@@ -4,10 +4,10 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2016-10-23
+ * Built on 2017-01-17
  *
  * MIT License
- * Copyright 2016, Lindsay Kay
+ * Copyright 2017, Lindsay Kay
  * http://xeolabs.com/
  *
  */
@@ -158,6 +158,9 @@
          */
         this.scenes = {};
 
+        // Used for throttling FPS for each Scene
+        this._scenesRenderInfo = {};
+
         /**
          * For each component type, a list of its supertypes, ordered upwards in the hierarchy.
          * @type {{}}
@@ -280,11 +283,31 @@
             }
 
             function render() {
+
                 var scenes = self.scenes;
+                var scenesRenderInfo = self._scenesRenderInfo;
+                var scene;
+                var renderInfo;
+                var ticksPerRender;
+
                 var forceRender = false;
                 for (id in scenes) {
                     if (scenes.hasOwnProperty(id)) {
-                        scenes[id].render(forceRender);
+
+                        scene = scenes[id];
+                        renderInfo = scenesRenderInfo[id];
+
+                        ticksPerRender = scene.ticksPerRender;
+
+                        if (renderInfo.ticksPerRender !== ticksPerRender) {
+                            renderInfo.ticksPerRender = ticksPerRender;
+                            renderInfo.renderCountdown = ticksPerRender;
+                        }
+
+                        if (--renderInfo.renderCountdown === 0) {
+                            scene.render(forceRender);
+                            renderInfo.renderCountdown = ticksPerRender;
+                        }
                     }
                 }
             }
@@ -353,6 +376,13 @@
 
             this.scenes[scene.id] = scene;
 
+            var ticksPerRender = scene.ticksPerRender;
+
+            this._scenesRenderInfo[scene.id] = {
+                ticksPerRender: ticksPerRender,
+                renderCountdown: ticksPerRender
+            };
+
             this.stats.components.scenes++;
 
             var self = this;
@@ -365,6 +395,7 @@
                     self._sceneIDMap.removeItem(scene.id);
 
                     delete self.scenes[scene.id];
+                    delete self._scenesRenderInfo[scene.id];
 
                     self.stats.components.scenes--;
                 });
@@ -531,11 +562,13 @@
         /**
          * Tests if the given component type is a subtype of another component supertype.
          * @param {String} type
-         * @param {String} superType
+         * @param {String} [superType="xeogl.Component"]
          * @returns {boolean}
          * @private
          */
         _isComponentType: function (type, superType) {
+
+            superType = superType || "xeogl.Component";
 
             if (type === superType) {
                 return true;
@@ -629,6 +662,20 @@
          */
         _inQuotes: function (id) {
             return this._isNumeric(id) ? ("" + id) : ("'" + id + "'");
+        },
+
+        /**
+         * Returns the concatenation of two typed arrays.
+         * @param a
+         * @param b
+         * @returns {*|a}
+         * @private
+         */
+        _concat: function (a, b) {
+            var c = new a.constructor(a.length + b.length);
+            c.set(a);
+            c.set(b, a.length);
+            return c;
         }
     };
 
@@ -1073,46 +1120,11 @@ var Canvas2Image = (function () {
 
     var tempMat1 = new Float32Array(16);
     var tempMat2 = new Float32Array(16);
-    var tempVec3 = new Float32Array(3);
-    var tempVec3b = new Float32Array(3);
-    var tempVec3c = new Float32Array(3);
-    var tempVec3d = new Float32Array(3);
-    var tempVec3e = new Float32Array(3);
-    var tempVec3f = new Float32Array(3);
-    var tempVec3g = new Float32Array(3);
 
     var tempVec4 = new Float32Array(4);
 
-    /*
-     * Optimizations made based on glMatrix by Brandon Jones
-     */
-
-    /*
-     * Copyright (c) 2010 Brandon Jones
-     *
-     * This software is provided 'as-is', without any express or implied
-     * warranty. In no event will the authors be held liable for any damages
-     * arising from the use of this software.
-     *
-     * Permission is granted to anyone to use this software for any purpose,
-     * including commercial applications, and to alter it and redistribute it
-     * freely, subject to the following restrictions:
-     *
-     *    1. The origin of this software must not be misrepresented; you must not
-     *    claim that you wrote the original software. If you use this software
-     *    in a product, an acknowledgment in the product documentation would be
-     *    appreciated but is not required.
-     *
-     *    2. Altered source versions must be plainly marked as such, and must not
-     *    be misrepresented as being the original software.
-     *
-     *    3. This notice may not be removed or altered from any source
-     *    distribution.
-     */
-
-
     /**
-     * This utility object provides math functions that are used within xeogl. These functions are also part xeogl's
+     * This utility object provides math functions that are used within xeogl. These functions are also part of xeogl's
      * public API and are therefore available for you to use within your application code.
      * @module xeogl
      * @submodule math
@@ -1209,32 +1221,6 @@ var Canvas2Image = (function () {
         },
 
         /**
-         * Returns a new, uninitialized 3D axis-aligned bounding box.
-         * @method AABB3
-         * @static
-         * @returns {*} The bounding box.
-         */
-        AABB3: function () {
-            return {
-                min: new Float32Array(3),
-                max: new Float32Array(3)
-            }
-        },
-
-        /**
-         * Returns a new, uninitialized 2D axis-aligned bounding box.
-         * @method AABB2
-         * @static
-         * @returns {*} The bounding box.
-         */
-        AABB2: function () {
-            return {
-                min: new Float32Array(2),
-                max: new Float32Array(2)
-            }
-        },
-
-        /**
          * Returns a new UUID.
          * @method createUUID
          * @static
@@ -1273,7 +1259,6 @@ var Canvas2Image = (function () {
          */
         clamp: function (value, min, max) {
             return Math.max(min, Math.min(max, value));
-
         },
 
         /**
@@ -2421,9 +2406,15 @@ var Canvas2Image = (function () {
          * @method translationMat4c
          * @static
          */
-        translationMat4c: function (x, y, z, dest) {
-            return math.translationMat4v([x, y, z], dest);
-        },
+        translationMat4c: (function () {
+            var xyz = new Float32Array(3);
+            return function (x, y, z, dest) {
+                xyz[0] = x;
+                xyz[1] = y;
+                xyz[2] = z;
+                return math.translationMat4v(xyz, dest);
+            };
+        })(),
 
         /**
          * Returns 4x4 translation matrix.
@@ -2434,7 +2425,71 @@ var Canvas2Image = (function () {
             return math.translationMat4c(s, s, s, dest);
         },
 
+        /**
+         * Efficiently post-concatenates a translation to the given matrix.
+         * @param v
+         * @param m
+         */
+        translateMat4v: function (xyz, m) {
+            return math.translateMat4c(xyz[0], xyz[1], xyz[2], m);
+        },
 
+        /**
+         * Efficiently post-concatenates a translation to the given matrix.
+         * @param x
+         * @param y
+         * @param z
+         * @param m
+         */
+        OLDtranslateMat4c: function (x, y, z, m) {
+
+            var m12 = m[12];
+            m[0] += m12 * x;
+            m[4] += m12 * y;
+            m[8] += m12 * z;
+
+            var m13 = m[13];
+            m[1] += m13 * x;
+            m[5] += m13 * y;
+            m[9] += m13 * z;
+
+            var m14 = m[14];
+            m[2] += m14 * x;
+            m[6] += m14 * y;
+            m[10] += m14 * z;
+
+            var m15 = m[15];
+            m[3] += m15 * x;
+            m[7] += m15 * y;
+            m[11] += m15 * z;
+
+            return m;
+        },
+
+        translateMat4c: function (x, y, z, m) {
+
+            var m3 = m[3];
+            m[0] += m3 * x;
+            m[1] += m3 * y;
+            m[2] += m3 * z;
+
+            var m7 = m[7];
+            m[4] += m7 * x;
+            m[5] += m7 * y;
+            m[6] += m7 * z;
+
+            var m11 = m[11];
+            m[8] += m11 * x;
+            m[9] += m11 * y;
+            m[10] += m11 * z;
+
+            var m15 = m[15];
+            m[12] += m15 * x;
+            m[13] += m15 * y;
+            m[14] += m15 * z;
+
+            return m;
+        },
         /**
          * Returns 4x4 rotation matrix.
          * @method rotationMat4v
@@ -2514,28 +2569,68 @@ var Canvas2Image = (function () {
          * @method scalingMat4c
          * @static
          */
-        scalingMat4c: function (x, y, z) {
-            return math.scalingMat4v([x, y, z]);
-        },
-        
-        scaleMat4v: function(v, m) {
-            
-            var x = v[0];
-            var y = v[1]; 
-            var z = v[2];
+        scalingMat4c: (function () {
+            var xyz = new Float32Array(3);
+            return function (x, y, z, dest) {
+                xyz[0] = x;
+                xyz[1] = y;
+                xyz[2] = z;
+                return math.scalingMat4v(xyz, dest);
+            };
+        })(),
 
-            m[ 0 ] *= x;
-            m[ 4 ] *= y;
-            m[ 8 ] *= z;
-            m[ 1 ] *= x;
-            m[ 5 ] *= y;
-            m[ 9 ] *= z;
-            m[ 2 ] *= x;
-            m[ 6 ] *= y;
-            m[ 10 ] *= z;
-            m[ 3 ] *= x;
-            m[ 7 ] *= y;
-            m[ 11 ] *= z;
+        /**
+         * Efficiently post-concatenates a scaling to the given matrix.
+         * @method scaleMat4c
+         * @param x
+         * @param y
+         * @param z
+         * @param m
+         */
+        scaleMat4c:  function (x, y, z, m) {
+            
+            m[0] *= x;
+            m[4] *= y;
+            m[8] *= z;
+            
+            m[1] *= x;
+            m[5] *= y;
+            m[9] *= z;
+            
+            m[2] *= x;
+            m[6] *= y;
+            m[10] *= z;
+            
+            m[3] *= x;
+            m[7] *= y;
+            m[11] *= z;
+            return m;
+        },
+
+        /**
+         * Efficiently post-concatenates a scaling to the given matrix.
+         * @method scaleMat4c
+         * @param xyz
+         * @param m
+         */
+        scaleMat4v: function (xyz, m) {
+
+            var x = xyz[0];
+            var y = xyz[1];
+            var z = xyz[2];
+
+            m[0] *= x;
+            m[4] *= y;
+            m[8] *= z;
+            m[1] *= x;
+            m[5] *= y;
+            m[9] *= z;
+            m[2] *= x;
+            m[6] *= y;
+            m[10] *= z;
+            m[3] *= x;
+            m[7] *= y;
+            m[11] *= z;
 
             return m;
         },
@@ -3008,6 +3103,54 @@ var Canvas2Image = (function () {
         },
 
         /**
+         * Transforms an array of positions by a 4x4 matrix.
+         * @method transformPositions3
+         * @static
+         */
+        transformPositions3: function (m, p, p2) {
+
+            p2 = p2 || p;
+
+            var i;
+            var len = p.length;
+
+            var x;
+            var y;
+            var z;
+
+            var m0 = m[0];
+            var m1 = m[1];
+            var m2 = m[2];
+            var m3 = m[3];
+            var m4 = m[4];
+            var m5 = m[5];
+            var m6 = m[6];
+            var m7 = m[7];
+            var m8 = m[8];
+            var m9 = m[9];
+            var m10 = m[10];
+            var m11 = m[11];
+            var m12 = m[12];
+            var m13 = m[13];
+            var m14 = m[14];
+            var m15 = m[15];
+
+            for (i = 0; i < len; i += 3) {
+
+                x = p[i + 0];
+                y = p[i + 1];
+                z = p[i + 2];
+
+                p2[i + 0] = (m0 * x) + (m4 * y) + (m8 * z) + m12;
+                p2[i + 1] = (m1 * x) + (m5 * y) + (m9 * z) + m13;
+                p2[i + 2] = (m2 * x) + (m6 * y) + (m10 * z) + m14;
+                p2[i + 3] = (m3 * x) + (m7 * y) + (m11 * z) + m15;
+            }
+
+            return p2;
+        },
+
+        /**
          * Transforms a three-element vector by a 4x4 matrix.
          * @method transformVec3
          * @static
@@ -3166,718 +3309,6 @@ var Canvas2Image = (function () {
             return result;
         },
 
-        /**
-         * Gets the diagonal size of a boundary given as minima and maxima.
-         * @method getAABBDiag
-         * @static
-         */
-        getAABBDiag: function (aabb) {
-            math.subVec3(aabb.max, aabb.min, tempVec3c);
-            return Math.abs(math.lenVec3(tempVec3c));
-        },
-
-        /**
-         * Get a diagonal boundary size that is symmetrical about the given point.
-         *
-         * @method getAABBDiagPoint
-         * @static
-         */
-        getAABBDiagPoint: function (aabb, p) {
-
-            var diagVec = math.subVec3(aabb.max, aabb.min, tempVec3c);
-
-            var xneg = p[0] - aabb.min[0];
-            var xpos = aabb.max[0] - p[0];
-            var yneg = p[1] - aabb.min[1];
-            var ypos = aabb.max[1] - p[1];
-            var zneg = p[2] - aabb.min[2];
-            var zpos = aabb.max[2] - p[2];
-
-            diagVec[0] += (xneg > xpos) ? xneg : xpos;
-            diagVec[1] += (yneg > ypos) ? yneg : ypos;
-            diagVec[2] += (zneg > zpos) ? zneg : zpos;
-
-            return Math.abs(math.lenVec3(diagVec));
-        },
-
-        /**
-         * Gets the center of an AABB.
-         * @method getAABBCenter
-         * @static
-         */
-        getAABBCenter: function (aabb, dest) {
-            var r = dest || math.vec3();
-
-            r[0] = (aabb.max[0] + aabb.min[0] ) * 0.5;
-            r[1] = (aabb.max[1] + aabb.min[1] ) * 0.5;
-            r[2] = (aabb.max[2] + aabb.min[2] ) * 0.5;
-
-            return r;
-        },
-
-        /**
-         * Gets the center of a 2D AABB.
-         * @method getAABB2Center
-         * @static
-         */
-        getAABB2Center: function (aabb, dest) {
-            var r = dest || math.vec2();
-
-            r[0] = (aabb.max[0] + aabb.min[0] ) / 2;
-            r[1] = (aabb.max[1] + aabb.min[1] ) / 2;
-
-            return r;
-        },
-
-        /**
-         * Collapses a 3D axis-aligned boundary, ready to expand to fit 3D points.
-         * Creates new AABB if none supplied.
-         *
-         * @method collapseAABB3
-         * @static
-         * @param {*} [aabb] 3D axis-aligned bounding box.
-         * @returns {*} 3D axis-aligned bounding box.
-         */
-        collapseAABB3: function (aabb) {
-
-            aabb = aabb || math.AABB2();
-
-            aabb.min[0] = 10000000;
-            aabb.min[1] = 10000000;
-            aabb.min[2] = 10000000;
-            aabb.max[0] = -10000000;
-            aabb.max[1] = -10000000;
-            aabb.max[2] = -10000000;
-
-            return aabb;
-        },
-
-        /**
-         * Converts an axis-aligned 3D boundary into an oriented boundary consisting of
-         * an array of eight 3D positions, one for each corner of the boundary.
-         *
-         * @method AABB3ToOBB3
-         * @static
-         * @param {*} aabb Axis-aligned boundary.
-         * @param {Array} [obb] Oriented bounding box.
-         * @returns {*} Oriented bounding box.
-         */
-        AABB3ToOBB3: function (aabb, obb) {
-
-            obb = obb || [];
-
-            if (!obb[0]) {
-                obb[0] = [];
-            }
-
-            obb[0][0] = aabb.min[0];
-            obb[0][1] = aabb.min[1];
-            obb[0][2] = aabb.min[2];
-            obb[0][3] = 1;
-
-            if (!obb[1]) {
-                obb[1] = [];
-            }
-
-            obb[1][0] = aabb.max[0];
-            obb[1][1] = aabb.min[1];
-            obb[1][2] = aabb.min[2];
-            obb[1][3] = 1;
-
-            if (!obb[2]) {
-                obb[2] = [];
-            }
-
-            obb[2][0] = aabb.max[0];
-            obb[2][1] = aabb.max[1];
-            obb[2][2] = aabb.min[2];
-            obb[2][3] = 1;
-
-            if (!obb[3]) {
-                obb[3] = [];
-            }
-
-            obb[3][0] = aabb.min[0];
-            obb[3][1] = aabb.max[1];
-            obb[3][2] = aabb.min[2];
-            obb[3][3] = 1;
-
-            if (!obb[4]) {
-                obb[4] = [];
-            }
-
-            obb[4][0] = aabb.min[0];
-            obb[4][1] = aabb.min[1];
-            obb[4][2] = aabb.max[2];
-            obb[4][3] = 1;
-
-            if (!obb[5]) {
-                obb[5] = [];
-            }
-
-            obb[5][0] = aabb.max[0];
-            obb[5][1] = aabb.min[1];
-            obb[5][2] = aabb.max[2];
-            obb[5][3] = 1;
-
-            if (!obb[6]) {
-                obb[6] = [];
-            }
-
-            obb[6][0] = aabb.max[0];
-            obb[6][1] = aabb.max[1];
-            obb[6][2] = aabb.max[2];
-            obb[6][3] = 1;
-
-            if (!obb[7]) {
-                obb[7] = [];
-            }
-
-            obb[7][0] = aabb.min[0];
-            obb[7][1] = aabb.max[1];
-            obb[7][2] = aabb.max[2];
-            obb[7][3] = 1;
-
-            return obb;
-        },
-
-        /**
-         * Finds the minimum axis-aligned 3D boundary enclosing the 3D points given in a flattened,  1-dimensional array.
-         *
-         * @method positions3ToAABB3
-         * @static
-         * @param {Array} positions Flattened 3D positions array
-         * @param {*} [aabb] Axis-aligned bounding box.
-         * @returns {*} Axis-aligned bounding box.
-         */
-        positions3ToAABB3: function (positions, aabb) {
-
-            aabb = aabb || math.AABB3();
-
-            var xmin = 100000;
-            var ymin = 100000;
-            var zmin = 100000;
-            var xmax = -100000;
-            var ymax = -100000;
-            var zmax = -100000;
-
-            var x, y, z;
-
-            for (var i = 0, len = positions.length - 2; i < len; i += 3) {
-
-                x = positions[i + 0];
-                y = positions[i + 1];
-                z = positions[i + 2];
-
-                if (x < xmin) {
-                    xmin = x;
-                }
-
-                if (y < ymin) {
-                    ymin = y;
-                }
-
-                if (z < zmin) {
-                    zmin = z;
-                }
-
-                if (x > xmax) {
-                    xmax = x;
-                }
-
-                if (y > ymax) {
-                    ymax = y;
-                }
-
-                if (z > zmax) {
-                    zmax = z;
-                }
-            }
-
-            aabb.min[0] = xmin;
-            aabb.min[1] = ymin;
-            aabb.min[2] = zmin;
-            aabb.max[0] = xmax;
-            aabb.max[1] = ymax;
-            aabb.max[2] = zmax;
-
-            return aabb;
-        },
-
-        /**
-         * Finds the minimum axis-aligned 3D boundary enclosing the given 3D points.
-         *
-         * @method points3ToAABB3
-         * @static
-         * @param {Array} points Oriented bounding box.
-         * @param {*} [aabb] Axis-aligned bounding box.
-         * @returns {*} Axis-aligned bounding box.
-         */
-        points3ToAABB3: function (points, aabb) {
-
-            aabb = aabb || math.AABB3();
-
-            var xmin = 100000;
-            var ymin = 100000;
-            var zmin = 100000;
-            var xmax = -100000;
-            var ymax = -100000;
-            var zmax = -100000;
-
-            var x, y, z;
-
-            for (var i = 0, len = points.length; i < len; i++) {
-
-                x = points[i][0];
-                y = points[i][1];
-                z = points[i][2];
-
-                if (x < xmin) {
-                    xmin = x;
-                }
-
-                if (y < ymin) {
-                    ymin = y;
-                }
-
-                if (z < zmin) {
-                    zmin = z;
-                }
-
-                if (x > xmax) {
-                    xmax = x;
-                }
-
-                if (y > ymax) {
-                    ymax = y;
-                }
-
-                if (z > zmax) {
-                    zmax = z;
-                }
-            }
-
-            aabb.min[0] = xmin;
-            aabb.min[1] = ymin;
-            aabb.min[2] = zmin;
-            aabb.max[0] = xmax;
-            aabb.max[1] = ymax;
-            aabb.max[2] = zmax;
-
-            return aabb;
-        },
-
-        /**
-         * Expands the first axis-aligned 3D boundary to enclose the second, if required.
-         *
-         * @method expandAABB3
-         * @static
-         * @param {*} aabb1 First AABB
-         * @param {*} aabb2 Second AABB
-         * @returns {*} The second AABB
-         */
-        expandAABB3: function (aabb1, aabb2) {
-
-            if (aabb1.min[0] > aabb2.min[0]) {
-                aabb1.min[0] = aabb2.min[0];
-            }
-
-            if (aabb1.min[1] > aabb2.min[1]) {
-                aabb1.min[1] = aabb2.min[1];
-            }
-
-            if (aabb1.min[2] > aabb2.min[2]) {
-                aabb1.min[2] = aabb2.min[2];
-            }
-
-            if (aabb1.max[0] < aabb2.max[0]) {
-                aabb1.max[0] = aabb2.max[0];
-            }
-
-            if (aabb1.max[1] < aabb2.max[1]) {
-                aabb1.max[1] = aabb2.max[1];
-            }
-
-            if (aabb1.max[2] < aabb2.max[2]) {
-                aabb1.max[2] = aabb2.max[2];
-            }
-
-            return aabb2;
-        },
-
-        /**
-         * Expands an axis-aligned 3D boundary to enclose the given point, if needed.
-         *
-         * @method expandAABB3Point3
-         * @static
-         * @param {*} aabb AABB
-         * @param {*} p Point
-         * @returns {*} The AABB
-         */
-        expandAABB3Point3: function (aabb, p) {
-
-            if (aabb.min[0] < p[0]) {
-                aabb.min[0] = p[0];
-            }
-
-            if (aabb.min[1] < p[1]) {
-                aabb.min[1] = p[1];
-            }
-
-            if (aabb.min[2] < p[2]) {
-                aabb.min[2] = p[2];
-            }
-
-            if (aabb.max[0] > p[0]) {
-                aabb.max[0] = p[0];
-            }
-
-            if (aabb.max[1] > p[1]) {
-                aabb.max[1] = p[1];
-            }
-
-            if (aabb.max[2] > p[2]) {
-                aabb.max[2] = p[2];
-            }
-
-            return aabb;
-        },
-
-        /**
-         * Collapses a 2D axis-aligned boundary, ready to expand to fit 2D points.
-         * Creates new AABB if none supplied.
-         *
-         * @method collapseAABB2
-         * @static
-         * @param {*} [aabb] 2D axis-aligned bounding box.
-         * @returns {*} 2D axis-aligned bounding box.
-         */
-        collapseAABB2: function (aabb) {
-
-            aabb = aabb || math.AABB2();
-
-            aabb.min[0] = 10000000;
-            aabb.min[1] = 10000000;
-            aabb.max[0] = -10000000;
-            aabb.max[1] = -10000000;
-
-            return aabb;
-        },
-
-        /**
-         * Finds the minimum 2D projected axis-aligned boundary enclosing the given 3D points.
-         *
-         * @method points3ToAABB2
-         * @static
-         * @param {Array} points 3D Points.
-         * @param {*} [aabb] 2D axis-aligned bounding box.
-         * @returns {*} 2D axis-aligned bounding box.
-         */
-        points3ToAABB2: function (points, aabb) {
-
-            aabb = aabb || math.AABB2();
-
-            var xmin = 10000000;
-            var ymin = 10000000;
-            var xmax = -10000000;
-            var ymax = -10000000;
-
-            var x;
-            var y;
-            var w;
-            var f;
-
-            for (var i = 0, len = points.length; i < len; i++) {
-
-                x = points[i][0];
-                y = points[i][1];
-                w = points[i][3] || 1.0;
-
-                f = 1.0 / w;
-
-                x *= f;
-                y *= f;
-
-                if (x < xmin) {
-                    xmin = x;
-                }
-
-                if (y < ymin) {
-                    ymin = y;
-                }
-
-                if (x > xmax) {
-                    xmax = x;
-                }
-
-                if (y > ymax) {
-                    ymax = y;
-                }
-            }
-
-            aabb.min[0] = xmin;
-            aabb.min[1] = ymin;
-            aabb.max[0] = xmax;
-            aabb.max[1] = ymax;
-
-            return aabb;
-        },
-
-        /**
-         * Expands the first axis-aligned 2D boundary to enclose the second, if required.
-         *
-         * @method expandAABB3
-         * @static
-         * @param {*} aabb1 First AABB
-         * @param {*} aabb2 Second AABB
-         * @returns {*} The second AABB
-         */
-        expandAABB2: function (aabb1, aabb2) {
-
-            if (aabb1.min[0] > aabb2.min[0]) {
-                aabb1.min[0] = aabb2.min[0];
-            }
-
-            if (aabb1.min[1] > aabb2.min[1]) {
-                aabb1.min[1] = aabb2.min[1];
-            }
-
-            if (aabb1.max[0] < aabb2.max[0]) {
-                aabb1.max[0] = aabb2.max[0];
-            }
-
-            if (aabb1.max[1] < aabb2.max[1]) {
-                aabb1.max[1] = aabb2.max[1];
-            }
-
-            return aabb2;
-        },
-
-        /**
-         * Expands an axis-aligned 2D boundary to enclose the given point, if required.
-         *
-         * @method expandAABB2Point2
-         * @static
-         * @param {*} aabb AABB
-         * @param {*} p Point
-         * @returns {*} The AABB
-         */
-        expandAABB2Point2: function (aabb, p) {
-
-            if (aabb.min[0] > p[0]) {
-                aabb.min[0] = p[0];
-            }
-
-            if (aabb.min[1] > p[1]) {
-                aabb.min[1] = p[1];
-            }
-
-            if (aabb.max[0] < p[0]) {
-                aabb.max[0] = p[0];
-            }
-
-            if (aabb.max[1] < p[1]) {
-                aabb.max[1] = p[1];
-            }
-
-            return aabb;
-        },
-
-        AABB2ToCanvas: function (aabb, canvasWidth, canvasHeight, aabb2) {
-
-            aabb2 = aabb2 || aabb;
-
-            var xmin = (aabb.min[0] + 1.0) * 0.5;
-            var ymin = (aabb.min[1] + 1.0) * 0.5;
-            var xmax = (aabb.max[0] + 1.0) * 0.5;
-            var ymax = (aabb.max[1] + 1.0) * 0.5;
-
-            aabb2.min[0] = Math.floor(xmin * canvasWidth);
-            aabb2.min[1] = canvasHeight - Math.floor(ymax * canvasHeight);
-            aabb2.max[0] = Math.floor(xmax * canvasWidth);
-            aabb2.max[1] = canvasHeight - Math.floor(ymin * canvasHeight);
-
-            return aabb;
-        },
-
-        /**
-         * Calculates the normal vector of a triangle
-         *
-         * @method triangleNormal
-         * @param a
-         * @param b
-         * @param c
-         * @param normal
-         * @returns {*}
-         */
-        triangleNormal: function (a, b, c, normal) {
-
-            normal = normal || math.vec3();
-
-            var p1x = b[0] - a[0];
-            var p1y = b[1] - a[1];
-            var p1z = b[2] - a[2];
-
-            var p2x = c[0] - a[0];
-            var p2y = c[1] - a[1];
-            var p2z = c[2] - a[2];
-
-            var p3x = p1y * p2z - p1z * p2y;
-            var p3y = p1z * p2x - p1x * p2z;
-            var p3z = p1x * p2y - p1y * p2x;
-
-            var mag = Math.sqrt(p3x * p3x + p3y * p3y + p3z * p3z);
-            if (mag === 0) {
-                normal[0] = 0;
-                normal[1] = 0;
-                normal[2] = 0;
-            } else {
-                normal[0] = p3x / mag;
-                normal[1] = p3y / mag;
-                normal[2] = p3z / mag;
-            }
-
-            return normal
-        },
-
-        /**
-         * Builds normal vectors from positions and indices.
-         *
-         * @method buildNormals
-         * @static
-         * @param {Float32Array} positions One-dimensional flattened array of positions.
-         * @param {Float32Array} indices One-dimensional flattened array of indices.*
-         * @returns {Float32Array} One-dimensional flattened array of normal vectors.
-         */
-        buildNormals: function (positions, indices) {
-
-            var i;
-            var len;
-            var nvecs = new Array(positions.length / 3);
-            var j0;
-            var j1;
-            var j2;
-            var v1;
-            var v2;
-            var v3;
-
-            for (i = 0, len = indices.length; i < len; i += 3) {
-                j0 = indices[i + 0];
-                j1 = indices[i + 1];
-                j2 = indices[i + 2];
-
-                v1 = [positions[j0 * 3 + 0], positions[j0 * 3 + 1], positions[j0 * 3 + 2]];
-                v2 = [positions[j1 * 3 + 0], positions[j1 * 3 + 1], positions[j1 * 3 + 2]];
-                v3 = [positions[j2 * 3 + 0], positions[j2 * 3 + 1], positions[j2 * 3 + 2]];
-
-                v2 = math.subVec3(v2, v1, [0, 0, 0]);
-                v3 = math.subVec3(v3, v1, [0, 0, 0]);
-
-                var n = math.normalizeVec3(math.cross3Vec3(v2, v3, [0, 0, 0]), [0, 0, 0]);
-
-                if (!nvecs[j0]) {
-                    nvecs[j0] = [];
-                }
-                if (!nvecs[j1]) {
-                    nvecs[j1] = [];
-                }
-                if (!nvecs[j2]) {
-                    nvecs[j2] = [];
-                }
-
-                nvecs[j0].push(n);
-                nvecs[j1].push(n);
-                nvecs[j2].push(n);
-            }
-
-            var normals = new Float32Array(positions.length);
-
-            // now go through and average out everything
-            for (i = 0, len = nvecs.length; i < len; i++) {
-                var count = nvecs[i].length;
-                var x = 0;
-                var y = 0;
-                var z = 0;
-                for (var j = 0; j < count; j++) {
-                    x += nvecs[i][j][0];
-                    y += nvecs[i][j][1];
-                    z += nvecs[i][j][2];
-                }
-                normals[i * 3 + 0] = (x / count);
-                normals[i * 3 + 1] = (y / count);
-                normals[i * 3 + 2] = (z / count);
-            }
-
-            return normals;
-        },
-
-
-        /**
-         * Builds vertex tangent vectors from positions, UVs and indices
-         *
-         * @method buildTangents
-         * @static
-         * @param {Float32Array} positions One-dimensional flattened array of positions.
-         * @param {Float32Array} indices One-dimensional flattened array of indices.
-         * @param {Float32Array} uv One-dimensional flattened array of UV coordinates.
-         * @returns {Float32Array} One-dimensional flattened array of tangents.
-         */
-        buildTangents: function (positions, indices, uv) {
-
-            var tangents = new Float32Array(positions.length);
-
-            // The vertex arrays needs to be calculated
-            // before the calculation of the tangents
-
-            for (var location = 0; location < indices.length; location += 3) {
-
-                // Recontructing each vertex and UV coordinate into the respective vectors
-
-                var index = indices[location];
-
-                var v0 = positions.subarray(index * 3, index * 3 + 3);
-                var uv0 = uv.subarray(index * 2, index * 2 + 2);
-
-                index = indices[location + 1];
-
-                var v1 = positions.subarray(index * 3, index * 3 + 3);
-                var uv1 = uv.subarray(index * 2, index * 2 + 2);
-
-                index = indices[location + 2];
-
-                var v2 = positions.subarray(index * 3, index * 3 + 3);
-                var uv2 = uv.subarray(index * 2, index * 2 + 2);
-
-                var deltaPos1 = math.subVec3(v1, v0, tempVec3);
-                var deltaPos2 = math.subVec3(v2, v0, tempVec3b);
-
-                var deltaUV1 = math.subVec2(uv1, uv0, tempVec3c);
-                var deltaUV2 = math.subVec2(uv2, uv0, tempVec3d);
-
-                var r = 1 / ((deltaUV1[0] * deltaUV2[1]) - (deltaUV1[1] * deltaUV2[0]));
-
-                var tangent = math.mulVec3Scalar(
-                    math.subVec3(
-                        math.mulVec3Scalar(deltaPos1, deltaUV2[1], tempVec3e),
-                        math.mulVec3Scalar(deltaPos2, deltaUV1[1], tempVec3f),
-                        tempVec3g
-                    ),
-                    r,
-                    tempVec3f
-                );
-
-                // Average the value of the vectors outs
-                for (var v = 0; v < 3; v++) {
-                    var addTo = indices[location + v] * 3;
-
-                    tangents[addTo] += tangent[0];
-                    tangents[addTo + 1] += tangent[1];
-                    tangents[addTo + 2] += tangent[2];
-                }
-            }
-
-            return tangents;
-        },
 
         /**
          * Flattens a two-dimensional array into a one-dimensional array.
@@ -3905,301 +3336,6 @@ var Canvas2Image = (function () {
             }
 
             return result;
-        },
-
-        /**
-         * Builds vertex and index arrays needed by color-indexed triangle picking.
-         *
-         * @method getPickPrimitives
-         * @static
-         * @param {Float32Array} positions One-dimensional flattened array of positions.
-         * @param {Float32Array} indices One-dimensional flattened array of indices.
-         * @returns {*} Object containing the arrays, created by this method or reused from 'pickTris' parameter.
-         */
-        getPickPrimitives: function (positions, indices) {
-
-            var numIndices = indices.length;
-
-            var pickPositions = new Float32Array(numIndices * 30); // FIXME: Why do we need to extend size like this to make large meshes pickable?
-            var pickColors = new Float32Array(numIndices * 40);
-
-            var primIndex = 0;
-
-            // Positions array index
-            var vi;
-
-            // Picking positions array index
-            var pvi;
-
-            // Picking color array index
-            var pci;
-
-            // Triangle indices
-
-            var i;
-            var r;
-            var g;
-            var b;
-            var a;
-
-            for (var location = 0; location < numIndices; location += 3) {
-
-                pvi = location * 3;
-                pci = location * 4;
-
-                // Primitive-indexed triangle pick color
-
-                a = (primIndex >> 24 & 0xFF) / 255.0;
-                b = (primIndex >> 16 & 0xFF) / 255.0;
-                g = (primIndex >> 8 & 0xFF) / 255.0;
-                r = (primIndex & 0xFF) / 255.0;
-
-                // A
-
-                i = indices[location];
-                vi = i * 3;
-
-                pickPositions[pvi] = positions[vi];
-                pickPositions[pvi + 1] = positions[vi + 1];
-                pickPositions[pvi + 2] = positions[vi + 2];
-
-                pickColors[pci] = r;
-                pickColors[pci + 1] = g;
-                pickColors[pci + 2] = b;
-                pickColors[pci + 3] = a;
-
-
-                // B
-
-                i = indices[location + 1];
-                vi = i * 3;
-
-                pickPositions[pvi + 3] = positions[vi];
-                pickPositions[pvi + 4] = positions[vi + 1];
-                pickPositions[pvi + 5] = positions[vi + 2];
-
-                pickColors[pci + 4] = r;
-                pickColors[pci + 5] = g;
-                pickColors[pci + 6] = b;
-                pickColors[pci + 7] = a;
-
-
-                // C
-
-                i = indices[location + 2];
-                vi = i * 3;
-
-                pickPositions[pvi + 6] = positions[vi];
-                pickPositions[pvi + 7] = positions[vi + 1];
-                pickPositions[pvi + 8] = positions[vi + 2];
-
-                pickColors[pci + 8] = r;
-                pickColors[pci + 9] = g;
-                pickColors[pci + 10] = b;
-                pickColors[pci + 11] = a;
-
-                primIndex++;
-            }
-
-            return {
-                positions: pickPositions,
-                colors: pickColors
-            };
-        },
-
-        /**
-         * Finds the intersection of a 3D ray with a 3D triangle.
-         *
-         * @method rayTriangleIntersect
-         * @static
-         * @param {Float32Array} origin Ray origin.
-         * @param {Float32Array} dir Ray direction.
-         * @param {Float32Array} a First triangle vertex.
-         * @param {Float32Array} b Second triangle vertex.
-         * @param {Float32Array} c Third triangle vertex.
-         * @param {Float32Array} [isect] Intersection point.
-         * @returns {Float32Array} The intersection point, or null if no intersection found.
-         */
-        rayTriangleIntersect: function (origin, dir, a, b, c, isect) {
-
-            isect = isect || math.vec3();
-
-            var EPSILON = 0.000001;
-
-            var edge1 = math.subVec3(b, a, tempVec3);
-            var edge2 = math.subVec3(c, a, tempVec3b);
-
-            var pvec = math.cross3Vec3(dir, edge2, tempVec3c);
-            var det = math.dotVec3(edge1, pvec);
-            if (det < EPSILON) {
-                return null;
-            }
-
-            var tvec = math.subVec3(origin, a, tempVec3d);
-            var u = math.dotVec3(tvec, pvec);
-            if (u < 0 || u > det) {
-                return null;
-            }
-
-            var qvec = math.cross3Vec3(tvec, edge1, tempVec3e);
-            var v = math.dotVec3(dir, qvec);
-            if (v < 0 || u + v > det) {
-                return null;
-            }
-
-            var t = math.dotVec3(edge2, qvec) / det;
-            isect[0] = origin[0] + t * dir[0];
-            isect[1] = origin[1] + t * dir[1];
-            isect[2] = origin[2] + t * dir[2];
-
-            return isect;
-        },
-
-        /**
-         * Finds the intersection of a 3D ray with a plane defined by 3 points.
-         *
-         * @method rayPlaneIntersect
-         * @static
-         * @param {Float32Array} origin Ray origin.
-         * @param {Float32Array} dir Ray direction.
-         * @param {Float32Array} a First point on plane.
-         * @param {Float32Array} b Second point on plane.
-         * @param {Float32Array} c Third point on plane.
-         * @param {Float32Array} [isect] Intersection point.
-         * @returns {Float32Array} The intersection point.
-         */
-        rayPlaneIntersect: function (origin, dir, a, b, c, isect) {
-
-            isect = isect || math.vec3();
-
-            dir = math.normalizeVec3(dir, tempVec3);
-
-            var edge1 = math.subVec3(b, a, tempVec3b);
-            var edge2 = math.subVec3(c, a, tempVec3c);
-
-            var n = math.cross3Vec3(edge1, edge2, tempVec3d);
-            math.normalizeVec3(n, n);
-
-            var d = -math.dotVec3(a, n);
-
-            var t = -(math.dotVec3(origin, n) + d) / math.dotVec3(dir, n);
-
-            isect[0] = origin[0] + t * dir[0];
-            isect[1] = origin[1] + t * dir[1];
-            isect[2] = origin[2] + t * dir[2];
-
-            return isect;
-        },
-
-        /**
-         * Gets barycentric coordinates from cartesian coordinates within a triangle.
-         *
-         * @method cartesianToBaryCentric
-         * @static
-         * @param {Float32Array} cartesian Cartesian coordinates.
-         * @param {Float32Array} a First triangle vertex.
-         * @param {Float32Array} b Second triangle vertex.
-         * @param {Float32Array} c Third triangle vertex.
-         * @param {Float32Array} [bary] The barycentric coordinates.
-         * @returns {Float32Array} The barycentric coordinates, or null if the triangle was invalid.
-         * @returns {*}
-         */
-        cartesianToBarycentric: function (cartesian, a, b, c, bary) {
-
-            var f1 = math.subVec3(a, cartesian, tempVec3);
-            var f2 = math.subVec3(b, cartesian, tempVec3b);
-            var f3 = math.subVec3(c, cartesian, tempVec3c);
-
-            var t1 = math.subVec3(a, b, tempVec3d);
-            var t2 = math.subVec3(a, c, tempVec3e);
-
-            var a0 = math.lenVec3(math.cross3Vec3(t1, t2, tempVec3f));
-
-            bary[0] = math.lenVec3(math.cross3Vec3(f2, f3, tempVec3f)) / a0;
-            bary[1] = math.lenVec3(math.cross3Vec3(f3, f1, tempVec3f)) / a0;
-            bary[2] = math.lenVec3(math.cross3Vec3(f1, f2, tempVec3f)) / a0;
-
-            return bary;
-        },
-
-        cartesianToBarycentric2: function (cartesian, a, b, c, dest) {
-
-            var v0 = math.subVec3(c, a, tempVec3);
-            var v1 = math.subVec3(b, a, tempVec3b);
-            var v2 = math.subVec3(cartesian, a, tempVec3c);
-
-            var dot00 = math.dotVec3(v0, v0);
-            var dot01 = math.dotVec3(v0, v1);
-            var dot02 = math.dotVec3(v0, v2);
-            var dot11 = math.dotVec3(v1, v1);
-            var dot12 = math.dotVec3(v1, v2);
-
-            var denom = ( dot00 * dot11 - dot01 * dot01 );
-
-            // Colinear or singular triangle
-
-            if (denom === 0) {
-
-                // Arbitrary location outside of triangle
-
-                return null;
-            }
-
-            var invDenom = 1 / denom;
-
-            var u = ( dot11 * dot02 - dot01 * dot12 ) * invDenom;
-            var v = ( dot00 * dot12 - dot01 * dot02 ) * invDenom;
-
-            dest[0] = 1 - u - v;
-            dest[1] = v;
-            dest[2] = u;
-
-            return dest;
-        },
-
-        /**
-         * Returns true if the given barycentric coordinates are within their triangle.
-         *
-         * @method barycentricInsideTriangle
-         * @static
-         * @param {Float32Array} bary Barycentric coordinates.
-         * @returns {Boolean} True if the barycentric coordinates are inside their triangle.
-         * @returns {*}
-         */
-        barycentricInsideTriangle: function (bary) {
-
-            var v = bary[1];
-            var u = bary[2];
-
-            return (u >= 0) && (v >= 0) && (u + v < 1);
-        },
-
-        /**
-         * Gets cartesian coordinates from barycentric coordinates within a triangle.
-         *
-         * @method barycentricToCartesian
-         * @static
-         * @param {Float32Array} bary The barycentric coordinate.
-         * @param {Float32Array} a First triangle vertex.
-         * @param {Float32Array} b Second triangle vertex.
-         * @param {Float32Array} c Third triangle vertex.
-         * @param {Float32Array} [cartesian] Cartesian coordinates.
-         * @returns {Float32Array} The cartesian coordinates, or null if the triangle was invalid.
-         * @returns {*}
-         */
-        barycentricToCartesian2: function (bary, a, b, c, cartesian) {
-
-            cartesian = cartesian || math.vec3();
-
-            var u = bary[0];
-            var v = bary[1];
-            var w = bary[2];
-
-            cartesian[0] = a[0] * u + b[0] * v + c[0] * w;
-            cartesian[1] = a[1] * u + b[1] * v + c[1] * w;
-            cartesian[2] = a[2] * u + b[2] * v + c[2] * w;
-
-            return cartesian;
         },
 
 
@@ -4520,7 +3656,7 @@ var Canvas2Image = (function () {
 
             return m;
         },
-        
+
         normalizeQuaternion: function (q, dest) {
             dest = dest || q;
             var len = math.lenVec4([q[0], q[1], q[2], q[3]]);
@@ -4564,90 +3700,1443 @@ var Canvas2Image = (function () {
         }
     };
 
-})();;xeogl.math.tangentQuadraticBezier = function (t, p0, p1, p2) {
-    return 2 * ( 1 - t ) * ( p1 - p0 ) + 2 * t * ( p2 - p1 );
+})();;/**
+ * Boundary math functions.
+ */
+(function () {
 
-};
+    "use strict";
 
-xeogl.math.tangentQuadraticBezier = function (t, p0, p1, p2, p3) {
-    return -3 * p0 * (1 - t) * (1 - t) +
-        3 * p1 * (1 - t) * (1 - t) - 6 * t * p1 * (1 - t) +
-        6 * t * p2 * (1 - t) - 3 * t * t * p2 +
-        3 * t * t * p3;
+    var math = xeogl.math;
 
-};
+    /**
+     * Returns a new, uninitialized 3D axis-aligned bounding box.
+     *
+     * @private
+     */
+    math.AABB3 = function (values) {
+        return new Float32Array(values || 6);
+    };
 
-xeogl.math.tangentSpline = function (t, p0, p1, p2, p3) {
+    /**
+     * Returns a new, uninitialized 2D axis-aligned bounding box.
+     *
+     * @private
+     */
+    math.AABB2 = function (values) {
+        return new Float32Array(values || 4);
+    };
 
-    var h00 = 6 * t * t - 6 * t;
-    var h10 = 3 * t * t - 4 * t + 1;
-    var h01 = -6 * t * t + 6 * t;
-    var h11 = 3 * t * t - 2 * t;
+    /**
+     * Returns a new, uninitialized 3D oriented bounding box (OBB).
+     *
+     * @private
+     */
+    math.OBB3 = function (values) {
+        return new Float32Array(values || 32);
+    };
 
-    return h00 + h10 + h01 + h11;
+    /**
+     * Returns a new, uninitialized 2D oriented bounding box (OBB).
+     *
+     * @private
+     */
+    math.OBB2 = function (values) {
+        return new Float32Array(values || 16);
+    };
 
-};
 
-// Catmull-Rom
+    /**
+     * Transforms an OBB3 by a 4x4 matrix.
+     *
+     * @private
+     */
+    math.transformOBB3 = function (m, p, p2) {
 
-xeogl.math.catmullRomInterpolate = function (p0, p1, p2, p3, t) {
-    var v0 = ( p2 - p0 ) * 0.5;
-    var v1 = ( p3 - p1 ) * 0.5;
-    var t2 = t * t;
-    var t3 = t * t2;
-    return ( 2 * p1 - 2 * p2 + v0 + v1 ) * t3 + ( -3 * p1 + 3 * p2 - 2 * v0 - v1 ) * t2 + v0 * t + p1;
+        p2 = p2 || p;
 
-};
+        var i;
+        var len = p.length;
 
-// Bezier Curves formulas obtained from
-// http://en.wikipedia.org/wiki/B%C3%A9zier_curve
+        var x;
+        var y;
+        var z;
 
-// Quad Bezier Functions
+        var m0 = m[0];
+        var m1 = m[1];
+        var m2 = m[2];
+        var m3 = m[3];
+        var m4 = m[4];
+        var m5 = m[5];
+        var m6 = m[6];
+        var m7 = m[7];
+        var m8 = m[8];
+        var m9 = m[9];
+        var m10 = m[10];
+        var m11 = m[11];
+        var m12 = m[12];
+        var m13 = m[13];
+        var m14 = m[14];
+        var m15 = m[15];
 
-xeogl.math.b2p0 = function (t, p) {
-    var k = 1 - t;
-    return k * k * p;
+        for (i = 0; i < len; i += 4) {
 
-};
+            x = p[i + 0];
+            y = p[i + 1];
+            z = p[i + 2];
 
-xeogl.math.b2p1 = function (t, p) {
-    return 2 * ( 1 - t ) * t * p;
-};
+            p2[i + 0] = (m0 * x) + (m4 * y) + (m8 * z) + m12;
+            p2[i + 1] = (m1 * x) + (m5 * y) + (m9 * z) + m13;
+            p2[i + 2] = (m2 * x) + (m6 * y) + (m10 * z) + m14;
+            p2[i + 3] = (m3 * x) + (m7 * y) + (m11 * z) + m15;
+        }
 
-xeogl.math.b2p2 = function (t, p) {
-    return t * t * p;
-};
+        return p2;
+    };
 
-xeogl.math.b2 = function (t, p0, p1, p2) {
-    return this.b2p0(t, p0) + this.b2p1(t, p1) + this.b2p2(t, p2);
-};
+    /**
+     * Gets the diagonal size of an AABB3 given as minima and maxima.
+     *
+     * @private
+     */
+    math.getAABB3Diag = (function () {
 
-// Cubic Bezier Functions
+        var min = new Float32Array(3);
+        var max = new Float32Array(3);
+        var tempVec3 = new Float32Array(3);
 
-xeogl.math.b3p0 = function (t, p) {
-    var k = 1 - t;
-    return k * k * k * p;
-};
+        return function (aabb) {
 
-xeogl.math.b3p1 = function (t, p) {
-    var k = 1 - t;
-    return 3 * k * k * t * p;
-};
+            min[0] = aabb[0];
+            min[1] = aabb[1];
+            min[2] = aabb[2];
 
-xeogl.math.b3p2 = function (t, p) {
-    var k = 1 - t;
-    return 3 * k * t * t * p;
-};
+            max[0] = aabb[3];
+            max[1] = aabb[4];
+            max[2] = aabb[5];
 
-xeogl.math.b3p3 = function (t, p) {
-    return t * t * t * p;
-};
+            math.subVec3(max, min, tempVec3);
 
-xeogl.math.b3 = function (t, p0, p1, p2, p3) {
-    return this.b3p0(t, p0) + this.b3p1(t, p1) + this.b3p2(t, p2) + this.b3p3(t, p3);
-};
+            return Math.abs(math.lenVec3(tempVec3));
+        };
+    })();
 
-;(function () {
+    /**
+     * Get a diagonal boundary size that is symmetrical about the given point.
+     *
+     * @private
+     */
+    math.getAABB3DiagPoint = (function () {
+
+        var min = new Float32Array(3);
+        var max = new Float32Array(3);
+        var tempVec3 = new Float32Array(3);
+
+        return function (aabb, p) {
+
+            min[0] = aabb[0];
+            min[1] = aabb[1];
+            min[2] = aabb[2];
+
+            max[0] = aabb[3];
+            max[1] = aabb[4];
+            max[2] = aabb[5];
+
+            var diagVec = math.subVec3(max, min, tempVec3);
+
+            var xneg = p[0] - aabb[0];
+            var xpos = aabb[3] - p[0];
+            var yneg = p[1] - aabb[1];
+            var ypos = aabb[4] - p[1];
+            var zneg = p[2] - aabb[2];
+            var zpos = aabb[5] - p[2];
+
+            diagVec[0] += (xneg > xpos) ? xneg : xpos;
+            diagVec[1] += (yneg > ypos) ? yneg : ypos;
+            diagVec[2] += (zneg > zpos) ? zneg : zpos;
+
+            return Math.abs(math.lenVec3(diagVec));
+        };
+    })();
+
+    /**
+     * Gets the center of an AABB.
+     *
+     * @private
+     */
+    math.getAABB3Center = function (aabb, dest) {
+        var r = dest || math.vec3();
+
+        r[0] = (aabb[3] + aabb[0] ) * 0.5;
+        r[1] = (aabb[4] + aabb[1] ) * 0.5;
+        r[2] = (aabb[5] + aabb[2] ) * 0.5;
+
+        return r;
+    };
+
+    /**
+     * Gets the center of a 2D AABB.
+     *
+     * @private
+     */
+    math.getAABB2Center = function (aabb, dest) {
+        var r = dest || math.vec2();
+
+        r[0] = (aabb[2] + aabb[0] ) / 2;
+        r[1] = (aabb[3] + aabb[1] ) / 2;
+
+        return r;
+    };
+
+    /**
+     * Collapses a 3D axis-aligned boundary, ready to expand to fit 3D points.
+     * Creates new AABB if none supplied.
+     *
+     * @private
+     */
+    math.collapseAABB3 = function (aabb) {
+
+        aabb = aabb || math.AABB3();
+
+        aabb[0] = 10000000;
+        aabb[1] = 10000000;
+        aabb[2] = 10000000;
+        aabb[3] = -10000000;
+        aabb[4] = -10000000;
+        aabb[5] = -10000000;
+
+        return aabb;
+    };
+
+    /**
+     * Converts an axis-aligned 3D boundary into an oriented boundary consisting of
+     * an array of eight 3D positions, one for each corner of the boundary.
+     *
+     * @private
+     */
+    math.AABB3ToOBB3 = function (aabb, obb) {
+
+        obb = obb || math.OBB3();
+
+        obb[0] = aabb[0];
+        obb[1] = aabb[1];
+        obb[2] = aabb[2];
+        obb[3] = 1;
+
+        obb[4] = aabb[3];
+        obb[5] = aabb[1];
+        obb[6] = aabb[2];
+        obb[7] = 1;
+
+        obb[8] = aabb[3];
+        obb[9] = aabb[4];
+        obb[10] = aabb[2];
+        obb[11] = 1;
+
+        obb[12] = aabb[0];
+        obb[13] = aabb[4];
+        obb[14] = aabb[2];
+        obb[15] = 1;
+
+        obb[16] = aabb[0];
+        obb[17] = aabb[1];
+        obb[18] = aabb[5];
+        obb[19] = 1;
+
+        obb[20] = aabb[3];
+        obb[21] = aabb[1];
+        obb[22] = aabb[5];
+        obb[23] = 1;
+
+        obb[24] = aabb[3];
+        obb[25] = aabb[4];
+        obb[26] = aabb[5];
+        obb[27] = 1;
+
+        obb[28] = aabb[0];
+        obb[29] = aabb[4];
+        obb[30] = aabb[5];
+        obb[31] = 1;
+
+        return obb;
+    };
+
+    /**
+     * Finds the minimum axis-aligned 3D boundary enclosing the homogeneous 3D points (x,y,z,w) given in a flattened array.
+     *
+     * @private
+     */
+    math.positions3ToAABB3 = function (positions, aabb) {
+
+        aabb = aabb || math.AABB3();
+
+        var xmin = 100000;
+        var ymin = 100000;
+        var zmin = 100000;
+        var xmax = -100000;
+        var ymax = -100000;
+        var zmax = -100000;
+
+        var x, y, z;
+
+        for (var i = 0, len = positions.length; i < len; i += 3) {
+
+            x = positions[i + 0];
+            y = positions[i + 1];
+            z = positions[i + 2];
+
+            if (x < xmin) {
+                xmin = x;
+            }
+
+            if (y < ymin) {
+                ymin = y;
+            }
+
+            if (z < zmin) {
+                zmin = z;
+            }
+
+            if (x > xmax) {
+                xmax = x;
+            }
+
+            if (y > ymax) {
+                ymax = y;
+            }
+
+            if (z > zmax) {
+                zmax = z;
+            }
+        }
+
+        aabb[0] = xmin;
+        aabb[1] = ymin;
+        aabb[2] = zmin;
+        aabb[3] = xmax;
+        aabb[4] = ymax;
+        aabb[5] = zmax;
+
+        return aabb;
+    };
+
+    /**
+     * Finds the minimum axis-aligned 3D boundary enclosing the homogeneous 3D points (x,y,z,w) given in a flattened array.
+     *
+     * @private
+     */
+    math.OBB3ToAABB3 = function (obb, aabb) {
+
+        aabb = aabb || math.AABB3();
+
+        var xmin = 100000;
+        var ymin = 100000;
+        var zmin = 100000;
+        var xmax = -100000;
+        var ymax = -100000;
+        var zmax = -100000;
+
+        var x, y, z;
+
+        for (var i = 0, len = obb.length; i < len; i += 4) {
+
+            x = obb[i + 0];
+            y = obb[i + 1];
+            z = obb[i + 2];
+
+            if (x < xmin) {
+                xmin = x;
+            }
+
+            if (y < ymin) {
+                ymin = y;
+            }
+
+            if (z < zmin) {
+                zmin = z;
+            }
+
+            if (x > xmax) {
+                xmax = x;
+            }
+
+            if (y > ymax) {
+                ymax = y;
+            }
+
+            if (z > zmax) {
+                zmax = z;
+            }
+        }
+
+        aabb[0] = xmin;
+        aabb[1] = ymin;
+        aabb[2] = zmin;
+        aabb[3] = xmax;
+        aabb[4] = ymax;
+        aabb[5] = zmax;
+
+        return aabb;
+    };
+
+    /**
+     * Finds the minimum axis-aligned 3D boundary enclosing the given 3D points.
+     *
+     * @private
+     */
+    math.points3ToAABB3 = function (points, aabb) {
+
+        aabb = aabb || math.AABB3();
+
+        var xmin = 100000;
+        var ymin = 100000;
+        var zmin = 100000;
+        var xmax = -100000;
+        var ymax = -100000;
+        var zmax = -100000;
+
+        var x, y, z;
+
+        for (var i = 0, len = points.length; i < len; i++) {
+
+            x = points[i][0];
+            y = points[i][1];
+            z = points[i][2];
+
+            if (x < xmin) {
+                xmin = x;
+            }
+
+            if (y < ymin) {
+                ymin = y;
+            }
+
+            if (z < zmin) {
+                zmin = z;
+            }
+
+            if (x > xmax) {
+                xmax = x;
+            }
+
+            if (y > ymax) {
+                ymax = y;
+            }
+
+            if (z > zmax) {
+                zmax = z;
+            }
+        }
+
+        aabb[0] = xmin;
+        aabb[1] = ymin;
+        aabb[2] = zmin;
+        aabb[3] = xmax;
+        aabb[4] = ymax;
+        aabb[5] = zmax;
+
+        return aabb;
+    };
+
+    /**
+     * Finds the minimum boundary sphere enclosing the given 3D points.
+     *
+     * @private
+     */
+    math.points3ToSphere3 = (function () {
+
+        var tempVec3 = new Float32Array(3);
+
+        return function (points, sphere) {
+
+            sphere = sphere || math.vec4();
+
+            var x = 0;
+            var y = 0;
+            var z = 0;
+
+            var i;
+            var numPoints = points.length;
+
+            for (i = 0; i < numPoints; i++) {
+                x += points[i][0];
+                y += points[i][1];
+                z += points[i][2];
+            }
+
+            sphere[0] = x / numPoints;
+            sphere[1] = y / numPoints;
+            sphere[2] = z / numPoints;
+
+            var radius = 0;
+            var dist;
+
+            for (i = 0; i < numPoints; i++) {
+
+                dist = Math.abs(math.lenVec3(math.subVec3(points[i], sphere, tempVec3)));
+
+                if (dist > radius) {
+                    radius = dist;
+                }
+            }
+
+            sphere[3] = radius;
+
+            return sphere;
+        };
+    })();
+
+    /**
+     * Finds the minimum boundary sphere enclosing the given 3D points.
+     *
+     * @private
+     */
+    math.OBB3ToSphere3 = (function () {
+
+        var point = new Float32Array(3);
+        var tempVec3 = new Float32Array(3);
+
+        return function (points, sphere) {
+
+            sphere = sphere || math.vec4();
+
+            var x = 0;
+            var y = 0;
+            var z = 0;
+
+            var i;
+            var lenPoints = points.length;
+            var numPoints = lenPoints / 4;
+
+            for (i = 0; i < lenPoints; i += 4) {
+                x += points[i + 0];
+                y += points[i + 1];
+                z += points[i + 2];
+            }
+
+            sphere[0] = x / numPoints;
+            sphere[1] = y / numPoints;
+            sphere[2] = z / numPoints;
+
+            var radius = 0;
+            var dist;
+
+            for (i = 0; i < lenPoints; i += 4) {
+
+                point[0] = points[i + 0];
+                point[1] = points[i + 1];
+                point[2] = points[i + 2];
+
+                dist = Math.abs(math.lenVec3(math.subVec3(point, sphere, tempVec3)));
+
+                if (dist > radius) {
+                    radius = dist;
+                }
+            }
+
+            sphere[3] = radius;
+
+            return sphere;
+        };
+    })();
+
+    /**
+     * Gets the center of a bounding sphere.
+     *
+     * @private
+     */
+    math.getSphere3Center = function (sphere, dest) {
+        dest = dest || math.vec3();
+
+        dest[0] = sphere[0];
+        dest[1] = sphere[1];
+        dest[2] = sphere[2];
+
+        return dest;
+    };
+
+    /**
+     * Expands the first axis-aligned 3D boundary to enclose the second, if required.
+     *
+     * @private
+     */
+    math.expandAABB3 = function (aabb1, aabb2) {
+
+        if (aabb1[0] > aabb2[0]) {
+            aabb1[0] = aabb2[0];
+        }
+
+        if (aabb1[1] > aabb2[1]) {
+            aabb1[1] = aabb2[1];
+        }
+
+        if (aabb1[2] > aabb2[2]) {
+            aabb1[2] = aabb2[2];
+        }
+
+        if (aabb1[3] < aabb2[3]) {
+            aabb1[3] = aabb2[3];
+        }
+
+        if (aabb1[4] < aabb2[4]) {
+            aabb1[4] = aabb2[4];
+        }
+
+        if (aabb1[5] < aabb2[5]) {
+            aabb1[5] = aabb2[5];
+        }
+
+        return aabb1;
+    };
+
+    /**
+     * Expands an axis-aligned 3D boundary to enclose the given point, if needed.
+     *
+     * @private
+     */
+    math.expandAABB3Point3 = function (aabb, p) {
+
+        if (aabb[0] < p[0]) {
+            aabb[0] = p[0];
+        }
+
+        if (aabb[1] < p[1]) {
+            aabb[1] = p[1];
+        }
+
+        if (aabb[2] < p[2]) {
+            aabb[2] = p[2];
+        }
+
+        if (aabb[3] > p[0]) {
+            aabb[3] = p[0];
+        }
+
+        if (aabb[4] > p[1]) {
+            aabb[4] = p[1];
+        }
+
+        if (aabb[5] > p[2]) {
+            aabb[5] = p[2];
+        }
+
+        return aabb;
+    };
+
+    /**
+     * Collapses a 2D axis-aligned boundary, ready to expand to fit 2D points.
+     * Creates new AABB if none supplied.
+     *
+     * @private
+     */
+    math.collapseAABB2 = function (aabb) {
+
+        aabb = aabb || math.AABB2();
+
+        aabb[0] = 10000000;
+        aabb[1] = 10000000;
+        aabb[2] = -10000000;
+        aabb[3] = -10000000;
+
+        return aabb;
+    };
+
+    /**
+     * Finds the minimum 2D projected axis-aligned boundary enclosing the given 3D points.
+     *
+     * @private
+     */
+    math.OBB3ToAABB2 = function (points, aabb) {
+
+        aabb = aabb || math.AABB2();
+
+        var xmin = 10000000;
+        var ymin = 10000000;
+        var xmax = -10000000;
+        var ymax = -10000000;
+
+        var x;
+        var y;
+        var w;
+        var f;
+
+        for (var i = 0, len = points.length; i < len; i += 4) {
+
+            x = points[i + 0];
+            y = points[i + 1];
+            w = points[i + 3] || 1.0;
+
+            f = 1.0 / w;
+
+            x *= f;
+            y *= f;
+
+            if (x < xmin) {
+                xmin = x;
+            }
+
+            if (y < ymin) {
+                ymin = y;
+            }
+
+            if (x > xmax) {
+                xmax = x;
+            }
+
+            if (y > ymax) {
+                ymax = y;
+            }
+        }
+
+        aabb[0] = xmin;
+        aabb[1] = ymin;
+        aabb[2] = xmax;
+        aabb[3] = ymax;
+
+        return aabb;
+    };
+
+    /**
+     * Expands the first axis-aligned 2D boundary to enclose the second, if required.
+     *
+     * @private
+     */
+    math.expandAABB2 = function (aabb1, aabb2) {
+
+        if (aabb1[0] > aabb2[0]) {
+            aabb1[0] = aabb2[0];
+        }
+
+        if (aabb1[1] > aabb2[1]) {
+            aabb1[1] = aabb2[1];
+        }
+
+        if (aabb1[2] < aabb2[2]) {
+            aabb1[2] = aabb2[2];
+        }
+
+        if (aabb1[3] < aabb2[3]) {
+            aabb1[3] = aabb2[3];
+        }
+
+        return aabb1;
+    };
+
+    /**
+     * Expands an axis-aligned 2D boundary to enclose the given point, if required.
+     *
+     * @private
+     */
+    math.expandAABB2Point2 = function (aabb, p) {
+
+        if (aabb[0] > p[0]) {
+            aabb[0] = p[0];
+        }
+
+        if (aabb[1] > p[1]) {
+            aabb[1] = p[1];
+        }
+
+        if (aabb[2] < p[0]) {
+            aabb[2] = p[0];
+        }
+
+        if (aabb[3] < p[1]) {
+            aabb[3] = p[1];
+        }
+
+        return aabb;
+    };
+
+    math.AABB2ToCanvas = function (aabb, canvasWidth, canvasHeight, aabb2) {
+
+        aabb2 = aabb2 || aabb;
+
+        var xmin = (aabb[0] + 1.0) * 0.5;
+        var ymin = (aabb[1] + 1.0) * 0.5;
+        var xmax = (aabb[2] + 1.0) * 0.5;
+        var ymax = (aabb[3] + 1.0) * 0.5;
+
+        aabb2[0] = Math.floor(xmin * canvasWidth);
+        aabb2[1] = canvasHeight - Math.floor(ymax * canvasHeight);
+        aabb2[2] = Math.floor(xmax * canvasWidth);
+        aabb2[3] = canvasHeight - Math.floor(ymin * canvasHeight);
+
+        return aabb2;
+    };
+
+})();;/**
+ * Boundary math functions.
+ */
+(function () {
+
+    "use strict";
+
+    var math = xeogl.math;
+
+    /**
+     * Calculates the normal vector of a trianglel.
+     *
+     * @private
+     */
+    math.triangleNormal = function (a, b, c, normal) {
+
+        normal = normal || math.vec3();
+
+        var p1x = b[0] - a[0];
+        var p1y = b[1] - a[1];
+        var p1z = b[2] - a[2];
+
+        var p2x = c[0] - a[0];
+        var p2y = c[1] - a[1];
+        var p2z = c[2] - a[2];
+
+        var p3x = p1y * p2z - p1z * p2y;
+        var p3y = p1z * p2x - p1x * p2z;
+        var p3z = p1x * p2y - p1y * p2x;
+
+        var mag = Math.sqrt(p3x * p3x + p3y * p3y + p3z * p3z);
+        if (mag === 0) {
+            normal[0] = 0;
+            normal[1] = 0;
+            normal[2] = 0;
+        } else {
+            normal[0] = p3x / mag;
+            normal[1] = p3y / mag;
+            normal[2] = p3z / mag;
+        }
+
+        return normal
+    };
+
+    /**
+     * Finds the intersection of a 3D ray with a 3D triangle.
+     *
+     * @private
+     */
+    math.rayTriangleIntersect = (function() {
+
+        var tempVec3 = new Float32Array(3);
+        var tempVec3b = new Float32Array(3);
+        var tempVec3c = new Float32Array(3);
+        var tempVec3d = new Float32Array(3);
+        var tempVec3e = new Float32Array(3);
+
+        return function (origin, dir, a, b, c, isect) {
+
+            isect = isect || math.vec3();
+
+            var EPSILON = 0.000001;
+
+            var edge1 = math.subVec3(b, a, tempVec3);
+            var edge2 = math.subVec3(c, a, tempVec3b);
+
+            var pvec = math.cross3Vec3(dir, edge2, tempVec3c);
+            var det = math.dotVec3(edge1, pvec);
+            if (det < EPSILON) {
+                return null;
+            }
+
+            var tvec = math.subVec3(origin, a, tempVec3d);
+            var u = math.dotVec3(tvec, pvec);
+            if (u < 0 || u > det) {
+                return null;
+            }
+
+            var qvec = math.cross3Vec3(tvec, edge1, tempVec3e);
+            var v = math.dotVec3(dir, qvec);
+            if (v < 0 || u + v > det) {
+                return null;
+            }
+
+            var t = math.dotVec3(edge2, qvec) / det;
+            isect[0] = origin[0] + t * dir[0];
+            isect[1] = origin[1] + t * dir[1];
+            isect[2] = origin[2] + t * dir[2];
+
+            return isect;
+        };
+    })();
+
+    /**
+     * Finds the intersection of a 3D ray with a plane defined by 3 points.
+     *
+     * @private
+     */
+    math.rayPlaneIntersect = (function() {
+
+        var tempVec3 = new Float32Array(3);
+        var tempVec3b = new Float32Array(3);
+        var tempVec3c = new Float32Array(3);
+        var tempVec3d = new Float32Array(3);
+
+        return function (origin, dir, a, b, c, isect) {
+
+            isect = isect || math.vec3();
+
+            dir = math.normalizeVec3(dir, tempVec3);
+
+            var edge1 = math.subVec3(b, a, tempVec3b);
+            var edge2 = math.subVec3(c, a, tempVec3c);
+
+            var n = math.cross3Vec3(edge1, edge2, tempVec3d);
+            math.normalizeVec3(n, n);
+
+            var d = -math.dotVec3(a, n);
+
+            var t = -(math.dotVec3(origin, n) + d) / math.dotVec3(dir, n);
+
+            isect[0] = origin[0] + t * dir[0];
+            isect[1] = origin[1] + t * dir[1];
+            isect[2] = origin[2] + t * dir[2];
+
+            return isect;
+        };
+    })();
+
+    /**
+     * Gets barycentric coordinates from cartesian coordinates within a triangle.
+     *
+     * @private
+     */
+    math.cartesianToBarycentric = (function() {
+
+        var tempVec3 = new Float32Array(3);
+        var tempVec3b = new Float32Array(3);
+        var tempVec3c = new Float32Array(3);
+
+        return function (cartesian, a, b, c, dest) {
+
+            var v0 = math.subVec3(c, a, tempVec3);
+            var v1 = math.subVec3(b, a, tempVec3b);
+            var v2 = math.subVec3(cartesian, a, tempVec3c);
+
+            var dot00 = math.dotVec3(v0, v0);
+            var dot01 = math.dotVec3(v0, v1);
+            var dot02 = math.dotVec3(v0, v2);
+            var dot11 = math.dotVec3(v1, v1);
+            var dot12 = math.dotVec3(v1, v2);
+
+            var denom = ( dot00 * dot11 - dot01 * dot01 );
+
+            // Colinear or singular triangle
+
+            if (denom === 0) {
+
+                // Arbitrary location outside of triangle
+
+                return null;
+            }
+
+            var invDenom = 1 / denom;
+
+            var u = ( dot11 * dot02 - dot01 * dot12 ) * invDenom;
+            var v = ( dot00 * dot12 - dot01 * dot02 ) * invDenom;
+
+            dest[0] = 1 - u - v;
+            dest[1] = v;
+            dest[2] = u;
+
+            return dest;
+        };
+    })();
+
+    /**
+     * Returns true if the given barycentric coordinates are within their triangle.
+     *
+     * @private
+     */
+    math.barycentricInsideTriangle = function (bary) {
+
+        var v = bary[1];
+        var u = bary[2];
+
+        return (u >= 0) && (v >= 0) && (u + v < 1);
+    };
+
+    /**
+     * Gets cartesian coordinates from barycentric coordinates within a triangle.
+     *
+     * @private
+     */
+    math.barycentricToCartesian = function (bary, a, b, c, cartesian) {
+
+        cartesian = cartesian || math.vec3();
+
+        var u = bary[0];
+        var v = bary[1];
+        var w = bary[2];
+
+        cartesian[0] = a[0] * u + b[0] * v + c[0] * w;
+        cartesian[1] = a[1] * u + b[1] * v + c[1] * w;
+        cartesian[2] = a[2] * u + b[2] * v + c[2] * w;
+
+        return cartesian;
+    };
+
+})();;/**
+ * Boundary math functions.
+ */
+(function () {
+
+    "use strict";
+
+    var math = xeogl.math;
+
+    /**
+     * Builds normal vectors from positions and indices.
+     *
+     * @private
+     */
+    math.buildNormals = (function () {
+
+        var a = math.vec3();
+        var b = math.vec3();
+        var c = math.vec3();
+        var ab = math.vec3();
+        var ac = math.vec3();
+        var crossVec = math.vec3();
+        var normVec = math.vec3();
+
+        return function (positions, indices) {
+
+            var i;
+            var len;
+            var nvecs = new Array(positions.length / 3);
+            var j0;
+            var j1;
+            var j2;
+
+            for (i = 0, len = indices.length; i < len; i += 3) {
+
+                j0 = indices[i];
+                j1 = indices[i + 1];
+                j2 = indices[i + 2];
+
+                a[0] = positions[j0 * 3];
+                a[1] = positions[j0 * 3 + 1];
+                a[2] = positions[j0 * 3 + 2];
+
+                b[0] = positions[j1 * 3];
+                b[1] = positions[j1 * 3 + 1];
+                b[2] = positions[j1 * 3 + 2];
+
+                c[0] = positions[j2 * 3];
+                c[1] = positions[j2 * 3 + 1];
+                c[2] = positions[j2 * 3 + 2];
+
+                math.subVec3(b, a, ab);
+                math.subVec3(c, a, ac);
+
+                math.normalizeVec3(math.cross3Vec3(ab, ac, crossVec), normVec);
+
+                if (!nvecs[j0]) {
+                    nvecs[j0] = [];
+                }
+                if (!nvecs[j1]) {
+                    nvecs[j1] = [];
+                }
+                if (!nvecs[j2]) {
+                    nvecs[j2] = [];
+                }
+
+                nvecs[j0].push(normVec);
+                nvecs[j1].push(normVec);
+                nvecs[j2].push(normVec);
+            }
+
+            var normals = new Float32Array(positions.length);
+
+            // now go through and average out everything
+            for (i = 0, len = nvecs.length; i < len; i++) {
+                var count = nvecs[i].length;
+                var x = 0;
+                var y = 0;
+                var z = 0;
+                for (var j = 0; j < count; j++) {
+                    x += nvecs[i][j][0];
+                    y += nvecs[i][j][1];
+                    z += nvecs[i][j][2];
+                }
+                normals[i * 3] = (x / count);
+                normals[i * 3 + 1] = (y / count);
+                normals[i * 3 + 2] = (z / count);
+            }
+
+            return normals;
+        };
+    })();
+
+    /**
+     * Builds vertex tangent vectors from positions, UVs and indices.
+     *
+     * @private
+     */
+    math.buildTangents = (function () {
+
+        var tempVec3 = new Float32Array(3);
+        var tempVec3b = new Float32Array(3);
+        var tempVec3c = new Float32Array(3);
+        var tempVec3d = new Float32Array(3);
+        var tempVec3e = new Float32Array(3);
+        var tempVec3f = new Float32Array(3);
+        var tempVec3g = new Float32Array(3);
+
+        return function (positions, indices, uv) {
+
+            var tangents = new Float32Array(positions.length);
+
+            // The vertex arrays needs to be calculated
+            // before the calculation of the tangents
+
+            for (var location = 0; location < indices.length; location += 3) {
+
+                // Recontructing each vertex and UV coordinate into the respective vectors
+
+                var index = indices[location];
+
+                var v0 = positions.subarray(index * 3, index * 3 + 3);
+                var uv0 = uv.subarray(index * 2, index * 2 + 2);
+
+                index = indices[location + 1];
+
+                var v1 = positions.subarray(index * 3, index * 3 + 3);
+                var uv1 = uv.subarray(index * 2, index * 2 + 2);
+
+                index = indices[location + 2];
+
+                var v2 = positions.subarray(index * 3, index * 3 + 3);
+                var uv2 = uv.subarray(index * 2, index * 2 + 2);
+
+                var deltaPos1 = math.subVec3(v1, v0, tempVec3);
+                var deltaPos2 = math.subVec3(v2, v0, tempVec3b);
+
+                var deltaUV1 = math.subVec2(uv1, uv0, tempVec3c);
+                var deltaUV2 = math.subVec2(uv2, uv0, tempVec3d);
+
+                var r = 1 / ((deltaUV1[0] * deltaUV2[1]) - (deltaUV1[1] * deltaUV2[0]));
+
+                var tangent = math.mulVec3Scalar(
+                    math.subVec3(
+                        math.mulVec3Scalar(deltaPos1, deltaUV2[1], tempVec3e),
+                        math.mulVec3Scalar(deltaPos2, deltaUV1[1], tempVec3f),
+                        tempVec3g
+                    ),
+                    r,
+                    tempVec3f
+                );
+
+                // Average the value of the vectors
+
+                var addTo;
+
+                for (var v = 0; v < 3; v++) {
+                    addTo = indices[location + v] * 3;
+                    tangents[addTo] += tangent[0];
+                    tangents[addTo + 1] += tangent[1];
+                    tangents[addTo + 2] += tangent[2];
+                }
+            }
+
+            return tangents;
+        };
+    })();
+
+    /**
+     * Builds vertex and index arrays needed by color-indexed triangle picking.
+     *
+     * @private
+     */
+    math.buildPickTriangles = function (positions, indices) {
+
+        var numIndices = indices.length;
+        var pickPositions = new Float32Array(numIndices * 30); // FIXME: Why do we need to extend size like this to make large meshes pickable?
+        var pickColors = new Float32Array(numIndices * 40);
+        var primIndex = 0;
+        var vi;// Positions array index
+        var pvi;// Picking positions array index
+        var pci; // Picking color array index
+
+        // Triangle indices
+        var i;
+        var r;
+        var g;
+        var b;
+        var a;
+
+        for (var location = 0; location < numIndices; location += 3) {
+
+            pvi = location * 3;
+            pci = location * 4;
+
+            // Primitive-indexed triangle pick color
+
+            a = (primIndex >> 24 & 0xFF) / 255.0;
+            b = (primIndex >> 16 & 0xFF) / 255.0;
+            g = (primIndex >> 8 & 0xFF) / 255.0;
+            r = (primIndex & 0xFF) / 255.0;
+
+            // A
+
+            i = indices[location];
+            vi = i * 3;
+
+            pickPositions[pvi] = positions[vi];
+            pickPositions[pvi + 1] = positions[vi + 1];
+            pickPositions[pvi + 2] = positions[vi + 2];
+
+            pickColors[pci] = r;
+            pickColors[pci + 1] = g;
+            pickColors[pci + 2] = b;
+            pickColors[pci + 3] = a;
+
+            // B
+
+            i = indices[location + 1];
+            vi = i * 3;
+
+            pickPositions[pvi + 3] = positions[vi];
+            pickPositions[pvi + 4] = positions[vi + 1];
+            pickPositions[pvi + 5] = positions[vi + 2];
+
+            pickColors[pci + 4] = r;
+            pickColors[pci + 5] = g;
+            pickColors[pci + 6] = b;
+            pickColors[pci + 7] = a;
+
+            // C
+
+            i = indices[location + 2];
+            vi = i * 3;
+
+            pickPositions[pvi + 6] = positions[vi];
+            pickPositions[pvi + 7] = positions[vi + 1];
+            pickPositions[pvi + 8] = positions[vi + 2];
+
+            pickColors[pci + 8] = r;
+            pickColors[pci + 9] = g;
+            pickColors[pci + 10] = b;
+            pickColors[pci + 11] = a;
+
+            primIndex++;
+        }
+
+        return {
+            positions: pickPositions,
+            colors: pickColors
+        };
+    };
+}());;/**
+ * Curve math functions.
+ */
+(function () {
+
+    "use strict";
+
+    var math = xeogl.math;
+
+    math.tangentQuadraticBezier = function (t, p0, p1, p2) {
+        return 2 * ( 1 - t ) * ( p1 - p0 ) + 2 * t * ( p2 - p1 );
+    };
+
+    math.tangentQuadraticBezier = function (t, p0, p1, p2, p3) {
+        return -3 * p0 * (1 - t) * (1 - t) +
+            3 * p1 * (1 - t) * (1 - t) - 6 * t * p1 * (1 - t) +
+            6 * t * p2 * (1 - t) - 3 * t * t * p2 +
+            3 * t * t * p3;
+    };
+
+    math.tangentSpline = function (t) {
+        var h00 = 6 * t * t - 6 * t;
+        var h10 = 3 * t * t - 4 * t + 1;
+        var h01 = -6 * t * t + 6 * t;
+        var h11 = 3 * t * t - 2 * t;
+        return h00 + h10 + h01 + h11;
+    };
+
+    math.catmullRomInterpolate = function (p0, p1, p2, p3, t) {
+        var v0 = ( p2 - p0 ) * 0.5;
+        var v1 = ( p3 - p1 ) * 0.5;
+        var t2 = t * t;
+        var t3 = t * t2;
+        return ( 2 * p1 - 2 * p2 + v0 + v1 ) * t3 + ( -3 * p1 + 3 * p2 - 2 * v0 - v1 ) * t2 + v0 * t + p1;
+    };
+
+    // Bezier Curve formulii from http://en.wikipedia.org/wiki/B%C3%A9zier_curve
+
+    // Quad Bezier Functions
+
+    math.b2p0 = function (t, p) {
+        var k = 1 - t;
+        return k * k * p;
+
+    };
+
+    math.b2p1 = function (t, p) {
+        return 2 * ( 1 - t ) * t * p;
+    };
+
+    math.b2p2 = function (t, p) {
+        return t * t * p;
+    };
+
+    math.b2 = function (t, p0, p1, p2) {
+        return this.b2p0(t, p0) + this.b2p1(t, p1) + this.b2p2(t, p2);
+    };
+
+    // Cubic Bezier Functions
+
+    math.b3p0 = function (t, p) {
+        var k = 1 - t;
+        return k * k * k * p;
+    };
+
+    math.b3p1 = function (t, p) {
+        var k = 1 - t;
+        return 3 * k * k * t * p;
+    };
+
+    math.b3p2 = function (t, p) {
+        var k = 1 - t;
+        return 3 * k * t * t * p;
+    };
+
+    math.b3p3 = function (t, p) {
+        return t * t * t * p;
+    };
+
+    math.b3 = function (t, p0, p1, p2, p3) {
+        return this.b3p0(t, p0) + this.b3p1(t, p1) + this.b3p2(t, p2) + this.b3p3(t, p3);
+    };
+})();;/**
+ * Ray casting support functions.
+ */
+(function () {
+
+    "use strict";
+
+    var math = xeogl.math;
+
+    /**
+     Transforms a Canvas-space position into a World-space ray, in the context of a Camera.
+     @method canvasPosToWorldRay
+     @static
+     @param {Camera} camera The Camera.
+     @param {Float32Array} canvasPos The Canvas-space position.
+     @param {Float32Array} worldRayOrigin The World-space ray origin.
+     @param {Float32Array} worldRayDir The World-space ray direction.
+     */
+    math.canvasPosToWorldRay = (function () {
+
+        var tempMat4b = math.mat4();
+        var tempMat4c = math.mat4();
+        var tempVec4a = math.vec4();
+        var tempVec4b = math.vec4();
+        var tempVec4c = math.vec4();
+        var tempVec4d = math.vec4();
+
+        return function (camera, canvasPos, worldRayOrigin, worldRayDir) {
+
+            var canvas = camera.scene.canvas.canvas;
+
+            var viewMat = camera.view.matrix;
+            var projMat = camera.project.matrix;
+
+            var pvMat = math.mulMat4(projMat, viewMat, tempMat4b);
+            var pvMatInverse = math.inverseMat4(pvMat, tempMat4c);
+
+            // Calculate clip space coordinates, which will be in range
+            // of x=[-1..1] and y=[-1..1], with y=(+1) at top
+
+            var canvasWidth = canvas.width;
+            var canvasHeight = canvas.height;
+
+            var clipX = (canvasPos[0] - canvasWidth / 2) / (canvasWidth / 2);  // Calculate clip space coordinates
+            var clipY = -(canvasPos[1] - canvasHeight / 2) / (canvasHeight / 2);
+
+            tempVec4a[0] = clipX;
+            tempVec4a[1] = clipY;
+            tempVec4a[2] = -1;
+            tempVec4a[3] = 1;
+
+            math.transformVec4(pvMatInverse, tempVec4a, tempVec4b);
+            math.mulVec4Scalar(tempVec4b, 1 / tempVec4b[3]);
+
+            tempVec4c[0] = clipX;
+            tempVec4c[1] = clipY;
+            tempVec4c[2] = 1;
+            tempVec4c[3] = 1;
+
+            math.transformVec4(pvMatInverse, tempVec4c, tempVec4d);
+            math.mulVec4Scalar(tempVec4d, 1 / tempVec4d[3]);
+
+            worldRayOrigin[0] = tempVec4d[0];
+            worldRayOrigin[1] = tempVec4d[1];
+            worldRayOrigin[2] = tempVec4d[2];
+
+            math.subVec3(tempVec4d, tempVec4b, worldRayDir);
+
+            math.normalizeVec3(worldRayDir);
+        };
+    })();
+
+    /**
+     Transforms a Canvas-space position to an Entity's Local-space coordinate system, in the context of a Camera.
+     @method canvasPosToLocalRay
+     @static
+     @param {Camera} camera The Camera.
+     @param {Entity} entity The Entity.
+     @param {Float32Array} canvasPos The Canvas-space position.
+     @param {Float32Array} localRayOrigin The Local-space ray origin.
+     @param {Float32Array} localRayDir The Local-space ray direction.
+     */
+    math.canvasPosToLocalRay = (function () {
+
+        var worldRayOrigin = math.vec3();
+        var worldRayDir = math.vec3();
+
+        return function (camera, entity, canvasPos, localRayOrigin, localRayDir) {
+            math.canvasPosToWorldRay(camera, canvasPos, worldRayOrigin, worldRayDir);
+            math.worldRayToLocalRay(entity, worldRayOrigin, worldRayDir, localRayOrigin, localRayDir);
+        };
+    })();
+
+    /**
+     Transforms a ray from World-space to an Entity's Local-space coordinate system.
+     @method worldRayToLocalRay
+     @static
+     @param {Entity} entity The Entity.
+     @param {Float32Array} worldRayOrigin The World-space ray origin.
+     @param {Float32Array} worldRayDir The World-space ray direction.
+     @param {Float32Array} localRayOrigin The Local-space ray origin.
+     @param {Float32Array} localRayDir The Local-space ray direction.
+     */
+    math.worldRayToLocalRay = (function () {
+
+        var tempMat4 = math.mat4();
+        var tempVec4a = math.vec4();
+        var tempVec4b = math.vec4();
+
+        return function (entity, worldRayOrigin, worldRayDir, localRayOrigin, localRayDir) {
+
+            var modelMat = entity.transform.leafMatrix;
+            var modelMatInverse = math.inverseMat4(modelMat, tempMat4);
+
+            tempVec4a[0] = worldRayOrigin[0];
+            tempVec4a[1] = worldRayOrigin[1];
+            tempVec4a[2] = worldRayOrigin[2];
+            tempVec4a[3] = 1;
+
+            math.transformVec4(modelMatInverse, tempVec4a, tempVec4b);
+
+            localRayOrigin[0] = tempVec4b[0];
+            localRayOrigin[1] = tempVec4b[1];
+            localRayOrigin[2] = tempVec4b[2];
+
+            math.transformVec3(modelMatInverse, worldRayDir, localRayDir);
+        };
+    })();
+})();;(function () {
 
     "use strict";
 
@@ -5172,6 +5661,24 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
         params = params || {};
 
+       this._prepareDisplay(params);
+
+        if (this.imageDirty || params.force) {
+            this._renderObjectList({ // Render the draw list
+                clear: (params.clear !== false), // Clear buffers by default
+                opaqueOnly: params.opaqueOnly,
+                pass: params.pass
+            });
+            this.stats.frame.frameCount++;
+            this.imageDirty = false;
+        }
+    };
+
+
+    xeogl.renderer.Renderer.prototype._prepareDisplay = function (params) {
+
+        params = params || {};
+
         if (this.objectListDirty) {
             this._buildObjectList(); // Build the scene object list
             this.objectListDirty = false;
@@ -5189,17 +5696,8 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
             this.stateSortDirty = false;
             this.imageDirty = true; // Now need to build object draw list
         }
-
-        if (this.imageDirty || params.force) {
-            this._renderObjectList({ // Render the draw list
-                clear: (params.clear !== false), // Clear buffers by default
-                opaqueOnly: params.opaqueOnly,
-                pass: params.pass
-            });
-            this.stats.frame.frameCount++;
-            this.imageDirty = false;
-        }
     };
+
 
     /**
      * Builds the object list from the object map
@@ -5464,9 +5962,9 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
                 frameCtx.renderBuf.unbind();
             }
 
-            var numTextureUnits = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
+            var numTextureUnits = gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
 
-            for (var ii = 0; ii < numTextureUnits; ++ii) {
+            for (var ii = 0; ii < numTextureUnits; ii++) {
                 gl.activeTexture(gl.TEXTURE0 + ii);
                 gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
                 gl.bindTexture(gl.TEXTURE_2D, null);
@@ -5503,8 +6001,8 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
                 this.pickBuf = pickBuf;
             }
 
-            // Do any pending render
-            this.render();
+            // Do any pending display preparation
+            this._prepareDisplay();
 
             pickBuf.bind();
             pickBuf.clear();
@@ -5744,10 +6242,42 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
         this.type = type;
 
-        this.itemType = data.constructor == Uint8Array   ? gl.UNSIGNED_BYTE :
-            data.constructor == Uint16Array  ? gl.UNSIGNED_SHORT :
-                data.constructor == Uint32Array  ? gl.UNSIGNED_INT :
-                    gl.FLOAT;
+        switch (data.constructor) {
+
+            case Uint8Array:
+                this.itemType = gl.UNSIGNED_BYTE;
+                this.itemByteSize = 1;
+                break;
+
+            case Int8Array:
+                this.itemType = gl.BYTE;
+                this.itemByteSize = 1;
+                break;
+
+            case  Uint16Array:
+                this.itemType = gl.UNSIGNED_SHORT;
+                this.itemByteSize = 2;
+                break;
+
+            case  Int16Array:
+                this.itemType = gl.SHORT;
+                this.itemByteSize = 2;
+                break;
+
+            case Uint32Array:
+                this.itemType = gl.UNSIGNED_INT;
+                this.itemByteSize = 4;
+                break;
+
+            case Int32Array:
+                this.itemType = gl.INT;
+                this.itemByteSize = 4;
+                break;
+
+            default:
+                this.itemType = gl.FLOAT;
+                this.itemByteSize = 4;
+        }
 
         this.usage = usage;
 
@@ -5811,14 +6341,15 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
             // No reallocation needed
 
+            this.gl.bindBuffer(this.type, this._handle);
+
             if (offset || offset === 0) {
-
-                this.gl.bufferSubData(this.type, offset, data);
-
+                this.gl.bufferSubData(this.type, offset * this.itemByteSize, data);
             } else {
-
                 this.gl.bufferData(this.type, data);
             }
+
+            this.gl.bindBuffer(this.type, null);
         }
     };
 
@@ -6507,10 +7038,16 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
             if (!gl.isContextLost()) { // Handled explicitly elsewhere, so won't re-handle here
 
+                var lines = this.source.split("\n");
+                var numberedLines = [];
+                for (var i = 0; i < lines.length; i++) {
+                    numberedLines.push((i + 1) + ": " + lines[i] + "\n");
+                }
+
                 this.errorLog = [];
                 this.errorLog.push("");
                 this.errorLog.push(gl.getShaderInfoLog(this.handle));
-                this.errorLog = this.errorLog.concat(this.source);
+                this.errorLog = this.errorLog.concat(numberedLines.join(""));
             }
         }
     };
@@ -6519,15 +7056,68 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
     "use strict";
 
-    xeogl.renderer.webgl.Texture2D = function (gl) {
+    xeogl.renderer.webgl.Texture2D = function (gl, target) {
 
         this.gl = gl;
 
-        this.target = gl.TEXTURE_2D;
+        this.target = target || gl.TEXTURE_2D;
 
         this.texture = gl.createTexture();
 
+        this.setPreloadColor([0,0,0,0]); // Prevents "there is no texture bound to the unit 0" error
+
         this.allocated = true;
+    };
+
+    xeogl.renderer.webgl.Texture2D.prototype.setPreloadColor = (function () {
+
+        var color = new Uint8Array([0, 0, 0, 1]);
+
+        return function (value) {
+
+            if (!value) {
+                color[0] = 0;
+                color[1] = 0;
+                color[2] = 0;
+                color[3] = 255;
+            } else {
+                color[0] = Math.floor(value[0] * 255);
+                color[1] = Math.floor(value[1] * 255);
+                color[2] = Math.floor(value[2] * 255);
+                color[3] = Math.floor((value[3] !== undefined ? value[3] : 1) * 255);
+            }
+
+            var gl = this.gl;
+
+            gl.bindTexture(this.target, this.texture);
+            gl.texParameteri(this.target, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+            gl.texParameteri(this.target, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+
+            if (this.target === gl.TEXTURE_CUBE_MAP) {
+
+                var faces = [
+                    gl.TEXTURE_CUBE_MAP_POSITIVE_X,
+                    gl.TEXTURE_CUBE_MAP_NEGATIVE_X,
+                    gl.TEXTURE_CUBE_MAP_POSITIVE_Y,
+                    gl.TEXTURE_CUBE_MAP_NEGATIVE_Y,
+                    gl.TEXTURE_CUBE_MAP_POSITIVE_Z,
+                    gl.TEXTURE_CUBE_MAP_NEGATIVE_Z
+                ];
+
+                for (var i = 0, len = faces.length; i < len; i++) {
+                    gl.texImage2D(faces[i], 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, color);
+                }
+
+            } else {
+                gl.texImage2D(this.target, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, color);
+            }
+
+            gl.bindTexture(this.target, null);
+        };
+    })();
+
+    xeogl.renderer.webgl.Texture2D.prototype.setTarget = function (target) {
+        this.target = target || this.gl.TEXTURE_2D;
     };
 
     xeogl.renderer.webgl.Texture2D.prototype.setImage = function (image, props) {
@@ -6538,7 +7128,29 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, props.flipY);
 
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+        if (this.target === gl.TEXTURE_CUBE_MAP) {
+
+            if (xeogl._isArray(image)) {
+
+                var images = image;
+
+                var faces = [
+                    gl.TEXTURE_CUBE_MAP_POSITIVE_X,
+                    gl.TEXTURE_CUBE_MAP_NEGATIVE_X,
+                    gl.TEXTURE_CUBE_MAP_POSITIVE_Y,
+                    gl.TEXTURE_CUBE_MAP_NEGATIVE_Y,
+                    gl.TEXTURE_CUBE_MAP_POSITIVE_Z,
+                    gl.TEXTURE_CUBE_MAP_NEGATIVE_Z
+                ];
+
+                for (var i = 0, len = faces.length; i < len; i++) {
+                    gl.texImage2D(faces[i], 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, images[i]);
+                }
+            }
+
+        } else {
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+        }
 
         gl.bindTexture(this.target, null);
     };
@@ -6937,7 +7549,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
      renderer.State
      @module xeogl
-     
+
      @constructor
      @param cfg {*} Configs
      */
@@ -6971,7 +7583,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
      renderer.Visibility
      @module xeogl
-     
+
      @constructor
      @param cfg {*} Configs
      @param cfg.visible {Boolean} Flag which controls visibility of the associated render objects.
@@ -7003,7 +7615,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
      renderer.Mode
      @module xeogl
-     
+
      @constructor
      @param cfg {*} Configs
      @param cfg.pickable {Boolean} Flag which controls pickability of the associated render objects.
@@ -7022,7 +7634,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
      renderer.Layer
      @module xeogl
-     
+
      @constructor
      @param cfg {*} Configs
      @param cfg.priority {Number} Layer render priority.
@@ -7038,7 +7650,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
      renderer.Stage
      @module xeogl
-     
+
      @constructor
      @param cfg {*} Configs
      @param cfg.priority {Number} Stage render priority.
@@ -7054,7 +7666,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
      renderer.DepthBuf
      @module xeogl
-     
+
      @constructor
      @param cfg {*} Configs
      @param cfg.clearDepth {Number} Clear depth
@@ -7071,7 +7683,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
      renderer.ColorBuf
      @module xeogl
-     
+
      @constructor
      @param cfg {*} Configs
      @param cfg.blendEnabled {Boolean} Indicates if blending is enebled for
@@ -7088,7 +7700,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
      renderer.Lights
      @module xeogl
-     
+
      @constructor
      @param cfg {*} Configs
      @param cfg.colorMask {Array of Object} The light sources
@@ -7104,7 +7716,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
      renderer.PhongMaterial
      @module xeogl
-     
+
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
@@ -7115,11 +7727,41 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
     /**
 
+     PBR specular-glossiness material state.
+
+     renderer.SpecularMaterial
+     @module xeogl
+
+     @constructor
+     @param cfg {*} Configs
+     @extends renderer.State
+     */
+    xeogl.renderer.SpecularMaterial = xeogl.renderer.State.extend({
+        _ids: new xeogl.utils.Map({})
+    });
+
+    /**
+
+     PBR metallic-roughness material state.
+
+     renderer.MetallicMaterial
+     @module xeogl
+
+     @constructor
+     @param cfg {*} Configs
+     @extends renderer.State
+     */
+    xeogl.renderer.MetallicMaterial = xeogl.renderer.State.extend({
+        _ids: new xeogl.utils.Map({})
+    });
+
+    /**
+
      Environmental reflection state.
 
      renderer.Reflect
      @module xeogl
-     
+
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
@@ -7134,7 +7776,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
      renderer.Transform
      @module xeogl
-     
+
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
@@ -7149,7 +7791,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
      renderer.Billboard
      @module xeogl
-     
+
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
@@ -7180,7 +7822,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
      renderer.RenderTarget
      @module xeogl
-     
+
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
@@ -7198,7 +7840,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
      renderer.Clips
      @module xeogl
-     
+
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
@@ -7213,7 +7855,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
      renderer.MorphTargets
      @module xeogl
-     
+
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
@@ -7228,7 +7870,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
      renderer.Shader
      @module xeogl
-     
+
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
@@ -7243,7 +7885,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
      renderer.ShaderParams
      @module xeogl
-     
+
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
@@ -7258,7 +7900,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
      renderer.Texture
      @module xeogl
-     
+
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
@@ -7267,6 +7909,20 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
         _ids: new xeogl.utils.Map({})
     });
 
+    /**
+
+     Cube texture state.
+
+     renderer.CubeTexture
+     @module xeogl
+
+     @constructor
+     @param cfg {*} Configs
+     @extends renderer.State
+     */
+    xeogl.renderer.CubeTexture = xeogl.renderer.State.extend({
+        _ids: new xeogl.utils.Map({})
+    });
 
     /**
 
@@ -7274,7 +7930,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
      renderer.Fresnel
      @module xeogl
-     
+
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
@@ -7290,7 +7946,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
      renderer.Geometry
      @module xeogl
-     
+
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
@@ -7305,7 +7961,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
      renderer.ProgramState
      @module xeogl
-     
+
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
@@ -7330,7 +7986,6 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
         _ids: new xeogl.utils.Map({})
     });
 })();
-
 
 ;(function () {
 
@@ -7786,6 +8441,9 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
         var src = ""; // Accumulates source code as it's being built
 
         var states; // Cache rendering state
+        var phongMaterial;
+        var MetallicMaterial;
+        var SpecularMaterial;
         var texturing; // True when rendering state contains textures
         var normals; // True when rendering state contains normals
         var normalMapping; // True when rendering state contains tangents
@@ -7819,6 +8477,9 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
             texturing = hasTextures();
             normals = hasNormals();
             normalMapping = hasNormalMap();
+            phongMaterial = (states.material.type === "phongMaterial");
+            MetallicMaterial = (states.material.type === "MetallicMaterial");
+            SpecularMaterial = (states.material.type === "SpecularMaterial");
             reflection = hasReflection();
             diffuseFresnel = states.material.diffuseFresnel;
             specularFresnel = states.material.specularFresnel;
@@ -7847,10 +8508,17 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
             }
             var material = states.material;
             return material.ambientMap ||
+                material.occlusionMap ||
+                material.baseColorMap ||
                 material.diffuseMap ||
+                material.occlusionMap ||
                 material.specularMap ||
+                material.glossinessMap ||
+                material.specularGlossinessMap ||
                 material.emissiveMap ||
-                material.opacityMap ||
+                material.metallicMap ||
+                material.roughnessMap ||
+                material.metallicRoughnessMap ||
                 material.reflectivityMap ||
                 states.material.normalMap;
         }
@@ -7926,20 +8594,26 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
         }
 
         function vertexPickPrimitive() {
+
             if (vertexPickPrimSrc) {
                 return vertexPickPrimSrc;
             }
+
             begin();
+
             add("// Triangle picking vertex shader");
             add("attribute vec3 xeo_aPosition;");
             add("attribute vec4 xeo_aColor;");
+
             add("uniform vec3 xeo_uPickColor;");
             add("uniform mat4 xeo_uModelMatrix;");
             add("uniform mat4 xeo_uViewMatrix;");
             add("uniform mat4 xeo_uProjMatrix;");
+
             add("varying vec4 xeo_vWorldPosition;");
             add("varying vec4 xeo_vViewPosition;");
             add("varying vec4 xeo_vColor;");
+
             add("void main(void) {");
             add("   vec4 tmpVertex = vec4(xeo_aPosition, 1.0); ");
             add("   vec4 worldPosition = xeo_uModelMatrix * tmpVertex; ");
@@ -7947,6 +8621,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
             add("   xeo_vColor = xeo_aColor;");
             add("   gl_Position = xeo_uProjMatrix * viewPosition;");
             add("}");
+
             return vertexPickPrimSrc = end();
         }
 
@@ -7968,9 +8643,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
             var vertex = states.shader.vertex;
 
-            if (vertex) {
-
-                // Custom vertex shader
+            if (vertex) { // Custom vertex shader
                 return vertex;
             }
 
@@ -7980,31 +8653,27 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
             begin();
 
-            add("// Drawing vertex shader");
+            add("attribute  vec3 xeo_aPosition;");
 
-            add("uniform mat4 xeo_uModelMatrix;          // Modeling matrix");
-            add("uniform mat4 xeo_uViewMatrix;           // Viewing matrix");
-            add("uniform mat4 xeo_uProjMatrix;           // Projection matrix");
+            add("uniform    mat4 xeo_uModelMatrix;");
+            add("uniform    mat4 xeo_uViewMatrix;");
+            add("uniform    mat4 xeo_uProjMatrix;");
 
-            add("attribute vec3 xeo_aPosition;           // Local-space vertex position");
-
-            add();
-
-            add("varying vec4 xeo_vViewPosition;         // Output: View-space fragment position");
+            add("varying    vec3 xeo_vViewPosition;");
+            add("varying    vec3 xeo_vWorldPosition;");
+            add("varying    vec3 xeo_vWorldNormal;");
 
             if (normals) {
 
-                add();
+                add("attribute  vec3 xeo_aNormal;");
 
-                add("attribute vec3 xeo_aNormal;             // Local-space vertex normal");
+                add("uniform    mat4 xeo_uModelNormalMatrix;");
+                add("uniform    mat4 xeo_uViewNormalMatrix;");
 
-                add("uniform mat4 xeo_uModelNormalMatrix;    // Modeling normal matrix");
-                add("uniform mat4 xeo_uViewNormalMatrix;     // Viewing normal matrix");
+                add("varying    vec3 xeo_vViewEyeVec;");
+                add("varying    vec3 xeo_vViewNormal;");
+                add("varying    mat3 xeo_TBN;");
 
-                add("varying vec3 xeo_vViewEyeVec;           // Output: View-space vector from fragment position to eye");
-                add("varying vec3 xeo_vViewNormal;           // Output: View-space normal");
-
-                // Lights
                 for (i = 0, len = states.lights.lights.length; i < len; i++) {
 
                     light = states.lights.lights[i];
@@ -8014,18 +8683,18 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
                     }
 
                     if (light.type === "dir") {
-                        add("uniform vec3 xeo_uLightDir" + i + ";   // Directional light direction");
+                        add("uniform vec3 xeo_uLightDir" + i + ";");
                     }
 
                     if (light.type === "point") {
-                        add("uniform vec3 xeo_uLightPos" + i + ";   // Positional light position");
+                        add("uniform vec3 xeo_uLightPos" + i + ";");
                     }
 
                     if (light.type === "spot") {
-                        add("uniform vec3 xeo_uLightPos" + i + ";   // Spot light position");
+                        add("uniform vec3 xeo_uLightPos" + i + ";");
                     }
 
-                    add("varying vec4 xeo_vViewLightVecAndDist" + i + "; // Output: Vector from vertex to light, packaged with the pre-computed length of that vector");
+                    add("varying vec4 xeo_vViewLightReverseDirAndDist" + i + ";");
                 }
             }
 
@@ -8034,22 +8703,12 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
             }
 
             if (texturing) {
-
-                add();
-
-                // Vertex UV coordinate
                 add("attribute vec2 xeo_aUV;");
-
-                // Fragment UV coordinate
                 add("varying vec2 xeo_vUV;");
             }
 
             if (states.geometry.colors) {
-
-                // Vertex color
                 add("attribute vec4 xeo_aColor;");
-
-                // Fragment color
                 add("varying vec4 xeo_vColor;");
             }
 
@@ -8063,85 +8722,82 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
                 add("   mat[0][0] = 1.0;");
                 add("   mat[0][1] = 0.0;");
                 add("   mat[0][2] = 0.0;");
+
                 if (states.billboard.spherical) {
                     add("   mat[1][0] = 0.0;");
                     add("   mat[1][1] = 1.0;");
                     add("   mat[1][2] = 0.0;");
                 }
+
                 add("   mat[2][0] = 0.0;");
                 add("   mat[2][1] = 0.0;");
                 add("   mat[2][2] =1.0;");
                 add("}");
             }
 
-            // ------------------- main -------------------------------
-
-            add();
             add("void main(void) {");
-            add();
-            add("   vec4 localPosition = vec4(xeo_aPosition, 1.0); ");
+
+            add("vec4 localPosition = vec4(xeo_aPosition, 1.0); ");
+            add("vec4 worldPosition;");
 
             if (normals) {
-
-                add("   vec4 localNormal = vec4(xeo_aNormal, 0.0); ");
-                add("   mat4 modelNormalMatrix = xeo_uModelNormalMatrix;");
-                add("   mat4 viewNormalMatrix = xeo_uViewNormalMatrix;");
+                add("vec4 localNormal = vec4(xeo_aNormal, 0.0); ");
+                add("mat4 modelNormalMatrix = xeo_uModelNormalMatrix;");
+                add("mat4 viewNormalMatrix = xeo_uViewNormalMatrix;");
             }
 
-            add("   mat4 modelMatrix = xeo_uModelMatrix;");
-            add("   mat4 viewMatrix = xeo_uViewMatrix;");
-            add("   vec4 worldPosition;");
+            add("mat4 modelMatrix = xeo_uModelMatrix;");
+            add("mat4 viewMatrix = xeo_uViewMatrix;");
 
             if (states.stationary.active) {
-                add("   viewMatrix[3][0] = viewMatrix[3][1] = viewMatrix[3][2] = 0.0;")
+                add("viewMatrix[3][0] = viewMatrix[3][1] = viewMatrix[3][2] = 0.0;")
             }
 
             if (states.billboard.active) {
 
-                add("   mat4 modelViewMatrix =  xeo_uViewMatrix * xeo_uModelMatrix;");
+                add("mat4 modelViewMatrix = xeo_uViewMatrix * xeo_uModelMatrix;");
 
-                add("   billboard(modelMatrix);");
-                add("   billboard(viewMatrix);");
-                add("   billboard(modelViewMatrix);");
+                add("billboard(modelMatrix);");
+                add("billboard(viewMatrix);");
+                add("billboard(modelViewMatrix);");
 
                 if (normals) {
-
-                    add("   mat4 modelViewNormalMatrix =  xeo_uViewNormalMatrix * xeo_uModelNormalMatrix;");
-
-                    add("   billboard(modelNormalMatrix);");
-                    add("   billboard(viewNormalMatrix);");
-                    add("   billboard(modelViewNormalMatrix);");
+                    add("mat4 modelViewNormalMatrix =  xeo_uViewNormalMatrix * xeo_uModelNormalMatrix;");
+                    add("billboard(modelNormalMatrix);");
+                    add("billboard(viewNormalMatrix);");
+                    add("billboard(modelViewNormalMatrix);");
                 }
 
-                add("   worldPosition = modelMatrix * localPosition;");
-                add("   vec4 viewPosition = modelViewMatrix * localPosition;");
+                add("worldPosition = modelMatrix * localPosition;");
+                add("vec4 viewPosition = modelViewMatrix * localPosition;");
 
             } else {
 
-                add("   worldPosition = modelMatrix * localPosition;");
-                add("   vec4 viewPosition  = viewMatrix * worldPosition; ");
+                add("worldPosition = modelMatrix * localPosition;");
+                add("vec4 viewPosition  = viewMatrix * worldPosition; ");
             }
 
             if (normals) {
 
-                add("   vec3 worldNormal = (modelNormalMatrix * localNormal).xyz; ");
-                add("   xeo_vViewNormal = normalize((viewNormalMatrix * vec4(worldNormal, 1.0)).xyz);");
+                add("vec3 worldNormal = (modelNormalMatrix * localNormal).xyz; ");
+                add("xeo_vWorldNormal = worldNormal;");
+                add("xeo_vViewNormal = normalize((viewNormalMatrix * vec4(worldNormal, 1.0)).xyz);");
 
                 if (normalMapping) {
 
-                    // Compute the tangent-bitangent-normal (TBN) matrix
+                    add("mat4 mat =  viewMatrix * modelMatrix;");
 
-                    add("   vec3 tangent = normalize((xeo_uViewNormalMatrix * xeo_uModelNormalMatrix * vec4(xeo_aTangent, 1.0)).xyz);");
-                    add("   vec3 bitangent = cross(xeo_vViewNormal, tangent);");
-                    add("   mat3 TBN = mat3(tangent, bitangent, xeo_vViewNormal);");
+                    add("vec3 n = normalize( ( mat * vec4( xeo_aNormal, 0.0 ) ).xyz );");
+                    add("vec3 t = normalize( ( mat * vec4( xeo_aTangent, 0.0 ) ).xyz );");
+                    add("vec3 b = normalize( ( mat * vec4( ( cross(xeo_aNormal, xeo_aTangent.xyz ) * 1.0 ), 0.0 ) ).xyz );");
+
+                    add("xeo_TBN = mat3(t, b, n);");
                 }
 
-                add("   vec3 tmpVec3;");
-                add("   float lightDist;");
+                add("vec3 tmpVec3;");
+                add("float lightDist;");
 
-                // Lights
-
-                for (i = 0, len = states.lights.lights.length; i < len; i++) {
+                for (i = 0, len = states.lights.lights.length; i < len; i++) { // Lights
 
                     light = states.lights.lights[i];
 
@@ -8151,238 +8807,536 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
                     if (light.type === "dir") {
 
-                        // Directional light
-
                         if (light.space === "world") {
-
-                            // World space light
-
-                            add("   tmpVec3 = xeo_uLightDir" + i + ";");
-
-                            // Transform to View space
-                            add("   tmpVec3 = vec3(viewMatrix * vec4(tmpVec3, 1.0)).xyz;");
-
-                            if (normalMapping) {
-
-                                // Transform to Tangent space
-                                add("   tmpVec3 *= TBN;");
-                            }
-
+                            add("tmpVec3 = vec3(viewMatrix * vec4(xeo_uLightDir" + i + ", 0.0) ).xyz;");
                         } else {
-
-                            // View space light
-
-                            add("   tmpVec3 = xeo_uLightDir" + i + ";");
-
-                            if (normalMapping) {
-
-                                // Transform to Tangent space
-                                add("   tmpVec3 *= TBN;");
-                            }
+                            add("tmpVec3 = xeo_uLightDir" + i + ";");
                         }
 
-                        // Pipe the light direction and zero distance through to the fragment shader
-                        add("   xeo_vViewLightVecAndDist" + i + " = vec4(tmpVec3, 0.0);");
+                        add("xeo_vViewLightReverseDirAndDist" + i + " = vec4(-tmpVec3, 0.0);");
                     }
 
                     if (light.type === "point") {
 
-                        // Positional light
-
                         if (light.space === "world") {
-
-                            // World space
-
-                            // Get vertex -> light vector in View space
-                            // Transform light pos to View space first
-                            add("   tmpVec3 = (viewMatrix * vec4(xeo_uLightPos" + i + ", 1.0)).xyz - viewPosition.xyz;"); // Vector from World coordinate to light pos
-
-                            // Get distance to light
-                            add("   lightDist = abs(length(tmpVec3));");
-
-                            if (normalMapping) {
-
-                                // Transform light vector to Tangent space
-                                add("   tmpVec3 *= TBN;");
-                            }
+                            add("tmpVec3 = (viewMatrix * vec4(xeo_uLightPos" + i + ", 1.0)).xyz - viewPosition.xyz;");
+                            add("lightDist = abs(length(tmpVec3));");
 
                         } else {
-
-                            // View space
-
-                            // Get vertex -> light vector in View space
-                            add("   tmpVec3 = xeo_uLightPos" + i + ".xyz - viewPosition.xyz;"); // Vector from View coordinate to light pos
-
-                            // Get distance to light
-                            add("   lightDist = abs(length(tmpVec3));");
-
-                            if (normalMapping) {
-
-                                // Transform light vector to tangent space
-                                add("   tmpVec3 *= TBN;");
-                            }
+                            add("tmpVec3 = xeo_uLightPos" + i + ".xyz - viewPosition.xyz;");
+                            add("lightDist = abs(length(tmpVec3));");
                         }
 
-                        // Pipe the light direction and distance through to the fragment shader
-                        add("   xeo_vViewLightVecAndDist" + i + " = vec4(tmpVec3, lightDist);");
+                        add("xeo_vViewLightReverseDirAndDist" + i + " = vec4(tmpVec3, lightDist);");
                     }
                 }
 
-                add("   xeo_vViewEyeVec = -viewPosition.xyz;");
-
-                if (normalMapping) {
-
-                    // Transform vertex->eye vector to tangent space
-                    add("   xeo_vViewEyeVec *= TBN;");
-                }
+                add("xeo_vViewEyeVec = -viewPosition.xyz;");
             }
 
             if (texturing) {
-                add("   xeo_vUV = xeo_aUV;");
+                add("xeo_vUV = xeo_aUV;");
             }
 
             if (states.geometry.colors) {
-                add("   xeo_vColor = xeo_aColor;");
+                add("xeo_vColor = xeo_aColor;");
             }
 
             if (states.geometry.primitiveName === "points") {
-                add("   gl_PointSize = xeo_uPointSize;");
+                add("gl_PointSize = xeo_uPointSize;");
             }
-
-            add("   xeo_vViewPosition = viewPosition;");
-
+            add("   xeo_vViewPosition = viewPosition.xyz;");
             add("   gl_Position = xeo_uProjMatrix * viewPosition;");
-
             add("}");
 
             return end();
         }
 
-
         function fragmentDraw() {
 
-            var fragment = states.shader.fragment;
-            if (fragment) {
-                // Custom fragment shader
-                return fragment;
-            }
+            var material = states.material;
+            var geometry = states.geometry;
+
+            var phongMaterial = material.type === "phongMaterial";
+            var pbrMetalRough = material.type === "MetallicMaterial";
+            var pbrSpecGloss = material.type === "SpecularMaterial";
 
             var i;
             var len;
-
             var light;
 
             begin();
 
-            add("// Drawing fragment shader");
-
             add("precision " + getFSFloatPrecision(states.gl) + " float;");
-            add();
 
-            if (normals) {
+            //--------------------------------------------------------------------------------
+            // LIGHT AND REFLECTION MAP INPUTS
+            // Define here so available globally to shader functions
+            //--------------------------------------------------------------------------------
 
-                add("varying vec4 xeo_vViewPosition;");
-
-                add();
-
-                add("uniform vec3 xeo_uSpecular;");
-                add("uniform float xeo_uShininess;");
-                add("uniform float xeo_uReflectivity;");
+            if (states.lights.lightMap) {
+                add("uniform samplerCube xeo_uLightMap;");
+                add("uniform    mat4 xeo_uViewNormalMatrix;");
             }
 
-            if (normalMapping) {
-                //    add("varying vec3 xeo_vTangent;");
+            if (states.lights.reflectionMap) {
+                add("uniform samplerCube xeo_uReflectionMap;");
             }
 
-            add("uniform vec3 xeo_uEmissive;");
-            add("uniform float xeo_uOpacity;");
-            add("uniform vec3 xeo_uDiffuse;");
+            if (states.lights.lightMap||states.lights.reflectionMap) {
+                add("uniform mat4 xeo_uViewMatrix;");
+            }
 
-            add();
 
-            if (states.geometry.colors) {
+            //--------------------------------------------------------------------------------
+            // SHADING FUNCTIONS
+            //--------------------------------------------------------------------------------
+
+            // CONSTANT DEFINITIONS
+
+            add("#define PI 3.14159265359");
+            add("#define RECIPROCAL_PI 0.31830988618");
+            add("#define RECIPROCAL_PI2 0.15915494");
+            add("#define EPSILON 1e-6");
+
+            add("#define saturate(a) clamp( a, 0.0, 1.0 )");
+
+            // UTILITY DEFINITIONS
+
+            add("float pow2(const in float x) {");
+            add("   return x*x;");
+            add("}");
+
+            add("vec3 inverseTransformDirection(in vec3 dir, in mat4 matrix) {");
+            add("   return normalize( ( vec4( dir, 0.0 ) * matrix ).xyz );");
+            add("}");
+
+            // STRUCTURES
+
+            add("struct IncidentLight {");
+            add("   vec3 color;");
+            add("   vec3 direction;");
+            add("};");
+
+            add("struct ReflectedLight {");
+            add("   vec3 diffuse;");
+            add("   vec3 specular;");
+            add("};");
+
+            add("struct Geometry {");
+            add("   vec3 position;");
+            add("   vec3 viewNormal;");
+            add("   vec3 worldNormal;");
+            add("   vec3 viewEyeDir;");
+            add("};");
+
+            add("struct Material {");
+            add("   vec3    diffuseColor;");
+            add("   float   specularRoughness;");
+            add("   vec3    specularColor;");
+            add("   float   shine;"); // Only used for Phong
+            add("};");
+
+            // DIFFUSE BRDF EVALUATION
+
+            add("vec3 BRDF_Diffuse_Lambert(const in vec3 diffuseColor) {");
+            add("   return RECIPROCAL_PI * diffuseColor;");
+            add("}");
+
+            // COMMON UTILS
+
+            add("vec4 LinearTosRGB( in vec4 value ) {");
+            add("   return vec4(mix(pow(value.rgb,vec3(0.41666))*1.055-vec3(0.055), value.rgb*12.92, vec3(lessThanEqual(value.rgb,vec3(0.0031308)))),value.w);");
+            add("}");
+
+            if (phongMaterial) {
+
+                if (states.lights.lightMap || states.lights.reflectionMap) {
+
+                    add("void computePhongLightMapping(const in Geometry geometry, const in Material material, inout ReflectedLight reflectedLight) {");
+
+                    if (states.lights.lightMap) {
+                        add("   vec3 irradiance = textureCube(xeo_uLightMap, geometry.worldNormal).rgb;");
+                        add("   irradiance *= PI;");
+                        add("   vec3 diffuseBRDFContrib = BRDF_Diffuse_Lambert(material.diffuseColor);");
+                        add("   reflectedLight.diffuse += irradiance * diffuseBRDFContrib;");
+                    }
+
+                    if (states.lights.reflectionMap) {
+                   //     add("   vec3 reflectVec             = reflect(-geometry.viewEyeDir, geometry.worldNormal);");
+                   //   //  add("   reflectVec                  = inverseTransformDirection(reflectVec, xeo_uViewMatrix);");
+                   //     add("   vec3 radiance               = textureCube(xeo_uReflectionMap, geometry.worldNormal).rgb;");
+                   ////     add("   radiance *= PI;");
+                   //     add("   reflectedLight.specular     += radiance;");
+                    }
+
+                    add("}");
+                }
+
+                add("void computePhongLighting(const in IncidentLight directLight, const in Geometry geometry, const in Material material, inout ReflectedLight reflectedLight) {");
+                add("   float dotNL     = saturate(dot(geometry.viewNormal, directLight.direction));");
+                add("   vec3 irradiance = dotNL * directLight.color * PI;");
+                add("   reflectedLight.diffuse  += irradiance * BRDF_Diffuse_Lambert(material.diffuseColor);");
+                add("   reflectedLight.specular += directLight.color * material.specularColor * pow(max(dot(reflect(-directLight.direction, -geometry.viewNormal), geometry.viewEyeDir), 0.0), material.shine);");
+                add("}");
+            }
+
+            if (pbrMetalRough || pbrSpecGloss) {
+
+                // IRRADIANCE EVALUATION
+
+                //add("vec3 sample_reflectMapEquirect(const in vec3 reflect, const in float mipLevel) {");
+                //add("   vec2 sampleUV;");
+                //add("   sampleUV.y = saturate(reflect.y * 0.5 + 0.5);");
+                //add("   sampleUV.x = atan(reflect.z, reflect.x) * RECIPROCAL_PI2 + 0.5;");
+                //add("   vec4 texColor = texture2D(xeo_uReflectionMap, sampleUV, mipLevel);");
+                //add("   return texColor.rgb;"); // assumed to be linear
+                //add("}");
+
+                add("float GGXRoughnessToBlinnExponent(const in float ggxRoughness) {");
+                add("   return (2.0 / pow2(ggxRoughness + 0.0001) - 2.0);");
+                add("}");
+
+                add("float getSpecularMIPLevel(const in float blinnShininessExponent, const in int maxMIPLevel) {");
+                add("   float maxMIPLevelScalar = float( maxMIPLevel );");
+                add("   float desiredMIPLevel = maxMIPLevelScalar - 0.79248 - 0.5 * log2( pow2( blinnShininessExponent ) + 1.0 );");
+                add("   return clamp( desiredMIPLevel, 0.0, maxMIPLevelScalar );");
+                add("}");
+
+                //add("vec3 getLightProbeIndirectRadiance(const in mat4 viewMatrix, const in Geometry geometry, const in float blinnShininessExponent, const in int maxMIPLevel) {");
+                //add("   vec3 reflectVec = reflect(geometry.viewEyeDir, geometry.viewNormal);");
+                //add("   reflectVec = inverseTransformDirection(reflectVec, viewMatrix);");
+                //add("   float mipLevel = getSpecularMIPLevel( blinnShininessExponent, maxMIPLevel );");
+                //add("   vec3 reflectionMapColor = sample_reflectMapEquirect(reflectVec, float(mipLevel));");
+                //add("   return reflectionMapColor;");
+                //add("}");
+
+
+                if (states.lights.reflectionMap) {
+                    add("vec3 getLightProbeIndirectRadiance(const in vec3 reflectVec, const in float blinnShininessExponent, const in int maxMIPLevel) {");
+                    add("   float mipLevel = 0.5 * getSpecularMIPLevel(blinnShininessExponent, maxMIPLevel);"); //TODO: a random factor - fix this
+                    add("   vec3 envMapColor = textureCube(xeo_uReflectionMap, reflectVec, mipLevel).rgb;");
+                    add("   return envMapColor;");
+                    add("}");
+                }
+
+                // SPECULAR BRDF EVALUATION
+
+                add("vec3 F_Schlick(const in vec3 specularColor, const in float dotLH) {");
+                add("   float fresnel = exp2( ( -5.55473 * dotLH - 6.98316 ) * dotLH );");
+                add("   return ( 1.0 - specularColor ) * fresnel + specularColor;");
+                add("}");
+
+                add("float G_GGX_Smith(const in float alpha, const in float dotNL, const in float dotNV) {");
+                add("   float a2 = pow2( alpha );");
+                add("   float gl = dotNL + sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNL ) );");
+                add("   float gv = dotNV + sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNV ) );");
+                add("   return 1.0 / ( gl * gv );");
+                add("}");
+
+                add("float G_GGX_SmithCorrelated(const in float alpha, const in float dotNL, const in float dotNV) {");
+                add("   float a2 = pow2( alpha );");
+                add("   float gv = dotNL * sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNV ) );");
+                add("   float gl = dotNV * sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNL ) );");
+                add("   return 0.5 / max( gv + gl, EPSILON );");
+                add("}");
+
+                add("float D_GGX(const in float alpha, const in float dotNH) {");
+                add("   float a2 = pow2( alpha );");
+                add("   float denom = pow2( dotNH ) * ( a2 - 1.0 ) + 1.0;");
+                add("   return RECIPROCAL_PI * a2 / pow2( denom );");
+                add("}");
+
+                add("vec3 BRDF_Specular_GGX(const in IncidentLight incidentLight, const in Geometry geometry, const in vec3 specularColor, const in float roughness) {");
+                add("   float alpha = pow2( roughness );");
+                add("   vec3 halfDir = normalize( incidentLight.direction + geometry.viewEyeDir );");
+                add("   float dotNL = saturate( dot( geometry.viewNormal, incidentLight.direction ) );");
+                add("   float dotNV = saturate( dot( geometry.viewNormal, geometry.viewEyeDir ) );");
+                add("   float dotNH = saturate( dot( geometry.viewNormal, halfDir ) );");
+                add("   float dotLH = saturate( dot( incidentLight.direction, halfDir ) );");
+                add("   vec3  F = F_Schlick( specularColor, dotLH );");
+                add("   float G = G_GGX_SmithCorrelated( alpha, dotNL, dotNV );");
+                add("   float D = D_GGX( alpha, dotNH );");
+                add("   return F * (G * D);");
+                add("}");
+
+                add("vec3 BRDF_Specular_GGX_Environment(const in Geometry geometry, const in vec3 specularColor, const in float roughness) {");
+                add("   float dotNV = saturate(dot(geometry.viewNormal, geometry.viewEyeDir));");
+                add("   const vec4 c0 = vec4( -1, -0.0275, -0.572,  0.022);");
+                add("   const vec4 c1 = vec4(  1,  0.0425,   1.04, -0.04);");
+                add("   vec4 r = roughness * c0 + c1;");
+                add("   float a004 = min(r.x * r.x, exp2(-9.28 * dotNV)) * r.x + r.y;");
+                add("   vec2 AB    = vec2(-1.04, 1.04) * a004 + r.zw;");
+                add("   return specularColor * AB.x + AB.y;");
+                add("}");
+
+
+                if (states.lights.lightMap || states.lights.reflectionMap) {
+
+                    add("void computePBRLightMapping(const in Geometry geometry, const in Material material, inout ReflectedLight reflectedLight) {");
+
+                    if (states.lights.lightMap) {
+                        add("   vec3 irradiance = textureCube(xeo_uLightMap, geometry.worldNormal).rgb;");
+                        add("   irradiance *= PI;");
+                        add("   vec3 diffuseBRDFContrib = BRDF_Diffuse_Lambert(material.diffuseColor);");
+                        add("   reflectedLight.diffuse += irradiance * diffuseBRDFContrib;");
+                    }
+
+                    if (states.lights.reflectionMap) {
+                        add("   vec3 reflectVec             = reflect(-geometry.viewEyeDir, geometry.viewNormal);");
+                        add("   reflectVec                  = inverseTransformDirection(reflectVec, xeo_uViewMatrix);");
+                        add("   float blinnExpFromRoughness = GGXRoughnessToBlinnExponent(material.specularRoughness);");
+                        add("   vec3 radiance               = getLightProbeIndirectRadiance(reflectVec, blinnExpFromRoughness, 8);");
+                        add("   vec3 specularBRDFContrib    = BRDF_Specular_GGX_Environment(geometry, material.specularColor, material.specularRoughness);");
+                        add("   reflectedLight.specular     += radiance * specularBRDFContrib;");
+                    }
+
+                    add("}");
+                }
+
+                // MAIN LIGHTING COMPUTATION FUNCTION
+
+                add("void computePBRLighting(const in IncidentLight incidentLight, const in Geometry geometry, const in Material material, inout ReflectedLight reflectedLight) {");
+                add("   float dotNL     = saturate(dot(geometry.viewNormal, incidentLight.direction));");
+                add("   vec3 irradiance = dotNL * incidentLight.color * PI;");
+                add("   reflectedLight.diffuse  += irradiance * BRDF_Diffuse_Lambert(material.diffuseColor);");
+                add("   reflectedLight.specular += irradiance * BRDF_Specular_GGX(incidentLight, geometry, material.specularColor, material.specularRoughness);");
+                add("}");
+            }
+
+            //--------------------------------------------------------------------------------
+            // GEOMETRY INPUTS
+            //--------------------------------------------------------------------------------
+
+            add("varying vec3 xeo_vViewPosition;");
+            add("varying vec3 xeo_vWorldPosition;");
+
+            if (geometry.colors) {
                 add("varying vec4 xeo_vColor;");
             }
 
-            if (texturing) {
+            if (geometry.uv && ((geometry.normals && material.normalMap)
+                || material.ambientMap
+                || material.baseColorMap
+                || material.diffuseMap
+                || material.emissiveMap
+                || material.metallicMap
+                || material.roughnessMap
+                || material.metallicRoughnessMap
+                || material.specularMap
+                || material.glossinessMap
+                || material.specularGlossinessMap
+                || material.occlusionMap)) {
+                add("varying vec2 xeo_vUV;");
+            }
 
-                add();
-                comment("Texture variables");
-                add();
+            if (geometry.normals) {
+                add("varying vec3 xeo_vWorldNormal;");
+                add("varying vec3 xeo_vViewNormal;");
+            }
 
-                if (states.geometry.uv) {
-                    add("varying vec2 xeo_vUV;");
-                }
+            //--------------------------------------------------------------------------------
+            // MATERIAL CHANNEL INPUTS
+            //--------------------------------------------------------------------------------
 
-                if (states.material.emissiveMap) {
-                    add("uniform sampler2D xeo_uEmissiveMap;");
-                    if (states.material.emissiveMap.matrix) {
-                        add("uniform mat4 xeo_uEmissiveMapMatrix;");
-                    }
-                }
+            if (material.baseColor) {
+                add("uniform vec3 xeo_uBaseColor;");
+            }
 
-                if (states.material.opacityMap) {
-                    add("uniform sampler2D xeo_uOpacityMap;");
-                    if (states.material.opacityMap.matrix) {
-                        add("uniform mat4 xeo_uOpacityMapMatrix;");
-                    }
-                }
+            if (material.opacity) {
+                add("uniform float xeo_uOpacity;");
+            }
 
-                if (states.material.ambientMap) {
-                    add("uniform sampler2D xeo_uAmbientMap;");
-                    if (states.material.ambientMap.matrix) {
-                        add("uniform mat4 xeo_uAmbientMapMatrix;");
-                    }
-                }
+            if (material.emissive) {
+                add("uniform vec3 xeo_uEmissive;");
+            }
 
-                if (states.material.diffuseMap) {
-                    add("uniform sampler2D xeo_uDiffuseMap;");
-                    if (states.material.diffuseMap.matrix) {
-                        add("uniform mat4 xeo_uDiffuseMapMatrix;");
-                    }
-                }
+            if (material.diffuse) {
+                add("uniform vec3 xeo_uDiffuse;");
+            }
 
-                if (normals) {
+            if (material.glossiness !== undefined) {
+                add("uniform float xeo_uGlossiness;");
+            }
 
-                    if (states.material.specularMap) {
-                        add("uniform sampler2D xeo_uSpecularMap;");
-                        if (states.material.specularMap.matrix) {
-                            add("uniform mat4 xeo_uSpecularMapMatrix;");
-                        }
-                    }
+            if (material.shininess !== undefined) {
+                add("uniform float xeo_uShininess;");  // Phong channel
+            }
 
-                    if (states.material.reflectivityMap) {
-                        add("uniform sampler2D xeo_uTextureReflectivity;");
-                        if (states.material.reflectivityMap.matrix) {
-                            add("uniform mat4 xeo_uTextureReflectivityMatrix;");
-                        }
-                    }
+            if (material.specular) {
+                add("uniform vec3 xeo_uSpecular;");
+            }
 
-                    if (normalMapping) {
-                        add("uniform sampler2D xeo_uNormalMap;");
-                        if (states.material.normalMap.matrix) {
-                            add("uniform mat4 xeo_uNormalMapMatrix;");
-                        }
-                    }
+            if (material.metallic !== undefined) {
+                add("uniform float xeo_uMetallic;");
+            }
+
+            if (material.roughness !== undefined) {
+                add("uniform float xeo_uRoughness;");
+            }
+
+            if (material.reflectivity !== undefined) {
+                add("uniform float xeo_uReflectivity;");
+            }
+
+            //--------------------------------------------------------------------------------
+            // MATERIAL TEXTURE INPUTS
+            //--------------------------------------------------------------------------------
+
+            if (geometry.uv && material.ambientMap) {
+                add("uniform sampler2D xeo_uAmbientMap;");
+                if (material.ambientMap.matrix) {
+                    add("uniform mat4 xeo_uAmbientMapMatrix;");
                 }
             }
 
-            add("uniform vec3 xeo_uLightAmbientColor;");
-            add("uniform float xeo_uLightAmbientIntensity;");
+            if (geometry.uv && material.baseColorMap) {
+                add("uniform sampler2D xeo_uBaseColorMap;");
+                if (material.baseColorMap.matrix) {
+                    add("uniform mat4 xeo_uBaseColorMapMatrix;");
+                }
+            }
 
-            if (normals) {
+            if (geometry.uv && material.diffuseMap) {
+                add("uniform sampler2D xeo_uDiffuseMap;");
+                if (material.diffuseMap.matrix) {
+                    add("uniform mat4 xeo_uDiffuseMapMatrix;");
+                }
+            }
 
-                // View-space vector from fragment to eye
+            if (geometry.uv && material.emissiveMap) {
+                add("uniform sampler2D xeo_uEmissiveMap;");
+                if (material.emissiveMap.matrix) {
+                    add("uniform mat4 xeo_uEmissiveMapMatrix;");
+                }
+            }
+
+            if (geometry.normals && geometry.uv && material.metallicMap) {
+                add("uniform sampler2D xeo_uMetallicMap;");
+                if (material.metallicMap.matrix) {
+                    add("uniform mat4 xeo_uMetallicMapMatrix;");
+                }
+            }
+
+            if (geometry.normals && geometry.uv && material.roughnessMap) {
+                add("uniform sampler2D xeo_uRoughnessMap;");
+                if (material.roughnessMap.matrix) {
+                    add("uniform mat4 xeo_uRoughnessMapMatrix;");
+                }
+            }
+
+            if (geometry.normals && geometry.uv && material.metallicRoughnessMap) {
+                add("uniform sampler2D xeo_uMetallicRoughnessMap;");
+                if (material.metallicRoughnessMap.matrix) {
+                    add("uniform mat4 xeo_uMetallicRoughnessMapMatrix;");
+                }
+            }
+
+            if (geometry.normals && material.normalMap) {
+                add("varying mat3 xeo_TBN;");
+                add("uniform sampler2D xeo_uNormalMap;");
+                if (material.normalMap.matrix) {
+                    add("uniform mat4 xeo_uNormalMapMatrix;");
+                }
+            }
+
+            if (geometry.uv && material.occlusionMap) {
+                add("uniform sampler2D xeo_uOcclusionMap;");
+                if (material.occlusionMap.matrix) {
+                    add("uniform mat4 xeo_uOcclusionMapMatrix;");
+                }
+            }
+
+            if (geometry.normals && geometry.uv && material.specularMap) {
+                add("uniform sampler2D xeo_uSpecularMap;");
+                if (material.specularMap.matrix) {
+                    add("uniform mat4 xeo_uSpecularMapMatrix;");
+                }
+            }
+
+            if (geometry.normals && geometry.uv && material.glossinessMap) {
+                add("uniform sampler2D xeo_uGlossinessMap;");
+                if (material.glossinessMap.matrix) {
+                    add("uniform mat4 xeo_uGlossinessMapMatrix;");
+                }
+            }
+
+            if (geometry.normals && geometry.uv && material.specularGlossinessMap) {
+                add("uniform sampler2D xeo_uSpecularGlossinessMap;");
+                if (material.specularGlossinessMap.matrix) {
+                    add("uniform mat4 xeo_uSpecularGlossinessMapMatrix;");
+                }
+            }
+
+            //--------------------------------------------------------------------------------
+            // MATERIAL FRESNEL INPUTS
+            //--------------------------------------------------------------------------------
+
+            if (geometry.normals && (material.diffuseFresnel ||
+                material.specularFresnel ||
+                material.opacityFresnel ||
+                material.emissiveFresnel ||
+                material.reflectivityFresnel)) {
+
+                add("float fresnel(vec3 eyeDir, vec3 normal, float edgeBias, float centerBias, float power) {");
+                add("    float fr = abs(dot(eyeDir, normal));");
+                add("    float finalFr = clamp((fr - edgeBias) / (centerBias - edgeBias), 0.0, 1.0);");
+                add("    return pow(finalFr, power);");
+                add("}");
+
+                if (material.diffuseFresnel) {
+                    add("uniform float  xeo_uDiffuseFresnelCenterBias;");
+                    add("uniform float  xeo_uDiffuseFresnelEdgeBias;");
+                    add("uniform float  xeo_uDiffuseFresnelPower;");
+                    add("uniform vec3   xeo_uDiffuseFresnelCenterColor;");
+                    add("uniform vec3   xeo_uDiffuseFresnelEdgeColor;");
+                }
+
+                if (material.specularFresnel) {
+                    add("uniform float  xeo_uSpecularFresnelCenterBias;");
+                    add("uniform float  xeo_uSpecularFresnelEdgeBias;");
+                    add("uniform float  xeo_uSpecularFresnelPower;");
+                    add("uniform vec3   xeo_uSpecularFresnelCenterColor;");
+                    add("uniform vec3   xeo_uSpecularFresnelEdgeColor;");
+                }
+
+                if (material.opacityFresnel) {
+                    add("uniform float  xeo_uOpacityFresnelCenterBias;");
+                    add("uniform float  xeo_uOpacityFresnelEdgeBias;");
+                    add("uniform float  xeo_uOpacityFresnelPower;");
+                    add("uniform vec3   xeo_uOpacityFresnelCenterColor;");
+                    add("uniform vec3   xeo_uOpacityFresnelEdgeColor;");
+                }
+
+                if (material.reflectivityFresnel) {
+                    add("uniform float  xeo_uReflectivityFresnelCenterBias;");
+                    add("uniform float  xeo_uReflectivityFresnelEdgeBias;");
+                    add("uniform float  xeo_uReflectivityFresnelPower;");
+                    add("uniform vec3   xeo_uReflectivityFresnelCenterColor;");
+                    add("uniform vec3   xeo_uReflectivityFresnelEdgeColor;");
+                }
+
+                if (material.emissiveFresnel) {
+                    add("uniform float  xeo_uEmissiveFresnelCenterBias;");
+                    add("uniform float  xeo_uEmissiveFresnelEdgeBias;");
+                    add("uniform float  xeo_uEmissiveFresnelPower;");
+                    add("uniform vec3   xeo_uEmissiveFresnelCenterColor;");
+                    add("uniform vec3   xeo_uEmissiveFresnelEdgeColor;");
+                }
+            }
+
+            //--------------------------------------------------------------------------------
+            // LIGHT SOURCE INPUTS
+            //--------------------------------------------------------------------------------
+
+            add("uniform vec3   xeo_uLightAmbientColor;");
+            add("uniform float  xeo_uLightAmbientIntensity;");
+
+            if (geometry.normals) {
 
                 add("varying vec3 xeo_vViewEyeVec;");
 
-                // View-space fragment normal
-
-                add("varying vec3 xeo_vViewNormal;");
-
-                // Light sources
-
-                for (i = 0, len = states.lights.lights.length; i < len; i++) {
+                for (i = 0, len = states.lights.lights.length; i < len; i++) { // Light sources
 
                     light = states.lights.lights[i];
 
@@ -8392,223 +9346,302 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
                     add("uniform vec3 xeo_uLightColor" + i + ";");
                     add("uniform float xeo_uLightIntensity" + i + ";");
+
                     if (light.type === "point") {
                         add("uniform vec3 xeo_uLightAttenuation" + i + ";");
                     }
-                    add("varying vec4 xeo_vViewLightVecAndDist" + i + ";");         // Vector from light to vertex
-                }
 
-                if (diffuseFresnel || specularFresnel || opacityFresnel || emissiveFresnel || reflectivityFresnel) {
-
-                    add();
-                    comment("Fresnel variables");
-                    add();
-
-                    if (diffuseFresnel) {
-                        add("uniform float xeo_uDiffuseFresnelCenterBias;");
-                        add("uniform float xeo_uDiffuseFresnelEdgeBias;");
-                        add("uniform float xeo_uDiffuseFresnelPower;");
-                        add("uniform vec3 xeo_uDiffuseFresnelCenterColor;");
-                        add("uniform vec3 xeo_uDiffuseFresnelEdgeColor;");
-                        add();
-                    }
-
-                    if (specularFresnel) {
-                        add("uniform float xeo_uSpecularFresnelCenterBias;");
-                        add("uniform float xeo_uSpecularFresnelEdgeBias;");
-                        add("uniform float xeo_uSpecularFresnelPower;");
-                        add("uniform vec3 xeo_uSpecularFresnelCenterColor;");
-                        add("uniform vec3 xeo_uSpecularFresnelEdgeColor;");
-                        add();
-                    }
-
-                    if (opacityFresnel) {
-                        add("uniform float xeo_uOpacityFresnelCenterBias;");
-                        add("uniform float xeo_uOpacityFresnelEdgeBias;");
-                        add("uniform float xeo_uOpacityFresnelPower;");
-                        add("uniform vec3 xeo_uOpacityFresnelCenterColor;");
-                        add("uniform vec3 xeo_uOpacityFresnelEdgeColor;");
-                        add();
-                    }
-
-                    if (reflectivityFresnel) {
-                        add("uniform float xeo_uReflectivityFresnelCenterBias;");
-                        add("uniform float xeo_uReflectivityFresnelEdgeBias;");
-                        add("uniform float xeo_uReflectivityFresnelPower;");
-                        add("uniform vec3 xeo_uReflectivityFresnelCenterColor;");
-                        add("uniform vec3 xeo_uReflectivityFresnelEdgeColor;");
-                        add();
-                    }
-
-                    if (emissiveFresnel) {
-                        add("uniform float xeo_uEmissiveFresnelCenterBias;");
-                        add("uniform float xeo_uEmissiveFresnelEdgeBias;");
-                        add("uniform float xeo_uEmissiveFresnelPower;");
-                        add("uniform vec3 xeo_uEmissiveFresnelCenterColor;");
-                        add("uniform vec3 xeo_uEmissiveFresnelEdgeColor;");
-                        add();
-                    }
-
-                    comment("Fresnel calculation");
-                    add();
-                    add("float fresnel(vec3 eyeDir, vec3 normal, float edgeBias, float centerBias, float power) {");
-                    add("    float fr = abs(dot(eyeDir, normal));");
-                    add("    float finalFr = clamp((fr - edgeBias) / (centerBias - edgeBias), 0.0, 1.0);");
-                    add("    return pow(finalFr, power);");
-                    add("}");
+                    add("varying vec4 xeo_vViewLightReverseDirAndDist" + i + ";"); // Vector from light to vertex
                 }
             }
 
-            add();
+            //================================================================================
+            // MAIN
+            //================================================================================
 
             add("void main(void) {");
 
-            add();
+            if (geometry.primitiveName === "points") {
+                add("vec2 cxy = 2.0 * gl_PointCoord - 1.0;");
+                add("float r = dot(cxy, cxy);");
+                add("if (r > 1.0) {");
+                add("   discard;");
+                add("}");
+            }
 
-            add("   vec3 ambient = xeo_uLightAmbientColor;");
-            add("   vec3 emissive = xeo_uEmissive;");
-            add("   float opacity = xeo_uOpacity;");
+            add("float occlusion = 1.0;");
 
-            if (states.geometry.colors) {
-                add("   vec3 diffuse = xeo_vColor.rgb;"); // Diffuse color from vertex colors
+            if (material.ambient) {
+                add("vec3 ambient = xeo_uLightAmbientColor;");
             } else {
-                add("   vec3 diffuse = xeo_uDiffuse;");
+                add("vec3 ambient = vec3(0.0, 0.0, 0.0);");
             }
 
-            if (normals) {
+            if (material.diffuse) {
+                add("vec3 diffuse = xeo_uDiffuse;");
+            } else if (material.baseColor) {
+                add("vec3 diffuse = xeo_uBaseColor;");
+            } else {
+                add("vec3 diffuse = vec3(1.0, 1.0, 1.0);");
+            }
 
-                add("vec3 viewEyeVec = normalize(xeo_vViewEyeVec);");
+            if (material.emissive) {
+                add("vec3 emissive = xeo_uEmissive;"); // Emissive default is (0,0,0), so initializing here
+            } else {
+                add("vec3  emissive = vec3(0.0, 0.0, 0.0);");
+            }
 
-                add("   vec3 specular = xeo_uSpecular;");
-                add("   float shininess = xeo_uShininess;");
-                add("   float reflectivity = xeo_uReflectivity;");
+            if (material.specular) {
+                add("vec3 specular = xeo_uSpecular;");
+            } else {
+                add("vec3 specular = vec3(1.0, 1.0, 1.0);");
+            }
 
-                if (normalMapping) {
+            if (material.opacity !== undefined) {
+                add("float opacity = xeo_uOpacity;");
+            } else {
+                add("float opacity = 1.0;");
+            }
 
-                    add("   vec3 viewNormal = vec3(0.0, 1.0, 0.0);");
+            if (material.glossiness !== undefined) {
+                add("float glossiness = xeo_uGlossiness;");
+            } else {
+                add("float glossiness = 1.0;");
+            }
 
+            if (material.metallic !== undefined) {
+                add("float metallic = xeo_uMetallic;");
+            } else {
+                add("float metallic = 1.0;");
+            }
+
+            if (material.roughness !== undefined) {
+                add("float roughness = xeo_uRoughness;");
+            } else {
+                add("float roughness = 1.0;");
+            }
+
+            if (material.reflectivity !== undefined) {
+                add("float reflectivity = xeo_uReflectivity;");
+            } else {
+                add("float reflectivity = 1.0;");
+            }
+
+            //--------------------------------------------------------------------------------
+            // TEXTURING
+            //--------------------------------------------------------------------------------
+
+            if (geometry.uv
+                && ((geometry.normals && material.normalMap)
+                || material.ambientMap
+                || material.baseColorMap
+                || material.diffuseMap
+                || material.occlusionMap
+                || material.emissiveMap
+                || material.metallicMap
+                || material.roughnessMap
+                || material.metallicRoughnessMap
+                || material.specularMap
+                || material.glossinessMap
+                || material.specularGlossinessMap
+                || material.opacityMap)) {
+                add("vec4 texturePos = vec4(xeo_vUV.s, xeo_vUV.t, 1.0, 1.0);");
+                add("vec2 textureCoord;");
+            }
+
+            if (geometry.uv && material.ambientMap) {
+                if (material.ambientMap.matrix) {
+                    add("textureCoord = (xeo_uAmbientMapMatrix * texturePos).xy;");
                 } else {
-
-                    // Normalize the interpolated normals in the per-fragment-fragment-shader,
-                    // because if we linear interpolated two nonparallel normalized vectors,
-                    // the resulting vector won’t be of length 1
-
-                    add("   vec3 viewNormal = normalize(xeo_vViewNormal);");
+                    add("textureCoord = texturePos.xy;");
                 }
+                //add("textureCoord.y = -textureCoord.y;");
+                add("ambient *= texture2D(xeo_uAmbientMap, textureCoord).rgb;");
             }
 
-            if (texturing) {
-
-                // Apply textures
-
-                add();
-                comment("   Apply textures");
-                add();
-
-                add("   vec4 texturePos = vec4(xeo_vUV.s, xeo_vUV.t, 1.0, 1.0);");
-                add("   vec2 textureCoord;");
-
-                var material = states.material;
-
-                // Opacity and emissive lighting and mapping are independent of normals
-
-                if (material.emissiveMap) {
-                    add();
-                    if (material.emissiveMap.matrix) {
-                        add("   textureCoord = (xeo_uEmissiveMapMatrix * texturePos).xy;");
-                    } else {
-                        add("   textureCoord = texturePos.xy;");
-                    }
-                    add("   textureCoord.y = -textureCoord.y;");
-                    add("   emissive = texture2D(xeo_uEmissiveMap, textureCoord).rgb;");
+            if (geometry.uv && material.diffuseMap) {
+                if (material.diffuseMap.matrix) {
+                    add("textureCoord = (xeo_uDiffuseMapMatrix * texturePos).xy;");
+                } else {
+                    add("textureCoord = texturePos.xy;");
                 }
+               // add("textureCoord.y = -textureCoord.y;");
+                add("diffuse *= texture2D(xeo_uDiffuseMap, textureCoord).rgb;");
+            }
 
-                if (material.opacityMap) {
-                    add();
-                    if (material.opacityMap.matrix) {
-                        add("   textureCoord = (xeo_uOpacityMapMatrix * texturePos).xy;");
-                    } else {
-                        add("   textureCoord = texturePos.xy;");
-                    }
-                    add("   textureCoord.y = -textureCoord.y;");
-                    add("   opacity = texture2D(xeo_uOpacityMap, textureCoord).b;");
+            if (geometry.uv && material.baseColorMap) {
+                if (material.baseColorMap.matrix) {
+                    add("textureCoord = (xeo_uBaseColorMapMatrix * texturePos).xy;");
+                } else {
+                    add("textureCoord = texturePos.xy;");
                 }
+              //  add("textureCoord.y = -textureCoord.y;");
+                add("diffuse *= texture2D(xeo_uBaseColorMap, textureCoord).rgb;");
+            }
 
-                if (material.ambientMap) {
-                    add();
-                    if (material.ambientMap.matrix) {
-                        add("   textureCoord = (xeo_uAmbientMapMatrix * texturePos).xy;");
-                    } else {
-                        add("   textureCoord = texturePos.xy;");
-                    }
-                    add("   textureCoord.y = -textureCoord.y;");
-                    add("   ambient = texture2D(xeo_uAmbientMap, textureCoord).rgb;");
+            if (geometry.uv && material.emissiveMap) {
+                if (material.emissiveMap.matrix) {
+                    add("textureCoord = (xeo_uEmissiveMapMatrix * texturePos).xy;");
+                } else {
+                    add("textureCoord = texturePos.xy;");
                 }
+             //   add("textureCoord.y = -textureCoord.y;");
+                add("emissive += texture2D(xeo_uEmissiveMap, textureCoord).rgb;");
+            }
 
-                if (material.diffuseMap) {
-                    add();
-                    if (material.diffuseMap.matrix) {
-                        add("   textureCoord = (xeo_uDiffuseMapMatrix * texturePos).xy;");
-                    } else {
-                        add("   textureCoord = texturePos.xy;");
-                    }
-                    add("   textureCoord.y = -textureCoord.y;");
-                    add("   diffuse = texture2D(xeo_uDiffuseMap, textureCoord).rgb;");
+            if (geometry.uv && material.opacityMap) {
+                if (material.opacityMap.matrix) {
+                    add("textureCoord = (xeo_uOpacityMapMatrix * texturePos).xy;");
+                } else {
+                    add("textureCoord = texturePos.xy;");
                 }
+               // add("textureCoord.y = -textureCoord.y;");
+                add("opacity *= texture2D(xeo_uOpacityMap, textureCoord).r;");
+            }
 
-                if (normals) {
-
-                    if (material.specularMap) {
-                        add();
-                        if (material.specularMap.matrix) {
-                            add("   textureCoord = (xeo_uSpecularMapMatrix * texturePos).xy;");
-                        } else {
-                            add("   textureCoord = texturePos.xy;");
-                        }
-                        add("   textureCoord.y = -textureCoord.y;");
-                        add("   specular = texture2D(xeo_uSpecularMap, textureCoord).rgb;");
-                    }
-
-                    if (material.reflectivityMap) {
-                        add();
-                        if (material.reflectivityMap.matrix) {
-                            add("   textureCoord = (xeo_uReflectivityMapMatrix * texturePos).xy;");
-                        } else {
-                            add("   textureCoord = texturePos.xy;");
-                        }
-                        add("   textureCoord.y = -textureCoord.y;");
-                        add("   reflectivity = texture2D(xeo_uReflectivityMap, textureCoord).b;");
-                    }
+            if (geometry.uv && material.occlusionMap) {
+                if (material.occlusionMap.matrix) {
+                    add("textureCoord = (xeo_uOcclusionMapMatrix * texturePos).xy;");
+                } else {
+                    add("textureCoord = texturePos.xy;");
                 }
+               // add("textureCoord.y = -textureCoord.y;");
+                add("occlusion *= texture2D(xeo_uOcclusionMap, textureCoord).r;");
+            }
 
-                if (normalMapping) {
-                    add();
+            if (geometry.normals) {
+
+                //--------------------------------------------------------------------------------
+                // SHADING
+                //--------------------------------------------------------------------------------
+
+                if (material.normalMap) {
                     if (material.normalMap.matrix) {
-                        add("   textureCoord = (xeo_uNormalMapMatrix * texturePos).xy;");
+                        add("textureCoord = (xeo_uNormalMapMatrix * texturePos).xy;");
                     } else {
-                        add("   textureCoord = texturePos.xy;");
+                        add("textureCoord = texturePos.xy;");
                     }
-                    add("   textureCoord.y = -textureCoord.y;");
-                    add("   viewNormal = normalize(texture2D(xeo_uNormalMap, vec2(textureCoord.x, textureCoord.y)).xyz * 2.0 - 1.0);");
+                 //   add("textureCoord.y = -textureCoord.y;");
+                    add("vec3 viewNormal = xeo_TBN * normalize( texture2D(xeo_uNormalMap, vec2(textureCoord.x, textureCoord.y) ).rgb * 2.0 - 1.0);");
+                } else {
+                    add("vec3 viewNormal = normalize(xeo_vViewNormal);");
                 }
-            }
 
-            add("   vec4 fragColor;");
+                if (geometry.uv && material.specularMap) {
+                    if (material.specularMap.matrix) {
+                        add("textureCoord = (xeo_uSpecularMapMatrix * texturePos).xy;");
+                    } else {
+                        add("textureCoord = texturePos.xy;");
+                    }
+                  //  add("textureCoord.y = -textureCoord.y;");
+                    add("specular *= texture2D(xeo_uSpecularMap, textureCoord).rgb;");
+                }
 
-            if (normals) {
+                if (geometry.uv && material.glossinessMap) {
+                    if (material.glossinessMap.matrix) {
+                        add("textureCoord = (xeo_uGlossinessMapMatrix * texturePos).xy;");
+                    } else {
+                        add("textureCoord = texturePos.xy;");
+                    }
+                   // add("textureCoord.y = -textureCoord.y;");
+                    add("glossiness *= texture2D(xeo_uGlossinessMap, textureCoord).r;");
+                }
 
-                // Get Lambertian shading terms
+                if (geometry.uv && material.specularGlossinessMap) {
+                    if (material.specularGlossinessMap.matrix) {
+                        add("textureCoord = (xeo_uSpecularGlossinessMapMatrix * texturePos).xy;");
+                    } else {
+                        add("textureCoord = texturePos.xy;");
+                    }
+                 //   add("textureCoord.y = -textureCoord.y;");
+                    add("vec4 specGlossRGB = texture2D(xeo_uSpecularGlossinessMap, textureCoord).rgba;"); // TODO: what if only RGB texture?
+                    add("specular *= specGlossRGB.rgb;");
+                    add("glossiness *= specGlossRGB.a;");
+                }
 
-                add();
-                add("   vec3  diffuseLight = vec3(0.0, 0.0, 0.0);");
-                add("   vec3  specularLight = vec3(0.0, 0.0, 0.0);");
+                if (geometry.uv && material.metallicMap) {
+                    if (material.metallicMap.matrix) {
+                        add("textureCoord = (xeo_uMetallicMapMatrix * texturePos).xy;");
+                    } else {
+                        add("textureCoord = texturePos.xy;");
+                    }
+                  //  add("textureCoord.y = -textureCoord.y;");
+                    add("metallic *= texture2D(xeo_uMetallicMap, textureCoord).r;");
+                }
 
-                add();
-                add("   vec3  viewLightVec;");
-                add("   float specAngle;");
-                add("   float lightDist;");
-                add("   float attenuation;");
+                if (geometry.uv && material.roughnessMap) {
+                    if (material.roughnessMap.matrix) {
+                        add("textureCoord = (xeo_uRoughnessMapMatrix * texturePos).xy;");
+                    } else {
+                        add("textureCoord = texturePos.xy;");
+                    }
+                  //  add("textureCoord.y = -textureCoord.y;");
+                    add("roughness *= texture2D(xeo_uRoughnessMap, textureCoord).r;");
+                }
 
+                if (geometry.uv && material.metallicRoughnessMap) {
+                    if (material.metallicRoughnessMap.matrix) {
+                        add("textureCoord = (xeo_uMetallicRoughnessMapMatrix * texturePos).xy;");
+                    } else {
+                        add("textureCoord = texturePos.xy;");
+                    }
+                   // add("textureCoord.y = -textureCoord.y;");
+                    add("vec3 metalRoughRGB = texture2D(xeo_uMetallicRoughnessMap, textureCoord).rgb;");
+                    add("metallic *= metalRoughRGB.r;");
+                    add("roughness *= metalRoughRGB.g;");
+                }
+
+                // PREPARE INPUTS FOR SHADER FUNCTIONS
+
+                add("IncidentLight  light;");
+                add("Material       material;");
+                add("Geometry       geometry;");
+                add("ReflectedLight reflectedLight = ReflectedLight(vec3(0.0,0.0,0.0), vec3(0.0,0.0,0.0));");
+                add("vec3           viewLightDir;");
+
+                if (phongMaterial) {
+                    add("material.diffuseColor      = diffuse;");
+                    add("material.specularColor     = specular;");
+                    add("material.shine             = xeo_uShininess;");
+                }
+
+                if (pbrSpecGloss) {
+                    add("float oneMinusSpecularStrength = 1.0 - max(max(specular.r, specular.g ),specular.b);"); // Energy conservation
+                    add("material.diffuseColor      = diffuse * oneMinusSpecularStrength;");
+                    add("material.specularRoughness = clamp( 1.0 - glossiness, 0.04, 1.0 );");
+                    add("material.specularColor     = specular;");
+                }
+
+                if (pbrMetalRough) {
+                    add("float dielectricSpecular = 0.16 * reflectivity * reflectivity;");
+                    add("material.diffuseColor      = diffuse * (1.0 - dielectricSpecular) * (1.0 - metallic);");
+                    add("material.specularRoughness = clamp(roughness, 0.04, 1.0);");
+                    add("material.specularColor     = mix(vec3(dielectricSpecular), diffuse, metallic);");
+                }
+
+                add("geometry.position      = xeo_vViewPosition;");
+                //add("geometry.worldNormal   = normalize(xeo_vWorldNormal);");
+                if (states.lights.lightMap) {
+                    add("geometry.worldNormal   = normalize(xeo_vWorldNormal);");
+
+                    //add("geometry.worldNormal   = (inverse(xeo_uViewMatrix) * vec4(viewNormal, 0.0)).xyz;");
+                }
+                add("geometry.viewNormal    = viewNormal;");
+                add("geometry.viewEyeDir    = normalize(-xeo_vViewPosition);");
+
+                // ENVIRONMENT AND REFLECTION MAP SHADING
+
+                if ((phongMaterial) && (states.lights.lightMap || states.lights.reflectionMap)) {
+                    add("computePhongLightMapping(geometry, material, reflectedLight);");
+                }
+
+                if ((pbrSpecGloss || pbrMetalRough) && (states.lights.lightMap || states.lights.reflectionMap)) {
+                    add("computePBRLightMapping(geometry, material, reflectedLight);");
+                }
+
+                // LIGHT SOURCE SHADING
+
+                var light;
 
                 for (i = 0, len = states.lights.lights.length; i < len; i++) {
 
@@ -8618,95 +9651,46 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
                         continue;
                     }
 
-                    // If normal mapping, the fragment->light vector will be in tangent space
-                    add("   viewLightVec = normalize(xeo_vViewLightVecAndDist" + i + ".xyz);");
+                    add("viewLightDir = normalize(xeo_vViewLightReverseDirAndDist" + i + ".xyz);"); // If normal mapping, the fragment->light vector will be in tangent space
 
+                    add("light.direction = viewLightDir;");
+                    add("light.color = xeo_uLightIntensity" + i + " * xeo_uLightColor" + i + ";");
 
-                    if (light.type === "point") {
-                        add();
-
-                        add("   specAngle = max(dot(viewNormal, viewLightVec), 0.0);");
-
-                        add("   lightDist = xeo_vViewLightVecAndDist" + i + ".w;");
-
-                        add("   attenuation = 1.0 - (" +
-                            "  xeo_uLightAttenuation" + i + "[0] + " +
-                            "  xeo_uLightAttenuation" + i + "[1] * lightDist + " +
-                            "  xeo_uLightAttenuation" + i + "[2] * lightDist * lightDist);");
-
-                        add("   diffuseLight += xeo_uLightIntensity" + i + " * specAngle * xeo_uLightColor" + i + " * attenuation;");
-
-                        add("   specularLight += xeo_uLightIntensity" + i + " *  pow(max(dot(reflect(-viewLightVec, -viewNormal), viewEyeVec), 0.0), shininess) * attenuation;");
+                    if (phongMaterial) {
+                        add("computePhongLighting(light, geometry, material, reflectedLight);");
                     }
 
-                    if (light.type === "dir") {
-
-                        add("   specAngle = max(dot(viewNormal, -viewLightVec), 0.0);");
-
-                        add("   diffuseLight += xeo_uLightIntensity" + i + " * specAngle * xeo_uLightColor" + i + ";");
-
-                        add("   specularLight += xeo_uLightIntensity" + i + " * pow(max(dot(reflect(viewLightVec, -viewNormal), viewEyeVec), 0.0), shininess);");
+                    if (pbrSpecGloss || pbrMetalRough) {
+                        add("computePBRLighting(light, geometry, material, reflectedLight);");
                     }
                 }
 
-                add();
+                // COMBINE TERMS
 
-                // Get Fresnel terms
+                if (phongMaterial) {
+                    add("vec3 outgoingLight = (occlusion * (reflectedLight.diffuse + ambient)) + (occlusion * reflectedLight.specular) + emissive;");
 
-                if (diffuseFresnel || specularFresnel || opacityFresnel || emissiveFresnel || reflectivityFresnel) {
-
-                    add();
-                    comment("   Apply Fresnels");
-
-                    if (diffuseFresnel) {
-                        add();
-                        add("float diffuseFresnel = fresnel(viewEyeVec, viewNormal, xeo_uDiffuseFresnelEdgeBias, xeo_uDiffuseFresnelCenterBias, xeo_uDiffuseFresnelPower);");
-                        add("diffuse *= mix(xeo_uDiffuseFresnelEdgeColor, xeo_uDiffuseFresnelCenterColor, diffuseFresnel);");
-                    }
-
-                    if (specularFresnel) {
-                        add();
-                        add("float specularFresnel = fresnel(viewEyeVec, viewNormal, xeo_uSpecularFresnelEdgeBias, xeo_uSpecularFresnelCenterBias, xeo_uSpecularFresnelPower);");
-                        add("specular *= mix(xeo_uSpecularFresnelEdgeColor, xeo_uSpecularFresnelCenterColor, specularFresnel);");
-                    }
-
-                    if (opacityFresnel) {
-                        add();
-                        add("float opacityFresnel = fresnel(viewEyeVec, viewNormal, xeo_uOpacityFresnelEdgeBias, xeo_uOpacityFresnelCenterBias, xeo_uOpacityFresnelPower);");
-                        add("opacity *= mix(xeo_uOpacityFresnelEdgeColor.r, xeo_uOpacityFresnelCenterColor.r, opacityFresnel);");
-                    }
-
-                    if (emissiveFresnel) {
-                        add();
-                        add("float emissiveFresnel = fresnel(viewEyeVec, viewNormal, xeo_uEmissiveFresnelEdgeBias, xeo_uEmissiveFresnelCenterBias, xeo_uEmissiveFresnelPower);");
-                        add("emissive *= mix(xeo_uEmissiveFresnelEdgeColor, xeo_uEmissiveFresnelCenterColor, emissiveFresnel);");
-                    }
+                } else {
+                    add("vec3 outgoingLight = (occlusion * reflectedLight.diffuse) + (occlusion * reflectedLight.specular) + emissive;");
                 }
-
-                // Combine terms with Blinn-Phong BRDF
-
-                add();
-                comment("   Phong BRDF");
-                add();
-                add("   fragColor = vec4((specular * specularLight) + ((diffuseLight + (ambient * xeo_uLightAmbientIntensity) ) * diffuse) + emissive, opacity);");
 
             } else {
 
-                // No normals
-                add();
-                comment("   Non-Lambertian BRDF");
-                add();
-                add("   fragColor = vec4(emissive + diffuse, opacity);");
+                //--------------------------------------------------------------------------------
+                // NO SHADING - EMISSIVE ONLY
+                //--------------------------------------------------------------------------------
+
+                add("vec3 outgoingLight = emissive;");
             }
 
-            add("   fragColor.rgb *= fragColor.a;");
-
-            add("   gl_FragColor = fragColor;");
+            add("gl_FragColor = vec4(outgoingLight, opacity);");
+            add("gl_FragColor = LinearTosRGB(gl_FragColor);");  // Gamma correction
 
             add("}");
 
             return end();
         }
+
 
         // Start fresh program source
         function begin() {
@@ -8716,20 +9700,6 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
         // Append to program source
         function add(txt) {
             src.push(txt || "");
-        }
-
-        // Append to program source
-        function comment(txt) {
-            if (txt) {
-                var c = 0;
-                for (var i = 0, len = txt.length; i < len; i++) {
-                    if (txt.charAt(i) === " ") {
-                        c++;
-                    }
-                }
-                var pad = c > 0 ? txt.substring(0, c - 1) : "";
-                src.push(pad + "// " + txt.substring(c - 1));
-            }
         }
 
         // Finish building program source
@@ -8754,9 +9724,11 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
             return "lowp";
         }
 
-    })();
+    })
+    ();
 
-})();;(function () {
+})
+();;(function () {
 
     "use strict";
 
@@ -9266,25 +10238,42 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
         draw: function (frameCtx) {
 
             var state = this.state;
+            var ready = true;
 
             if (this._aPositionDraw) {
-                this._aPositionDraw.bindFloatArrayBuffer(state.positions);
-                frameCtx.bindArray++;
+                if (state.positions) {
+                    this._aPositionDraw.bindFloatArrayBuffer(state.positions);
+                    frameCtx.bindArray++;
+                } else {
+                    ready = false;
+                }
             }
 
             if (this._aNormalDraw) {
-                this._aNormalDraw.bindFloatArrayBuffer(state.normals);
-                frameCtx.bindArray++;
+                if (state.normals) {
+                    this._aNormalDraw.bindFloatArrayBuffer(state.normals);
+                    frameCtx.bindArray++;
+                } else {
+                    ready = false;
+                }
             }
 
             if (this._aUVDraw) {
-                this._aUVDraw.bindFloatArrayBuffer(state.uv);
-                frameCtx.bindArray++;
+                if (state.uv) {
+                    this._aUVDraw.bindFloatArrayBuffer(state.uv);
+                    frameCtx.bindArray++;
+                } else {
+                    ready = false;
+                }
             }
 
             if (this._aColorDraw) {
-                this._aColorDraw.bindFloatArrayBuffer(state.colors);
-                frameCtx.bindArray++;
+                if (state.colors) {
+                    this._aColorDraw.bindFloatArrayBuffer(state.colors);
+                    frameCtx.bindArray++;
+                } else {
+                    ready = false;
+                }
             }
 
             if (this._aTangentDraw) {
@@ -9292,13 +10281,23 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
                 // Tangents array is lazy-built from UVs and normals,
                 // now that we know that we need it
 
-                this._aTangentDraw.bindFloatArrayBuffer(state.getTangents());
-                frameCtx.bindArray++;
+                var tangents = state.getTangents();
+                if (tangents) {
+                    this._aTangentDraw.bindFloatArrayBuffer(tangents);
+                    frameCtx.bindArray++;
+                } else {
+                    ready = false;
+                }
             }
 
             if (state.indices) {
-                state.indices.bind();
-                frameCtx.bindArray++;
+                if (ready) {
+                    state.indices.bind();
+                    frameCtx.bindArray++;
+                    //var gl = this.program.gl;
+                    //gl.drawElements(state.primitive, state.indices.numItems, state.indices.itemType, 0);
+                    //frameCtx.drawElements++;
+                }
             }
         },
 
@@ -9381,11 +10380,22 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
                         break;
                 }
             }
+
+            if (this.state.lightMap) {
+                this._uLightMap = "xeo_uLightMap";
+            }
+
+            if (this.state.reflectionMap) {
+                this._uReflectionMap = "xeo_uReflectionMap";
+            }
         },
 
-        draw: function () {
+        draw: function (frameCtx) {
 
-            var lights = this.state.lights;
+            var draw = this.program.draw;
+            var gl = this.program.gl;
+            var state = this.state;
+            var lights = state.lights;
             var light;
 
             for (var i = 0, len = lights.length; i < len; i++) {
@@ -9432,6 +10442,18 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
                         this._uLightDir[i].setValue(light.dir);
                     }
                 }
+            }
+
+            var maxTextureUnits = gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS;
+
+            if (state.lightMap && state.lightMap.texture && this._uLightMap) {
+                draw.bindTexture(this._uLightMap, state.lightMap.texture, (frameCtx.textureUnit < maxTextureUnits ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
+                frameCtx.bindTexture++;
+            }
+
+            if (state.reflectionMap && state.reflectionMap.texture && this._uReflectionMap) {
+                draw.bindTexture(this._uReflectionMap, state.reflectionMap.texture, (frameCtx.textureUnit < maxTextureUnits ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
+                frameCtx.bindTexture++;
             }
         }
     });
@@ -9661,6 +10683,11 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
                 this._uNormalMapMatrix = draw.getUniform("xeo_uNormalMapMatrix");
             }
 
+            if (state.occlusionMap) {
+                this._uOcclusionMap = "xeo_uOcclusionMap";
+                this._uOcclusionMapMatrix = draw.getUniform("xeo_uOcclusionMapMatrix");
+            }
+
             // Fresnel effects
 
             if (state.diffuseFresnel) {
@@ -9709,7 +10736,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
             var draw = this.program.draw;
             var state = this.state;
             var gl = this.program.gl;
-
+            var maxTextureUnits = gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS;
 
             if (this._uShininess) {
                 this._uShininess.setValue(state.shininess);
@@ -9724,11 +10751,27 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
                 this._uPointSize.setValue(state.pointSize);
             }
 
+            if (this._uDiffuse) {
+                this._uDiffuse.setValue(state.diffuse);
+            }
+
+            if (this._uSpecular) {
+                this._uSpecular.setValue(state.specular);
+            }
+
+            if (this._uEmissive) {
+                this._uEmissive.setValue(state.emissive);
+            }
+
+            if (this._uOpacity) {
+                this._uOpacity.setValue(state.opacity);
+            }
+
             // Ambient map
 
             if (state.ambientMap && state.ambientMap.texture) {
 
-                draw.bindTexture(this._uAmbientMap, state.ambientMap.texture, (frameCtx.textureUnit < 8 ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
+                draw.bindTexture(this._uAmbientMap, state.ambientMap.texture, (frameCtx.textureUnit < maxTextureUnits ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
                 frameCtx.bindTexture++;
 
                 if (this._uAmbientMapMatrix) {
@@ -9740,67 +10783,55 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
             if (state.diffuseMap && state.diffuseMap.texture) {
 
-                draw.bindTexture(this._uDiffuseMap, state.diffuseMap.texture, (frameCtx.textureUnit < 8 ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
+                draw.bindTexture(this._uDiffuseMap, state.diffuseMap.texture, (frameCtx.textureUnit < maxTextureUnits ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
                 frameCtx.bindTexture++;
 
                 if (this._uDiffuseMapMatrix) {
                     this._uDiffuseMapMatrix.setValue(state.diffuseMap.matrix);
                 }
-
-            } else if (this._uDiffuse) {
-                this._uDiffuse.setValue(state.diffuse);
             }
 
             // Specular map
 
             if (state.specularMap && state.specularMap.texture) {
 
-                draw.bindTexture(this._uSpecularMap, state.specularMap.texture, (frameCtx.textureUnit < 8 ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
+                draw.bindTexture(this._uSpecularMap, state.specularMap.texture, (frameCtx.textureUnit < maxTextureUnits ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
                 frameCtx.bindTexture++;
 
                 if (this._uSpecularMapMatrix) {
                     this._uSpecularMapMatrix.setValue(state.specularMap.matrix);
                 }
-
-            } else if (this._uSpecular) {
-                this._uSpecular.setValue(state.specular);
             }
 
             // Emissive map
 
             if (state.emissiveMap && state.emissiveMap.texture) {
 
-                draw.bindTexture(this._uEmissiveMap, state.emissiveMap.texture, (frameCtx.textureUnit < 8 ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
+                draw.bindTexture(this._uEmissiveMap, state.emissiveMap.texture, (frameCtx.textureUnit < maxTextureUnits ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
                 frameCtx.bindTexture++;
 
                 if (this._uEmissiveMapMatrix) {
                     this._uEmissiveMapMatrix.setValue(state.emissiveMap.matrix);
                 }
-
-            } else if (this._uEmissive) {
-                this._uEmissive.setValue(state.emissive);
             }
 
             // Opacity map
 
             if (state.opacityMap && state.opacityMap.texture) {
 
-                draw.bindTexture(this._uOpacityMap, state.opacityMap.texture, (frameCtx.textureUnit < 8 ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
+                draw.bindTexture(this._uOpacityMap, state.opacityMap.texture, (frameCtx.textureUnit < maxTextureUnits ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
                 frameCtx.bindTexture++;
 
                 if (this._uOpacityMapMatrix) {
                     this._uOpacityMapMatrix.setValue(state.opacityMap.matrix);
                 }
-
-            } else if (this._uOpacity) {
-                this._uOpacity.setValue(state.opacity);
             }
 
             // Reflectivity map
 
             if (state.reflectivityMap && state.reflectivityMap.texture) {
 
-                draw.bindTexture(this._uReflectivityMap, state.reflectivityMap.texture, (frameCtx.textureUnit < 8 ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
+                draw.bindTexture(this._uReflectivityMap, state.reflectivityMap.texture, (frameCtx.textureUnit < maxTextureUnits ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
 
                 if (this._uReflectivityMapMatrix) {
                     this._uReflectivityMapMatrix.setValue(state.reflectivityMap.matrix);
@@ -9811,7 +10842,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
             if (state.normalMap && state.normalMap.texture) {
 
-                draw.bindTexture(this._uNormalMap, state.normalMap.texture, (frameCtx.textureUnit < 8 ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
+                draw.bindTexture(this._uNormalMap, state.normalMap.texture, (frameCtx.textureUnit < maxTextureUnits ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
                 frameCtx.bindTexture++;
 
                 if (this._uNormalMapMatrix) {
@@ -9819,6 +10850,18 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
                 }
             }
 
+            // Occlusion map
+
+            if (state.occlusionMap && state.occlusionMap.texture) {
+
+                draw.bindTexture(this._uOcclusionMap, state.occlusionMap.texture, (frameCtx.textureUnit < maxTextureUnits ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
+                frameCtx.bindTexture++;
+
+                if (this._uOcclusionMapMatrix) {
+                    this._uOcclusionMapMatrix.setValue(state.occlusionMap.matrix);
+                }
+            }
+            
             // Fresnel effects
 
             if (state.diffuseFresnel) {
@@ -9933,6 +10976,321 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
                 if (this._uEmissiveFresnelPower) {
                     this._uEmissiveFresnelPower.setValue(state.emissiveFresnel.power);
+                }
+            }
+        }
+    });
+
+})();
+;(function () {
+
+    "use strict";
+
+    xeogl.renderer.ChunkFactory.createChunkType({
+
+        type: "MetallicMaterial",
+
+        build: function () {
+
+            var state = this.state;
+
+            var draw = this.program.draw;
+
+            this._uBaseColor = draw.getUniform("xeo_uBaseColor");
+            this._uMetallic = draw.getUniform("xeo_uMetallic");
+            this._uRoughness = draw.getUniform("xeo_uRoughness");
+            this._uReflectivity = draw.getUniform("xeo_uReflectivity");
+            this._uEmissive = draw.getUniform("xeo_uEmissive");
+            this._uOpacity = draw.getUniform("xeo_uOpacity");
+
+            if (state.baseColorMap) {
+                this._uBaseColorMap = "xeo_uBaseColorMap";
+                this._uBaseColorMapMatrix = draw.getUniform("xeo_uBaseColorMapMatrix");
+            }
+
+            if (state.metallicMap) {
+                this._uMetallicMap = "xeo_uMetallicMap";
+                this._uMetallicMapMatrix = draw.getUniform("xeo_uMetallicMapMatrix");
+            }
+
+            if (state.roughnessMap) {
+                this._uRoughnessMap = "xeo_uRoughnessMap";
+                this._uRoughnessMapMatrix = draw.getUniform("xeo_uRoughnessMapMatrix");
+            }
+
+            if (state.metallicRoughnessMap) {
+                this._uMetallicRoughnessMap = "xeo_uMetallicRoughnessMap";
+                this._uMetallicRoughnessMapMatrix = draw.getUniform("xeo_uMetallicRoughnessMapMatrix");
+            }
+
+            if (state.emissiveMap) {
+                this._uEmissiveMap = "xeo_uEmissiveMap";
+                this._uEmissiveMapMatrix = draw.getUniform("xeo_uEmissiveMapMatrix");
+            }
+
+            if (state.occlusionMap) {
+                this._uOcclusionMap = "xeo_uOcclusionMap";
+                this._uOcclusionMapMatrix = draw.getUniform("xeo_uOcclusionMapMatrix");
+            }
+
+            if (state.opacityMap) {
+                this._uOpacityMap = "xeo_uOpacityMap";
+                this._uOpacityMapMatrix = draw.getUniform("xeo_uOpacityMapMatrix");
+            }
+
+            if (state.normalMap) {
+                this._uNormalMap = "xeo_uNormalMap";
+                this._uNormalMapMatrix = draw.getUniform("xeo_uNormalMapMatrix");
+            }
+        },
+
+        draw: function (frameCtx) {
+
+            var draw = this.program.draw;
+            var state = this.state;
+            var gl = this.program.gl;
+            var maxTextureUnits = gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS;
+
+            if (this._uBaseColor) {
+                this._uBaseColor.setValue(state.baseColor);
+            }
+
+            if (this._uMetallic) {
+                this._uMetallic.setValue(state.metallic);
+            }
+
+            if (this._uRoughness) {
+                this._uRoughness.setValue(state.roughness);
+            }
+
+            if (this._uReflectivity) {
+                this._uReflectivity.setValue(state.reflectivity);
+            }
+
+            if (this._uEmissive) {
+                this._uEmissive.setValue(state.emissive);
+            }
+
+            if (this._uOpacity) {
+                this._uOpacity.setValue(state.opacity);
+            }
+
+            if (state.baseColorMap && state.baseColorMap.texture) {
+                draw.bindTexture(this._uBaseColorMap, state.baseColorMap.texture, (frameCtx.textureUnit < maxTextureUnits ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
+                frameCtx.bindTexture++;
+                if (this._uBaseColorMapMatrix) {
+                    this._uBaseColorMapMatrix.setValue(state.baseColorMap.matrix);
+                }
+            }
+
+            if (state.metallicMap && state.metallicMap.texture) {
+                draw.bindTexture(this._uMetallicMap, state.metallicMap.texture, (frameCtx.textureUnit < maxTextureUnits ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
+                frameCtx.bindTexture++;
+                if (this._uMetallicMapMatrix) {
+                    this._uMetallicMapMatrix.setValue(state.metallicMap.matrix);
+                }
+            }
+            
+            if (state.roughnessMap && state.roughnessMap.texture) {
+                draw.bindTexture(this._uRoughnessMap, state.roughnessMap.texture, (frameCtx.textureUnit < maxTextureUnits ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
+                frameCtx.bindTexture++;
+                if (this._uRoughnessMapMatrix) {
+                    this._uRoughnessMapMatrix.setValue(state.roughnessMap.matrix);
+                }
+            }
+            
+            if (state.metallicRoughnessMap && state.metallicRoughnessMap.texture) {
+                draw.bindTexture(this._uMetallicRoughnessMap, state.metallicRoughnessMap.texture, (frameCtx.textureUnit < maxTextureUnits ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
+                frameCtx.bindTexture++;
+                if (this._uMetallicRoughnessMapMatrix) {
+                    this._uMetallicRoughnessMapMatrix.setValue(state.metallicRoughnessMap.matrix);
+                }
+            }
+
+            if (state.emissiveMap && state.emissiveMap.texture) {
+                draw.bindTexture(this._uEmissiveMap, state.emissiveMap.texture, (frameCtx.textureUnit < maxTextureUnits ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
+                frameCtx.bindTexture++;
+                if (this._uEmissiveMapMatrix) {
+                    this._uEmissiveMapMatrix.setValue(state.emissiveMap.matrix);
+                }
+            }
+
+            if (state.occlusionMap && state.occlusionMap.texture) {
+                draw.bindTexture(this._uOcclusionMap, state.occlusionMap.texture, (frameCtx.textureUnit < maxTextureUnits ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
+                frameCtx.bindTexture++;
+                if (this._uOcclusionMapMatrix) {
+                    this._uOcclusionMapMatrix.setValue(state.occlusionMap.matrix);
+                }
+            }
+
+            if (state.opacityMap && state.opacityMap.texture) {
+                draw.bindTexture(this._uOpacityMap, state.opacityMap.texture, (frameCtx.textureUnit < maxTextureUnits ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
+                frameCtx.bindTexture++;
+                if (this._uOpacityMapMatrix) {
+                    this._uOpacityMapMatrix.setValue(state.opacityMap.matrix);
+                }
+            }
+
+            if (state.normalMap && state.normalMap.texture) {
+                draw.bindTexture(this._uNormalMap, state.normalMap.texture, (frameCtx.textureUnit < maxTextureUnits ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
+                frameCtx.bindTexture++;
+                if (this._uNormalMapMatrix) {
+                    this._uNormalMapMatrix.setValue(state.normalMap.matrix);
+                }
+            }
+        }
+    });
+
+})();
+;(function () {
+
+    "use strict";
+
+    xeogl.renderer.ChunkFactory.createChunkType({
+
+        type: "SpecularMaterial",
+
+        build: function () {
+
+            var state = this.state;
+
+            var draw = this.program.draw;
+
+            this._uDiffuse = draw.getUniform("xeo_uDiffuse");
+            this._uSpecular = draw.getUniform("xeo_uSpecular");
+            this._uGlossiness = draw.getUniform("xeo_uGlossiness");
+            this._uEmissive = draw.getUniform("xeo_uEmissive");
+            this._uOpacity = draw.getUniform("xeo_uOpacity");
+
+            if (state.diffuseMap) {
+                this._uDiffuseMap = "xeo_uDiffuseMap";
+                this._uDiffuseMapMatrix = draw.getUniform("xeo_uDiffuseMapMatrix");
+            }
+
+            if (state.specularMap) {
+                this._uSpecularMap = "xeo_uSpecularMap";
+                this._uSpecularMapMatrix = draw.getUniform("xeo_uSpecularMapMatrix");
+            }
+            
+            if (state.glossinessMap) {
+                this._uGlossinessMap = "xeo_uGlossinessMap";
+                this._uGlossinessMapMatrix = draw.getUniform("xeo_uGlossinessMapMatrix");
+            }
+            
+            if (state.specularGlossinessMap) {
+                this._uSpecularGlossinessMap = "xeo_uSpecularGlossinessMap";
+                this._uSpecularGlossinessMapMatrix = draw.getUniform("xeo_uSpecularGlossinessMapMatrix");
+            }
+
+            if (state.emissiveMap) {
+                this._uEmissiveMap = "xeo_uEmissiveMap";
+                this._uEmissiveMapMatrix = draw.getUniform("xeo_uEmissiveMapMatrix");
+            }
+
+            if (state.occlusionMap) {
+                this._uOcclusionMap = "xeo_uOcclusionMap";
+                this._uOcclusionMapMatrix = draw.getUniform("xeo_uOcclusionMapMatrix");
+            }
+
+            if (state.opacityMap) {
+                this._uOpacityMap = "xeo_uOpacityMap";
+                this._uOpacityMapMatrix = draw.getUniform("xeo_uOpacityMapMatrix");
+            }
+
+            if (state.normalMap) {
+                this._uNormalMap = "xeo_uNormalMap";
+                this._uNormalMapMatrix = draw.getUniform("xeo_uNormalMapMatrix");
+            }
+        },
+
+        draw: function (frameCtx) {
+
+            var draw = this.program.draw;
+            var state = this.state;
+            var gl = this.program.gl;
+            var maxTextureUnits = gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS;
+
+            if (this._uDiffuse) {
+                this._uDiffuse.setValue(state.diffuse);
+            }
+
+            if (this._uSpecular) {
+                this._uSpecular.setValue(state.specular);
+            }
+
+            if (this._uGlossiness) {
+                this._uGlossiness.setValue(state.glossiness);
+            }
+
+            if (this._uEmissive) {
+                this._uEmissive.setValue(state.emissive);
+            }
+
+            if (this._uOpacity) {
+                this._uOpacity.setValue(state.opacity);
+            }
+
+            if (state.diffuseMap && state.diffuseMap.texture) {
+                draw.bindTexture(this._uDiffuseMap, state.diffuseMap.texture, (frameCtx.textureUnit < maxTextureUnits ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
+                frameCtx.bindTexture++;
+                if (this._uDiffuseMapMatrix) {
+                    this._uDiffuseMapMatrix.setValue(state.diffuseMap.matrix);
+                }
+            }
+
+            if (state.specularMap && state.specularMap.texture) {
+                draw.bindTexture(this._uSpecularMap, state.specularMap.texture, (frameCtx.textureUnit < maxTextureUnits ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
+                frameCtx.bindTexture++;
+                if (this._uSpecularMapMatrix) {
+                    this._uSpecularMapMatrix.setValue(state.specularMap.matrix);
+                }
+            }
+
+            if (state.glossinessMap && state.glossinessMap.texture) {
+                draw.bindTexture(this._uGlossinessMap, state.glossinessMap.texture, (frameCtx.textureUnit < maxTextureUnits ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
+                frameCtx.bindTexture++;
+                if (this._uGlossinessMapMatrix) {
+                    this._uGlossinessMapMatrix.setValue(state.glossinessMap.matrix);
+                }
+            }
+            
+            if (state.specularGlossinessMap && state.specularGlossinessMap.texture) {
+                draw.bindTexture(this._uSpecularGlossinessMap, state.specularGlossinessMap.texture, (frameCtx.textureUnit < maxTextureUnits ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
+                frameCtx.bindTexture++;
+                if (this._uSpecularGlossinessMapMatrix) {
+                    this._uSpecularGlossinessMapMatrix.setValue(state.specularGlossinessMap.matrix);
+                }
+            }
+
+            if (state.emissiveMap && state.emissiveMap.texture) {
+                draw.bindTexture(this._uEmissiveMap, state.emissiveMap.texture, (frameCtx.textureUnit < maxTextureUnits ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
+                frameCtx.bindTexture++;
+                if (this._uEmissiveMapMatrix) {
+                    this._uEmissiveMapMatrix.setValue(state.emissiveMap.matrix);
+                }
+            }
+
+            if (state.occlusionMap && state.occlusionMap.texture) {
+                draw.bindTexture(this._uOcclusionMap, state.occlusionMap.texture, (frameCtx.textureUnit < maxTextureUnits ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
+                frameCtx.bindTexture++;
+                if (this._uOcclusionMapMatrix) {
+                    this._uOcclusionMapMatrix.setValue(state.occlusionMap.matrix);
+                }
+            }
+
+            if (state.opacityMap && state.opacityMap.texture) {
+                draw.bindTexture(this._uOpacityMap, state.opacityMap.texture, (frameCtx.textureUnit < maxTextureUnits ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
+                frameCtx.bindTexture++;
+                if (this._uOpacityMapMatrix) {
+                    this._uOpacityMapMatrix.setValue(state.opacityMap.matrix);
+                }
+            }
+
+            if (state.normalMap && state.normalMap.texture) {
+                draw.bindTexture(this._uNormalMap, state.normalMap.texture, (frameCtx.textureUnit < maxTextureUnits ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
+                frameCtx.bindTexture++;
+                if (this._uNormalMapMatrix) {
+                    this._uNormalMapMatrix.setValue(state.normalMap.matrix);
                 }
             }
         }
@@ -10181,20 +11539,9 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
 })();
 ;/**
+ The **Component** class is the base class for all xeogl components.
 
- **Component** is the base class for all xeogl components.
-
- ## Contents
-
- <Ul>
- <li><a href="#ids">Component IDs</a></li>
- <li><a href="#componentProps">Properties</a></li>
- <li><a href="#metadata">Metadata</a></li>
- <li><a href="#logging">Logging</a></li>
- <li><a href="#destruction">Destruction</a></li>
- </ul>
-
- ## <a name="ids">Component IDs</a>
+ ## Component IDs
 
  Every Component has an ID that's unique within the parent {{#crossLink "Scene"}}{{/crossLink}}. xeogl generates
  the IDs automatically by default, however you can also specify them yourself. In the example below, we're creating a
@@ -10206,21 +11553,21 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
  // The Scene is a Component too
  var scene = new xeogl.Scene({
     id: "myScene"
-});
+ });
 
  var material = new xeogl.PhongMaterial(scene, {
     id: "myMaterial"
-});
+ });
 
  var geometry = new xeogl.Geometry(scene, {
     id: "myGeometry"
-});
+ });
 
  // Let xeogl automatically generate the ID for our Entity
  var entity = new xeogl.Entity(scene, {
     material: material,
     geometry: geometry
-});
+ });
  ````
 
  We can then find those components like this:
@@ -10233,7 +11580,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
  var theMaterial = theScene.components["myMaterial"];
  ````
 
- ## <a name="componentProps">Properties</a>
+ ## Properties
 
  Almost every property on a xeogl Component fires a change event when you update it. For example, we can subscribe
  to the {{#crossLink "PhongMaterial/diffuse:event"}}{{/crossLink}} event that a
@@ -10262,17 +11609,17 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
  // Bind a change callback to the Entity's Material
  entity1.on("material", function(material) {
     console.log("Entity's Material has changed to: " + material.id);
-});
+ });
 
  // Now replace that Material with another
  entity1.material = new xeogl.PhongMaterial({
     id: "myOtherMaterial",
     diffuse: [ 0.3, 0.3, 0.6 ]
     //..
-});
+ });
  ````
 
- ## <a name="metadata">Metadata</a>
+ ## Metadata
 
  You can set optional **metadata** on your Components, which can be anything you like. These are intended
  to help manage your components within your application code or content pipeline. You could use metadata to attach
@@ -10287,7 +11634,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
         author: "@xeolabs",
         date: "February 13 2015"
     }
-});
+ });
 
  // Material with descriptive metadata
  var material = new xeogl.PhongMaterial(scene, {
@@ -10298,7 +11645,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
         version: "0.1",
         foo: "bar"
     }
-});
+ });
  ````
 
  As with all properties, you can subscribe and change the metadata like this:
@@ -10307,17 +11654,17 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
  // Subscribe to changes to the Material's metadata
  material.on("meta", function(value) {
     console.log("Metadata changed: " + JSON.stringify(value));
-});
+ });
 
  // Change the Material's metadata, firing our change handler
  material.meta = {
     description: "Bright red color with no textures",
     version: "0.2",
     foo: "baz"
-};
+ };
  ````
 
- ## <a name="logging">Logging</a>
+ ## Logging
 
  Components have methods to log ID-prefixed messages to the JavaScript console:
 
@@ -10335,14 +11682,14 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
  [ERROR] myMaterial: Aw, snap!
  ````
 
- ## <a name="destruction">Destruction</a>
+ ## Destruction
 
  Get notification of destruction directly on the Components:
 
  ````javascript
  material.on("destroyed", function() {
     this.log("Component was destroyed: " + this.id);
-});
+ });
  ````
 
  Or get notification of destruction of any Component within its {{#crossLink "Scene"}}{{/crossLink}}, indiscriminately:
@@ -10350,7 +11697,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
  ````javascript
  scene.on("componentDestroyed", function(component) {
     this.log("Component was destroyed: " + component.id);
-});
+ });
  ````
 
  Then destroy a component like this:
@@ -10588,8 +11935,8 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
         /**
          * Fires an event on this component.
          *
-         * Notifies existing subscribers to the event, retains the event to give to
-         * any subsequent notifications on that location as they are made.
+         * Notifies existing subscribers to the event, optionally retains the event to give to
+         * any subsequent notifications on the event as they are made.
          *
          * @method fire
          * @param {String} event The event type name
@@ -10988,9 +12335,9 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
                 var onDetached = oldAttachment.params.onDetached;
                 if (onDetached) {
                     if (xeogl._isFunction(onDetached)) {
-                        onDetached(component);
+                        onDetached(oldComponent);
                     } else {
-                        onDetached.scope ? onDetached.callback.call(onDetached.scope, component) : onDetached.callback(component);
+                        onDetached.scope ? onDetached.callback.call(onDetached.scope, oldComponent) : onDetached.callback(oldComponent);
                     }
                 }
 
@@ -10999,7 +12346,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
                     // Note that we just unsubscribed from all events fired by the child
                     // component, so destroying it won't fire events back at us now.
 
-                    component.destroy();
+                    oldComponent.destroy();
                 }
             }
 
@@ -11119,20 +12466,18 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
          * times as you got it, the Scene will destroy the component.
          *
          * @method create
-         * @param {String} type Component type - either a string like "xeogl.PhongMaterial" or the actual
-         * constructor function, ie. xeogl.PhongMaterial.
          * @param {*} [cfg] Configuration for the component instance - only used if this is the first time you are getting
          * the component, ignored when reusing an existing instance.
          * @param {String|Number} [instanceId] Identifies the shared component instance. Note that this is not used as the ID of the
          * component - you can specify the component ID in the ````cfg```` parameter.
          * @returns {*}
          */
-        create: function (type, cfg, instanceId) {
+        create: function (cfg, instanceId) {
 
             // Create or reuse the component via this component's scene;
             // reusing if instanceId given, else getting unique instance otherwise
 
-            var component = this.scene._getSharedComponent(type, cfg, instanceId);
+            var component = this.scene._getSharedComponent(cfg, instanceId);
 
             if (component) {
 
@@ -11359,7 +12704,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 ;/**
  A **Scene** models a 3D scene as a fully-editable and serializable <a href="http://gameprogrammingpatterns.com/component.html" target="_other">component-entity</a> graph.
 
- ## <a name="sceneStructure">Scene Structure</a>
+ ## Scene Structure
 
  A Scene contains a soup of instances of various {{#crossLink "Component"}}Component{{/crossLink}} subtypes, such as
  {{#crossLink "Entity"}}Entity{{/crossLink}}, {{#crossLink "Camera"}}Camera{{/crossLink}}, {{#crossLink "Material"}}Material{{/crossLink}},
@@ -11471,7 +12816,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
  var material2 = new xeogl.PhongMaterial({
     diffuse: { r: 0.6, g: 0.6, b: 0.7 },
     specular: { 1.0, 1.0, 1.0 }
-});
+ });
 
  var geometry2 = new xeogl.Geometry({
      primitive: "triangles",
@@ -11479,7 +12824,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
      normals: [...],
      uvs: [...],
      indices: [...]
-});
+ });
 
  var camera = new xeogl.Camera();
 
@@ -11487,7 +12832,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
      material: material2,
      geometry: geometry2,
      camera: camera2
-});
+ });
  ````
 
  You can then obtain the default Scene from the {{#crossLink "xeogl"}}xeogl{{/crossLink}} entity's
@@ -11533,13 +12878,12 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
  // Create another scene from that JSON, in a fresh canvas:
  var myOtherScene = new xeogl.Scene({
       json: json
-  });
+ });
 
  ***Note:*** this will save your {{#crossLink "Geometry"}}Geometry{{/crossLink}}s' array properties
  ({{#crossLink "Geometry/positions:property"}}positions{{/crossLink}}, {{#crossLink "Geometry/normals:property"}}normals{{/crossLink}},
  {{#crossLink "Geometry/indices:property"}}indices{{/crossLink}} etc) as JSON arrays, which may stress your browser
  if those arrays are huge.
-
 
  @class Scene
  @module xeogl
@@ -11551,8 +12895,9 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
  @param [cfg.webgl2=true] {Boolean} Set this false when we **don't** want to use WebGL 2 for our Scene; the Scene will fall
  back on WebGL 1 if not available. This property will be deprecated when WebGL 2 is supported everywhere.
  @param [cfg.components] {Array(Object)} JSON array containing parameters for {{#crossLink "Component"}}Component{{/crossLink}} subtypes to immediately create within the Scene.
- @param [cfg.passes=1] The number of times this Scene renders per frame.
- @param [cfg.clearEachPass=false] When doing multiple passes per frame, specifies whether to clear the
+ @param [cfg.ticksPerRender=1] {Number} The number of {{#crossLink "Scene/tick:property"}}{{/crossLink}} that happen between each render or this Scene.
+ @param [cfg.passes=1] {Number} The number of times this Scene renders per frame.
+ @param [cfg.clearEachPass=false] {Boolean} When doing multiple passes per frame, specifies whether to clear the
  canvas before each pass (true) or just before the first pass (false).
  @param [cfg.transparent=false] {Boolean} Whether or not the canvas is transparent.
  @param [cfg.backgroundColor] {Float32Array} RGBA color for canvas background, when canvas is not transparent. Overridden by backgroundImage.
@@ -11732,6 +13077,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
             this._initDefaults();
 
+            this.ticksPerRender = cfg.ticksPerRender;
             this.passes = cfg.passes;
             this.clearEachPass = cfg.clearEachPass;
         },
@@ -11775,8 +13121,8 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
                 // User-supplied ID
 
                 if (this.components[c.id]) {
-                    this.error("Component " + xeogl._inQuotes(c.id) + " already exists in Scene");
-                    return;
+                    this.error("Component " + xeogl._inQuotes(c.id) + " already exists in Scene - ignoring ID, will randomly-generate instead");
+                    c.id = this._componentIDMap.addItem(c);
                 }
             } else {
 
@@ -11964,7 +13310,53 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
         _props: {
 
             /**
+             * The number of {{#crossLink "Scene/tick:property"}}{{/crossLink}} that happen between each render or this Scene.
+             *
+             * Fires a {{#crossLink "Scene/ticksPerRender:event"}}{{/crossLink}} event on change.
+             *
+             * @property ticksPerRender
+             * @default 1
+             * @type Number
+             */
+            ticksPerRender: {
+
+                set: function (value) {
+
+                    if (value === undefined || value === null) {
+                        value = 1;
+
+                    } else if (!xeogl._isNumeric(value) || value <= 0) {
+
+                        this.error("Unsupported value for 'ticksPerRender': '" + value +
+                            "' - should be an integer greater than zero.");
+
+                        value = 1;
+                    }
+
+                    if (value === this._ticksPerRender) {
+                        return;
+                    }
+
+                    this._ticksPerRender = value;
+
+                    /**
+                     Fired whenever this Scene's {{#crossLink "Scene/ticksPerRender:property"}}{{/crossLink}} property changes.
+
+                     @event ticksPerRender
+                     @param value {Boolean} The property's new value
+                     */
+                    this.fire("ticksPerRender", this._ticksPerRender);
+                },
+
+                get: function () {
+                    return this._ticksPerRender;
+                }
+            },
+
+            /**
              * The number of times this Scene renders per frame.
+             *
+             * Fires a {{#crossLink "Scene/passes:event"}}{{/crossLink}} event on change.
              *
              * @property passes
              * @default 1
@@ -12010,6 +13402,8 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
             /**
              * When doing multiple passes per frame, specifies whether to clear the
              * canvas before each pass (true) or just before the first pass (false).
+             *
+             * Fires a {{#crossLink "Scene/clearEachPass:event"}}{{/crossLink}} event on change.
              *
              * @property clearEachPass
              * @default false
@@ -12248,6 +13642,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
              * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} by default.
              * @property colorTarget
+             * @private
              * @final
              * @type ColorTarget
              */
@@ -12296,6 +13691,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
              * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} by default.
              * @property depthTarget
+             * @private
              * @final
              * @type DepthTarget
              */
@@ -12448,27 +13844,26 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
                             lights: [
 
-                                // Ambient light source #0
-                                new xeogl.AmbientLight(this, {
-                                    id: "default.light0",
-                                    color: [0.45, 0.45, 0.5],
-                                    intensity: 0.9
-                                }),
-
-                                // Directional light source #1
                                 new xeogl.DirLight(this, {
-                                    id: "default.light1",
-                                    dir: [-0.5, 0.5, -0.6],
-                                    color: [0.8, 0.8, 0.7],
+                                    id: "default.light0",
+                                    dir: [0.8, -0.6, -0.8],
+                                    color: [1.0, 1.0, 1.0],
                                     intensity: 1.0,
                                     space: "view"
                                 }),
-                                //
-                                // Directional light source #2
+
+                                new xeogl.DirLight(this, {
+                                    id: "default.light1",
+                                    dir: [-0.8, -0.4, -0.4],
+                                    color: [0.6, 0.6, 0.6],
+                                    intensity: 1.0,
+                                    space: "view"
+                                }),
+
                                 new xeogl.DirLight(this, {
                                     id: "default.light2",
-                                    dir: [0.5, -0.5, -0.6],
-                                    color: [0.8, 0.8, 0.8],
+                                    dir: [0.2, -0.8, 0.8],
+                                    color: [0.6, 0.6, 0.6],
                                     intensity: 1.0,
                                     space: "view"
                                 })
@@ -12509,6 +13904,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
              * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "MorphTargets"}}MorphTargets{{/crossLink}} by default.
              * @property morphTargets
+             * @private
              * @final
              * @type MorphTargets
              */
@@ -12556,6 +13952,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
              * {{#crossLink "Shader"}}Shader{{/crossLink}} by default.
              * @property shader
              * @final
+             * @private
              * @type Shader
              */
             shader: {
@@ -12579,6 +13976,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
              *
              * @property shaderParams
              * @final
+             * @private
              * @type ShaderParams
              */
             shaderParams: {
@@ -12838,8 +14236,6 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
             var tempVec4a = math.vec4();
             var tempVec4b = math.vec4();
             var tempVec4c = math.vec4();
-            var tempVec4d = math.vec4();
-            var tempVec4e = math.vec4();
 
             var tempVec3 = math.vec3();
             var tempVec3b = math.vec3();
@@ -12852,77 +14248,6 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
             var tempVec3i = math.vec3();
             var tempVec3j = math.vec3();
             var tempVec3k = math.vec3();
-
-            var tempMat4 = math.mat4();
-            var tempMat4b = math.mat4();
-            var tempMat4c = math.mat4();
-
-            // Given a Entity and canvas coordinates, gets a Local-space ray.
-            function canvasPosToLocalRay(entity, canvasPos, localRayOrigin, localRayDir) {
-
-                var canvas = entity.scene.canvas.canvas;
-
-                var modelMat = entity.transform.leafMatrix;
-                var viewMat = entity.camera.view.matrix;
-                var projMat = entity.camera.project.matrix;
-
-                var vmMat = math.mulMat4(viewMat, modelMat, tempMat4);
-                var pvMat = math.mulMat4(projMat, vmMat, tempMat4b);
-                var pvMatInverse = math.inverseMat4(pvMat, tempMat4c);
-
-                // Calculate clip space coordinates, which will be in range
-                // of x=[-1..1] and y=[-1..1], with y=(+1) at top
-
-                var canvasWidth = canvas.width;
-                var canvasHeight = canvas.height;
-
-                var clipX = (canvasPos[0] - canvasWidth / 2) / (canvasWidth / 2);  // Calculate clip space coordinates
-                var clipY = -(canvasPos[1] - canvasHeight / 2) / (canvasHeight / 2);
-
-                tempVec4a[0] = clipX;
-                tempVec4a[1] = clipY;
-                tempVec4a[2] = -1;
-                tempVec4a[3] = 1;
-
-                math.transformVec4(pvMatInverse, tempVec4a, tempVec4b);
-                math.mulVec4Scalar(tempVec4b, 1 / tempVec4b[3]);
-
-                tempVec4c[0] = clipX;
-                tempVec4c[1] = clipY;
-                tempVec4c[2] = 1;
-                tempVec4c[3] = 1;
-
-                math.transformVec4(pvMatInverse, tempVec4c, tempVec4d);
-                math.mulVec4Scalar(tempVec4d, 1 / tempVec4d[3]);
-
-                localRayOrigin[0] = tempVec4d[0];
-                localRayOrigin[1] = tempVec4d[1];
-                localRayOrigin[2] = tempVec4d[2];
-
-                math.subVec3(tempVec4d, tempVec4b, localRayDir);
-
-                math.normalizeVec3(localRayDir);
-            }
-
-            // Transforms a ray from World-space to Local-space
-            function worldRayToLocalRay(entity, worldRayOrigin, worldRayDir, localRayOrigin, localRayDir) {
-
-                var modelMat = entity.transform.leafMatrix;
-                var modelMatInverse = math.inverseMat4(modelMat, tempMat4);
-
-                tempVec4a[0] = worldRayOrigin[0];
-                tempVec4a[1] = worldRayOrigin[1];
-                tempVec4a[2] = worldRayOrigin[2];
-                tempVec4a[3] = 1;
-
-                math.transformVec4(modelMatInverse, tempVec4a, tempVec4b);
-
-                localRayOrigin[0] = tempVec4b[0];
-                localRayOrigin[1] = tempVec4b[1];
-                localRayOrigin[2] = tempVec4b[2];
-
-                math.transformVec3(modelMatInverse, worldRayDir, localRayDir);
-            }
 
             return function (params) {
 
@@ -12998,10 +14323,10 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
                                 if (params.canvasPos) {
                                     canvasPos = params.canvasPos;
                                     hit.canvasPos = params.canvasPos;
-                                    canvasPosToLocalRay(entity, canvasPos, localRayOrigin, localRayDir);
+                                    math.canvasPosToLocalRay(entity.camera, entity, canvasPos, localRayOrigin, localRayDir);
 
                                 } else if (params.origin && params.direction) {
-                                    worldRayToLocalRay(entity, params.origin, params.direction, localRayOrigin, localRayDir);
+                                    math.worldRayToLocalRay(entity, params.origin, params.direction, localRayOrigin, localRayDir);
                                 }
 
                                 math.normalizeVec3(localRayDir);
@@ -13043,7 +14368,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
                                 // Get barycentric coordinates of the ray-triangle intersection
 
-                                math.cartesianToBarycentric2(position, a, b, c, bary);
+                                math.cartesianToBarycentric(position, a, b, c, bary);
 
                                 hit.bary = bary;
 
@@ -13158,14 +14483,44 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
          *
          * @method _getSharedComponent
          * @private
-         * @param {String|Function} type Component type, eg "xeogl.PhongMaterial", or constructor.
          * @param {*} [cfg] Attributes for the component instance - only used if this is the first time you are getting
          * the component, ignored when reusing an existing shared component.
          * @param {String|Number} instanceId Identifies the shared component instance. Note that this is not used as the ID of the
          * component - you can specify the component ID in the ````cfg```` parameter.
          * @returns {*}
          */
-        _getSharedComponent: function (type, cfg, instanceId) {
+        _getSharedComponent: function (cfg, instanceId) {
+
+            var type;
+            var claz;
+
+            if (xeogl._isObject(cfg)) { // Component config given
+
+                type = cfg.type || "xeogl.Component";
+                claz = xeogl[type.substring(6)];
+
+            } else if (xeogl._isString(cfg)) {
+
+                type = cfg;
+                claz = xeogl[type.substring(6)];
+
+            } else {
+
+                claz = cfg;
+                type = cfg.prototype.type;
+
+                // TODO: catch unknown component class
+            }
+
+            if (!claz) {
+                this.error("Component type not found: " + type);
+                return;
+            }
+
+            if (!xeogl._isComponentType(type, "xeogl.Component")) {
+                this.error("Expected a xeogl.Component type or subtype");
+                return;
+            }
 
             var component;
 
@@ -13189,25 +14544,13 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
             // Component does not yet exist
 
-            var clazz;
-
-            if (xeogl._isString(type)) {
-                var type2 = type.substring(3); // Find constructor on the xeogl namespace
-                clazz = xeogl[type2];
-                if (!clazz) {
-                    this.error("Component type not found: '" + type + "'");
-                    return null;
-                }
-            } else {
-                clazz = type;
-            }
-
             if (cfg && cfg.id && this.components[cfg.id]) {
-                this.error("Component " + xeogl._inQuotes(cfg.id) + " already exists in Scene");
+                this.error("Component " + xeogl._inQuotes(cfg.id) + " already exists in Scene - ignoring ID, will randomly-generate instead");
+                cfg.id = undefined;
                 return null;
             }
 
-            component = new clazz(this, cfg);
+            component = new claz(this, cfg);
 
             if (instanceId !== undefined) {
 
@@ -13389,7 +14732,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
      TODO
 
-     @class MorphTargets
+
      @module xeogl
      @submodule animation
      @constructor
@@ -13492,47 +14835,34 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
 
 ;/**
- A **CameraFlight** flies a {{#crossLink "Camera"}}{{/crossLink}} to a given target.
+ A **CameraFlightAnimation** jumps or flies a {{#crossLink "Camera"}}{{/crossLink}} to look at a given target.
 
- <ul>
- <li>A CameraFlight animates the {{#crossLink "Lookat"}}{{/crossLink}} attached to its {{#crossLink "Camera"}}{{/crossLink}}.</li>
- <li>A CameraFlight can be attached to a different {{#crossLink "Camera"}}{{/crossLink}} at any time.</li>
- <li>While a CameraFlight is busy flying to a target, it can be stopped, or redirected to fly to a different target.</li>
- </ul>
+ <a href="../../examples/#animation_CameraFlightAnimation_Entity"><img src="http://i.giphy.com/3o7TKP0jN800EQ99EQ.gif"></img></a>
 
- A target can be:
+ ## Overview
 
- <ul>
- <li>specific ````eye````, ````look```` and ````up```` positions,</li>
- <li>a World-space {{#crossLink "Boundary3D"}}{{/crossLink}},</li>
- <li>an instance or ID of any {{#crossLink "Component"}}{{/crossLink}} subtype that provides a World-space</li>
- {{#crossLink "Boundary3D"}}{{/crossLink}} in a "worldBoundary" property, or</li>
- <li>an axis-aligned World-space bounding box.</li>
- </ul>
+ * Requires that the {{#crossLink "Camera"}}{{/crossLink}} have a {{#crossLink "Lookat"}}{{/crossLink}} for its {{#crossLink "Camera/view:property"}}view{{/crossLink}} transform.
+ * Can be attached to a different {{#crossLink "Camera"}}{{/crossLink}} at any time.
+ * Can be made to either fly or jump to its target.
+ * While busy flying to a target, it can be stopped, or redirected to fly to a different target.
+
+ A CameraFlightAnimation's target can be:
+
+ * specific ````eye````, ````look```` and ````up```` positions,
+ * a World-space {{#crossLink "Boundary3D"}}{{/crossLink}},
+ * an instance or ID of any {{#crossLink "Component"}}{{/crossLink}} subtype that provides a World-space {{#crossLink "Boundary3D"}}{{/crossLink}} in a "worldBoundary" property, or
+ * an axis-aligned World-space bounding box (AABB).
+
+ When a CameraFlightAnimation's target is a {{#crossLink "Boundary3D"}}{{/crossLink}} or AABB, you can configure its {{#crossLink "CameraFlightAnimation/fit:property"}}{{/crossLink}}
+ and {{#crossLink "CameraFlightAnimation/fitFOV:property"}}{{/crossLink}} properties to make it stop at the point where the target
+ occupies a certain amount of the field-of-view.
 
  ## Examples
 
- <ul>
- <li>[Flying to Entity](../../examples/#animation_CameraFlight_Entity)</li>
- <li>[Flying to Boundary3D](../../examples/#animation_CameraFlight_Boundary3D)</li>
- <li>[Flying to AABB](../../examples/#animation_CameraFlight_AABB)</li>
- </ul>
+ * [Flying to random Entities](../../examples/#animation_CameraFlightAnimation_Entity)
+ * [Flying to Boundary3D](../../examples/#animation_CameraFlightAnimation_Boundary3D)
+ * [Flying to AABB](../../examples/#animation_CameraFlightAnimation_AABB)
 
- ## Flying to a position
-
- Flying the CameraFlight from the previous example to specified eye, look and up positions:
-
- ````Javascript
- cameraFlight.flyTo({
-    eye: [-5,-5,-5],
-    look: [0,0,0]
-    up: [0,1,0],
-    stopFOV: 45, // Default, degrees
-    duration: 1 // Default, seconds
- }, function() {
-    // Arrived
- });
- ````
  ## Flying to an Entity
 
  Flying to an {{#crossLink "Entity"}}{{/crossLink}} (which provides a World-space
@@ -13541,13 +14871,15 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
  ````Javascript
  var camera = new xeogl.Camera();
 
- // Create a CameraFlight that takes exactly twenty seconds to fly
- // the Camera to each specified target
- var cameraFlight = new xeogl.CameraFlight({
-    camera: camera,
-    stopFOV: 45, // Default, degrees
+ // Create a CameraFlightAnimation that takes one second to fly
+ // the default Scene's default Camera to each specified target
+ var cameraFlight = new xeogl.CameraFlightAnimation({
+    fit: true, // Default
+    fitFOV: 45, // Default, degrees
     duration: 1 // Default, seconds
- });
+ }, function() {
+           // Arrived
+       });
 
  // Create a Entity, which gets all the default components
  var entity = new Entity();
@@ -13555,21 +14887,33 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
  // Fly to the Entity's worldBoundary
  cameraFlight.flyTo(entity);
  ````
+ ## Flying to a position
+
+ Flying the CameraFlightAnimation from the previous example to specified eye, look and up positions:
+
+ ````Javascript
+ cameraFlight.flyTo({
+    eye: [-5,-5,-5],
+    look: [0,0,0]
+    up: [0,1,0],
+    duration: 1 // Default, seconds
+ }, function() {
+          // Arrived
+      });
+ ````
 
  ## Flying to a Boundary3D
 
- Flying the CameraFlight from the previous two examples explicitly to the World-space
+ Flying the CameraFlightAnimation from the previous two examples explicitly to the World-space
  {{#crossLink "Boundary3D"}}{{/crossLink}} of the {{#crossLink "Entity"}}{{/crossLink}} property):
 
  ````Javascript
- var worldBoundary = entity.worldBoundary;
-
- cameraFlight.flyTo(worldBoundary);
+ cameraFlight.flyTo(entity.worldBoundary);
  ````
 
  ## Flying to an AABB
 
- Flying the CameraFlight from the previous two examples explicitly to the {{#crossLink "Boundary3D"}}Boundary3D's{{/crossLink}}
+ Flying the CameraFlightAnimation from the previous two examples explicitly to the {{#crossLink "Boundary3D"}}Boundary3D's{{/crossLink}}
  axis-aligned bounding box:
 
  ````Javascript
@@ -13580,33 +14924,32 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
  cameraFlight.flyTo(aabb);
  ````
 
- @class CameraFlight
- @author xeolabs / http://xeolabs.org
+ @class CameraFlightAnimation
  @module xeogl
  @submodule animation
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this CameraFlight.
- @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to control.
- Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this CameraFlight. Defaults to the
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this CameraFlightAnimation.
+ @param [cfg.camera] {Number|String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to control.
+ Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this CameraFlightAnimation. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
- @param [cfg.stopFOV=45] {Number} How much of field-of-view, in degrees, that a target {{#crossLink "Entity"}}{{/crossLink}} or its AABB should
-  fill the canvas when calling {{#crossLink "CameraFlight/flyTo:method"}}{{/crossLink}} or {{#crossLink "CameraFlight/jumpTo:method"}}{{/crossLink}}.
- @param [cfg.duration=1] {Number} Flight duration, in seconds, when calling {{#crossLink "CameraFlight/flyTo:method"}}{{/crossLink}}.
+ @param [cfg.fit=true] {Boolean} When true, will ensure that when this CameraFlightAnimation has flown or jumped to a boundary
+ it will adjust the distance between the {{#crossLink "CameraFlightAnimation/camera:property"}}camera{{/crossLink}}'s {{#crossLink "Lookat/eye:property"}}eye{{/crossLink}}
+ and {{#crossLink "Lookat/look:property"}}{{/crossLink}} position so as to ensure that the target boundary is filling the view volume.
+ @param [cfg.fitFOV=45] {Number} How much field-of-view, in degrees, that a target boundary should
+ fill the canvas when fitting the {{#crossLink "Camera"}}Camera{{/crossLink}} to the target boundary.
+ @param [cfg.trail] {Boolean} When true, will cause this CameraFlightAnimation to point the {{#crossLink "Camera"}}{{/crossLink}} in the direction that it is travelling.
+ @param [cfg.duration=1] {Number} Flight duration, in seconds, when calling {{#crossLink "CameraFlightAnimation/flyTo:method"}}{{/crossLink}}.
  @extends Component
  */
 (function () {
 
     "use strict";
 
-    // Caches to avoid garbage collection
+    var math = xeogl.math;
 
-    var tempVec3 = xeogl.math.vec3();
-    var tempVec3b = xeogl.math.vec3();
-    var tempVec3c = xeogl.math.vec3();
-
-    xeogl.CameraFlight = xeogl.Component.extend({
+    xeogl.CameraFlightAnimation = xeogl.Component.extend({
 
         /**
          JavaScript class name for this Component.
@@ -13615,40 +14958,44 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
          @type String
          @final
          */
-        type: "xeogl.CameraFlight",
+        type: "xeogl.CameraFlightAnimation",
 
         _init: function (cfg) {
 
-            this._look1 = xeogl.math.vec3();
-            this._eye1 = xeogl.math.vec3();
-            this._up1 = xeogl.math.vec3();
+            this._look1 = math.vec3();
+            this._eye1 = math.vec3();
+            this._up1 = math.vec3();
 
-            this._look2 = xeogl.math.vec3();
-            this._eye2 = xeogl.math.vec3();
-            this._up2 = xeogl.math.vec3();
+            this._look2 = math.vec3();
+            this._eye2 = math.vec3();
+            this._up2 = math.vec3();
 
             this._flying = false;
+            this._flyEyeLookUp = false;
 
             this._callback = null;
             this._callbackScope = null;
 
             this._onTick = null;
 
-            this._stopFOV = 55;
-
             this._time1 = null;
             this._time2 = null;
 
             this.easing = cfg.easing !== false;
 
-            this.duration = cfg.duration || 0.5;
-
+            this.duration = cfg.duration;
+            this.fit = cfg.fit;
+            this.fitFOV = cfg.fitFOV;
+            this.trail = cfg.trail;
             this.camera = cfg.camera;
 
-            // Shows a wireframe box at the given boundary
-            this._boundaryIndicator = this.create(xeogl.Entity, {
-                geometry: this.create(xeogl.BoundaryGeometry, {
-                    material: this.create(xeogl.PhongMaterial, {
+            // Shows a wireframe box for target AABBs
+            this._aabbHelper = this.create({
+                type: "xeogl.Entity",
+                geometry: this.create({
+                    type: "xeogl.AABBGeometry",
+                    material: this.create({
+                        type: "xeogl.PhongMaterial",
                         diffuse: [0, 0, 0],
                         ambient: [0, 0, 0],
                         specular: [0, 0, 0],
@@ -13656,138 +15003,81 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
                         lineWidth: 3
                     })
                 }),
-                visibility: this.create(xeogl.Visibility, {
+                visibility: this.create({
+                    type: "xeogl.Visibility",
                     visible: false
                 }),
-                modes: this.create(xeogl.Modes, {
+                modes: this.create({
+                    type: "xeogl.Modes",
+                    collidable: false // Effectively has no boundary
+                })
+            });
+
+            // Shows a wireframe box for target AABBs
+            this._obbHelper = this.create({
+                type: "xeogl.Entity",
+                geometry: this.create({
+                    type: "xeogl.OBBGeometry",
+                    material: this.create({
+                        type: "xeogl.PhongMaterial",
+                        diffuse: [0, 0, 0],
+                        ambient: [0, 0, 0],
+                        specular: [0, 0, 0],
+                        emissive: [1.0, 1.0, 0.0],
+                        lineWidth: 3
+                    })
+                }),
+                visibility: this.create({
+                    type: "xeogl.Visibility",
+                    visible: false
+                }),
+                modes: this.create({
+                    type: "xeogl.Modes",
                     collidable: false // Effectively has no boundary
                 })
             });
         },
 
         /**
-         * Begins flying this CameraFlight's {{#crossLink "Camera"}}{{/crossLink}} to the given target.
+         * Begins flying this CameraFlightAnimation's {{#crossLink "Camera"}}{{/crossLink}} to the given target.
          *
-         * <ul>
-         *     <li>When the target is a boundary, the {{#crossLink "Camera"}}{{/crossLink}} will fly towards the target
-         *     and stop when the target fills most of the canvas.</li>
-         *     <li>When the target is an explicit {{#crossLink "Camera"}}{{/crossLink}} position, given as ````eye````, ````look```` and ````up````
-         *      vectors, then this CameraFlight will interpolate the {{#crossLink "Camera"}}{{/crossLink}} to that target and stop there.</li>
+         *
+         *  * When the target is a boundary, the {{#crossLink "Camera"}}{{/crossLink}} will fly towards the target
+         *    and stop when the target fills most of the canvas.
+         *  * When the target is an explicit {{#crossLink "Camera"}}{{/crossLink}} position, given as ````eye````, ````look```` and ````up````
+         *    vectors, then this CameraFlightAnimation will interpolate the {{#crossLink "Camera"}}{{/crossLink}} to that target and stop there.
          * @method flyTo
-         * @param params  {*|Component} Either a parameters object or a {{#crossLink "Component"}}{{/crossLink}} subtype that has a {{#crossLink "WorldBoundary"}}{{/crossLink}}.
+         * @param [params=scene]  {*|Component} Either a parameters object or a {{#crossLink "Component"}}{{/crossLink}} subtype that has a {{#crossLink "WorldBoundary"}}{{/crossLink}}.
          * @param[params.arc=0]  {Number} Factor in range [0..1] indicating how much the
          * {{#crossLink "Camera/eye:property"}}Camera's eye{{/crossLink}} position will
          * swing away from its {{#crossLink "Camera/eye:property"}}look{{/crossLink}} position as it flies to the target.
-         * @param [params.component] {String|Component} ID or instance of a component to fly to.
+         * @param [params.component] {Number|String|Component} ID or instance of a component to fly to. Defaults to the entire {{#crossLink "Scene"}}{{/crossLink}}.
          * @param [params.aabb] {*}  World-space axis-aligned bounding box (AABB) target to fly to.
-         * @param [params.eye] {Array of Number} Position to fly the eye position to.
-         * @param [params.look] {Array of Number} Position to fly the look position to.
-         * @param [params.up] {Array of Number} Position to fly the up vector to.
-         * @param [params.stopFOV=45] {Number} How much of field-of-view, in degrees, that a target {{#crossLink "Entity"}}{{/crossLink}} or its AABB should
-         * fill the canvas on arrival.
-         * @param [params.duration=1] {Number} Flight duration in seconds.
+         * @param [params.eye] {Float32Array} Position to fly the eye position to.
+         * @param [params.look] {Float32Array} Position to fly the look position to.
+         * @param [params.up] {Float32Array} Position to fly the up vector to.
+         * @param [params.fit=true] {Boolean} Whether to fit the target to the view volume. Overrides {{#crossLink "CameraFlightAnimation/fit:property"}}{{/crossLink}}.
+         * @param [params.fitFOV] {Number} How much of field-of-view, in degrees, that a target {{#crossLink "Entity"}}{{/crossLink}} or its AABB should
+         * fill the canvas on arrival. Overrides {{#crossLink "CameraFlightAnimation/fitFOV:property"}}{{/crossLink}}.
+         * @param [params.duration] {Number} Flight duration in seconds.  Overrides {{#crossLink "CameraFlightAnimation/duration:property"}}{{/crossLink}}.
          * @param [callback] {Function} Callback fired on arrival
          * @param [scope] {Object} Optional scope for callback
          */
-        flyTo: function (params, callback, scope) {
+        flyTo: (function () {
 
-            if (this._flying) {
-                this.stop();
-            }
+            var tempVec3 = math.vec3();
 
-            var camera = this._attached.camera;
+            return function (params, callback, scope) {
 
-            if (!camera) {
-                if (callback) {
-                    if (scope) {
-                        callback.call(scope);
-                    } else {
-                        callback();
-                    }
-                }
-                return;
-            }
+                params = params || this.scene;
 
-            this._flying = false;
-
-            this._callback = callback;
-            this._callbackScope = scope;
-
-            var lookat = camera.view;
-
-            this._eye1[0] = lookat.eye[0];
-            this._eye1[1] = lookat.eye[1];
-            this._eye1[2] = lookat.eye[2];
-
-            this._look1[0] = lookat.look[0];
-            this._look1[1] = lookat.look[1];
-            this._look1[2] = lookat.look[2];
-
-            this._up1[0] = lookat.up[0];
-            this._up1[1] = lookat.up[1];
-            this._up1[2] = lookat.up[2];
-
-            var aabb;
-            var eye;
-            var look;
-            var up;
-            var componentId;
-
-            if (params.worldBoundary) {
-
-                // Argument is a Component subtype with a worldBoundary
-
-                aabb = params.worldBoundary.aabb;
-
-            } else if (params.aabb) {
-
-                aabb = params.aabb;
-
-                // Argument is a Boundary3D
-
-            } else if (params.min !== undefined && params.max !== undefined) {
-
-                // Argument is an AABB
-
-                aabb = params;
-
-            } else if (params.eye || params.look || params.up) {
-
-                // Argument is eye, look and up positions
-
-                eye = params.eye;
-                look = params.look;
-                up = params.up;
-
-            } else {
-
-                // Argument must be an instance or ID of a Component (subtype)
-
-                var component = params;
-
-                if (xeogl._isNumeric(component) || xeogl._isString(component)) {
-
-                    componentId = component;
-
-                    component = this.scene.components[componentId];
-
-                    if (!component) {
-                        this.error("Component not found: " + xeogl._inQuotes(componentId));
-                        if (callback) {
-                            if (scope) {
-                                callback.call(scope);
-                            } else {
-                                callback();
-                            }
-                        }
-                        return;
-                    }
+                if (this._flying) {
+                    this.stop();
                 }
 
-                var worldBoundary = component.worldBoundary;
+                var camera = this._attached.camera;
 
-                if (!worldBoundary) {
-                    this.error("Can't fly to component " + xeogl._inQuotes(componentId) + " - does not have a worldBoundary");
+                if (!camera) {
                     if (callback) {
                         if (scope) {
                             callback.call(scope);
@@ -13798,237 +15088,432 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
                     return;
                 }
 
-                aabb = worldBoundary.aabb;
-            }
+                this._flying = false;
 
-            var offset = params.offset;
+                this._callback = callback;
+                this._callbackScope = scope;
 
-            if (aabb) {
+                var view = camera.view;
 
-                if (aabb.max[0] <= aabb.min[0] || aabb.max[1] <= aabb.min[1] || aabb.max[2] <= aabb.min[2]) {
+                this._eye1[0] = view.eye[0];
+                this._eye1[1] = view.eye[1];
+                this._eye1[2] = view.eye[2];
 
-                    // Don't fly to an empty boundary
-                    return;
+                this._look1[0] = view.look[0];
+                this._look1[1] = view.look[1];
+                this._look1[2] = view.look[2];
+
+                this._up1[0] = view.up[0];
+                this._up1[1] = view.up[1];
+                this._up1[2] = view.up[2];
+
+                var aabb;
+                var sphere;
+                var eye;
+                var look;
+                var up;
+                var componentId;
+
+                if (params.worldBoundary) {
+
+                    // Argument is a Component subtype with a worldBoundary
+
+                    aabb = params.worldBoundary.aabb;
+
+                } else if (params.aabb) {
+
+                    aabb = params.aabb;
+
+                    // Argument is a Boundary3D
+
+                } else if (params.length === 6) { // [xmin,ymin,zmin, xmax,ymax,zmax]
+
+                    // Argument is an AABB
+
+                    aabb = params;
+
+                    //} else if (params.length === 4) { // [x,y,z,radius]
+                    //
+                    //    // Argument is an OBB
+                    //
+                    //    sphere = params;
+
+                } else if (params.eye || params.look || params.up) {
+
+                    // Argument is eye, look and up positions
+
+                    eye = params.eye;
+                    look = params.look;
+                    up = params.up;
+
+                } else {
+
+                    // Argument must be an instance or ID of a Component (subtype)
+
+                    var component = params;
+
+                    if (xeogl._isNumeric(component) || xeogl._isString(component)) {
+
+                        componentId = component;
+
+                        component = this.scene.components[componentId];
+
+                        if (!component) {
+                            this.error("Component not found: " + xeogl._inQuotes(componentId));
+                            if (callback) {
+                                if (scope) {
+                                    callback.call(scope);
+                                } else {
+                                    callback();
+                                }
+                            }
+                            return;
+                        }
+                    }
+
+                    var worldBoundary = component.worldBoundary;
+
+                    if (!worldBoundary) {
+                        this.error("Can't fly to component " + xeogl._inQuotes(componentId) + " - does not have a worldBoundary");
+                        if (callback) {
+                            if (scope) {
+                                callback.call(scope);
+                            } else {
+                                callback();
+                            }
+                        }
+                        return;
+                    }
+
+                    aabb = worldBoundary.aabb;
                 }
 
-                // Show boundary
+                var offset = params.offset;
 
-                this._boundaryIndicator.geometry.aabb = aabb;
-                this._boundaryIndicator.visibility.visible = true;
+                if (aabb) {
 
-                var aabbCenter = xeogl.math.getAABBCenter(aabb);
+                    if (aabb[3] <= aabb[0] || aabb[4] <= aabb[1] || aabb[5] <= aabb[2]) {
 
-                this._look2 = params.look || aabbCenter;
+                        // Don't fly to an empty boundary
+                        return;
+                    }
 
-                if (offset) {
-                    this._look2[0] += offset[0];
-                    this._look2[1] += offset[1];
-                    this._look2[2] += offset[2];
+                    // Show boundary
+
+                    this._aabbHelper.geometry.aabb = aabb;
+                    this._aabbHelper.visibility.visible = true;
+
+                    var aabbCenter = math.getAABB3Center(aabb);
+
+                    this._look2 = params.look || aabbCenter;
+
+                    if (offset) {
+                        this._look2[0] += offset[0];
+                        this._look2[1] += offset[1];
+                        this._look2[2] += offset[2];
+                    }
+
+                    var vec = math.normalizeVec3(math.subVec3(this._eye1, this._look1, tempVec3));
+                    var diag = (params.look && false) ? math.getAABB3DiagPoint(aabb, params.look) : math.getAABB3Diag(aabb);
+                    var sca = Math.abs((diag) / Math.tan((params.fitFOV || this._fitFOV) * xeogl.math.DEGTORAD));
+
+                    this._eye2[0] = this._look2[0] + (vec[0] * sca);
+                    this._eye2[1] = this._look2[1] + (vec[1] * sca);
+                    this._eye2[2] = this._look2[2] + (vec[2] * sca);
+
+                    this._up2[0] = this._up1[0];
+                    this._up2[1] = this._up1[1];
+                    this._up2[2] = this._up1[2];
+
+                    this._flyEyeLookUp = false;
+
+                } else if (eye || look || up) {
+
+                    look = look || this._look1;
+                    eye = eye || this._eye1;
+                    up = up || this._up1;
+
+                    this._look2[0] = look[0];
+                    this._look2[1] = look[1];
+                    this._look2[2] = look[2];
+
+                    this._eye2[0] = eye[0];
+                    this._eye2[1] = eye[1];
+                    this._eye2[2] = eye[2];
+
+                    this._up2[0] = up[0];
+                    this._up2[1] = up[1];
+                    this._up2[2] = up[2];
+
+                    this._flyEyeLookUp = true;
                 }
 
-                var vec = xeogl.math.normalizeVec3(xeogl.math.subVec3(this._eye1, this._look1, tempVec3));
-                var diag = (params.look && false) ? xeogl.math.getAABBDiagPoint(aabb, params.look) : xeogl.math.getAABBDiag(aabb);
-                var sca = Math.abs((diag) / Math.tan((params.stopFOV || this._stopFOV) / 2));
+                this.fire("started", params, true);
 
-                this._eye2[0] = this._look2[0] + (vec[0] * sca);
-                this._eye2[1] = this._look2[1] + (vec[1] * sca);
-                this._eye2[2] = this._look2[2] + (vec[2] * sca);
+                this._time1 = Date.now();
+                this._time2 = this._time1 + (params.duration ? params.duration * 1000 : this._duration);
 
-                this._up2[0] = this._up1[0];
-                this._up2[1] = this._up1[1];
-                this._up2[2] = this._up1[2];
+                this._flying = true; // False as soon as we stop
 
-            } else if (eye || look || up) {
-
-                look = look || this._look1;
-                eye = eye || this._eye1;
-                up = up || this._up1;
-
-                this._look2[0] = look[0];
-                this._look2[1] = look[1];
-                this._look2[2] = look[2];
-
-                this._eye2[0] = eye[0];
-                this._eye2[1] = eye[1];
-                this._eye2[2] = eye[2];
-
-                this._up2[0] = up[0];
-                this._up2[1] = up[1];
-                this._up2[2] = up[2];
-            }
-
-            this.fire("started", params, true);
-
-            this._time1 = Date.now();
-            this._time2 = this._time1 + (params.duration ? params.duration * 1000 : this._duration);
-
-            this._flying = true; // False as soon as we stop
-
-            xeogl.scheduleTask(this._update, this);
-        },
+                xeogl.scheduleTask(this._update, this);
+            };
+        })(),
 
         /**
-         * Jumps this CameraFlight's {{#crossLink "Camera"}}{{/crossLink}} to the given target.
+         * Jumps this CameraFlightAnimation's {{#crossLink "Camera"}}{{/crossLink}} to the given target.
          *
-         * <ul>
-         *     <li>When the target is a boundary, this CameraFlight will position the {{#crossLink "Camera"}}{{/crossLink}}
-         *     at where the target fills most of the canvas.</li>
-         *     <li>When the target is an explicit {{#crossLink "Camera"}}{{/crossLink}} position, given as ````eye````, ````look```` and ````up````
-         *      vectors, then this CameraFlight will jump the {{#crossLink "Camera"}}{{/crossLink}} to that target.</li>
+         *
+         *     * When the target is a boundary, this CameraFlightAnimation will position the {{#crossLink "Camera"}}{{/crossLink}}
+         *     at where the target fills most of the canvas.
+         *     * When the target is an explicit {{#crossLink "Camera"}}{{/crossLink}} position, given as ````eye````, ````look```` and ````up````
+         *      vectors, then this CameraFlightAnimation will jump the {{#crossLink "Camera"}}{{/crossLink}} to that target.
          * @method flyTo
          * @param params  {*|Component} Either a parameters object or a {{#crossLink "Component"}}{{/crossLink}} subtype that has a {{#crossLink "WorldBoundary"}}{{/crossLink}}.
          * @param[params.arc=0]  {Number} Factor in range [0..1] indicating how much the
          * {{#crossLink "Camera/eye:property"}}Camera's eye{{/crossLink}} position will
          * swing away from its {{#crossLink "Camera/eye:property"}}look{{/crossLink}} position as it flies to the target.
-         * @param [params.component] {String|Component} ID or instance of a component to fly to.
+         * @param [params.component] {Number|String|Component} ID or instance of a component to fly to.
          * @param [params.aabb] {*}  World-space axis-aligned bounding box (AABB) target to fly to.
-         * @param [params.eye] {Array of Number} Position to fly the eye position to.
-         * @param [params.look] {Array of Number} Position to fly the look position to.
-         * @param [params.up] {Array of Number} Position to fly the up vector to.
-         * @param [params.stopFOV] {Number} How much of field-of-view, in degrees, that a target {{#crossLink "Entity"}}{{/crossLink}} or its AABB should
-         * fill the canvas on arrival.
+         * @param [params.eye] {Float32Array} Position to fly the eye position to.
+         * @param [params.look] {Float32Array} Position to fly the look position to.
+         * @param [params.up] {Float32Array} Position to fly the up vector to.
+         * @param [params.fitFOV] {Number} How much of field-of-view, in degrees, that a target {{#crossLink "Entity"}}{{/crossLink}} or its AABB should
+         * fill the canvas on arrival. Overrides {{#crossLink "CameraFlightAnimation/fitFOV:property"}}{{/crossLink}}.
+         * @param [params.fit] {Boolean} Whether to fit the target to the view volume. Overrides {{#crossLink "CameraFlightAnimation/fit:property"}}{{/crossLink}}.
          */
         jumpTo: function (params) {
+            var self = this;
+            xeogl.scheduleTask(function () {  // Ensures that required asynch boundaries are built first
+                self._jumpTo(params);
+            });
+        },
 
-            if (this._flying) {
-                this.stop();
-            }
+        _jumpTo: (function () {
 
-            var camera = this._attached.camera;
+            var eyeLookVec = math.vec3();
+            var newEye = math.vec3();
+            var newLook = math.vec3();
+            var newUp = math.vec3();
+            var newLookEyeVec = math.vec3();
+            var tempVec3e = math.vec3();
 
-            if (!camera) {
-                return;
-            }
+            return function (params) {
 
-            var lookat = camera.view;
+                if (this._flying) {
+                    this.stop();
+                }
 
-            var aabb;
-            var eye;
-            var look;
-            var up;
-            var componentId;
+                var camera = this._attached.camera;
 
-            if (params.worldBoundary) {
+                if (!camera) {
+                    return;
+                }
 
-                // Argument is a Component subtype with a worldBoundary
+                var view = camera.view;
 
-                aabb = params.worldBoundary.aabb;
+                var aabb;
+                var sphere;
+                var componentId;
 
-            } else if (params.aabb) {
+                if (params.worldBoundary) {
 
-                aabb = params.aabb;
+                    // Argument is a Component subtype with a worldBoundary
 
-                // Argument is a Boundary3D
+                    sphere = params.worldBoundary.sphere;
 
-            } else if (params.min !== undefined && params.max !== undefined) {
+                } else if (params.sphere) {
 
-                // Argument is an AABB
+                    sphere = params.sphere;
 
-                aabb = params;
+                } else if (params.aabb) {
 
-            } else if (params.eye || params.look || params.up) {
+                    aabb = params.aabb;
 
-                // Argument is eye, look and up positions
+                    // Argument is a Boundary3D
 
-                eye = params.eye;
-                look = params.look;
-                up = params.up;
+                } else if (params.length === 6) { // [xmin,ymin,zmin, xmax,ymax,zmax]
 
-            } else {
+                    // Argument is an AABB
 
-                // Argument must be an instance or ID of a Component (subtype)
+                    aabb = params;
 
-                var component = params;
+                } else if (params.length === 4) { // [x,y,z,radius]
 
-                if (xeogl._isNumeric(component) || xeogl._isString(component)) {
+                    // Argument is an OBB
 
-                    componentId = component;
+                    sphere = params;
 
-                    component = this.scene.components[componentId];
+                } else if (params.eye || params.look || params.up) {
 
-                    if (!component) {
-                        this.error("Component not found: " + xeogl._inQuotes(componentId));
+                    // Argument is eye, look and up positions
+
+                    newEye = params.eye;
+                    newLook = params.look;
+                    newUp = params.up;
+
+                } else {
+
+                    // Argument must be an instance or ID of a Component (subtype)
+
+                    var component = params;
+
+                    if (xeogl._isNumeric(component) || xeogl._isString(component)) {
+
+                        componentId = component;
+
+                        component = this.scene.components[componentId];
+
+                        if (!component) {
+                            this.error("Component not found: " + xeogl._inQuotes(componentId));
+                            return;
+                        }
+                    }
+
+                    var worldBoundary = component.worldBoundary;
+
+                    if (!worldBoundary) {
+                        this.error("Can't jump to component " + xeogl._inQuotes(componentId) + " - does not have a worldBoundary");
                         return;
                     }
+
+                    sphere = worldBoundary.sphere;
                 }
 
-                var worldBoundary = component.worldBoundary;
+                var offset = params.offset;
 
-                if (!worldBoundary) {
-                    this.error("Can't jump to component " + xeogl._inQuotes(componentId) + " - does not have a worldBoundary");
+                if (aabb || sphere) {
+
+                    var diag;
+
+                    if (aabb) {
+
+                        if (aabb[3] <= aabb[0] || aabb[4] <= aabb[1] || aabb[5] <= aabb[2]) {
+
+                            // Don't fly to an empty boundary
+                            return;
+                        }
+
+                        diag = math.getAABB3Diag(aabb);
+                        math.getAABB3Center(aabb, newLook);
+
+                    } else {
+
+                        if (sphere[3] <= 0) {
+                            return;
+                        }
+
+                        diag = sphere[3] * 2;
+
+                        newLook[0] = sphere[0];
+                        newLook[1] = sphere[1];
+                        newLook[2] = sphere[2];
+                    }
+
+                    if (this._trail) {
+                        math.subVec3(view.look, newLook, newLookEyeVec);
+                    } else {
+                        math.subVec3(view.eye, view.look, newLookEyeVec);
+                    }
+
+                    math.normalizeVec3(newLookEyeVec);
+
+                    var dist;
+
+                    var fit = (params.fit !== undefined) ? params.fit : this._fit;
+                    if (fit) {
+                        dist = Math.abs((diag) / Math.tan((params.fitFOV || this._fitFOV) * xeogl.math.DEGTORAD));
+
+                    } else {
+                        dist = math.lenVec3(math.subVec3(view.eye, view.look, tempVec3e));
+                    }
+
+                    math.mulVec3Scalar(newLookEyeVec, dist);
+
+                    view.eye = math.addVec3(newLook, newLookEyeVec, newEye);
+                    view.look = newLook;
+
+                } else if (newEye || newLook || newUp) {
+
+                    if (newEye) {
+                        view.eye = newEye;
+                    }
+
+                    if (newLook) {
+                        view.look = newLook;
+                    }
+
+                    if (newUp) {
+                        view.up = newUp;
+                    }
+                }
+            };
+        })(),
+
+        _update: (function () {
+
+            var newLookEyeVec = math.vec3();
+            var newEye = math.vec3();
+            var newLook = math.vec3();
+            var newUp = math.vec3();
+            var lookEyeVec = math.vec3();
+
+            return function () {
+
+                if (!this._flying) {
                     return;
                 }
 
-                aabb = worldBoundary.aabb;
-            }
+                var time = Date.now();
 
-            var offset = params.offset;
+                var t = (time - this._time1) / (this._time2 - this._time1);
 
-            if (aabb) {
+                var stopping = (t >= 1);
 
-                if (aabb.max[0] <= aabb.min[0] || aabb.max[1] <= aabb.min[1] || aabb.max[2] <= aabb.min[2]) {
+                if (t > 1) {
+                    t = 1;
+                }
 
-                    // Don't fly to an empty boundary
+                t = this.easing ? this._ease(t, 0, 1, 1) : t;
+
+                var view = this._attached.camera.view;
+
+                if (this._flyEyeLookUp) {
+
+                    view.eye = math.lerpVec3(t, 0, 1, this._eye1, this._eye2, newEye);
+                    view.look = math.lerpVec3(t, 0, 1, this._look1, this._look2, newLook);
+                    view.up = math.lerpVec3(t, 0, 1, this._up1, this._up2, newUp);
+
+                } else {
+
+                    math.lerpVec3(t, 0, 1, this._look1, this._look2, newLook);
+
+                    var dist;
+
+                    if (this._trail) {
+                        math.subVec3(newLook, view.look, newLookEyeVec);
+
+                    } else {
+                        math.subVec3(view.eye, view.look, newLookEyeVec);
+                    }
+
+                    math.normalizeVec3(newLookEyeVec);
+                    math.lerpVec3(t, 0, 1, this._eye1, this._eye2, newEye);
+                    math.subVec3(newEye, newLook, lookEyeVec);
+                    dist = math.lenVec3(lookEyeVec);
+                    math.mulVec3Scalar(newLookEyeVec, dist);
+
+                    view.eye = math.addVec3(newLook, newLookEyeVec, newEye);
+                    view.look = newLook;
+                }
+
+                if (stopping) {
+                    this.stop();
                     return;
                 }
 
-                eye = lookat.eye;
-                look = xeogl.math.getAABBCenter(aabb);
-
-                var vec = xeogl.math.normalizeVec3(xeogl.math.subVec3(eye, look, tempVec3));
-                var diag = xeogl.math.getAABBDiag(aabb);
-                var sca = Math.abs((diag) / Math.tan((params.stopFOV || this._stopFOV) / 2));
-
-                lookat.eye = [look[0] + (vec[0] * sca), look[1] + (vec[1] * sca), look[2] + (vec[2] * sca)];
-                lookat.look = look;
-
-            } else if (eye || look || up) {
-
-                if (eye) {
-                    lookat.eye = eye;
-                }
-
-                if (look) {
-                    lookat.look = look;
-                }
-
-                if (up) {
-                    lookat.up = up;
-                }
-            }
-        },
-
-        _update: function () {
-
-            if (!this._flying) {
-                return;
-            }
-
-            var time = Date.now();
-
-            var t = (time - this._time1) / (this._time2 - this._time1);
-
-            var stopping = (t >= 1);
-
-            if (t > 1) {
-                t = 1;
-            }
-
-            t = this.easing ? this._ease(t, 0, 1, 1) : t;
-
-            var view = this._attached.camera.view;
-
-            view.eye = xeogl.math.lerpVec3(t, 0, 1, this._eye1, this._eye2, tempVec3);
-            view.look = xeogl.math.lerpVec3(t, 0, 1, this._look1, this._look2, tempVec3b);
-            view.up = xeogl.math.lerpVec3(t, 0, 1, this._up1, this._up2, tempVec3c);
-
-            if (stopping) {
-                this.stop();
-                return;
-            }
-
-            xeogl.scheduleTask(this._update, this); // Keep flying
-        },
+                xeogl.scheduleTask(this._update, this); // Keep flying
+            };
+        })(),
 
         // Quadratic easing out - decelerating to zero velocity
         // http://gizma.com/easing
@@ -14048,7 +15533,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
                 return;
             }
 
-            this._boundaryIndicator.visibility.visible = false;
+            this._aabbHelper.visibility.visible = false;
 
             this._flying = false;
 
@@ -14081,7 +15566,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
                 return;
             }
 
-            this._boundaryIndicator.visibility.visible = false;
+            this._aabbHelper.visibility.visible = false;
 
             this._flying = false;
 
@@ -14097,12 +15582,24 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
         _props: {
 
+            /**
+             * The {{#crossLink "Camera"}}{{/crossLink}} being controlled by this CameraFlightAnimation.
+             *
+             * Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this CameraFlightAnimation. Defaults to the parent
+             * {{#crossLink "Scene"}}Scene's{{/crossLink}} default {{#crossLink "Scene/camera:property"}}camera{{/crossLink}} when set to
+             * a null or undefined value.
+             *
+             * Fires a {{#crossLink "CameraFlightAnimation/camera:event"}}{{/crossLink}} event on change.
+             *
+             * @property camera
+             * @type Camera
+             */
             camera: {
 
                 set: function (value) {
 
                     /**
-                     * Fired whenever this CameraFlight's {{#crossLink "CameraFlight/camera:property"}}{{/crossLink}}
+                     * Fired whenever this CameraFlightAnimation's {{#crossLink "CameraFlightAnimation/camera:property"}}{{/crossLink}}
                      * property changes.
                      *
                      * @event camera
@@ -14124,24 +15621,24 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
             },
 
             /**
-             * Flight duration, in seconds, when calling {{#crossLink "CameraFlight/flyTo:method"}}{{/crossLink}}.
+             * Flight duration, in seconds, when calling {{#crossLink "CameraFlightAnimation/flyTo:method"}}{{/crossLink}}.
              *
              * Stops any flight currently in progress.
              *
-             * Fires a {{#crossLink "CameraFlight/duration:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "CameraFlightAnimation/duration:event"}}{{/crossLink}} event on change.
              *
              * @property duration
-             * @default 1
+             * @default 0.5
              * @type Number
              */
             duration: {
 
                 set: function (value) {
 
-                    value = value || 1.0;
+                    value = value || 0.5;
 
                     /**
-                     Fired whenever this CameraFlight's {{#crossLink "CameraFlight/duration:property"}}{{/crossLink}} property changes.
+                     Fired whenever this CameraFlightAnimation's {{#crossLink "CameraFlightAnimation/duration:property"}}{{/crossLink}} property changes.
 
                      @event duration
                      @param value {Number} The property's new value
@@ -14157,32 +15654,98 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
             },
 
             /**
+             * When true, will ensure that this CameraFlightAnimation is flying to a boundary it will always adjust the distance between the
+             * {{#crossLink "CameraFlightAnimation/camera:property"}}camera{{/crossLink}}'s {{#crossLink "Lookat/eye:property"}}eye{{/crossLink}}
+             * and {{#crossLink "Lookat/look:property"}}{{/crossLink}}
+             * so as to ensure that the target boundary is always filling the view volume.
+             *
+             * When false, the eye will remain at its current distance from the look position.
+             *
+             * Fires a {{#crossLink "CameraFlightAnimation/fit:event"}}{{/crossLink}} event on change.
+             *
+             * @property fit
+             * @type Boolean
+             * @default true
+             */
+            fit: {
+
+                set: function (value) {
+
+                    this._fit = value !== false;
+
+                    /**
+                     * Fired whenever this CameraFlightAnimation's
+                     * {{#crossLink "CameraFlightAnimation/fit:property"}}{{/crossLink}} property changes.
+                     * @event fit
+                     * @param value The property's new value
+                     */
+                    this.fire("fit", this._fit);
+                },
+
+                get: function () {
+                    return this._fit;
+                }
+            },
+
+
+            /**
              * How much of field-of-view, in degrees, that a target {{#crossLink "Entity"}}{{/crossLink}} or its AABB should
-             * fill the canvas when calling {{#crossLink "CameraFlight/flyTo:method"}}{{/crossLink}} or {{#crossLink "CameraFlight/jumpTo:method"}}{{/crossLink}}.
+             * fill the canvas when calling {{#crossLink "CameraFlightAnimation/flyTo:method"}}{{/crossLink}} or {{#crossLink "CameraFlightAnimation/jumpTo:method"}}{{/crossLink}}.
              *
-             * Fires a {{#crossLink "CameraFlight/stopFOV:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "CameraFlightAnimation/fitFOV:event"}}{{/crossLink}} event on change.
              *
-             * @property stopFOV
+             * @property fitFOV
              * @default 45
              * @type Number
              */
-            stopFOV: {
+            fitFOV: {
 
                 set: function (value) {
 
                     value = value || 45;
 
                     /**
-                     Fired whenever this CameraFlight's {{#crossLink "CameraFlight/stopFOV:property"}}{{/crossLink}} property changes.
+                     Fired whenever this CameraFlightAnimation's {{#crossLink "CameraFlightAnimation/fitFOV:property"}}{{/crossLink}} property changes.
 
-                     @event stopFOV
+                     @event fitFOV
                      @param value {Number} The property's new value
                      */
-                    this._stopFOV = value;
+                    this._fitFOV = value;
                 },
 
                 get: function () {
-                    return this._stopFOV;
+                    return this._fitFOV;
+                }
+            },
+
+            /**
+             * When true, will cause this CameraFlightAnimation to point the {{#crossLink "CameraFlightAnimation/camera:property"}}{{/crossLink}}
+             * in the direction that it is travelling.
+             *
+             * Fires a {{#crossLink "CameraFlightAnimation/trail:event"}}{{/crossLink}} event on change.
+             *
+             * @property trail
+             * @type Boolean
+             * @default false
+             */
+            trail: {
+
+                set: function (value) {
+
+                    this._trail = !!value;
+
+                    /**
+                     * Fired whenever this CameraFlightAnimation's {{#crossLink "CameraFlightAnimation/trail:property"}}{{/crossLink}}
+                     * property changes.
+                     *
+                     * @event trail
+                     * @param value The property's new value
+                     */
+                    this.fire("trail", this._trail);
+                },
+
+                get: function () {
+                    return this._trail;
                 }
             }
         },
@@ -14191,7 +15754,9 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
             var json = {
                 duration: this._duration,
-                stopFOV: this._stopFOV
+                fitFOV: this._fitFOV,
+                fit: this._fit,
+                trail: this._trail
             };
 
             if (this._attached.camera) {
@@ -14210,25 +15775,26 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 ;/**
  A **Camera** defines viewing and projection transforms for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- <ul>
- <li> A Camera is composed of a viewing and projection {{#crossLink "Transform"}}{{/crossLink}}.</li>
- <li>The viewing transform is usually a {{#crossLink "Lookat"}}Lookat{{/crossLink}}. Having the viewing transform as a
+ ## Overview
+
+ *  A Camera is composed of a viewing and projection {{#crossLink "Transform"}}{{/crossLink}}.
+ * The viewing transform is usually a {{#crossLink "Lookat"}}Lookat{{/crossLink}}. Having the viewing transform as a
  separate component from the Camera allows us to switch the Camera between multiple, existing viewpoints by simply re-attaching it to
- different viewing transform components (ie. {{#crossLink "Lookat"}}Lookats{{/crossLink}}).</li>
- <li> By default, each Camera has its parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/view:property"}}{{/crossLink}} transform,
+ different viewing transform components (ie. {{#crossLink "Lookat"}}Lookats{{/crossLink}}).
+ *  By default, each Camera has its parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/view:property"}}{{/crossLink}} transform,
  (which is a {{#crossLink "Lookat"}}Lookat{{/crossLink}}) and default
  {{#crossLink "Scene/project:property"}}{{/crossLink}} transform (which is a {{#crossLink "Perspective"}}Perspective{{/crossLink}}).
- You would override those with your own transform components as necessary.</li>
-
- </ul>
+ You would override those with your own transform components as necessary.
 
  <img src="../../../assets/images/Camera.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Perspective Camera](../../examples/#camera_perspective)</li>
- </ul>
+ * [Perspective Camera](../../examples/#transforms_project_perspective)
+ * [Orthographic Camera](../../examples/#transforms_project_ortho)
+ * [Flying a Camera to ](../../examples/#animation_CameraFlightAnimation_AABB)
+ * [Automatically following an Entity with a Camera](../../examples/#animation_camera_follow_entity)
+ * [Animating a Camera along a path](../../examples/#animation_camera_path_interpolate)
 
  ## Usage
 
@@ -14243,18 +15809,21 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
              look: [0, 0, 0],
              up: [0, 1, 0]
          }),
-         project: new xeogl.Lookat({
+         project: new xeogl.Perspective({
              fovy: 60,
              near: 0.1,
              far: 1000
          })
      }),
-     geometry: new xeogl.BoxGeometry()
+     geometry: new xeogl.TorusGeometry()
  });
 
  entity.scene.on("tick", function () {
-     camera.view.rotateEyeY(0.5);
-     camera.view.rotateEyeX(0.3);
+
+     var lookat = entity.camera.view;
+
+     lookat.rotateEyeY(0.5);
+     lookat.rotateEyeX(0.3);
  });
  ````
  @class Camera
@@ -14395,32 +15964,34 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 ;/**
  A **Canvas** manages a {{#crossLink "Scene"}}Scene{{/crossLink}}'s HTML canvas and its WebGL context.
 
- <ul>
- <li>Each {{#crossLink "Scene"}}Scene{{/crossLink}} provides a Canvas as a read-only property on itself.</li>
- <li>When a {{#crossLink "Scene"}}Scene{{/crossLink}} is configured with the ID of
+ ## Overview
+
+ * Each {{#crossLink "Scene"}}Scene{{/crossLink}} provides a Canvas as a read-only property on itself.
+ * When a {{#crossLink "Scene"}}Scene{{/crossLink}} is configured with the ID of
  an existing <a href="http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element">HTMLCanvasElement</a>, then
- the Canvas will bind to that, otherwise the Canvas will automatically create its own.</li>
- <li>A Canvas will fire a {{#crossLink "Canvas/size:event"}}{{/crossLink}} event whenever
- the <a href="http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element">HTMLCanvasElement</a> resizes.</li>
- <li>A Canvas is responsible for obtaining a WebGL context from
- the <a href="http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element">HTMLCanvasElement</a>.</li>
- <li>A Canvas also fires a {{#crossLink "Canvas/webglContextLost:event"}}{{/crossLink}} event when the WebGL context is
- lost, and a {{#crossLink "Canvas/webglContextRestored:event"}}{{/crossLink}} when it is restored again.</li>
- <li>The various components within the parent {{#crossLink "Scene"}}Scene{{/crossLink}} will transparently recover on
- the {{#crossLink "Canvas/webglContextRestored:event"}}{{/crossLink}} event.</li>
- </ul>
+ the Canvas will bind to that, otherwise the Canvas will automatically create its own.
+ * A Canvas will fire a {{#crossLink "Canvas/boundary:event"}}{{/crossLink}} event whenever
+ the <a href="http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element">HTMLCanvasElement</a> resizes.
+ * A Canvas is responsible for obtaining a WebGL context from
+ the <a href="http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element">HTMLCanvasElement</a>.
+ * A Canvas also fires a {{#crossLink "Canvas/webglContextLost:event"}}{{/crossLink}} event when the WebGL context is
+ lost, and a {{#crossLink "Canvas/webglContextRestored:event"}}{{/crossLink}} when it is restored again.
+ * The various components within the parent {{#crossLink "Scene"}}Scene{{/crossLink}} will transparently recover on
+ the {{#crossLink "Canvas/webglContextRestored:event"}}{{/crossLink}} event.
 
  <img src="../../../assets/images/Canvas.png"></img>
 
- <br><br>
- Note that a Canvas also has a {{#crossLink "Spinner"}}{{/crossLink}}, which shows a
- busy spinner when a {{#crossLink "Model"}}{{/crossLink}} is loading, or when directed by application logic.
+ A Canvas also has
+
+ * a {{#crossLink "Spinner"}}{{/crossLink}}, which shows a busy spinner when a {{#crossLink "Model"}}{{/crossLink}}
+ is loading, or when directed by application logic, and
 
  ## Examples
 
- <ul>
- <li>[Multiple canvases](../../examples/#scene_multipleScenes)</li>
- </ul>
+ * [Multiple canvases/scenes in a page](../../examples/#scenes_multipleScenes)
+ * [Taking canvas snapshots](../../examples/#canvas_snapshot)
+ * [Transparent canvas with background image](../../examples/#canvas_transparent)
+ * [Canvas with multiple viewports](../../examples/#canvas_multipleViewports)
 
  ## Usage
 
@@ -14579,6 +16150,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
              */
             this.contextAttr = cfg.contextAttr || {};
             this.contextAttr.alpha = this.transparent;
+            this.contextAttr.preserveDrawingBuffer = false;
 
             if (!cfg.canvas) {
 
@@ -14696,22 +16268,26 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
             var lastCanvasWidth = null;
             var lastCanvasHeight = null;
 
+            var lastCanvasOffsetLeft = null;
+            var lastCanvasOffsetTop = null;
+
             this._tick = this.scene.on("tick",
                 function () {
 
                     var canvas = self.canvas;
 
-                    var newPosition = (window.innerWidth !== lastWindowWidth || window.innerHeight !== lastWindowHeight);
-                    var newSize = (canvas.clientWidth !== lastCanvasWidth || canvas.clientHeight !== lastCanvasHeight);
+                    var newWindowSize = (window.innerWidth !== lastWindowWidth || window.innerHeight !== lastWindowHeight);
+                    var newCanvasSize = (canvas.clientWidth !== lastCanvasWidth || canvas.clientHeight !== lastCanvasHeight);
+                    var newCanvasPos = (canvas.offsetLeft !== lastCanvasOffsetLeft || canvas.offsetTop !== lastCanvasOffsetTop);
 
-                    if (newPosition || newSize) {
+                    if (newWindowSize || newCanvasSize || newCanvasPos) {
 
                         self._spinner._adjustPosition();
 
                         self._resizeBackground();
                         self._resizeOverlay();
 
-                        if (newSize) {
+                        if (newCanvasSize) {
 
                             var newWidth = canvas.clientWidth;
                             var newHeight = canvas.clientHeight;
@@ -14747,9 +16323,16 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
                             lastCanvasWidth = newWidth;
                             lastCanvasHeight = newHeight;
+                        }
 
+                        if (newWindowSize) {
                             lastWindowWidth = window.innerWidth;
                             lastWindowHeight = window.innerHeight;
+                        }
+
+                        if (newCanvasPos) {
+                            lastCanvasOffsetLeft = canvas.offsetLeft;
+                            lastCanvasOffsetTop = canvas.offsetTop;
                         }
                     }
                 });
@@ -14758,9 +16341,6 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
                 e.preventDefault();
             };
 
-            /**
-             *
-             */
             this._spinner = new xeogl.Spinner(this.scene, {
                 canvas: this.canvas
             });
@@ -14899,8 +16479,8 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
         _getElementXY: function (e) {
             var x = 0, y = 0;
             while (e) {
-                x += e.offsetLeft;
-                y += e.offsetTop;
+                x += (e.offsetLeft - e.scrollLeft);
+                y += (e.offsetTop - e.scrollTop);
                 e = e.offsetParent;
             }
             return {x: x, y: y};
@@ -15136,6 +16716,42 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
                 get: function () {
                     return this._spinner;
                 }
+            },
+
+            fullscreen: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    if (value === Document.fullScreen) {
+                        return;
+                    }
+
+                    if (value) {
+                        if (this.canvas.requestFullScreen) {
+                            this.canvas.requestFullScreen();
+                        } else if (this.canvas.webkitRequestFullScreen) {
+                            this.canvas.webkitRequestFullScreen();
+                        } else if (this.canvas.mozRequestFullScreen) {
+                            this.canvas.mozRequestFullScreen();
+                        }
+                    } else {
+                        if(document.exitFullscreen) {
+                            document.exitFullscreen();
+                        } else if(document.mozCancelFullScreen) {
+                            document.mozCancelFullScreen();
+                        } else if(document.webkitExitFullscreen) {
+                            document.webkitExitFullscreen();
+                        }
+                    }
+
+                    this.fire("fullscreen", Document.fullScreen);
+                },
+
+                get: function () {
+                    return Document.fullScreen;
+                }
             }
         },
 
@@ -15148,24 +16764,22 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 ;/**
  A Spinner displays a spinner animation at the center of its {{#crossLink "Canvas"}}{{/crossLink}} while things are loading or otherwise busy.
 
- <ul>
- <li>Spinners are normally shown by {{#crossLink "Model"}}Models{{/crossLink}} while they are loading, however they may also
- be shown by any application code that wants to indicate business.</li>
- <li>By default, they are also shown by components that load assets, such as {{#crossLink "Texture"}}{{/crossLink}}. You
- can disable that by flipping the Spinner's {{#crossLink "Spinner/textures:property"}}{{/crossLink}} property.</li>
- <li>A Spinner component has a {{#crossLink "Spinner/processes:property"}}{{/crossLink}} count that indicates how many
+ ## Overview
+
+ * Spinners are normally shown by {{#crossLink "Model"}}Models{{/crossLink}} while they are loading, however they may also
+ be shown by any application code that wants to indicate business.
+ * By default, they are also shown by components that load assets, such as {{#crossLink "Texture"}}{{/crossLink}}. You
+ can disable that by flipping the Spinner's {{#crossLink "Spinner/textures:property"}}{{/crossLink}} property.
+ * A Spinner component has a {{#crossLink "Spinner/processes:property"}}{{/crossLink}} count that indicates how many
  active processes it currently represents. As a process starts, a process would increment {{#crossLink "Spinner/processes:property"}}{{/crossLink}}, then as it
- completes (or fails), would decrement it again.</li>
- <li>A Spinner is only visible while {{#crossLink "Spinner/processes:property"}}{{/crossLink}} is greater than zero.</li>
- </ul>
+ completes (or fails), would decrement it again.
+ * A Spinner is only visible while {{#crossLink "Spinner/processes:property"}}{{/crossLink}} is greater than zero.
 
  <img src="../../../assets/images/Spinner.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Loading glTF model with spinner](../../examples/#importing_gltf_gearbox)</li>
- </ul>
+ * [Loading glTF model with spinner](../../examples/#importing_gltf_gearbox)
 
  ## Usage
 
@@ -15501,43 +17115,41 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
  *
  * @module xeogl
  * @submodule clipping
- */;
-
-/**
+ */;/**
  A **Clip** is an arbitrarily-aligned World-space clipping plane used to create
  cross-section views of associated {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- <ul>
- <li>These are grouped within {{#crossLink "Clips"}}Clips{{/crossLink}} components, which are attached to
+ ## Overview
+
+ * These are grouped within {{#crossLink "Clips"}}Clips{{/crossLink}} components, which are attached to
  {{#crossLink "Entity"}}Entities{{/crossLink}}. See the {{#crossLink "Clips"}}Clips{{/crossLink}} documentation
- for more info.</li>
- <li>A Clip is specified in World-space, as being perpendicular to a vector {{#crossLink "Clip/dir:property"}}{{/crossLink}}
- that emanates from the origin, offset at a distance {{#crossLink "Clip/dist:property"}}{{/crossLink}} along that vector. </li>
- <li>You can move a Clip back and forth along its vector by varying {{#crossLink "Clip/dist:property"}}{{/crossLink}}.</li>
- <li>Likewise, you can rotate a Clip about the origin by rotating the {{#crossLink "Clip/dir:property"}}{{/crossLink}} vector.</li>
- <li>A Clip is has a {{#crossLink "Clip/mode:property"}}{{/crossLink}},  which indicates whether it is disabled
+ for more info.
+ * A Clip is specified in World-space, as being perpendicular to a vector {{#crossLink "Clip/dir:property"}}{{/crossLink}}
+ that emanates from the origin, offset at a distance {{#crossLink "Clip/dist:property"}}{{/crossLink}} along that vector.
+ * You can move a Clip back and forth along its vector by varying {{#crossLink "Clip/dist:property"}}{{/crossLink}}.
+ * Likewise, you can rotate a Clip about the origin by rotating the {{#crossLink "Clip/dir:property"}}{{/crossLink}} vector.
+ * A Clip is has a {{#crossLink "Clip/mode:property"}}{{/crossLink}},  which indicates whether it is disabled
  ("disabled"), discarding fragments that fall on the origin-side of the plane ("inside"), or clipping fragments that
- fall on the other side of the plane from the origin ("outside").</li>
- <li>You can update the {{#crossLink "Clip/mode:property"}}{{/crossLink}} of a Clip to activate or deactivate it, or to
- switch which side it discards fragments from.</li>
- <li>Clipping may also be enabled or disabled for specific {{#crossLink "Entity"}}Entities{{/crossLink}}
+ fall on the other side of the plane from the origin ("outside").
+ * You can update the {{#crossLink "Clip/mode:property"}}{{/crossLink}} of a Clip to activate or deactivate it, or to
+ switch which side it discards fragments from.
+ * Clipping may also be enabled or disabled for specific {{#crossLink "Entity"}}Entities{{/crossLink}}
  via the {{#crossLink "Modes/clipping:property"}}{{/crossLink}} flag on {{#crossLink "Modes"}}Modes{{/crossLink}} components
- attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Clips create within xeogl's shaders.</li>
- </ul>
+ attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
 
  <img src="../../../assets/images/Clip.png"></img>
 
  ## Usage
 
- <ul>
- <li>In this example we have an {{#crossLink "Entity"}}{{/crossLink}} that's clipped by a {{#crossLink "Clips"}}{{/crossLink}}
- that contains two {{#crossLink "Clip"}}{{/crossLink}} planes.</li>
- <li>The first {{#crossLink "Clip"}}{{/crossLink}} plane is on the
- positive diagonal, while the second is on the negative diagonal.</li>
- <li>The {{#crossLink "Entity"}}Entity's{{/crossLink}}
- {{#crossLink "Geometry"}}{{/crossLink}} is a box, and the planes will clip off two of the box's corners.</li>
- </ul>
+
+ * In this example we have an {{#crossLink "Entity"}}{{/crossLink}} that's clipped by a {{#crossLink "Clips"}}{{/crossLink}}
+ that contains two {{#crossLink "Clip"}}{{/crossLink}} planes.
+ * The first {{#crossLink "Clip"}}{{/crossLink}} plane is on the
+ positive diagonal, while the second is on the negative diagonal.
+ * The {{#crossLink "Entity"}}Entity's{{/crossLink}}
+ {{#crossLink "Geometry"}}{{/crossLink}} is a box, and the planes will clip off two of the box's corners.
+
 
  ````javascript
  // Create a set of Clip planes
@@ -15565,7 +17177,6 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
      geometry: new xeogl.BoxGeometry(),
      clips: clips
  });
-
  ````
 
  ### Toggling clipping on and off
@@ -15626,11 +17237,11 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
              Possible states are:
 
-             <ul>
-             <li>"disabled" - inactive</li>
-             <li>"inside" - clipping fragments that fall within the half-space on the origin-side of the Clip plane</li>
-             <li>"outside" - clipping fragments that fall on the other side of the Clip plane from the origin</li>
-             </ul>
+
+             * "disabled" - inactive
+             * "inside" - clipping fragments that fall within the half-space on the origin-side of the Clip plane
+             * "outside" - clipping fragments that fall on the other side of the Clip plane from the origin
+
 
              Fires a {{#crossLink "Clip/mode:event"}}{{/crossLink}} event on change.
 
@@ -15744,22 +17355,21 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
  ## Overview
 
- <ul>
- <li>Each {{#crossLink "Clip"}}Clip{{/crossLink}} is specified in World-space, as being perpendicular to a vector
+
+ * Each {{#crossLink "Clip"}}Clip{{/crossLink}} is specified in World-space, as being perpendicular to a vector
  {{#crossLink "Clip/dir:property"}}{{/crossLink}} that emanates from the origin, offset at a
- distance {{#crossLink "Clip/dist:property"}}{{/crossLink}} along that vector. </li>
- <li>You can move each {{#crossLink "Clip"}}Clip{{/crossLink}} back and forth along its vector by varying
- its {{#crossLink "Clip/dist:property"}}{{/crossLink}}.</li>
- <li>Likewise, you can rotate each {{#crossLink "Clip"}}Clip{{/crossLink}} about the origin by rotating
- its {{#crossLink "Clip/dir:property"}}{{/crossLink}} vector.</li>
- <li>Each {{#crossLink "Clip"}}Clip{{/crossLink}} is has a {{#crossLink "Clip/mode:property"}}{{/crossLink}}, which indicates whether it is disabled ("disabled"), discarding fragments that fall on the origin-side of the plane ("inside"), or clipping fragments that fall on the other side of the plane from the origin ("outside").</li>
- <li>You can update each {{#crossLink "Clip"}}Clip{{/crossLink}}'s {{#crossLink "Clip/mode:property"}}{{/crossLink}} to
- activate or deactivate it, or to switch which side it discards fragments from.</li>
- <li>Clipping may also be enabled or disabled for specific {{#crossLink "Entity"}}Entities{{/crossLink}}
+ distance {{#crossLink "Clip/dist:property"}}{{/crossLink}} along that vector.
+ * You can move each {{#crossLink "Clip"}}Clip{{/crossLink}} back and forth along its vector by varying
+ its {{#crossLink "Clip/dist:property"}}{{/crossLink}}.
+ * Likewise, you can rotate each {{#crossLink "Clip"}}Clip{{/crossLink}} about the origin by rotating
+ its {{#crossLink "Clip/dir:property"}}{{/crossLink}} vector.
+ * Each {{#crossLink "Clip"}}Clip{{/crossLink}} is has a {{#crossLink "Clip/mode:property"}}{{/crossLink}}, which indicates whether it is disabled ("disabled"), discarding fragments that fall on the origin-side of the plane ("inside"), or clipping fragments that fall on the other side of the plane from the origin ("outside").
+ * You can update each {{#crossLink "Clip"}}Clip{{/crossLink}}'s {{#crossLink "Clip/mode:property"}}{{/crossLink}} to
+ activate or deactivate it, or to switch which side it discards fragments from.
+ * Clipping may also be enabled or disabled for specific {{#crossLink "Entity"}}Entities{{/crossLink}}
  via the {{#crossLink "Modes/clipping:property"}}{{/crossLink}} flag on {{#crossLink "Modes"}}Modes{{/crossLink}} components
- attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Clips create within xeogl's shaders.</li>
- </ul>
+ attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
  <img src="../../../assets/images/Clips.png"></img>
 
  ## Usage
@@ -15995,13 +17605,15 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
  */;/**
  A **Configs** holds configuration properties for the parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
 
- <ul>
- <li>Each {{#crossLink "Scene"}}Scene{{/crossLink}} provides a Configs on itself as a read-only property.</li>
- <li>Config property values are set on a Configs using its {{#crossLink "Configs/set:method"}}{{/crossLink}} method,
- and changes to properties may be subscribed to using {{#crossLink "Component/on:method"}}{{/crossLink}}.</li>
- <li>You can define your own properties in a Configs, but take care not to clobber the native properties used by
- xeogl (see table below).</li>
- </ul>
+ ## Overview
+
+
+ * Each {{#crossLink "Scene"}}Scene{{/crossLink}} provides a Configs on itself as a read-only property.
+ * Config property values are set on a Configs using its {{#crossLink "Configs/set:method"}}{{/crossLink}} method,
+ and changes to properties may be subscribed to using {{#crossLink "Component/on:method"}}{{/crossLink}}.
+ * You can define your own properties in a Configs, but take care not to clobber the native properties used by
+ xeogl (see table below).
+
 
  <img src="../../../assets/images/Configs.png"></img>
 
@@ -16103,41 +17715,35 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
  A CameraControl contains the following control sub-components, each of which handle an aspect of interaction:
 
- <ul>
- <li>{{#crossLink "KeyboardPanCamera"}}{{/crossLink}} pans the camera with the W,S,A,D,X and Z keys</li>
- <li>{{#crossLink "MousePanCamera"}}{{/crossLink}} pans horizontally and vertically by dragging the mouse with left and right buttons down</li>
- <li>{{#crossLink "KeyboardRotateCamera"}}{{/crossLink}} rotates the camera with the arrow keys</li>
- <li>{{#crossLink "MouseRotateCamera"}}{{/crossLink}} rotates the camera by dragging with the left mouse button down</li>
- <li>{{#crossLink "KeyboardZoomCamera"}}{{/crossLink}} zooms the *eye* position closer and further from the *look* position with the + and - keys</li>
- <li>{{#crossLink "MouseZoomCamera"}}{{/crossLink}} zooms the *eye* closer and further from *look* using the mousewheel</li>
- <li>{{#crossLink "KeyboardAxisCamera"}}{{/crossLink}} between preset left, right, anterior, posterior, superior and inferior views using keys 1-6</li>
- <li>{{#crossLink "MousePickEntity"}}{{/crossLink}} TODO</li>
- <li>{{#crossLink "CameraFlight"}}{{/crossLink}} TODO</li>
- </ul>
+ * {{#crossLink "KeyboardPanCamera"}}{{/crossLink}} pans the camera with the W,S,A,D,X and Z keys
+ * {{#crossLink "MousePanCamera"}}{{/crossLink}} pans horizontally and vertically by dragging the mouse with left and right buttons down
+ * {{#crossLink "KeyboardRotateCamera"}}{{/crossLink}} rotates the camera with the arrow keys
+ * {{#crossLink "MouseRotateCamera"}}{{/crossLink}} rotates the camera by dragging with the left mouse button down
+ * {{#crossLink "KeyboardZoomCamera"}}{{/crossLink}} zooms the *eye* position closer and further from the *look* position with the + and - keys
+ * {{#crossLink "MouseZoomCamera"}}{{/crossLink}} zooms the *eye* closer and further from *look* using the mousewheel
+ * {{#crossLink "KeyboardAxisCamera"}}{{/crossLink}} between preset left, right, anterior, posterior, superior and inferior views using keys 1-6
+ * {{#crossLink "MousePickEntity"}}{{/crossLink}} TODO
+ * {{#crossLink "cameraFlightAnimation"}}{{/crossLink}} TODO
 
  A CameraControl provides these control sub-components as read-only properties, which allows them to be individually configured (or deactivated) as required.
 
- <ul>
- <li>Activating or deactivating a CameraControl will activate or deactivate all its control sub-components.</li>
- <li>Attaching a different {{#crossLink "Camera"}}{{/crossLink}} to the CameraControl will also attach that
- {{#crossLink "Camera"}}{{/crossLink}} to all the control sub-components.</li>
- <li>The control sub-components are not supposed to be re-attached to a different {{#crossLink "Camera"}}{{/crossLink}} than the owner CameraControl.</li>
- <li>A CameraControl manages the life-cycles of its control sub-components, destroying them when the CameraControl is destroyed.</li>
- </ul>
+ * Activating or deactivating a CameraControl will activate or deactivate all its control sub-components.
+ * Attaching a different {{#crossLink "Camera"}}{{/crossLink}} to the CameraControl will also attach that
+ {{#crossLink "Camera"}}{{/crossLink}} to all the control sub-components.
+ * The control sub-components are not supposed to be re-attached to a different {{#crossLink "Camera"}}{{/crossLink}} than the owner CameraControl.
+ * A CameraControl manages the life-cycles of its control sub-components, destroying them when the CameraControl is destroyed.
 
  <img src="../../../assets/images/CameraControl.png"></img>
 
  ## Examples
 
- <ul>
- <li>[CameraControl example](../../examples/#interaction_CameraControl)</li>
- <li>[KeyboardRotateCamera example](../../examples/#interaction_KeyboardRotateCamera)</li>
- <li>[KeyboardPanCamera example](../../examples/#interaction_KeyboardPanCamera)</li>
- <li>[KeyboardZoomCamera example](../../examples/#interaction_KeyboardZoomCamera)</li>
- <li>[KeyboardRotateCamera example](../../examples/#interaction_KeyboardRotateCamera)</li>
- <li>[KeyboardPanCamera example](../../examples/#interaction_KeyboardPanCamera)</li>
- <li>[KeyboardZoomCamera example](../../examples/#interaction_KeyboardZoomCamera)</li>
- </ul>
+ * [CameraControl example](../../examples/#interaction_camera_CameraControl)
+ * [KeyboardRotateCamera example](../../examples/#interaction_KeyboardRotateCamera)
+ * [KeyboardPanCamera example](../../examples/#interaction_KeyboardPanCamera)
+ * [KeyboardZoomCamera example](../../examples/#interaction_KeyboardZoomCamera)
+ * [KeyboardRotateCamera example](../../examples/#interaction_KeyboardRotateCamera)
+ * [KeyboardPanCamera example](../../examples/#interaction_KeyboardPanCamera)
+ * [KeyboardZoomCamera example](../../examples/#interaction_KeyboardZoomCamera)
 
  ## Usage
 
@@ -16222,20 +17828,25 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
             var scene = this.scene;
 
             // Shows a bounding box around each Entity we fly to
-            this._boundaryEntity = this.create(xeogl.Entity, {
-                geometry: this.create(xeogl.BoundaryGeometry),
-                material: this.create(xeogl.PhongMaterial, {
+            this._boundaryHelper = this.create({
+                type: "xeogl.Entity",
+                geometry: this.create({
+                    type: "xeogl.AABBGeometry"
+                }),
+                material: this.create({
+                    type: "xeogl.PhongMaterial",
                     diffuse: [0, 0, 0],
                     ambient: [0, 0, 0],
                     specular: [0, 0, 0],
                     emissive: [1.0, 1.0, 0.6],
                     lineWidth: 4
                 }),
-                visibility: this.create(xeogl.Visibility, {
+                visibility: this.create({
+                    type: "xeogl.Visibility",
                     visible: false
                 }),
-                modes: this.create(xeogl.Modes, {
-
+                modes: this.create({
+                    type: "xeogl.Modes",
                     // Does not contribute to the size of any enclosing boundaries
                     // that might be calculated by xeogl, eg. like that returned by xeogl.Scene#worldBoundary
                     collidable: false
@@ -16334,17 +17945,22 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
             this.mousePickEntity.on("nopick",
                 function () {
-                    //alert("Nothing picked");
-                });
+                    var aabb = this.scene.worldBoundary.aabb;
+                    this._boundaryHelper.geometry.aabb = aabb;
+                    this.cameraFlight.flyTo({
+                            aabb: aabb
+                        },
+                        this._hideEntityBoundary, this);
+                }, this);
 
             /**
-             * The {{#crossLink "CameraFlight"}}{{/crossLink}} within this CameraControl.
+             * The {{#crossLink "cameraFlightAnimation"}}{{/crossLink}} within this CameraControl.
              *
              * @property cameraFlight
              * @final
-             * @type CameraFlight
+             * @type cameraFlightAnimation
              */
-            this.cameraFlight = this.create(xeogl.CameraFlight, {
+            this.cameraFlight = this.create(xeogl.CameraFlightAnimation, {
                 camera: cfg.camera,
                 duration: 0.5
             });
@@ -16364,12 +17980,12 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
                 pos = e.worldPos
             }
 
-            var aabb;
+            var worldBoundary = e.entity.worldBoundary;
+            var aabb = worldBoundary.aabb;
+            var sphere = worldBoundary.sphere;
 
-            aabb = e.entity.worldBoundary.aabb;
-
-            this._boundaryEntity.geometry.aabb = aabb;
-            this._boundaryEntity.visibility.visible = true;
+            this._boundaryHelper.geometry.aabb = aabb;
+            //    this._boundaryHelper.visibility.visible = true;
 
             if (pos) {
 
@@ -16398,7 +18014,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
         },
 
         _hideEntityBoundary: function () {
-            this._boundaryEntity.visibility.visible = false;
+            this._boundaryHelper.visibility.visible = false;
         },
 
         _props: {
@@ -16679,27 +18295,21 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
  A **KeyboardAxisCamera** switches a {{#crossLink "Camera"}}{{/crossLink}} between preset left, right, anterior,
  posterior, superior and inferior views using the keyboard.
 
- <ul>
- <li>A KeyboardAxisCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
- </ul>
+ * A KeyboardAxisCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
 
  By default the views are selected by the following keys:
 
- <ul>
- <li>'1' - left side, viewing center from along -X axis</li>
- <li>'2' - right side, viewing center from along +X axis</li>
- <li>'3' - anterior, viewing center from along -Z axis</li>
- <li>'4' - posterior, viewing center from along +Z axis</li>
- <li>'5' - superior, viewing center from along -Y axis</li>
- <li>'6' - inferior, viewing center from along +Y axis</li>
- </ul>
+ * '1' - left side, viewing center from along -X axis
+ * '2' - right side, viewing center from along +X axis
+ * '3' - anterior, viewing center from along -Z axis
+ * '4' - posterior, viewing center from along +Z axis
+ * '5' - superior, viewing center from along -Y axis
+ * '6' - inferior, viewing center from along +Y axis
 
  ## Examples
 
- <ul>
- <li>[KeyboardAxisCamera example](../../examples/#interaction_KeyboardAxisCamera)</li>
- <li>[CameraControl example](../../examples/#interaction_CameraControl)</li>
- </ul>
+ * [KeyboardAxisCamera example](../../examples/#interaction_KeyboardAxisCamera)
+ * [CameraControl example](../../examples/#interaction_camera_CameraControl)
 
  ## Usage
 
@@ -16764,7 +18374,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
             // Animations
 
-            this._cameraFly = new xeogl.CameraFlight(this.scene, {
+            this._cameraFly = new xeogl.CameraFlightAnimation(this.scene, {
                 duration: 1.0
             });
 
@@ -16891,10 +18501,10 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
             var boundary = this.scene.worldBoundary;
             var aabb = boundary.aabb;
             var center = boundary.center;
-            var diag = xeogl.math.getAABBDiag(aabb);
+            var diag = xeogl.math.getAABB3Diag(aabb);
 
-            this._stopFOV = 55;
-            var dist = Math.abs((diag) / Math.tan(this._stopFOV / 2));
+            this._fitFOV = 55;
+            var dist = Math.abs((diag) / Math.tan(this._fitFOV / 2));
 
             switch (keyCode) {
 
@@ -16998,26 +18608,22 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 ;/**
  A **KeyboardRotateCamera** orbits a {{#crossLink "Camera"}}{{/crossLink}} about its point-of-interest using the keyboard's arrow keys.
 
- <ul>
- <li>A KeyboardRotateCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to its target {{#crossLink "Camera"}}{{/crossLink}}.
- <li>The point-of-interest is the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/look:property"}}{{/crossLink}}.</li>
- <li>Orbiting involves rotating the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/eye:property"}}{{/crossLink}}
- about {{#crossLink "Lookat/look:property"}}{{/crossLink}}.</li>
- <li>Y-axis rotation is about the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/up:property"}}{{/crossLink}} vector.</li>
- <li>Z-axis rotation is about the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} -&gt; {{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.</li>
- <li>X-axis rotation is about the vector perpendicular to the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}}
- and {{#crossLink "Lookat/up:property"}}{{/crossLink}} vectors.</li>
- <li>In 'first person' mode, the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/look:property"}}{{/crossLink}}
+ * A KeyboardRotateCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to its target {{#crossLink "Camera"}}{{/crossLink}}.
+ * The point-of-interest is the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/look:property"}}{{/crossLink}}.
+ * Orbiting involves rotating the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/eye:property"}}{{/crossLink}}
+ about {{#crossLink "Lookat/look:property"}}{{/crossLink}}.
+ * Y-axis rotation is about the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/up:property"}}{{/crossLink}} vector.
+ * Z-axis rotation is about the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} -&gt; {{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.
+ * X-axis rotation is about the vector perpendicular to the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}}
+ and {{#crossLink "Lookat/up:property"}}{{/crossLink}} vectors.
+ * In 'first person' mode, the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/look:property"}}{{/crossLink}}
  position will orbit the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} position, otherwise the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}
- will orbit the {{#crossLink "Lookat/look:property"}}{{/crossLink}}.</li>
- </ul>
+ will orbit the {{#crossLink "Lookat/look:property"}}{{/crossLink}}.
 
  ## Examples
 
- <ul>
- <li>[KeyboardRotateCamera example](../../examples/#interaction_KeyboardRotateCamera)</li>
- <li>[CameraControl example](../../examples/#interaction_CameraControl)</li>
- </ul>
+ * [KeyboardRotateCamera example](../../examples/#interaction_KeyboardRotateCamera)
+ * [CameraControl example](../../examples/#interaction_camera_CameraControl)
 
  ## Usage
 
@@ -17167,7 +18773,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
              * target {{#crossLink "Camera"}}{{/crossLink}}. In 'first person' mode, the
              * {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/look:property"}}{{/crossLink}}
              * position orbits the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} position, otherwise
-             * the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} orbits {{#crossLink "Lookat/look:property"}}{{/crossLink}}.</li>
+             * the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} orbits {{#crossLink "Lookat/look:property"}}{{/crossLink}}.
              *
              * Fires a {{#crossLink "KeyboardRotateCamera/firstPerson:event"}}{{/crossLink}} event on change.
              *
@@ -17321,25 +18927,21 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 ;/**
  A **KeyboardPanCamera** pans a {{#crossLink "Camera"}}{{/crossLink}} using the W,S,A,D,X and Z keys.
 
- <ul>
- <li>A KeyboardPanCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
- <li>Panning up and down involves translating the positions of the {{#crossLink "Lookat"}}Lookat's{{/crossLink}}
+ * A KeyboardPanCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
+ * Panning up and down involves translating the positions of the {{#crossLink "Lookat"}}Lookat's{{/crossLink}}
  {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and {{#crossLink "Lookat/look:property"}}{{/crossLink}} back and forth
- along the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/up:property"}}{{/crossLink}} vector.</li>
- <li>Panning forwards and backwards involves translating
+ along the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/up:property"}}{{/crossLink}} vector.
+ * Panning forwards and backwards involves translating
  {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and {{#crossLink "Lookat/look:property"}}{{/crossLink}} back and forth along the
- {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.</li>
- <li>Panning left and right involves translating the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and
+ {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.
+ * Panning left and right involves translating the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and
  {{#crossLink "Lookat/look:property"}}{{/crossLink}} along the the vector perpendicular to the {{#crossLink "Lookat/up:property"}}{{/crossLink}}
- and {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vectors.</li>
- </ul>
+ and {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vectors.
 
  ## Examples
 
- <ul>
- <li>[KeyboardPanCamera example](../../examples/#interaction_KeyboardPanCamera)</li>
- <li>[CameraControl example](../../examples/#interaction_CameraControl)</li>
- </ul>
+ * [KeyboardPanCamera example](../../examples/#interaction_KeyboardPanCamera)
+ * [CameraControl example](../../examples/#interaction_camera_CameraControl)
 
  ## Usage
 
@@ -17601,19 +19203,15 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 ;/**
  A **KeyboardZoomCamera** zooms a {{#crossLink "Camera"}}{{/crossLink}} using the + and - keys.
 
- <ul>
- <li>A KeyboardZoomCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
- <li>Zooming involves translating the positions of the {{#crossLink "Lookat"}}Lookat's{{/crossLink}}
+ * A KeyboardZoomCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
+ * Zooming involves translating the positions of the {{#crossLink "Lookat"}}Lookat's{{/crossLink}}
  {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and {{#crossLink "Lookat/look:property"}}{{/crossLink}} back and forth
- along the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.</li>
- </ul>
+ along the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.
 
  ## Examples
 
- <ul>
- <li>[KeyboardZoomCamera example](../../examples/#interaction_KeyboardZoomCamera)</li>
- <li>[CameraControl example](../../examples/#interaction_CameraControl)</li>
- </ul>
+ * [KeyboardZoomCamera example](../../examples/#interaction_KeyboardZoomCamera)
+ * [CameraControl example](../../examples/#interaction_camera_CameraControl)
 
  ## Usage
 
@@ -17854,26 +19452,22 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 ;/**
  A **MouseRotateCamera** orbits a {{#crossLink "Camera"}}{{/crossLink}} about its point-of-interest using the mouse.
 
- <ul>
- <li>A MouseRotateCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
- <li>The point-of-interest is the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/look:property"}}{{/crossLink}}.</li>
- <li>Orbiting involves rotating the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/eye:property"}}{{/crossLink}}
- about {{#crossLink "Lookat/look:property"}}{{/crossLink}}.</li>
- <li>Y-axis rotation is about the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/up:property"}}{{/crossLink}} vector.</li>
- <li>Z-axis rotation is about the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} -&gt; {{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.</li>
- <li>X-axis rotation is about the vector perpendicular to the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}}
- and {{#crossLink "Lookat/up:property"}}{{/crossLink}} vectors.</li>
- <li>In 'first person' mode, the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/look:property"}}{{/crossLink}}
+ * A MouseRotateCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
+ * The point-of-interest is the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/look:property"}}{{/crossLink}}.
+ * Orbiting involves rotating the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/eye:property"}}{{/crossLink}}
+ about {{#crossLink "Lookat/look:property"}}{{/crossLink}}.
+ * Y-axis rotation is about the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/up:property"}}{{/crossLink}} vector.
+ * Z-axis rotation is about the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} -&gt; {{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.
+ * X-axis rotation is about the vector perpendicular to the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}}
+ and {{#crossLink "Lookat/up:property"}}{{/crossLink}} vectors.
+ * In 'first person' mode, the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/look:property"}}{{/crossLink}}
  position will orbit the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} position, otherwise the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}
- will orbit the {{#crossLink "Lookat/look:property"}}{{/crossLink}}.</li>
- </ul>
+ will orbit the {{#crossLink "Lookat/look:property"}}{{/crossLink}}.
 
  ## Examples
 
- <ul>
- <li>[MouseRotateCamera example](../../examples/#interaction_MouseRotateCamera)</li>
- <li>[CameraControl example](../../examples/#interaction_CameraControl)</li>
- </ul>
+ * [MouseRotateCamera example](../../examples/#interaction_MouseRotateCamera)
+ * [CameraControl example](../../examples/#interaction_camera_CameraControl)
 
  ## Usage
 
@@ -18027,7 +19621,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
              * target {{#crossLink "Camera"}}{{/crossLink}}. In 'first person' mode, the
              * {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/look:property"}}{{/crossLink}}
              * position orbits the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} position, otherwise
-             * the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} orbits {{#crossLink "Lookat/look:property"}}{{/crossLink}}.</li>
+             * the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} orbits {{#crossLink "Lookat/look:property"}}{{/crossLink}}.
              *
              * Fires a {{#crossLink "MouseRotateCamera/firstPerson:event"}}{{/crossLink}} event on change.
              *
@@ -18248,26 +19842,22 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 ;/**
  A **MousePanCamera** pans a {{#crossLink "Camera"}}{{/crossLink}} with the mouse.
 
- <ul>
- <li>A MousePanCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
- <li>Panning is done by dragging the mouse with both the left and right buttons down.</li>
- <li>Panning up and down involves translating the positions of the {{#crossLink "Lookat"}}Lookat's{{/crossLink}}
+ * A MousePanCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
+ * Panning is done by dragging the mouse with both the left and right buttons down.
+ * Panning up and down involves translating the positions of the {{#crossLink "Lookat"}}Lookat's{{/crossLink}}
  {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and {{#crossLink "Lookat/look:property"}}{{/crossLink}} back and forth
- along the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/up:property"}}{{/crossLink}} vector.</li>
- <li>Panning forwards and backwards involves translating
+ along the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/up:property"}}{{/crossLink}} vector.
+ * Panning forwards and backwards involves translating
  {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and {{#crossLink "Lookat/look:property"}}{{/crossLink}} back and forth along the
- {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.</li>
- <li>Panning left and right involves translating the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and
+ {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.
+ * Panning left and right involves translating the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and
  {{#crossLink "Lookat/look:property"}}{{/crossLink}} along the the vector perpendicular to the {{#crossLink "Lookat/up:property"}}{{/crossLink}}
- and {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vectors.</li>
- </ul>
+ and {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vectors.
 
  ## Examples
 
- <ul>
- <li>[MousePanCamera example](../../examples/#interaction_MousePanCamera)</li>
- <li>[CameraControl example](../../examples/#interaction_CameraControl)</li>
- </ul>
+ * [MousePanCamera example](../../examples/#interaction_MousePanCamera)
+ * [CameraControl example](../../examples/#interaction_camera_CameraControl)
 
  ## Usage
 
@@ -18538,10 +20128,8 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
  ## Examples
 
- <ul>
- <li>[MousePickEntity example](../../examples/#interaction_MousePickEntity)</li>
- <li>[CameraControl example](../../examples/#interaction_CameraControl)</li>
- </ul>
+ * [MousePickEntity example](../../examples/#interaction_MousePickEntity)
+ * [CameraControl example](../../examples/#interaction_camera_CameraControl)
 
  ## Usage
 
@@ -18795,19 +20383,15 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 })();;/**
  A **MouseZoomCamera** zooms a {{#crossLink "Camera"}}{{/crossLink}} using the mouse wheel.
 
- <ul>
- <li>A MouseZoomCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
- <li>Zooming involves translating the positions of the {{#crossLink "Lookat"}}Lookat's{{/crossLink}}
+ * A MouseZoomCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
+ * Zooming involves translating the positions of the {{#crossLink "Lookat"}}Lookat's{{/crossLink}}
  {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and {{#crossLink "Lookat/look:property"}}{{/crossLink}} back and forth
- along the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.</li>
- </ul>
+ along the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.
 
  ## Examples
 
- <ul>
- <li>[MouseZoomCamera example](../../examples/#interaction_MouseZoomCamera)</li>
- <li>[CameraControl example](../../examples/#interaction_CameraControl)</li>
- </ul>
+ * [MouseZoomCamera example](../../examples/#interaction_MouseZoomCamera)
+ * [CameraControl example](../../examples/#interaction_camera_CameraControl)
 
  ## Usage
 
@@ -19098,15 +20682,15 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
  * @module xeogl
  * @submodule culling
  */;/**
- A **Cull** toggles the culling of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **Cull** component toggles the culling of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- <ul>
- <li>An {{#crossLink "Entity"}}{{/crossLink}} is visible when its Cull's {{#crossLink "Cull/culled:property"}}{{/crossLink}} property is true and {{#crossLink "Visibility"}}Visibility's{{/crossLink}} {{#crossLink "Visibility/visible:property"}}{{/crossLink}} property is false.</li>
- <li>Cull components are intended for **visibility culling systems** to control the visibility of {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>{{#crossLink "Visibility"}}{{/crossLink}} components are intended for users to control the visibility of {{#crossLink "Entity"}}Entities{{/crossLink}} via UIs.</li>
- <li>A Cull may be shared among multiple {{#crossLink "Entity"}}Entities{{/crossLink}} to toggle
- their culling status as a group.</li>
- </ul>
+ ## Overview
+
+ * An {{#crossLink "Entity"}}{{/crossLink}} is visible when its Cull's {{#crossLink "Cull/culled:property"}}{{/crossLink}} property is true and {{#crossLink "Visibility"}}Visibility's{{/crossLink}} {{#crossLink "Visibility/visible:property"}}{{/crossLink}} property is false.
+ * Cull components are intended for **visibility culling systems** to control the visibility of {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ * {{#crossLink "Visibility"}}{{/crossLink}} components are intended for users to control the visibility of {{#crossLink "Entity"}}Entities{{/crossLink}} via UIs.
+ * A Cull may be shared among multiple {{#crossLink "Entity"}}Entities{{/crossLink}} to toggle
+ their culling status as a group.
 
  <img src="../../../assets/images/Cull.png"></img>
 
@@ -19119,22 +20703,22 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
  // Create a Cull component
  var cull = new xeogl.Cull({
     culled: false
-});
+ });
 
  // Create two Entities whose culling will be controlled by our Cull
 
  var entity1 = new xeogl.Entity({
     cull: cull
-});
+ });
 
  var entity2 = new xeogl.Entity({
     cull: cull
-});
+ });
 
  // Subscribe to change on the Cull's "culled" property
  var handle = cull.on("culled", function(value) {
     //...
-});
+ });
 
  // Hide our Entities by flipping the Cull's "culled" property,
  // which will also call our handler
@@ -19235,14 +20819,12 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 ;/**
  A **Visibility** toggles the visibility of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- <ul>
- <li>An {{#crossLink "Entity"}}{{/crossLink}} is visible when its Visibility's {{#crossLink "Visibility/visible:property"}}{{/crossLink}}
- property is true and {{#crossLink "Cull"}}Cull's{{/crossLink}} {{#crossLink "Cull/culled:property"}}{{/crossLink}} property is false.</li>
- <li>Visibility components are intended for users to control the visibility of {{#crossLink "Entity"}}Entities{{/crossLink}} via UIs.</li>
- <li>{{#crossLink "Cull"}}{{/crossLink}} components are intended for **visibility culling systems** to control the visibility of {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>A Visibility may be shared among multiple {{#crossLink "Entity"}}Entities{{/crossLink}} to toggle
- their visibility as a group.</li>
- </ul>
+ * An {{#crossLink "Entity"}}{{/crossLink}} is visible when its Visibility's {{#crossLink "Visibility/visible:property"}}{{/crossLink}}
+ property is true and {{#crossLink "Cull"}}Cull's{{/crossLink}} {{#crossLink "Cull/culled:property"}}{{/crossLink}} property is false.
+ * Visibility components are intended for users to control the visibility of {{#crossLink "Entity"}}Entities{{/crossLink}} via UIs.
+ * {{#crossLink "Cull"}}{{/crossLink}} components are intended for **visibility culling systems** to control the visibility of {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ * A Visibility may be shared among multiple {{#crossLink "Entity"}}Entities{{/crossLink}} to toggle
+ their visibility as a group.
 
  <img src="../../../assets/images/Visibility.png"></img>
 
@@ -19252,35 +20834,35 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
  two {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ````javascript
-var visibility = new xeogl.Visibility({
+ var visibility = new xeogl.Visibility({
     visible: true
-});
+ });
 
-// Create two Entities whose visibility will be controlled by our Visibility
+ // Create two Entities whose visibility will be controlled by our Visibility
 
-var entity1 = new xeogl.Entity({
+ var entity1 = new xeogl.Entity({
     visibility: visibility
-});
+ });
 
-var entity2 = new xeogl.Entity({
+ var entity2 = new xeogl.Entity({
     visibility: visibility
-});
+ });
 
-// Subscribe to change on the Visibility's "visible" property
-var handle = visibility.on("visible", function(value) {
+ // Subscribe to change on the Visibility's "visible" property
+ var handle = visibility.on("visible", function(value) {
     //...
-});
+ });
 
-// Hide our Entities by flipping the Visibility's "visible" property,
-// which will also call our handler
-visibility.visible = false;
+ // Hide our Entities by flipping the Visibility's "visible" property,
+ // which will also call our handler
+ visibility.visible = false;
 
-// Unsubscribe from the Visibility again
-visibility.off(handle);
+ // Unsubscribe from the Visibility again
+ visibility.off(handle);
 
-// When we destroy our Visibility, the Entities will fall back
-// on the Scene's default Visibility instance
-visibility.destroy();
+ // When we destroy our Visibility, the Entities will fall back
+ // on the Scene's default Visibility instance
+ visibility.destroy();
  ````
  @class Visibility
  @module xeogl
@@ -19367,40 +20949,42 @@ visibility.destroy();
  * @module xeogl
  * @submodule geometry
  */;/**
- A **Geometry** defines the geometric shape of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **Geometry** defines a mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- <ul>
- <li>Like everything in xeogl, all properties on a Geometry are dynamically editable.</li>
- <li>When no shape is specified, a Geometry will be a 2x2x2 box by default.</li>
- <li>A {{#crossLink "Scene"}}{{/crossLink}} provides a 2x2x2 box for {{#crossLink "Entity"}}Entities{{/crossLink}}
- default to when they are not configured with a Geometry.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Geometries create within xeogl's shaders.</li>
- <li>A Geometry provides its local-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}}.</li>
- </ul>
+ <a href="../../examples/#geometry_triangles_texture"><img src="../../assets/images/screenshots/BoxGeometry.png"></img></a>
+
+ ## Overview
+
+ * Like everything in xeogl, all properties on a Geometry are dynamically editable.
+ * Set a Geometry's {{#crossLink "Geometry/autoNormals:property"}}{{/crossLink}} ````true```` to make the Geometry automatically generate it's vertex normal vectors from its {{#crossLink "Geometry/positions:property"}}{{/crossLink}} and {{#crossLink "Geometry/indices:property"}}{{/crossLink}}.
+ * When no shape is specified, a Geometry will be a 2x2x2 box by default.
+ * A {{#crossLink "Scene"}}{{/crossLink}} provides a 2x2x2 box for {{#crossLink "Entity"}}Entities{{/crossLink}}
+ by default when they are not configured with a Geometry.
+ * A Geometry provides its local-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}}.
 
  <img src="../../../assets/images/Geometry.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Simple triangle mesh](../../examples/#geometry_triangles)</li>
- <li>[Triangle mesh with diffuse texture](../../examples/#geometry_triangles_texture)</li>
- <li>[Triangle mesh with vertex colors](../../examples/#geometry_triangles_vertexColors)</li>
- <li>[Wireframe box](../../examples/#geometry_lines)</li>
- <li>[Dynamically modifying a TorusGeometry](../../examples/#geometry_modifying)</li>
- </ul>
+ * [Simple triangle mesh](../../examples/#geometry_triangles)
+ * [Triangle mesh with diffuse texture](../../examples/#geometry_triangles_texture)
+ * [Triangle mesh with vertex colors](../../examples/#geometry_triangles_vertexColors)
+ * [Wireframe box](../../examples/#geometry_lines)
+ * [Dynamically modifying a TorusGeometry](../../examples/#geometry_modifying)
 
- ## Default shape</a>
+ ## Usage
+
+ ### Default shape</a>
 
  If you create a Geometry with no specified shape, it will default to a box-shaped triangle mesh with dimensions 2x2x2:
 
  ```` javascript
  var entity = new xeogl.Entity({
     geometry: new xeogl.Geometry() // 2x2x2 box
-});
+ });
  ````
 
- ## Scene's default Geometry
+ ### Scene's default Geometry
 
  If you create an {{#crossLink "Entity"}}{{/crossLink}} with no Geometry, it will inherit its {{#crossLink "Scene"}}Scene's{{/crossLink}}
  default {{#crossLink "Scene/geometry:property"}}{{/crossLink}}, which is a 2x2x2 triangle mesh box:
@@ -19409,7 +20993,7 @@ visibility.destroy();
  var entity2 = new xeogl.Entity();
  ````
 
- ## Sharing among Entities
+ ### Sharing among Entities
 
  xeogl components can be shared among multiple {{#crossLink "Entity"}}Entities{{/crossLink}}. For components like
  Geometry and {{#crossLink "Texture"}}{{/crossLink}}, this can provide significant memory
@@ -19431,7 +21015,7 @@ visibility.destroy();
  });
  ````
 
- ## Creating a custom Geometry
+ ### Creating a custom Geometry
 
  Let's create an {{#crossLink "Entity"}}{{/crossLink}} with a custom Geometry that's a quad-shaped triangle mesh:
 
@@ -19491,10 +21075,7 @@ visibility.destroy();
  {{#crossLink "Geometry/indices:property"}}{{/crossLink}} to reverse the direction of the triangles:
 
  ````javascript
- customGeometry.indices = [
- 2, 1, 0,
- 3, 2, 0
- ];
+ customGeometry.indices = [ 2, 1, 0, 3, 2, 0 ];
  ````
 
  Now let's make it wireframe by changing its primitive type from ````triangles```` to ````lines````:
@@ -19503,10 +21084,13 @@ visibility.destroy();
  quadGeometry.primitive = "lines";
  ````
 
- ## Toggling back-faces on and off
+ ````javascript
+ ````
+
+ ### Toggling back-faces on and off
 
  Now we'll attach a {{#crossLink "Modes"}}{{/crossLink}} to that last {{#crossLink "Entity"}}{{/crossLink}}, so that
- we can show or hide its {{#crossLink "Geometry"}}Geometry's{{/crossLink}} back-faces:
+ we can show or hide its {{#crossLink "Geometry"}}Geometry's{{/crossLink}} backfaces:
 
  ```` javascript
  var modes = new xeogl.Modes();
@@ -19518,7 +21102,7 @@ visibility.destroy();
  modes.backfaces = false;
  ````
 
- ## Setting front-face vertex winding
+ ### Setting front-face vertex winding
 
  The <a href="https://www.opengl.org/wiki/Face_Culling" target="other">vertex winding order</a> of each face determines
  whether it's a front-face or a back-face.
@@ -19534,7 +21118,9 @@ visibility.destroy();
  modes.frontface = "cw";
  ````
 
- ## Getting boundary
+ ### Getting the Local-space boundary
+
+ We can get a Geometry's Local-space {{#crossLink "Boundary3D"}}{{/crossLink}} like so:
 
  ````javascript
  var localBoundary = quadGeometry.localBoundary;
@@ -19544,6 +21130,7 @@ visibility.destroy();
         obb = localBoundary.obb;
         aabb = localBoundary.aabb;
         center = localBoundary.center;
+        sphere = localBoundary;
 
         //...
     });
@@ -19560,13 +21147,14 @@ visibility.destroy();
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Geometry.
  @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
+ @param [cfg.usage="statis"] {String} The Geometry's usage type. Accepted values are 'static', 'dynamic' and 'stream'.
  @param [cfg.positions] {Array of Number} Positions array.
- @param [cfg.normals] {Array of Number} Normals array.
+ @param [cfg.normals] {Array of Number} Vertex normal vectors array.
  @param [cfg.uv] {Array of Number} UVs array.
  @param [cfg.colors] {Array of Number} Vertex colors.
  @param [cfg.tangents] {Array of Number} Vertex tangents.
  @param [cfg.indices] {Array of Number} Indices array.
- @param [cfg.autoNormals] {Boolean} Set true to automatically generate normal vectors from positions and indices.
+ @param [cfg.autoNormals] {Boolean} Set true to automatically generate normal vectors from the positions and indices, if those are supplied.
  @extends Component
  */
 (function () {
@@ -19582,6 +21170,8 @@ visibility.destroy();
             var self = this;
 
             this._state = new xeogl.renderer.Geometry({
+
+                usage: null,
 
                 primitive: null, // WebGL enum
                 primitiveName: null, // String
@@ -19627,12 +21217,27 @@ visibility.destroy();
 
             // Typed arrays
 
-            this._positionsData = null;
-            this._colorsData = null;
-            this._normalsData = null;
-            this._uvData = null;
+            this._positions = null;
+            this._positionsUpdate = null;
+            this._positionsUpdateOffset = 0;
+
+            this._normals = null;
+            this._normalsUpdate = null;
+            this._normalsUpdateOffset = 0;
+
+            this._colors = null;
+            this._colorsUpdate = null;
+            this._colorsUpdateOffset = 0;
+
+            this._uvs = null;
+            this._uvsUpdate = null;
+            this._uvsUpdateOffset = 0;
+
             this._tangentsData = null;
-            this._indicesData = null;
+            this._tangentsUpdate = null;
+            this._tangentsUpdateOffset = 0;
+
+            this._indices = null;
 
             // Lazy-generated VBOs
 
@@ -19658,42 +21263,23 @@ visibility.destroy();
             this._localBoundary = null;
             this._boundaryDirty = true;
 
-
             var defaultGeometry = (!cfg.positions && !cfg.normals && !cfg.uv && !cfg.indices);
 
-            if (defaultGeometry) {
+            if (defaultGeometry) { // Default geometry is a box-shaped triangle mesh
 
                 this.primitive = cfg.primitive;
 
             } else {
 
-                var defaultLineStripGeometry = ((!cfg.primitive || cfg.primitive === "line-strip") && cfg.positions && !cfg.indices);
+                // Custom geometry
 
-                if (defaultLineStripGeometry) {
-
-                    // Line strip when only positions are given and no primitive
-
-                    var indices = [];
-                    for (var i = 0, len = cfg.positions.length / 3; i < len; i++) {
-                        indices.push(i);
-                    }
-
-                    this.primitive = "line-strip";
-                    this.positions = cfg.positions;
-                    this.indices = indices;
-
-                } else {
-
-                    // Custom geometry
-
-                    this.primitive = cfg.primitive;
-                    this.positions = cfg.positions;
-                    this.colors = cfg.colors;
-                    this.normals = cfg.normals;
-                    this.uv = cfg.uv;
-                    this.tangents = cfg.tangents;
-                    this.indices = cfg.indices;
-                }
+                this.primitive = cfg.primitive;
+                this.positions = cfg.positions;
+                this.colors = cfg.colors;
+                this.normals = cfg.normals;
+                this.uv = cfg.uv;
+                this.tangents = cfg.tangents;
+                this.indices = cfg.indices;
             }
 
             this.autoNormals = cfg.autoNormals;
@@ -19744,6 +21330,8 @@ visibility.destroy();
 
         _updateGeometry: function () {
 
+            var state = this._state;
+
             if (this._updateScheduled) {
 
                 if (this._update) {
@@ -19759,135 +21347,183 @@ visibility.destroy();
             }
 
             var gl = this.scene.canvas.gl;
-
-            switch (this._state.primitiveName) {
-
-                case "points":
-                    this._state.primitive = gl.POINTS;
-                    break;
-
-                case "lines":
-                    this._state.primitive = gl.LINES;
-                    break;
-
-                case "line-loop":
-                    this._state.primitive = gl.LINE_LOOP;
-                    break;
-
-                case "line-strip":
-                    this._state.primitive = gl.LINE_STRIP;
-                    break;
-
-                case "triangles":
-                    this._state.primitive = gl.TRIANGLES;
-                    break;
-
-                case "triangle-strip":
-                    this._state.primitive = gl.TRIANGLE_STRIP;
-                    break;
-
-                case "triangle-fan":
-                    this._state.primitive = gl.TRIANGLE_FAN;
-                    break;
-
-                default:
-                    this._state.primitive = gl.TRIANGLES;
-            }
-
-            var usage = gl.STATIC_DRAW;
-
             var memoryStats = xeogl.stats.memory;
+            var boundaryDirty = false;
 
             if (this._positionsDirty) {
-                if (this._state.positions) {
-                    memoryStats.positions -= this._state.positions.numItems;
-                    this._state.positions.destroy();
-                }
-                this._state.positions = this._positionsData ? new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._positionsData, this._positionsData.length, 3, usage) : null;
-                if (this._state.positions) {
-                    memoryStats.positions += this._state.positions.numItems;
+                if (!this._positionsUpdate) {
+                    if (state.positions) {
+                        memoryStats.positions -= state.positions.numItems;
+                        state.positions.destroy();
+                    }
+                } else if (!state.positions) {
+                    state.positions = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._positions, this._positions.length, 3, state.usage);
+                    memoryStats.positions += state.positions.numItems;
+                } else if (this._positionsUpdateOffset === null && this._positionsUpdate.length === state.positions.length) {
+                    state.positions.setData(this._positionsUpdate);
+                } else if (this._positionsUpdateOffset === null) {
+                    if (state.positions) {
+                        memoryStats.positions -= state.positions.numItems;
+                        state.positions.destroy();
+                    }
+                    state.positions = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._positions, this._positions.length, 3, state.usage);
+                    memoryStats.positions += state.positions.numItems;
+                } else if ((this._positionsUpdateOffset + this._positionsUpdate.length) <= state.positions.length) {
+                    state.positions.setData(this._positionsUpdate, this._positionsUpdateOffset);
+                } else {
+                    memoryStats.positions -= state.positions.numItems;
+                    state.positions.destroy();
+                    state.positions = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._positions, this._positions.length, 3, state.usage);
+                    memoryStats.positions += state.positions.numItems;
                 }
                 this._positionsDirty = false;
-
-                // Need to rebuild pick mesh now
+                this._tangentsDirty = true;
                 this._pickVBOsDirty = true;
+                if (this._autoNormals) {
+                    this._normalsDirty = true;
+                }
+                boundaryDirty = true;
             }
 
             if (this._colorsDirty) {
-
-                if (this._state.colors) {
-                    memoryStats.colors -= this._state.colors.numItems;
-                    this._state.colors.destroy();
-                }
-                this._state.colors = this._colorsData ? new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._colorsData, this._colorsData.length, 4, usage) : null;
-                if (this._state.colors) {
-                    memoryStats.colors += this._state.colors.numItems;
+                if (!this._colorsUpdate) {
+                    if (state.colors) {
+                        memoryStats.colors -= state.colors.numItems;
+                        state.colors.destroy();
+                    }
+                } else if (!state.colors) {
+                    state.colors = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._colors, this._colors.length, 4, state.usage);
+                    memoryStats.colors += state.colors.numItems;
+                } else if (this._colorsUpdateOffset === null && this._colorsUpdate.length === state.colors.length) {
+                    state.colors.setData(this._colorsUpdate);
+                } else if (this._colorsUpdateOffset === null) {
+                    if (state.colors) {
+                        memoryStats.colors -= state.colors.numItems;
+                        state.colors.destroy();
+                    }
+                    state.colors = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._colors, this._colors.length, 4, state.usage);
+                    memoryStats.colors += state.colors.numItems;
+                } else if ((this._colorsUpdateOffset + this._colorsUpdate.length) <= state.colors.length) {
+                    state.colors.setData(this._colorsUpdate, this._colorsUpdateOffset);
+                } else {
+                    memoryStats.colors -= state.colors.numItems;
+                    state.colors.destroy();
+                    state.colors = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._colors, this._colors.length, 4, state.usage);
+                    memoryStats.colors += state.colors.numItems;
                 }
                 this._colorsDirty = false;
             }
 
-            if (this._normalsDirty) {
-                if (this._state.normals) {
-                    memoryStats.normals -= this._state.normals.numItems;
-                    this._state.normals.destroy();
+            if (this._uvsDirty) {
+                if (!this._uvsUpdate) {
+                    if (state.uv) {
+                        memoryStats.uvs -= state.uv.numItems;
+                        state.uv.destroy();
+                    }
+                } else if (!state.uv) {
+                    state.uv = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._uvs, this._uvs.length, 2, state.usage);
+                    memoryStats.uvs += state.uv.numItems;
+                } else if (this._uvsUpdateOffset === null && this._uvsUpdate.length === state.uv.length) {
+                    state.uv.setData(this._uvsUpdate);
+                } else if (this._uvsUpdateOffset === null) {
+                    if (state.uv) {
+                        memoryStats.uvs -= state.uv.numItems;
+                        state.uv.destroy();
+                    }
+                    state.uv = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._uvs, this._uvs.length, 2, state.usage);
+                    memoryStats.uvs += state.uv.numItems;
+                } else if ((this._uvsUpdateOffset + this._uvsUpdate.length) <= state.uv.length) {
+                    state.uv.setData(this._uvsUpdate, this._uvsUpdateOffset);
+                } else {
+                    memoryStats.uvs -= state.uv.numItems;
+                    state.uv.destroy();
+                    state.uv = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._uvs, this._uvs.length, 2, state.usage);
+                    memoryStats.uvs += state.uv.numItems;
                 }
-
-                // Automatic normal generation
-
-                if (this._autoNormals && this._positionsData && this._indicesData) {
-                    this._normalsData = xeogl.math.buildNormals(this._positionsData, this._indicesData);
-                }
-
-                this._state.normals = this._normalsData ? new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._normalsData, this._normalsData.length, 3, usage) : null;
-                if (this._state.normals) {
-                    memoryStats.normals += this._state.normals.numItems;
-                }
-                this._normalsDirty = false;
-
-                // Need to rebuild tangents
-                // next time the renderer gets them from the state
-
-                this._tangentsDirty = true;
-            }
-
-            if (this._uvDirty) {
-                if (this._state.uv) {
-                    memoryStats.uvs -= this._state.uv.numItems;
-                    this._state.uv.destroy();
-                }
-                this._state.uv = this._uvData ? new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._uvData, this._uvData.length, 2, usage) : null;
-                if (this._state.uv) {
-                    memoryStats.uvs += this._state.uv.numItems;
-                }
-                this._uvDirty = false;
-
-                // Need to rebuild tangents
-                // next time the renderer gets them from the state
-
+                this._uvsDirty = false;
                 this._tangentsDirty = true;
             }
 
             if (this._indicesDirty) {
-                if (this._state.indices) {
-                    memoryStats.indices -= this._state.indices.numItems;
-                    this._state.indices.destroy();
-                }
-
-                this._state.indices = this._indicesData ? new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, this._indicesData, this._indicesData.length, 1, usage) : null;
-                if (this._state.indices) {
-                    memoryStats.indices += this._state.indices.numItems;
+                if (!this._indicesUpdate) {
+                    if (state.indices) {
+                        memoryStats.indices -= state.indices.numItems;
+                        state.indices.destroy();
+                    }
+                } else if (!state.indices) {
+                    state.indices = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, this._indices, this._indices.length, 1, state.usage);
+                    memoryStats.indices += state.indices.numItems;
+                } else if (this._indicesUpdateOffset === null && this._indicesUpdate.length === state.indices.length) {
+                    state.indices.setData(this._indicesUpdate);
+                } else if (this._indicesUpdateOffset === null) {
+                    if (state.indices) {
+                        memoryStats.indices -= state.indices.numItems;
+                        state.indices.destroy();
+                    }
+                    state.indices = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, this._indices, this._indices.length, 1, state.usage);
+                    memoryStats.indices += state.indices.numItems;
+                } else if ((this._indicesUpdateOffset + this._indicesUpdate.length) <= state.indices.length) {
+                    state.indices.setData(this._indicesUpdate, this._indicesUpdateOffset);
+                } else {
+                    memoryStats.indices -= state.indices.numItems;
+                    state.indices.destroy();
+                    state.indices = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, this._indices, this._indices.length, 1, state.usage);
+                    memoryStats.indices += state.indices.numItems;
                 }
                 this._indicesDirty = false;
-
-                // Need to rebuild pick mesh next time the
-                // renderer gets it from the state
-
+                this._tangentsDirty = true;
                 this._pickVBOsDirty = true;
+                if (this._autoNormals) {
+                    this._normalsDirty = true;
+                }
+                boundaryDirty = true;
+            }
+
+            if (this._normalsDirty) {
+                if (this._autoNormals) {
+                    if (this._positions && this._indices) {
+                        this._normals = xeogl.math.buildNormals(this._positions, this._indices);
+                        this._normalsDirty = false;
+                        this._tangentsDirty = true;
+                        boundaryDirty = true;
+                    }
+                } else {
+                    if (!this._normalsUpdate) {
+                        if (state.normals) {
+                            memoryStats.normals -= state.normals.numItems;
+                            state.normals.destroy();
+                        }
+                    } else if (!state.normals) {
+                        state.normals = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._normals, this._normals.length, 3, state.usage);
+                        memoryStats.normals += state.normals.numItems;
+                    } else if (this._normalsUpdateOffset === null && this._normalsUpdate.length === state.normals.length) {
+                        state.normals.setData(this._normalsUpdate);
+                    } else if (this._normalsUpdateOffset === null) {
+                        if (state.normals) {
+                            memoryStats.normals -= state.normals.numItems;
+                            state.normals.destroy();
+                        }
+                        state.normals = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._normals, this._normals.length, 3, state.usage);
+                        memoryStats.normals += state.normals.numItems;
+                    } else if ((this._normalsUpdateOffset + this._normalsUpdate.length) <= state.normals.length) {
+                        state.normals.setData(this._normalsUpdate, this._normalsUpdateOffset);
+                    } else {
+                        memoryStats.normals -= state.normals.numItems;
+                        state.normals.destroy();
+                        state.normals = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._normals, this._normals.length, 3, state.usage);
+                        memoryStats.normals += state.normals.numItems;
+                    }
+                    this._normalsDirty = false;
+                    this._tangentsDirty = true;
+                    boundaryDirty = true;
+                }
             }
 
             this._geometryUpdateScheduled = false;
 
-            this._setBoundaryDirty();
+            if (boundaryDirty) {
+                this._setBoundaryDirty();
+            }
         },
 
         _buildTangents: function () {
@@ -19907,18 +21543,16 @@ visibility.destroy();
                 this._tangents.destroy();
             }
 
-            if (!this._positionsData || !this._indicesData || !this._uvData) {
+            if (!this._positions || !this._indices || !this._uvs) {
                 return null;
             }
 
-            this._tangentsData = xeogl.math.buildTangents(this._positionsData, this._indicesData, this._uvData);
+            this._tangentsData = xeogl.math.buildTangents(this._positions, this._indices, this._uvs);
 
             var gl = this.scene.canvas.gl;
 
-            var usage = gl.STATIC_DRAW;
-
             this._tangents = this._tangentsData ?
-                new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._tangentsData, this._tangentsData.length, 3, usage) : null;
+                new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._tangentsData, this._tangentsData.length, 3, this._state.usage) : null;
 
             if (this._tangents) {
                 memoryStats.tangents += this._tangents.numItems;
@@ -19939,19 +21573,17 @@ visibility.destroy();
 
             this._destroyPickVBOs();
 
-            if (this._positionsData && this._indicesData) {
+            if (this._positions && this._indices) {
 
                 var gl = this.scene.canvas.gl;
 
-                var usage = gl.STATIC_DRAW;
-
-                var arrays = xeogl.math.getPickPrimitives(this._positionsData, this._indicesData);
+                var arrays = xeogl.math.buildPickTriangles(this._positions, this._indices);
 
                 var pickPositions = arrays.positions;
                 var pickColors = arrays.colors;
 
-                this._pickPositions = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, pickPositions, pickPositions.length, 3, usage);
-                this._pickColors = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, pickColors, pickColors.length, 4, usage);
+                this._pickPositions = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, pickPositions, pickPositions.length, 3, this._state.usage);
+                this._pickColors = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, pickColors, pickColors.length, 4, this._state.usage);
 
                 var memoryStats = xeogl.stats.memory;
 
@@ -19987,7 +21619,7 @@ visibility.destroy();
             /**
              * The Geometry's usage type.
              *
-             * Valid types are: 'static', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
+             * Accepted values are 'static', 'dynamic' and 'stream'.
              *
              * Fires a {{#crossLink "Geometry/usage:event"}}{{/crossLink}} event on change.
              *
@@ -20001,15 +21633,41 @@ visibility.destroy();
 
                     value = value || "static";
 
-                    if (value !== "static" && value !== "dynamic" && value !== "stream") {
+                    if (value === this._state.usageName) {
+                        return;
+                    }
 
-                        this.error("Unsupported value for 'usage': '" + value +
-                            "' - supported values are 'static', 'dynamic' and 'stream'.");
+                    var gl = this.scene.canvas.gl;
 
-                        value = "static";
+                    switch (value) {
+
+                        case "static":
+                            this._state.usage = gl.STATIC_DRAW;
+                            break;
+
+                        case "dynamic":
+                            this._state.usage = gl.DYNAMIC_DRAW;
+                            break;
+
+                        case "stream":
+                            this._state.usage = gl.STREAM_DRAW;
+                            break;
+
+                        default:
+                            this.error("Unsupported value for 'usage': '" + value +
+                                "' - supported values are 'static', 'dynamic' and 'stream'.");
+                            this._state.usage = gl.STREAM_DRAW;
+                            value = "static";
                     }
 
                     this._state.usageName = value;
+
+                    this._positionsDirty = true;
+                    this._colorsDirty = true;
+                    this._normalsDirty = true;
+                    this._uvDirty = true;
+                    this._tangentsDirty = true;
+                    this._indicesDirty = true;
 
                     this._scheduleGeometryUpdate();
 
@@ -20046,30 +21704,57 @@ visibility.destroy();
 
                     value = value || "triangles";
 
-                    if (value !== "points" &&
-                        value !== "lines" &&
-                        value !== "line-loop" &&
-                        value !== "line-strip" &&
-                        value !== "triangles" &&
-                        value !== "triangle-strip" &&
-                        value !== "triangle-fan") {
+                    var state = this._state;
+                    var gl = this.scene.canvas.gl;
 
-                        this.error("Unsupported value for 'primitive': '" + value +
-                            "' - supported values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', " +
-                            "'triangle-strip' and 'triangle-fan'. Defaulting to 'triangles'.");
-
-                        value = "triangles";
+                    if (value === state.primitiveName) {
+                        return;
                     }
 
-                    if (this._state.primitiveName === value) {
-                        return;
+                    switch (value) {
+
+                        case "points":
+                            state.primitive = gl.POINTS;
+                            break;
+
+                        case "lines":
+                            state.primitive = gl.LINES;
+                            break;
+
+                        case "line-loop":
+                            state.primitive = gl.LINE_LOOP;
+                            break;
+
+                        case "line-strip":
+                            state.primitive = gl.LINE_STRIP;
+                            break;
+
+                        case "triangles":
+                            state.primitive = gl.TRIANGLES;
+                            break;
+
+                        case "triangle-strip":
+                            state.primitive = gl.TRIANGLE_STRIP;
+                            break;
+
+                        case "triangle-fan":
+                            state.primitive = gl.TRIANGLE_FAN;
+                            break;
+
+                        default:
+                            this.error("Unsupported value for 'primitive': '" + value +
+                                "' - supported values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', " +
+                                "'triangle-strip' and 'triangle-fan'. Defaulting to 'triangles'.");
+
+                            state.primitive = gl.TRIANGLES;
+
+                            value = "triangles";
                     }
 
                     this._state.primitiveName = value;
 
-                    this._scheduleGeometryUpdate();
-
                     this._hashDirty = true;
+                    this._renderer.imageDirty = true;
 
                     this.fire("dirty", true);
 
@@ -20090,7 +21775,7 @@ visibility.destroy();
             /**
              * The Geometry's positions array.
              *
-             * This property is a one-dimensional array - use  {{#crossLink "xeogl.math/flatten:method"}}{{/crossLink}} to
+             * This property is a one-dimensional, flattened array - use  {{#crossLink "xeogl.math/flatten:method"}}{{/crossLink}} to
              * convert two-dimensional arrays for assignment to this property.
              *
              * Fires a {{#crossLink "Geometry/positions:event"}}{{/crossLink}} event on change.
@@ -20102,58 +21787,19 @@ visibility.destroy();
             positions: {
 
                 set: function (value) {
-
-                    // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._positionsData !== !value);
-
-                    if (value && value.constructor != Float32Array) {
-                        value = new Float32Array(value);
-                    }
-
-                    this._positionsData = value;
-                    this._positionsDirty = true;
-
-                    this._scheduleGeometryUpdate();
-
-                    if (dirty) {
-                        this._hashDirty = true;
-                        this.fire("dirty", true);
-                    }
-
-                    /**
-                     * Fired whenever this Geometry's {{#crossLink "Geometry/positions:property"}}{{/crossLink}} property changes.
-                     * @event positions
-                     * @param value The property's new value
-                     */
-                    this.fire("positions", this._positionsData);
-
-                    /**
-                     * Fired whenever this Geometry's {{#crossLink "Geometry/localBoundary:property"}}{{/crossLink}} property changes.
-                     *
-                     * Note that this event does not carry the value of the property. In order to avoid needlessly
-                     * calculating unused values for this property, it will be lazy-calculated next time it's referenced
-                     * on this Geometry.
-                     *
-                     * @event positions
-                     * @param value The property's new value
-                     */
-                    this.fire("localBoundary", true);
-
-                    this._renderer.imageDirty = true;
+                    this.setPositions(value, 0);
                 },
 
                 get: function () {
-
                     if (this._updateScheduled) {
                         this._doUpdate();
                     }
-
-                    return this._positionsData;
+                    return this._positions;
                 }
             },
 
             /**
-             * The Geometry's normal vectors array.
+             * The Geometry's vertex normal vectors array.
              *
              * Fires a {{#crossLink "Geometry/normals:event"}}{{/crossLink}} event on change.
              *
@@ -20164,41 +21810,14 @@ visibility.destroy();
             normals: {
 
                 set: function (value) {
-
-                    // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._normalsData !== !value);
-
-                    if (value && value.constructor != Float32Array) {
-                        value = new Float32Array(value);
-                    }
-
-                    this._normalsData = value;
-                    this._normalsDirty = true;
-
-                    this._scheduleGeometryUpdate();
-
-                    if (dirty) {
-                        this._hashDirty = true;
-                        this.fire("dirty", true);
-                    }
-
-                    /**
-                     * Fired whenever this Geometry's {{#crossLink "Geometry/ normals:property"}}{{/crossLink}} property changes.
-                     * @event  normals
-                     * @param value The property's new value
-                     */
-                    this.fire(" normals", this._normalsData);
-
-                    this._renderer.imageDirty = true;
+                    this.setNormals(value, 0);
                 },
 
                 get: function () {
-
                     if (this._updateScheduled) {
                         this._doUpdate();
                     }
-
-                    return this._normalsData;
+                    return this._normals;
                 }
             },
 
@@ -20214,41 +21833,14 @@ visibility.destroy();
             uv: {
 
                 set: function (value) {
-
-                    // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._uvData !== !value);
-
-                    if (value && value.constructor != Float32Array) {
-                        value = new Float32Array(value);
-                    }
-
-                    this._uvData = value;
-                    this._uvDirty = true;
-
-                    this._scheduleGeometryUpdate();
-
-                    if (dirty) {
-                        this._hashDirty = true;
-                        this.fire("dirty", true);
-                    }
-
-                    /**
-                     * Fired whenever this Geometry's {{#crossLink "Geometry/uv:property"}}{{/crossLink}} property changes.
-                     * @event uv
-                     * @param value The property's new value
-                     */
-                    this.fire("uv", this._uvData);
-
-                    this._renderer.imageDirty = true;
+                    this.setUVs(value, 0);
                 },
 
                 get: function () {
-
                     if (this._updateScheduled) {
                         this._doUpdate();
                     }
-
-                    return this._uvData;
+                    return this._uvs;
                 }
             },
 
@@ -20264,41 +21856,14 @@ visibility.destroy();
             colors: {
 
                 set: function (value) {
-
-                    // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._colorsData !== !value);
-
-                    if (value && value.constructor != Float32Array) {
-                        value = new Float32Array(value);
-                    }
-
-                    this._colorsData = value;
-                    this._colorsDirty = true;
-
-                    this._scheduleGeometryUpdate();
-
-                    if (dirty) {
-                        this._hashDirty = true;
-                        this.fire("dirty", true);
-                    }
-
-                    /**
-                     * Fired whenever this Geometry's {{#crossLink "Geometry/colors:property"}}{{/crossLink}} property changes.
-                     * @event colors
-                     * @param value The property's new value
-                     */
-                    this.fire("colors", this._colorsData);
-
-                    this._renderer.imageDirty = true;
+                    this.setColors(value, 0);
                 },
 
                 get: function () {
-
                     if (this._updateScheduled) {
                         this._doUpdate();
                     }
-
-                    return this._colorsData;
+                    return this._colors;
                 }
             },
 
@@ -20317,53 +21882,14 @@ visibility.destroy();
             indices: {
 
                 set: function (value) {
-
-                    // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._indicesData && !value);
-
-                    if (value) {
-
-                        var bigIndicesSupported = xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"];
-
-                        if (!bigIndicesSupported && value.constructor === Uint32Array) {
-                            this.error("This WebGL implementation does not support Uint32Array");
-                            return;
-                        }
-
-                        var IndexArrayType = bigIndicesSupported ? Uint32Array : Uint16Array;
-
-                        if (value.constructor != Uint16Array && value.constructor != Uint32Array) {
-                            value = new IndexArrayType(value);
-                        }
-                    }
-
-                    this._indicesData = value;
-                    this._indicesDirty = true;
-
-                    this._scheduleGeometryUpdate();
-
-                    if (dirty) {
-                        this._hashDirty = true;
-                        this.fire("dirty", true);
-                    }
-
-                    /**
-                     * Fired whenever this Geometry's {{#crossLink "Geometry/indices:property"}}{{/crossLink}} property changes.
-                     * @event indices
-                     * @param value The property's new value
-                     */
-                    this.fire("indices", this._indicesData);
-
-                    this._renderer.imageDirty = true;
+                    this.setIndices(value, 0);
                 },
 
                 get: function () {
-
                     if (this._updateScheduled) {
                         this._doUpdate();
                     }
-
-                    return this._indicesData;
+                    return this._indices;
                 }
             },
 
@@ -20411,7 +21937,7 @@ visibility.destroy();
                                     self._doUpdate();
                                 }
 
-                                return self._positionsData;
+                                return self._positions;
                             }
                         });
 
@@ -20467,6 +21993,375 @@ visibility.destroy();
                     return this._autoNormals;
                 }
             }
+        },
+
+        /**
+         Sets this Geometry's {{#crossLink "Geometry/positions:property"}}{{/crossLink}}.
+
+         @param positions {Float32Array} Flattened array of updated positions.
+         @param [offset=0] {Number}
+         */
+        setPositions: function (positions, offset) {
+
+            var dirty = (!this._positions !== !positions);
+
+            if (positions && positions.length === 0) {
+                positions = null;
+            }
+
+            if (!positions) {
+                this._positions = null;
+
+            } else {
+
+                positions = positions.constructor === Float32Array ? positions : new Float32Array(positions);
+
+                if (offset !== null && offset !== undefined) {
+
+                    if (offset < 0) {
+                        this.error("setPositions - negative offset not allowed");
+                        return;
+                    }
+
+                    if (this._positions && (offset + positions.length) <= this._positions.length) {
+                        this._positions.set(positions, offset);
+
+                    } else {
+                        if (!this._positions) {
+                            this._positions = positions;
+
+                        } else {
+                            this._positions = (offset === 0) ? positions : xeogl._concat(this._positions.slice(0, offset), positions);
+                        }
+                    }
+
+                } else {
+                    this._positions = positions;
+                }
+            }
+
+            this._positionsUpdate = positions;
+            this._positionsUpdateOffset = offset;
+            this._positionsDirty = true;
+
+            this._scheduleGeometryUpdate();
+
+            //    this._setBoundaryDirty();
+
+            if (dirty) {
+                this._hashDirty = true;
+                this.fire("dirty", true);
+            }
+
+            /**
+             * Fired whenever this Geometry's {{#crossLink "Geometry/positions:property"}}{{/crossLink}} property changes.
+             * @event positions
+             * @param value The property's new value
+             */
+            this.fire("positions", this._positions);
+
+            /**
+             * Fired whenever this Geometry's {{#crossLink "Geometry/localBoundary:property"}}{{/crossLink}} property changes.
+             *
+             * Note that this event does not carry the value of the property. In order to avoid needlessly
+             * calculating unused values for this property, it will be lazy-calculated next time it's referenced
+             * on this Geometry.
+             *
+             * @event positions
+             * @param value The property's new value
+             */
+            this.fire("localBoundary", true);
+
+            this._renderer.imageDirty = true;
+        },
+
+        /**
+         * Fast method to insert elements into this Geometry's {{#crossLink "Geometry/normals:property"}}{{/crossLink}}.
+         *
+         * @param normals
+         * @param offset
+         */
+        setNormals: function (normals, offset) {
+
+            var dirty = (!this._normals !== !normals);
+
+            if (normals && normals.length === 0) {
+                normals = null;
+            }
+
+            if (!normals) {
+                this._normals = null;
+
+            } else {
+
+                normals = normals.constructor === Float32Array ? normals : new Float32Array(normals);
+
+                if (offset !== null && offset !== undefined) {
+
+                    if (offset < 0) {
+                        this.error("setNormals - negative offset not allowed");
+                        return;
+                    }
+
+                    if (this._normals && (offset + normals.length) <= this._normals.length) {
+                        this._normals.set(normals, offset);
+
+                    } else {
+                        if (!this._normals) {
+                            this._normals = normals;
+
+                        } else {
+                            this._normals = (offset === 0) ? normals : xeogl._concat(this._normals.slice(0, offset), normals);
+                        }
+                    }
+
+                } else {
+                    this._normals = normals;
+                }
+            }
+
+            this._normalsUpdate = normals;
+            this._normalsUpdateOffset = offset;
+            this._normalsDirty = true;
+
+            this._scheduleGeometryUpdate();
+
+            if (dirty) {
+                this._hashDirty = true;
+                this.fire("dirty", true);
+            }
+
+            /**
+             * Fired whenever this Geometry's {{#crossLink "Geometry/normals:property"}}{{/crossLink}} property changes.
+             * @event normals
+             * @param value The property's new value
+             */
+            this.fire("normals", this._normals);
+
+            this._renderer.imageDirty = true;
+        },
+
+        /**
+         * Fast method to insert elements into this Geometry's {{#crossLink "Geometry/uvs:property"}}{{/crossLink}}.
+         *
+         * @param uvs
+         * @param offset
+         */
+        setUVs: function (uvs, offset) {
+
+            var dirty = (!this._uvs !== !uvs);
+
+            if (uvs && uvs.length === 0) {
+                uvs = null;
+            }
+
+            if (!uvs) {
+                this._uvs = null;
+
+            } else {
+
+                uvs = uvs.constructor === Float32Array ? uvs : new Float32Array(uvs);
+
+                if (offset !== null && offset !== undefined) {
+
+                    if (offset < 0) {
+                        this.error("setUvs - negative offset not allowed");
+                        return;
+                    }
+
+                    if (this._uvs && (offset + uvs.length) <= this._uvs.length) {
+                        this._uvs.set(uvs, offset);
+
+                    } else {
+                        if (!this._uvs) {
+                            this._uvs = uvs;
+
+                        } else {
+                            this._uvs = (offset === 0) ? uvs : xeogl._concat(this._uvs.slice(0, offset), uvs);
+                        }
+                    }
+
+                } else {
+                    this._uvs = uvs;
+                }
+            }
+
+            this._uvsUpdate = uvs;
+            this._uvsUpdateOffset = offset;
+            this._uvsDirty = true;
+
+            this._scheduleGeometryUpdate();
+
+            if (dirty) {
+                this._hashDirty = true;
+                this.fire("dirty", true);
+            }
+
+            /**
+             * Fired whenever this Geometry's {{#crossLink "Geometry/uvs:property"}}{{/crossLink}} property changes.
+             * @event uvs
+             * @param value The property's new value
+             */
+            this.fire("uvs", this._uvs);
+
+            this._renderer.imageDirty = true;
+        },
+
+        /**
+         * Fast method to insert elements into this Geometry's {{#crossLink "Geometry/colors:property"}}{{/crossLink}}.
+         *
+         * @param colors
+         * @param offset
+         */
+        setColors: function (colors, offset) {
+
+            var dirty = (!this._colors !== !colors);
+
+            if (colors && colors.length === 0) {
+                colors = null;
+            }
+
+            if (!colors) {
+                this._colors = null;
+
+            } else {
+
+                colors = colors.constructor === Float32Array ? colors : new Float32Array(colors);
+
+                if (offset !== null && offset !== undefined) {
+
+                    if (offset < 0) {
+                        this.error("setColors - negative offset not allowed");
+                        return;
+                    }
+
+                    if (this._colors && (offset + colors.length) <= this._colors.length) {
+                        this._colors.set(colors, offset);
+
+                    } else {
+                        if (!this._colors) {
+                            this._colors = colors;
+
+                        } else {
+                            this._colors = (offset === 0) ? colors : xeogl._concat(this._colors.slice(0, offset), colors);
+                        }
+                    }
+
+                } else {
+                    this._colors = colors;
+                }
+            }
+
+            this._colorsUpdate = colors;
+            this._colorsUpdateOffset = offset;
+            this._colorsDirty = true;
+
+            this._scheduleGeometryUpdate();
+
+            if (dirty) {
+                this._hashDirty = true;
+                this.fire("dirty", true);
+            }
+
+            /**
+             * Fired whenever this Geometry's {{#crossLink "Geometry/colors:property"}}{{/crossLink}} property changes.
+             * @event colors
+             * @param value The property's new value
+             */
+            this.fire("colors", this._colors);
+
+            this._renderer.imageDirty = true;
+        },
+
+        /**
+         Sets this Geometry's {{#crossLink "Geometry/indices:property"}}{{/crossLink}}.
+
+         @param indices {Int16Array} Flattened array of updated indices.
+         @param [offset=0] {Number}
+         */
+        setIndices: function (indices, offset) {
+
+            if (indices && indices.length === 0) {
+                indices = undefined;
+            }
+
+            var bigIndicesSupported = xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"];
+
+            if (indices) {
+                if (!bigIndicesSupported && indices.constructor === Uint32Array) {
+                    this.error("This WebGL implementation does not support Uint32Array");
+                    return;
+                }
+            }
+
+            var IndexArrayType = bigIndicesSupported ? Uint32Array : Uint16Array;
+
+            var dirty = (!this._indices !== !indices);
+
+            if (!indices) {
+                this._indices = null;
+
+            } else {
+
+                indices = (indices.constructor === Uint32Array || indices.constructor === Uint16Array) ? indices : new IndexArrayType(indices);
+
+                if (offset !== null && offset !== undefined) {
+
+                    if (offset < 0) {
+                        this.error("setIndices - negative offset not allowed");
+                        return;
+                    }
+
+                    if (this._indices && (offset + indices.length) <= this._indices.length) {
+                        this._indices.set(indices, offset);
+
+                    } else {
+                        if (!this._indices) {
+                            this._indices = indices;
+
+                        } else {
+                            this._indices = (offset === 0) ? indices : xeogl._concat(this._indices.slice(0, offset), indices);
+                        }
+                    }
+
+                } else {
+                    this._indices = indices;
+                }
+            }
+
+            this._indicesUpdate = indices;
+            this._indicesUpdateOffset = offset;
+            this._indicesDirty = true;
+
+            this._scheduleGeometryUpdate();
+
+            // this._setBoundaryDirty();
+
+            if (dirty) {
+                this._hashDirty = true;
+                this.fire("dirty", true);
+            }
+
+            /**
+             * Fired whenever this Geometry's {{#crossLink "Geometry/indices:property"}}{{/crossLink}} property changes.
+             * @event indices
+             * @param value The property's new value
+             */
+            this.fire("indices", this._indices);
+
+            /**
+             * Fired whenever this Geometry's {{#crossLink "Geometry/localBoundary:property"}}{{/crossLink}} property changes.
+             *
+             * Note that this event does not carry the value of the property. In order to avoid needlessly
+             * calculating unused values for this property, it will be lazy-calculated next time it's referenced
+             * on this Geometry.
+             *
+             * @event indices
+             * @param value The property's new value
+             */
+            this.fire("localBoundary", true);
+
+            this._renderer.imageDirty = true;
         },
 
         _setBoundaryDirty: function () {
@@ -20535,11 +22430,11 @@ visibility.destroy();
 
             return {
                 primitive: this._state.primitiveName,
-                positions: this._positionsData,
-                normals: this._normalsData,
-                uv: this._uvData,
-                colors: this._colorsData,
-                indices: this._indicesData
+                positions: this._positions,
+                normals: this._normals,
+                uv: this._uvs,
+                colors: this._colors,
+                indices: this._indices
             };
         },
 
@@ -20571,8 +22466,8 @@ visibility.destroy();
 
             // Destroy lazy-generated VBOs
 
-            if (this._tangentsData) {
-                this._tangentsData.destroy();
+            if (this._tangents) {
+                this._tangents.destroy();
             }
 
             if (this._pickPositions) {
@@ -20598,15 +22493,20 @@ visibility.destroy();
             xeogl.stats.memory.meshes--;
         }
     });
-})();
-;/**
- A **BoxGeometry** defines box-shaped geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+})();;/**
+ A **BoxGeometry** is a parameterized {{#crossLink "Geometry"}}{{/crossLink}} that defines a box-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+ <a href="../../examples/#geometry_primitives_box"><img src="../../assets/images/screenshots/BoxGeometry.png"></img></a>
+
+ ## Overview
+
+ * Dynamically modify a BoxGeometry's dimensions at any time by updating its {{#crossLink "BoxGeometry/center:property"}}{{/crossLink}}, {{#crossLink "BoxGeometry/xSize:property"}}{{/crossLink}}, {{#crossLink "BoxGeometry/ySize:property"}}{{/crossLink}} and {{#crossLink "BoxGeometry/zSize:property"}}{{/crossLink}} properties.
+ * Dynamically switch its primitive type between ````"points"````, ````"lines"```` and ````"triangles"```` at any time by
+ updating its {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} property.
 
  ## Examples
 
- <ul>
- <li>[Textured BoxGeometry](../../examples/#geometry_BoxGeometry)</li>
- </ul>
+ * [Textured BoxGeometry](../../examples/#geometry_primitives_box)
 
  ## Usage
 
@@ -20617,7 +22517,8 @@ visibility.destroy();
  new xeogl.Entity({
 
      geometry: new xeogl.BoxGeometry({
-        xSize: 1,
+        center: [0,0,0],
+        xSize: 1,  // Half-size on each axis; BoxGeometry is actually two units big on each side.
         ySize: 1,
         zSize: 1
      }),
@@ -20640,10 +22541,11 @@ visibility.destroy();
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this BoxGeometry.
- @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
- @param [cfg.xSize=1.0] {Number}
- @param [cfg.ySize=1.0] {Number}
- @param [cfg.zSize=1.0] {Number}
+ @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values for a BoxGeometry are 'points', 'lines' and 'triangles'.
+ @param [cfg.center] {Float32Array} 3D point indicating the center position.
+ @param [cfg.xSize=1.0] {Number} Half-size on the X-axis.
+ @param [cfg.ySize=1.0] {Number} Half-size on the Y-axis.
+ @param [cfg.zSize=1.0] {Number} Half-size on the Z-axis.
  @extends Geometry
  */
 (function () {
@@ -20658,6 +22560,7 @@ visibility.destroy();
 
             this._super(cfg);
 
+            this.center = cfg.center;
             this.xSize = cfg.xSize;
             this.ySize = cfg.ySize;
             this.zSize = cfg.zSize;
@@ -20671,12 +22574,12 @@ visibility.destroy();
          */
         _update: function () {
 
-            var xmin = -this._xSize;
-            var ymin = -this._ySize;
-            var zmin = -this._zSize;
-            var xmax = this._xSize;
-            var ymax = this._ySize;
-            var zmax = this._zSize;
+            var xmin = -this._xSize + this._center[0];
+            var ymin = -this._ySize + this._center[1];
+            var zmin = -this._zSize + this._center[2];
+            var xmax = this._xSize + this._center[0];
+            var ymax = this._ySize + this._center[1];
+            var zmax = this._zSize + this._center[2];
 
             // The vertices - eight for our cube, each
             // one spanning three array elements for X,Y and Z
@@ -20842,7 +22745,37 @@ visibility.destroy();
         _props: {
 
             /**
-             * The BoxGeometry's size on the X-axis.
+             * 3D point indicating the center position of this BoxGeometry.
+             *
+             * Fires an {{#crossLink "BoxGeometry/center:event"}}{{/crossLink}} event on change.
+             *
+             * @property center
+             * @default [0,0,0]
+             * @type {Float32Array}
+             */
+            center: {
+
+                set: function (value) {
+
+                    (this._center = this._center || new xeogl.math.vec3()).set(value || [0, 0, 0]);
+
+                    this._scheduleUpdate();
+
+                    /**
+                     Fired whenever this BoxGeometry's {{#crossLink "BoxGeometry/center:property"}}{{/crossLink}} property changes.
+                     @event center
+                     @param value {Float32Array} The property's new value
+                     */
+                    this.fire("center", this._center);
+                },
+
+                get: function () {
+                    return this._center;
+                }
+            },
+
+            /**
+             * The BoxGeometry's half-size on the X-axis.
              *
              * Fires a {{#crossLink "BoxGeometry/xsize:event"}}{{/crossLink}} event on change.
              *
@@ -20884,7 +22817,7 @@ visibility.destroy();
             },
 
             /**
-             * The BoxGeometry's size on the Y-axis.
+             * The BoxGeometry's half-size on the Y-axis.
              *
              * Fires a {{#crossLink "BoxGeometry/ySize:event"}}{{/crossLink}} event on change.
              *
@@ -20926,7 +22859,7 @@ visibility.destroy();
             },
 
             /**
-             * The BoxGeometry's size on the Z-axis.
+             * The BoxGeometry's half-size on the Z-axis.
              *
              * Fires a {{#crossLink "BoxGeometry/zSize:event"}}{{/crossLink}} event on change.
              *
@@ -20970,6 +22903,7 @@ visibility.destroy();
 
         _getJSON: function () {
             return {
+                center: this._center.slice(),
                 xSize: this._xSize,
                 ySize: this._ySize,
                 zSize: this._zSize
@@ -20979,261 +22913,23 @@ visibility.destroy();
 
 })();
 ;/**
- A **BoundaryGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that shows the entity-aligned wireframe bounding box (OBB)
- of a {{#crossLink "Boundary3D"}}{{/crossLink}}.
+ A **TorusGeometry** is a parameterized {{#crossLink "Geometry"}}{{/crossLink}} that defines a torus-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
+ <a href="../../examples/#geometry_primitives_torus"><img src="../../assets/images/screenshots/TorusGeometry.png"></img></a>
+
+ ## Overview
+
+ * Dynamically modify a TorusGeometry's shape at any time by updating its {{#crossLink "TorusGeometry/center:property"}}{{/crossLink}}, {{#crossLink "TorusGeometry/radius:property"}}{{/crossLink}}, {{#crossLink "TorusGeometry/tube:property"}}{{/crossLink}},
+ {{#crossLink "TorusGeometry/radialSegments:property"}}{{/crossLink}}, {{#crossLink "TorusGeometry/tubeSegments:property"}}{{/crossLink}},  and
+ {{#crossLink "TorusGeometry/arc:property"}}{{/crossLink}} properties.
+ * Dynamically switch its primitive type between ````"points"````, ````"lines"```` and ````"triangles"```` at any time by
+ updating its {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} property.
+ 
  ## Examples
 
- <ul>
- <li>[Rendering a BoundaryGeometry](../../examples/#geometry_BoundaryGeometry)</li>
- </ul>
 
- ## Usage
+ * [Textured TorusGeometry](../../examples/#geometry_primitives_torus)
 
- An {{#crossLink "Entity"}}{{/crossLink}} with a BoundaryGeometry that shows the extents of the
- World-space {{#crossLink "Boundary3D"}}{{/crossLink}} of another {{#crossLink "Entity"}}{{/crossLink}}:
-
- ````javascript
-
- // First Entity with a BoxGeometry
- var box = new xeogl.Entity({
-     geometry: new xeogl.BoxGeometry({
-        xSize: 1,
-        ySize: 1,
-        zSize: 1
-     })
- });
-
- // World-space boundary of the first entity
- var worldBoundary = box.worldBoundary;
-
- // Second Entity with a BoundaryGeometry that shows a wireframe box
- // for the World-space boundary of the first Entity
-
- new xeogl.Entity({
-
-     geometry: new xeogl.BoundaryGeometry({
-         boundary: worldBoundary
-     }),
-
-     material: new xeogl.PhongMaterial({
-         diffuse: [0.5, 1.0, 0.5],
-         emissive: [0.5, 1.0, 0.5],
-         lineWidth:2
-     })
- });
- ````
-
- @class BoundaryGeometry
- @module xeogl
- @submodule geometry
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this BoundaryGeometry in the default
- {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
- generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this BoundaryGeometry.
- @param [cfg.boundary] {Boundary3D} ID or instance of a {{#crossLink "Boundary3D"}}{{/crossLink}}
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    xeogl.BoundaryGeometry = xeogl.Geometry.extend({
-
-        type: "xeogl.BoundaryGeometry",
-
-        _init: function (cfg) {
-
-            this._super(cfg);
-
-            this.primitive = cfg.primitive || "lines";
-
-            this.indices = [
-                0, 1, 1, 2, 2, 3, 3, 0, 4,
-                5, 5, 6, 6, 7, 7, 4, 0, 4,
-                1, 5, 2, 6, 3, 7
-            ];
-
-            if (cfg.boundary) {
-                this.boundary = cfg.boundary;
-
-            } else if (cfg.obb) {
-                this.obb = cfg.obb;
-
-            } else if (cfg.aabb) {
-                this.aabb = cfg.aabb;
-
-            } else if (cfg.positions) {
-                this.positions = cfg.positions;
-
-            } else {
-                this.positions = [
-                    1.0, 1.0, 1.0,
-                    1.0, -1.0, 1.0,
-                    -1.0, -1.0, 1.0,
-                    -1.0, 1.0, 1.0,
-                    1.0, 1.0, -1.0,
-                    1.0, -1.0, -1.0,
-                    -1.0, -1.0, -1.0,
-                    -1.0, 1.0, -1.0
-                ];
-            }
-        },
-
-        _props: {
-
-            /**
-             * The {{#crossLink "Boundary3D"}}{{/crossLink}} we are showing.
-             *
-             * Fires a {{#crossLink "BoundaryGeometry/boundary:event"}}{{/crossLink}} event on change.
-             *
-             * @property Boundary3D
-             * @type Boundary3D
-             */
-            boundary: {
-
-                set: function (value) {
-
-                    var geometryDirty = false;
-                    var self = this;
-
-                    this._attach({
-                        name: "boundary",
-                        type: "xeogl.Boundary3D",
-                        component: value,
-                        sceneDefault: false,
-                        on: {
-                            updated: function () {
-                                if (geometryDirty) {
-                                    return;
-                                }
-                                geometryDirty = true;
-                                xeogl.scheduleTask(function () {
-                                    self._setPositionsFromOBB(self._attached.boundary.obb);
-                                    geometryDirty = false;
-                                });
-                            }
-                        },
-                        onAttached: function () {
-                            self._setPositionsFromOBB(self._attached.boundary.obb);
-                        }
-                    });
-                },
-
-                get: function () {
-                    return this._attached.boundary;
-                }
-            },
-
-            /**
-             * The {{#crossLink "Boundary3D"}}{{/crossLink}} we are showing.
-             *
-             * Fires a {{#crossLink "BoundaryGeometry/boundary:event"}}{{/crossLink}} event on change.
-             *
-             * @property Boundary3D
-             * @type Boundary3D
-             */
-            obb: {
-
-                set: function (value) {
-
-                    if (!value) {
-                        return;
-                    }
-
-                    if (this._attached.boundary) {
-                        this.boundary = null;
-                    }
-
-                    this._setPositionsFromOBB(value);
-                }
-            },
-
-            /**
-             * Assign to an Axis-aligned bounding-box
-             *
-             * @property aabb
-             * @type Boundary3D
-             */
-            aabb: {
-
-                set: function (value) {
-
-                    if (!value) {
-                        return;
-                    }
-
-                    if (this._attached.boundary) {
-                        this.boundary = null;
-                    }
-
-                    this._setPositionsFromAABB(value);
-                }
-            }
-        },
-
-        _setPositionsFromOBB: function (obb) {
-            this.positions = [
-                obb[0][0], obb[0][1], obb[0][2],
-                obb[1][0], obb[1][1], obb[1][2],
-                obb[2][0], obb[2][1], obb[2][2],
-                obb[3][0], obb[3][1], obb[3][2],
-                obb[4][0], obb[4][1], obb[4][2],
-                obb[5][0], obb[5][1], obb[5][2],
-                obb[6][0], obb[6][1], obb[6][2],
-                obb[7][0], obb[7][1], obb[7][2]
-            ];
-        },
-
-        _setPositionsFromAABB: function (aabb) {
-            this.positions = [
-                aabb.max[0], aabb.max[1], aabb.max[2],
-                aabb.max[0], aabb.min[1], aabb.max[2],
-                aabb.min[0], aabb.min[1], aabb.max[2],
-                aabb.min[0], aabb.max[1], aabb.max[2],
-                aabb.max[0], aabb.max[1], aabb.min[2],
-                aabb.max[0], aabb.min[1], aabb.min[2],
-                aabb.min[0], aabb.min[1], aabb.min[2],
-                aabb.min[0], aabb.max[1], aabb.min[2]
-            ];
-        },
-
-        _getJSON: function () {
-
-            var json = {};
-
-            if (this._attached.boundary) {
-                json.boundary = this._attached.boundary.id;
-
-            } else if (json.positions) {
-                json.positions = this.positions;
-            }
-
-            return json;
-        },
-
-        _destroy: function () {
-
-            if (this._attached.boundary) {
-                this._attached.boundary.off(this._onBoundaryUpdated);
-                this._attached.boundary.off(this._onBoundaryDestroyed);
-            }
-
-            this._super();
-        }
-    });
-})();
-;/**
- A **TorusGeometry** defines torus-shaped geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
-
- ## Examples
-
- <ul>
- <li>[Textured TorusGeometry](../../examples/#geometry_TorusGeometry)</li>
- </ul>
 
  ## Usage
 
@@ -21244,6 +22940,7 @@ visibility.destroy();
  new xeogl.Entity({
 
      geometry: new xeogl.TorusGeometry({
+         center: [0,0,0],
          radius: 1.0,
          tube: 0.3,
          radialSegments: 32,
@@ -21269,7 +22966,8 @@ visibility.destroy();
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this TorusGeometry.
- @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
+ @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values for a TorusGeometry are 'points', 'lines' and 'triangles'.
+ @param [cfg.center] {Float32Array} 3D point indicating the center position of the TorusGeometry.
  @param [cfg.radius=1] {Number} The overall radius of the TorusGeometry.
  @param [cfg.tube=0.3] {Number} The tube radius of the TorusGeometry.
  @param [cfg.radialSegments=32] {Number} The number of radial segments that make up the TorusGeometry.
@@ -21291,6 +22989,7 @@ visibility.destroy();
             this._super(cfg);
 
             this.lod = cfg.lod;
+            this.center = cfg.center;
             this.radius = cfg.radius;
             this.tube = cfg.tube;
             this.radialSegments = cfg.radialSegments;
@@ -21305,6 +23004,10 @@ visibility.destroy();
          * @protected
          */
         _update: function () {
+
+            var xCenter = this._center[0];
+            var yCenter = this._center[1];
+            var zCenter = this._center[2];
 
             var radius = this._radius;
             var tube = this._tube;
@@ -21351,9 +23054,9 @@ visibility.destroy();
                     y = (radius + tube * Math.cos(v) ) * Math.sin(u);
                     z = tube * Math.sin(v);
 
-                    positions.push(x);
-                    positions.push(y);
-                    positions.push(z);
+                    positions.push(x + xCenter);
+                    positions.push(y + yCenter);
+                    positions.push(z + zCenter);
 
                     uvs.push(1 - (i / tubeSegments));
                     uvs.push(1 - (j / radialSegments));
@@ -21436,6 +23139,36 @@ visibility.destroy();
 
                 get: function () {
                     return this._lod;
+                }
+            },
+
+            /**
+             * 3D point indicating the center position of this TorusGeometry.
+             *
+             * Fires an {{#crossLink "TorusGeometry/center:event"}}{{/crossLink}} event on change.
+             *
+             * @property center
+             * @default [0,0,0]
+             * @type {Float32Array}
+             */
+            center: {
+
+                set: function (value) {
+
+                    (this._center = this._center || new xeogl.math.vec3()).set(value || [0, 0, 0]);
+
+                    this._scheduleUpdate();
+
+                    /**
+                     Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/center:property"}}{{/crossLink}} property changes.
+                     @event center
+                     @param value {Float32Array} The property's new value
+                     */
+                    this.fire("center", this._center);
+                },
+
+                get: function () {
+                    return this._center;
                 }
             },
 
@@ -21655,6 +23388,7 @@ visibility.destroy();
         _getJSON: function () {
             return {
                 // Don't save lod
+                center: this._center.slice(),
                 radius: this._radius,
                 tube: this._tube,
                 radialSegments: this._radialSegments,
@@ -21666,13 +23400,22 @@ visibility.destroy();
 
 })();
 ;/**
- A **SphereGeometry** defines spherical geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **SphereGeometry** is a parameterized {{#crossLink "Geometry"}}{{/crossLink}} that defines a sphere-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
+ <a href="../../examples/#geometry_SphereGeometry"><img src="../../assets/images/screenshots/SphereGeometry.png"></img></a>
+
+ ## Overview
+ 
+ * Dynamically modify a SphereGeometry's shape at any time by updating its {{#crossLink "SphereGeometry/center:property"}}{{/crossLink}}, {{#crossLink "SphereGeometry/radius:property"}}{{/crossLink}}, {{#crossLink "SphereGeometry/heightSegments:property"}}{{/crossLink}} and
+ {{#crossLink "SphereGeometry/widthSegments:property"}}{{/crossLink}} properties.
+ * Dynamically switch its primitive type between ````"points"````, ````"lines"```` and ````"triangles"```` at any time by
+ updating its {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} property.
+ 
  ## Examples
 
- <ul>
- <li>[Textured SphereGeometry](../../examples/#geometry_SphereGeometry)</li>
- </ul>
+
+ * [Textured SphereGeometry](../../examples/#geometry_SphereGeometry)
+
 
  ## Usage
 
@@ -21683,6 +23426,7 @@ visibility.destroy();
  new xeogl.Entity({
 
      geometry: new xeogl.SphereGeometry({
+         center: [0,0,0],
          radius: 1.5,
          heightSegments: 60,
          widthSegments: 60
@@ -21706,10 +23450,11 @@ visibility.destroy();
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this SphereGeometry.
- @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
+ @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values for a SphereGeometry are 'points', 'lines' and 'triangles'.
+ @param [cfg.center] {Float32Array} 3D point indicating the center position of the SphereGeometry.
  @param [cfg.radius=1] {Number}
- @param [cfg.heightSegments=24] {Number}
- @param [cfg.widthSegments=18] {Number}
+ @param [cfg.heightSegments=24] {Number} The SphereGeometry's number of latitudinal bands.
+ @param [cfg.widthSegments=18] {Number} The SphereGeometry's number of longitudinal bands.
  @param [cfg.lod=1] {Number} Level-of-detail, in range [0..1].
  @extends Geometry
  */
@@ -21726,6 +23471,7 @@ visibility.destroy();
             this._super(cfg);
 
             this.lod = cfg.lod;
+            this.center = cfg.center;
             this.radius = cfg.radius;
             this.heightSegments = cfg.heightSegments;
             this.widthSegments = cfg.widthSegments;
@@ -21771,6 +23517,10 @@ visibility.destroy();
             var y;
             var z;
 
+            var xCenter = this._center[0];
+            var yCenter = this._center[1];
+            var zCenter = this._center[2];
+
             var u;
             var v;
 
@@ -21802,9 +23552,9 @@ visibility.destroy();
                     uvs.push(u);
                     uvs.push(v);
 
-                    positions.push(radius * x);
-                    positions.push(radius * y);
-                    positions.push(radius * z);
+                    positions.push(xCenter + radius * x);
+                    positions.push(yCenter + radius * y);
+                    positions.push(zCenter + radius * z);
                 }
             }
 
@@ -21874,6 +23624,36 @@ visibility.destroy();
             },
 
             /**
+             * 3D point indicating the center position of this SphereGeometry.
+             *
+             * Fires an {{#crossLink "SphereGeometry/center:event"}}{{/crossLink}} event on change.
+             *
+             * @property center
+             * @default [0,0,0]
+             * @type {Float32Array}
+             */
+            center: {
+
+                set: function (value) {
+
+                    (this._center = this._center || new xeogl.math.vec3()).set(value || [0, 0, 0]);
+
+                    this._scheduleUpdate();
+
+                    /**
+                     Fired whenever this SphereGeometry's {{#crossLink "SphereGeometry/center:property"}}{{/crossLink}} property changes.
+                     @event center
+                     @param value {Float32Array} The property's new value
+                     */
+                    this.fire("center", this._center);
+                },
+
+                get: function () {
+                    return this._center;
+                }
+            },
+            
+            /**
              * The SphereGeometry's radius.
              *
              * Fires a {{#crossLink "SphereGeometry/radius:event"}}{{/crossLink}} event on change.
@@ -21917,7 +23697,7 @@ visibility.destroy();
 
 
             /**
-             * The SphereGeometry's number of latitude bands.
+             * The SphereGeometry's number of latitudinal bands.
              *
              * Fires a {{#crossLink "SphereGeometry/heightSegments:event"}}{{/crossLink}} event on change.
              *
@@ -21959,7 +23739,7 @@ visibility.destroy();
             },
 
             /**
-             * The SphereGeometry's number of longitude bands.
+             * The SphereGeometry's number of longitudinal bands.
              *
              * Fires a {{#crossLink "SphereGeometry/widthSegments:event"}}{{/crossLink}} event on change.
              *
@@ -22004,6 +23784,7 @@ visibility.destroy();
         _getJSON: function () {
             return {
                 // Don't save lod
+                center: this._center.slice(),
                 radius: this._radius,
                 heightSegments: this._heightSegments,
                 widthSegments: this._widthSegments
@@ -22011,6 +23792,698 @@ visibility.destroy();
         }
     });
 
+})();
+;/**
+ An **BoundingSphereGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that shows the extents of a World-space bounding sphere.
+
+ <a href="../../examples/#boundaries_entity_world_sphere"><img src="http://i.giphy.com/3oz8xRv4g56Y4pZKWk.gif"></img></a>
+
+ ## Overview
+
+ * A sphere is given as a four-element Float32Array containing elements````[x,y,z,radius]````.
+ * Set the BoundingSphereGeometry's {{#crossLink "BoundingSphereGeometry/sphere:property"}}{{/crossLink}} property to a sphere to fix the BoundingSphereGeometry to those extents, or
+ * Set the BoundingSphereGeometry's {{#crossLink "BoundingSphereGeometry/boundary:property"}}{{/crossLink}} property to a {{#crossLink "Boundary3D"}}{{/crossLink}}
+ to make it dynamically fit itself to changes in the {{#crossLink "Boundary3D"}}{{/crossLink}}'s {{#crossLink "Boundary3D/sphere:property"}}{{/crossLink}} extents.
+
+ ## Examples
+
+ * [Rendering a BoundingSphereGeometry](../../examples/#boundaries_entity_world_sphere)
+
+ ## Usage
+
+ In the example below we'll render a transparent {{#crossLink "Entity"}}{{/crossLink}} with a BoundingSphereGeometry that shows the spherical extents of the
+ World-space {{#crossLink "Boundary3D"}}{{/crossLink}} of another {{#crossLink "Entity"}}{{/crossLink}}:
+
+ ````javascript
+ // First Entity with a TorusGeometry
+ var torus = new xeogl.Entity({
+     geometry: new xeogl.TorusGeometry()
+ });
+
+ // Second Entity with an BoundingSphereGeometry that shows a wireframe box
+ // for the World-space boundary of the first Entity
+
+ var boundaryHelper = new xeogl.Entity({
+
+     geometry: new xeogl.BoundingSphereGeometry({
+         boundary: torus.worldBoundary
+     }),
+
+     material: new xeogl.PhongMaterial({
+         diffuse: [0.5, 1.0, 0.5],
+         emissive: [0.5, 1.0, 0.5],
+         opacity: 0.4
+     }),
+
+     modes: new xeogl.Modes({
+        transparent: true
+     })
+ });
+ ````
+
+ Now whenever our torus {{#crossLink "Entity"}}{{/crossLink}} changes shape or position, our BoundingSphereGeometry will automatically
+ update to stay fitted to it.
+
+ As shown below, we can also directly configure the BoundingSphereGeometry with
+ the {{#crossLink "Boundary3D"}}{{/crossLink}}'s {{#crossLink "Boundary3D/aabb:property"}}AABB{{/crossLink}}. In this second example, we'll
+ show the sphere as wireframe.
+
+ ````javascript
+ var boundaryHelper2 = new xeogl.Entity({
+
+     geometry: new xeogl.BoundingSphereGeometry({
+         boundary: torus.worldBoundary.sphere,
+         primitive: "lines"
+     }),
+
+     material: new xeogl.PhongMaterial({
+         diffuse: [0.5, 1.0, 0.5],
+         emissive: [0.5, 1.0, 0.5],
+         lineWidth:2
+     })
+ });
+ ````
+ Note that, without the reference to a {{#crossLink "Boundary3D"}}{{/crossLink}}, our second BoundingSphereGeometry is fixed to the
+ given AABB and will not automatically update whenever our torus {{#crossLink "Entity"}}{{/crossLink}} changes shape or position.
+
+ @class BoundingSphereGeometry
+ @module xeogl
+ @submodule geometry
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this BoundingSphereGeometry in the default
+ {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
+ generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this BoundingSphereGeometry.
+ @param [cfg.boundary] {Number|String|Boundary3D} ID or instance of a {{#crossLink "Boundary3D"}}{{/crossLink}}.
+ @param [cfg.aabb] {Float32Array} An axis-aligned box (AABB) in a six-element Float32Array
+ containing the min/max extents of the axis-aligned volume, ie. ````(xmin,ymin,zmin,xmax,ymax,zmax)````.
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    xeogl.BoundingSphereGeometry = xeogl.SphereGeometry.extend({
+
+        type: "xeogl.BoundingSphereGeometry",
+
+        _init: function (cfg) {
+
+            this._super(cfg);
+
+           // this.primitive = cfg.primitive || "lines";
+
+            if (cfg.boundary) {
+                this.boundary = cfg.boundary;
+
+            } else if (cfg.sphere) {
+                this.sphere = cfg.sphere;
+            }
+        },
+
+        _props: {
+
+            /**
+             A {{#crossLink "Boundary3D"}}{{/crossLink}} whose {{#crossLink "Boundary3D/aabb:property"}}OBB{{/crossLink}} we'll
+             dynamically fit this OBBGeometry to.
+
+             This property effectively replaces the {{#crossLink "BoundingSphereGeometry/aabb:property"}}{{/crossLink}} property.
+
+             Fires a {{#crossLink "BoundingSphereGeometry/boundary:event"}}{{/crossLink}} event on change.
+
+             @property boundary
+             @type Boundary3D
+             */
+            boundary: {
+
+                set: function (value) {
+
+                    var geometryDirty = false;
+                    var self = this;
+
+                    /**
+                     * Fired whenever this BoundingSphereGeometry's {{#crossLink "BoundingSphereGeometry/boundary:property"}}{{/crossLink}}
+                     * property changes.
+                     *
+                     * @event boundary
+                     * @param value The property's new value
+                     */
+                    this._attach({
+                        name: "boundary",
+                        type: "xeogl.Boundary3D",
+                        component: value,
+                        sceneDefault: false,
+                        on: {
+                            updated: function () {
+                                if (geometryDirty) {
+                                    return;
+                                }
+                                geometryDirty = true;
+                                xeogl.scheduleTask(function () {
+                                    self._setFromSphere(self._attached.boundary.sphere);
+                                    geometryDirty = false;
+                                });
+                            }
+                        },
+                        onAttached: function () {
+                            self._setFromSphere(self._attached.boundary.sphere);
+                        }
+                    });
+                },
+
+                get: function () {
+                    return this._attached.boundary;
+                }
+            },
+
+            /**
+             Sets this BoundingSphereGeometry to an axis-aligned box (SPHERE), given as a six-element Float32Array
+             containing the min/max extents of the
+             axis-aligned volume, ie. ````[xmin,ymin,zmin,xmax,ymax,zmax]````.
+
+             This property overrides the {{#crossLink "BoundingSphereGeometry/boundary:property"}}{{/crossLink}} property, causing it to become null.
+
+             @property sphere
+             @type Float32Array
+             */
+            sphere: {
+
+                set: function (value) {
+
+                    if (!value) {
+                        return;
+                    }
+
+                    if (this._attached.boundary) {
+                        this.boundary = null;
+                    }
+
+                    this._setFromSphere(value);
+                }
+            }
+        },
+
+        _setFromSphere: (function () {
+
+            var vec3 = xeogl.math.vec3();
+
+            return function (sphere) {
+
+                vec3[0] = sphere[0];
+                vec3[1] = sphere[1];
+                vec3[2] = sphere[2];
+
+                this.center = vec3;
+                this.radius = sphere[4];
+            };
+        })()
+
+        //_getJSON: function () {
+        //
+        //    var json = {};
+        //
+        //    if (this._attached.boundary) {
+        //        json.boundary = this._attached.boundary.id;
+        //
+        //    } else if (this.positions) {
+        //        this.positions = this.positions;
+        //    }
+        //
+        //    return json;
+        //},
+
+    });
+})();
+;/**
+ An **OBBGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that shows the extents of a World-space entity-oriented bounding box (OBB).
+
+ <a href="../../examples/#geometry_primitives_OBBGeometry"><img src="http://i.giphy.com/3o6ZsSVy0NKXZ1vDSo.gif"></img></a>
+
+ ## Overview
+
+ * A World-space OBB a bounding box that's oriented to its contents, given as a 32-element array containing the homogeneous coordinates for the eight corner vertices, ie. each having elements [x,y,z,w].
+ * Set an OBBGeometry's {{#crossLink "OBBGeometry/obb:property"}}{{/crossLink}} property to an OBB to fix it to those extents, or
+ * Set an OBBGeometry's {{#crossLink "OBBGeometry/boundary:property"}}{{/crossLink}} property to a {{#crossLink "Boundary3D"}}{{/crossLink}}
+ to make it dynamically fit itself to changes in the {{#crossLink "Boundary3D"}}{{/crossLink}}'s {{#crossLink "Boundary3D/obb:property"}}{{/crossLink}} extents.
+
+ ## Examples
+
+ * [Rendering an OBBGeometry](../../examples/#geometry_primitives_OBBGeometry)
+
+ ## Usage
+
+ An {{#crossLink "Entity"}}{{/crossLink}} with a OBBGeometry that shows the extents of the
+ World-space {{#crossLink "Boundary3D"}}{{/crossLink}} of another {{#crossLink "Entity"}}{{/crossLink}}:
+
+ ````javascript
+ // First Entity with a TorusGeometry
+ var torus = new xeogl.Entity({
+     geometry: new xeogl.TorusGeometry()
+ });
+
+ // Second Entity with an OBBGeometry that shows a wireframe box
+ // for the World-space boundary of the first Entity
+
+ var boundaryHelper = new xeogl.Entity({
+
+     geometry: new xeogl.OBBGeometry({
+         boundary: torus.worldBoundary
+     }),
+
+     material: new xeogl.PhongMaterial({
+         diffuse: [0.5, 1.0, 0.5],
+         emissive: [0.5, 1.0, 0.5],
+         lineWidth:2
+     })
+ });
+ ````
+
+ Now whenever our torus {{#crossLink "Entity"}}{{/crossLink}} changes shape or position, our OBBGeometry will automatically
+ update to stay fitted to it.
+
+ We could also directly configure the OBBGeometry with
+ the {{#crossLink "Boundary3D"}}{{/crossLink}}'s {{#crossLink "Boundary3D/obb:property"}}OBB{{/crossLink}}:
+
+ ````javascript
+ var boundaryHelper2 = new xeogl.Entity({
+
+     geometry: new xeogl.OBBGeometry({
+         boundary: torus.worldBoundary.obb
+     }),
+
+     material: new xeogl.PhongMaterial({
+         diffuse: [0.5, 1.0, 0.5],
+         emissive: [0.5, 1.0, 0.5],
+         lineWidth:2
+     })
+ });
+ ````
+ Note that, without the reference to a {{#crossLink "Boundary3D"}}{{/crossLink}}, our second OBBGeometry is fixed to the
+ given OBB and will not automatically update whenever our torus {{#crossLink "Entity"}}{{/crossLink}} changes shape or position.
+
+ @class OBBGeometry
+ @module xeogl
+ @submodule geometry
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this OBBGeometry in the default
+ {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
+ generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this OBBGeometry.
+ @param [cfg.boundary] {Number|String|Boundary3D} ID or instance of a {{#crossLink "Boundary3D"}}{{/crossLink}}.
+ @param [cfg.obb] {Float32Array} An entity-oriented box (OBB) in a 32-element Float32Array
+ containing homogeneous coordinates for the eight corner vertices, ie. each having elements (x,y,z,w).
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    xeogl.OBBGeometry = xeogl.Geometry.extend({
+
+        type: "xeogl.OBBGeometry",
+
+        _init: function (cfg) {
+
+            this._super(cfg);
+
+            this.primitive = cfg.primitive || "lines";
+
+            this.indices = [
+                0, 1, 1, 2, 2, 3, 3, 0, 4,
+                5, 5, 6, 6, 7, 7, 4, 0, 4,
+                1, 5, 2, 6, 3, 7
+            ];
+
+            if (cfg.boundary) {
+                this.boundary = cfg.boundary;
+
+            } else if (cfg.obb) {
+                this.obb = cfg.obb;
+
+            } else if (cfg.positions) {
+                this.positions = cfg.positions;
+
+            } else {
+                this.positions = [
+                    1.0, 1.0, 1.0,
+                    1.0, -1.0, 1.0,
+                    -1.0, -1.0, 1.0,
+                    -1.0, 1.0, 1.0,
+                    1.0, 1.0, -1.0,
+                    1.0, -1.0, -1.0,
+                    -1.0, -1.0, -1.0,
+                    -1.0, 1.0, -1.0
+                ];
+            }
+        },
+
+        _props: {
+
+            /**
+             A {{#crossLink "Boundary3D"}}{{/crossLink}} whose {{#crossLink "Boundary3D/obb:property"}}OBB{{/crossLink}} we'll
+             dynamically fit this OBBGeometry to.
+
+             This property effectively replaces the {{#crossLink "OBBGeometry/obb:property"}}{{/crossLink}} property.
+
+             Fires a {{#crossLink "OBBGeometry/boundary:event"}}{{/crossLink}} event on change.
+
+             @property boundary
+             @type Boundary3D
+             */
+            boundary: {
+
+                set: function (value) {
+
+                    var geometryDirty = false;
+                    var self = this;
+
+                    /**
+                     * Fired whenever this OBBGeometry's {{#crossLink "OBBGeometry/boundary:property"}}{{/crossLink}}
+                     * property changes.
+                     *
+                     * @event boundary
+                     * @param value The property's new value
+                     */
+                    this._attach({
+                        name: "boundary",
+                        type: "xeogl.Boundary3D",
+                        component: value,
+                        sceneDefault: false,
+                        on: {
+                            updated: function () {
+                                if (geometryDirty) {
+                                    return;
+                                }
+                                geometryDirty = true;
+                                xeogl.scheduleTask(function () {
+                                    self._setPositionsFromOBB(self._attached.boundary.obb);
+                                    geometryDirty = false;
+                                });
+                            }
+                        },
+                        onAttached: function () {
+                            self._setPositionsFromOBB(self._attached.boundary.obb);
+                        }
+                    });
+                },
+
+                get: function () {
+                    return this._attached.boundary;
+                }
+            },
+
+            /**
+             Sets this OBBGeometry to an entity-oriented bounding box (OBB), given as a 32-element Float32Array
+             containing homogeneous coordinates for the eight corner vertices, ie. each having elements [x,y,z,w].
+
+             This property effectively replaces the {{#crossLink "OBBGeometry/boundary:property"}}{{/crossLink}} property, causing it to become null.
+
+             @property obb
+             @type Float32Array
+             */
+            obb: {
+
+                set: function (value) {
+
+                    if (!value) {
+                        return;
+                    }
+
+                    if (this._attached.boundary) {
+                        this.boundary = null;
+                    }
+
+                    this._setPositionsFromOBB(value);
+                }
+            }
+        },
+
+        _setPositionsFromOBB: function (obb) {
+            this.positions = [
+                obb[0], obb[1], obb[2],
+                obb[4], obb[5], obb[6],
+                obb[8], obb[9], obb[10],
+                obb[12], obb[13], obb[14],
+                obb[16], obb[17], obb[18],
+                obb[20], obb[21], obb[22],
+                obb[24], obb[25], obb[26],
+                obb[28], obb[29], obb[30]
+            ];
+        },
+
+        _getJSON: function () {
+
+            var json = {};
+
+            if (this._attached.boundary) {
+                json.boundary = this._attached.boundary.id;
+
+            } else if (this.positions) {
+                json.positions = this.positions;
+            }
+
+            return json;
+        }
+    });
+})();
+;/**
+ An **AABBGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that shows the extents of a World-space axis-aligned bounding box (AABB).
+
+ <a href="../../examples/#geometry_primitives_AABBGeometry"><img src="http://i.giphy.com/3o6ZsSVy0NKXZ1vDSo.gif"></img></a>
+
+ ## Overview
+
+ * A World-space AABB is an axis-aligned box given as a six-element array containing the min/max extents of an axis-aligned volume, ie. ````[xmin,ymin,zmin,xmax,ymax,zmax]````.
+ * Set a AABBGeometry's {{#crossLink "AABBGeometry/aabb:property"}}{{/crossLink}} property to an AABB to fix the AABBGeometry to those extents, or
+ * set a AABBGeometry's {{#crossLink "AABBGeometry/boundary:property"}}{{/crossLink}} property to a {{#crossLink "Boundary3D"}}{{/crossLink}}
+ to make it dynamically fit itself to changes in the {{#crossLink "Boundary3D"}}{{/crossLink}}'s {{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}} extents.
+
+ ## Examples
+
+ * [Rendering an AABBGeometry](../../examples/#geometry_primitives_AABBGeometry)
+
+ ## Usage
+
+ An {{#crossLink "Entity"}}{{/crossLink}} with a AABBGeometry that shows the extents of the
+ World-space {{#crossLink "Boundary3D"}}{{/crossLink}} of another {{#crossLink "Entity"}}{{/crossLink}}:
+
+ ````javascript
+ // First Entity with a TorusGeometry
+ var torus = new xeogl.Entity({
+     geometry: new xeogl.TorusGeometry()
+ });
+
+ // Second Entity with an AABBGeometry that shows a wireframe box
+ // for the World-space boundary of the first Entity
+
+ var boundaryHelper = new xeogl.Entity({
+
+     geometry: new xeogl.AABBGeometry({
+         boundary: torus.worldBoundary
+     }),
+
+     material: new xeogl.PhongMaterial({
+         diffuse: [0.5, 1.0, 0.5],
+         emissive: [0.5, 1.0, 0.5],
+         lineWidth:2
+     })
+ });
+ ````
+
+ Now whenever our torus {{#crossLink "Entity"}}{{/crossLink}} changes shape or position, our AABBGeometry will automatically
+ update to stay fitted to it.
+
+ We could also directly configure the AABBGeometry with
+ the {{#crossLink "Boundary3D"}}{{/crossLink}}'s {{#crossLink "Boundary3D/aabb:property"}}AABB{{/crossLink}}:
+
+ ````javascript
+ var boundaryHelper2 = new xeogl.Entity({
+
+     geometry: new xeogl.AABBGeometry({
+         boundary: torus.worldBoundary.aabb
+     }),
+
+     material: new xeogl.PhongMaterial({
+         diffuse: [0.5, 1.0, 0.5],
+         emissive: [0.5, 1.0, 0.5],
+         lineWidth:2
+     })
+ });
+ ````
+ Note that, without the reference to a {{#crossLink "Boundary3D"}}{{/crossLink}}, our second AABBGeometry is fixed to the
+ given AABB and will not automatically update whenever our torus {{#crossLink "Entity"}}{{/crossLink}} changes shape or position.
+
+ @class AABBGeometry
+ @module xeogl
+ @submodule geometry
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this AABBGeometry in the default
+ {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
+ generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this AABBGeometry.
+ @param [cfg.boundary] {Number|String|Boundary3D} ID or instance of a {{#crossLink "Boundary3D"}}{{/crossLink}}.
+ @param [cfg.aabb] {Float32Array} An axis-aligned box (AABB) in a six-element Float32Array
+ containing the min/max extents of the axis-aligned volume, ie. ````(xmin,ymin,zmin,xmax,ymax,zmax)````.
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    xeogl.AABBGeometry = xeogl.Geometry.extend({
+
+        type: "xeogl.AABBGeometry",
+
+        _init: function (cfg) {
+
+            this._super(cfg);
+
+            this.primitive = cfg.primitive || "lines";
+
+            this.indices = [
+                0, 1, 1, 2, 2, 3, 3, 0, 4,
+                5, 5, 6, 6, 7, 7, 4, 0, 4,
+                1, 5, 2, 6, 3, 7
+            ];
+
+            if (cfg.boundary) {
+                this.boundary = cfg.boundary;
+
+            } else if (cfg.aabb) {
+                this.aabb = cfg.aabb;
+
+            } else if (cfg.positions) {
+                this.positions = cfg.positions;
+
+            } else {
+                this.positions = [
+                    1.0, 1.0, 1.0,
+                    1.0, -1.0, 1.0,
+                    -1.0, -1.0, 1.0,
+                    -1.0, 1.0, 1.0,
+                    1.0, 1.0, -1.0,
+                    1.0, -1.0, -1.0,
+                    -1.0, -1.0, -1.0,
+                    -1.0, 1.0, -1.0
+                ];
+            }
+        },
+
+        _props: {
+
+            /**
+             A {{#crossLink "Boundary3D"}}{{/crossLink}} whose {{#crossLink "Boundary3D/aabb:property"}}OBB{{/crossLink}} we'll
+             dynamically fit this OBBGeometry to.
+
+             This property effectively replaces the {{#crossLink "AABBGeometry/aabb:property"}}{{/crossLink}} property.
+
+             Fires a {{#crossLink "AABBGeometry/boundary:event"}}{{/crossLink}} event on change.
+
+             @property boundary
+             @type Boundary3D
+             */
+            boundary: {
+
+                set: function (value) {
+
+                    var geometryDirty = false;
+                    var self = this;
+
+                    /**
+                     * Fired whenever this AABBGeometry's {{#crossLink "AABBGeometry/boundary:property"}}{{/crossLink}}
+                     * property changes.
+                     *
+                     * @event boundary
+                     * @param value The property's new value
+                     */
+                    this._attach({
+                        name: "boundary",
+                        type: "xeogl.Boundary3D",
+                        component: value,
+                        sceneDefault: false,
+                        on: {
+                            updated: function () {
+                                if (geometryDirty) {
+                                    return;
+                                }
+                                geometryDirty = true;
+                                xeogl.scheduleTask(function () {
+                                    self._setPositionsFromAABB(self._attached.boundary.aabb);
+                                    geometryDirty = false;
+                                });
+                            }
+                        },
+                        onAttached: function () {
+                            self._setPositionsFromAABB(self._attached.boundary.aabb);
+                        }
+                    });
+                },
+
+                get: function () {
+                    return this._attached.boundary;
+                }
+            },
+
+            /**
+             Sets this AABBGeometry to an axis-aligned box (AABB), given as a six-element Float32Array
+             containing the min/max extents of the
+             axis-aligned volume, ie. ````[xmin,ymin,zmin,xmax,ymax,zmax]````.
+
+             This property overrides the {{#crossLink "AABBGeometry/boundary:property"}}{{/crossLink}} property, causing it to become null.
+
+             @property aabb
+             @type Float32Array
+             */
+            aabb: {
+
+                set: function (value) {
+
+                    if (!value) {
+                        return;
+                    }
+
+                    if (this._attached.boundary) {
+                        this.boundary = null;
+                    }
+
+                    this._setPositionsFromAABB(value);
+                }
+            }
+        },
+
+        _setPositionsFromAABB: function (aabb) {
+            this.positions = [
+                aabb[3], aabb[4], aabb[5],
+                aabb[3], aabb[1], aabb[5],
+                aabb[0], aabb[1], aabb[5],
+                aabb[0], aabb[4], aabb[5],
+                aabb[3], aabb[4], aabb[2],
+                aabb[3], aabb[1], aabb[2],
+                aabb[0], aabb[1], aabb[2],
+                aabb[0], aabb[4], aabb[2]
+            ];
+        },
+
+        _getJSON: function () {
+
+            var json = {};
+
+            if (this._attached.boundary) {
+                json.boundary = this._attached.boundary.id;
+
+            } else if (this.positions) {
+                this.positions = this.positions;
+            }
+
+            return json;
+        }
+    });
 })();
 ;/**
 
@@ -22205,13 +24678,21 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
         return json;
     }
 });;/**
- A **CylinderGeometry** defines cylindrical geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **CylinderGeometry** is a parameterized {{#crossLink "Geometry"}}{{/crossLink}} that defines a cylinder-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+ <a href="../../examples/#geometry_primitives_cylinder"><img src="../../assets/images/screenshots/CylinderGeometry.png"></img></a>
+
+ ## Overview
+
+ * Dynamically modify a CylinderGeometry's shape at any time by updating its {{#crossLink "CylinderGeometry/center:property"}}{{/crossLink}}, {{#crossLink "CylinderGeometry/radiusTop:property"}}{{/crossLink}}, {{#crossLink "CylinderGeometry/radiusBottom:property"}}{{/crossLink}}, {{#crossLink "CylinderGeometry/height:property"}}{{/crossLink}},
+ {{#crossLink "CylinderGeometry/radialSegments:property"}}{{/crossLink}}, {{#crossLink "CylinderGeometry/heightSegments:property"}}{{/crossLink}} and
+ {{#crossLink "CylinderGeometry/openEnded:property"}}{{/crossLink}} properties.
+ * Dynamically switch its primitive type between ````"points"````, ````"lines"```` and ````"triangles"```` at any time by
+ updating its {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} property.
 
  ## Examples
 
- <ul>
- <li>[Textured CylinderGeometry](../../examples/#geometry_CylinderGeometry)</li>
- </ul>
+ * [Textured CylinderGeometry](../../examples/#geometry_primitives_cylinder)
 
  ## Usage
 
@@ -22222,6 +24703,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  new xeogl.Entity({
 
      geometry: new xeogl.CylinderGeometry({
+         center: [0,0,0],
          radiusTop: 2.0,
          radiusBottom: 2.0,
          height: 5.0,
@@ -22248,7 +24730,8 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this CylinderGeometry.
- @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
+ @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values for a CylinderGeometry are 'points', 'lines' and 'triangles'.
+ @param [cfg.center] {Float32Array} 3D point indicating the center position of the CylinderGeometry.
  @param [cfg.radiusTop=1] {Number} Radius of top.
  @param [cfg.radiusBottom=1] {Number} Radius of bottom.
  @param [cfg.height=1] {Number} Height.
@@ -22269,8 +24752,9 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
         _init: function (cfg) {
 
             this._super(cfg);
-
+            this.center = cfg.center;
             this.lod = cfg.lod;
+            this.center = cfg.center;
             this.radiusTop = cfg.radiusTop;
             this.radiusBottom = cfg.radiusBottom;
             this.height = cfg.height;
@@ -22286,6 +24770,10 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
          * @protected
          */
         _update: function () {
+
+            var centerX = this._center[0];
+            var centerY = this._center[1];
+            var centerZ = this._center[2];
 
             var radiusTop = this._radiusTop;
             var radiusBottom = this._radiusBottom;
@@ -22346,19 +24834,23 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
                     normals.push(currentRadius * x);
                     normals.push(normalY); //todo
                     normals.push(currentRadius * z);
-                    uvs.push( (i * radialLength));
-                    uvs.push(1-  h * 1 / heightSegments);
-                    positions.push(currentRadius * x);
-                    positions.push(currentHeight);
-                    positions.push(currentRadius * z);
+
+                    uvs.push((i * radialLength));
+                    uvs.push(1 - h * 1 / heightSegments);
+
+                    positions.push((currentRadius * x) + centerX);
+                    positions.push((currentHeight) + centerY);
+                    positions.push((currentRadius * z) + centerZ);
                 }
             }
 
             // create faces
             for (h = 0; h < heightSegments; h++) {
                 for (i = 0; i <= radialSegments; i++) {
+
                     first = h * (radialSegments + 1) + i;
                     second = first + radialSegments;
+
                     indices.push(first);
                     indices.push(second);
                     indices.push(second + 1);
@@ -22377,11 +24869,13 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
                 normals.push(0.0);
                 normals.push(1.0);
                 normals.push(0.0);
+
                 uvs.push(0.5);
                 uvs.push(0.5);
-                positions.push(0);
-                positions.push(heightHalf);
-                positions.push(0);
+
+                positions.push(0 + centerX);
+                positions.push(heightHalf + centerY);
+                positions.push(0 + centerZ);
 
                 // top triangle fan
                 for (i = 0; i <= radialSegments; i++) {
@@ -22393,16 +24887,19 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
                     normals.push(radiusTop * x);
                     normals.push(1.0);
                     normals.push(radiusTop * z);
+
                     uvs.push(tu);
                     uvs.push(tv);
-                    positions.push(radiusTop * x);
-                    positions.push(heightHalf);
-                    positions.push(radiusTop * z);
+
+                    positions.push((radiusTop * x) + centerX);
+                    positions.push((heightHalf) + centerY);
+                    positions.push((radiusTop * z) + centerZ);
                 }
 
                 for (i = 0; i < radialSegments; i++) {
                     center = startIndex;
                     first = startIndex + 1 + i;
+
                     indices.push(first);
                     indices.push(first + 1);
                     indices.push(center);
@@ -22411,38 +24908,47 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
             // create bottom cap
             if (!openEnded && radiusBottom > 0) {
+
                 startIndex = (positions.length / 3);
 
                 // top center
                 normals.push(0.0);
                 normals.push(-1.0);
                 normals.push(0.0);
+
                 uvs.push(0.5);
                 uvs.push(0.5);
-                positions.push(0);
-                positions.push(0 - heightHalf);
-                positions.push(0);
+
+                positions.push(0 + centerX);
+                positions.push(0 - heightHalf + centerY);
+                positions.push(0 + centerZ);
 
                 // top triangle fan
                 for (i = 0; i <= radialSegments; i++) {
+
                     x = Math.sin(i * radialAngle);
                     z = Math.cos(i * radialAngle);
+
                     tu = (0.5 * Math.sin(i * radialAngle)) + 0.5;
                     tv = (0.5 * Math.cos(i * radialAngle)) + 0.5;
 
                     normals.push(radiusBottom * x);
                     normals.push(-1.0);
                     normals.push(radiusBottom * z);
+
                     uvs.push(tu);
                     uvs.push(tv);
-                    positions.push(radiusBottom * x);
-                    positions.push(0 - heightHalf);
-                    positions.push(radiusBottom * z);
+
+                    positions.push((radiusBottom * x) + centerX);
+                    positions.push((0 - heightHalf) + centerY);
+                    positions.push((radiusBottom * z) + centerZ);
                 }
 
                 for (i = 0; i < radialSegments; i++) {
+
                     center = startIndex;
                     first = startIndex + 1 + i;
+
                     indices.push(center);
                     indices.push(first + 1);
                     indices.push(first);
@@ -22496,6 +25002,36 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
                 get: function () {
                     return this._lod;
+                }
+            },
+
+            /**
+             * 3D point indicating the center position of this CylinderGeometry.
+             *
+             * Fires an {{#crossLink "CylinderGeometry/center:event"}}{{/crossLink}} event on change.
+             *
+             * @property center
+             * @default [0,0,0]
+             * @type {Float32Array}
+             */
+            center: {
+
+                set: function (value) {
+
+                    (this._center = this._center || new xeogl.math.vec3()).set(value || [0, 0, 0]);
+
+                    this._scheduleUpdate();
+
+                    /**
+                     Fired whenever this CylinderGeometry's {{#crossLink "CylinderGeometry/center:property"}}{{/crossLink}} property changes.
+                     @event center
+                     @param value {Float32Array} The property's new value
+                     */
+                    this.fire("center", this._center);
+                },
+
+                get: function () {
+                    return this._center;
                 }
             },
 
@@ -22751,6 +25287,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
         _getJSON: function () {
             return {
                 // Don't save lod
+                center: this._center.slice(),
                 radiusTop: this._radiusTop,
                 radiusBottom: this._radiusBottom,
                 height: this._height,
@@ -22763,13 +25300,21 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
 })();
 ;/**
- A **PlaneGeometry** defines a plane geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **PlaneGeometry** is a parameterized {{#crossLink "Geometry"}}{{/crossLink}} that defines a plane-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
+ <a href="../../examples/#geometry_primitives_plane"><img src="../../assets/images/screenshots/PlaneGeometry.png"></img></a>
+
+ ## Overview
+
+ * A PlaneGeometry lies in the X-Z plane.
+ * Dynamically modify it's shape at any time by updating its {{#crossLink "PlaneGeometry/center:property"}}{{/crossLink}}, {{#crossLink "PlaneGeometry/xSize:property"}}{{/crossLink}}, {{#crossLink "PlaneGeometry/zSize:property"}}{{/crossLink}}, {{#crossLink "PlaneGeometry/xSegments:property"}}{{/crossLink}} and
+ {{#crossLink "PlaneGeometry/zSegments:property"}}{{/crossLink}} properties.
+ * Dynamically switch its primitive type between ````"points"````, ````"lines"```` and ````"triangles"```` at any time by
+ updating its {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} property.
+ 
  ## Examples
 
- <ul>
- <li>[Textured PlaneGeometry](../../examples/#geometry_PlaneGeometry)</li>
- </ul>
+ * [Textured PlaneGeometry](../../examples/#geometry_primitives_plane)
 
  ## Usage
 
@@ -22781,6 +25326,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
      geometry: new xeogl.PlaneGeometry({
          primitive: "triangles",
+         center: [0,0,0],
          xSize: 2,
          zSize: 2,
          xSegments: 10,
@@ -22806,7 +25352,8 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this PlaneGeometry.
- @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
+ @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values for a PlaneGeometry are 'points', 'lines' and 'triangles'.
+ @param [cfg.center] {Float32Array} 3D point indicating the center position of the PlaneGeometry.
  @param [cfg.xSize=1] {Number} Dimension on the X-axis.
  @param [cfg.zSize=1] {Number} Dimension on the Z-axis.
  @param [cfg.xSegments=1] {Number} Number of segments on the X-axis.
@@ -22827,6 +25374,8 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
             this._super(cfg);
 
+            this.center = cfg.center;
+            
             this.xSize = cfg.xSize;
             this.zSize = cfg.zSize;
 
@@ -22846,7 +25395,9 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
          */
         _update: function () {
 
-            // Geometry needs rebuild
+            var centerX = this._center[0];
+            var centerY = this._center[1];
+            var centerZ = this._center[2];
 
             var width = this._xSize;
             var height = this._zSize;
@@ -22897,8 +25448,9 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
                     x = ix * segmentWidth - halfWidth;
 
-                    positions[offset] = x;
-                    positions[offset + 2] = -z;
+                    positions[offset] = x + centerX;
+                    positions[offset + 1] = centerY;
+                    positions[offset + 2] = -z + centerZ;
 
                     normals[offset + 2] = -1;
 
@@ -22983,6 +25535,36 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
                 get: function () {
                     return this._lod;
+                }
+            },
+
+            /**
+             * 3D point indicating the center position of this PlaneGeometry.
+             *
+             * Fires an {{#crossLink "PlaneGeometry/center:event"}}{{/crossLink}} event on change.
+             *
+             * @property center
+             * @default [0,0,0]
+             * @type {Float32Array}
+             */
+            center: {
+
+                set: function (value) {
+
+                    (this._center = this._center || new xeogl.math.vec3()).set(value || [0, 0, 0]);
+
+                    this._scheduleUpdate();
+
+                    /**
+                     Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/center:property"}}{{/crossLink}} property changes.
+                     @event center
+                     @param value {Float32Array} The property's new value
+                     */
+                    this.fire("center", this._center);
+                },
+
+                get: function () {
+                    return this._center;
                 }
             },
 
@@ -23157,6 +25739,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
         _getJSON: function () {
             return {
+                center: this._center.slice(),
                 xSize: this._xSize,
                 zSize: this._zSize,
                 xSegments: this._xSegments,
@@ -23201,7 +25784,6 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  });
  ````
 
- @class LatheGeometry
  @module xeogl
  @submodule geometry
  @constructor
@@ -23542,485 +26124,6 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
 })();
 ;/**
- * Components for managing collections of components.
- *
- * @module xeogl
- * @submodule collections
- */;/**
- A **Collection** is a set of {{#crossLink "Component"}}Components{{/crossLink}}.
-
- <ul>
- <li>A {{#crossLink "Component"}}Component{{/crossLink}} can be included in more than one Collection.</li>
- <li>{{#crossLink "Component"}}Components{{/crossLink}} can be added to a Collection by instance, ID or type.</li>
- <li>A Collection supports iteration over its {{#crossLink "Component"}}Components{{/crossLink}}.</li>
- <li>A {{#crossLink "Model"}}Model{{/crossLink}} stores the {{#crossLink "Component"}}Components{{/crossLink}} it has loaded in a Collection.</li>
- <li>A {{#crossLink "CollectionBoundary"}}CollectionBoundary{{/crossLink}} provides a World-space {{#crossLink "Boundary3D"}}{{/crossLink}} that encloses a Collection.</li>
- </ul>
-
- <img src="../../../assets/images/Collection.png"></img>
-
- ## Examples
-
- <ul>
- <li>[Adding Entities to a Collection](../../examples/#collections_Collection_creating_add)</li>
- <li>[Adding components types to a Collection](../../examples/#collections_Collection_creating_type)</li>
- <li>[Iterating a Collection](../../examples/#boundaries_Collection_iterating)</li>
- <li>[Visualizing World-space boundary of a Collection](../../examples/#boundaries_CollectionBoundary)</li>
- <li>[Visualizing World-space boundaries of a hierarchy of Collections](../../examples/#boundaries_CollectionBoundary_hierarchy)</li>
- </ul>
-
- ## Creating Collections
-
- Our first Collection contains a {{#crossLink "PhongMaterial"}}{{/crossLink}}, added by ID, plus a {{#crossLink "BoxGeometry"}}{{/crossLink}} and
- an {{#crossLink "Entity"}}{{/crossLink}}, both added by instance.
-
- ````javascript
- var material = new xeogl.PhongMaterial({
-     id: "myMaterial",
-     diffuse: [0.5, 0.5, 0.0]
- });
-
- var geometry = new xeogl.BoxGeometry();
-
- var entity = new xeogl.Entity({
-    id: "myEntity",
-    material: material,
-    geometry: geometry
- });
-
- var collection1 = new xeogl.Collection({ // Initialize with the three components
-     components: [
-         "myMaterial",
-         geometry,
-         myEntity
-     ]
- });
- ````
- Our second Collection includes the {{#crossLink "BoxGeometry"}}{{/crossLink}}, added by instance,
- and the {{#crossLink "Entity"}}{{/crossLink}}, added by type. If there were more than
- one {{#crossLink "Entity"}}{{/crossLink}} in the scene, then that type would ensure
- that all the {{#crossLink "Entity"}}Entities{{/crossLink}} were in the Collection.
-
- ````javascript
- var collection2 = new xeogl.Collection();
-
- collection2.add([  // Add two components
-    geometry,
-    "xeogl.Entity",
- ]);
- ````
-
- ## Accessing Components
-
- Iterate over the components in a Collection using the convenience iterator:
-
- ````javascript
- collection1.iterate(function(component) {
-     if (component.isType("xeogl.Entity")) {
-         this.log("Found the Entity: " + component.id);
-     }
-     //..
- });
- ````
-
- A Collection also registers its components by type:
-
- ````javascript
- var entities = collection1.types["xeogl.Entity"];
- var theEntity = entities["myEntity"];
- ````
-
- ## Removing Components
-
- We can remove components from a Collection by instance, ID or type:
-
- ````javascript
- collection1.remove("myMaterial"); // Remove one component by ID
- collection1.remove([geometry, myEntity]); // Remove two components by instance
- collection2.remove("xeogl.Geometry"); // Remove all Geometries
- ````
-
- ## Getting the boundary of a Collection
-
- A {{#crossLink "CollectionBoundary"}}{{/crossLink}} provides a {{#crossLink "Boundary3D"}}{{/crossLink}} that
- dynamically fits to the collective World-space boundary of all the Components in a Collection.
-
- ````javascript
- var collectionBoundary = new xeogl.CollectionBoundary({
-    collection: collection1
- });
-
- var worldBoundary = collectionBoundary.worldBoundary;
- ````
- The {{#crossLink "Boundary3D"}}{{/crossLink}}
- will automatically update whenever we add, remove or update any Components that have World-space boundaries. We can subscribe
- to updates on it like so:
-
- ````javascript
- worldBoundary.on("updated", function() {
-     obb = worldBoundary.obb;
-     aabb = worldBoundary.aabb;
-     center = worldBoundary.center;
-     //...
- });
- ````
-
- Now, if we now re-insert our {{#crossLink "Entity"}}{{/crossLink}} into to our Collection,
- the {{#crossLink "Boundary3D"}}{{/crossLink}} will fire our update handler.
-
- ````javascript
- collection1.add(myEntity);
- ````
-
-
- @class Collection
- @module xeogl
- @submodule collections
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Component} Optional map of user-defined metadata to attach to this Collection.
- @param [cfg.components] {{Array of String|Component}} Array of {{#crossLink "Component"}}{{/crossLink}} IDs or instances.
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    xeogl.Collection = xeogl.Component.extend({
-
-        /**
-         JavaScript class name for this Component.
-
-         @property type
-         @type String
-         @final
-         */
-        type: "xeogl.Collection",
-
-        _init: function (cfg) {
-
-            /**
-             * The {{#crossLink "Components"}}{{/crossLink}} within this Collection, mapped to their IDs.
-             *
-             * Fires an {{#crossLink "Collection/updated:event"}}{{/crossLink}} event on change.
-             *
-             * @property components
-             * @type {{String:Component}}
-             */
-            this.components = {};
-
-            /**
-             * The number of {{#crossLink "Components"}}{{/crossLink}} within this Collection.
-             *
-             * @property numComponents
-             * @type Number
-             */
-            this.numComponents = 0;
-
-            /**
-             * A map of maps; for each {{#crossLink "Component"}}{{/crossLink}} type in this Collection,
-             * a map to IDs to {{#crossLink "Component"}}{{/crossLink}} instances, eg.
-             *
-             * ````
-             * "xeogl.Geometry": {
-             *   "alpha": <xeogl.Geometry>,
-             *   "beta": <xeogl.Geometry>
-             * },
-             * "xeogl.Rotate": {
-             *   "charlie": <xeogl.Rotate>,
-             *   "delta": <xeogl.Rotate>,
-             *   "echo": <xeogl.Rotate>,
-             * },
-             * //...
-             * ````
-             *
-             * @property types
-             * @type {String:{String:xeogl.Component}}
-             */
-            this.types = {};
-
-            // Subscriptions to "destroyed" events from components
-            this._destroyedSubs = {};
-
-            if (cfg.components) {
-                this.add(cfg.components);
-            }
-        },
-
-        /**
-         * Adds one or more {{#crossLink "Component"}}Components{{/crossLink}}s to this Collection.
-         *
-         * The {{#crossLink "Component"}}Component(s){{/crossLink}} may be specified by instance, ID or type.
-         *
-         * See class comment for usage examples.
-         *
-         * The {{#crossLink "Component"}}Components{{/crossLink}} must be in the same {{#crossLink "Scene"}}{{/crossLink}} as this Collection.
-         *
-         * Fires an {{#crossLink "Collection/added:event"}}{{/crossLink}} event.
-         *
-         * @method add
-         * @param {Array of Component} components Array of {{#crossLink "Component"}}Components{{/crossLink}} instances.
-         */
-        add: function (components) {
-
-            components = xeogl._isArray(components) ? components : [components];
-
-            for (var i = 0, len = components.length; i < len; i++) {
-                this._add(components[i]);
-            }
-        },
-
-        _add: function (c) {
-
-            var componentId;
-            var component;
-            var type;
-            var types;
-
-            if (c.type) {
-
-                // Component instance
-
-                component = c;
-
-            } else if (xeogl._isNumeric(c) || xeogl._isString(c)) {
-
-                if (this.scene.types[c]) {
-
-                    // Component type
-
-                    type = c;
-
-                    types = this.scene.types[type];
-
-                    if (!types) {
-                        this.warn("Component type not found: '" + type + "'");
-                        return;
-                    }
-
-                    for (componentId in types) {
-                        if (types.hasOwnProperty(componentId)) {
-                            this._add(types[componentId]);
-                        }
-                    }
-
-                    return;
-
-                } else {
-
-                    // Component ID
-
-                    component = this.scene.components[c];
-
-                    if (!component) {
-                        this.warn("Component not found: " + xeogl._inQuotes(c));
-                        return;
-                    }
-                }
-
-            } else {
-
-                return;
-            }
-
-            if (component.scene !== this.scene) {
-
-                // Component in wrong Scene
-
-                this.warn("Attempted to add component from different xeogl.Scene: " + xeogl._inQuotes(component.id));
-                return;
-            }
-
-            // Add component to this map
-
-            if (this.components[component.id]) {
-
-                // Component already in this Collection
-                return;
-            }
-
-            this.components[component.id] = component;
-
-            // Register component for its type
-
-            types = this.types[component.type];
-
-            if (!types) {
-                types = this.types[component.type] = {};
-            }
-
-            types[component.id] = component;
-
-            this.numComponents++;
-
-            // Remove component when it's destroyed
-
-            var self = this;
-
-            this._destroyedSubs[component.id] = component.on("destroyed",
-                function () {
-                    self._remove(component);
-                });
-
-            /**
-             * Fired whenever an individual {{#crossLink "Component"}}{{/crossLink}} is added to this {{#crossLink "Collection"}}{{/crossLink}}.
-             * @event added
-             * @param value {Component} The {{#crossLink "Component"}}{{/crossLink}} that was added.
-             */
-            this.fire("added", component);
-
-            if (!this._dirty) {
-                this._scheduleUpdate();
-            }
-        },
-
-        _scheduleUpdate: function () {
-            if (!this._dirty) {
-                this._dirty = true;
-                xeogl.scheduleTask(this._notifyUpdated, this);
-            }
-        },
-
-        _notifyUpdated: function () {
-
-            /* Fired on the next {{#crossLink "Scene/tick.animate:event"}}{{/crossLink}} whenever
-             * {{#crossLink "Component"}}Components{{/crossLink}} were added or removed since the
-             * last {{#crossLink "Scene/tick.animate:event"}}{{/crossLink}} event, to provide a batched change event
-             * for subscribers who don't want to react to every individual addition or removal on this Collection.
-             *
-             * @event updated
-             */
-            this.fire("updated");
-            this._dirty = false;
-        },
-
-        /**
-         * Removes all {{#crossLink "Component"}}Components{{/crossLink}} from this Collection.
-         *
-         * Fires an {{#crossLink "Collection/updated:event"}}{{/crossLink}} event.
-         *
-         * @method clear
-         */
-        clear: function () {
-
-            this.iterate(function (component) {
-                this._remove(component);
-            });
-        },
-
-        /**
-         * Destroys all {{#crossLink "Component"}}Components{{/crossLink}} in this Collection.
-         *
-         * @method destroyAll
-         */
-        destroyAll: function () {
-
-            this.iterate(function (component) {
-                component.destroy();
-            });
-        },
-
-        /**
-         * Removes one or more {{#crossLink "Component"}}Components{{/crossLink}} from this Collection.
-         *
-         * The {{#crossLink "Component"}}Component(s){{/crossLink}} may be specified by instance, ID or type.
-         *
-         * See class comment for usage examples.
-         *
-         * Fires a {{#crossLink "Collection/removed:event"}}{{/crossLink}} event.
-         *
-         * @method remove
-         * @param {Array of Components} components Array of {{#crossLink "Component"}}Components{{/crossLink}} instances.
-         */
-        remove: function (components) {
-
-            components = xeogl._isArray(components) ? components : [components];
-
-            for (var i = 0, len = components.length; i < len; i++) {
-                this._remove(components[i]);
-            }
-        },
-
-        _remove: function (component) {
-
-            var componentId = component.id;
-
-            if (component.scene !== this.scene) {
-                this.warn("Attempted to remove component that's not in same xeogl.Scene: '" + componentId + "'");
-                return;
-            }
-
-            delete this.components[componentId];
-
-            // Unsubscribe from component destruction
-
-            component.off(this._destroyedSubs[componentId]);
-
-            delete this._destroyedSubs[componentId];
-
-            // Unregister component for its type
-
-            var types = this.types[component.type];
-
-            if (types) {
-                delete types[component.id];
-            }
-
-            this.numComponents--;
-
-            /**
-             * Fired whenever an individual {{#crossLink "Component"}}{{/crossLink}} is removed from this {{#crossLink "Collection"}}{{/crossLink}}.
-             * @event removed
-             * @param value {Component} The {{#crossLink "Component"}}{{/crossLink}} that was removed.
-             */
-            this.fire("removed", component);
-
-            if (!this._dirty) {
-                this._scheduleUpdate();
-            }
-        },
-
-        /**
-         * Iterates with a callback over the {{#crossLink "Component"}}Components{{/crossLink}} in this Collection.
-         *
-         * @method iterate
-         * @param {Function} callback Callback called for each {{#crossLink "Component"}}{{/crossLink}}.
-         * @param {Object} [scope=this] Optional scope for the callback, defaults to this Collection.
-         */
-        iterate: function (callback, scope) {
-            scope = scope || this;
-            var components = this.components;
-            for (var componentId in components) {
-                if (components.hasOwnProperty(componentId)) {
-                    callback.call(scope, components[componentId]);
-                }
-            }
-        },
-
-        _getJSON: function () {
-
-            var componentIds = [];
-
-            for (var componentId in this.components) {
-                if (this.components.hasOwnProperty(componentId)) {
-                    componentIds.push(this.components[componentId].id); // Don't convert numbers into strings
-                }
-            }
-
-            return {
-                components: componentIds
-            };
-        },
-
-        _destroy: function () {
-
-            this.clear();
-        }
-    });
-
-})();;/**
  * Components for capturing user input.
  *
  * @module xeogl
@@ -24028,9 +26131,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  */;/**
  Publishes keyboard and mouse events that occur on the parent {{#crossLink "Scene"}}{{/crossLink}}'s {{#crossLink "Canvas"}}{{/crossLink}}.
 
- <ul>
- <li>Each {{#crossLink "Scene"}}{{/crossLink}} provides an Input on itself as a read-only property.</li>
- </ul>
+ * Each {{#crossLink "Scene"}}{{/crossLink}} provides an Input on itself as a read-only property.
 
  <img src="../../../assets/images/Input.png"></img>
 
@@ -24285,7 +26386,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
                 });
 
 
-            document.addEventListener("mousedown",
+            cfg.element.addEventListener("mousedown",
                 this._mouseDownListener = function (e) {
 
                     if (!self.enabled) {
@@ -24407,7 +26508,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
                     }
                 });
 
-            document.addEventListener("mousemove",
+            cfg.element.addEventListener("mousemove",
                 this._mouseMoveListener = function (e) {
 
                     if (!self.enabled) {
@@ -24429,14 +26530,14 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
                     }
                 });
 
-            cfg.element.addEventListener("mousewheel",
+            cfg.element.addEventListener("wheel",
                 this._mouseWheelListener = function (e, d) {
 
                     if (!self.enabled) {
                         return;
                     }
 
-                    var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+                    var delta = Math.max(-1, Math.min(1, -e.deltaY * 40));
 
                     /**
                      * Fired whenever the mouse wheel is moved over the parent
@@ -24485,6 +26586,258 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
                         }
                     });
             })();
+
+
+            // Touch events
+
+            //(function () {
+            //
+            //    var processTap = false;
+            //
+            //    function getCoordinates (touches) {
+            //        var coordinates = [];
+            //        for (var i = 0, length = touches.length; i < length; i++) {
+            //            var touch = touches[i];
+            //            coordinates.push({ x: touch.pageX, y: touch.pageY });
+            //        }
+            //        return coordinates;
+            //    }
+            //
+            //    function _onTouchEvent(e) {
+            //
+            //        // prevent bubble up
+            //        e.preventDefault();
+            //        e.stopPropagation();
+            //
+            //        // dispatch messages
+            //        var subs = [];
+            //        var tap = false;
+            //        var dblTap = false;
+            //        var xDelta = 0;
+            //        var yDelta = 0;
+            //        var elapse = 0;
+            //        var xSpeed = 0;
+            //        var ySpeed = 0;
+            //
+            //        // normalize touch coordiantes
+            //        var touches = e.touches;
+            //        var changedTouches = e.changedTouches;
+            //        var coordinates = getCoordinates(touches);
+            //        currentTouches = coordinates;
+            //
+            //        // locals
+            //        var currentTime = Date.now();
+            //        var i;
+            //
+            //        var getEventParams = function () {
+            //            return {
+            //                touches: coordinates,
+            //                xDelta: xDelta,
+            //                yDelta: yDelta,
+            //                distanceX: distanceX,
+            //                distanceY: distanceY,
+            //                elapse: elapse,
+            //                xSpeed: xSpeed,
+            //                ySpeed: ySpeed
+            //            };
+            //        };
+            //
+            //        var dispatch = function (subs, params) {
+            //            params = params || getEventParams();
+            //            for (var i = 0; i < subs.length; i++) {
+            //                subs[i](params);
+            //            }
+            //        };
+            //
+            //        // throttle touch move
+            //        if (e.type === "touchmove" && multiTouchTime) {
+            //            var elapsed = currentTime - multiTouchTime;
+            //            if (elapsed <= 25) {
+            //                return;
+            //            }
+            //        }
+            //
+            //        switch (e.type) {
+            //            case "touchstart":
+            //
+            //                processTap = e.touches.length === 1 && changedTouches.length === 1;
+            //
+            //                if (processTap) {
+            //                    tapStartTime = currentTime;
+            //                    multiTouchTime = null;
+            //                } else {
+            //                    tapStartTime = null;
+            //                }
+            //
+            //                touchStartTime = currentTime;
+            //                //tapStartTime = touches.length === 1 && multiCoordinates.length <= 1 ? touchStartTime : null;
+            //                multiTouchTime = touches.length === 2 ? currentTime : null;
+            //
+            //                downTouches.length = 0;
+            //                downTouches = downTouches.concat(coordinates);
+            //                startPosition = coordinates[0];
+            //                stopPosition = coordinates[0];
+            //                // pinch-zoom start
+            //                var multiTouch = coordinates.length > 1;
+            //                if (multiTouch) {
+            //                    multiCoordinates = coordinates;
+            //                }
+            //                else {
+            //                    subs.push(touchStartSubs);
+            //                    multiCoordinates = [];
+            //                }
+            //                break;
+            //
+            //            case "touchmove":
+            //
+            //                // pinch-zoom active
+            //                var twoFingerAction = coordinates.length === 2 && multiCoordinates.length === 2;
+            //
+            //                if (twoFingerAction) {
+            //                    multiTouchTime = currentTime;
+            //                    // compare to prev action
+            //                    var deltaOneX = Math.abs(multiCoordinates[0].x - multiCoordinates[1].x);
+            //                    var deltaOneY = Math.abs(multiCoordinates[0].y - multiCoordinates[1].y);
+            //                    var deltaTwoX = Math.abs(coordinates[0].x - coordinates[1].x);
+            //                    var deltaTwoY = Math.abs(coordinates[0].y - coordinates[1].y);
+            //                    //xDelta = coordinates[0].x - multiCoordinates[0].x;
+            //                    //yDelta = coordinates[0].y - multiCoordinates[0].y;
+            //                    var xDeltaOne = coordinates[0].x - multiCoordinates[0].x;
+            //                    var yDeltaOne = coordinates[0].y - multiCoordinates[0].y;
+            //                    var xDeltaTwo = coordinates[1].x - multiCoordinates[1].x;
+            //                    var yDeltaTwo = coordinates[1].y - multiCoordinates[1].y;
+            //                    xDelta = (xDeltaOne + xDeltaTwo) / 2;
+            //                    yDelta = (yDeltaOne + yDeltaTwo) / 2;
+            //                    //xDelta = deltaOneX - deltaTwoX;
+            //                    //yDelta = deltaOneY - deltaTwoY;
+            //                    distanceX = Math.abs(coordinates[0].x - coordinates[1].x);
+            //                    distanceY = Math.abs(coordinates[0].y - coordinates[1].y);
+            //                    var distanceOne = Math.sqrt(Math.pow(deltaOneX, 2) + Math.pow(deltaOneY, 2));
+            //                    var distanceTwo = Math.sqrt(Math.pow(deltaTwoX, 2) + Math.pow(deltaTwoY, 2));
+            //                    // angle in degrees
+            //                    //var angleDeg = Math.atan2(deltaTwoY, deltaTwoX) * 180 / Math.PI;
+            //                    // determine panning
+            //                    //panning = angleDeg <= TOUCH_PAN_ANGLE || angleDeg >= 90 - TOUCH_PAN_ANGLE;
+            //                    var deltaDistance = Math.abs(distanceOne - distanceTwo);
+            //                    panning = deltaDistance <= 5;
+            //                    // compare finger direction
+            //
+            //                    var xChange = xDeltaOne < 0 && xDeltaTwo > 0 || xDeltaOne > 0 && xDeltaTwo < 0;
+            //                    var yChange = yDeltaOne < 0 && yDeltaTwo > 0 || yDeltaOne > 0 && yDeltaTwo < 0;
+            //
+            //                    // panning
+            //                    if (panning) { // panning
+            //                        xDelta = (xDeltaOne + xDeltaTwo) / 2;
+            //                        yDelta = (yDeltaOne + yDeltaTwo) / 2;
+            //                        // determine panning/pinch/zoom
+            //                        subs.push(touchPanSubs);
+            //
+            //                        // update multi position
+            //                        //  multiCoordinates = coordinates.concat([]);
+            //                    } else if (xChange || yChange) {
+            //                        // pinch
+            //                        if (deltaTwoX < deltaOneX && deltaTwoY < deltaOneY) {
+            //                            subs.push(touchPinchSubs);
+            //                        }
+            //                        // zoom
+            //                        else if (deltaTwoX > deltaOneX && deltaTwoY > deltaOneY) {
+            //                            subs.push(touchZoomSubs);
+            //                        }
+            //                    }
+            //
+            //                    // update multi position
+            //                    multiCoordinates = coordinates.concat([]);
+            //                } else {
+            //
+            //                    // standard cursor move
+            //
+            //                    xDelta = coordinates[0].x - stopPosition.x;
+            //                    yDelta = coordinates[0].y - stopPosition.y;
+            //
+            //                    if (multiTouchTime) {
+            //
+            //                        var multiTouchElapsed = currentTime - multiTouchTime;
+            //
+            //                        // delay move event
+            //                        if (multiTouchElapsed > 250) {
+            //                            subs.push(touchMoveSubs);
+            //                        }
+            //                    } else {
+            //                        subs.push(touchMoveSubs);
+            //                    }
+            //
+            //                    multiCoordinates = [];
+            //                    multiTouchTime = null;
+            //                }
+            //                stopPosition = coordinates[0];
+            //                break;
+            //
+            //            case "touchend":
+            //                processTap = processTap && e.touches.length === 0 && changedTouches.length === 1;
+            //                tap = false;
+            //                dblTap = false;
+            //                // process tap
+            //                if (processTap) {
+            //                    tap = (currentTime - tapStartTime) < TAP_INTERVAL;
+            //                    if (tap) {
+            //                        // check for dbl tap
+            //                        if (lastTapTime) {
+            //                            dblTap = (tapStartTime - lastTapTime) < DBL_TAP_INTERVAL;
+            //                        }
+            //                        // update last single tap
+            //                        if (!dblTap) {
+            //                            lastTapTime = currentTime;
+            //                        }
+            //                    }
+            //                }
+            //                else {
+            //                    tap = false;
+            //                    dblTap = false;
+            //                    tapStartTime = null;
+            //                    lastTapTime = null;
+            //                }
+            //                elapse = currentTime - touchStartTime;
+            //                // track touch end
+            //                if (multiCoordinates.length <= 1) {
+            //                    subs.push(touchEndSubs);
+            //                }
+            //
+            //                // check speed
+            //                ///if (multiCoordinates.length && multiCoordinates.length !== 2) {
+            //                // update deltas
+            //                xDelta = stopPosition.x - startPosition.x;
+            //                yDelta = stopPosition.y - startPosition.y;
+            //                // s = d/t
+            //                xSpeed = Math.abs(xDelta) / elapse;
+            //                ySpeed = Math.abs(yDelta) / elapse;
+            //                break;
+            //            default:
+            //                break;
+            //        }
+            //
+            //        // dispatch std events
+            //        for (i = 0; i < subs.length; i++) {
+            //            var _subs = subs[i];
+            //            // dispatch messages
+            //            for (var j = 0; j < _subs.length; j++) {
+            //                dispatch(_subs);
+            //            }
+            //        }
+            //
+            //        // dispatch tap events
+            //        if (tap || dblTap) {
+            //            var tapParams = getEventParams();
+            //            tapParams.touches = downTouches;
+            //            if (tap) {
+            //                dispatch(touchTapSubs, tapParams);
+            //            }
+            //            if (dblTap) {
+            //                dispatch(touchDoubleTapSubs, tapParams);
+            //            }
+            //        }
+            //    }
+            //
+            //})();
 
             // VR
 
@@ -25475,16 +27828,21 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  */;/**
  A **Lights** defines a group of light sources that illuminate attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
+ ## Overview
+
  A Lights may contain a virtually unlimited number of three types of light source:
 
- <ul>
- <li>{{#crossLink "AmbientLight"}}AmbientLight{{/crossLink}}s, which are fixed-intensity and fixed-color, and
- affect all the {{#crossLink "Entity"}}Entities{{/crossLink}} equally,</li>
- <li>{{#crossLink "PointLight"}}PointLight{{/crossLink}}s, which emit light that
- originates from a single point and spreads outward in all directions, and </li>
- <li>{{#crossLink "DirLight"}}DirLight{{/crossLink}}s, which illuminate all the
- {{#crossLink "Entity"}}Entities{{/crossLink}} equally from a given direction</li>
- </ul>
+ * {{#crossLink "AmbientLight"}}AmbientLight{{/crossLink}}s, which are fixed-intensity and fixed-color, and
+ affect all the {{#crossLink "Entity"}}Entities{{/crossLink}} equally,
+ * {{#crossLink "PointLight"}}PointLight{{/crossLink}}s, which emit light that
+ originates from a single point and spreads outward in all directions, and
+ * {{#crossLink "DirLight"}}DirLight{{/crossLink}}s, which illuminate all the
+ {{#crossLink "Entity"}}Entities{{/crossLink}} equally from a given direction
+
+ A Lights can also have two other components that define environmental reflection and irradiance:
+
+ * {{#crossLink "Lights/lightMap"}}{{/crossLink}} set to a {{#crossLink "CubeTexture"}}{{/crossLink}}
+ * {{#crossLink "Lights/reflectionMap"}}{{/crossLink}} set to a {{#crossLink "CubeTexture"}}{{/crossLink}}
 
  <img src="../../../assets/images/Lights.png"></img>
 
@@ -25540,6 +27898,8 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Lights.
  @param [cfg.lights] {{Array of String|Entity}} Array of light source IDs or instances.
+ @param [cfg.lightMap=undefined] {CubeTexture} A light map {{#crossLink "CubeTexture"}}{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
+ @param [cfg.reflectionMap=undefined] {CubeTexture} A reflection map {{#crossLink "CubeTexture"}}{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
  @extends Component
  */
 (function () {
@@ -25558,8 +27918,6 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
                 hash: ""
             });
 
-            this._dirty = true;
-
             // Array of child light source components
             this._lights = [];
 
@@ -25570,7 +27928,17 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
             this._destroyedSubs = [];
 
             // Add initial light source components
-            this.lights = cfg.lights;
+            if (cfg.lights) {
+                this.lights = cfg.lights;
+            }
+
+            if (cfg.lightMap) {
+                this.lightMap = cfg.lightMap;
+            }
+
+            if (cfg.reflectionMap) {
+                this.reflectionMap = cfg.reflectionMap;
+            }
         },
 
         _props: {
@@ -25640,8 +28008,6 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
                                 self._dirtySubs = self._dirtySubs.slice(i, i + 1);
                                 self._destroyedSubs = self._destroyedSubs.slice(i, i + 1);
 
-                                self._dirty = true;
-
                                 self.fire("dirty", true);
                                 self.fire("lights", self._lights);
 
@@ -25681,9 +28047,6 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
                         this._destroyedSubs.push(light.on("destroyed", lightDestroyed));
                     }
-
-                    this._dirty = true;
-
                     this.fire("dirty", true);
                     this.fire("lights", this._lights);
                 },
@@ -25691,46 +28054,129 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
                 get: function () {
                     return this._lights;
                 }
+            },
+
+            /**
+
+             A {{#crossLink "CubeTexture"}}{{/crossLink}} that defines the brightness of the
+             surfaces of attached {{#crossLink "Entities"}}{{/crossLink}}.
+
+             Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this Lights.
+
+             Fires a {{#crossLink "Lights/lightMap:event"}}{{/crossLink}} event on change.
+
+             @property lightMap
+             @default undefined
+             @type {CubeTexture}
+             */
+            lightMap: {
+
+                set: function (texture) {
+
+                    /**
+                     Fired whenever this Lights's {{#crossLink "Lights/lightMap:property"}}{{/crossLink}} property changes.
+
+                     @event lightMap
+                     @param value Number The property's new value
+                     */
+                    this._attachComponent("xeogl.CubeTexture", "lightMap", texture);
+                },
+
+                get: function () {
+                    return this._attached.lightMap;
+                }
+            },
+
+            /**
+
+             A {{#crossLink "CubeTexture"}}{{/crossLink}} that defines a background image that is reflected in the
+             surfaces of attached {{#crossLink "Entities"}}{{/crossLink}}.
+
+             Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this Lights.
+
+             Fires a {{#crossLink "Lights/reflectionMap:event"}}{{/crossLink}} event on change.
+
+             @property reflectionMap
+             @default undefined
+             @type {CubeTexture}
+             */
+            reflectionMap: {
+
+                set: function (texture) {
+
+                    /**
+                     Fired whenever this Lights's {{#crossLink "Lights/reflectionMap:property"}}{{/crossLink}} property changes.
+
+                     @event reflectionMap
+                     @param value Number The property's new value
+                     */
+                    this._attachComponent("xeogl.CubeTexture", "reflectionMap", texture);
+                },
+
+                get: function () {
+                    return this._attached.reflectionMap;
+                }
             }
+        },
+
+        _attachComponent: function (expectedType, name, component) {
+            component = this._attach({
+                name: name,
+                type: expectedType,
+                component: component,
+                sceneDefault: false,
+                on: {
+                    destroyed: {
+                        callback: function () {
+                            this._state[name] = null;
+                            this._hashDirty = true;
+                        },
+                        scope: this
+                    }
+                }
+            });
+            this._state[name] = component ? component._state : undefined; // FIXME: Accessing _state breaks encapsulation
+            this._hashDirty = true;
         },
 
         _compile: function () {
 
             var state = this._state;
 
-            if (this._dirty) {
+            state.lights = [];
 
-                state.lights = [];
-
-                for (var i = 0, len = this._lights.length; i < len; i++) {
-                    state.lights.push(this._lights[i]._state);
-                }
-
-                this._makeHash();
-
-                this._dirty = false;
+            for (var i = 0, len = this._lights.length; i < len; i++) {
+                state.lights.push(this._lights[i]._state);
             }
+
+            this._makeHash();
 
             this._renderer.lights = state;
         },
 
         _makeHash: function () {
 
-            var lights = this._state.lights;
-
-            if (lights.length === 0) {
-                return ";";
-            }
-
             var hash = [];
+
+            var state = this._state;
+
+            var lights = state.lights;
+
             var light;
 
             for (var i = 0, len = lights.length; i < len; i++) {
-
                 light = lights[i];
-
+                hash.push("/");
                 hash.push(light.type);
                 hash.push((light.space === "world") ? "w" : "v");
+            }
+
+            if (state.lightMap) {
+                hash.push("/lm");
+            }
+
+            if (state.reflectionMap) {
+                hash.push("/rm");
             }
 
             hash.push(";");
@@ -25740,15 +28186,25 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
         _getJSON: function () {
 
-            var lightIds = [];
+            var json = {
+                lights: []
+            };
+
+            var components = this._attached;
 
             for (var i = 0, len = this._lights.length; i < len; i++) {
-                lightIds.push(this._lights[i].id);
+                json.lights.push(this._lights[i].id);
             }
 
-            return {
-                lights: lightIds
-            };
+            if (components.lightMap) {
+                json.lightMap = components.lightMap.id;
+            }
+
+            if (components.reflectionMap) {
+                json.reflectionMap = components.reflectionMap.id;
+            }
+
+            return json.lights;
         },
 
         _destroy: function () {
@@ -25770,46 +28226,44 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
     });
 })();
 ;/**
-
  An **AmbientLight** defines an ambient light source of fixed intensity and color that affects all attached {{#crossLink "Entity"}}Entities{{/crossLink}}
  equally.
 
- <ul>
- <li>AmbientLights are grouped, along with other light source types, within
- {{#crossLink "Lights"}}Lights{{/crossLink}} components, which are attached to {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>When the {{#crossLink "Entity"}}Entities{{/crossLink}} have {{#crossLink "PhongMaterial"}}PhongMaterials{{/crossLink}},
+ <a href="../../examples/#lights_ambient"><img src="http://i.giphy.com/l0HlGTxXQWMRVOPwk.gif"></img></a>
+
+ ## Overview
+
+ * AmbientLights are grouped, along with other light source types, within
+ {{#crossLink "Lights"}}Lights{{/crossLink}} components, which are attached to {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ * When the {{#crossLink "Entity"}}Entities{{/crossLink}} have {{#crossLink "PhongMaterial"}}PhongMaterials{{/crossLink}},
  AmbientLight {{#crossLink "AmbientLight/color:property"}}color{{/crossLink}} is multiplied by
- {{#crossLink "PhongMaterial"}}PhongMaterial{{/crossLink}} {{#crossLink "PhongMaterial/ambient:property"}}{{/crossLink}}.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that AmbientLights create within xeogl's shaders.</li>
- </ul>
+ {{#crossLink "PhongMaterial"}}PhongMaterial{{/crossLink}} {{#crossLink "PhongMaterial/ambient:property"}}{{/crossLink}} at each rendered fragment of the {{#crossLink "Geometry"}}{{/crossLink}} surface.
 
  <img src="../../../assets/images/AmbientLight.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Ambient light source](../../examples/#lights_ambient)</li>
- </ul>
+ * [Ambient light source](../../examples/#lights_ambient)
 
  ## Usage
 
  ```` javascript
  var entity = new xeogl.Entity({
 
-        lights: new xeogl.Lights({
-            lights: [
-                new xeogl.AmbientLight({
-                    color: [0.7, 0.7, 0.7]
-                })
-            ]
-        }),
- ,
-        material: new xeogl.PhongMaterial({
-            diffuse: [0.5, 0.5, 0.0]
-        }),
+     lights: new xeogl.Lights({
+         lights: [
+             new xeogl.AmbientLight({
+                 color: [0.7, 0.7, 0.7]
+             })
+         ]
+     }),
 
-        geometry: new xeogl.BoxGeometry()
-  });
+     material: new xeogl.PhongMaterial({
+        diffuse: [0.5, 0.5, 0.0]
+     }),
+
+     geometry: new xeogl.BoxGeometry()
+ });
  ````
 
  @class AmbientLight
@@ -25921,25 +28375,23 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  A **DirLight** is a directional light source that illuminates all attached {{#crossLink "Entity"}}Entities{{/crossLink}} equally
  from a given direction.
 
- <ul>
- <li>DirLights are grouped, along with other light source types, within {{#crossLink "Lights"}}Lights{{/crossLink}} components,
- which are attached to {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>DirLights have a direction, but no position.</li>
- <li>DirLights may be defined in either **World** or **View** coordinate space. When in World-space, their direction
+ ## Overview
+
+ * DirLights are grouped, along with other light source types, within {{#crossLink "Lights"}}Lights{{/crossLink}} components,
+ which are attached to {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ * DirLights have a direction, but no position.
+ * The direction is the **direction that the light is emitted in**.
+ * DirLights may be defined in either **World** or **View** coordinate space. When in World-space, their direction
  is relative to the World coordinate system, and will appear to move as the {{#crossLink "Camera"}}{{/crossLink}} moves.
  When in View-space, their direction is relative to the View coordinate system, and will behave as if fixed to the viewer's
- head as the {{#crossLink "Camera"}}{{/crossLink}} moves.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that DirLights create within xeogl's shaders.</li>
- </ul>
+ head as the {{#crossLink "Camera"}}{{/crossLink}} moves.
 
  <img src="../../../assets/images/DirLight.png"></img>
 
  ## Examples
 
- <ul>
- <li>[View-space directional light](../../examples/#lights_directional_view)</li>
- <li>[World-space directional light](../../examples/#lights_directional_world)</li>
- </ul>
+ * [View-space directional light](../../examples/#lights_directional_view)
+ * [World-space directional light](../../examples/#lights_directional_world)
 
  ## Usage
 
@@ -26112,10 +28564,10 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
              Supported values are:
 
-             <ul>
-             <li>"view" - View space, aligned within the view volume as if fixed to the viewer's head</li>
-             <li>"world" - World space, fixed within the world, moving within the view volume with respect to camera</li>
-             </ul>
+
+             * "view" - View space, aligned within the view volume as if fixed to the viewer's head
+             * "world" - World space, fixed within the world, moving within the view volume with respect to camera
+
 
              Fires a {{#crossLink "DirLight/space:event"}}{{/crossLink}} event on change.
 
@@ -26158,31 +28610,28 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
 })();
 ;/**
+ A **PointLight** defines a positional light source that originates from a single point and spreads outward in all directions, to illuminate attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- A **PointLight** defines a positional light source that originates from a single point and spreads outward in all directions, to illuminate
- attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ <a href="../../examples/#lights_point_world"><img src="http://i.giphy.com/3o6ZsZoFGIOJ2nlmN2.gif"></img></a>
 
- <ul>
- <li>PointLights are grouped, along with other light source types, within {{#crossLink "Lights"}}Lights{{/crossLink}} components,
- which are attached to {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>PointLights have a position, but no direction.</li>
- <li>PointLights may be defined in either **World** or **View** coordinate space. When in World-space, their positions
+ ## Overview
+
+ * PointLights are grouped, along with other light source types, within {{#crossLink "Lights"}}Lights{{/crossLink}} components,
+ which are attached to {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ * PointLights have a position, but no direction.
+ * PointLights may be defined in either **World** or **View** coordinate space. When in World-space, their positions
  are relative to the World coordinate system, and will appear to move as the {{#crossLink "Camera"}}{{/crossLink}} moves.
  When in View-space, their positions are relative to the View coordinate system, and will behave as if fixed to the viewer's
- head as the {{#crossLink "Camera"}}{{/crossLink}} moves.</li>
- <li>PointLights have {{#crossLink "PointLight/constantAttenuation:property"}}{{/crossLink}}, {{#crossLink "PointLight/linearAttenuation:property"}}{{/crossLink}} and
- {{#crossLink "PointLight/quadraticAttenuation:property"}}{{/crossLink}} factors, which indicate how their intensity attenuates over distance.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that PointLights create within xeogl's shaders.</li>
- </ul>
+ head as the {{#crossLink "Camera"}}{{/crossLink}} moves.
+ * PointLights have {{#crossLink "PointLight/constantAttenuation:property"}}{{/crossLink}}, {{#crossLink "PointLight/linearAttenuation:property"}}{{/crossLink}} and
+ {{#crossLink "PointLight/quadraticAttenuation:property"}}{{/crossLink}} factors, which indicate how their intensity attenuates over distance.
 
  <img src="../../../assets/images/PointLight.png"></img>
 
  ## Examples
 
- <ul>
- <li>[View-space point light](../../examples/#lights_point_view)</li>
- <li>[World-space point light](../../examples/#lights_point_world)</li>
- </ul>
+ * [View-space point light](../../examples/#lights_point_view)
+ * [World-space point light](../../examples/#lights_point_world)
 
  ## Usage
 
@@ -26454,10 +28903,10 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
              Supported values are:
 
-             <ul>
-             <li>"view" - View space, aligned within the view volume as if fixed to the viewer's head</li>
-             <li>"world" - World space, fixed within the world, moving within the view volume with respect to camera</li>
-             </ul>
+
+             * "view" - View space, aligned within the view volume as if fixed to the viewer's head
+             * "world" - World space, fixed within the world, moving within the view volume with respect to camera
+
 
              Fires a {{#crossLink "PointLight/space:event"}}{{/crossLink}} event on change.
 
@@ -26504,11 +28953,777 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
 })();
 ;/**
- * Imports content from files.
+ * Models are units of xeogl content.
  *
  * @module xeogl
- * @submodule importing
- */;// Copyright (c) 2013 Fabrice Robinet
+ * @submodule models
+ */;(function () {
+
+    "use strict";
+
+    /**
+     A **Model** is a group of {{#crossLink "Component"}}Components{{/crossLink}} within a xeogl {{#crossLink "Scene"}}{{/crossLink}}.
+
+     ## Overview
+
+     * A Model manages the lifecycle of its components, automatically deleting them when the Model is deleted.
+     * Can be attached to a hierarchy of {{#crossLink "Transform"}}Transforms{{/crossLink}}, to transform its components as a group, within World-space.
+     * Provides the collective World-space boundary of its components as a {{#crossLink "Boundary3D"}}{{/crossLink}}, which
+     updates its extents automatically as components are added and removed, or Transforms are updated.
+
+     A Model is subclassed by (at least):
+
+     * {{#crossLink "GLTFModel"}}{{/crossLink}}, which loads its components from glTF files.
+     * {{#crossLink "SceneJSModel"}}{{/crossLink}}, which loads its components from SceneJS scene definitions.
+     * {{#crossLink "BuildableModel"}}{{/crossLink}}, which provides a fluent API for building its components.
+
+     <img src="../../../assets/images/Model.png"></img>
+
+     ## Usage
+
+     ### Adding and removing components to a Model
+
+     When adding components to a Model, it's usually easiest to just add their configuration objects and let the Model
+     internally instantiate them, as shown below.
+
+     Note that a Model manages the lifecycles of all the components contained within it, destroying them when we destroy
+     the Model or call its {{#crossLink "Model/destroyAll:method"}}{{/crossLink}} method.
+
+     ````javascript
+     var model = new xeogl.Model();
+
+     var geometry = model.add({
+            type: "xeogl.TorusGeometry"
+        });
+
+     var material = model.add({
+            type: "xeogl.PhongMaterial"
+            diffuse: [0.4, 0.4, 9.0]
+        });
+
+     model.add({
+            type: "xeogl.Entity",
+            geometry: geometry,
+            material: material
+        });
+     ````
+
+     As shown below, we can also add our own component instances, supplying either the objects or their IDs.
+
+     Note that the components must be in the same {{#crossLink "Scene"}}{{/crossLink}} as the model.
+
+     ````javascript
+     // Add our component object
+     model.add(new xeogl.Entity({
+            geometry: geometry,
+            material: material
+        }));
+
+     // Instantiate our component and add it by ID:
+     var material2 = new xeogl.PhongMaterial({
+            id: "myMaterial",
+            diffuse: [0.4, 1.0, 9.0]
+        });
+
+     model.add("myMaterial");
+     ````
+
+     Since xeogl aims to be as declarative as possible, we can also add components immediately,
+     via the Model's constructor:
+
+     ````javascript
+     var model2 = new xeogl.Model({
+            components: [
+                {
+                    type: "xeogl.TorusGeometry"
+                    id: "myTorusGeometry"
+                },
+                {
+                    type: "xeogl.PhongMaterial"
+                    id: "myPhongMaterial",
+                    diffuse: [0.4, 0.4, 9.0]
+                },
+                {
+                    type: "xeogl.Entity",
+                    geometry: "myTorusGeometry",
+                    material: "myPhongMaterial"
+                }
+            ]
+        });
+     ````
+
+     ### Transforming a Model
+
+     As well as allowing us organize the lifecycle of groups of components, a Model also lets us transform them as a group.
+
+     We can attach a modeling {{#crossLink "Transform"}}{{/crossLink}} to our Model, as a either a
+     configuration object or a component instance:
+
+     ```` Javascript
+     // Attach transforms as a configuration object:
+     model.transform = {
+        type: "xeogl.Translate",
+        xyz: [-35, 0, 0],
+        parent: {
+            type: "xeogl.Rotate",
+            xyz: [0, 1, 0],
+            angle: 45
+        }
+     };
+
+     // Attach our own transform instances:
+     model.transform = new xeogl.Translate({
+        xyz: [-35, 0, 0],
+        parent: new xeogl.Rotate({
+            xyz: [0, 1, 0],
+            angle: 45
+        })
+     });
+     ````
+
+     We can also provide the transforms to the Model constructor, as either configuration objects or instances.
+
+     Here we'll provide them as configuration objects:
+
+     ```` Javascript
+     // Model internally instantiates our transform components:
+     var model3 = new xeogl.Model({
+        transform: {
+            type: "xeogl.Translate",
+            xyz: [-35, 0, 0],
+            parent: {
+                type: "xeogl.Rotate",
+                xyz: [0, 1, 0],
+                angle: 45
+            }
+        }
+     });
+
+     ````
+
+     Note that, as with the components we added before, the Model will manage the lifecycles of our transform components,
+     destroying them when we destroy the Model or call its {{#crossLink "Model/destroyAll:method"}}{{/crossLink}} method.
+
+     ### Getting the World-space boundary of a Model
+
+     A Model's {{#crossLink "Model/worldBoundary:property"}}{{/crossLink}} property is a {{#crossLink "Boundary3D"}}{{/crossLink}}
+     that provides the collective World-space boundary of all its components. The {{#crossLink "Boundary3D"}}{{/crossLink}} will
+     automatically adjust its extents whenever we add or remove components to its Model, or whenever we update the Model's transforms.
+
+     Let's get the {{#crossLink "Boundary3D"}}{{/crossLink}} from our first Model, subscribe to changes on its extents,
+     then animate one of the Model's transforms, which will cause the {{#crossLink "Boundary3D"}}{{/crossLink}} to fire an
+     {{#crossLink "Boundary3D/updated:event"}}{{/crossLink}} event each time its extents change:
+
+     ```` Javascript
+     var worldBoundary = model.worldBoundary;
+
+     worldBoundary.on("updated", function() {
+
+            // See docs on xeogl.Boundary3D for
+            // the format of these properties
+
+            obb = worldBoundary.obb;
+            aabb = worldBoundary.aabb;
+            center = worldBoundary.center;
+            sphere = worldBoundary.sphere();
+            //...
+    });
+
+     model.scene.on("tick", function() {
+            model.transform.parent.angle += 0.2;
+        });
+     ````
+
+     Since xeogl is all about lazy-execution to avoid needless work, the {{#crossLink "Boundary3D"}}{{/crossLink}} will
+     only actually recompute its extents the first time we read its {{#crossLink "Boundary3D/obb:property"}}{{/crossLink}},
+     {{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}}, {{#crossLink "Boundary3D/center:property"}}{{/crossLink}},
+     {{#crossLink "Boundary3D/center:property"}}{{/crossLink}} or
+     {{#crossLink "Boundary3D/sphere:property"}}{{/crossLink}} properties after it fired its
+     last {{#crossLink "Boundary3D/updated:event"}}{{/crossLink}} event.
+
+     Also, the Model lazy-instantiates its {{#crossLink "Boundary3D"}}{{/crossLink}} the first time we reference
+     the Model's {{#crossLink "Model/worldBoundary:property"}}{{/crossLink}} property. Since the {{#crossLink "Boundary3D"}}{{/crossLink}}
+     is going to hang around in memory and fire {{#crossLink "Boundary3D/updated:event"}}{{/crossLink}} events each time we add or
+     remove components, or animate transforms, for efficiency we should destroy the {{#crossLink "Boundary3D"}}{{/crossLink}}
+     as soon as we no longer need it.
+
+     Finally, when we destroy a Model, it will also destroy its {{#crossLink "Boundary3D"}}{{/crossLink}}, if it
+     currently has one.
+
+     @class Model
+     @module xeogl
+     @submodule models
+     @constructor
+     @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this ModelModel in the default
+     {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+     @param [cfg] {*} Configs
+     @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
+     generated automatically when omitted.
+     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ModelModel.
+     @param [cfg.transform] {Number|String|Transform} A Local-to-World-space (modelling) {{#crossLink "Transform"}}{{/crossLink}} to attach to this Model.
+     Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this Model. Internally, the given
+     {{#crossLink "Transform"}}{{/crossLink}} will be inserted above each top-most {{#crossLink "Transform"}}Transform{{/crossLink}}
+     that the Model attaches to its {{#crossLink "Entity"}}Entities{{/crossLink}}.
+     @param [cfg.components] {Array} Array of {{#crossLink "Components"}}{{/crossLink}} to add initially, given as IDs, configuration objects or instances.
+     @extends Component
+     */
+    xeogl.Model = xeogl.Component.extend({
+
+        /**
+         JavaScript class name for this Component.
+
+         @property type
+         @type String
+         @final
+         */
+        type: "xeogl.Model",
+
+        _init: function (cfg) {
+
+            /**
+             * The {{#crossLink "Components"}}{{/crossLink}} within this Model, mapped to their IDs.
+             *
+             * Fires an {{#crossLink "Model/updated:event"}}{{/crossLink}} event on change.
+             *
+             * @property components
+             * @type {{String:Component}}
+             */
+            this.components = {};
+
+            /**
+             * The number of {{#crossLink "Components"}}{{/crossLink}} within this Model.
+             *
+             * @property numComponents
+             * @type Number
+             */
+            this.numComponents = 0;
+
+            /**
+             * A map of maps; for each {{#crossLink "Component"}}{{/crossLink}} type in this Model,
+             * a map to IDs to {{#crossLink "Component"}}{{/crossLink}} instances, eg.
+             *
+             * ````
+             * "xeogl.Geometry": {
+             *   "alpha": <xeogl.Geometry>,
+             *   "beta": <xeogl.Geometry>
+             * },
+             * "xeogl.Rotate": {
+             *   "charlie": <xeogl.Rotate>,
+             *   "delta": <xeogl.Rotate>,
+             *   "echo": <xeogl.Rotate>,
+             * },
+             * //...
+             * ````
+             *
+             * @property types
+             * @type {String:{String:xeogl.Component}}
+             */
+            this.types = {};
+
+            // Subscriptions to "destroyed" events from components
+            this._onDestroyed = {};
+
+            // Subscriptions to "updated" events from components' worldBoundaries
+            this._onWorldBoundaryUpdated = {};
+
+            this._aabbDirty = true;
+
+            // Dummy transform to make it easy to graft user-supplied transforms above added entities
+            this._dummyRootTransform = this.create({
+                type: "xeogl.Transform",
+                meta: "dummy"
+            });
+
+            this.transform = cfg.transform;
+
+            if (cfg.components) {
+                var components = cfg.components;
+                for (var i = 0, len = components.length; i , len; i++) {
+                    this.add(components[i]);
+                }
+            }
+        },
+
+        /**
+         * Adds a {{#crossLink "Component"}}Component{{/crossLink}} or subtype to this Model.
+         *
+         * The {{#crossLink "Component"}}Component(s){{/crossLink}} may be specified by ID, instance, JSON definition or type.
+         *
+         * See class comment for usage examples.
+         *
+         * The {{#crossLink "Component"}}Components{{/crossLink}} must be in the same {{#crossLink "Scene"}}{{/crossLink}} as this Model.
+         *
+         * Fires an {{#crossLink "Model/added:event"}}{{/crossLink}} event.
+         *
+         * @method add
+         * @param {Number|String|*|Component} component ID, definition or instance of a {{#crossLink "Component"}}Component{{/crossLink}} type or subtype.
+         */
+        add: function (component) {
+
+            var componentId;
+            var types;
+
+            if (xeogl._isNumeric(component) || xeogl._isString(component)) {
+
+                if (this.scene.types[component]) {
+
+                    // Component type
+
+                    type = component;
+
+                    types = this.scene.types[type];
+
+                    if (!types) {
+                        this.warn("Component type not found: '" + type + "'");
+                        return;
+                    }
+
+                    for (componentId in types) {
+                        if (types.hasOwnProperty(componentId)) {
+                            this._add(types[componentId]);
+                        }
+                    }
+
+                    return;
+
+                } else {
+
+                    // Component ID
+
+                    component = this.scene.components[component];
+
+                    if (!component) {
+                        this.warn("Component not found: " + xeogl._inQuotes(component));
+                        return;
+                    }
+                }
+
+            } else if (xeogl._isObject(component)) {
+
+                // Component config given
+
+                var type = component.type || "xeogl.Component";
+
+                if (!xeogl._isComponentType(type)) {
+                    this.error("Not a xeogl component type: " + type);
+                    return;
+                }
+
+                component = new window[type](this.scene, component);
+
+            }
+
+            if (component.scene !== this.scene) {
+
+                // Component in wrong Scene
+
+                this.warn("Attempted to add component from different xeogl.Scene: " + xeogl._inQuotes(component.id));
+                return;
+            }
+
+            // Add component to this map
+
+            if (this.components[component.id]) {
+
+                // Component already in this Model
+                return;
+            }
+
+            this.components[component.id] = component;
+
+            // Register component for its type
+
+            types = this.types[component.type];
+
+            if (!types) {
+                types = this.types[component.type] = {};
+            }
+
+            types[component.id] = component;
+
+            this.numComponents++;
+
+            // Remove component when it's destroyed
+
+            var self = this;
+
+            this._onDestroyed[component.id] = component.on("destroyed", function () {
+                self._remove(component);
+            });
+
+            if (component.isType("xeogl.Entity")) {
+
+                // Insert the dummy transform above
+                // each entity we just loaded
+
+                var rootTransform = component.transform;
+
+                if (!rootTransform) {
+
+                    component.transform = self._dummyRootTransform;
+
+                } else {
+
+                    while (rootTransform.parent) {
+
+                        if (rootTransform.id === self._dummyRootTransform.id) {
+
+                            // Since transform hierarchies may contain
+                            // transforms that share the same parents, there is potential to find
+                            // our dummy root transform while walking up an entity's transform
+                            // path, when that path is joins a path that belongs to an Entity that
+                            // we processed earlier
+
+                            return;
+                        }
+
+                        rootTransform = rootTransform.parent;
+                    }
+
+                    if (rootTransform.id !== self._dummyRootTransform.id) {
+                        rootTransform.parent = self._dummyRootTransform;
+                    }
+                }
+            }
+
+            if (component.worldBoundary) {
+                this._onWorldBoundaryUpdated[component.id] = component.worldBoundary.on("updated", this._updated, this);
+                if (!this._aabbDirty) {
+                    this._setAABBDirty();
+                }
+            }
+
+            /**
+             * Fired whenever an individual {{#crossLink "Component"}}{{/crossLink}} is added to this {{#crossLink "Model"}}{{/crossLink}}.
+             * @event added
+             * @param value {Component} The {{#crossLink "Component"}}{{/crossLink}} that was added.
+             */
+            this.fire("added", component);
+
+            this.log("Mode.added:" + component.id);
+
+            if (!this._dirty) {
+                this._scheduleUpdate();
+            }
+
+            return component;
+        },
+
+        _scheduleUpdate: function () {
+            if (!this._dirty) {
+                this._dirty = true;
+                xeogl.scheduleTask(this._notifyUpdated, this);
+            }
+        },
+
+        _notifyUpdated: function () {
+
+            /* Fired on the next {{#crossLink "Scene/tick.animate:event"}}{{/crossLink}} whenever
+             * {{#crossLink "Component"}}Components{{/crossLink}} were added or removed since the
+             * last {{#crossLink "Scene/tick.animate:event"}}{{/crossLink}} event, to provide a batched change event
+             * for subscribers who don't want to react to every individual addition or removal on this Model.
+             *
+             * @event updated
+             */
+            this.fire("updated");
+            this._dirty = false;
+        },
+
+        /**
+         * Destroys all {{#crossLink "Component"}}Components{{/crossLink}} in this Model.
+         *
+         * @method destroyAll
+         */
+        destroyAll: function () {
+
+            // For efficiency, destroy Entities first to avoid
+            // xeogl's automatic default component substitutions
+
+            var type;
+            var list = [];
+            var components;
+            var component;
+            var id;
+
+            for (type in this.types) {
+                if (this.types.hasOwnProperty(type)) {
+                    components = this.types[type];
+                    for (id in components) {
+                        if (components.hasOwnProperty(id)) {
+                            component = components[id];
+                            if (component.isType("xeogl.Entity")) {
+                                list.push(component);
+                            } else {
+                                list.unshift(component);
+                            }
+                        }
+                    }
+                }
+            }
+
+            while (list.length > 0) {
+                list.pop().destroy();
+            }
+        },
+
+        /**
+         * Removes all {{#crossLink "Component"}}Components{{/crossLink}} from this Model.
+         *
+         * @method removeAll
+         */
+        removeAll: function () {
+
+            // this.iterate(function (component) {
+            //     component.destroy();
+            // });
+        },
+
+        _remove: function (component) {
+
+            var componentId = component.id;
+
+            if (component.scene !== this.scene) {
+                this.warn("Attempted to remove component that's not in same xeogl.Scene: '" + componentId + "'");
+                return;
+            }
+
+            delete this.components[componentId];
+
+            // Unsubscribe from component destruction
+
+            component.off(this._onDestroyed[componentId]);
+            delete this._onDestroyed[componentId];
+
+            // Unregister component for its type
+
+            var types = this.types[component.type];
+
+            if (types) {
+                delete types[component.id];
+            }
+
+            this.numComponents--;
+
+            //
+
+            if (component.worldBoundary) {
+                component.worldBoundary.off(this._onWorldBoundaryUpdated[component.id]);
+                delete this._onWorldBoundaryUpdated[component.id];
+            }
+
+            if (!this._aabbDirty) {
+                this._setAABBDirty();
+            }
+
+
+            /**
+             * Fired whenever an individual {{#crossLink "Component"}}{{/crossLink}} is removed from this {{#crossLink "Model"}}{{/crossLink}}.
+             * @event removed
+             * @param value {Component} The {{#crossLink "Component"}}{{/crossLink}} that was removed.
+             */
+            this.fire("removed", component);
+
+            if (!this._dirty) {
+                this._scheduleUpdate();
+            }
+        },
+
+        /**
+         * Iterates with a callback over the {{#crossLink "Component"}}Components{{/crossLink}} in this Model.
+         *
+         * @method iterate
+         * @param {Function} callback Callback called for each {{#crossLink "Component"}}{{/crossLink}}.
+         * @param {Object} [scope=this] Optional scope for the callback, defaults to this Model.
+         */
+        iterate: function (callback, scope) {
+            scope = scope || this;
+            var components = this.components;
+            for (var componentId in components) {
+                if (components.hasOwnProperty(componentId)) {
+                    callback.call(scope, components[componentId]);
+                }
+            }
+        },
+
+        _props: {
+
+            /**
+             * The Local-to-World-space (modelling) {{#crossLink "Transform"}}{{/crossLink}} attached to this Model.
+             *
+             * Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this Model.
+             *
+             * Internally, the given {{#crossLink "Transform"}}{{/crossLink}} will be inserted above each top-most
+             * {{#crossLink "Transform"}}Transform{{/crossLink}} that the Model attaches to
+             * its {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             *
+             * Fires an {{#crossLink "Model/transform:event"}}{{/crossLink}} event on change.
+             *
+             * @property transform
+             * @type Transform
+             */
+            transform: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this Model's {{#crossLink "Model/transform:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event transform
+                     * @param value The property's new value
+                     */
+                    this._attach({
+                        name: "transform",
+                        type: "xeogl.Transform",
+                        component: value,
+                        sceneDefault: false,
+                        onAttached: {
+                            callback: this._transformUpdated,
+                            scope: this
+                        }
+                    });
+                },
+
+                get: function () {
+                    return this._attached.transform;
+                }
+            },
+
+            /**
+             * World-space 3D boundary enclosing all the components in this Model.
+             *
+             * If you call {{#crossLink "Component/destroy:method"}}{{/crossLink}} on this boundary, then
+             * this property will be assigned to a fresh {{#crossLink "Boundary3D"}}{{/crossLink}} instance next
+             * time you reference it.
+             *
+             * @property worldBoundary
+             * @type Boundary3D
+             * @final
+             */
+            worldBoundary: {
+
+                get: function () {
+
+                    if (!this._worldBoundary) {
+
+                        var self = this;
+
+                        this._worldBoundary = this.create({
+
+                            type: "xeogl.Boundary3D",
+
+                            getDirty: function () {
+                                if (self._aabbDirty) {
+                                    self._buildAABB();
+                                    self._aabbDirty = false;
+                                    return true;
+                                }
+                                return false;
+                            },
+
+                            getAABB: function () {
+                                return self._aabb;
+                            }
+                        });
+
+                        this._worldBoundary.on("destroyed",
+                            function () {
+                                self._worldBoundary = null;
+                            });
+                    }
+
+                    return this._worldBoundary;
+                }
+            }
+        },
+
+        _transformUpdated: function (transform) {
+            this._dummyRootTransform.parent = transform;
+        },
+
+        _updated: function () {
+            if (!this._aabbDirty) {
+                this._setAABBDirty();
+            }
+        },
+
+        _setAABBDirty: function () {
+            this._aabbDirty = true;
+            if (this._worldBoundary) {
+                this._worldBoundary.fire("updated", true);
+            }
+        },
+
+        _buildAABB: function () {
+
+            if (!this._aabb) {
+                this._aabb = xeogl.math.AABB3();
+            }
+
+            var xmin = 100000;
+            var ymin = 100000;
+            var zmin = 100000;
+            var xmax = -100000;
+            var ymax = -100000;
+            var zmax = -100000;
+
+            var component;
+            var worldBoundary;
+            var aabb;
+
+            var components = this.components;
+
+            for (var componentId in components) {
+                if (components.hasOwnProperty(componentId)) {
+
+                    component = components[componentId];
+
+                    worldBoundary = component.worldBoundary;
+
+                    if (worldBoundary) {
+
+                        aabb = worldBoundary.aabb;
+
+                        if (aabb[0] < xmin) {
+                            xmin = aabb[0];
+                        }
+
+                        if (aabb[1] < ymin) {
+                            ymin = aabb[1];
+                        }
+
+                        if (aabb[2] < zmin) {
+                            zmin = aabb[2];
+                        }
+
+                        if (aabb[3] > xmax) {
+                            xmax = aabb[3];
+                        }
+
+                        if (aabb[4] > ymax) {
+                            ymax = aabb[4];
+                        }
+
+                        if (aabb[5] > zmax) {
+                            zmax = aabb[5];
+                        }
+                    }
+                }
+            }
+
+            this._aabb[0] = xmin;
+            this._aabb[1] = ymin;
+            this._aabb[2] = zmin;
+            this._aabb[3] = xmax;
+            this._aabb[4] = ymax;
+            this._aabb[5] = zmax;
+        },
+
+        _destroy: function () {
+            this.removeAll();
+        }
+    });
+
+})();;// Copyright (c) 2013 Fabrice Robinet
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -26763,7 +29978,6 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
                             break;
                         }
                     } else {
-
                         if (methodForType[type]) {
                             if (methodForType[type].call(this, entryID, description, this._state.userInfo) === false) {
                                 success = false;
@@ -27358,9 +30572,9 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
     xeogl.GLTFLoader = Object.create(xeogl.glTFParser, {
 
-        setCollection: {
-            value: function (collection) {
-                this.collection = collection;
+        setModel: {
+            value: function (model) {
+                this.model = model;
             }
         },
 
@@ -27368,9 +30582,11 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             enumerable: true,
             value: function (userInfo, options, ok) {
 
-                if (!this.collection) {
-                    throw "collection not set";
+                if (!this.model) {
+                    throw "model not set";
                 }
+
+                xeogl.GLTFLoaderUtils.init();
 
                 this.resources = new Resources();
 
@@ -27423,13 +30639,13 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                 var image = this._json.images[description.source];
 
-                var texture = new xeogl.Texture(this.collection.scene, {
+                var texture = new xeogl.Texture(this.model.scene, {
                     id: this._makeID(entryID),
                     src: image.uri,
-                    flipY: true
+                    flipY: description.flipY
                 });
 
-                this.collection.add(texture);
+                this.model.add(texture);
 
                 this.resources.setEntry(entryID, texture, description);
 
@@ -27440,24 +30656,177 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         handleMaterial: {
             value: function (entryID, description, userInfo) {
 
-                //   log("material", entryID, description);
+                var extensions = description.extensions;
+                var material;
 
-                var values = description.values || {};
+                if (extensions && extensions.FRAUNHOFER_materials_pbr) {
+                    var pbr = extensions.FRAUNHOFER_materials_pbr;
+                    var materialModel = pbr.materialModel;
+                    var values = pbr.values || {};
 
-                var diffuseVal = values.diffuse;
-                var specularVal = values.specular;
-                var shininessVal = values.shininess;
-                var emissiveVal = values.emission;
+                    switch (materialModel) {
+                        case "PBR_metal_roughness":
+                            material = this._parseMetallicMaterial(entryID, values, userInfo);
+                            break;
+
+                        case "PBR_specular_glossiness":
+                            material = this._parseSpecularMaterial(entryID, values, userInfo);
+                            break;
+
+                        default:
+                            material = this._parseMetallicMaterial(entryID, values, userInfo);
+                    }
+                } else {
+                    material = this._parsePhongMaterial(entryID, description.values || {}, userInfo);
+                }
+
+                this.model.add(material);
+
+                this.resources.setEntry(entryID, material, description);
+
+                return true;
+            }
+        },
+
+        _parseMetallicMaterial: {
+            value: function (entryID, values, userInfo) {
 
                 var cfg = {
                     id: this._makeID(entryID),
                     meta: {
                         userInfo: userInfo
-                    },
-                    shininess: shininessVal
+                    }
                 };
 
                 var entry;
+
+                var baseColorFactor = values.baseColorFactor;
+                if (baseColorFactor) {
+                    cfg.baseColor = baseColorFactor.slice(0,3);
+                    cfg.opacity = baseColorFactor[3];
+                }
+
+                if (values.baseColorTexture) {
+                    entry = this.resources.getEntry(values.baseColorTexture);
+                    if (entry) {
+                        cfg.baseColorMap = entry.object;
+                    }
+                }
+
+                var metallicFactor = values.metallicFactor;
+                if (metallicFactor !== null && metallicFactor !== undefined) {
+                    cfg.metallic = metallicFactor;
+                }
+
+                var roughnessFactor = values.roughnessFactor;
+                if (roughnessFactor !== null && roughnessFactor !== undefined) {
+                    cfg.roughness = roughnessFactor;
+                }
+
+                if (values.metallicRoughnessTexture) {
+                    entry = this.resources.getEntry(values.metallicRoughnessTexture);
+                    if (entry) {
+                        cfg.metallicRoughnessMap = entry.object;
+                    }
+                }
+
+                if (values.normalTexture) {
+                    entry = this.resources.getEntry(values.normalTexture);
+                    if (entry) {
+                        cfg.normalMap = entry.object;
+                    }
+                }
+
+                if (values.occlusionTexture) {
+                    entry = this.resources.getEntry(values.occlusionTexture);
+                    if (entry) {
+                        cfg.occlusionMap = entry.object;
+                    }
+                }
+
+                return new xeogl.MetallicMaterial(this.model.scene, cfg);
+            }
+        },
+
+        _parseSpecularMaterial: {
+            value: function (entryID, values, userInfo) {
+
+                var cfg = {
+                    id: this._makeID(entryID),
+                    meta: {
+                        userInfo: userInfo
+                    }
+                };
+
+                var entry;
+
+                var diffuseFactor = values.diffuseFactor;
+                if (diffuseFactor) {
+                    cfg.diffuse = diffuseFactor.slice(0,3);
+                    cfg.opacity = diffuseFactor[3];
+                }
+
+                if (values.diffuseTexture) {
+                    entry = this.resources.getEntry(values.diffuseTexture);
+                    if (entry) {
+                        cfg.diffuseMap = entry.object;
+                    }
+                }
+
+                var specularFactor = values.specularFactor;
+                if (specularFactor !== null && specularFactor !== undefined) {
+                    cfg.specular = specularFactor;
+                }
+
+                var glossinessFactor = values.glossinessFactor;
+                if (glossinessFactor !== null && glossinessFactor !== undefined) {
+                    cfg.glossiness = glossinessFactor;
+                }
+
+                if (values.specularGlossinessTexture) {
+                    entry = this.resources.getEntry(values.specularGlossinessTexture);
+                    if (entry) {
+                        cfg.specularGlossinessMap = entry.object;
+                    }
+                }
+
+                if (values.normalTexture) {
+                    entry = this.resources.getEntry(values.normalTexture);
+                    if (entry) {
+                        cfg.normalMap = entry.object;
+                    }
+                }
+
+                if (values.occlusionTexture) {
+                    entry = this.resources.getEntry(values.occlusionTexture);
+                    if (entry) {
+                        cfg.occlusionMap = entry.object;
+                    }
+                }
+
+                return new xeogl.SpecularMaterial(this.model.scene, cfg);
+            }
+        },
+
+        _parsePhongMaterial: {
+            value: function (entryID, values, userInfo) {
+
+                var cfg = {
+                    id: this._makeID(entryID),
+                    meta: {
+                        userInfo: userInfo
+                    }
+                };
+
+                var entry;
+                var diffuseVal = values.diffuse;
+                var specularVal = values.specular;
+                var shininessVal = values.shininess;
+                var emissiveVal = values.emission;
+
+                if (shininessVal !== null && shininessVal !== undefined) {
+                    cfg.shininessVal = shininessVal;
+                }
 
                 if (diffuseVal) {
                     if (xeogl._isString(diffuseVal)) {
@@ -27492,13 +30861,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                     }
                 }
 
-                var material = new xeogl.PhongMaterial(this.collection.scene, cfg);
-
-                this.collection.add(material);
-
-                this.resources.setEntry(entryID, material, description);
-
-                return true;
+                return new xeogl.PhongMaterial(this.model.scene, cfg);
             }
         },
 
@@ -27529,11 +30892,11 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                     if (primitiveDescription.mode === WebGLRenderingContext.TRIANGLES) {
 
-                        var geometry = new xeogl.Geometry(this.collection.scene, {
+                        var geometry = new xeogl.Geometry(this.model.scene, {
                             id: this._makeID(entryID)
                         });
 
-                        this.collection.add(geometry);
+                        this.model.add(geometry);
 
                         var materialEntry = this.resources.getEntry(primitiveDescription.material);
                         var material = materialEntry.object;
@@ -27653,8 +31016,8 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                     return;
                 }
 
-                var collection = this.collection;
-                var scene = collection.scene;
+                var model = this.model;
+                var scene = model.scene;
 
                 if (node.matrix) {
                     var matrix = node.matrix;
@@ -27663,7 +31026,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                         matrix: matrix,
                         parent: transform
                     });
-                    collection.add(transform);
+                    model.add(transform);
                 }
 
                 if (node.translation) {
@@ -27673,7 +31036,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                         xyz: [translation[0], translation[1], translation[2]],
                         parent: transform
                     });
-                    collection.add(transform);
+                    model.add(transform);
                 }
 
                 if (node.rotation) {
@@ -27684,7 +31047,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                         angle: rotation[3],
                         parent: transform
                     });
-                    collection.add(transform);
+                    model.add(transform);
                 }
 
                 if (node.scale) {
@@ -27694,7 +31057,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                         xyz: [scale[0], scale[1], scale[2]],
                         parent: transform
                     });
-                    collection.add(transform);
+                    model.add(transform);
                 }
 
                 if (node.meshes) {
@@ -27705,7 +31068,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                         id: this._makeID(nodeId + ".visibility")
                     });
 
-                    collection.add(visibility);
+                    model.add(visibility);
 
                     // One xeogl.Cull per mesh group
 
@@ -27713,7 +31076,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                         id: this._makeID(nodeId + ".cull")
                     });
 
-                    collection.add(cull);
+                    model.add(cull);
 
                     // One xeogl.Modes per mesh group
 
@@ -27721,7 +31084,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                         id: this._makeID(nodeId + ".modes")
                     });
 
-                    collection.add(cull);
+                    model.add(modes);
 
                     // One xeogl.Entity per mesh, each sharing the same
                     // xeogl.Visibility, xeogl.Cull and xeogl.Nodes
@@ -27779,7 +31142,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                                 loading: true
                             });
 
-                            collection.add(entity);
+                            model.add(entity);
                         }
                     }
                 }
@@ -27804,97 +31167,76 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
     "use strict";
 
-    var glTFLoader = xeogl.GLTFLoader;
-
     /**
-     A **Model** loads content from a <a href="https://github.com/KhronosGroup/glTF" target = "_other">glTF</a> file into its parent {{#crossLink "Scene"}}{{/crossLink}}.
+     A **GLTFModel** is a {{#crossLink "Model"}}{{/crossLink}} that loads itself from a <a href="https://github.com/KhronosGroup/glTF" target = "_other">glTF</a> file.
 
-     <ul><li>A Model begins loading as soon as it's {{#crossLink "Model/src:property"}}{{/crossLink}}
-     property is set to the location of a valid glTF file.</li>
-     <li>A Model keeps all its loaded components in a {{#crossLink "Collection"}}{{/crossLink}}.</li>
-     <li>A Model can be attached to an animated and dynamically-editable
-     modelling {{#crossLink "Transform"}}{{/crossLink}} hierarchy, to rotate, translate and scale it within the World-space coordinate system, in the
-     same way that an {{#crossLink "Entity"}}{{/crossLink}} can.</li>
-     <li>You can set a Model's {{#crossLink "Model/src:property"}}{{/crossLink}} property to a new file path at any time,
-     which will cause it to load components from the new file (destroying any components loaded previously).</li>
-     </ul>
+     <a href="../../examples/#importing_gltf_gearbox"><img src="../../../assets/images/gltf/glTF_gearbox_squashed.png"></img></a>
 
-     <img src="../../../assets/images/Model.png"></img>
+     ## Overview
 
-     ## Examples
+     * A GLTFModel is a container of {{#crossLink "Component"}}Components{{/crossLink}} that loads itself from glTF.
+     * It begins loading as soon as you set its {{#crossLink "GLTFModel/src:property"}}{{/crossLink}}
+     property to the location of a valid glTF file.
+     * You can set {{#crossLink "GLTFModel/src:property"}}{{/crossLink}} to a new file path at any time, which causes
+     the GLTFModel to clear itself and load components from the new file.
+     * Can be transformed within World-space by attaching it to a {{#crossLink "Transform"}}{{/crossLink}}.
+     * Provides its World-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}}.
 
-     <ul>
-     <li>[Gearbox](../../examples/#importing_gltf_gearbox)</li>
-     <li>[Buggy](../../examples/#importing_gltf_buggy)</li>
-     <li>[Reciprocating Saw](../../examples/#importing_gltf_ReciprocatingSaw)</li>
-     <li>[Textured Duck](../../examples/#importing_gltf_duck)</li>
-     <li>[Model with entity explorer UI](../../examples/#demos_ui_explorer)</li>
-     <li>[Fly camera to model entities](../../examples/#boundaries_flyToBoundary)</li>
-     <li>[Ensuring individual materials on Model entities](../../examples/#importing_gltf_techniques_uniqueMaterials)</li>
-     <li>[Baking transform hierarchies](../../examples/#importing_gltf_techniques_bakeTransforms)</li>
-     <li>[Attaching transforms to Models, via constructor](../../examples/#importing_gltf_techniques_configTransform)</li>
-     <li>[Attaching transforms to Models, via property](../../examples/#importing_gltf_techniques_attachTransform)</li>
-     </ul>
+     <img src="../../../assets/images/GLTFModel.png"></img>
 
      ## Tutorials
 
-     Find API documentation for Model here:
+     * [Importing glTF](https://github.com/xeolabs/xeogl/wiki/Importing-glTF)
 
-     <ul>
-     <li>[Importing glTF](https://github.com/xeolabs/xeogl/wiki/Importing-glTF)</li>
-     </ul>
+     ## Examples
 
-     @class Model
+     * [Gearbox](../../examples/#importing_gltf_gearbox)
+     * [GLTFModel with entity explorer UI](../../examples/#demos_ui_explorer
+     * [Ensuring individual materials on GLTFModel entities](../../examples/#models_filter_uniqueMaterials)
+     * [Baking transform hierarchies](../../examples/#models_filter_bakeTransforms)
+     * [Attaching transforms to GLTFModel, via constructor](../../examples/#transforms_model_configureTransform)
+     * [Attaching transforms to GLTFModel, via property](../../examples/#transforms_model_attachTransform)
+
+     @class GLTFModel
      @module xeogl
-     @submodule importing
-     @extends Component
+     @submodule models
+     @constructor
+     @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this GLTFModel in the default
+     {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+     @param [cfg] {*} Configs
+     @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
+     generated automatically when omitted.
+     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this GLTFModel.
+     @param [cfg.src] {String} Path to a glTF file. You can set this to a new file path at any time, which will cause the
+     GLTFModel to load components from the new file (after first destroying any components loaded from a previous file path).
+     @param [cfg.transform] {Number|String|Transform} A Local-to-World-space (modelling) {{#crossLink "Transform"}}{{/crossLink}} to attach to this GLTFModel.
+     Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this GLTFModel. Internally, the given
+     {{#crossLink "Transform"}}{{/crossLink}} will be inserted above each top-most {{#crossLink "Transform"}}Transform{{/crossLink}}
+     that the GLTFModel attaches to its {{#crossLink "Entity"}}Entities{{/crossLink}}.
+     @extends Model
      */
-    xeogl.Model = xeogl.Component.extend({
+    xeogl.GLTFModel = xeogl.Model.extend({
 
-        type: "xeogl.Model",
+        type: "xeogl.GLTFModel",
 
         _init: function (cfg) {
 
             this._super(cfg);
 
-            // The xeogl.Collection that will hold all the components
-            // we create from the glTF model; this will be available
-            // as a public, immutable #collection property
-
-            this._collection = this.create(xeogl.Collection);
-
-            // Dummy transform to make it easy to graft user-supplied
-            // transforms above loaded entities
-
-            this._dummyRootTransform = this.create(xeogl.Transform, {
-                meta: "dummy"
-            });
-
             this._src = null;
 
-            if (!cfg.src) {
-                this.error("Config missing: 'src'");
-                return;
-            }
-
-            if (!xeogl._isString(cfg.src)) {
-                this.error("Value for config 'src' should be a string");
-                return;
-            }
-
             this.src = cfg.src;
-            this.transform = cfg.transform;
         },
 
         _props: {
 
             /**
-             Path to the glTF file.
+             Path to a glTF file.
 
-             You can set this to a new file path at any time, which will cause the Model to load components from
+             You can set this to a new file path at any time, which will cause the GLTFModel to load components from
              the new file (after first destroying any components loaded from a previous file path).
 
-             Fires a {{#crossLink "Model/src:event"}}{{/crossLink}} event on change.
+             Fires a {{#crossLink "GLTFModel/src:event"}}{{/crossLink}} event on change.
 
              @property src
              @type String
@@ -27912,11 +31254,11 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                         return;
                     }
 
-                    if (value === this._src) { // Already loaded this model
+                    if (value === this._src) { // Already loaded this GLTFModel
 
                         /**
-                         Fired whenever this Model has finished loading components from the glTF file
-                         specified by {{#crossLink "Model/src:property"}}{{/crossLink}}.
+                         Fired whenever this GLTFModel has finished loading components from the glTF file
+                         specified by {{#crossLink "GLTFModel/src:property"}}{{/crossLink}}.
                          @event loaded
                          */
                         this.fire("loaded");
@@ -27924,82 +31266,38 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                         return;
                     }
 
-                    this._clear();
+                    this.destroyAll();
 
                     this._src = value;
 
-                    glTFLoader.setCollection(this._collection);
+                    var glTFLoader = xeogl.GLTFLoader;
+
+                    glTFLoader.setModel(this);
                     glTFLoader.initWithPath(this.id, this._src);
 
                     var self = this;
                     var userInfo = null;
                     var options = null;
-                    var rootTransform;
-                    var dummyRootTransform = self._dummyRootTransform;
 
                     // Increment processes represented by loading spinner
                     // Spinner appears as soon as count is non-zero
 
-                    var spinner = self.scene.canvas.spinner;
+                    var spinner = this.scene.canvas.spinner;
                     spinner.processes++;
 
-                    glTFLoader.load(userInfo, options,
-                        function () {
+                    glTFLoader.load(userInfo, options, function () {
 
-                            self._collection.iterate(function (component) {
+                        // Decrement processes represented by loading spinner
+                        // Spinner disappears if the count is now zero
+                        spinner.processes--;
 
-                                if (component.isType("xeogl.Entity")) {
-
-                                    // Insert the dummy transform above
-                                    // each entity we just loaded
-
-                                    rootTransform = component.transform;
-
-                                    if (!rootTransform) {
-
-                                        component.transform = dummyRootTransform;
-
-                                    } else {
-
-                                        while (rootTransform.parent) {
-
-                                            if (rootTransform.id === dummyRootTransform.id) {
-
-                                                // Since transform hierarchies created by the glTFLoader may contain
-                                                // transforms that share the same parents, there is potential to find
-                                                // our dummy root transform while walking up an entity's transform
-                                                // path, when that path is joins a path that belongs to an Entity that
-                                                // we processed earlier
-
-                                                return;
-                                            }
-
-                                            rootTransform = rootTransform.parent;
-                                        }
-
-                                        if (rootTransform.id === dummyRootTransform.id) {
-                                            return;
-                                        }
-
-                                        rootTransform.parent = dummyRootTransform;
-                                    }
-                                }
-                            });
-
-                            // Decrement processes represented by loading spinner
-                            // Spinner disappears if the count is now zero
-                            spinner.processes--;
-
-                            /**
-                             Fired whenever this Model has finished loading components from the glTF file
-                             specified by {{#crossLink "Model/src:property"}}{{/crossLink}}.
-                             @event loaded
-                             */
-                            self.fire("loaded");
+                        xeogl.scheduleTask(function () {
+                            self.fire("loaded", true);
                         });
+                    });
 
                     /**
-                     Fired whenever this Model's {{#crossLink "Model/src:property"}}{{/crossLink}} property changes.
+                     Fired whenever this GLTFModel's {{#crossLink "GLTFModel/src:property"}}{{/crossLink}} property changes.
                      @event src
                      @param value The property's new value
                      */
@@ -28009,106 +31307,24 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                 get: function () {
                     return this._src;
                 }
-            },
-
-            /**
-             * A {{#crossLink "Collection"}}{{/crossLink}} containing the scene components loaded by this Model.
-             *
-             * Whenever {{#crossLink "Model/src:property"}}{{/crossLink}} is set to the location of a valid glTF file,
-             * and once the file has been loaded, this {{#crossLink "Collection"}}{{/crossLink}} will contain whatever
-             * components were loaded from that file.
-             *
-             * Note that prior to loading the file, the Model will destroy any components in the {{#crossLink "Collection"}}{{/crossLink}}.
-             *
-             * @property collection
-             * @type Collection
-             * @final
-             */
-            collection: {
-
-                get: function () {
-                    return this._collection;
-                }
-            },
-
-            /**
-             * The Local-to-World-space (modelling) {{#crossLink "Transform"}}{{/crossLink}} attached to this Model.
-             *
-             * Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this Model.
-             *
-             * Internally, the given {{#crossLink "Transform"}}{{/crossLink}} will be inserted above each top-most
-             * {{#crossLink "Transform"}}Transform{{/crossLink}} that the Model attaches to
-             * its {{#crossLink "Entity"}}Entities{{/crossLink}}.
-             *
-             * Fires an {{#crossLink "Model/transform:event"}}{{/crossLink}} event on change.
-             *
-             * @property transform
-             * @type Transform
-             */
-            transform: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this Model's {{#crossLink "Model/transform:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event transform
-                     * @param value The property's new value
-                     */
-                    this._attach({
-                        name: "transform",
-                        type: "xeogl.Transform",
-                        component: value,
-                        sceneDefault: false,
-                        onAttached: {
-                            callback: this._transformUpdated,
-                            scope: this
-                        }
-                    });
-                },
-
-                get: function () {
-                    return this._attached.transform;
-                }
-            }
-        },
-
-        _transformUpdated: function (transform) {
-            this._dummyRootTransform.parent = transform;
-        },
-
-        _clear: function () {
-
-            var c = [];
-
-            this._collection.iterate(
-                function (component) {
-                    c.push(component);
-                });
-
-            while (c.length) {
-                c.pop().destroy();
             }
         },
 
         _getJSON: function () {
 
-            var json = {
-                src: this._src
-            };
+            var json = {};
 
-            if (this._attached.transform) {
-                json.transform = this._attached.transform.id;
+            if (this.src) {
+                json.src = this._src;
             }
 
             return json;
         },
 
         _destroy: function () {
-            this._clear();
+            this.destroyAll();
         }
     });
-
 
 })();;/**
  * Components to define the surface appearance of Entities.
@@ -28120,10 +31336,8 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  Material is the base class for:
 
- <ul>
- <li>{{#crossLink "PhongMaterial"}}{{/crossLink}} - Blinn-Phong shading material.</li>
- <li>(more Material subtypes coming)</li>
- </ul>
+ * {{#crossLink "PhongMaterial"}}{{/crossLink}} - Blinn-Phong shading material.
+ * (more Material subtypes coming)
 
  @class Material
  @module xeogl
@@ -28146,32 +31360,30 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
 })();
 ;/**
-
  A **PhongMaterial** is a {{#crossLink "Material"}}{{/crossLink}} that defines the surface appearance of
  attached {{#crossLink "Entity"}}Entities{{/crossLink}} using
  the <a href="http://en.wikipedia.org/wiki/Phong_reflection_model">Phong</a> lighting model.
 
- <ul>
- <li>PhongMaterial properties, along with {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}},
+ ## Overview
+
+ * PhongMaterial properties, along with {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}},
  {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} and {{#crossLink "PhongMaterial/reflectivity:property"}}{{/crossLink}},
- specify attributes that are to be **applied uniformly** across the surface of attached {{#crossLink "Geometry"}}Geometries{{/crossLink}}.</li>
- <li>Most of those attributes can be textured, **effectively replacing the values set for those properties**, by
+ specify attributes that are to be **applied uniformly** across the surface of attached {{#crossLink "Geometry"}}Geometries{{/crossLink}}.
+ * Most of those attributes can be textured, **effectively replacing the values set for those properties**, by
  assigning {{#crossLink "Texture"}}Textures{{/crossLink}} to the PhongMaterial's
  {{#crossLink "PhongMaterial/diffuseMap:property"}}{{/crossLink}}, {{#crossLink "PhongMaterial/specularMap:property"}}{{/crossLink}},
  {{#crossLink "PhongMaterial/emissiveMap:property"}}{{/crossLink}}, {{#crossLink "PhongMaterial/opacityMap:property"}}{{/crossLink}}
- and  {{#crossLink "PhongMaterial/reflectivityMap:property"}}{{/crossLink}} properties.</li>
- <li>For example, the value of {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} will be ignored if your
+ and  {{#crossLink "PhongMaterial/reflectivityMap:property"}}{{/crossLink}} properties.
+ * For example, the value of {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} will be ignored if your
  PhongMaterial also has a {{#crossLink "PhongMaterial/diffuseMap:property"}}{{/crossLink}} set to a {{#crossLink "Texture"}}Texture{{/crossLink}}.
  The {{#crossLink "Texture"}}Texture's{{/crossLink}} pixel colors directly provide the diffuse color of each fragment across the
  {{#crossLink "Geometry"}}{{/crossLink}} surface, ie. they are not multiplied by
- the {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} for each pixel, as is done in many shading systems.</li>
- <li>When the {{#crossLink "Entity"}}{{/crossLink}}'s {{#crossLink "Geometry"}}{{/crossLink}} has a
+ the {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} for each pixel, as is done in many shading systems.
+ * When the {{#crossLink "Entity"}}{{/crossLink}}'s {{#crossLink "Geometry"}}{{/crossLink}} has a
  {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} set to "lines" or "points" then only the {{#crossLink "PhongMaterial"}}{{/crossLink}}'s
  {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}}, {{#crossLink "PhongMaterial/emissiveMap:property"}}{{/crossLink}},
  {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} and {{#crossLink "PhongMaterial/opacityMap:property"}}{{/crossLink}}
- will actually be applied, since those primitive types cannot be shaded.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that PhongMaterials create within xeogl's shaders.</li>
- </ul>
+ will actually be applied, since those primitive types cannot be shaded.
 
  <img src="../../../assets/images/PhongMaterial.png"></img>
 
@@ -28179,11 +31391,9 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  In this example we have an Entity with
 
- <ul>
- <li>a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "DirLight"}}{{/crossLink}},</li>
- <li>a {{#crossLink "PhongMaterial"}}{{/crossLink}} which applies a {{#crossLink "Texture"}}{{/crossLink}} as a diffuse map and a specular {{#crossLink "Fresnel"}}{{/crossLink}}, and
- <li>a {{#crossLink "TorusGeometry"}}{{/crossLink}}.</li>
- </ul>
+ * a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "DirLight"}}{{/crossLink}},
+ * a {{#crossLink "PhongMaterial"}}{{/crossLink}} which applies a {{#crossLink "Texture"}}{{/crossLink}} as a diffuse map and a specular {{#crossLink "Fresnel"}}{{/crossLink}}, and
+ * a {{#crossLink "TorusGeometry"}}{{/crossLink}}.
 
  Note that xeogl will ignore the PhongMaterial's {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}}
  property, since we assigned the {{#crossLink "Texture"}}{{/crossLink}} to the PhongMaterial's
@@ -28237,7 +31447,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  @param [cfg] {*} The PhongMaterial configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta=null] {String:Object} Metadata to attach to this PhongMaterial.
- @param [cfg.ambient=[0.7, 0.7, 0.8 ]] {Array of Number} PhongMaterial ambient color.
+ @param [cfg.ambient=[1.0, 1.0, 1.0 ]] {Array of Number} PhongMaterial ambient color.
  @param [cfg.diffuse=[ 1.0, 1.0, 1.0 ]] {Array of Number} PhongMaterial diffuse color.
  @param [cfg.specular=[ 1.0, 1.0, 1.0 ]] {Array of Number} PhongMaterial specular color.
  @param [cfg.emissive=[ 0.0, 0.0, 0.0 ]] {Array of Number} PhongMaterial emissive color.
@@ -28247,17 +31457,19 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  @param [cfg.reflectivity=1] {Number} Scalar in range 0-1 that controls how much {{#crossLink "CubeMap"}}CubeMap{{/crossLink}} is reflected.
  @param [cfg.lineWidth=1] {Number} Scalar that controls the width of lines for {{#crossLink "Geometry"}}{{/crossLink}} with {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} set to "lines".
  @param [cfg.pointSize=1] {Number} Scalar that controls the size of points for {{#crossLink "Geometry"}}{{/crossLink}} with {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} set to "points".
+ @param [cfg.ambientMap=null] {Texture} A ambient map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will multiply by the diffuse property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
  @param [cfg.diffuseMap=null] {Texture} A diffuse map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the diffuse property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
  @param [cfg.specularMap=null] {Texture} A specular map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the specular property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
- @param [cfg.emissiveMap=null] {Texture} An emissive map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the emissive property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
- @param [cfg.normalMap=null] {Texture} A normal map {{#crossLink "Texture"}}Texture{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
- @param [cfg.opacityMap=null] {Texture} An opacity map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the opacity property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
- @param [cfg.reflectivityMap=null] {Texture} A reflectivity control map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the reflectivity property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
- @param [cfg.diffuseFresnel=null] {Fresnel} A diffuse {{#crossLink "Fresnel"}}Fresnel{{/crossLink}}.
- @param [cfg.specularFresnel=null] {Fresnel} A specular {{#crossLink "Fresnel"}}Fresnel{{/crossLink}}.
- @param [cfg.emissiveFresnel=null] {Fresnel} An emissive {{#crossLink "Fresnel"}}Fresnel{{/crossLink}}.
- @param [cfg.opacityFresnel=null] {Fresnel} An opacity {{#crossLink "Fresnel"}}Fresnel{{/crossLink}}.
- @param [cfg.reflectivityFresnel=null] {Fresnel} A reflectivity {{#crossLink "Fresnel"}}Fresnel{{/crossLink}}.
+ @param [cfg.emissiveMap=undefined] {Texture} An emissive map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the emissive property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
+ @param [cfg.normalMap=undefined] {Texture} A normal map {{#crossLink "Texture"}}Texture{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
+ @param [cfg.opacityMap=undefined] {Texture} An opacity map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the opacity property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
+ @param [cfg.reflectivityMap=undefined] {Texture} A reflectivity control map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the reflectivity property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
+ @param [cfg.occlusionMap=null] {Texture} An occlusion map {{#crossLink "Texture"}}Texture{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
+ @param [cfg.diffuseFresnel=undefined] {Fresnel} A diffuse {{#crossLink "Fresnel"}}Fresnel{{/crossLink}}.
+ @param [cfg.specularFresnel=undefined] {Fresnel} A specular {{#crossLink "Fresnel"}}Fresnel{{/crossLink}}.
+ @param [cfg.emissiveFresnel=undefined] {Fresnel} An emissive {{#crossLink "Fresnel"}}Fresnel{{/crossLink}}.
+ @param [cfg.opacityFresnel=undefined] {Fresnel} An opacity {{#crossLink "Fresnel"}}Fresnel{{/crossLink}}.
+ @param [cfg.reflectivityFresnel=undefined] {Fresnel} A reflectivity {{#crossLink "Fresnel"}}Fresnel{{/crossLink}}.
  */
 (function () {
 
@@ -28279,25 +31491,11 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                 emissive: xeogl.math.vec3([0.0, 0.0, 0.0]),
 
                 opacity: 1.0,
-                shininess: 30.0,
+                shininess: 80.0,
                 reflectivity: 1.0,
 
                 lineWidth: 1.0,
                 pointSize: 1.0,
-
-                ambientMap: null,
-                normalMap: null,
-                diffuseMap: null,
-                specularMap: null,
-                emissiveMap: null,
-                opacityMap: null,
-                reflectivityMap: null,
-
-                diffuseFresnel: null,
-                specularFresnel: null,
-                emissiveFresnel: null,
-                opacityFresnel: null,
-                reflectivityFresnel: null,
 
                 hash: null
             });
@@ -28325,19 +31523,57 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             this.lineWidth = cfg.lineWidth;
             this.pointSize = cfg.pointSize;
 
-            this.ambientMap = cfg.ambientMap;
-            this.diffuseMap = cfg.diffuseMap;
-            this.specularMap = cfg.specularMap;
-            this.emissiveMap = cfg.emissiveMap;
-            this.opacityMap = cfg.opacityMap;
-            this.reflectivityMap = cfg.reflectivityMap;
-            this.normalMap = cfg.normalMap;
+            if (cfg.ambientMap) {
+                this.ambientMap = cfg.ambientMap;
+            }
 
-            this.diffuseFresnel = cfg.diffuseFresnel;
-            this.specularFresnel = cfg.specularFresnel;
-            this.emissiveFresnel = cfg.emissiveFresnel;
-            this.opacityFresnel = cfg.opacityFresnel;
-            this.reflectivityFresnel = cfg.reflectivityFresnel;
+            if (cfg.diffuseMap) {
+                this.diffuseMap = cfg.diffuseMap;
+            }
+
+            if (cfg.specularMap) {
+                this.specularMap = cfg.specularMap;
+            }
+
+            if (cfg.emissiveMap) {
+                this.emissiveMap = cfg.emissiveMap;
+            }
+
+            if (cfg.opacityMap) {
+                this.opacityMap = cfg.opacityMap;
+            }
+
+            if (cfg.reflectivityMap) {
+                this.reflectivityMap = cfg.reflectivityMap;
+            }
+
+            if (cfg.normalMap) {
+                this.normalMap = cfg.normalMap;
+            }
+
+            if (cfg.occlusionMap) {
+                this.occlusionMap = cfg.occlusionMap;
+            }
+
+            if (cfg.diffuseFresnel) {
+                this.diffuseFresnel = cfg.diffuseFresnel;
+            }
+
+            if (cfg.specularFresnal) {
+                this.specularFresnel = cfg.specularFresnel;
+            }
+
+            if (cfg.emissiveFresnel) {
+                this.emissiveFresnel = cfg.emissiveFresnel;
+            }
+
+            if (cfg.opacityfresnel) {
+                this.opacityFresnel = cfg.opacityFresnel;
+            }
+
+            if (cfg.reflectivityFresnel) {
+                this.reflectivityFresnel = cfg.reflectivityFresnel;
+            }
         },
 
         _props: {
@@ -28652,12 +31888,12 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             /**
              A normal {{#crossLink "Texture"}}{{/crossLink}} attached to this PhongMaterial.
 
-             This property overrides {{#crossLink "PhongMaterial/normalMap:property"}}{{/crossLink}} when not null or undefined.
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
 
              Fires a {{#crossLink "PhongMaterial/normalMap:event"}}{{/crossLink}} event on change.
 
              @property normalMap
-             @default null
+             @default undefined
              @type {Texture}
              */
             normalMap: {
@@ -28681,12 +31917,14 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             /**
              An ambient {{#crossLink "Texture"}}{{/crossLink}} attached to this PhongMaterial.
 
-             This property overrides {{#crossLink "PhongMaterial/ambientMap:property"}}{{/crossLink}} when not null or undefined.
+             This property multiplies by {{#crossLink "PhongMaterial/ambient:property"}}{{/crossLink}} property.
+
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
 
              Fires a {{#crossLink "PhongMaterial/ambientMap:event"}}{{/crossLink}} event on change.
 
              @property ambientMap
-             @default null
+             @default undefined
              @type {Texture}
              */
             ambientMap: {
@@ -28710,12 +31948,14 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             /**
              A diffuse {{#crossLink "Texture"}}{{/crossLink}} attached to this PhongMaterial.
 
-             This property overrides {{#crossLink "PhongMaterial/diffuseMap:property"}}{{/crossLink}} when not null or undefined.
+             This property multiplies by {{#crossLink "PhongMaterial/diffuseMap:property"}}{{/crossLink}} when not null or undefined.
+
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
 
              Fires a {{#crossLink "PhongMaterial/diffuseMap:event"}}{{/crossLink}} event on change.
 
              @property diffuseMap
-             @default null
+             @default undefined
              @type {Texture}
              */
             diffuseMap: {
@@ -28739,12 +31979,14 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             /**
              A specular {{#crossLink "Texture"}}{{/crossLink}} attached to this PhongMaterial.
 
-             This property overrides {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}} when not null or undefined.
+             This property multiplies by {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}} when not null or undefined.
+
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
 
              Fires a {{#crossLink "PhongMaterial/specularMap:event"}}{{/crossLink}} event on change.
 
              @property specularMap
-             @default null
+             @default undefined
              @type {Texture}
              */
             specularMap: {
@@ -28768,12 +32010,14 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             /**
              An emissive {{#crossLink "Texture"}}{{/crossLink}} attached to this PhongMaterial.
 
-             This property overrides {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}} when not null or undefined.
+             This property multiplies by {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}} when not null or undefined.
+
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
 
              Fires an {{#crossLink "PhongMaterial/emissiveMap:event"}}{{/crossLink}} event on change.
 
              @property emissiveMap
-             @default null
+             @default undefined
              @type {Texture}
              */
             emissiveMap: {
@@ -28797,12 +32041,14 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             /**
              An opacity {{#crossLink "Texture"}}{{/crossLink}} attached to this PhongMaterial.
 
-             This property overrides {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} when not null or undefined.
+             This property multiplies by {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} when not null or undefined.
+
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
 
              Fires an {{#crossLink "PhongMaterial/opacityMap:event"}}{{/crossLink}} event on change.
 
              @property opacityMap
-             @default null
+             @default undefined
              @type {Texture}
              */
             opacityMap: {
@@ -28826,12 +32072,14 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             /**
              A reflectivity {{#crossLink "Texture"}}{{/crossLink}} attached to this PhongMaterial.
 
-             This property overrides {{#crossLink "PhongMaterial/reflectivity:property"}}{{/crossLink}} when not null or undefined.
+             This property multiplies by {{#crossLink "PhongMaterial/reflectivity:property"}}{{/crossLink}} when not null or undefined.
+
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
 
              Fires a {{#crossLink "PhongMaterial/reflectivityMap:event"}}{{/crossLink}} event on change.
 
              @property reflectivityMap
-             @default null
+             @default undefined
              @type {Texture}
              */
             reflectivityMap: {
@@ -28855,10 +32103,12 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             /**
              A reflection {{#crossLink "CubeMap"}}{{/crossLink}} attached to this PhongMaterial.
 
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
+
              Fires a {{#crossLink "PhongMaterial/reflection:event"}}{{/crossLink}} event on change.
 
              @property reflection
-             @default null
+             @default undefined
              @type {Reflect}
              */
             reflection: {
@@ -28880,14 +32130,46 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
+
+             An occlusion map {{#crossLink "Texture"}}{{/crossLink}} attached to this PhongMaterial.
+
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
+
+             Fires a {{#crossLink "PhongMaterial/occlusionMap:event"}}{{/crossLink}} event on change.
+
+             @property occlusionMap
+             @default undefined
+             @type {Texture}
+             */
+            occlusionMap: {
+
+                set: function (texture) {
+
+                    /**
+                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/occlusionMap:property"}}{{/crossLink}} property changes.
+
+                     @event occlusionMap
+                     @param value Number The property's new value
+                     */
+                    this._attachComponent("xeogl.Texture", "occlusionMap", texture);
+                },
+
+                get: function () {
+                    return this._attached.occlusionMap;
+                }
+            },
+
+            /**
              A diffuse {{#crossLink "Fresnel"}}{{/crossLink}} attached to this PhongMaterial.
 
-             This property overrides {{#crossLink "PhongMaterial/diffuseFresnel:property"}}{{/crossLink}} when not null or undefined.
+             This property multiplies by {{#crossLink "PhongMaterial/diffuseFresnel:property"}}{{/crossLink}} when not null or undefined.
+
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
 
              Fires a {{#crossLink "PhongMaterial/diffuseFresnel:event"}}{{/crossLink}} event on change.
 
              @property diffuseFresnel
-             @default null
+             @default undefined
              @type {Fresnel}
              */
             diffuseFresnel: {
@@ -28911,12 +32193,14 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             /**
              A specular {{#crossLink "Fresnel"}}{{/crossLink}} attached to this PhongMaterial.
 
-             This property overrides {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}} when not null or undefined.
+             This property multiplies by {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}} when not null or undefined.
+
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
 
              Fires a {{#crossLink "PhongMaterial/specularFresnel:event"}}{{/crossLink}} event on change.
 
              @property specularFresnel
-             @default null
+             @default undefined
              @type {Fresnel}
              */
             specularFresnel: {
@@ -28940,12 +32224,14 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             /**
              An emissive {{#crossLink "Fresnel"}}{{/crossLink}} attached to this PhongMaterial.
 
-             This property overrides {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}} when not null or undefined.
+             This property multiplies by {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}} when not null or undefined.
+
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
 
              Fires an {{#crossLink "PhongMaterial/emissiveFresnel:event"}}{{/crossLink}} event on change.
 
              @property emissiveFresnel
-             @default null
+             @default undefined
              @type {Fresnel}
              */
             emissiveFresnel: {
@@ -28969,12 +32255,14 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             /**
              An opacity {{#crossLink "Fresnel"}}{{/crossLink}} attached to this PhongMaterial.
 
-             This property overrides {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} when not null or undefined.
+             This property multiplies by {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} when not null or undefined.
+
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
 
              Fires an {{#crossLink "PhongMaterial/opacityFresnel:event"}}{{/crossLink}} event on change.
 
              @property opacityFresnel
-             @default null
+             @default undefined
              @type {Fresnel}
              */
             opacityFresnel: {
@@ -28998,12 +32286,14 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             /**
              A reflectivity {{#crossLink "Fresnel"}}{{/crossLink}} attached to this PhongMaterial.
 
-             This property overrides {{#crossLink "PhongMaterial/reflectivity:property"}}{{/crossLink}} when not null or undefined.
+             This property multiplies by {{#crossLink "PhongMaterial/reflectivity:property"}}{{/crossLink}} when not null or undefined.
+
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
 
              Fires a {{#crossLink "PhongMaterial/reflectivityFresnel:event"}}{{/crossLink}} event on change.
 
              @property reflectivityFresnel
-             @default null
+             @default undefined
              @type {Fresnel}
              */
             reflectivityFresnel: {
@@ -29062,50 +32352,57 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             var hash = ["/p"]; // 'P' for Phong
 
             if (state.normalMap) {
-                hash.push("/b");
+                hash.push("/nm");
                 if (state.normalMap.matrix) {
                     hash.push("/mat");
                 }
             }
 
             if (state.ambientMap) {
-                hash.push("/a");
+                hash.push("/am");
                 if (state.ambientMap.matrix) {
                     hash.push("/mat");
                 }
             }
 
             if (state.diffuseMap) {
-                hash.push("/d");
+                hash.push("/dm");
                 if (state.diffuseMap.matrix) {
                     hash.push("/mat");
                 }
             }
 
             if (state.specularMap) {
-                hash.push("/s");
+                hash.push("/sm");
                 if (state.specularMap.matrix) {
                     hash.push("/mat");
                 }
             }
 
             if (state.emissiveMap) {
-                hash.push("/e");
+                hash.push("/em");
                 if (state.emissiveMap.matrix) {
                     hash.push("/mat");
                 }
             }
 
             if (state.opacityMap) {
-                hash.push("/o");
+                hash.push("/om");
                 if (state.opacityMap.matrix) {
                     hash.push("/mat");
                 }
             }
 
             if (state.reflectivityMap) {
-                hash.push("/r");
+                hash.push("/rm");
                 if (state.reflectivityMap.matrix) {
+                    hash.push("/mat");
+                }
+            }
+
+            if (state.occlusionMap) {
+                hash.push("/om");
+                if (state.occlusionMap.matrix) {
                     hash.push("/mat");
                 }
             }
@@ -29141,10 +32438,10 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                 // Colors
 
-                ambient: this._state.ambient,
-                diffuse: this._state.diffuse,
-                specular: this._state.specular,
-                emissive: this._state.emissive
+                ambient: this._state.ambient.slice(),
+                diffuse: this._state.diffuse.slice(),
+                specular: this._state.specular.slice(),
+                emissive: this._state.emissive.slice()
             };
 
             if (this._state.opacity !== 1.0) {
@@ -29158,7 +32455,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             if (this._state.reflectivity !== 1.0) {
                 json.reflectivity = this._state.reflectivity;
             }
-
 
             // Lines and points
 
@@ -29202,6 +32498,10 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                 json.reflectivityMap = components.reflectivityMap.id;
             }
 
+            if (components.occlusionMap) {
+                json.occlusionMap = components.occlusionMap.id;
+            }
+
             if (components.diffuseFresnel) {
                 json.diffuseFresnel = components.diffuseFresnel.id;
             }
@@ -29230,50 +32530,1442 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         }
     });
 
-})();
-;/**
+})();;/**
+
+ A **SpecularMaterial** is a {{#crossLink "Material"}}{{/crossLink}} that defines the surface appearance of
+ attached {{#crossLink "Entity"}}Entities{{/crossLink}} using the specular-glossy physically-based rendering model.
+
+ ## Overview
+
+ * Alpha status
+ * Conforms to the [Fraunhofer PBR extensions for glTF](https://github.com/tsturm/glTF/tree/master/extensions/Vendor/FRAUNHOFER_materials_pbr)
+ with some minor renamings for consistency with the rest of xeogl's API.
+ * Supports specular, glossiness and specularGlossiness maps for flexibility, with latter to support glTF
+ * Separate diffuse and opacity channels to allow opacity updates independently of baseColor
+ * Supports separate opacityMap for opacity, or diffuseMap with diffuse in (RGB) and opacity in (A)
+ * When both opacityMap and diffuseMap are present, they will multiply together with opacity
+
+
+ @class SpecularMaterial
+ @module xeogl
+ @submodule materials
+ @constructor
+ @extends Material
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this SpecularMaterial within the
+ default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted
+ @param [cfg] {*} The SpecularMaterial configuration
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
+ @param [cfg.meta=null] {String:Object} Metadata to attach to this material.
+
+ */
+(function () {
+
+    "use strict";
+
+    xeogl.SpecularMaterial = xeogl.Material.extend({
+
+        type: "xeogl.SpecularMaterial",
+
+        _init: function (cfg) {
+
+            this._state = new xeogl.renderer.SpecularMaterial({
+                type: "SpecularMaterial",
+                diffuse: xeogl.math.vec4([1.0, 1.0, 1.0]),
+                emissive: xeogl.math.vec4([0.0, 0.0, 0.0]),
+                specular: xeogl.math.vec4([1.0, 1.0, 1.0]),
+                glossiness: 1.0,
+                opacity: 1.0,
+
+                diffuseMap: null,
+                emissiveMap: null,
+                specularMap: null,
+                glossinessMap: null,
+                specularGlossinessMap: null,
+                occlusionMap: null,
+                opacityMap: null,
+                normalMap: null,
+
+                hash: null
+            });
+
+            this._hashDirty = true;
+
+            this.on("dirty", function () {
+
+                // This SpecularMaterial is flagged dirty when a
+                // child component fires "dirty", which always
+                // means that a shader recompile will be needed.
+
+                this._hashDirty = true;
+            }, this);
+
+            this.diffuse = cfg.diffuse;
+            this.emissive = cfg.emissive;
+            this.specular = cfg.specular;
+            this.opacity = cfg.opacity;
+            this.glossiness = cfg.glossiness;
+
+            if (cfg.diffuseMap) {
+                this.diffuseMap = cfg.diffuseMap;
+            }
+
+            if (cfg.emissiveMap) {
+                this.emissiveMap = cfg.emissiveMap;
+            }
+
+            if (cfg.specularMap) {
+                this.specularMap = cfg.specularMap;
+            }
+
+            if (cfg.glossinessMap) {
+                this.glossinessMap = cfg.glossinessMap;
+            }
+
+            if (cfg.specularGlossinessMap) {
+                this.specularGlossinessMap = cfg.specularGlossinessMap;
+            }
+
+            if (cfg.occlusionMap) {
+                this.occlusionMap = cfg.occlusionMap;
+            }
+
+            if (cfg.opacityMap) {
+                this.opacityMap = cfg.opacityMap;
+            }
+
+            if (cfg.normalMap) {
+                this.normalMap = cfg.normalMap;
+            }
+        },
+
+        _props: {
+
+
+            /**
+
+             Description: TODO
+
+             Multiplied by {{#crossLink "SpecularMaterial/diffuseMap:property"}}{{/crossLink}}.
+
+             Fires a {{#crossLink "SpecularMaterial/diffuse:event"}}{{/crossLink}} event on change.
+
+             @property diffuse
+             @default [1.0, 1.0, 1.0]
+             @type Float32Array
+             */
+            diffuse: {
+
+                set: function (value) {
+
+                    this._state.diffuse.set(value || [1.0, 1.0, 1.0]);
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     * Fired whenever this SpecularMaterial's {{#crossLink "SpecularMaterial/diffuse:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event diffuse
+                     * @param value {Float32Array} The property's new value
+                     */
+                    this.fire("diffuse", this._state.diffuse);
+                },
+
+                get: function () {
+                    return this._state.diffuse;
+                }
+            },
+
+            /**
+
+             Description: TODO
+
+             Multiplied by {{#crossLink "SpecularMaterial/emissiveMap:property"}}{{/crossLink}}.
+
+             Fires a {{#crossLink "SpecularMaterial/emissive:event"}}{{/crossLink}} event on change.
+
+             @property emissive
+             @default [0.0, 0.0, 0.0]
+             @type Float32Array
+             */
+            emissive: {
+
+                set: function (value) {
+
+                    this._state.emissive.set(value || [0.0, 0.0, 0.0]);
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this SpecularMaterial's {{#crossLink "SpecularMaterial/emissive:property"}}{{/crossLink}} property changes.
+
+                     @event emissive
+                     @param value {Float32Array} The property's new value
+                     */
+                    this.fire("emissive", this._state.emissive);
+                },
+
+                get: function () {
+                    return this._state.emissive;
+                }
+            },
+
+            /**
+
+             Description: TODO
+
+             Fires a {{#crossLink "SpecularMaterial/specular:event"}}{{/crossLink}} event on change.
+
+             @property specular
+             @default [1.0, 1.0, 1.0]
+             @type Float32Array
+             */
+            specular: {
+
+                set: function (value) {
+
+                    this._state.specular.set(value || [1.0, 1.0, 1.0]);
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this SpecularMaterial's {{#crossLink "SpecularMaterial/specular:property"}}{{/crossLink}} property changes.
+
+                     @event specular
+                     @param value {Float32Array} The property's new value
+                     */
+                    this.fire("specular", this._state.specular);
+                },
+
+                get: function () {
+                    return this._state.specular;
+                }
+            },
+
+            /**
+
+             Description: TODO
+
+             Fires a {{#crossLink "SpecularMaterial/glossiness:event"}}{{/crossLink}} event on change.
+
+             @property glossiness
+             @default 1.0
+             @type Number
+             */
+            glossiness: {
+
+                set: function (value) {
+
+                    value = (value !== undefined && value !== null) ? value : 1.0;
+
+                    if (this._state.glossiness === value) {
+                        return;
+                    }
+
+                    this._state.glossiness = value;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     * Fired whenever this SpecularMaterial's {{#crossLink "SpecularMaterial/glossiness:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event glossiness
+                     * @param value {Number} The property's new value
+                     */
+                    this.fire("glossiness", this._state.glossiness);
+                },
+
+                get: function () {
+                    return this._state.glossiness;
+                }
+            },
+
+            /**
+
+             Description: TODO
+
+             Fires an {{#crossLink "SpecularMaterial/opacity:event"}}{{/crossLink}} event on change.
+
+             @property opacity
+             @default 1.0
+             @type Number
+             */
+            opacity: {
+
+                set: function (value) {
+
+                    value = (value !== undefined && value !== null) ? value : 1.0;
+
+                    if (this._state.opacity === value) {
+                        return;
+                    }
+
+                    this._state.opacity = value;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     * Fired whenever this SpecularMaterial's {{#crossLink "SpecularMaterial/opacity:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event opacity
+                     * @param value {Number} The property's new value
+                     */
+                    this.fire("opacity", this._state.opacity);
+                },
+
+                get: function () {
+                    return this._state.opacity;
+                }
+            },
+
+            /**
+
+             Description: TODO
+
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this SpecularMaterial.
+
+             Fires a {{#crossLink "SpecularMaterial/diffuseMap:event"}}{{/crossLink}} event on change.
+
+             @property diffuseMap
+             @default undefined
+             @type {Texture}
+             */
+            diffuseMap: {
+
+                set: function (texture) {
+
+                    /**
+                     Fired whenever this SpecularMaterial's {{#crossLink "SpecularMaterial/diffuseMap:property"}}{{/crossLink}} property changes.
+
+                     @event diffuseMap
+                     @param value Number The property's new value
+                     */
+                    this._attachComponent("xeogl.Texture", "diffuseMap", texture);
+                },
+
+                get: function () {
+                    return this._attached.diffuseMap;
+                }
+            },
+
+            /**
+
+             Description: TODO
+
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this SpecularMaterial.
+
+             Fires a {{#crossLink "SpecularMaterial/emissiveMap:event"}}{{/crossLink}} event on change.
+
+             @property emissiveMap
+             @default undefined
+             @type {Texture}
+             */
+            emissiveMap: {
+
+                set: function (texture) {
+
+                    /**
+                     Fired whenever this SpecularMaterial's {{#crossLink "SpecularMaterial/emissiveMap:property"}}{{/crossLink}} property changes.
+
+                     @event emissiveMap
+                     @param value Number The property's new value
+                     */
+                    this._attachComponent("xeogl.Texture", "emissiveMap", texture);
+                },
+
+                get: function () {
+                    return this._attached.emissiveMap;
+                }
+            },
+
+            /**
+
+             Description: TODO
+
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this SpecularMaterial.
+
+             Fires a {{#crossLink "SpecularMaterial/specularMap:event"}}{{/crossLink}} event on change.
+
+             @property specularMap
+             @default undefined
+             @type {Texture}
+             */
+            specularMap: {
+
+                set: function (texture) {
+
+                    /**
+                     Fired whenever this SpecularMaterial's {{#crossLink "SpecularMaterial/specularGlossinessMap:property"}}{{/crossLink}} property changes.
+
+                     @event specularMap
+                     @param value Number The property's new value
+                     */
+                    this._attachComponent("xeogl.Texture", "specularMap", texture);
+                },
+
+                get: function () {
+                    return this._attached.specularMap;
+                }
+            },
+
+            /**
+
+             Description: TODO
+
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this SpecularMaterial.
+
+             Fires a {{#crossLink "SpecularMaterial/glossinessMap:event"}}{{/crossLink}} event on change.
+
+             @property glossinessMap
+             @default undefined
+             @type {Texture}
+             */
+            glossinessMap: {
+
+                set: function (texture) {
+
+                    /**
+                     Fired whenever this SpecularMaterial's {{#crossLink "SpecularMaterial/glossinessMap:property"}}{{/crossLink}} property changes.
+
+                     @event glossinessMap
+                     @param value Number The property's new value
+                     */
+                    this._attachComponent("xeogl.Texture", "glossinessMap", texture);
+                },
+
+                get: function () {
+                    return this._attached.glossinessMap;
+                }
+            },
+
+            /**
+
+             Description: TODO
+
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this SpecularMaterial.
+
+             Fires a {{#crossLink "SpecularMaterial/specularGlossinessMap:event"}}{{/crossLink}} event on change.
+
+             @property specularGlossinessMap
+             @default undefined
+             @type {Texture}
+             */
+            specularGlossinessMap: {
+
+                set: function (texture) {
+
+                    /**
+                     Fired whenever this SpecularMaterial's {{#crossLink "SpecularMaterial/specularGlossinessMap:property"}}{{/crossLink}} property changes.
+
+                     @event specularGlossinessMap
+                     @param value Number The property's new value
+                     */
+                    this._attachComponent("xeogl.Texture", "specularGlossinessMap", texture);
+                },
+
+                get: function () {
+                    return this._attached.specularGlossinessMap;
+                }
+            },
+
+            /**
+
+             Description: TODO
+
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this SpecularMaterial.
+
+             Fires a {{#crossLink "SpecularMaterial/occlusionMap:event"}}{{/crossLink}} event on change.
+
+             @property occlusionMap
+             @default undefined
+             @type {Texture}
+             */
+            occlusionMap: {
+
+                set: function (texture) {
+
+                    /**
+                     Fired whenever this SpecularMaterial's {{#crossLink "SpecularMaterial/occlusionMap:property"}}{{/crossLink}} property changes.
+
+                     @event occlusionMap
+                     @param value Number The property's new value
+                     */
+                    this._attachComponent("xeogl.Texture", "occlusionMap", texture);
+                },
+
+                get: function () {
+                    return this._attached.occlusionMap;
+                }
+            },
+
+            /**
+
+             Description: TODO
+
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this SpecularMaterial.
+
+             Fires an {{#crossLink "SpecularMaterial/opacityMap:event"}}{{/crossLink}} event on change.
+
+             @property opacityMap
+             @default undefined
+             @type {Texture}
+             */
+            opacityMap: {
+
+                set: function (texture) {
+
+                    /**
+                     Fired whenever this SpecularMaterial's {{#crossLink "SpecularMaterial/opacityMap:property"}}{{/crossLink}} property changes.
+
+                     @event opacityMap
+                     @param value Number The property's new value
+                     */
+                    this._attachComponent("xeogl.Texture", "opacityMap", texture);
+                },
+
+                get: function () {
+                    return this._attached.opacityMap;
+                }
+            },
+
+            /**
+
+             Description: TODO
+
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this SpecularMaterial.
+
+             Fires a {{#crossLink "PhongMaterial/normalMap:event"}}{{/crossLink}} event on change.
+
+             @property normalMap
+             @default undefined
+             @type {Texture}
+             */
+            normalMap: {
+
+                set: function (texture) {
+
+                    /**
+                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/normalMap:property"}}{{/crossLink}} property changes.
+
+                     @event normalMap
+                     @param value Number The property's new value
+                     */
+                    this._attachComponent("xeogl.Texture", "normalMap", texture);
+                },
+
+                get: function () {
+                    return this._attached.normalMap;
+                }
+            }
+        },
+
+        _attachComponent: function (expectedType, name, component) {
+            component = this._attach({
+                name: name,
+                type: expectedType,
+                component: component,
+                sceneDefault: false,
+                on: {
+                    destroyed: {
+                        callback: function () {
+                            this._state[name] = null;
+                            this._hashDirty = true;
+                        },
+                        scope: this
+                    }
+                }
+            });
+            this._state[name] = component ? component._state : null; // FIXME: Accessing _state breaks encapsulation
+            this._hashDirty = true;
+        },
+
+        _compile: function () {
+
+            if (this._hashDirty) {
+                this._makeHash();
+                this._hashDirty = false;
+            }
+
+            this._renderer.material = this._state;
+        },
+
+        _makeHash: function () {
+
+            var state = this._state;
+
+            var hash = ["/spe"];
+
+            if (state.diffuseMap) {
+                hash.push("/dm");
+                if (state.diffuseMap.matrix) {
+                    hash.push("/mat");
+                }
+            }
+
+            if (state.emissiveMap) {
+                hash.push("/em");
+                if (state.emissiveMap.matrix) {
+                    hash.push("/mat");
+                }
+            }
+
+            if (state.glossinessMap) {
+                hash.push("/gm");
+                if (state.glossinessMap.matrix) {
+                    hash.push("/mat");
+                }
+            }
+
+            if (state.specularMap) {
+                hash.push("/sm");
+                if (state.specularMap.matrix) {
+                    hash.push("/mat");
+                }
+            }
+
+            if (state.specularGlossinessMap) {
+                hash.push("/sgm");
+                if (state.specularGlossinessMap.matrix) {
+                    hash.push("/mat");
+                }
+            }
+
+            if (state.occlusionMap) {
+                hash.push("/om");
+                if (state.occlusionMap.matrix) {
+                    hash.push("/mat");
+                }
+            }
+
+            if (state.normalMap) {
+                hash.push("/nm");
+                if (state.normalMap.matrix) {
+                    hash.push("/mat");
+                }
+            }
+
+            if (state.opacityMap) {
+                hash.push("/om");
+                if (state.opacityMap.matrix) {
+                    hash.push("/mat");
+                }
+            }
+
+            hash.push(";");
+
+            state.hash = hash.join("");
+        },
+
+        _getJSON: function () {
+
+            var json = {
+                diffuse: this._state.diffuse.slice(0, 3),
+                emissive: this._state.emissive.slice(0, 3),
+                specular: this._state.specular.slice(0, 3),
+                glossiness: this._state.glossiness,
+                opacity: this._state.opacity
+            };
+
+            var components = this._attached;
+
+            if (components.diffuseMap) {
+                json.diffuseMap = components.diffuseMap.id;
+            }
+
+            if (components.emissiveMap) {
+                json.emissiveMap = components.emissiveMap.id;
+            }
+
+            if (components.specularMap) {
+                json.specularMap = components.specularMap.id;
+            }
+
+            if (components.glossinessMap) {
+                json.glossinessMap = components.glossinessMap.id;
+            }
+
+            if (components.specularGlossinessMap) {
+                json.specularGlossinessMap = components.specularGlossinessMap.id;
+            }
+
+            if (components.occlusionMap) {
+                json.occlusionMap = components.occlusionMap.id;
+            }
+
+            if (components.opacityMap) {
+                json.opacityMap = components.opacityMap.id;
+            }
+
+            if (components.normalMap) {
+                json.normalMap = components.normalMap.id;
+            }
+
+            return json;
+        },
+
+        _destroy: function () {
+            this._state.destroy();
+        }
+    });
+
+})();;/**
+
+ A **MetallicMaterial** is a {{#crossLink "Material"}}{{/crossLink}} that defines the surface appearance of
+ attached {{#crossLink "Entity"}}Entities{{/crossLink}} using the metal-roughness physically-based rendering model.
+
+ ## Overview
+
+ * Alpha status
+ * Conforms to the [Fraunhofer PBR extensions for glTF](https://github.com/tsturm/glTF/tree/master/extensions/Vendor/FRAUNHOFER_materials_pbr)
+ with some minor renamings for consistency with the rest of xeogl's API.
+ * Provides metallic, roughness and metalicRoughness channels for flexibility, with latter to support glTF
+ * Separate baseColor and opacity channels to allow opacity updates independently of baseColor
+ * Supports separate opacityMap for opacity, or baseColorMap with baseColor in (RGB) and opacity in (A)
+ * When both opacityMap and baseColorMap are present, they will multiply together with opacity
+
+ TODO
+
+ <img src="../../../assets/images/MetallicMaterial.png"></img>
+
+ ## Usage
+
+ ```` javascript
+
+ ````
+
+ @class MetallicMaterial
+ @module xeogl
+ @submodule materials
+ @constructor
+ @extends Material
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this MetallicMaterial within the
+ default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted
+ @param [cfg] {*} The MetallicMaterial configuration
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
+ @param [cfg.meta=null] {String:Object} Metadata to attach to this material.
+
+ */
+(function () {
+
+    "use strict";
+
+    xeogl.MetallicMaterial = xeogl.Material.extend({
+
+        type: "xeogl.MetallicMaterial",
+
+        _init: function (cfg) {
+
+            this._state = new xeogl.renderer.MetallicMaterial({
+                type: "MetallicMaterial",
+
+                baseColor: xeogl.math.vec4([1.0, 1.0, 1.0]),
+                emissive: xeogl.math.vec4([0.0, 0.0, 0.0]),
+                metallic: 1.0,
+                roughness: 1.0,
+                reflectivity: 1.0,
+                opacity: 1.0,
+
+                baseColorMap: null,
+                opacityMap: null,
+                metallicMap: null,
+                roughnessMap: null,
+                metallicRoughnessMap: null,
+                emissiveMap: null,
+                occlusionMap: null,
+                normalMap: null,
+
+                hash: null
+            });
+
+            this._hashDirty = true;
+
+            this.on("dirty", function () {
+
+                // This MetallicMaterial is flagged dirty when a
+                // child component fires "dirty", which always
+                // means that a shader recompile will be needed.
+
+                this._hashDirty = true;
+            }, this);
+
+            this.baseColor = cfg.baseColor;
+            this.metallic = cfg.metallic;
+            this.roughness = cfg.roughness;
+            this.reflectivity = cfg.reflectivity;
+            this.emissive = cfg.emissive;
+            this.opacity = cfg.opacity;
+
+            if (cfg.baseColorMap) {
+                this.baseColorMap = cfg.baseColorMap;
+            }
+
+            if (cfg.metallicMap) {
+                this.metallicMap = cfg.metallicMap;
+            }
+
+            if (cfg.roughnessMap) {
+                this.roughnessMap = cfg.roughnessMap;
+            }
+
+            if (cfg.metallicRoughnessMap) {
+                this.metallicRoughnessMap = cfg.metallicRoughnessMap;
+            }
+
+            if (cfg.emissiveMap) {
+                this.emissiveMap = cfg.emissiveMap;
+            }
+
+            if (cfg.occlusionMap) {
+                this.occlusionMap = cfg.occlusionMap;
+            }
+
+            if (cfg.normalMap) {
+                this.normalMap = cfg.normalMap;
+            }
+        },
+
+        _props: {
+
+            /**
+
+             Description: TODO
+
+             Fires a {{#crossLink "MetallicMaterial/baseColor:event"}}{{/crossLink}} event on change.
+
+             @property baseColor
+             @default [1.0, 1.0, 1.0, 1.0]
+             @type Float32Array
+             */
+            baseColor: {
+
+                set: function (value) {
+
+                    this._state.baseColor.set(value || [1.0, 1.0, 1.0]);
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     * Fired whenever this MetallicMaterial's {{#crossLink "MetallicMaterial/baseColor:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event baseColor
+                     * @param value {Float32Array} The property's new value
+                     */
+                    this.fire("baseColor", this._state.baseColor);
+                },
+
+                get: function () {
+                    return this._state.baseColor;
+                }
+            },
+
+            /**
+
+             Description: TODO
+
+             Fires an {{#crossLink "MetallicMaterial/opacity:event"}}{{/crossLink}} event on change.
+
+             @property opacity
+             @default 1.0
+             @type Number
+             */
+            opacity: {
+
+                set: function (value) {
+
+                    value = (value !== undefined && value !== null) ? value : 1.0;
+
+                    if (this._state.opacity === value) {
+                        return;
+                    }
+
+                    this._state.opacity = value;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     * Fired whenever this MetallicMaterial's {{#crossLink "MetallicMaterial/opacity:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event opacity
+                     * @param value {Number} The property's new value
+                     */
+                    this.fire("opacity", this._state.opacity);
+                },
+
+                get: function () {
+                    return this._state.opacity;
+                }
+            },
+
+            /**
+
+             Description: TODO
+
+             Fires a {{#crossLink "MetallicMaterial/metallic:event"}}{{/crossLink}} event on change.
+
+             @property metallic
+             @default 1.0
+             @type Number
+             */
+            metallic: {
+
+                set: function (value) {
+
+                    value = (value !== undefined && value !== null) ? value : 1.0;
+
+                    if (this._state.metallic === value) {
+                        return;
+                    }
+
+                    this._state.metallic = value;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this MetallicMaterial's {{#crossLink "MetallicMaterial/metallic:property"}}{{/crossLink}} property changes.
+
+                     @event metallic
+                     @param value {Float32Array} The property's new value
+                     */
+                    this.fire("metallic", this._state.metallic);
+                },
+
+                get: function () {
+                    return this._state.metallic;
+                }
+            },
+
+            /**
+
+             Description: TODO
+
+             Fires a {{#crossLink "MetallicMaterial/roughness:event"}}{{/crossLink}} event on change.
+
+             @property roughness
+             @default 1.0
+             @type Number
+             */
+            roughness: {
+
+                set: function (value) {
+
+                    value = (value !== undefined && value !== null) ? value : 1.0;
+
+                    if (this._state.roughness === value) {
+                        return;
+                    }
+
+                    this._state.roughness = value;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     * Fired whenever this MetallicMaterial's {{#crossLink "MetallicMaterial/roughness:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event roughness
+                     * @param value {Number} The property's new value
+                     */
+                    this.fire("roughness", this._state.roughness);
+                },
+
+                get: function () {
+                    return this._state.roughness;
+                }
+            },
+
+            /**
+
+             Description: TODO
+
+             Fires a {{#crossLink "MetallicMaterial/reflectivity:event"}}{{/crossLink}} event on change.
+
+             @property reflectivity
+             @default 0.5
+             @type Number
+             */
+            reflectivity: {
+
+                set: function (value) {
+
+                    value = (value !== undefined && value !== null) ? value : 0.5;
+
+                    if (this._state.reflectivity === value) {
+                        return;
+                    }
+
+                    this._state.reflectivity = value;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this MetallicMaterial's {{#crossLink "MetallicMaterial/reflectivity:property"}}{{/crossLink}} property changes.
+
+                     @event reflectivity
+                     @param value {Float32Array} The property's new value
+                     */
+                    this.fire("reflectivity", this._state.reflectivity);
+                },
+
+                get: function () {
+                    return this._state.reflectivity;
+                }
+            },
+
+            /**
+
+             Description: TODO
+
+             Fires a {{#crossLink "MetallicMaterial/emissive:event"}}{{/crossLink}} event on change.
+
+             @property emissive
+             @default [0.0, 0.0, 0.0]
+             @type Float32Array
+             */
+            emissive: {
+
+                set: function (value) {
+
+                    this._state.emissive.set(value || [0.0, 0.0, 0.0]);
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this MetallicMaterial's {{#crossLink "MetallicMaterial/emissive:property"}}{{/crossLink}} property changes.
+
+                     @event emissive
+                     @param value {Float32Array} The property's new value
+                     */
+                    this.fire("emissive", this._state.emissive);
+                },
+
+                get: function () {
+                    return this._state.emissive;
+                }
+            },
+
+            /**
+
+             Description: TODO
+
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MetallicMaterial.
+
+             Fires a {{#crossLink "MetallicMaterial/baseColorMap:event"}}{{/crossLink}} event on change.
+
+             @property baseColorMap
+             @default undefined
+             @type {Texture}
+             */
+            baseColorMap: {
+
+                set: function (texture) {
+
+                    /**
+                     Fired whenever this MetallicMaterial's {{#crossLink "MetallicMaterial/baseColorMap:property"}}{{/crossLink}} property changes.
+
+                     @event baseColorMap
+                     @param value Number The property's new value
+                     */
+                    this._attachComponent("xeogl.Texture", "baseColorMap", texture);
+                },
+
+                get: function () {
+                    return this._attached.baseColorMap;
+                }
+            },
+
+            /**
+
+             Description: TODO
+
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MetallicMaterial.
+
+             Fires a {{#crossLink "MetallicMaterial/metallicMap:event"}}{{/crossLink}} event on change.
+
+             @property metallicMap
+             @default undefined
+             @type {Texture}
+             */
+            metallicMap: {
+
+                set: function (texture) {
+
+                    /**
+                     Fired whenever this MetallicMaterial's {{#crossLink "MetallicMaterial/metallicMap:property"}}{{/crossLink}} property changes.
+
+                     @event metallicMap
+                     @param value Number The property's new value
+                     */
+                    this._attachComponent("xeogl.Texture", "metallicMap", texture);
+                },
+
+                get: function () {
+                    return this._attached.metallicMap;
+                }
+            },
+
+            /**
+
+             Description: TODO
+
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MetallicMaterial.
+
+             Fires a {{#crossLink "MetallicMaterial/roughnessMap:event"}}{{/crossLink}} event on change.
+
+             @property roughnessMap
+             @default undefined
+             @type {Texture}
+             */
+            roughnessMap: {
+
+                set: function (texture) {
+
+                    /**
+                     Fired whenever this MetallicMaterial's {{#crossLink "MetallicMaterial/roughnessMap:property"}}{{/crossLink}} property changes.
+
+                     @event roughnessMap
+                     @param value Number The property's new value
+                     */
+                    this._attachComponent("xeogl.Texture", "roughnessMap", texture);
+                },
+
+                get: function () {
+                    return this._attached.roughnessMap;
+                }
+            },
+
+            /**
+
+             Description: TODO
+
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MetallicMaterial.
+
+             Fires a {{#crossLink "MetallicMaterial/metallicRoughnessMap:event"}}{{/crossLink}} event on change.
+
+             @property metallicRoughnessMap
+             @default undefined
+             @type {Texture}
+             */
+            metallicRoughnessMap: {
+
+                set: function (texture) {
+
+                    /**
+                     Fired whenever this MetallicMaterial's {{#crossLink "MetallicMaterial/metallicRoughnessMap:property"}}{{/crossLink}} property changes.
+
+                     @event metallicRoughnessMap
+                     @param value Number The property's new value
+                     */
+                    this._attachComponent("xeogl.Texture", "metallicRoughnessMap", texture);
+                },
+
+                get: function () {
+                    return this._attached.metallicRoughnessMap;
+                }
+            },
+
+            /**
+
+             Description: TODO
+
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MetallicMaterial.
+
+             Fires a {{#crossLink "MetallicMaterial/emissiveMap:event"}}{{/crossLink}} event on change.
+
+             @property emissiveMap
+             @default undefined
+             @type {Texture}
+             */
+            emissiveMap: {
+
+                set: function (texture) {
+
+                    /**
+                     Fired whenever this MetallicMaterial's {{#crossLink "MetallicMaterial/emissiveMap:property"}}{{/crossLink}} property changes.
+
+                     @event emissiveMap
+                     @param value Number The property's new value
+                     */
+                    this._attachComponent("xeogl.Texture", "emissiveMap", texture);
+                },
+
+                get: function () {
+                    return this._attached.emissiveMap;
+                }
+            },
+
+            /**
+
+             Description: TODO
+
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MetallicMaterial.
+
+             Fires a {{#crossLink "MetallicMaterial/occlusionMap:event"}}{{/crossLink}} event on change.
+
+             @property occlusionMap
+             @default undefined
+             @type {Texture}
+             */
+            occlusionMap: {
+
+                set: function (texture) {
+
+                    /**
+                     Fired whenever this MetallicMaterial's {{#crossLink "MetallicMaterial/occlusionMap:property"}}{{/crossLink}} property changes.
+
+                     @event occlusionMap
+                     @param value Number The property's new value
+                     */
+                    this._attachComponent("xeogl.Texture", "occlusionMap", texture);
+                },
+
+                get: function () {
+                    return this._attached.occlusionMap;
+                }
+            },
+
+            /**
+
+             Description: TODO
+
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MetallicMaterial.
+
+             Fires an {{#crossLink "MetallicMaterial/opacityMap:event"}}{{/crossLink}} event on change.
+
+             @property opacityMap
+             @default undefined
+             @type {Texture}
+             */
+            opacityMap: {
+
+                set: function (texture) {
+
+                    /**
+                     Fired whenever this MetallicMaterial's {{#crossLink "MetallicMaterial/opacityMap:property"}}{{/crossLink}} property changes.
+
+                     @event opacityMap
+                     @param value Number The property's new value
+                     */
+                    this._attachComponent("xeogl.Texture", "opacityMap", texture);
+                },
+
+                get: function () {
+                    return this._attached.opacityMap;
+                }
+            },
+
+            /**
+
+             Description: TODO
+
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MetallicMaterial.
+
+             Fires a {{#crossLink "PhongMaterial/normalMap:event"}}{{/crossLink}} event on change.
+
+             @property normalMap
+             @default undefined
+             @type {Texture}
+             */
+            normalMap: {
+
+                set: function (texture) {
+
+                    /**
+                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/normalMap:property"}}{{/crossLink}} property changes.
+
+                     @event normalMap
+                     @param value Number The property's new value
+                     */
+                    this._attachComponent("xeogl.Texture", "normalMap", texture);
+                },
+
+                get: function () {
+                    return this._attached.normalMap;
+                }
+            }
+        },
+
+        _attachComponent: function (expectedType, name, component) {
+            component = this._attach({
+                name: name,
+                type: expectedType,
+                component: component,
+                sceneDefault: false,
+                on: {
+                    destroyed: {
+                        callback: function () {
+                            this._state[name] = null;
+                            this._hashDirty = true;
+                        },
+                        scope: this
+                    }
+                }
+            });
+            this._state[name] = component ? component._state : null; // FIXME: Accessing _state breaks encapsulation
+            this._hashDirty = true;
+        },
+
+        _compile: function () {
+
+            if (this._hashDirty) {
+                this._makeHash();
+                this._hashDirty = false;
+            }
+
+            this._renderer.material = this._state;
+        },
+
+        _makeHash: function () {
+
+            var state = this._state;
+
+            var hash = ["/met"];
+
+            if (state.baseColorMap) {
+                hash.push("/bm");
+                if (state.baseColorMap.matrix) {
+                    hash.push("/mat");
+                }
+            }
+
+            if (state.metallicMap) {
+                hash.push("/mm");
+                if (state.metallicMap.matrix) {
+                    hash.push("/mat");
+                }
+            }
+
+            if (state.roughnessMap) {
+                hash.push("/rm");
+                if (state.roughnessMap.matrix) {
+                    hash.push("/mat");
+                }
+            }
+
+            if (state.metallicRoughnessMap) {
+                hash.push("/mrm");
+                if (state.metallicRoughnessMap.matrix) {
+                    hash.push("/mat");
+                }
+            }
+
+            if (state.emissiveMap) {
+                hash.push("/em");
+                if (state.emissiveMap.matrix) {
+                    hash.push("/mat");
+                }
+            }
+
+            if (state.occlusionMap) {
+                hash.push("/om");
+                if (state.occlusionMap.matrix) {
+                    hash.push("/mat");
+                }
+            }
+
+            if (state.opacityMap) {
+                hash.push("/om");
+                if (state.opacityMap.matrix) {
+                    hash.push("/mat");
+                }
+            }
+
+            if (state.normalMap) {
+                hash.push("/nm");
+                if (state.normalMap.matrix) {
+                    hash.push("/mat");
+                }
+            }
+
+            hash.push(";");
+
+            state.hash = hash.join("");
+        },
+
+        _getJSON: function () {
+
+            var json = {
+                baseColor: this._state.baseColor.slice(0, 3),
+                metallic: this._state.metallic.slice(0, 3),
+                roughness: this._state.roughness,
+                reflectivity: this._state.reflectivity,
+                emissive: this._state.emissive.slice(0, 3),
+                opacity: this._state.opacity
+            };
+
+            var components = this._attached;
+
+            if (components.baseColorMap) {
+                json.baseColorMap = components.baseColorMap.id;
+            }
+
+            if (components.metallicMap) {
+                json.metallicMap = components.metallicMap.id;
+            }
+
+            if (components.roughnessMap) {
+                json.roughnessMap = components.roughnessMap.id;
+            }
+
+            if (components.metallicRoughnessMap) {
+                json.metallicRoughnessMap = components.metallicRoughnessMap.id;
+            }
+
+            if (components.emissiveMap) {
+                json.emissiveMap = components.emissiveMap.id;
+            }
+
+            if (components.occlusionMap) {
+                json.occlusionMap = components.occlusionMap.id;
+            }
+
+            if (components.normalMap) {
+                json.normalMap = components.normalMap.id;
+            }
+
+            return json;
+        },
+
+        _destroy: function () {
+            this._state.destroy();
+        }
+    });
+
+})();;/**
  A **Texture** specifies a texture map.
 
- <ul>
- <li>Textures are grouped within {{#crossLink "PhongMaterial"}}PhongMaterials{{/crossLink}}s, which are attached to
- {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>To create a Texture from an image file, set the Texture's {{#crossLink "Texture/src:property"}}{{/crossLink}}
- property to the image file path.</li>
- <li>To create a Texture from an HTMLImageElement, set the Texture's {{#crossLink "Texture/image:property"}}{{/crossLink}}
- property to the HTMLImageElement.</li>
- <li>To render color images of {{#crossLink "Entity"}}Entities{{/crossLink}} to a Texture, set the Texture's {{#crossLink "Texture/target:property"}}{{/crossLink}}
- property to a {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} that is attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>Similarly, to render depth images of {{#crossLink "Entity"}}Entities{{/crossLink}} to a Texture, set the Texture's {{#crossLink "Texture/target:property"}}{{/crossLink}}
- property to a {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>For special effects, we often use rendered Textures in combination with {{#crossLink "Shader"}}Shaders{{/crossLink}} and {{#crossLink "Stage"}}Stages{{/crossLink}}.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Textures create within xeogl's shaders.</li>
- </ul>
+ <a href="../../examples/#materials_texture_diffuse"><img src="../../assets/images/screenshots/TorusGeometry.png"></img></a>
+
+ ## Overview
+
+ * Textures are grouped within {{#crossLink "PhongMaterial"}}PhongMaterials{{/crossLink}}s, which are attached to
+ {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ To create a Texture from an image file, set the Texture's {{#crossLink "Texture/src:property"}}{{/crossLink}}
+ property to the image file path.
+ To create a Texture from an HTMLImageElement, set the Texture's {{#crossLink "Texture/image:property"}}{{/crossLink}}
+ property to the HTMLImageElement.
+ To render color images of {{#crossLink "Entity"}}Entities{{/crossLink}} to a Texture, set the Texture's {{#crossLink "Texture/target:property"}}{{/crossLink}}
+ property to a {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} that is attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ Similarly, to render depth images of {{#crossLink "Entity"}}Entities{{/crossLink}} to a Texture, set the Texture's {{#crossLink "Texture/target:property"}}{{/crossLink}}
+ property to a {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ For special effects, we often use rendered Textures in combination with {{#crossLink "Shader"}}Shaders{{/crossLink}} and {{#crossLink "Stage"}}Stages{{/crossLink}}.
 
  <img src="../../../assets/images/Texture.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Diffuse Texture](../../examples/#materials_texture_diffuse)</li>
- <li>[Specular Texture](../../examples/#materials_texture_specular)</li>
- <li>[Opacity Texture](../../examples/#materials_texture_opacity)</li>
- <li>[Emissive Texture](../../examples/#materials_texture_emissive)</li>
- <li>[Reflectivity Texture](../../examples/#materials_texture_reflectivity)</li>
- <li>[Normal map](../../examples/#materials_texture_normalMap)</li>
- <li>[Diffuse Video Texture](../../examples/#materials_texture_video)</li>
- <li>[Diffuse Procedural Texture](../../examples/#materials_texture_procedural)</li>
- <li>[Texture Animation](../../examples/#materials_texture_animation)</li>
- </ul>
+ * [Diffuse Texture](../../examples/#materials_texture_diffuse)
+ * [Specular Texture](../../examples/#materials_texture_specular)
+ * [Opacity Texture](../../examples/#materials_texture_opacity)
+ * [Emissive Texture](../../examples/#materials_texture_emissive)
+ * [Normal map](../../examples/#materials_texture_normalMap)
+ * [Diffuse Video Texture](../../examples/#materials_texture_video)
+ * [Texture Animation](../../examples/#materials_texture_animation)
 
  ## Usage
 
  In this example we have an Entity with
 
- <ul>
- <li>a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "DirLight"}}{{/crossLink}},</li>
- <li>a {{#crossLink "PhongMaterial"}}{{/crossLink}} which applies diffuse and specular {{#crossLink "Texture"}}Textures{{/crossLink}}, and
- <li>a {{#crossLink "TorusGeometry"}}{{/crossLink}}.</li>
- </ul>
+ * a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "DirLight"}}{{/crossLink}},
+ * a {{#crossLink "PhongMaterial"}}{{/crossLink}} which applies diffuse and specular {{#crossLink "Texture"}}Textures{{/crossLink}}, and
+ * a {{#crossLink "TorusGeometry"}}{{/crossLink}}.
 
  Note that xeogl will ignore the {{#crossLink "PhongMaterial"}}PhongMaterial's{{/crossLink}} {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}}
  and {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}} properties, since we assigned {{#crossLink "Texture"}}Textures{{/crossLink}} to the {{#crossLink "PhongMaterial"}}PhongMaterial's{{/crossLink}} {{#crossLink "PhongMaterial/diffuseMap:property"}}{{/crossLink}} and
@@ -29332,7 +34024,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  @param [cfg.magFilter="linear"] {String} How the texture is sampled when a texel covers more than one pixel. See the {{#crossLink "Texture/magFilter:property"}}{{/crossLink}} property for more info.
  @param [cfg.wrapS="repeat"] {String} Wrap parameter for texture coordinate *S*. See the {{#crossLink "Texture/wrapS:property"}}{{/crossLink}} property for more info.
  @param [cfg.wrapT="repeat"] {String} Wrap parameter for texture coordinate *S*. See the {{#crossLink "Texture/wrapT:property"}}{{/crossLink}} property for more info.
- @param [cfg.flipY=false] {Boolean} Flips this Texture's source data along its vertical axis when true.
+ @param [cfg.flipY=true] {Boolean} Flips this Texture's source data along its vertical axis when true.
  @param [cfg.translate=[0,0]] {Array of Number} 2D translation vector that will be added to texture's *S* and *T* coordinates.
  @param [cfg.scale=[1,1]] {Array of Number} 2D scaling vector that will be applied to texture's *S* and *T* coordinates.
  @param [cfg.rotate=0] {Number} Rotation, in degrees, that will be applied to texture's *S* and *T* coordinates.
@@ -29352,7 +34044,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
             this._state = new xeogl.renderer.Texture({
 
-                texture: null,  // xeogl.renderer.webgl.Texture2D
+                texture : new xeogl.renderer.webgl.Texture2D( this.scene.canvas.gl),
                 matrix: null,   // Float32Array
 
                 // Texture properties
@@ -29361,9 +34053,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                 magFilter: null,
                 wrapS: null,
                 wrapT: null,
-                flipY: null,
-
-                pageTableTexture: null
+                flipY: true
             });
 
             // Data source
@@ -29371,8 +34061,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             this._src = null;   // URL string
             this._image = null; // HTMLImageElement
             this._target = null;// xeogl.RenderTarget
-
-            this._pageTable = null; // Float32Array
 
             // Transformation
 
@@ -29482,6 +34170,8 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                     state.texture.setImage(this._image, state);
 
+                    state.renderable = true;
+
                     this._imageDirty = false;
                     this._propsDirty = true; // May now need to regenerate mipmaps etc
                 }
@@ -29557,35 +34247,8 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                 this._propsDirty = false;
             }
 
-            if (this._pageTableDirty) {
-
-                if (this._image) {
-
-                    if (this._onTargetActive) {
-                        this._target.off(this._onTargetActive);
-                        this._onTargetActive = null;
-                    }
-
-                    if (state.texture && state.texture.renderBuffer) {
-
-                        // Detach from "virtual texture" provided by render target
-                        state.texture = null;
-                    }
-
-                    if (!state.texture) {
-                        state.texture = new xeogl.renderer.webgl.Texture2D(gl);
-                    }
-
-                    state.texture.setImage(this._image, state);
-
-                    this._imageDirty = false;
-                    this._propsDirty = true; // May now need to regenerate mipmaps etc
-                }
-            }
-
             this._renderer.imageDirty = true;
         },
-
 
         _loadSrc: function (src) {
 
@@ -29802,36 +34465,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
-             * Page table for sparse virtual texturing.
-             *
-             * Fires an {{#crossLink "Texture/pageTable:event"}}{{/crossLink}} event on change.
-             *
-             * @property pageTable
-             * @default null
-             * @type {Float32Array}
-             */
-            pageTable: {
-
-                set: function (value) {
-
-                    this._pageTable = value;
-
-                    this._imageDirty = true;
-
-                    /**
-                     * Fired whenever this Texture's  {{#crossLink "Texture/pageTable:property"}}{{/crossLink}} property changes.
-                     * @event pageTable
-                     * @param value {Float32Array} The property's new value
-                     */
-                    this.fire("pageTable", this._pageTable);
-                },
-
-                get: function () {
-                    return this._state._pageTable;
-                }
-            },
-
-            /**
              * 2D translation vector that will be added to this Texture's *S* and *T* coordinates.
              *
              * Fires a {{#crossLink "Texture/translate:event"}}{{/crossLink}} event on change.
@@ -29935,34 +34568,34 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
              *
              * Options are:
              *
-             * <ul>
-             *     <li>**"nearest"** - Uses the value of the texture element that is nearest
-             *     (in Manhattan distance) to the center of the pixel being textured.</li>
              *
-             *     <li>**"linear"** - Uses the weighted average of the four texture elements that are
-             *     closest to the center of the pixel being textured.</li>
+             *     * **"nearest"** - Uses the value of the texture element that is nearest
+             *     (in Manhattan distance) to the center of the pixel being textured.
              *
-             *     <li>**"nearestMipmapNearest"** - Chooses the mipmap that most closely matches the
+             *     * **"linear"** - Uses the weighted average of the four texture elements that are
+             *     closest to the center of the pixel being textured.
+             *
+             *     * **"nearestMipmapNearest"** - Chooses the mipmap that most closely matches the
              *     size of the pixel being textured and uses the "nearest" criterion (the texture
-             *     element nearest to the center of the pixel) to produce a texture value.</li>
+             *     element nearest to the center of the pixel) to produce a texture value.
              *
-             *     <li>**"linearMipmapNearest"** - Chooses the mipmap that most closely matches the size of
+             *     * **"linearMipmapNearest"** - Chooses the mipmap that most closely matches the size of
              *     the pixel being textured and uses the "linear" criterion (a weighted average of the
              *     four texture elements that are closest to the center of the pixel) to produce a
-             *     texture value.</li>
+             *     texture value.
              *
-             *     <li>**"nearestMipmapLinear"** - Chooses the two mipmaps that most closely
+             *     * **"nearestMipmapLinear"** - Chooses the two mipmaps that most closely
              *     match the size of the pixel being textured and uses the "nearest" criterion
              *     (the texture element nearest to the center of the pixel) to produce a texture
              *     value from each mipmap. The final texture value is a weighted average of those two
-             *     values.</li>
+             *     values.
              *
-             *     <li>**"linearMipmapLinear"** - **(default)** - Chooses the two mipmaps that most closely match the size
+             *     * **"linearMipmapLinear"** - **(default)** - Chooses the two mipmaps that most closely match the size
              *     of the pixel being textured and uses the "linear" criterion (a weighted average
              *     of the four texture elements that are closest to the center of the pixel) to
              *     produce a texture value from each mipmap. The final texture value is a weighted
-             *     average of those two values.</li>
-             * </ul>
+             *     average of those two values.
+             *
              *
              * Fires a {{#crossLink "Texture/minFilter:event"}}{{/crossLink}} event on change.
              *
@@ -30012,12 +34645,12 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
              *
              * Options are:
              *
-             * <ul>
-             *     <li>**"nearest"** - Uses the value of the texture element that is nearest
-             *     (in Manhattan distance) to the center of the pixel being textured.</li>
-             *     <li>**"linear"** - **(default)** - Uses the weighted average of the four texture elements that are
-             *     closest to the center of the pixel being textured.</li>
-             * </ul>
+             *
+             *     * **"nearest"** - Uses the value of the texture element that is nearest
+             *     (in Manhattan distance) to the center of the pixel being textured.
+             *     * **"linear"** - **(default)** - Uses the weighted average of the four texture elements that are
+             *     closest to the center of the pixel being textured.
+             *
              *
              * Fires a {{#crossLink "Texture/magFilter:event"}}{{/crossLink}} event on change.
              *
@@ -30062,14 +34695,14 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
              *
              * Options are:
              *
-             * <ul>
-             *     <li>**"clampToEdge"** -  causes *S* coordinates to be clamped to the size of the texture.</li>
-             *     <li>**"mirroredRepeat"** - causes the *S* coordinate to be set to the fractional part of the texture coordinate
+             *
+             *     * **"clampToEdge"** -  causes *S* coordinates to be clamped to the size of the texture.
+             *     * **"mirroredRepeat"** - causes the *S* coordinate to be set to the fractional part of the texture coordinate
              *     if the integer part of *S* is even; if the integer part of *S* is odd, then the *S* texture coordinate is
-             *     set to *1 - frac ⁡ S* , where *frac ⁡ S* represents the fractional part of *S*.</li>
-             *     <li>**"repeat"** - **(default)** - causes the integer part of the *S* coordinate to be ignored; xeogl uses only the
-             *     fractional part, thereby creating a repeating pattern.</li>
-             * </ul>
+             *     set to *1 - frac ⁡ S* , where *frac ⁡ S* represents the fractional part of *S*.
+             *     * **"repeat"** - **(default)** - causes the integer part of the *S* coordinate to be ignored; xeogl uses only the
+             *     fractional part, thereby creating a repeating pattern.
+             *
              *
              * Fires a {{#crossLink "Texture/wrapS:event"}}{{/crossLink}} event on change.
              *
@@ -30114,14 +34747,14 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
              *
              * Options are:
              *
-             * <ul>
-             *     <li>**"clampToEdge"** -  Causes *T* coordinates to be clamped to the size of the texture.</li>
-             *     <li>**"mirroredRepeat"** - Causes the *T* coordinate to be set to the fractional part of the texture coordinate
+             *
+             *     * **"clampToEdge"** -  Causes *T* coordinates to be clamped to the size of the texture.
+             *     * **"mirroredRepeat"** - Causes the *T* coordinate to be set to the fractional part of the texture coordinate
              *     if the integer part of *T* is even; if the integer part of *T* is odd, then the *T* texture coordinate is
-             *     set to *1 - frac ⁡ S* , where *frac ⁡ S* represents the fractional part of *T*.</li>
-             *     <li>**"repeat"** - **(default)** - Causes the integer part of the *T* coordinate to be ignored; xeogl uses only the
-             *     fractional part, thereby creating a repeating pattern.</li>
-             * </ul>
+             *     set to *1 - frac ⁡ S* , where *frac ⁡ S* represents the fractional part of *T*.
+             *     * **"repeat"** - **(default)** - Causes the integer part of the *T* coordinate to be ignored; xeogl uses only the
+             *     fractional part, thereby creating a repeating pattern.
+             *
              *
              * Fires a {{#crossLink "Texture/wrapT:event"}}{{/crossLink}} event on change.
              *
@@ -30167,14 +34800,14 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
              * Fires a {{#crossLink "Texture/flipY:event"}}{{/crossLink}} event on change.
              *
              * @property flipY
-             * @default false
+             * @default true
              * @type Boolean
              */
             flipY: {
 
                 set: function (value) {
 
-                    value = !!value;
+                    value = value !== false;
 
                     if (this._state.flipY === value) {
                         return;
@@ -30246,8 +34879,337 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                 // json.src = image.src;
             }
 
-            if (false && this._state.pageTable !== false) {
-                json.pageTable = this._state.pageTable;
+            return json;
+        },
+
+        _destroy: function () {
+
+            this.scene.canvas.off(this._webglContextRestored);
+
+            if (this._state.texture) {
+                this._state.texture.destroy();
+            }
+
+            xeogl.stats.memory.textures--;
+        }
+    });
+
+})();
+;/**
+ A **CubeTexture** specifies a cube texture map.
+
+ <a href="../../examples/#materials_texture_diffuse"><img src="../../assets/images/screenshots/TorusGeometry.png"></img></a>
+
+ ## Overview
+
+ * CubeTextures are grouped within {{#crossLink "PhongMaterial"}}PhongMaterials{{/crossLink}}s, which are attached to
+ {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ To create a CubeTexture from an image file, set the CubeTexture's {{#crossLink "CubeTexture/src:property"}}{{/crossLink}}
+ property to the image file path.
+ To create a CubeTexture from an HTMLImageElement, set the CubeTexture's {{#crossLink "CubeTexture/image:property"}}{{/crossLink}}
+ property to the HTMLImageElement.
+ To render color images of {{#crossLink "Entity"}}Entities{{/crossLink}} to a CubeTexture, set the CubeTexture's {{#crossLink "CubeTexture/target:property"}}{{/crossLink}}
+ property to a {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} that is attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ Similarly, to render depth images of {{#crossLink "Entity"}}Entities{{/crossLink}} to a CubeTexture, set the CubeTexture's {{#crossLink "CubeTexture/target:property"}}{{/crossLink}}
+ property to a {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ For special effects, we often use rendered CubeTextures in combination with {{#crossLink "Shader"}}Shaders{{/crossLink}} and {{#crossLink "Stage"}}Stages{{/crossLink}}.
+
+ <img src="../../../assets/images/CubeTexture.png"></img>
+
+ ## Examples
+
+ * [Diffuse CubeTexture](../../examples/#materials_texture_diffuse)
+ * [Specular CubeTexture](../../examples/#materials_texture_specular)
+ * [Opacity CubeTexture](../../examples/#materials_texture_opacity)
+ * [Emissive CubeTexture](../../examples/#materials_texture_emissive)
+ * [Normal map](../../examples/#materials_texture_normalMap)
+ * [Diffuse Video CubeTexture](../../examples/#materials_texture_video)
+ * [CubeTexture Animation](../../examples/#materials_texture_animation)
+
+ ## Usage
+
+ In this example we have an Entity with
+
+ * a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "DirLight"}}{{/crossLink}},
+ * a {{#crossLink "PhongMaterial"}}{{/crossLink}} which applies diffuse and specular {{#crossLink "CubeTexture"}}CubeTextures{{/crossLink}}, and
+ * a {{#crossLink "TorusGeometry"}}{{/crossLink}}.
+
+ Note that xeogl will ignore the {{#crossLink "PhongMaterial"}}PhongMaterial's{{/crossLink}} {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}}
+ and {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}} properties, since we assigned {{#crossLink "CubeTexture"}}CubeTextures{{/crossLink}} to the {{#crossLink "PhongMaterial"}}PhongMaterial's{{/crossLink}} {{#crossLink "PhongMaterial/diffuseMap:property"}}{{/crossLink}} and
+ {{#crossLink "PhongMaterial/specularMap:property"}}{{/crossLink}} properties. The {{#crossLink "CubeTexture"}}CubeTextures'{{/crossLink}} pixel
+ colors directly provide the diffuse and specular components for each fragment across the {{#crossLink "Geometry"}}{{/crossLink}} surface.
+
+ ```` javascript
+ var entity = new xeogl.Entity({
+
+    lights: new xeogl.Lights({
+        lights: [
+            new xeogl.AmbientLight({
+                color: [0.7, 0.7, 0.7]
+            }),
+            new xeogl.DirLight({
+                dir: [-1, -1, -1],
+                color: [0.5, 0.7, 0.5],
+                intensity: [1.0, 1.0, 1.0],
+                space: "view"
+            })
+        ]
+    }),
+
+    material: new xeogl.PhongMaterial({
+        ambient: [0.3, 0.3, 0.3],
+        diffuse: [0.5, 0.5, 0.0],   // Ignored, since we have assigned a CubeTexture to diffuseMap, below
+        specular: [1.0, 1.0, 1.0],   // Ignored, since we have assigned a CubeTexture to specularMap, below
+        diffuseMap: new xeogl.CubeTexture({
+            src: "diffuseMap.jpg"
+        }),
+        specularMap: new xeogl.Fresnel({
+            src: "diffuseMap.jpg"
+        }),
+        shininess: 80, // Default
+        opacity: 1.0 // Default
+    }),
+
+    geometry: new xeogl.TorusGeometry()
+});
+ ````
+
+ @class CubeTexture
+ @module xeogl
+ @submodule materials
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this CubeTexture in the default
+ {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID for this CubeTexture, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this CubeTexture.
+ @param [cfg.src=null] {String} Paths to six image files to load into this CubeTexture from. See the {{#crossLink "CubeTexture/src:property"}}{{/crossLink}} property for more info.
+ @param [cfg.flipY=false] {Boolean} Flips this CubeTexture's source data along its vertical axis when true.
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    xeogl.CubeTexture = xeogl.Component.extend({
+
+        type: "xeogl.CubeTexture",
+
+        _init: function (cfg) {
+
+            this._state = new xeogl.renderer.CubeTexture({
+                texture: null
+            });
+
+            this._src = [];
+            this._images = [];
+
+            this._srcDirty = false;
+            this._imageDirty = false;
+
+            this._webglContextRestored = this.scene.canvas.on("webglContextRestored", this._webglContextRestored, this);
+
+            this.flipY = cfg.flipY;
+            this.src = cfg.src; // Image file}
+
+            xeogl.stats.memory.textures++;
+        },
+
+        _webglContextRestored: function () {
+
+            this._state.texture = null;
+
+            if (this._src) {
+                this._srcDirty = true;
+            }
+
+            this._scheduleUpdate();
+        },
+
+        _update: function () {
+
+            if (this._srcDirty) {
+                if (this._src) {
+                    this._loadSrc(this._src); // _imageDirty is set when the image has loaded
+                    this._srcDirty = false;
+                    return;
+                }
+            }
+
+            if (this._imageDirty) {
+                this._createTexture();
+                this._renderer.imageDirty = true;
+            }
+        },
+
+        _loadSrc: function (src) {
+
+            var self = this;
+
+            var spinner = this.scene.canvas.spinner;
+            var spinnerTextures = spinner.textures;
+
+            this._images = [];
+
+            var loadFailed = false;
+
+            for (var i = 0; i < src.length; i++) {
+
+                var image = new Image();
+
+                image.onload = (function () {
+
+                    var _image = image;
+                    var index = i;
+
+                    return function () {
+
+                        if (loadFailed) {
+                            return;
+                        }
+
+                        _image = xeogl.renderer.webgl.ensureImageSizePowerOfTwo(_image);
+
+                        self._images[index] = _image;
+
+                        if (self._images.length === src.length) {
+
+                            self._imageDirty = true;
+
+                            if (spinnerTextures) {
+                                spinner.processes--;
+                            }
+
+                            self._scheduleUpdate();
+
+                            /**
+                             * Fired whenever this CubeTexture has loaded the
+                             * image files that its {{#crossLink "CubeTexture/src:property"}}{{/crossLink}} property currently points to.
+                             * @event loaded
+                             * @param value {HTML Image} The value of the {{#crossLink "CubeTexture/src:property"}}{{/crossLink}} property
+                             */
+                            self.fire("loaded", self._src);
+                        }
+                    };
+                })();
+
+                image.onerror = function () {
+                    loadFailed = true;
+                    if (spinnerTextures) {
+                        spinner.processes--;
+                    }
+
+                };
+
+                image.src = src[i];
+            }
+        },
+
+        _createTexture: function () {
+
+            var gl = this.scene.canvas.gl;
+
+            var texture = this._state.texture;
+
+            if (!texture) {
+                texture = new xeogl.renderer.webgl.Texture2D(gl, gl.TEXTURE_CUBE_MAP);
+                this._state.texture = texture;
+            }
+
+            texture.setImage(this._images, this._state);
+
+            texture.setProps({
+                minFilter: "linearMipmapLinear",
+                magFilter: "linear",
+                wrapS: "clampToEdge",
+                wrapT: "clampToEdge",
+                mipmaps: true
+            });
+
+            this._imageDirty = false;
+        },
+
+        _props: {
+
+            /**
+             Array of paths to six image files to source this CubeTexture from.
+
+             Fires a {{#crossLink "CubeTexture/src:event"}}{{/crossLink}} event on change.
+
+             @property src
+             @default null
+             @type {Array of String}
+             */
+            src: {
+
+                set: function (value) {
+
+                    this._src = value;
+
+                    this._srcDirty = true;
+
+                    this._scheduleUpdate();
+
+                    /**
+                     * Fired whenever this CubeTexture's {{#crossLink "CubeTexture/src:property"}}{{/crossLink}} property changes.
+                     * @event src
+                     * @param value The property's new value
+                     * @type {Array of String}
+                     */
+                    this.fire("src", this._src);
+                },
+
+                get: function () {
+                    return this._src;
+                }
+            },
+
+            /**
+             * Flips this CubeTexture's source data along its vertical axis when true.
+             *
+             * Fires a {{#crossLink "CubeTexture/flipY:event"}}{{/crossLink}} event on change.
+             *
+             * @property flipY
+             * @default false
+             * @type Boolean
+             */
+            flipY: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    if (this._state.flipY === value) {
+                        return;
+                    }
+
+                    this._state.flipY = value;
+                    this._imageDirty = true; // flipY is used when loading image data, not when post-applying props
+
+                    this._scheduleUpdate();
+
+                    /**
+                     * Fired whenever this CubeTexture's  {{#crossLink "CubeTexture/flipY:property"}}{{/crossLink}} property changes.
+                     * @event flipY
+                     * @param value {String} The property's new value
+                     */
+                    this.fire("flipY", this._state.flipY);
+                },
+
+                get: function () {
+                    return this._state.flipY;
+                }
+            }
+        },
+
+        _getJSON: function () {
+
+            var json =  {
+                src: this._src.slice()
+            };
+
+            if (this._state.flipY !== false) {
+                json.flipY = this._state.flipY;
             }
 
             return json;
@@ -30267,22 +35229,21 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
 })();
 ;/**
- A **Fresnel** specifies a Fresnel effect.
+ A **Fresnel** specifies a Fresnel effect for attached {{#crossLink "PhongMaterial"}}PhongMaterials{{/crossLink}}.
 
- <ul>
- <li>Fresnels are grouped within {{#crossLink "PhongMaterial"}}{{/crossLink}}s, which are attached to
- {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Fresnels create within xeogl's shaders.</li>
- </ul>
+ <a href="../../examples/#materials_fresnel_specular"><img src="../../assets/images/screenshots/diffuseFresnel.png"></img></a>
+
+ ## Overview
+
+ * Fresnels are grouped within {{#crossLink "PhongMaterial"}}{{/crossLink}}s, which are attached to
+ {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Examples
 
- <ul>
- <li>[Diffuse Fresnel](../../examples/#materials_fresnel_diffuse)</li>
- <li>[Specular Fresnel](../../examples/#materials_fresnel_specular)</li>
- <li>[Opacity Fresnel](../../examples/#materials_fresnel_opacity)</li>
- <li>[Emissive Fresnel](../../examples/#materials_fresnel_emissive)</li>
- </ul>
+ * [Diffuse Fresnel](../../examples/#materials_fresnel_diffuse)
+ * [Specular Fresnel](../../examples/#materials_fresnel_specular)
+ * [Opacity Fresnel](../../examples/#materials_fresnel_opacity)
+ * [Emissive Fresnel](../../examples/#materials_fresnel_emissive)
 
  <img src="../../../assets/images/Fresnel.png"></img>
 
@@ -30534,33 +35495,30 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  ## Overview
 
- <ul>
- <li>Reflects are grouped within {{#crossLink "Material"}}Material{{/crossLink}}s, which are attached to
- {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>To create a Reflect from an image file, set the Reflect's {{#crossLink "Reflect/src:property"}}{{/crossLink}}
- property to the image file path.</li>
- <li>To create a Reflect from an HTML DOM Image object, set the Reflect's {{#crossLink "Reflect/image:property"}}{{/crossLink}}
- property to the entity.</li>
- <li>To render color images of {{#crossLink "Entity"}}Entities{{/crossLink}} to a Reflect, set the Reflect's {{#crossLink "Reflect/target:property"}}{{/crossLink}}
- property to a {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} that is attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>Similarly, to render depth images of {{#crossLink "Entity"}}Entities{{/crossLink}} to a Reflect, set the Reflect's {{#crossLink "Reflect/target:property"}}{{/crossLink}}
- property to a {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>For special effects, we often use rendered Reflects in combination with {{#crossLink "Shader"}}Shaders{{/crossLink}} and {{#crossLink "Stage"}}Stages{{/crossLink}}.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Reflects create within xeogl's shaders.</li>
- </ul>
+ * Reflects are grouped within {{#crossLink "Material"}}Material{{/crossLink}}s, which are attached to
+ {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ * To create a Reflect from an image file, set the Reflect's {{#crossLink "Reflect/src:property"}}{{/crossLink}}
+ property to the image file path.
+ * To create a Reflect from an HTML DOM Image object, set the Reflect's {{#crossLink "Reflect/image:property"}}{{/crossLink}}
+ property to the entity.
+ * To render color images of {{#crossLink "Entity"}}Entities{{/crossLink}} to a Reflect, set the Reflect's {{#crossLink "Reflect/target:property"}}{{/crossLink}}
+ property to a {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} that is attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ * Similarly, to render depth images of {{#crossLink "Entity"}}Entities{{/crossLink}} to a Reflect, set the Reflect's {{#crossLink "Reflect/target:property"}}{{/crossLink}}
+ property to a {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ * For special effects, we often use rendered Reflects in combination with {{#crossLink "Shader"}}Shaders{{/crossLink}} and {{#crossLink "Stage"}}Stages{{/crossLink}}.
 
  <img src="../../../assets/images/Reflect.png"></img>
 
  ## Usage
 
  The example below has:
- <ul>
- <li>three Reflects,</li>
- <li>a {{#crossLink "PhongMaterial"}}{{/crossLink}} which applies the {{#crossLink "Reflect"}}{{/crossLink}}s as diffuse, normal and specular maps,</li>
- <li>a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "PointLight"}}{{/crossLink}},</li>
- <li>a {{#crossLink "Geometry"}}{{/crossLink}} that has the default box shape, and
- <li>an {{#crossLink "Entity"}}{{/crossLink}} attached to all of the above.</li>
- </ul>
+
+ * three Reflects,
+ * a {{#crossLink "PhongMaterial"}}{{/crossLink}} which applies the {{#crossLink "Reflect"}}{{/crossLink}}s as diffuse, normal and specular maps,
+ * a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "PointLight"}}{{/crossLink}},
+ * a {{#crossLink "Geometry"}}{{/crossLink}} that has the default box shape, and
+ * an {{#crossLink "Entity"}}{{/crossLink}} attached to all of the above.
+
 
  ```` javascript
  var scene = new xeogl.Scene();
@@ -30575,7 +35533,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  var reflect3 = new xeogl.Reflect(scene, {
     src: "specularMap.jpg"
-});
+ });
 
  var material = new xeogl.PhongMaterial(scene, {
     ambient: [0.3, 0.3, 0.3],
@@ -30583,23 +35541,23 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
     diffuseMap: reflect1,
     normalMap: reflect2,
     specularMap: reflect3
-});
+ });
 
  var light1 = new xeogl.PointLight(scene, {
     pos: [0, 100, 100],
     color: [0.5, 0.7, 0.5]
-});
+ });
 
  var light2 = new xeogl.AmbientLight(scene, {
     color: [0.5, 0.7, 0.5]
-});
+ });
 
  var lights = new xeogl.Lights(scene, {
     lights: [
         light1,
         light2
     ]
-});
+ });
 
  // Geometry without parameters will default to a 2x2x2 box.
  var geometry = new xeogl.Geometry(scene);
@@ -30608,9 +35566,9 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
     lights: lights,
     material: material,
     geometry: geometry
-});
+ });
  ````
- @class Reflect
+
  @module xeogl
  @submodule materials
  @constructor
@@ -30848,34 +35806,32 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  ## Overview
 
- See the {{#crossLink "Scene"}}Scene{{/crossLink}} class documentation for more information on Entities.</li>
+ See the {{#crossLink "Scene"}}Scene{{/crossLink}} class documentation for more information on Entities.
 
  <img src="../../../assets/images/Entity.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Minimal Entity example](../../examples/#entities_minimal)</li>
- </ul>
+ * [Minimal Entity example](../../examples/#entities_minimal)
 
  ## Boundaries
 
  #### Local-space
 
  A Entity provides its Local-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}} that encloses
- the {{#crossLink "Geometry"}}{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}}.</li>
+ the {{#crossLink "Geometry"}}{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}}.
 
  ```` javascript
  var scene = new xeogl.Scene();
 
  var geometry = new xeogl.Geometry(myScene, {
       //...
-  });
+ });
 
  var entity = new xeogl.Entity(myScene, {
        geometry: myGeometry,
        transform: translate
-  });
+ });
 
  // Get the Local-space Boundary3D
  var localBoundary = entity.localBoundary;
@@ -30891,22 +35847,20 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  // get the Local-space center of the Entity:
  var center = localBoundary.center;
-
  ````
 
  #### World-space
 
  A Entity provides its World-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}} that encloses
  the {{#crossLink "Geometry"}}{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}} after
- transformation by the Entity's {{#crossLink "Entity/transform:property"}}Modelling transform{{/crossLink}}.</li>
-
+ transformation by the Entity's {{#crossLink "Entity/transform:property"}}Modelling transform{{/crossLink}}.
 
  ```` javascript
  var scene = new xeogl.Scene();
 
  var geometry = new xeogl.Geometry(myScene, {
       //...
-  });
+ });
 
  var translate = new xeogl.Translate(scene, {
     xyz: [-5, 0, 0] // Translate along -X axis
@@ -30915,7 +35869,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  var entity = new xeogl.Entity(myScene, {
        geometry: myGeometry,
        transform: translate
-  });
+ });
 
  // Get the World-space Boundary3D
  var worldBoundary = entity.worldBoundary;
@@ -30931,7 +35885,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  // get the World-space center of the Entity:
  var center = worldBoundary.center;
-
  ````
 
  #### View-space
@@ -30939,7 +35892,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  A Entity also provides its View-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}} that encloses
  the {{#crossLink "Geometry/positions:property"}}Geometry positions{{/crossLink}} after
  their transformation by the {{#crossLink "Camera/view:property"}}View{{/crossLink}} and
- {{#crossLink "Entity/transform:property"}}Modelling{{/crossLink}} transforms.</li>
+ {{#crossLink "Entity/transform:property"}}Modelling{{/crossLink}} transforms.
 
  ```` javascript
  // Get the View-space Boundary3D
@@ -30956,7 +35909,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  // get the View-space center of the Entity:
  var center = viewBoundary.center;
-
  ````
 
  #### View-space
@@ -30964,7 +35916,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  A Entity also provides its Canvas-space boundary as a {{#crossLink "Boundary2D"}}{{/crossLink}} that encloses
  the {{#crossLink "Geometry/positions:property"}}Geometry positions{{/crossLink}} after
  their transformation by the {{#crossLink "Entity/transform:property"}}Modelling{{/crossLink}},
- {{#crossLink "Camera/view:property"}}View{{/crossLink}} and {{#crossLink "Camera/project:property"}}Projection{{/crossLink}} transforms.</li>
+ {{#crossLink "Camera/view:property"}}View{{/crossLink}} and {{#crossLink "Camera/project:property"}}Projection{{/crossLink}} transforms.
 
  ```` javascript
  // Get the Canvas-space Boundary2D
@@ -30976,7 +35928,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  // get the Canvas-space center of the Entity:
  var center = canvasBoundary.center;
-
  ````
 
  @class Entity
@@ -30991,10 +35942,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
  @param [cfg.clips] {String|Clips} ID or instance of a {{#crossLink "Clips"}}Clips{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/clips:property"}}clips{{/crossLink}}.
- @param [cfg.colorTarget] {String|ColorTarget} ID or instance of a {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
- parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/colorTarget:property"}}colorTarget{{/crossLink}}.
- @param [cfg.depthTarget] {String|DepthTarget} ID or instance of a {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
- parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/depthTarget:property"}}depthTarget{{/crossLink}}.
  @param [cfg.depthBuf] {String|DepthBuf} ID or instance of a {{#crossLink "DepthBuf"}}DepthBuf{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, depth {{#crossLink "Scene/depthBuf:property"}}depthBuf{{/crossLink}}.
  @param [cfg.visibility] {String|Visibility} ID or instance of a {{#crossLink "Visibility"}}Visibility{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
@@ -31015,10 +35962,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  default instance, {{#crossLink "Scene/morphTargets:property"}}morphTargets{{/crossLink}}.
  @param [cfg.reflect] {String|Reflect} ID or instance of a {{#crossLink "CubeMap"}}CubeMap{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
  {{#crossLink "Scene/reflect:property"}}reflection{{/crossLink}}.
- @param [cfg.shader] {String|Shader} ID or instance of a {{#crossLink "Shader"}}Shader{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
- {{#crossLink "Scene/shader:property"}}shader{{/crossLink}}.
- @param [cfg.shaderParams] {String|ShaderParams} ID or instance of a {{#crossLink "ShaderParams"}}ShaderParams{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
- {{#crossLink "Scene/shaderParams:property"}}shaderParams{{/crossLink}}.
  @param [cfg.stage] {String|Stage} ID or instance of of a {{#crossLink "Stage"}}Stage{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
  {{#crossLink "Scene/stage:property"}}stage{{/crossLink}}.
  @param [cfg.transform] {String|Transform} ID or instance of a modelling transform to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
@@ -31185,6 +36128,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
              * Fires an {{#crossLink "Entity/colorTarget:event"}}{{/crossLink}} event on change.
              *
              * @property colorTarget
+             * @private
              * @type ColorTarget
              */
             colorTarget: {
@@ -31254,6 +36198,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
              * Fires an {{#crossLink "Entity/depthTarget:event"}}{{/crossLink}} event on change.
              *
              * @property depthTarget
+             * @private
              * @type DepthTarget
              */
             depthTarget: {
@@ -31444,6 +36389,12 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                     this._setWorldBoundaryDirty();
 
+                    /**
+                     * Fired whenever this Entity's {{#crossLink "Entity/geometry:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event modes
+                     * @param value The property's new value
+                     */
                     this._attach({
                         name: "geometry",
                         type: "xeogl.Geometry",
@@ -31582,6 +36533,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
              * Fires an {{#crossLink "Entity/morphTargets:event"}}{{/crossLink}} event on change.
              *
              * @property morphTargets
+             * @private
              * @type MorphTargets
              */
             morphTargets: {
@@ -31651,6 +36603,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
              * Fires an {{#crossLink "Entity/shader:event"}}{{/crossLink}} event on change.
              *
              * @property shader
+             * @private
              * @type Shader
              */
             shader: {
@@ -31685,6 +36638,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
              * Fires an {{#crossLink "Entity/shaderParams:event"}}{{/crossLink}} event on change.
              *
              * @property shaderParams
+             * @private
              * @type ShaderParams
              */
             shaderParams: {
@@ -31992,11 +36946,9 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                         // this._setWorldBoundaryDirty();
 
-                        this._worldBoundary = new xeogl.Boundary3D(this.scene, {
+                        this._worldBoundary = this.create({
 
-                            meta: {
-                                desc: "Entity " + self.id + " World-space boundary" // For debugging
-                            },
+                            type:"xeogl.Boundary3D",
 
                             getDirty: function () {
                                 if (self._worldBoundaryDirty) {
@@ -32080,11 +37032,9 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                         //     this._setViewBoundaryDirty();
 
-                        this._viewBoundary = new xeogl.Boundary3D(this.scene, {
+                        this._viewBoundary = this.create({
 
-                            meta: {
-                                desc: "Entity " + self.id + " View-space boundary" // For debugging
-                            },
+                            type:"xeogl.Boundary3D",
 
                             getDirty: function () {
                                 if (self._viewBoundaryDirty) {
@@ -32151,11 +37101,9 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                         //   this._setCanvasBoundaryDirty();
 
-                        this._canvasBoundary = new xeogl.Boundary2D(this.scene, {
+                        this._canvasBoundary = this.create({
 
-                            meta: {
-                                desc: "Entity " + self.id + " Canvas-space boundary" // For debugging
-                            },
+                            type:"xeogl.Boundary2D",
 
                             getDirty: function () {
                                 if (self._canvasBoundaryDirty) {
@@ -32312,7 +37260,9 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                     self._compiling = false;
                 };
 
-                xeogl.scheduleTask(task);
+                //xeogl.scheduleTask(task);
+
+                task();
             }
         },
 
@@ -32399,19 +37349,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         },
 
         _destroy: function () {
-
-            if (this._worldBoundary) {
-                this._worldBoundary.destroy();
-            }
-
-            if (this._viewBoundary) {
-                this._viewBoundary.destroy();
-            }
-
-            if (this._canvasBoundary) {
-                this._canvasBoundary.destroy();
-            }
-
             this._renderer.removeObject(this.id);
         }
     });
@@ -32423,14 +37360,13 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  * @module xeogl
  * @submodule rendering
  */;/**
-
  A **ColorBuf** configures the WebGL color buffer for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- <ul>
- <li>A ColorBuf configures **the way** that pixels are written to the WebGL color buffer.</li>
- <li>ColorBuf is not to be confused with {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}}, which stores rendered pixel
- colors for consumption by {{#crossLink "Texture"}}Textures{{/crossLink}}, used when performing *render-to-texture*.</li>
- </ul>
+ ## Overview
+
+ * A ColorBuf configures the way that pixels are written to the WebGL color buffer.
+ * ColorBuf is not to be confused with {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}}, which stores rendered pixel
+ colors for consumption by {{#crossLink "Texture"}}Textures{{/crossLink}}, used when performing *render-to-texture*.
 
  <img src="../../../assets/images/ColorBuf.png"></img>
 
@@ -32566,11 +37502,11 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 ;/**
  A **DepthBuf** configures the WebGL depth buffer for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- <ul>
- <li>A DepthBuf configures **the way** that pixel depths are written to the WebGL depth buffer</li>
- <li>DepthBuf is not to be confused with {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}}, which stores rendered pixel
- depths for consumption by {{#crossLink "Texture"}}Textures{{/crossLink}}, used when performing *render-to-texture*.</li>
- </ul>
+ ## Overview
+
+ * A DepthBuf configures the way that pixel depths are written to the WebGL depth buffer
+ * DepthBuf is not to be confused with {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}}, which stores rendered pixel
+ depths for consumption by {{#crossLink "Texture"}}Textures{{/crossLink}}, used when performing *render-to-texture*.
 
  <img src="../../../assets/images/DepthBuf.png"></img>
 
@@ -32662,14 +37598,14 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
              *
              * Accepted values are:
              *
-             * <ul>
-             *     <li>"less"</li>
-             *     <li>"equal"</li>
-             *     <li>"lequal"</li>
-             *     <li>"greater"</li>
-             *     <li>"notequal"</li>
-             *     <li>"gequal"</li>
-             * </ul>
+             *
+             *     * "less"
+             *     * "equal"
+             *     * "lequal"
+             *     * "greater"
+             *     * "notequal"
+             *     * "gequal"
+             *
              *
              * Fires a {{#crossLink "DepthBuf/depthFunc:event"}}{{/crossLink}} event on change.
              *
@@ -32782,31 +37718,29 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 ;/**
  A **Layer** sets the rendering order of {{#crossLink "Entity"}}Entities{{/crossLink}} within their {{#crossLink "Stage"}}Stages{{/crossLink}}.
 
- <ul>
- <li>When xeogl renders a {{#crossLink "Scene"}}Scene{{/crossLink}}, each {{#crossLink "Stage"}}Stage{{/crossLink}} within that will render its bin
- of {{#crossLink "Entity"}}Entities{{/crossLink}} in turn, from the lowest priority {{#crossLink "Stage"}}Stage{{/crossLink}} to the highest.</li>
- <li>{{#crossLink "Stage"}}Stages{{/crossLink}} are typically used for ordering the render-to-texture steps in posteffects pipelines.</li>
- <li>You can control the render order of the individual {{#crossLink "Entity"}}Entities{{/crossLink}} ***within*** a {{#crossLink "Stage"}}Stage{{/crossLink}}
- by associating them with {{#crossLink "Layer"}}Layers{{/crossLink}}.</li>
- <li>{{#crossLink "Layer"}}Layers{{/crossLink}} are typically used to <a href="https://www.opengl.org/wiki/Transparency_Sorting" target="_other">transparency-sort</a> the
- {{#crossLink "Entity"}}Entities{{/crossLink}} within {{#crossLink "Stage"}}Stages{{/crossLink}}.</li>
- <li>{{#crossLink "Entity"}}Entities{{/crossLink}} not explicitly attached to a Layer are implicitly
+ ## Overview
+
+ * When xeogl renders a {{#crossLink "Scene"}}Scene{{/crossLink}}, each {{#crossLink "Stage"}}Stage{{/crossLink}} within that will render its bin
+ of {{#crossLink "Entity"}}Entities{{/crossLink}} in turn, from the lowest priority {{#crossLink "Stage"}}Stage{{/crossLink}} to the highest.
+ * {{#crossLink "Stage"}}Stages{{/crossLink}} are typically used for ordering the render-to-texture steps in posteffects pipelines.
+ * You can control the render order of the individual {{#crossLink "Entity"}}Entities{{/crossLink}} ***within*** a {{#crossLink "Stage"}}Stage{{/crossLink}}
+ by associating them with {{#crossLink "Layer"}}Layers{{/crossLink}}.
+ * {{#crossLink "Layer"}}Layers{{/crossLink}} are typically used to <a href="https://www.opengl.org/wiki/Transparency_Sorting" target="_other">transparency-sort</a> the
+ {{#crossLink "Entity"}}Entities{{/crossLink}} within {{#crossLink "Stage"}}Stages{{/crossLink}}.
+ * {{#crossLink "Entity"}}Entities{{/crossLink}} not explicitly attached to a Layer are implicitly
  attached to the {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
  {{#crossLink "Scene/layer:property"}}layer{{/crossLink}}. which has
- a {{#crossLink "Layer/priority:property"}}{{/crossLink}} value of zero.</li>
- <li>You can use Layers without defining any {{#crossLink "Stage"}}Stages{{/crossLink}} if you simply let your
+ a {{#crossLink "Layer/priority:property"}}{{/crossLink}} value of zero.
+ * You can use Layers without defining any {{#crossLink "Stage"}}Stages{{/crossLink}} if you simply let your
  {{#crossLink "Entity"}}Entities{{/crossLink}} fall back on the {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
- {{#crossLink "Scene/stage:property"}}stage{{/crossLink}}. which has a {{#crossLink "Stage/priority:property"}}{{/crossLink}} value of zero.</li>
- </ul>
+ {{#crossLink "Scene/stage:property"}}stage{{/crossLink}}. which has a {{#crossLink "Stage/priority:property"}}{{/crossLink}} value of zero.
 
  <img src="../../../assets/images/Layer.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Z-sorted transparent entities](../../examples/#materials_techniques_transparencySort)</li>
- <li>[Clouds as billboarded and z-sorted alpha maps](../../examples/#billboards_spherical_clouds)</li>
- </ul>
+ * [Z-sorted transparent entities](../../examples/#materials_techniques_transparencySort)
+ * [Clouds as billboarded and z-sorted alpha maps](../../examples/#transforms_billboard_spherical_clouds)
 
  ## Usage
 
@@ -32829,7 +37763,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  // We could instead just implicitly default to the Scene's default Stage
  var stage = new xeogl.Stage({
     priority: 0
-});
+ });
 
  // Geometry we'll share among our Entities
  var geometry = new xeogl.BoxGeometry();
@@ -32847,7 +37781,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         diffuse: [0.2, 0.2, 1.0],
         opacity: 1.0
     })
-});
+ });
 
  // Middle box
  // Red and transparent, in Layer with render order 2, renders next
@@ -32864,7 +37798,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
     scale: new xeogl.Scale({
         xyz: [6, 6, 6]
     })
-});
+ });
 
  // Outermost box
  // Green and transparent, in Layer with render order 3, renders last
@@ -32882,7 +37816,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
     scale: new xeogl.Scale({
         xyz: [9, 9, 9]
     })
-});
+ });
  ````
 
  @class Layer
@@ -32982,23 +37916,20 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  A **ColorTarget** is a  <a href="http://en.wikipedia.org/wiki/Render_Target" target="other">render target</a>  that
  captures the colors pixels rendered for associated {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- <ul>
- <li>ColorTargets are typically used when *rendering-to-texture*.</li>
- <li>A ColorTarget provides the pixel colors as a dynamic color image that may be consumed by {{#crossLink "Texture"}}Textures{{/crossLink}}.</li>
- <li>ColorTarget is not to be confused with {{#crossLink "ColorBuf"}}ColorBuf{{/crossLink}}, which configures ***how*** the pixel colors are written with respect to the WebGL color buffer.</li>
- <li>Use {{#crossLink "Stage"}}Stages{{/crossLink}} when you need to ensure that a ColorTarget is rendered before
- the {{#crossLink "Texture"}}Textures{{/crossLink}} that consume it.</li>
- <li>For special effects, we often use ColorTargets and {{#crossLink "Texture"}}Textures{{/crossLink}} in combination
- with {{#crossLink "DepthTarget"}}DepthTargets{{/crossLink}} and {{#crossLink "Shader"}}Shaders{{/crossLink}}.</li>
- </ul>
+ * ColorTargets are typically used when *rendering-to-texture*.
+ * A ColorTarget provides the pixel colors as a dynamic color image that may be consumed by {{#crossLink "Texture"}}Textures{{/crossLink}}.
+ * ColorTarget is not to be confused with {{#crossLink "ColorBuf"}}ColorBuf{{/crossLink}}, which configures ***how*** the pixel colors are written with respect to the WebGL color buffer.
+ * Use {{#crossLink "Stage"}}Stages{{/crossLink}} when you need to ensure that a ColorTarget is rendered before
+ the {{#crossLink "Texture"}}Textures{{/crossLink}} that consume it.
+ * For special effects, we often use ColorTargets and {{#crossLink "Texture"}}Textures{{/crossLink}} in combination
+ with {{#crossLink "DepthTarget"}}DepthTargets{{/crossLink}} and {{#crossLink "Shader"}}Shaders{{/crossLink}}.
 
  <img src="../../../assets/images/ColorTarget.png"></img>
 
  ## Usage
 
  This example contains an {{#crossLink "Entity"}}{{/crossLink}} that renders its pixel colors to a ColorTarget, which is then
- piped into a {{#crossLink "Texture"}}{{/crossLink}} that's applied to a second {{#crossLink "Entity"}}{{/crossLink}}.</li>
- </ul>
+ piped into a {{#crossLink "Texture"}}{{/crossLink}} that's applied to a second {{#crossLink "Entity"}}{{/crossLink}}.
 
  ````javascript
  var colorTarget = new xeogl.ColorTarget();
@@ -33024,7 +37955,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 });
  ````
 
- @class ColorTarget
+
  @module xeogl
  @submodule rendering
  @constructor
@@ -33184,7 +38115,9 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
             this.scene.canvas.off(this._webglContextRestored);
 
-            this._state.renderBuf.destroy();
+            if (this._state.renderBuf) {
+                this._state.renderBuf.destroy();
+            }
 
             this._state.destroy();
         }
@@ -33195,23 +38128,20 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  A **DepthTarget** is a  <a href="http://en.wikipedia.org/wiki/Render_Target" target="other">render target</a>  that
  captures the depths of the pixels rendered for the attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- <ul>
- <li>DepthTargets are typically used when *rendering-to-texture*.</li>
- <li>A DepthTarget provides the pixel depths as a dynamic color-encoded image that may be fed into {{#crossLink "Texture"}}Textures{{/crossLink}}.</li>
- <li>DepthTarget is not to be confused with {{#crossLink "DepthBuf"}}DepthBuf{{/crossLink}}, which configures ***how*** the pixel depths are written with respect to the WebGL depth buffer.</li>
- <li>Use {{#crossLink "Stage"}}Stages{{/crossLink}} when you need to ensure that a DepthTarget is rendered before
- the {{#crossLink "Texture"}}Textures{{/crossLink}} that consume it.</li>
- <li>For special effects, we often use DepthTargets and {{#crossLink "Texture"}}Textures{{/crossLink}} in combination
- with {{#crossLink "DepthTarget"}}DepthTargets{{/crossLink}} and {{#crossLink "Shader"}}Shaders{{/crossLink}}.</li>
- </ul>
+ * DepthTargets are typically used when *rendering-to-texture*.
+ * A DepthTarget provides the pixel depths as a dynamic color-encoded image that may be fed into {{#crossLink "Texture"}}Textures{{/crossLink}}.
+ * DepthTarget is not to be confused with {{#crossLink "DepthBuf"}}DepthBuf{{/crossLink}}, which configures ***how*** the pixel depths are written with respect to the WebGL depth buffer.
+ * Use {{#crossLink "Stage"}}Stages{{/crossLink}} when you need to ensure that a DepthTarget is rendered before
+ the {{#crossLink "Texture"}}Textures{{/crossLink}} that consume it.
+ * For special effects, we often use DepthTargets and {{#crossLink "Texture"}}Textures{{/crossLink}} in combination
+ with {{#crossLink "DepthTarget"}}DepthTargets{{/crossLink}} and {{#crossLink "Shader"}}Shaders{{/crossLink}}.
 
  <img src="../../../assets/images/DepthTarget.png"></img>
 
  ## Usage
 
  This example contains an {{#crossLink "Entity"}}{{/crossLink}} that renders its (RBGA-encoded) pixel depths to a DepthTarget, which is then
- piped into a {{#crossLink "Texture"}}{{/crossLink}} that's applied to a second {{#crossLink "Entity"}}{{/crossLink}}.</li>
- </ul>
+ piped into a {{#crossLink "Texture"}}{{/crossLink}} that's applied to a second {{#crossLink "Entity"}}{{/crossLink}}.
 
  ````javascript
  var depthTarget = new xeogl.DepthTarget();
@@ -33223,9 +38153,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
     depthTarget: depthTarget
  });
 
-
- // Second Entity is textured with the
- // image of the first Entity
+ // Second Entity is textured with the image of the first Entity
 
  var entity2 = new xeogl.Entity({
      geometry: new xeogl.BoxGeometry()
@@ -33234,9 +38162,9 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             target: depthTarget
          })
      })
-});
+ });
  ````
- @class DepthTarget
+
  @module xeogl
  @submodule rendering
  @constructor
@@ -33352,7 +38280,9 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
             this.scene.canvas.off(this._webglContextRestored);
 
-            this._state.renderBuf.destroy();
+            if (this._state.renderBuf) {
+                this._state.renderBuf.destroy();
+            }
 
             this._state.destroy();
         }
@@ -33360,16 +38290,14 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
 })();
 ;/**
-
  A **Modes** toggles various xeogl modes and capabilities for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- <ul>
- <li>Though the rendering modes are defined by various different components attached to the {{#crossLink "Entity"}}Entities{{/crossLink}},
- Modes components provide a single point through which you can toggle them on or off.</li>
- <li>A Modes may be shared among multiple {{#crossLink "Entity"}}Entities{{/crossLink}} to toggle
- rendering modes for them as a group.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Modes create within xeogl's shaders.</li>
- </ul>
+ ## Overview
+
+ * Though the rendering modes are defined by various different components attached to the {{#crossLink "Entity"}}Entities{{/crossLink}},
+ Modes components provide a single point through which you can toggle them on or off.
+ * A Modes may be shared among multiple {{#crossLink "Entity"}}Entities{{/crossLink}} to toggle
+ rendering modes for them as a group.
 
  <img src="../../../assets/images/Modes.png"></img>
 
@@ -33729,16 +38657,14 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 ;/**
  A **Viewport** defines a viewport within the canvas in which attached {{#crossLink "Entity"}}Entities{{/crossLink}} will render.
 
- <ul>
- <li>Make a Viewport automatically size to its {{#crossLink "Scene"}}Scene's{{/crossLink}} {{#crossLink "Canvas"}}{{/crossLink}}
- by setting its {{#crossLink "Viewport/autoBoundary:property"}}{{/crossLink}} property ````true```` (default is ````false````).</li>
- </ul>
+ ## Overview
+
+ * Make a Viewport automatically size to its {{#crossLink "Scene"}}Scene's{{/crossLink}} {{#crossLink "Canvas"}}{{/crossLink}}
+ by setting its {{#crossLink "Viewport/autoBoundary:property"}}{{/crossLink}} property ````true```` (default is ````false````).
 
  ## Examples
 
- <ul>
- <li>[Multiple viewports](../../examples/#canvas_multipleViewports)</li>
- </ul>
+ * [Multiple viewports](../../examples/#canvas_multipleViewports)
 
  ## Usage
 
@@ -33933,28 +38859,25 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  A **Stage** is a bin of {{#crossLink "Entity"}}Entities{{/crossLink}} that is rendered in a specified priority with respect to
  other Stages in the same {{#crossLink "Scene"}}{{/crossLink}}.
 
- <ul>
- <li>When the parent {{#crossLink "Scene"}}Scene{{/crossLink}} renders, each Stage renders its bin
- of {{#crossLink "Entity"}}Entities{{/crossLink}} in turn, from the lowest priority Stage to the highest.</li>
- <li>Stages are typically used for ordering the render-to-texture steps in posteffects pipelines.</li>
- <li>You can control the render order of the individual {{#crossLink "Entity"}}Entities{{/crossLink}} ***within*** a Stage
- by associating them with {{#crossLink "Layer"}}Layers{{/crossLink}}.</li>
- <li>{{#crossLink "Layer"}}Layers{{/crossLink}} are typically used to <a href="https://www.opengl.org/wiki/Transparency_Sorting" target="_other">transparency-sort</a> the
- {{#crossLink "Entity"}}Entities{{/crossLink}} within Stages.</li>
- <li>{{#crossLink "Entity"}}Entities{{/crossLink}} not explicitly attached to a Stage are implicitly
+ ## Overview
+
+ * When the parent {{#crossLink "Scene"}}Scene{{/crossLink}} renders, each Stage renders its bin
+ of {{#crossLink "Entity"}}Entities{{/crossLink}} in turn, from the lowest priority Stage to the highest.
+ * Stages are typically used for ordering the render-to-texture steps in posteffects pipelines.
+ * You can control the render order of the individual {{#crossLink "Entity"}}Entities{{/crossLink}} ***within*** a Stage
+ by associating them with {{#crossLink "Layer"}}Layers{{/crossLink}}.
+ * {{#crossLink "Layer"}}Layers{{/crossLink}} are typically used to <a href="https://www.opengl.org/wiki/Transparency_Sorting" target="_other">transparency-sort</a> the
+ {{#crossLink "Entity"}}Entities{{/crossLink}} within Stages.
+ * {{#crossLink "Entity"}}Entities{{/crossLink}} not explicitly attached to a Stage are implicitly
  attached to the {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
  {{#crossLink "Scene/stage:property"}}stage{{/crossLink}}. which has
- a {{#crossLink "Stage/priority:property"}}{{/crossLink}} value of zero.</li>
-
- </ul>
+ a {{#crossLink "Stage/priority:property"}}{{/crossLink}} value of zero.
 
  <img src="../../../assets/images/Stage.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Procedural texture using RTT](../../examples/#materials_texture_procedural)</li>
- </ul>
+ * [Procedural texture using RTT](../../examples/#materials_texture_procedural)
 
  ## Usage
 
@@ -33974,8 +38897,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
     }),
     geometry: new xeogl.BoxGeometry(),
     colorTarget: new xeogl.ColorTarget()
-});
-
+ });
 
  // Second stage: an Entity with a Texture that sources from the ColorTarget
  var entity2 = new xeogl.Entity({
@@ -33988,7 +38910,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         })
     }),
     geometry: new xeogl.BoxGeometry()
-});
+ });
  ````
 
  @class Stage
@@ -34130,23 +39052,18 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
 })();
 ;/**
- * Components for defining custom GLSL shaders.
- *
- * @module xeogl
- * @submodule shaders
- */;/**
  A **Shader** specifies a custom GLSL shader to apply when rendering attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- <ul>
- <li>Normally you would rely on xeogl to automatically generate shaders for you, however the Shader component allows you to author them manually.</li>
- <li>You can use xeogl's reserved uniform and variable names in your Shaders to read all the WebGL state that's set by other
- components on the attached {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>Use Shaders in combination with {{#crossLink "ShaderParams"}}ShaderParams{{/crossLink}} components when you need to share
+
+ * Normally you would rely on xeogl to automatically generate shaders for you, however the Shader component allows you to author them manually.
+ * You can use xeogl's reserved uniform and variable names in your Shaders to read all the WebGL state that's set by other
+ components on the attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ * Use Shaders in combination with {{#crossLink "ShaderParams"}}ShaderParams{{/crossLink}} components when you need to share
  the same Shaders among multiple {{#crossLink "Entity"}}Entities{{/crossLink}} while setting the Shaders' uniforms
- differently for each {{#crossLink "Entity"}}Entity{{/crossLink}}.</li>
- <li>Use {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}}, {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}}
- and {{#crossLink "Texture"}}Texture{{/crossLink}} components to connect the output of one Shader as input into another Shader.</li>
- </ul>
+ differently for each {{#crossLink "Entity"}}Entity{{/crossLink}}.
+ * Use {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}}, {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}}
+ and {{#crossLink "Texture"}}Texture{{/crossLink}} components to connect the output of one Shader as input into another Shader.
+
 
  <img src="../../../assets/images/Shader.png"></img>
 
@@ -34298,9 +39215,8 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  |---|---|---|
 
 
- @class Shader
+
  @module xeogl
- @submodule shaders
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Shader in the default
  {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
@@ -34475,10 +39391,10 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 ;/**
  A **ShaderParams** sets uniform values for {{#crossLink "Shader"}}Shaders{{/crossLink}} on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- <ul>
- <li>Use ShaderParams components when you need to share the same {{#crossLink "Shader"}}Shaders{{/crossLink}} among multiple {{#crossLink "Entity"}}Entities{{/crossLink}},
- while setting the {{#crossLink "Shader"}}Shaders{{/crossLink}}' uniforms differently for each {{#crossLink "Entity"}}Entity{{/crossLink}}.</li>
- </ul>
+
+ * Use ShaderParams components when you need to share the same {{#crossLink "Shader"}}Shaders{{/crossLink}} among multiple {{#crossLink "Entity"}}Entities{{/crossLink}},
+ while setting the {{#crossLink "Shader"}}Shaders{{/crossLink}}' uniforms differently for each {{#crossLink "Entity"}}Entity{{/crossLink}}.
+
 
  <img src="../../../assets/images/ShaderParams.png"></img>
 
@@ -34596,9 +39512,9 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
     });
 });
  ````
- @class ShaderParams
+
  @module xeogl
- @submodule shaders
+
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this ShaderParams in the default
  {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
@@ -34695,27 +39611,26 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  */;/**
  A **Boundary2D** is a Canvas-space 2D boundary.
 
+ <a href="../../examples/#animation_camera_flyTo_boundary"><img src="http://i.giphy.com/3oriO8fJ8f70AfXdUA.gif"></img></a>
+
+ ## Overview
+
  A Boundary2D provides its spatial info in these properties:
 
- <ul>
- <li>{{#crossLink "Boundary2D/aabb:property"}}{{/crossLink}} - axis-aligned bounding box (AABB)</li>
- <li>{{#crossLink "Boundary2D/center:property"}}{{/crossLink}} - center coordinate </li>
- </ul>
+ * {{#crossLink "Boundary2D/aabb:property"}}{{/crossLink}} - an axis-aligned box (AABB) as a four-element Float32Array
+ containing the min/max extents of the axis-aligned volume, ie. ````[xmin,ymin,xmax,ymax]````, and
+ * {{#crossLink "Boundary2D/center:property"}}{{/crossLink}} - the center point as a two-element Float32Array containing elements ````[x,y]````.
 
  The following components have Boundary2Ds:
 
- <ul>
- <li>An {{#crossLink "Entity"}}{{/crossLink}} provides its Canvas-space boundary via
- its {{#crossLink "Entity/canvasBoundary:property"}}{{/crossLink}} property</li>
- </ul>
+ * An {{#crossLink "Entity"}}{{/crossLink}} provides its Canvas-space boundary via
+ its {{#crossLink "Entity/canvasBoundary:property"}}{{/crossLink}} property
 
  <img src="../../../assets/images/Boundary2D.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Visualizing an Entity's Canvas-space boundary](../../examples/#boundaries_Entity_canvasBoundary)</li>
- </ul>
+ * [Visualizing an Entity's Canvas-space boundary](../../examples/#boundaries_entity_canvas_aabb)
 
  ## Usage
 
@@ -34769,17 +39684,16 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Boundary.
- @param [cfg.aabb] {Array of Number} Optional initial canvas-space 2D axis-aligned bounding volume (AABB).
- @param [cfg.center] {Array of Number} Optional initial canvas-space 2D center
+ @param [cfg.aabb] {Float32Array} Optional initial canvas-space 2D axis-aligned bounding volume (AABB).
+ @param [cfg.center] {Float32Array} Optional initial canvas-space 2D center
  @param [cfg.getDirty] {Function} Optional callback to check if parent component has new OBB and matrix.
  @param [cfg.getOBB] {Function} Optional callback to get new view-space 3D OBB from parent.
  @param [cfg.getMatrix] {Function} Optional callback to get new projection matrix from parent.
- @param [cfg.shown] {Boolean} Set true to show a helper DIV that indicates the boundary.
  @extends Component
  */
 
 /**
- * Fired whenever this Boundary2D's {{#crossLink "Boundary2D/abb:property"}}{{/crossLink}} abd {{#crossLink "Boundary2D/center:property"}}{{/crossLink}}.
+ * Fired whenever this Boundary2D's {{#crossLink "Boundary2D/aabb:property"}}{{/crossLink}} and {{#crossLink "Boundary2D/center:property"}}{{/crossLink}}.
  * properties change.
  * @event updated
  */
@@ -34793,11 +39707,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
         _init: function (cfg) {
 
-            // Indicator DIV
-
-            this._div = null;
-            this._shown = false;
-
             // Cached boundaries
 
             this._obb = null; // Private 3D View-space OBB
@@ -34810,18 +39719,19 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             this._getDirty = cfg.getDirty;
             this._getOBB = cfg.getOBB;
             this._getMatrix = cfg.getMatrix;
-
-            this.shown = cfg.shown;
         },
 
         _props: {
 
             /**
-             * 2D Canvas-space axis-aligned bounding box (AABB).
+             * An axis-aligned box (AABB) representation of this 2D boundary.
+             *
+             * The AABB is represented by a four-element Float32Array containing the min/max canvas-space
+             * extents of the axis-aligned volume, ie. ````[xmin,ymin,xmax,ymax]````.
              *
              * @property aabb
              * @final
-             * @type {*}
+             * @type {Float32Array}
              */
             aabb: {
 
@@ -34836,11 +39746,14 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
-             * 2D Canvas-space center point.
+             * The center point of this 2D boundary.
+             *
+             * The center point is represented by a Float32Array containing canvas-space coordinates,
+             * ie. ````[x,y]````.
              *
              * @property center
              * @final
-             * @type {Array of Number}
+             * @type {Float32Array}
              */
             center: {
 
@@ -34851,74 +39764,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                     }
 
                     return this._center;
-                }
-            },
-
-            /**
-             * When true, shows a helper DIV that indicates the boundary.
-             *
-             * @property shown
-             * @type {Boolean}
-             */
-            shown: {
-
-                set: function (value) {
-
-                    if (value === this._shown) {
-                        return;
-                    }
-
-                    if (value) {
-                        if (!this._div) {
-
-                            var body = document.getElementsByTagName("body")[0];
-                            var div = document.createElement('div');
-
-                            var style = div.style;
-                            style.position = "absolute";
-                            style.padding = "0";
-                            style.margin = "0";
-                            style.border = "3px solid #99FF99";
-                            style["border-radius"] = "10px";
-                            style["z-index"] = "1000";
-
-                            body.appendChild(div);
-
-                            var self = this;
-
-                            this.on("updated",
-                                function () {
-
-                                    var aabb = self.aabb;
-
-                                    div.style.left = aabb.min[0] + "px";
-                                    div.style.top = aabb.min[1] + "px";
-                                    div.style.width = (aabb.max[0] - aabb.min[0]) + "px";
-                                    div.style.height = (aabb.max[1] - aabb.min[1]) + "px";
-                                });
-
-                            this._div = div;
-                        }
-                    } else {
-                        if (this._div) {
-                            this._div.parentNode.removeChild(this._div);
-                            this._div = null;
-                        }
-                    }
-
-                    this._shown = value;
-
-                    /**
-                     * Fired whenever this Boundary2d's
-                     * {{#crossLink "Boundary2d/shown:property"}}{{/crossLink}} property changes.
-                     * @event shown
-                     * @param value The property's new value
-                     */
-                    this.fire("shown", this._shown);
-                },
-
-                get: function () {
-                    return this._shown;
                 }
             }
         },
@@ -34937,9 +39782,9 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                 // Lazy-allocate
 
-                this._obb = [];
-                this._aabb = xeogl.math.AABB2();
-                this._center = xeogl.math.vec2();
+                this._obb = math.OBB2();
+                this._aabb = math.AABB2();
+                this._center = math.vec2();
             }
 
             var obb = this._getOBB();
@@ -34947,8 +39792,8 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
             if (obb && matrix) {
 
-                math.transformPoints3(matrix, obb, this._obb);
-                math.points3ToAABB2(this._obb, this._aabb);
+                math.transformOBB3(matrix, obb, this._obb);
+                math.OBB3ToAABB2(this._obb, this._aabb);
                 math.AABB2ToCanvas(this._aabb, width, height);
                 math.getAABB2Center(this._aabb, this._center);
             }
@@ -34961,20 +39806,25 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             };
         }
     });
-
 })();
 ;/**
- A **Boundary3D** provides the axis-aligned and object-aligned extents of its owner component.
+ A **Boundary3D** provides the 3D extents of its parent component in either the Local, World or View coordinate systems.
 
- A Boundary3D provides spatial info in these properties:
+ <a href="../../examples/#animation_camera_follow_entity"><img src="http://i.giphy.com/l0HlHcuzAjhMQ8YSY.gif"></img></a>
 
- <ul>
- <li>{{#crossLink "Boundary3D/obb:property"}}{{/crossLink}} - an object-aligned bounding box (OBB), as an array of eight corner vertex positions</li>
- <li>{{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}} - an axis-aligned bounding box (AABB), as minimum and maximum corner vertex positions</li>
- <li>{{#crossLink "Boundary3D/center:property"}}{{/crossLink}} - center coordinate</li>
- </ul>
+ ## Overview
+
+ A Boundary3D provides its spatial info in these properties:
+
+ * {{#crossLink "Boundary3D/obb:property"}}{{/crossLink}} - an oriented box (OBB) as a 32-element Float32Array
+ containing homogeneous coordinates for the eight corner vertices, ie. each having elements [x,y,z,w].
+ * {{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}} - an axis-aligned box (AABB) in a six-element Float32Array
+ containing the min/max extents of the axis-aligned volume, ie. ````[xmin,ymin,zmin,xmax,ymax,zmax]````,
+ * {{#crossLink "Boundary3D/center:property"}}{{/crossLink}} - the center point as a three-element Float32Array containing elements ````[x,y,z]```` and
+ * {{#crossLink "Boundary3D/sphere:property"}}{{/crossLink}} - a bounding sphere as a four-element Float32Array containing elements````[x,y,z,radius]````.
 
  As shown in the diagram below, the following xeogl components have Boundary3Ds:
+
  * A {{#crossLink "Scene/worldBoundary:property"}}Scene's worldBoundary{{/crossLink}} provides the **World**-space boundary of all its {{#crossLink "Entity"}}Entities{{/crossLink}}
  * A {{#crossLink "Geometry/localBoundary:property"}}Geometry's localBoundary{{/crossLink}} provides the **Local**-space boundary of its {{#crossLink "Geometry/positions:property"}}positions{{/crossLink}}
  * An {{#crossLink "Entity/localBoundary:property"}}Entity's localBoundary{{/crossLink}} (also) provides the **Local**-space boundary of its {{#crossLink "Geometry"}}{{/crossLink}}
@@ -34984,25 +39834,24 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  * An {{#crossLink "Entity/viewBoundary:property"}}Entity's viewBoundary{{/crossLink}} provides the **View**-space boundary of
  its {{#crossLink "Geometry"}}Geometry's{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}} after
  their transformation by both the {{#crossLink "Entity/transform:property"}}Entity's Modelling transform{{/crossLink}} **and** {{#crossLink "Camera/view:property"}}Viewing transform{{/crossLink}}.
- * A {{#crossLink "CollectionBoundary/worldBoundary:property"}}CollectionBoundary's worldBoundary{{/crossLink}} provides the **World**-space boundary of all the {{#crossLink "Entity"}}Entities{{/crossLink}} contained within its {{#crossLink "Collection"}}Collection{{/crossLink}}.
+ * A {{#crossLink "Model/worldBoundary:property"}}Model's worldBoundary{{/crossLink}} provides the **World**-space boundary of all its {{#crossLink "Entity"}}Entities{{/crossLink}}
 
  The diagram also shows an {{#crossLink "Entity/canvasBoundary:property"}}Entity's canvasBoundary{{/crossLink}}, which is a {{#crossLink "Boundary2D"}}{{/crossLink}} that provides the **Canvas**-space boundary of the {{#crossLink "Geometry"}}Geometry's{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}} after
  their transformation by the {{#crossLink "Entity/transform:property"}}Entity's Modelling transform{{/crossLink}}, {{#crossLink "Camera/view:property"}}Viewing transform{{/crossLink}}
  and {{#crossLink "Camera/project:property"}}Projection transform{{/crossLink}}.
 
- <br><br>
+ <br>
  <img src="../../../assets/images/Boundary3D.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Entity World-space boundary](../../examples/#boundaries_Entity_worldBoundary)</li>
- <li>[Entity View-space boundary](../../examples/#boundaries_Entity_viewBoundary)</li>
- <li>[Entity Canvas-space boundary](../../examples/#boundaries_Entity_canvasBoundary)</li>
- <li>[Flying camera to Entity World-space boundaries](../../examples/#boundaries_flyToBoundary)</li>
- <li>[Visualizing a CollectionBoundary](../../examples/#boundaries_CollectionBoundary)</li>
- <li>[Visualizing a CollectionBoundary hierarchy](../../examples/#boundaries_CollectionBoundary_hierarchy)</li>
- </ul>
+ * [Entity World-space boundary](../../examples/#boundaries_entity_world_aabb)
+ * [Entity View-space boundary](../../examples/#boundaries_entity_view_aabb)
+ * [Entity Canvas-space boundary](../../examples/#boundaries_entity_canvas_aabb)
+ * [Flying camera to Entity World-space boundaries](../../examples/#animation_camera_flyTo_boundary)
+ * [Model World-space boundary](../../examples/#boundaries_Model_worldBoundary_aabb)
+ * [Following an Entity with a Camera](../../examples/#animation_camera_follow_entity)
+ * [Following an Entity with a Camera, keeping Entity fitted to view volume](../../examples/#animation_camera_follow_entity_fitToView)
 
  ## Usage
 
@@ -35028,7 +39877,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         obb = worldBoundary.obb;
         aabb = worldBoundary.aabb;
         center = worldBoundary.center;
-
+        sphere = worldBoundary.sphere();
         //...
     });
 
@@ -35052,9 +39901,10 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Boundary3D.
- @param [cfg.obb] {Array of Number} Optional initial 3D object-aligned bounding volume (OBB).
- @param [cfg.aabb] {Array of Number} Optional initial 3D axis-aligned bounding volume (AABB).
- @param [cfg.center] {Array of Number} Optional initial 3D center
+ @param [cfg.obb] {Float32Array} Optional initial 3D object-aligned bounding volume (OBB).
+ @param [cfg.aabb] {Float32Array} Optional initial 3D axis-aligned bounding volume (AABB).
+ @param [cfg.center] {Float32Array} Optional initial 3D center
+ @param [cfg.sphere] {Float32Array} Optional initial 3D bounding sphere.
  @param [cfg.getDirty] {Function} Optional callback to check if parent component has new OBB, positions or transform matrix.
  @param [cfg.getOBB] {Function} Optional callback to get new OBB from parent.
  @param [cfg.getMatrix] {Function} Optional callback to get new transform matrix from parent.
@@ -35064,8 +39914,8 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
 /**
  * Fired whenever this Boundary3D's {{#crossLink "Boundary3D/obb:property"}}{{/crossLink}},
- * {{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}} or {{#crossLink "Boundary3D/center:property"}}{{/crossLink}}.
- * properties change.
+ * {{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}}, {{#crossLink "Boundary3D/sphere:property"}}{{/crossLink}}
+ * or {{#crossLink "Boundary3D/center:property"}}{{/crossLink}} properties change.
  * @event updated
  */
 (function () {
@@ -35078,18 +39928,18 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
         _init: function (cfg) {
 
-            // Cached bounding boxes (oriented and axis-aligned) 
-
+            // Cached bounding boxes (oriented and axis-aligned)
             this._obb = cfg.obb || null;
             this._aabb = cfg.aabb || null;
 
-            // Cached center point
+            // Cached bounding sphere
+            this._sphere = cfg.sphere || null;
 
+            // Cached center point
             this._center = cfg.center || null;
 
             // Owner injected callbacks to provide
             // resources on lazy-rebuild
-
             this._getDirty = cfg.getDirty;
             this._getOBB = cfg.getOBB;
             this._getAABB = cfg.getAABB;
@@ -35100,11 +39950,14 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         _props: {
 
             /**
-             * 3D oriented bounding box (OBB).
+             * An oriented box (OBB) representation of this 3D boundary.
              *
+             * The OBB is represented by a 32-element Float32Array containing the eight vertices of the box,
+             * where each vertex is a homogeneous coordinate having [x,y,z,w] elements.
+             *i
              * @property obb
              * @final
-             * @type {*}
+             * @type {Float32Array}
              */
             obb: {
 
@@ -35119,11 +39972,14 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
-             * 3D axis-aligned bounding box (AABB).
+             * An axis-aligned box (AABB) representation of this 3D boundary.
+             *
+             * The AABB is represented by a six-element Float32Array containing the min/max extents of the
+             * axis-aligned volume, ie. ````[xmin, ymin,zmin,xmax,ymax, zmax]````.
              *
              * @property aabb
              * @final
-             * @type {*}
+             * @type {Float32Array}
              */
             aabb: {
 
@@ -35138,11 +39994,13 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
-             * 3D center point.
+             * The center point of this 3D boundary.
+             *
+             * The center point is represented by a Float32Array containing elements ````[x,y,z]````.
              *
              * @property center
              * @final
-             * @type {Array of Number}
+             * @type {Float32Array}
              */
             center: {
 
@@ -35154,10 +40012,32 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                     return this._center;
                 }
+            },
+
+            /**
+             * A spherical representation of this 3D boundary.
+             *
+             * The sphere is a four-element Float32Array containing the sphere center and
+             * radius, ie: ````[xcenter, ycenter, zcenter, radius ]````.
+             *
+             * @property sphere
+             * @final
+             * @type {Float32Array}
+             */
+            sphere: {
+
+                get: function () {
+
+                    if (this._getDirty()) {
+                        this._buildBoundary();
+                    }
+
+                    return this._sphere;
+                }
             }
         },
 
-        // (Re)builds the obb, aabb and center.
+        // Builds the obb, aabb, sphere and center.
 
         _buildBoundary: function () {
 
@@ -35166,35 +40046,40 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             // Lazy-allocate
 
             if (!this._obb) {
-                this._obb = [];
+                this._obb = xeogl.math.OBB3();
             }
 
             if (!this._aabb) {
                 this._aabb = xeogl.math.AABB3();
             }
 
+            if (!this._sphere) {
+                this._sphere = xeogl.math.vec4();
+            }
+
             if (!this._center) {
                 this._center = xeogl.math.vec3();
             }
-
+            
             var aabb = this._getAABB ? this._getAABB() : null;
 
             if (aabb) {
 
                 // Got AABB
 
-                // Derive OBB and center
+                // Derive OBB, sphere and center
 
-                this._aabb.min[0] = aabb.min[0];
-                this._aabb.min[1] = aabb.min[1];
-                this._aabb.min[2] = aabb.min[2];
-                this._aabb.max[0] = aabb.max[0];
-                this._aabb.max[1] = aabb.max[1];
-                this._aabb.max[2] = aabb.max[2];
+                this._aabb[0] = aabb[0];
+                this._aabb[1] = aabb[1];
+                this._aabb[2] = aabb[2];
+                this._aabb[3] = aabb[3];
+                this._aabb[4] = aabb[4];
+                this._aabb[5] = aabb[5];
 
                 math.AABB3ToOBB3(this._aabb, this._obb);
-                math.getAABBCenter(this._aabb, this._center);
-
+                math.OBB3ToSphere3(this._obb, this._sphere);
+                math.getSphere3Center(this._sphere, this._center);
+                
                 return;
             }
 
@@ -35214,25 +40099,25 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                     // Got transform matrix
 
-                    // Transform OOBB by matrix,
-                    // derive AABB and center
+                    // Transform OBB by matrix, derive AABB, sphere and center
 
                     math.positions3ToAABB3(positions, this._aabb);
                     math.AABB3ToOBB3(this._aabb, this._obb);
-                    math.transformPoints3(matrix, this._obb);
-                    math.points3ToAABB3(this._obb, this._aabb);
-                    math.getAABBCenter(this._aabb, this._center);
+                    math.transformOBB3(matrix, this._obb);
+                    math.OBB3ToAABB3(this._obb, this._aabb);
+                    math.OBB3ToSphere3(this._obb, this._sphere);
+                    math.getSphere3Center(this._sphere, this._center);
 
                     return;
-
                 }
 
                 // No transform matrix
 
                 math.positions3ToAABB3(positions, this._aabb);
                 math.AABB3ToOBB3(this._aabb, this._obb);
-                math.getAABBCenter(this._aabb, this._center);
-
+                math.OBB3ToSphere3(this._obb, this._sphere);
+                math.getSphere3Center(this._sphere, this._center);
+                
                 return
             }
 
@@ -35240,7 +40125,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
             if (obb) {
 
-                // Got OOBB (array of eight four-element subarrays)
+                // Got OBB
 
                 matrix = this._getMatrix ? this._getMatrix() : null;
 
@@ -35248,26 +40133,28 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                     // Got transform matrix
 
-                    // Transform OOBB by matrix,
-                    // derive AABB and center
+                    // Transform OBB by matrix, derive AABB and center
 
-                    math.transformPoints3(matrix, obb, this._obb);
-                    math.points3ToAABB3(this._obb, this._aabb);
-                    math.getAABBCenter(this._aabb, this._center);
+                    math.transformOBB3(matrix, obb, this._obb);
+                    math.OBB3ToAABB3(this._obb, this._aabb);
+                    math.OBB3ToSphere3(this._obb, this._sphere);
+                    math.getSphere3Center(this._sphere, this._center);
 
                     return;
                 }
 
                 // No transform matrix
 
-                // Copy OOBB, derive AABB and center
+                // Copy OBB, derive AABB and center
 
                 for (var i = 0, len = obb.length; i < len; i++) {
                     this._obb[i] = obb[i];
                 }
 
-                math.points3ToAABB3(this._obb, this._aabb);
-                math.getAABBCenter(this._aabb, this._center);
+                math.OBB3ToAABB3(this._obb, this._aabb);
+                math.OBB3ToSphere3(this._obb, this._sphere);
+                math.getSphere3Center(this._sphere, this._center);
+
             }
         },
 
@@ -35275,357 +40162,13 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             return {
                 obb: this.obb,
                 aabb: this.aabb,
-                center: this.center
+                center: this.center,
+                sphere: this.sphere
             };
         }
     });
 
 })();
-;/**
- A **CollectionBoundary** provides the World-space boundary of the components within a {{#crossLink "Collection"}}{{/crossLink}}.
-
- <ul>
- <li>A CollectionBoundary provides its boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}}.</li>
- <li>The {{#crossLink "Boundary3D"}}{{/crossLink}} dynamically fits to the collective boundary of components
- that provide their own World-space {{#crossLink "Boundary3D"}}Boundar3Ds{{/crossLink}}.</li>
- <li>The {{#crossLink "Boundary3D"}}{{/crossLink}} automatically resizes whenever we add or remove components that
- have World-space {{#crossLink "Boundary3D"}}Boundary3Ds{{/crossLink}}, or whenever
- we cause those components to update their {{#crossLink "Boundary3D"}}Boundary3Ds{{/crossLink}}.</li>
- </ul>
-
- <img src="../../../assets/images/CollectionBoundary.png"></img>
-
- ## Examples
-
- <ul>
- <li>[Visualizing a CollectionBoundary](../../examples/#boundaries_CollectionBoundary)</li>
- <li>[Visualizing a CollectionBoundary hierarchy](../../examples/#boundaries_CollectionBoundary_hierarchy)</li>
- </ul>
-
- ## Usage
-
- Let's create a {{#crossLink "Collection"}}{{/crossLink}} that contains two {{#crossLink "Entity"}}Entities{{/crossLink}}:
-
- ````javascript
- var entity = new xeogl.Entity({
-        geometry: new xeogl.BoxGeometry(),
-        transform: new xeogl.Translate({
-            xyz: [-5, 0, 0]
-        })
-  });
-
- var entity2 = new xeogl.Entity({
-        geometry: new xeogl.BoxGeometry(),
-        transform: new xeogl.Translate({
-            xyz: [0, -5, 0]
-        })
-  });
-
- var collection = new xeogl.Collection({
-    components: [
-        entity1,
-        entity2
-    ]
- });
- ````
- Now we'll create a {{#crossLink "CollectionBoundary"}}{{/crossLink}} that provides
- a World-space {{#crossLink "Boundary3D"}}{{/crossLink}} that will dynamically fit to the collective World-space boundary of
- the {{#crossLink "Entity"}}Entities{{/crossLink}}:
-
- ````javascript
- var collectionBoundary = new xeogl.CollectionBoundary({
-    collection: collection1
- });
-
- var worldBoundary = collectionBoundary.worldBoundary;
- ````
- The {{#crossLink "Boundary3D"}}{{/crossLink}}
- will automatically update whenever we add, remove or update any Components within the {{#crossLink "Collection"}}{{/crossLink}}
- that have World-space boundaries.
-
- We can subscribe to updates on it like so:
-
- ````javascript
- worldBoundary.on("updated", function() {
-     obb = worldBoundary.obb;
-     aabb = worldBoundary.aabb;
-     center = worldBoundary.center;
-     //...
- });
- ````
-
- Now, if we now remove one of our {{#crossLink "Entity"}}Entities{{/crossLink}} from our {{#crossLink "Collection"}}{{/crossLink}},
- the {{#crossLink "Boundary3D"}}{{/crossLink}} will fire our update handler:
-
- ````javascript
- collection1.add(myEntity);
- ````
-
- @class CollectionBoundary
- @module xeogl
- @submodule boundaries
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this CollectionBoundary within the
- default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} CollectionBoundary configuration
- @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this CollectionBoundary.
- @param [cfg.collection=null] {Collection} A {{#crossLink "Collection"}}Collection{{/crossLink}} to fit the {{#crossLink "CollectionBoundary/worldBoundary:property"}}{{/crossLink}} to. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this CollectionBoundary.
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    xeogl.CollectionBoundary = xeogl.Component.extend({
-
-        type: "xeogl.CollectionBoundary",
-
-        _init: function (cfg) {
-
-            this._onAdded = {};
-            this._onUpdated = {};
-            this._onRemoved = {};
-
-            this._aabb = null;
-            this._aabbDirty = false;
-            this._worldBoundary = null;
-
-            this.collection = cfg.collection;
-        },
-
-        _props: {
-
-            /**
-             * The {{#crossLink "Collection"}}{{/crossLink}} attached to this CollectionBoundary.
-             *
-             * Fires a {{#crossLink "CollectionBoundary/collection:event"}}{{/crossLink}} event on change.
-             *
-             * @property collection
-             * @type Collection
-             */
-            collection: {
-
-                set: function (value) {
-
-                    var self = this;
-
-                    this._attach({
-                        name: "collection",
-                        type: "xeogl.Collection",
-                        component: value, // Converts value from ID to instance if necessary
-                        on: {
-                            added: function (component) {
-                                self._added(component);
-                            },
-                            removed: function (component) {
-                                self._removed(component);
-                            }
-                        },
-                        onAttached: function (collection) {
-                            collection.iterate(self._bind, self);
-                            self._setAABBDirty();
-                        },
-                        onDetached: function (collection) {
-                            collection.iterate(self._unbind, self);
-                        }
-                    });
-
-                    this._setAABBDirty();
-                },
-
-                get: function () {
-                    return this._attached.collection;
-                }
-            },
-
-            /**
-             * World-space 3D boundary enclosing all the components contained in {{#crossLink "CollectionBoundary/collection:property"}}{{/crossLink}}.
-             *
-             * If you call {{#crossLink "Component/destroy:method"}}{{/crossLink}} on this boundary, then
-             * this property will be assigned to a fresh {{#crossLink "Boundary3D"}}{{/crossLink}} instance next
-             * time you reference it.
-             *
-             * @property worldBoundary
-             * @type Boundary3D
-             * @final
-             */
-            worldBoundary: {
-
-                get: function () {
-
-                    if (!this._worldBoundary) {
-
-                        var self = this;
-
-                        this._worldBoundary = new xeogl.Boundary3D(this.scene, {
-
-                            getDirty: function () {
-                                if (self._aabbDirty) {
-                                    self._buildAABB();
-                                    self._aabbDirty = false;
-                                    return true;
-                                }
-                                return false;
-                            },
-
-                            getAABB: function () {
-                                return self._aabb;
-                            }
-                        });
-
-                        this._worldBoundary.on("destroyed",
-                            function () {
-                                self._worldBoundary = null;
-                            });
-                    }
-
-                    return this._worldBoundary;
-                }
-            }
-        },
-
-        _added: function (c) {
-            if (c.worldBoundary) {
-                this._bind(c);
-            }
-            if (!this._aabbDirty) {
-                this._setAABBDirty();
-            }
-        },
-
-        _removed: function (c) {
-            if (c.worldBoundary) {
-                this._unbind(c);
-            }
-            if (!this._aabbDirty) {
-                this._setAABBDirty();
-            }
-        },
-
-        _bind: function (c) {
-            var worldBoundary = c.worldBoundary;
-            if (!worldBoundary) {
-                return;
-            }
-            this._onUpdated[c.id] = worldBoundary.on("updated", this._updated, this);
-        },
-
-        _updated: function () {
-            if (!this._aabbDirty) {
-                this._setAABBDirty();
-            }
-        },
-
-        _unbind: function (c) {
-            var worldBoundary = c.worldBoundary;
-            if (!worldBoundary) {
-                return;
-            }
-            worldBoundary.off(this._onUpdated[c.id]);
-            delete this._onUpdated[c.id];
-        },
-
-        _setAABBDirty: function () {
-            this._aabbDirty = true;
-            if (this._worldBoundary) {
-                this._worldBoundary.fire("updated", true);
-            }
-        },
-
-        _buildAABB: function () {
-
-            if (!this._aabb) {
-                this._aabb = xeogl.math.AABB3();
-            }
-
-            var xmin = 100000;
-            var ymin = 100000;
-            var zmin = 100000;
-            var xmax = -100000;
-            var ymax = -100000;
-            var zmax = -100000;
-
-            var component;
-            var worldBoundary;
-            var aabb;
-            var min;
-            var max;
-
-            var collection = this.collection;
-
-            if (collection) {
-
-                var components = collection.components;
-
-                for (var componentId in components) {
-                    if (components.hasOwnProperty(componentId)) {
-
-                        component = components[componentId];
-
-                        worldBoundary = component.worldBoundary;
-                        if (worldBoundary) {
-
-                            aabb = worldBoundary.aabb;
-                            min = aabb.min;
-                            max = aabb.max;
-
-                            if (min[0] < xmin) {
-                                xmin = min[0];
-                            }
-
-                            if (min[1] < ymin) {
-                                ymin = min[1];
-                            }
-
-                            if (min[2] < zmin) {
-                                zmin = min[2];
-                            }
-
-                            if (max[0] > xmax) {
-                                xmax = max[0];
-                            }
-
-                            if (max[1] > ymax) {
-                                ymax = max[1];
-                            }
-
-                            if (max[2] > zmax) {
-                                zmax = max[2];
-                            }
-                        }
-                    }
-                }
-            }
-
-            this._aabb.min[0] = xmin;
-            this._aabb.min[1] = ymin;
-            this._aabb.min[2] = zmin;
-            this._aabb.max[0] = xmax;
-            this._aabb.max[1] = ymax;
-            this._aabb.max[2] = zmax;
-        },
-
-        _getJSON: function () {
-            var json = {};
-            if (this.collection) {
-                json.collection = this.collection.id
-            }
-            return json;
-        },
-
-        _destroy: function () {
-
-            this.collection = null; // Unsubscribes from worldBoundary updates on Collection members
-
-            if (this._worldBoundary) {
-                this._worldBoundary.destroy();
-            }
-        }
-    });
-
-})
-();
 ;/**
  * Modelling transform components.
  *
@@ -35634,31 +40177,27 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  */;/**
  A **Transform** is a modelling, viewing or projection transformation.
 
- <ul>
- <li>Sub-classes of Transform include: {{#crossLink "Translate"}}{{/crossLink}},
+ ## Overview
+
+ * Sub-classes of Transform include: {{#crossLink "Translate"}}{{/crossLink}},
  {{#crossLink "Scale"}}{{/crossLink}}, {{#crossLink "Rotate"}}{{/crossLink}}, {{#crossLink "Quaternion"}}{{/crossLink}},
  {{#crossLink "Lookat"}}{{/crossLink}}, {{#crossLink "Perspective"}}{{/crossLink}}, {{#crossLink "Frustum"}}{{/crossLink}}
- and {{#crossLink "Ortho"}}{{/crossLink}}.</li>
- <li>Instances of {{#crossLink "Transform"}}{{/crossLink}} and its sub-classes may be connected into hierarchies.</li>
+ and {{#crossLink "Ortho"}}{{/crossLink}}.
+ * Instances of {{#crossLink "Transform"}}{{/crossLink}} and its sub-classes may be connected into hierarchies.
 
- <li>When an {{#crossLink "Entity"}}{{/crossLink}} or {{#crossLink "Model"}}{{/crossLink}} is connected to a leaf {{#crossLink "Transform"}}{{/crossLink}}
+ * When an {{#crossLink "Entity"}}{{/crossLink}} or {{#crossLink "Model"}}{{/crossLink}} is connected to a leaf {{#crossLink "Transform"}}{{/crossLink}}
  within a {{#crossLink "Transform"}}{{/crossLink}} hierarchy, it will be transformed by each {{#crossLink "Transform"}}{{/crossLink}}
- on the path up to the root, in that order.</li>
- <li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transform create within xeogl's shaders.</li>
- </ul>
+ on the path up to the root, in that order.
 
  <img src="../../../assets/images/Transform.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Modelling transform hierarchy](../../examples/#transforms_model_hierarchy)</li>
- <li>[Attaching transforms to Models, via constructor](../../examples/#importing_gltf_techniques_configTransform)</li>
- <li>[Attaching transforms to Models, via property](../../examples/#importing_gltf_techniques_attachTransform)</li>
- </ul>
+ * [Modelling transform hierarchy](../../examples/#transforms_entity_transformHierarchy)
+ * [Attaching transforms to Models, via constructor](../../examples/#transforms_model_configureTransform)
+ * [Attaching transforms to Models, via property](../../examples/#transforms_model_attachTransform)
 
  ## Usage
-
 
  In this example we'll create the table shown below, which consists of five {{#crossLink "Entity"}}Entities{{/crossLink}}
  that share a {{#crossLink "BoxGeometry"}}{{/crossLink}} and each connect to a different leaf within a hierarchy of
@@ -36091,24 +40630,21 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
 })();
 ;/**
- A **Rotate** rotates associated {{#crossLink "Entity"}}Entities{{/crossLink}} or {{#crossLink "Model"}}Models{{/crossLink}} about an axis vector.
+ A **Rotate** is a {{#crossLink "Transform"}}{{/crossLink}} that rotates associated {{#crossLink "Entity"}}Entities{{/crossLink}} or {{#crossLink "Model"}}Models{{/crossLink}} about an axis vector.
 
- <ul>
- <li>Rotate is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}</li>
- <li>Instances of {{#crossLink "Transform"}}{{/crossLink}} and its sub-classes may be connected into hierarchies.</li>
- <li>When an {{#crossLink "Entity"}}{{/crossLink}} or {{#crossLink "Model"}}{{/crossLink}} is connected to a leaf {{#crossLink "Transform"}}{{/crossLink}}
+ ## Overview
+
+ * Instances of {{#crossLink "Transform"}}{{/crossLink}} and its sub-classes may be connected into hierarchies.
+ * When an {{#crossLink "Entity"}}{{/crossLink}} or {{#crossLink "Model"}}{{/crossLink}} is connected to a leaf {{#crossLink "Transform"}}{{/crossLink}}
  within a {{#crossLink "Transform"}}{{/crossLink}} hierarchy, it will be transformed by each {{#crossLink "Transform"}}{{/crossLink}}
- on the path up to the root, in that order.</li>
- <li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transform create within xeogl's shaders.</li>
- </ul>
+ on the path up to the root, in that order.
+
 
  <img src="../../../assets/images/Rotate.png"></img>
 
  ## Examples
 
- <ul>
- <li>Modeling transform hierarchy](../../examples/#transforms_model_hierarchy)</li>
- </ul>
+ * [Modeling transform hierarchy](../../examples/#transforms_entity_transformHierarchy)
 
  ## Usage
 
@@ -36202,6 +40738,10 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         },
 
         _update: function () {
+            if (this._xyz[0] === 0 && this._xyz[1] === 0 && this._xyz[2] === 0) {
+                this.warn("Rotation axis is [0,0,0] - won't build matrix.");
+                return;
+            }
             this.matrix = xeogl.math.rotationMat4v(this._angle * xeogl.math.DEGTORAD, this._xyz, this._matrix);
         },
 
@@ -36284,22 +40824,20 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
 })();
 ;/**
- A **Quaternion** applies a rotation transformation to associated {{#crossLink "Entity"}}Entities{{/crossLink}} or {{#crossLink "Model"}}Models{{/crossLink}}.
+ A **Quaternion** is a {{#crossLink "Transform"}}{{/crossLink}} that rotates associated {{#crossLink "Entity"}}Entities{{/crossLink}} or {{#crossLink "Model"}}Models{{/crossLink}}.
 
- <ul>
- <li>Quaternion is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}.</li>
- <li>Instances of {{#crossLink "Transform"}}{{/crossLink}} and its sub-classes may be connected into hierarchies.</li>
- <li>When an {{#crossLink "Entity"}}{{/crossLink}} or {{#crossLink "Model"}}{{/crossLink}} is connected to a
+ ## Overview
+
+ * Instances of {{#crossLink "Transform"}}{{/crossLink}} and its sub-classes may be connected into hierarchies.
+ * When an {{#crossLink "Entity"}}{{/crossLink}} or {{#crossLink "Model"}}{{/crossLink}} is connected to a
  leaf {{#crossLink "Transform"}}{{/crossLink}} within a {{#crossLink "Transform"}}{{/crossLink}} hierarchy, it will be
- transformed by each {{#crossLink "Transform"}}{{/crossLink}} on the path up to the root, in that order.</li>
- <li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transform create within xeogl's shaders.</li>
- </ul>
+ transformed by each {{#crossLink "Transform"}}{{/crossLink}} on the path up to the root, in that order.
 
  <img src="../../../assets/images/Quaternion.png"></img>
 
- <ul>
- <li>Viewing transform hierarchy](../../examples/#transforms_view_hierarchy)</li>
- </ul>
+ ## Examples
+
+ * [Viewing transform hierarchy](../../examples/#transforms_view_hierarchy)
 
  ## Usage
 
@@ -36310,34 +40848,34 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  ````javascript
  var quaternion = new xeogl.Quaternion({
     xyzw: [0, 0, 0, 1], // Unit quaternion
-});
+ });
 
  var translate1 = new xeogl.Translate({
    parent: quaternion,
    xyz: [-5, 0, 0] // Translate along -X axis
-});
+ });
 
  var translate2 = new xeogl.Translate({
    parent: quaternion,
    xyz: [5, 0, 0] // Translate along +X axis
-});
+ });
 
  var scale = new xeogl.Scale({
    parent: translate2,
    xyz: [1, 2, 1] // Scale x2 on Y axis
-});
+ });
 
  var geometry = new xeogl.BoxGeometry();
 
  var entity1 = new xeogl.Entity(scene, {
    transform: translate1,
    geometry: geometry
-});
+ });
 
  var entity2 = new xeogl.Entity({
    transform: scale,
    geometry: geometry
-});
+ });
  ````
 
  Since everything in xeogl is dynamically editable, we can restructure the transform hierarchy at any time.
@@ -36348,7 +40886,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  var scale2 = new xeogl.Scale({
    parent: translate1,
    xyz: [1, 1, 2] // Scale x2 on Z axis
-});
+ });
 
  Entity2.transform = scale2;
  ````
@@ -36357,8 +40895,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  ````javascript
  // Rotate 0.2 degrees about Y-axis on each frame
- scene.on("tick",
- function(e) {
+ scene.on("tick", function(e) {
         quaternion.rotate([0, 1, 0, 0.2]);
     });
  ````
@@ -36465,25 +41002,21 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         }
     });
 })();;/**
- A **Scale** applies a scaling transformation to associated {{#crossLink "Entity"}}Entities{{/crossLink}} or {{#crossLink "Model"}}Models{{/crossLink}}.
+ A **Scale** is a {{#crossLink "Transform"}}{{/crossLink}} that scales associated {{#crossLink "Entity"}}Entities{{/crossLink}} or {{#crossLink "Model"}}Models{{/crossLink}}.
 
- <ul>
- <li>Scale is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}</li>
- <li>Instances of {{#crossLink "Transform"}}{{/crossLink}} and its sub-classes may be connected into hierarchies.</li>
- <li>When an {{#crossLink "Entity"}}{{/crossLink}} or {{#crossLink "Model"}}{{/crossLink}} is connected to a leaf {{#crossLink "Transform"}}{{/crossLink}}
+ ## Overview
+
+ * Instances of {{#crossLink "Transform"}}{{/crossLink}} and its sub-classes may be connected into hierarchies.
+ * When an {{#crossLink "Entity"}}{{/crossLink}} or {{#crossLink "Model"}}{{/crossLink}} is connected to a leaf {{#crossLink "Transform"}}{{/crossLink}}
  within a {{#crossLink "Transform"}}{{/crossLink}} hierarchy, it will be transformed by each {{#crossLink "Transform"}}{{/crossLink}}
- on the path up to the root, in that order.</li>
- <li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transform create within xeogl's shaders.</li>
- </ul>
+ on the path up to the root, in that order.
 
  <img src="../../../assets/images/Scale.png"></img>
 
  ## Examples
 
- <ul>
- <li>Modeling transform hierarchy](../../examples/#transforms_model_hierarchy)</li>
- <li>Projection transform hierarchy](../../examples/#transforms_project_hierarchy)</li>
- </ul>
+ * [Modeling transform hierarchy](../../examples/#transforms_entity_transformHierarchy)
+ * [Projection transform hierarchy](../../examples/#transforms_camera_project_transformHierarchy)
 
  ## Usage
 
@@ -36546,6 +41079,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
     rotate.angle += 0.2;
  });
  ````
+
  @class Scale
  @module xeogl
  @submodule transforms
@@ -36623,24 +41157,20 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
 })();
 ;/**
- A **Translate** translates associated {{#crossLink "Entity"}}Entities{{/crossLink}} or {{#crossLink "Model"}}Models{{/crossLink}}.
+ A **Translate** is a {{#crossLink "Transform"}}{{/crossLink}} that translates associated {{#crossLink "Entity"}}Entities{{/crossLink}} or {{#crossLink "Model"}}Models{{/crossLink}}.
 
- <ul>
- <li>Translate is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}.</li>
- <li>Instances of {{#crossLink "Transform"}}{{/crossLink}} and its sub-classes may be connected into hierarchies.</li>
- <li>When an {{#crossLink "Entity"}}{{/crossLink}} or {{#crossLink "Model"}}{{/crossLink}} is connected to a leaf {{#crossLink "Transform"}}{{/crossLink}}
+ ## Overview
+
+ * Instances of {{#crossLink "Transform"}}{{/crossLink}} and its sub-classes may be connected into hierarchies.
+ * When an {{#crossLink "Entity"}}{{/crossLink}} or {{#crossLink "Model"}}{{/crossLink}} is connected to a leaf {{#crossLink "Transform"}}{{/crossLink}}
  within a {{#crossLink "Transform"}}{{/crossLink}} hierarchy, it will be transformed by each {{#crossLink "Transform"}}{{/crossLink}}
- on the path up to the root, in that order.</li>
- <li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transform create within xeogl's shaders.</li>
- </ul>
+ on the path up to the root, in that order.
 
  <img src="../../../assets/images/Translate.png"></img>
 
  ## Examples
 
- <ul>
- <li>Modeling transform hierarchy](../../examples/#transforms_model_hierarchy)</li>
- </ul>
+ * [Modeling transform hierarchy](../../examples/#transforms_entity_transformHierarchy)
 
  ## Usage
 
@@ -36782,70 +41312,69 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
 })();
 ;/**
- A **Billboard** causes associated {{#crossLink "Entity"}}Entities{{/crossLink}} to be always oriented towards the Camera.
+ A **Billboard** is a modelling {{#crossLink "Transform"}}{{/crossLink}} that causes associated {{#crossLink "Entity"}}Entities{{/crossLink}} to be always oriented towards the Camera.
 
- <ul>
- <li>**Spherical** billboards are free to rotate their {{#crossLink "Entity"}}Entities{{/crossLink}} in any direction and always face the {{#crossLink "Camera"}}{{/crossLink}} perfectly.</li>
- <li>**Cylindrical** billboards rotate their {{#crossLink "Entity"}}Entities{{/crossLink}} towards the {{#crossLink "Camera"}}{{/crossLink}}, but only around the Y-axis.</li>
- <li>A Billboard will cause {{#crossLink "Scale"}}{{/crossLink}} transformations to have no effect on its {{#crossLink "Entity"}}Entities{{/crossLink}}</li>
- </ul>
+ <a href="../../examples/#transforms_billboard_spherical"><img src="http://i.giphy.com/l3vR13LcnTuQGMInu.gif"></img></a>
+
+ ## Overview
+
+ * **Spherical** billboards are free to rotate their {{#crossLink "Entity"}}Entities{{/crossLink}} in any direction and always face the {{#crossLink "Camera"}}{{/crossLink}} perfectly.
+ * **Cylindrical** billboards rotate their {{#crossLink "Entity"}}Entities{{/crossLink}} towards the {{#crossLink "Camera"}}{{/crossLink}}, but only about the Y-axis.
+ * A Billboard will cause {{#crossLink "Scale"}}{{/crossLink}} transformations to have no effect on its {{#crossLink "Entity"}}Entities{{/crossLink}}
 
  <img src="../../../assets/images/Billboard.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Spherical billboards](../../examples/#billboards_spherical)</li>
- <li>[Cylindrical billboards](../../examples/#billboards_cylindrical)</li>
- <li>[Clouds using billboards](../../examples/#billboards_spherical_clouds)</li>
- <li>[Billboards with video textures](../../examples/#billboards_spherical_video)</li>
- </ul>
+ * [Spherical billboards](../../examples/#transforms_billboard_spherical)
+ * [Cylindrical billboards](../../examples/#transforms_billboard_cylindrical)
+ * [Clouds using billboards](../../examples/#transforms_billboard_spherical_clouds)
+ * [Spherical billboards with video textures](../../examples/#transforms_billboard_spherical_video)
 
  ## Usage
 
- Let's create 1000 {{#crossLink "Entity"}}Entities{{/crossLink}} that always face towards the viewpoint as we orbit the {{#crossLink "Camera"}}{{/crossLink}} about the X and Y axis:
+ Let's create 1000 randomly-positioned {{#crossLink "Entity"}}Entities{{/crossLink}} that always face towards the
+ viewpoint as we orbit the {{#crossLink "Camera"}}{{/crossLink}} about the X and Y axis:
 
  ```` javascript
- // Create 1000 Entities in default Scene with shared Geometry,
- // PhongMaterial and Billboard
+ // Create 1000 Entities in default Scene with shared Geometry, PhongMaterial and Billboard
 
  var geometry = new xeogl.Geometry({
-        primitive: "triangles",
-        positions: [3, 3, 0, -3, 3, 0, -3, -3, 0, 3, -3, 0],
-        normals: [-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0],
-        uv: [1, 1, 0, 1, 0, 0, 1, 0],
-        indices: [2, 1, 0, 3, 2, 0] // Ensure these will be front-faces
-    });
+     primitive: "triangles",
+     positions: [3, 3, 0, -3, 3, 0, -3, -3, 0, 3, -3, 0],
+     normals: [-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0],
+     uv: [1, 1, 0, 1, 0, 0, 1, 0],
+     indices: [2, 1, 0, 3, 2, 0] // Ensure these will be front-faces
+ });
 
  var material = new xeogl.PhongMaterial({
-        emissiveMap: new xeogl.Texture({
-            src: "textures/diffuse/teapot.jpg"
-        })
-    });
+     emissiveMap: new xeogl.Texture({
+         src: "textures/diffuse/teapot.jpg"
+     })
+ });
 
  var billboard = new xeogl.Billboard({
-        spherical: true
-    });
+     spherical: true
+ });
 
  for (var i = 0; i < 1000; i++) {
-        new xeogl.Entity({
-            geometry: geometry,
-            material: material,
-            billboard: billboard,
-            transform: new xeogl.Translate({
-                xyz: [Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50]
-            })
-        });
-  }
+     new xeogl.Entity({
+         geometry: geometry,
+         material: material,
+         billboard: billboard,
+         transform: new xeogl.Translate({
+             xyz: [Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50]
+         })
+     });
+ }
 
- // Move eye back to see everything, then orbit Camera
+ // Move eye back to see everything, then orbit the Camera
 
  var scene = xeogl.scene;
 
  scene.camera.view.zoom(120);
 
- scene.on("tick",
-     function () {
+ scene.on("tick", function () {
 
           var view = scene.camera.view;
 
@@ -36983,13 +41512,13 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  A **Stationary** disables the effect of {{#crossLink "Lookat"}}view transform{{/crossLink}} translations for
  associated {{#crossLink "Entity"}}Entities{{/crossLink}} or {{#crossLink "Model"}}Models{{/crossLink}}.
 
+ ## Overview
+
  <img src="../../../assets/images/Stationary.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Custom Skybox using a Stationary component](../../examples/#skyboxes_customSkybox)</li>
- </ul>
+ * [Custom Skybox using a Stationary component](../../examples/#skyboxes_skybox_custom)
 
  ## Usage
 
@@ -37102,30 +41631,26 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
 })();
 ;/**
- A **Frustum** defines a perspective projection as a frustum-shaped view volume.
+ A **Frustum** is a {{#crossLink "Transform"}}{{/crossLink}} that defines a perspective projection as a frustum-shaped view volume.
 
- <ul>
- <li>Frustum is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}.</li>
- <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
- {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>A Frustum lets us explicitly set the positions of the left, right, top, bottom, near and far planes, which is useful
- for asymmetrical view volumes, such as those used for stereo viewing.</li>
- <li>An Frustum's {{#crossLink "Frustum/near:property"}}{{/crossLink}} and {{#crossLink "Frustum/far:property"}}{{/crossLink}} properties
- specify the distances to the WebGL clipping planes.</li>
- <li>Use {{#crossLink "Ortho"}}{{/crossLink}} if you just want to specify the X,Y frustum extents with a single scale factor,
- ie. without individually specifying the distance to each frustum plane.</li>
- <li>Use {{#crossLink "Perspective"}}{{/crossLink}} if you need perspective projection.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Ortho components create within xeogl's shaders.</li>
- </ul>
+ ## Overview
+
+ * {{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
+ {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ * A Frustum lets us explicitly set the positions of the left, right, top, bottom, near and far planes, which is useful
+ for asymmetrical view volumes, such as those used for stereo viewing.
+ * An Frustum's {{#crossLink "Frustum/near:property"}}{{/crossLink}} and {{#crossLink "Frustum/far:property"}}{{/crossLink}} properties
+ specify the distances to the WebGL clipping planes.
+ * Use {{#crossLink "Ortho"}}{{/crossLink}} if you just want to specify the X,Y frustum extents with a single scale factor,
+ ie. without individually specifying the distance to each frustum plane.
+ * Use {{#crossLink "Perspective"}}{{/crossLink}} if you need perspective projection.
 
  <img src="../../../assets/images/Frustum.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Camera with frustum projection](../../examples/#transforms_project_frustum)</li>
- <li>[Stereo viewing with frustum projection](../../examples/#effects_stereo)</li>
- </ul>
+ * [Camera with frustum projection](../../examples/#transforms_project_frustum)
+ * [Stereo viewing with frustum projection](../../examples/#effects_stereo)
 
  ## Usage
 
@@ -37417,24 +41942,20 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
     });
 })();
 ;/**
- A **Lookat** defines a viewing transform as an {{#crossLink "Lookat/eye:property"}}eye{{/crossLink}} position, a
+ A **Lookat** is a {{#crossLink "Transform"}}{{/crossLink}} that defines a viewing transform as an {{#crossLink "Lookat/eye:property"}}eye{{/crossLink}} position, a
  {{#crossLink "Lookat/look:property"}}look{{/crossLink}} position and an {{#crossLink "Lookat/up:property"}}up{{/crossLink}}
  vector.
 
- <ul>
- <li>Lookat is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}.</li>
- <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with projection transforms such as
- {{#crossLink "Perspective"}}Perspective{{/crossLink}}, to define viewpoints on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Lookat components create within xeogl's shaders.</li>
- </ul>
+ ## Overview
+
+ * {{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with projection transforms such as
+ {{#crossLink "Perspective"}}Perspective{{/crossLink}}, to define viewpoints on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  <img src="../../../assets/images/Lookat.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Camera with Lookat and Perspective](../../examples/#transforms_project_perspective)</li>
- </ul>
+ * [Camera with Lookat and Perspective](../../examples/#transforms_project_perspective)
 
  ## Usage
 
@@ -37473,7 +41994,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  @param [cfg.eye=[0,0,10]] {Array of Number} Eye position.
  @param [cfg.look=[0,0,0]] {Array of Number} The position of the point-of-interest we're looking at.
  @param [cfg.up=[0,1,0]] {Array of Number} The "up" vector.
- @param [cfg.gimbalLockY=false] {Boolean} Whether Y-axis rotation is about the World-space Y-axis or the View-space Y-axis.
+ @param [cfg.gimbalLockY=false] {Boolean} Effectively whether Y-axis rotation is about the World-space Y-axis or the View-space Y-axis.
  @extends Transform
  @author xeolabs / http://xeolabs.com/
  */
@@ -37481,12 +42002,14 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
     "use strict";
 
-    var tempVec3 = xeogl.math.vec3();
-    var tempVec3b = xeogl.math.vec3();
-    var tempVec3c = xeogl.math.vec3();
-    var tempVec3d = xeogl.math.vec3();
-    var tempVec3e = xeogl.math.vec3();
-    var tempVec3f = xeogl.math.vec3();
+    var math = xeogl.math;
+
+    var tempVec3 = math.vec3();
+    var tempVec3b = math.vec3();
+    var tempVec3c = math.vec3();
+    var tempVec3d = math.vec3();
+    var tempVec3e = math.vec3();
+    var tempVec3f = math.vec3();
 
     xeogl.Lookat = xeogl.Transform.extend({
 
@@ -37496,9 +42019,9 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
             this._super(cfg);
 
-            this._eye = xeogl.math.vec3([0, 0, 10.0]);
-            this._look = xeogl.math.vec3([0, 0, 0]);
-            this._up = xeogl.math.vec3([0, 1, 0]);
+            this._eye = math.vec3([0, 0, 10.0]);
+            this._look = math.vec3([0, 0, 0]);
+            this._up = math.vec3([0, 1, 0]);
 
             this.eye = cfg.eye;
             this.look = cfg.look;
@@ -37506,9 +42029,18 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             this.gimbalLockY = cfg.gimbalLockY;
         },
 
-        _update: function () {
-            this.matrix = xeogl.math.lookAtMat4v(this._eye, this._look, this._up, this._matrix);
-        },
+        _update: (function () {
+
+            var lookatMat = math.mat4();
+
+            return function () {
+
+                math.lookAtMat4v(this._eye, this._look, this._up, lookatMat);
+
+                this.matrix = lookatMat;
+            };
+        })(),
+
 
         /**
          * Rotate 'eye' about 'look', around the 'up' vector
@@ -37518,18 +42050,18 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         rotateEyeY: function (angle) {
 
             // Get 'look' -> 'eye' vector
-            var eye2 = xeogl.math.subVec3(this._eye, this._look, tempVec3);
+            var eye2 = math.subVec3(this._eye, this._look, tempVec3);
 
-            var mat = xeogl.math.rotationMat4v(angle * 0.0174532925, this._gimbalLockY ? xeogl.math.vec3([0, 1, 0]) : this._up);
-            eye2 = xeogl.math.transformPoint3(mat, eye2, tempVec3b);
+            var mat = math.rotationMat4v(angle * 0.0174532925, this._gimbalLockY ? math.vec3([0, 1, 0]) : this._up);
+            eye2 = math.transformPoint3(mat, eye2, tempVec3b);
 
             // Set eye position as 'look' plus 'eye' vector
-            this.eye = xeogl.math.addVec3(eye2, this._look, tempVec3c);
+            this.eye = math.addVec3(eye2, this._look, tempVec3c);
 
             if (this._gimbalLockY) {
 
                 // Rotate 'up' vector about orthogonal vector
-                this.up = xeogl.math.transformPoint3(mat, this._up, tempVec3d);
+                this.up = math.transformPoint3(mat, this._up, tempVec3d);
             }
         },
 
@@ -37541,20 +42073,20 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         rotateEyeX: function (angle) {
 
             // Get 'look' -> 'eye' vector
-            var eye2 = xeogl.math.subVec3(this._eye, this._look, tempVec3);
+            var eye2 = math.subVec3(this._eye, this._look, tempVec3);
 
             // Get orthogonal vector from 'eye' and 'up'
-            var left = xeogl.math.cross3Vec3(xeogl.math.normalizeVec3(eye2, tempVec3b), xeogl.math.normalizeVec3(this._up, tempVec3c));
+            var left = math.cross3Vec3(math.normalizeVec3(eye2, tempVec3b), math.normalizeVec3(this._up, tempVec3c));
 
             // Rotate 'eye' vector about orthogonal vector
-            var mat = xeogl.math.rotationMat4v(angle * 0.0174532925, left);
-            eye2 = xeogl.math.transformPoint3(mat, eye2, tempVec3d);
+            var mat = math.rotationMat4v(angle * 0.0174532925, left);
+            eye2 = math.transformPoint3(mat, eye2, tempVec3d);
 
             // Set eye position as 'look' plus 'eye' vector
-            this.eye = xeogl.math.addVec3(eye2, this._look, tempVec3e);
+            this.eye = math.addVec3(eye2, this._look, tempVec3e);
 
             // Rotate 'up' vector about orthogonal vector
-            this.up = xeogl.math.transformPoint3(mat, this._up, tempVec3f);
+            this.up = math.transformPoint3(mat, this._up, tempVec3f);
         },
 
         /**
@@ -37567,14 +42099,14 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         rotateLookY: function (angle) {
 
             // Get 'look' -> 'eye' vector
-            var look2 = xeogl.math.subVec3(this._look, this._eye, tempVec3);
+            var look2 = math.subVec3(this._look, this._eye, tempVec3);
 
             // Rotate 'look' vector about 'up' vector
-            var mat = xeogl.math.rotationMat4v(angle * 0.0174532925, this._up);
-            look2 = xeogl.math.transformPoint3(mat, look2, tempVec3b);
+            var mat = math.rotationMat4v(angle * 0.0174532925, this._up);
+            look2 = math.transformPoint3(mat, look2, tempVec3b);
 
             // Set look position as 'look' plus 'eye' vector
-            this.look = xeogl.math.addVec3(look2, this._eye, tempVec3c);
+            this.look = math.addVec3(look2, this._eye, tempVec3c);
         },
 
         /**
@@ -37585,20 +42117,20 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         rotateLookX: function (angle) {
 
             // Get 'look' -> 'eye' vector
-            var look2 = xeogl.math.subVec3(this._look, this._eye, tempVec3);
+            var look2 = math.subVec3(this._look, this._eye, tempVec3);
 
             // Get orthogonal vector from 'eye' and 'up'
-            var left = xeogl.math.cross3Vec3(xeogl.math.normalizeVec3(look2, tempVec3b), xeogl.math.normalizeVec3(this._up, tempVec3c));
+            var left = math.cross3Vec3(math.normalizeVec3(look2, tempVec3b), math.normalizeVec3(this._up, tempVec3c));
 
             // Rotate 'look' vector about orthogonal vector
-            var mat = xeogl.math.rotationMat4v(angle * 0.0174532925, left);
-            look2 = xeogl.math.transformPoint3(mat, look2, tempVec3d);
+            var mat = math.rotationMat4v(angle * 0.0174532925, left);
+            look2 = math.transformPoint3(mat, look2, tempVec3d);
 
             // Set eye position as 'look' plus 'eye' vector
-            this.look = xeogl.math.addVec3(look2, this._eye, tempVec3e);
+            this.look = math.addVec3(look2, this._eye, tempVec3e);
 
             // Rotate 'up' vector about orthogonal vector
-            this.up = xeogl.math.transformPoint3(mat, this._up, tempVecf);
+            this.up = math.transformPoint3(mat, this._up, tempVecf);
         },
 
         /**
@@ -37608,7 +42140,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         pan: function (pan) {
 
             // Get 'look' -> 'eye' vector
-            var eye2 = xeogl.math.subVec3(this._eye, this._look, tempVec3);
+            var eye2 = math.subVec3(this._eye, this._look, tempVec3);
 
             // Building this pan vector
             var vec = [0, 0, 0];
@@ -37618,9 +42150,9 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                 // Pan along orthogonal vector to 'look' and 'up'
 
-                var left = xeogl.math.cross3Vec3(xeogl.math.normalizeVec3(eye2, []), xeogl.math.normalizeVec3(this._up, tempVec3b));
+                var left = math.cross3Vec3(math.normalizeVec3(eye2, []), math.normalizeVec3(this._up, tempVec3b));
 
-                v = xeogl.math.mulVec3Scalar(left, pan[0]);
+                v = math.mulVec3Scalar(left, pan[0]);
 
                 vec[0] += v[0];
                 vec[1] += v[1];
@@ -37631,7 +42163,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                 // Pan along 'up' vector
 
-                v = xeogl.math.mulVec3Scalar(xeogl.math.normalizeVec3(this._up, tempVec3c), pan[1]);
+                v = math.mulVec3Scalar(math.normalizeVec3(this._up, tempVec3c), pan[1]);
 
                 vec[0] += v[0];
                 vec[1] += v[1];
@@ -37642,15 +42174,15 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                 // Pan along 'eye'- -> 'look' vector
 
-                v = xeogl.math.mulVec3Scalar(xeogl.math.normalizeVec3(eye2, tempVec3d), pan[2]);
+                v = math.mulVec3Scalar(math.normalizeVec3(eye2, tempVec3d), pan[2]);
 
                 vec[0] += v[0];
                 vec[1] += v[1];
                 vec[2] += v[2];
             }
 
-            this.eye = xeogl.math.addVec3(this._eye, vec, tempVec3e);
-            this.look = xeogl.math.addVec3(this._look, vec, tempVec3f);
+            this.eye = math.addVec3(this._eye, vec, tempVec3e);
+            this.look = math.addVec3(this._look, vec, tempVec3f);
         },
 
         /**
@@ -37659,19 +42191,19 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
          */
         zoom: function (delta) {
 
-            var vec = xeogl.math.subVec3(this._eye, this._look, tempVec3); // Get vector from eye to look
-            var lenLook = Math.abs(xeogl.math.lenVec3(vec, tempVec3b));    // Get len of that vector
+            var vec = math.subVec3(this._eye, this._look, tempVec3); // Get vector from eye to look
+            var lenLook = Math.abs(math.lenVec3(vec, tempVec3b));    // Get len of that vector
             var newLenLook = Math.abs(lenLook + delta);         // Get new len after zoom
 
-            var dir = xeogl.math.normalizeVec3(vec, tempVec3c);  // Get normalised vector
+            var dir = math.normalizeVec3(vec, tempVec3c);  // Get normalised vector
 
-            this.eye = xeogl.math.addVec3(this._look, xeogl.math.mulVec3Scalar(dir, newLenLook), tempVec3d);
+            this.eye = math.addVec3(this._look, math.mulVec3Scalar(dir, newLenLook), tempVec3d);
         },
 
         _props: {
 
             /**
-             * Whether Y-axis rotation is about the World-space Y-axis or the View-space Y-axis.
+             * Effectively whether Y-axis rotation is about the World-space Y-axis or the View-space Y-axis.
              *
              * Fires a {{#crossLink "Lookat/gimbalLockY:event"}}{{/crossLink}} event on change.
              *
@@ -37795,9 +42327,10 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
         _getJSON: function () {
             var json = {
-                eye: this._eye,
-                look: this._look,
-                up: this._up
+                eye: this._eye.slice(),
+                look: this._look.slice(),
+                up: this._up.slice(),
+                gimbalLockY: this._gimbalLockY
             };
             if (this._parent) {
                 json.parent = this._parent.id;
@@ -37808,30 +42341,26 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
 })();
 ;/**
- An **Ortho** component defines an orthographic projection transform.
+ An **Ortho** is a {{#crossLink "Transform"}}{{/crossLink}} that defines an orthographic projection transform.
 
- <ul>
- <li>Ortho is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}.</li>
- <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
- {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>An Ortho works like Blender's orthographic projection, where the positions of the left, right, top and bottom planes are
+ ## Overview
+
+ * {{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
+ {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ * An Ortho works like Blender's orthographic projection, where the positions of the left, right, top and bottom planes are
  implicitly specified with a single {{#crossLink "Ortho/scale:property"}}{{/crossLink}} property, which causes the frustum to be symmetrical on X and Y axis, large enough to
- contain the number of units given by {{#crossLink "Ortho/scale:property"}}{{/crossLink}}.</li>
- <li>An Ortho's {{#crossLink "Ortho/near:property"}}{{/crossLink}} and {{#crossLink "Ortho/far:property"}}{{/crossLink}} properties
- specify the distances to the WebGL clipping planes.</li>
- <li>Use {{#crossLink "Frustum"}}{{/crossLink}} if you need to individually specify the position of each of the frustum
- planes, eg. for an asymmetrical view volume, such as those used for stereo viewing.</li>
- <li>Use {{#crossLink "Perspective"}}{{/crossLink}} if you need perspective projection.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Ortho components create within xeogl's shaders.</li>
- </ul>
+ contain the number of units given by {{#crossLink "Ortho/scale:property"}}{{/crossLink}}.
+ * An Ortho's {{#crossLink "Ortho/near:property"}}{{/crossLink}} and {{#crossLink "Ortho/far:property"}}{{/crossLink}} properties
+ specify the distances to the WebGL clipping planes.
+ * Use {{#crossLink "Frustum"}}{{/crossLink}} if you need to individually specify the position of each of the frustum
+ planes, eg. for an asymmetrical view volume, such as those used for stereo viewing.
+ * Use {{#crossLink "Perspective"}}{{/crossLink}} if you need perspective projection.
 
  <img src="../../../assets/images/Ortho.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Camera with orthographic projection](../../examples/#transforms_project_ortho)</li>
- </ul>
+ * [Camera with orthographic projection](../../examples/#transforms_project_ortho)
 
  ## Usage
 
@@ -38039,23 +42568,19 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
 })();
 ;/**
- A **Perspective** component defines a perspective projection transform.
+ A **Perspective** is a {{#crossLink "Transform"}}{{/crossLink}} that defines a perspective projection transform.
 
- <ul>
- <li>Perspective is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}.</li>
- <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
- {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>Alternatively, use {{#crossLink "Ortho"}}{{/crossLink}} if you need a orthographic projection.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Perspective components create within xeogl's shaders.</li>
- </ul>
+ ## Overview
+
+ * {{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
+ {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ * Alternatively, use {{#crossLink "Ortho"}}{{/crossLink}} if you need a orthographic projection.
 
  <img src="../../../assets/images/Perspective.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Camera with perspective projection](../../examples/#transforms_project_perspective)</li>
- </ul>
+ * [Camera with perspective projection](../../examples/#transforms_project_perspective)
 
  ## Usage
 
