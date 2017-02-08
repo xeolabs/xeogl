@@ -18,7 +18,7 @@
 
  ## Examples
 
- * [Camera with orthographic projection](../../examples/#transforms_project_ortho)
+ * [Camera with orthographic projection](../../examples/#transforms_camera_project_ortho)
 
  ## Usage
 

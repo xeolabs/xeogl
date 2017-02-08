@@ -139,10 +139,9 @@
                 return this._json;
             },
             set: function (value) {
-                if (this._json !== value) {
-                    this._json = value;
-                    this._resolvePathsForCategories(["buffers", "shaders", "images", "videos"]);
-                }
+                this._json = value;
+                this._resolvePathsForCategories(["buffers", "shaders", "images", "videos"]);
+
             }
         },
 
@@ -253,7 +252,6 @@
                             break;
                         }
                     } else {
-
                         if (methodForType[type]) {
                             if (methodForType[type].call(this, entryID, description, this._state.userInfo) === false) {
                                 success = false;
@@ -268,37 +266,30 @@
                 if (this.handleLoadCompleted) {
                     this.handleLoadCompleted(success);
                 }
-
             }
         },
 
-        _loadJSONIfNeeded: {
+        _loadJSON: {
             enumerable: true,
             value: function (callback) {
                 var self = this;
                 //FIXME: handle error
-                if (!this._json) {
-                    var jsonPath = this._path;
-                    var i = jsonPath.lastIndexOf("/");
-                    this.baseURL = (i !== 0) ? jsonPath.substring(0, i + 1) : '';
-                    var jsonfile = new XMLHttpRequest();
-                    jsonfile.open("GET", jsonPath, true);
-                    jsonfile.onreadystatechange = function () {
-                        if (jsonfile.readyState === 4) {
-                            if (jsonfile.status === 200) {
-                                self.json = JSON.parse(jsonfile.responseText);
-                                if (callback) {
-                                    callback(self.json);
-                                }
+                var jsonPath = this._path;
+                var i = jsonPath.lastIndexOf("/");
+                this.baseURL = (i !== 0) ? jsonPath.substring(0, i + 1) : '';
+                var jsonfile = new XMLHttpRequest();
+                jsonfile.open("GET", jsonPath, true);
+                jsonfile.onreadystatechange = function () {
+                    if (jsonfile.readyState === 4) {
+                        if (jsonfile.status === 200) {
+                            self.json = JSON.parse(jsonfile.responseText);
+                            if (callback) {
+                                callback(self.json);
                             }
                         }
-                    };
-                    jsonfile.send(null);
-                } else {
-                    if (callback) {
-                        callback(this.json);
                     }
-                }
+                };
+                jsonfile.send(null);
             }
         },
 
@@ -307,14 +298,12 @@
             value: function (callback) {
                 var self = this;
 
-                function JSONReady(json) {
+                this._loadJSON(function (json) {
                     self.rootDescription = json;
                     if (callback) {
                         callback(this);
                     }
-                }
-
-                this._loadJSONIfNeeded(JSONReady);
+                });
             }
         },
 
@@ -349,7 +338,7 @@
             enumerable: true,
             value: function (userInfo, options) {
                 var self = this;
-                this._buildLoader(function loaderReady(reader) {
+                this._buildLoader(function(reader) {
                     var startCategory = self.getNextCategoryIndex.call(self, 0);
                     if (startCategory !== -1) {
                         self._state = {
@@ -383,17 +372,6 @@
                     this._knownURLs[this._path] = Object.keys(this._knownURLs).length;
                 }
                 return "__" + this._knownURLs[this._path];
-            }
-        },
-
-        initWithJSON: {
-            value: function (json, baseURL) {
-                this.json = json;
-                this.baseURL = baseURL;
-                if (!baseURL) {
-                    console.log("WARNING: no base URL passed to Reader:initWithJSON");
-                }
-                return this;
             }
         }
     });

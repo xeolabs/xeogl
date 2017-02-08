@@ -5,7 +5,7 @@
     /**
      A **GLTFModel** is a {{#crossLink "Model"}}{{/crossLink}} that loads itself from a <a href="https://github.com/KhronosGroup/glTF" target = "_other">glTF</a> file.
 
-     <a href="../../examples/#models_GLTFModel_gearbox"><img src="../../../assets/images/gltf/glTF_gearbox_squashed.png"></img></a>
+     <a href="../../examples/#importing_gltf_gearbox"><img src="../../../assets/images/gltf/glTF_gearbox_squashed.png"></img></a>
 
      ## Overview
 
@@ -25,16 +25,13 @@
 
      ## Examples
 
-     * [Gearbox](../../examples/#models_GLTFModel_gearbox)
-     * [Buggy](../../examples/#models_GLTFModel_buggy)
-     * [Reciprocating Saw](../../examples/#models_GLTFModel_ReciprocatingSaw)
-     * [Textured Duck](../../examples/#models_GLTFModel_duck)
-     * [GLTFModel with entity explorer UI](../../examples/#demos_ui_explorer)
-     * [Fly camera to GLTFModel entities](../../examples/#boundaries_flyToBoundary)
-     * [Ensuring individual materials on GLTFModel entities](../../examples/#models__uniqueMaterials)
-     * [Baking transform hierarchies](../../examples/#models_bakeTransforms)
-     * [Attaching transforms to GLTFModel, via constructor](../../examples/#models_configureTransform)
-     * [Attaching transforms to GLTFModel, via property](../../examples/#models_attachTransform)
+     * [glTF gearbox](../../examples/#importing_gltf_gearbox)
+     * [glTF models with PBR materials](../../examples/#importing_gltf_PBR)
+     * [glTF gearbox with entity explorer](../../examples/#importing_gltf_explorer)
+     * [Ensuring individual materials on GLTFModel entities](../../examples/#models_filter_uniqueMaterials)
+     * [Baking transform hierarchies in a GLTFModel](../../examples/#models_filter_bakeTransforms)
+     * [Attaching transforms to a GLTFModel, via constructor](../../examples/#transforms_model_configureTransform)
+     * [Attaching transforms to a GLTFModel, via property](../../examples/#transforms_model_attachTransform)
 
      @class GLTFModel
      @module xeogl

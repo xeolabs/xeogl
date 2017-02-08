@@ -13,7 +13,7 @@
 
  ## Examples
 
- * [Modeling transform hierarchy](../../examples/#transforms_model_hierarchy)
+ * [Modeling transform hierarchy](../../examples/#transforms_entity_transformHierarchy)
 
  ## Usage
 
@@ -107,6 +107,10 @@
         },
 
         _update: function () {
+            if (this._xyz[0] === 0 && this._xyz[1] === 0 && this._xyz[2] === 0) {
+                this.warn("Rotation axis is [0,0,0] - won't build matrix.");
+                return;
+            }
             this.matrix = xeogl.math.rotationMat4v(this._angle * xeogl.math.DEGTORAD, this._xyz, this._matrix);
         },
 

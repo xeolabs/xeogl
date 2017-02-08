@@ -8,7 +8,7 @@
 
  ## Examples
 
- * [Custom Skybox using a Stationary component](../../examples/#skyboxes_customSkybox)
+ * [Custom Skybox using a Stationary component](../../examples/#skyboxes_skybox_custom)
 
  ## Usage
 

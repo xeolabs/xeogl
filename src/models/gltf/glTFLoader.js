@@ -169,7 +169,13 @@
                     throw "model not set";
                 }
 
-                this.resources = new Resources();
+                xeogl.GLTFLoaderUtils.init();
+
+                if (!this.resources) {
+                    this.resources = new Resources();
+                } else {
+                    this.resources.clearEntries();
+                }
 
                 xeogl.glTFParser.handleLoadCompleted = ok;
                 xeogl.glTFParser.load.call(this, userInfo, options);
@@ -179,7 +185,7 @@
         _makeID: {
             value: function (entryID) {
                 // https://github.com/KhronosGroup/glTF/blob/master/specification/README.md#ids-and-names
-                return this._idPrefix + "#" + entryID;
+                return "" + this._idPrefix + "#" + entryID;
             }
         },
 
@@ -221,9 +227,9 @@
                 var image = this._json.images[description.source];
 
                 var texture = new xeogl.Texture(this.model.scene, {
-                    id: this._makeID(entryID),
+                    // id: this._makeID(entryID),
                     src: image.uri,
-                    flipY: true
+                    flipY: description.flipY
                 });
 
                 this.model.add(texture);
@@ -237,24 +243,181 @@
         handleMaterial: {
             value: function (entryID, description, userInfo) {
 
-                //   log("material", entryID, description);
+                var extensions = description.extensions;
+                var material;
 
-                var values = description.values || {};
+                if (extensions && extensions.FRAUNHOFER_materials_pbr) {
+                    var pbr = extensions.FRAUNHOFER_materials_pbr;
+                    var materialModel = pbr.materialModel;
+                    var values = pbr.values || {};
 
+                    switch (materialModel) {
+                        case "PBR_metal_roughness":
+                            material = this._parseMetallicMaterial(entryID, values, userInfo);
+                            break;
+
+                        case "PBR_specular_glossiness":
+                            material = this._parseSpecularMaterial(entryID, values, userInfo);
+                            break;
+
+                        default:
+                            material = this._parseMetallicMaterial(entryID, values, userInfo);
+                    }
+
+                } else if (description.technique === "technique_Standard") {
+                    material = this._parseMetallicMaterial(entryID, description.values || {}, userInfo);
+
+                } else {
+                    material = this._parsePhongMaterial(entryID, description.values || {}, userInfo);
+                }
+
+                this.model.add(material);
+
+                this.resources.setEntry(entryID, material, description);
+
+                return true;
+            }
+        },
+
+        _parseMetallicMaterial: {
+            value: function (entryID, values, userInfo) {
+
+                var cfg = {
+                    // id: this._makeID(entryID),
+                    meta: {
+                        userInfo: userInfo
+                    }
+                };
+
+                var entry;
+
+                var baseColorFactor = values.baseColorFactor;
+                if (baseColorFactor) {
+                    cfg.baseColor = baseColorFactor.slice(0, 3);
+                    cfg.opacity = baseColorFactor[3];
+                }
+
+                if (values.baseColorTexture) {
+                    entry = this.resources.getEntry(values.baseColorTexture);
+                    if (entry) {
+                        cfg.baseColorMap = entry.object;
+                    }
+                }
+
+                var metallicFactor = values.metallicFactor;
+                if (metallicFactor !== null && metallicFactor !== undefined) {
+                    cfg.metallic = metallicFactor;
+                }
+
+                var roughnessFactor = values.roughnessFactor;
+                if (roughnessFactor !== null && roughnessFactor !== undefined) {
+                    cfg.roughness = roughnessFactor;
+                }
+
+                if (values.metallicRoughnessTexture) {
+                    entry = this.resources.getEntry(values.metallicRoughnessTexture);
+                    if (entry) {
+                        cfg.metallicRoughnessMap = entry.object;
+                    }
+                }
+
+                if (values.normalTexture) {
+                    entry = this.resources.getEntry(values.normalTexture);
+                    if (entry) {
+                        cfg.normalMap = entry.object;
+                    }
+                }
+
+                if (values.occlusionTexture) {
+                    entry = this.resources.getEntry(values.occlusionTexture);
+                    if (entry) {
+                        cfg.occlusionMap = entry.object;
+                    }
+                }
+
+                return new xeogl.MetallicMaterial(this.model.scene, cfg);
+            }
+        },
+
+        _parseSpecularMaterial: {
+            value: function (entryID, values, userInfo) {
+
+                var cfg = {
+                    // id: this._makeID(entryID),
+                    meta: {
+                        userInfo: userInfo
+                    }
+                };
+
+                var entry;
+
+                var diffuseFactor = values.diffuseFactor;
+                if (diffuseFactor) {
+                    cfg.diffuse = diffuseFactor.slice(0, 3);
+                    cfg.opacity = diffuseFactor[3];
+                }
+
+                if (values.diffuseTexture) {
+                    entry = this.resources.getEntry(values.diffuseTexture);
+                    if (entry) {
+                        cfg.diffuseMap = entry.object;
+                    }
+                }
+
+                var specularFactor = values.specularFactor;
+                if (specularFactor !== null && specularFactor !== undefined) {
+                    cfg.specular = specularFactor;
+                }
+
+                var glossinessFactor = values.glossinessFactor;
+                if (glossinessFactor !== null && glossinessFactor !== undefined) {
+                    cfg.glossiness = glossinessFactor;
+                }
+
+                if (values.specularGlossinessTexture) {
+                    entry = this.resources.getEntry(values.specularGlossinessTexture);
+                    if (entry) {
+                        cfg.specularGlossinessMap = entry.object;
+                    }
+                }
+
+                if (values.normalTexture) {
+                    entry = this.resources.getEntry(values.normalTexture);
+                    if (entry) {
+                        cfg.normalMap = entry.object;
+                    }
+                }
+
+                if (values.occlusionTexture) {
+                    entry = this.resources.getEntry(values.occlusionTexture);
+                    if (entry) {
+                        cfg.occlusionMap = entry.object;
+                    }
+                }
+
+                return new xeogl.SpecularMaterial(this.model.scene, cfg);
+            }
+        },
+
+        _parsePhongMaterial: {
+            value: function (entryID, values, userInfo) {
+
+                var cfg = {
+                    // id: this._makeID(entryID),
+                    meta: {
+                        userInfo: userInfo
+                    }
+                };
+
+                var entry;
                 var diffuseVal = values.diffuse;
                 var specularVal = values.specular;
                 var shininessVal = values.shininess;
                 var emissiveVal = values.emission;
 
-                var cfg = {
-                    id: this._makeID(entryID),
-                    meta: {
-                        userInfo: userInfo
-                    },
-                    shininess: shininessVal
-                };
-
-                var entry;
+                if (shininessVal !== null && shininessVal !== undefined) {
+                    cfg.shininessVal = shininessVal;
+                }
 
                 if (diffuseVal) {
                     if (xeogl._isString(diffuseVal)) {
@@ -289,13 +452,7 @@
                     }
                 }
 
-                var material = new xeogl.PhongMaterial(this.model.scene, cfg);
-
-                this.model.add(material);
-
-                this.resources.setEntry(entryID, material, description);
-
-                return true;
+                return new xeogl.PhongMaterial(this.model.scene, cfg);
             }
         },
 
@@ -327,7 +484,7 @@
                     if (primitiveDescription.mode === WebGLRenderingContext.TRIANGLES) {
 
                         var geometry = new xeogl.Geometry(this.model.scene, {
-                            id: this._makeID(entryID)
+                            // id: this._makeID(entryID)
                         });
 
                         this.model.add(geometry);
@@ -456,7 +613,7 @@
                 if (node.matrix) {
                     var matrix = node.matrix;
                     transform = new xeogl.Transform(scene, {
-                        id: this._makeID(nodeId + ".transform"),
+                        // id: this._makeID(nodeId + ".transform"),
                         matrix: matrix,
                         parent: transform
                     });
@@ -466,7 +623,7 @@
                 if (node.translation) {
                     var translation = node.translation;
                     transform = new xeogl.Translate(scene, {
-                        id: this._makeID(nodeId + ".translation"),
+                        // id: this._makeID(nodeId + ".translation"),
                         xyz: [translation[0], translation[1], translation[2]],
                         parent: transform
                     });
@@ -476,7 +633,7 @@
                 if (node.rotation) {
                     var rotation = node.rotation;
                     transform = new xeogl.Rotate(scene, {
-                        id: this._makeID(nodeId + ".rotation"),
+                        // id: this._makeID(nodeId + ".rotation"),
                         xyz: [rotation[0], rotation[1], rotation[2]],
                         angle: rotation[3],
                         parent: transform
@@ -487,7 +644,7 @@
                 if (node.scale) {
                     var scale = node.scale;
                     transform = new xeogl.Scale(scene, {
-                        id: this._makeID(nodeId + ".scale"),
+                        // id: this._makeID(nodeId + ".scale"),
                         xyz: [scale[0], scale[1], scale[2]],
                         parent: transform
                     });
@@ -499,7 +656,7 @@
                     // One xeogl.Visibility per mesh group
 
                     var visibility = new xeogl.Visibility(scene, {
-                        id: this._makeID(nodeId + ".visibility")
+                        // id: this._makeID(nodeId + ".visibility")
                     });
 
                     model.add(visibility);
@@ -507,7 +664,7 @@
                     // One xeogl.Cull per mesh group
 
                     var cull = new xeogl.Cull(scene, {
-                        id: this._makeID(nodeId + ".cull")
+                        // id: this._makeID(nodeId + ".cull")
                     });
 
                     model.add(cull);
@@ -515,10 +672,10 @@
                     // One xeogl.Modes per mesh group
 
                     var modes = new xeogl.Modes(scene, {
-                        id: this._makeID(nodeId + ".modes")
+                        // id: this._makeID(nodeId + ".modes")
                     });
 
-                    model.add(cull);
+                    model.add(modes);
 
                     // One xeogl.Entity per mesh, each sharing the same
                     // xeogl.Visibility, xeogl.Cull and xeogl.Nodes
@@ -559,7 +716,7 @@
                             //}
 
                             entity = new xeogl.Entity(scene, {
-                                id: entityId,
+                                // id: entityId,
                                 meta: {
                                     name: node.name
                                 },
