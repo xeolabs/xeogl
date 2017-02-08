@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/materials/pbrMetalRoughnessMaterial.js - xeogl</title>
+    <title>src/lighting/shadow.js - xeogl</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link href='https://fonts.googleapis.com/css?family=Exo+2:400,800,900,700,600,500|Roboto:100,300,400,500,700,900'  rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
@@ -63,6 +63,7 @@
                                 <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
+                                <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
                                 <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
@@ -77,42 +78,37 @@
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
-                                <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
-                                <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
-                                <li><a href="../classes/KeyboardRotateCamera.html">KeyboardRotateCamera</a></li>
-                                <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
+                                <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
-                                <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
-                                <li><a href="../classes/MousePickEntity.html">MousePickEntity</a></li>
-                                <li><a href="../classes/MouseRotateCamera.html">MouseRotateCamera</a></li>
-                                <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
-                                <li><a href="../classes/PBRMetalRoughnessMaterial.html">PBRMetalRoughnessMaterial</a></li>
-                                <li><a href="../classes/PBRSpecularGlossinessMaterial.html">PBRSpecularGlossinessMaterial</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/PointMarkings.html">PointMarkings</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
+                                <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
+                                <li><a href="../classes/SpecularMaterial.html">SpecularMaterial</a></li>
                                 <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/Spinner.html">Spinner</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
+                                <li><a href="../classes/SpotLight.html">SpotLight</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
@@ -124,7 +120,6 @@
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
-                                <li><a href="../classes/VoxelGeometryBuilder.html">VoxelGeometryBuilder</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
                                 <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
                                 <li><a href="../classes/ZSpaceEffect.html">ZSpaceEffect</a></li>
@@ -148,6 +143,7 @@
                                 <li><a href="..//modules/input.html">input</a></li>
                                 <li><a href="..//modules/interaction.html">interaction</a></li>
                                 <li><a href="..//modules/lighting.html">lighting</a></li>
+                                <li><a href="..//modules/marking.html">marking</a></li>
                                 <li><a href="..//modules/materials.html">materials</a></li>
                                 <li><a href="..//modules/math.html">math</a></li>
                                 <li><a href="..//modules/models.html">models</a></li>
@@ -155,6 +151,7 @@
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
                                 <li><a href="..//modules/xeogl.html">xeogl</a></li>
+                                <li><a href="..//modules/zspace.html">zspace</a></li>
                             </ul>
                         </div>
                     </div>
@@ -188,336 +185,164 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1 class="file-heading">File: src/materials/pbrMetalRoughnessMaterial.js</h1>
+<h1 class="file-heading">File: src/lighting/shadow.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
+ A **Shadow** defines a shadow cast by a {{#crossLink &quot;DirLight&quot;}}{{/crossLink}} or a {{#crossLink &quot;SpotLight&quot;}}{{/crossLink}}.
 
- A **PBRMetalRoughnessMaterial** is a {{#crossLink &quot;Material&quot;}}{{/crossLink}} that defines the surface appearance of
- attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} using the specular-glossy physically-based rendering model.
+ Work in progress!
 
  ## Overview
 
- https://github.com/tsturm/glTF/tree/master/extensions/Vendor/FRAUNHOFER_materials_pbr
- 
+ * Shadows are attached to {{#crossLink &quot;DirLight&quot;}}{{/crossLink}} and {{#crossLink &quot;SpotLight&quot;}}{{/crossLink}} components.
+
  TODO
 
- &lt;img src=&quot;../../../assets/images/PBRMetalRoughnessMaterial.png&quot;&gt;&lt;/img&gt;
+ ## Examples
+
+ TODO
 
  ## Usage
 
  &#x60;&#x60;&#x60;&#x60; javascript
+ var entity = new xeogl.Entity(scene, {
 
+        lights: new xeogl.Lights({
+            lights: [
+
+                new xeogl.SpotLight({
+                    pos: [0, 100, 100],
+                    dir: [0, -1, 0],
+                    color: [0.5, 0.7, 0.5],
+                    intensity: 1
+                    constantAttenuation: 0,
+                    linearAttenuation: 0,
+                    quadraticAttenuation: 0,
+                    space: &quot;view&quot;,
+
+                    shadow: new xeogl.Shadow({
+                        resolution: [1000, 1000],
+                        intensity: 0.7,
+                        sampling: &quot;stratified&quot; // &quot;stratified&quot; | &quot;poisson&quot; | &quot;basic&quot;
+                    });
+                })
+            ]
+        }),
+ ,
+        material: new xeogl.PhongMaterial({
+            diffuse: [0.5, 0.5, 0.0]
+        }),
+
+        geometry: new xeogl.BoxGeometry()
+  });
  &#x60;&#x60;&#x60;&#x60;
 
- @class PBRMetalRoughnessMaterial
+ @class Shadow
  @module xeogl
- @submodule materials
+ @submodule lighting
  @constructor
- @extends Material
- @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, creates this PBRMetalRoughnessMaterial within the
+ @extends Component
+ @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, creates this Shadow within the
  default {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted
- @param [cfg] {*} The PBRMetalRoughnessMaterial configuration
+ @param [cfg] {*} The Shadow configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, generated automatically when omitted.
- @param [cfg.meta=null] {String:Object} Metadata to attach to this material.
-
- @param [cfg.diffuse=[[1.0, 1.0, 1.0, 1.0]] {Array of Number} The RGB components of the reflected diffuse color of the material. For raw metals the diffuse color is black (0.0). The fourth component (A) is the glossiness of the material.
-
- @param [cfg.specular=[[1.0, 1.0, 1.0]] {Array of Number} The specular RGB color of the material.
-
- @param [cfg.glossiness=1] {Number} The glossiness of the material surface (0 is glossiness, 1 is full glossiness).
-
- @param [cfg.diffuseMap=null] {Texture} A diffuse map {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}}, which will override the effect of the diffuse property. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this PBRMetalRoughnessMaterial.
-
- @param [cfg.specularGlossinessMap=null] {Texture} An emissive map {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}}, which will override the effect of the emissive property. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this PBRMetalRoughnessMaterial.
-
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Shadow.
+ @param [cfg.resolution=[1000,1000]] {Uint16Array} Resolution of the texture map for this Shadow.
+ @param [cfg.intensity=1.0] {Number} Intensity of this Shadow.
  */
 (function () {
 
     &quot;use strict&quot;;
 
-    xeogl.PBRMetalRoughnessMaterial = xeogl.Material.extend({
+    xeogl.Shadow = xeogl.Component.extend({
 
-        type: &quot;xeogl.PBRMetalRoughnessMaterial&quot;,
+        type: &quot;xeogl.Shadow&quot;,
 
         _init: function (cfg) {
 
-            this._state = new xeogl.renderer.PBRMetalRoughnessMaterial({
-                type: &quot;PBRMetalRoughnessMaterial&quot;,
-                diffuse: xeogl.math.vec3([1.0, 1.0, 1.0, 1.0]),
-                specular: xeogl.math.vec3([1.0, 1.0, 1.0]),
-                glossiness: 1.0,
-                diffuseMap: null,
-                specularGlossinessMap: null,
-                hash: null
-            });
+            this._state = {
+                resolution: xeogl.math.vec3([1000, 1000]),
+                intensity: 1.0
+            };
 
-            this._hashDirty = true;
-
-            this.on(&quot;dirty&quot;, function () {
-
-                // This PBRMetalRoughnessMaterial is flagged dirty when a
-                // child component fires &quot;dirty&quot;, which always
-                // means that a shader recompile will be needed.
-
-                this._hashDirty = true;
-            }, this);
-
-            this.diffuse = cfg.diffuse;
-            this.specular = cfg.specular;
-            this.glossiness = cfg.glossiness;
-            this.diffuseMap = cfg.diffuseMap;
-            this.specularGlossinessMap = cfg.specularGlossinessMap;
+            this.resolution = cfg.resolution;
+            this.intensity = cfg.intensity;
         },
 
         _props: {
-            
 
             /**
-             The RGB components of the reflected diffuse color of the material. For raw metals the diffuse color is black (0.0). The fourth component (A) is the glossiness of the material.
+             The resolution of the texture map for this Shadow.
 
-             Fires a {{#crossLink &quot;PBRMetalRoughnessMaterial/diffuse:event&quot;}}{{/crossLink}} event on change.
+             This will be either World- or View-space, depending on the value of {{#crossLink &quot;Shadow/space:property&quot;}}{{/crossLink}}.
 
-             @property diffuse
-             @default [1.0, 1.0, 1.0, 1.0]
-             @type Float32Array
+             Fires a {{#crossLink &quot;Shadow/resolution:event&quot;}}{{/crossLink}} event on change.
+
+             @property resolution
+             @default [1000, 1000]
+             @type Uint16Array
              */
-            diffuse: {
+            resolution: {
 
                 set: function (value) {
 
-                    this._state.diffuse.set(value || [1.0, 1.0, 1.0, 1.0]);
+                    this._state.resolution.set(value || [1000.0, 1000.0]);
 
                     this._renderer.imageDirty = true;
 
                     /**
-                     * Fired whenever this PBRMetalRoughnessMaterial&#x27;s {{#crossLink &quot;PBRMetalRoughnessMaterial/diffuse:property&quot;}}{{/crossLink}} property changes.
-                     *
-                     * @event diffuse
-                     * @param value {Float32Array} The property&#x27;s new value
+                     Fired whenever this Shadow&#x27;s  {{#crossLink &quot;Shadow/resolution:property&quot;}}{{/crossLink}} property changes.
+                     @event resolution
+                     @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;diffuse&quot;, this._state.diffuse);
+                    this.fire(&quot;resolution&quot;, this._state.resolution);
                 },
 
                 get: function () {
-                    return this._state.diffuse;
-                }
-            },
-
-            /**
-             The specular RGB color of the material.
-
-             Fires a {{#crossLink &quot;PBRMetalRoughnessMaterial/specular:event&quot;}}{{/crossLink}} event on change.
-
-             @property specular
-             @default [1.0, 1.0, 1.0]
-             @type Float32Array
-             */
-            specular: {
-
-                set: function (value) {
-
-                    this._state.specular.set(value || [1.0, 1.0, 1.0]);
-
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     Fired whenever this PBRMetalRoughnessMaterial&#x27;s {{#crossLink &quot;PBRMetalRoughnessMaterial/specular:property&quot;}}{{/crossLink}} property changes.
-
-                     @event specular
-                     @param value {Float32Array} The property&#x27;s new value
-                     */
-                    this.fire(&quot;specular&quot;, this._state.specular);
-                },
-
-                get: function () {
-                    return this._state.specular;
+                    return this._state.resolution;
                 }
             },
             
             /**
-             The glossiness of the material surface (0 is glossiness, 1 is full glossiness).
+             The intensity of this Shadow.
 
-             Fires an {{#crossLink &quot;PBRMetalRoughnessMaterial/glossiness:event&quot;}}{{/crossLink}} event on change.
+             Fires a {{#crossLink &quot;Shadow/intensity:event&quot;}}{{/crossLink}} event on change.
 
-             @property glossiness
+             @property intensity
              @default 1.0
              @type Number
              */
-            glossiness: {
+            intensity: {
 
                 set: function (value) {
 
-                    value = (value !== undefined &amp;&amp; value !== null) ? value : 1.0;
+                    value = value !== undefined ? value : 1.0;
 
-                    if (this._state.glossiness === value) {
-                        return;
-                    }
-
-                    this._state.glossiness = value;
+                    this._state.intensity = value;
 
                     this._renderer.imageDirty = true;
 
                     /**
-                     * Fired whenever this PBRMetalRoughnessMaterial&#x27;s {{#crossLink &quot;PBRMetalRoughnessMaterial/glossiness:property&quot;}}{{/crossLink}} property changes.
-                     *
-                     * @event glossiness
-                     * @param value {Number} The property&#x27;s new value
+                     * Fired whenever this Shadow&#x27;s  {{#crossLink &quot;Shadow/intensity:property&quot;}}{{/crossLink}} property changes.
+                     * @event intensity
+                     * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;glossiness&quot;, this._state.glossiness);
+                    this.fire(&quot;intensity&quot;, this._state.intensity);
                 },
 
                 get: function () {
-                    return this._state.glossiness;
-                }
-            },
-            
-            /**
-             A diffuse {{#crossLink &quot;Texture&quot;}}{{/crossLink}} attached to this PBRMetalRoughnessMaterial.
-
-             This property overrides {{#crossLink &quot;PBRMetalRoughnessMaterial/diffuseMap:property&quot;}}{{/crossLink}} when not null or undefined.
-
-             Fires a {{#crossLink &quot;PBRMetalRoughnessMaterial/diffuseMap:event&quot;}}{{/crossLink}} event on change.
-
-             @property diffuseMap
-             @default null
-             @type {Texture}
-             */
-            diffuseMap: {
-
-                set: function (texture) {
-
-                    /**
-                     Fired whenever this PBRMetalRoughnessMaterial&#x27;s {{#crossLink &quot;PBRMetalRoughnessMaterial/diffuseMap:property&quot;}}{{/crossLink}} property changes.
-
-                     @event diffuseMap
-                     @param value Number The property&#x27;s new value
-                     */
-                    this._attachComponent(&quot;xeogl.Texture&quot;, &quot;diffuseMap&quot;, texture);
-                },
-
-                get: function () {
-                    return this._attached.diffuseMap;
-                }
-            },
-            
-            /**
-             An emissive {{#crossLink &quot;Texture&quot;}}{{/crossLink}} attached to this PBRMetalRoughnessMaterial.
-
-             This property overrides {{#crossLink &quot;PBRMetalRoughnessMaterial/emissive:property&quot;}}{{/crossLink}} when not null or undefined.
-
-             Fires an {{#crossLink &quot;PBRMetalRoughnessMaterial/specularGlossinessMap:event&quot;}}{{/crossLink}} event on change.
-
-             @property specularGlossinessMap
-             @default null
-             @type {Texture}
-             */
-            specularGlossinessMap: {
-
-                set: function (texture) {
-
-                    /**
-                     Fired whenever this PBRMetalRoughnessMaterial&#x27;s {{#crossLink &quot;PBRMetalRoughnessMaterial/specularGlossinessMap:property&quot;}}{{/crossLink}} property changes.
-
-                     @event specularGlossinessMap
-                     @param value Number The property&#x27;s new value
-                     */
-                    this._attachComponent(&quot;xeogl.Texture&quot;, &quot;specularGlossinessMap&quot;, texture);
-                },
-
-                get: function () {
-                    return this._attached.specularGlossinessMap;
+                    return this._state.intensity;
                 }
             }
-        },
-
-        _attachComponent: function (expectedType, name, component) {
-            component = this._attach({
-                name: name,
-                type: expectedType,
-                component: component,
-                sceneDefault: false,
-                on: {
-                    destroyed: {
-                        callback: function () {
-                            this._state[name] = null;
-                            this._hashDirty = true;
-                        },
-                        scope: this
-                    }
-                }
-            });
-            this._state[name] = component ? component._state : null; // FIXME: Accessing _state breaks encapsulation
-            this._hashDirty = true;
-        },
-
-        _compile: function () {
-
-            if (this._hashDirty) {
-                this._makeHash();
-                this._hashDirty = false;
-            }
-
-            this._renderer.material = this._state;
-        },
-
-        _makeHash: function () {
-
-            var state = this._state;
-
-            var hash = [&quot;/p&quot;]; // &#x27;P&#x27; for Phong
-            
-            if (state.diffuseMap) {
-                hash.push(&quot;/d&quot;);
-                if (state.diffuseMap.matrix) {
-                    hash.push(&quot;/mat&quot;);
-                }
-            }
-            
-            if (state.specularGlossinessMap) {
-                hash.push(&quot;/e&quot;);
-                if (state.specularGlossinessMap.matrix) {
-                    hash.push(&quot;/mat&quot;);
-                }
-            }
-            
-            hash.push(&quot;;&quot;);
-
-            state.hash = hash.join(&quot;&quot;);
         },
 
         _getJSON: function () {
-
-            var json = {
-
-                // Colors
-                
-                diffuse: this._state.diffuse,
-                specular: this._state.specular
+            return {
+                resolution: this._state.resolution,
+                intensity: this._state.intensity
             };
-
-            if (this._state.glossiness !== 1.0) {
-                json.glossiness = this._state.glossiness;
-            }
-            
-            // Textures
-
-            var components = this._attached;
-            
-            if (components.diffuseMap) {
-                json.diffuseMap = components.diffuseMap.id;
-            }
-
-            if (components.specularGlossinessMap) {
-                json.specularGlossinessMap = components.specularGlossinessMap.id;
-            }
-            
-            return json;
-        },
-
-        _destroy: function () {
-            this._state.destroy();
         }
     });
 

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>examples/js/controls/zSpaceStylusControlV2.js - xeogl</title>
+    <title>examples/js/zspace/zSpaceStylusControl.js - xeogl</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link href='https://fonts.googleapis.com/css?family=Exo+2:400,800,900,700,600,500|Roboto:100,300,400,500,700,900'  rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
@@ -63,6 +63,7 @@
                                 <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
+                                <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
                                 <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
@@ -77,42 +78,37 @@
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
-                                <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
-                                <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
-                                <li><a href="../classes/KeyboardRotateCamera.html">KeyboardRotateCamera</a></li>
-                                <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
+                                <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
-                                <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
-                                <li><a href="../classes/MousePickEntity.html">MousePickEntity</a></li>
-                                <li><a href="../classes/MouseRotateCamera.html">MouseRotateCamera</a></li>
-                                <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
-                                <li><a href="../classes/PBRMetalRoughnessMaterial.html">PBRMetalRoughnessMaterial</a></li>
-                                <li><a href="../classes/PBRSpecularGlossinessMaterial.html">PBRSpecularGlossinessMaterial</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/PointMarkings.html">PointMarkings</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
+                                <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
+                                <li><a href="../classes/SpecularMaterial.html">SpecularMaterial</a></li>
                                 <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/Spinner.html">Spinner</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
+                                <li><a href="../classes/SpotLight.html">SpotLight</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
@@ -124,7 +120,6 @@
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
-                                <li><a href="../classes/VoxelGeometryBuilder.html">VoxelGeometryBuilder</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
                                 <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
                                 <li><a href="../classes/ZSpaceEffect.html">ZSpaceEffect</a></li>
@@ -148,6 +143,7 @@
                                 <li><a href="..//modules/input.html">input</a></li>
                                 <li><a href="..//modules/interaction.html">interaction</a></li>
                                 <li><a href="..//modules/lighting.html">lighting</a></li>
+                                <li><a href="..//modules/marking.html">marking</a></li>
                                 <li><a href="..//modules/materials.html">materials</a></li>
                                 <li><a href="..//modules/math.html">math</a></li>
                                 <li><a href="..//modules/models.html">models</a></li>
@@ -155,6 +151,7 @@
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
                                 <li><a href="..//modules/xeogl.html">xeogl</a></li>
+                                <li><a href="..//modules/zspace.html">zspace</a></li>
                             </ul>
                         </div>
                     </div>
@@ -188,7 +185,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1 class="file-heading">File: examples/js/controls/zSpaceStylusControlV2.js</h1>
+<h1 class="file-heading">File: examples/js/zspace/zSpaceStylusControl.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
@@ -258,7 +255,7 @@
 
  @class ZSpaceStylusControl
  @module xeogl
- @submodule controls
+ @submodule zspace
  @constructor
  @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this ZSpaceStylusControl in the default
  {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
@@ -295,18 +292,6 @@
             /**
              * The {{#crossLink &quot;ZSpaceEffect&quot;}}{{/crossLink}} attached to this ZSpaceStylusControl.
              *
-             * The ZSpaceStylusControl will attach a {{#crossLink &quot;Projection&quot;}}{{/crossLink}} to its
-             * {{#crossLink &quot;ZSpaceEffect&quot;}}{{/crossLink}} if the {{#crossLink &quot;ZSpaceEffect&quot;}}ZSpaceEffect{{/crossLink}} does not have
-             * one already, replacing whatever projection transform component was already attached.
-             *
-             * Must be within the same {{#crossLink &quot;Scene&quot;}}{{/crossLink}} as this ZSpaceStylusControl. Defaults to the parent
-             * {{#crossLink &quot;Scene&quot;}}Scene&#x27;s{{/crossLink}} default {{#crossLink &quot;Scene/zspaceEffect:property&quot;}}zspaceEffect{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * No other component should modify the state of the {{#crossLink &quot;ZSpaceEffect&quot;}}{{/crossLink}} while
-             * it&#x27;s attached to this ZSpaceStylusControl. There is no prevention or check for that, so if that
-             * happens you&#x27;ll get unexpected results.
-             *
              * @property zspaceEffect
              * @type ZSpaceEffect
              */
@@ -321,7 +306,7 @@
                      * @event zspaceEffect
                      * @param value The property&#x27;s new value
                      */
-                    var zspaceEffect = this._attach({
+                    this._attach({
                         name: &quot;zspaceEffect&quot;,
                         type: &quot;xeogl.ZSpaceEffect&quot;,
                         component: value,
@@ -439,6 +424,7 @@
                 var stylusP = vec4.create();
                 var stylusD = vec4.create();
                 var rotationMatrix = mat3.create();
+                var startScale = vec3.create();
                 var q = quat.create();
                 var matrix = mat4.create();
                 var stylusEnd = vec4.create();
@@ -449,6 +435,37 @@
                 var entityRotation = quat.create();
                 var newRotation = quat.create();
                 var newOffset = vec4.create();
+
+
+                var extractScale = (function () {
+
+                    var a = vec3.create();
+                    var b = vec3.create();
+                    var c = vec3.create();
+
+                    function length(vec) {
+                        return Math.sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
+                    }
+
+                    return function (scale, mat) {
+
+                        a[0] = mat[0];
+                        a[1] = mat[1];
+                        a[2] = mat[2];
+
+                        b[0] = mat[4];
+                        b[1] = mat[5];
+                        b[2] = mat[6];
+
+                        c[0] = mat[8];
+                        c[1] = mat[9];
+                        c[2] = mat[10];
+
+                        scale[0] = xeogl.math.lenVec3(a);
+                        scale[1] = xeogl.math.lenVec3(b);
+                        scale[2] = xeogl.math.lenVec3(c);
+                    };
+                })();
 
                 return function () {
 
@@ -478,13 +495,13 @@
 
                         if (lastEntityHighlighted) {
                             if (!hit || (hit.entity.id !== lastEntityHighlighted.id)) {
-                                lastEntityHighlighted.material.emissive = [0, 0, 0];
+                                lastEntityHighlighted.material.emissive = [0, 0, 0];  // De-highlight the previous hit entity
                             }
                         }
 
                         if (hit) {
                             stylusHelper.setHighlighted(true);
-                            hit.entity.material.emissive = [0.25, 0.25, 0];
+                            hit.entity.material.emissive = [0.25, 0.25, 0]; // highlight the new entity
                             lastEntityHighlighted = hit.entity;
 
                         } else {
@@ -502,8 +519,8 @@
 
                             draggingEntity = hit.entity;
 
-                            // Ensure that the entity has a single modelling transform
-                            // ZSPaceStylusControl cannot yet support articulation of hierarchies
+                             //Ensure that the entity has a single modelling transform
+                             //ZSPaceStylusControl cannot yet support articulation of hierarchies
 
                             if (draggingEntity.transform.parent) {
 
@@ -516,17 +533,34 @@
                                 });
                             }
 
-                            mat3.fromMat4(rotationMatrix, draggingEntity.transform.matrix);
+                            // Get rotation matrix from entity leaf transform
+
+                            var entityModelMat = draggingEntity.transform.matrix;
+
+                            mat3.fromMat4(rotationMatrix, entityModelMat);
                             quat.fromMat3(q, rotationMatrix);
                             quat.invert(q, q);
                             mat4.fromQuat(matrix, q);
 
+                            extractScale(startScale, entityModelMat);
+
+                            // TODO: startScale.setFromMatrixScale ( objectHit.matrixWorld );		// Get scale vector from entity&#x27;s scale matrix
+
+                            // Get World-space entity center
+
                             vec4.set(zero, 0.0, 0.0, 0.0, 1.0);
                             vec4.transformMat4(entityPos, zero, draggingEntity.transform.matrix);
+
+                            // Get World-space stylus endpoint
+
                             vec4.scaleAndAdd(stylusEnd, stylusP, stylusD, stylusLength);
+
+                            // Get offset of stylus end from entity center
 
                             vec4.subtract(offset, entityPos, stylusEnd);
                             vec4.transformMat4(startOffset, offset, matrix);
+
+                            // Get rotation quaternion at start of drag
 
                             mat3.fromMat4(rotationMatrix, stylusMatrix);
                             quat.fromMat3(rotation, rotationMatrix);
@@ -553,6 +587,8 @@
                     } else if (draggingEntity) {
 
                         // Continue dragging entity
+
+                        // TODO derive scale from startscale
 
                         vec4.scaleAndAdd(stylusEnd, stylusP, stylusD, stylusLength);
                         mat3.fromMat4(rotationMatrix, stylusMatrix);
