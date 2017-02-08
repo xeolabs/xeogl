@@ -12,7 +12,7 @@
 
  ## Examples
 
- * [Camera with Lookat and Perspective](../../examples/#transforms_project_perspective)
+ * [Camera with Lookat and Perspective](../../examples/#transforms_camera_project_perspective)
 
  ## Usage
 

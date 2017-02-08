@@ -8,8 +8,7 @@
 
  ## Examples
 
- * [KeyboardZoomCamera example](../../examples/#interaction_KeyboardZoomCamera)
- * [CameraControl example](../../examples/#interaction_CameraControl)
+ * [CameraControl example](../../examples/#interaction_camera_CameraControl)
 
  ## Usage
 
@@ -36,7 +35,7 @@
      camera: camera
  });
  ````
- @class KeyboardZoomCamera
+
  @module xeogl
  @submodule controls
  @constructor

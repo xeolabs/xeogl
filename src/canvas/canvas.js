@@ -25,7 +25,7 @@
 
  ## Examples
 
- * [Multiple canvases/scenes in a page](../../examples/#scene_multipleScenes)
+ * [Multiple canvases/scenes in a page](../../examples/#scenes_multipleScenes)
  * [Taking canvas snapshots](../../examples/#canvas_snapshot)
  * [Transparent canvas with background image](../../examples/#canvas_transparent)
  * [Canvas with multiple viewports](../../examples/#canvas_multipleViewports)

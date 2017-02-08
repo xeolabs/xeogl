@@ -15,8 +15,7 @@
 
  ## Examples
 
- * [KeyboardAxisCamera example](../../examples/#interaction_KeyboardAxisCamera)
- * [CameraControl example](../../examples/#interaction_CameraControl)
+ * [Used in CameraControl](../../examples/#interaction_camera_CameraControl)
 
  ## Usage
 
@@ -44,7 +43,7 @@
  });
  ````
 
- @class KeyboardAxisCamera
+
  @module xeogl
  @submodule controls
  @constructor
@@ -82,6 +81,7 @@
             // Animations
 
             this._cameraFly = new xeogl.CameraFlightAnimation(this.scene, {
+                camera: cfg.camera,
                 duration: 1.0
             });
 
@@ -115,7 +115,7 @@
                      * @event camera
                      * @param value The property's new value
                      */
-                    var camera = this._attach({
+                    this._attach({
                         name: "camera",
                         type: "xeogl.Camera",
                         component: value,
@@ -124,7 +124,7 @@
 
                     // Update animation
 
-                    this._cameraFly.camera = camera;
+                    this._cameraFly.camera = this._attached.camera;
                 },
 
                 get: function () {

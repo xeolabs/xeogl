@@ -1,7 +1,7 @@
 /**
  A **BoxGeometry** is a parameterized {{#crossLink "Geometry"}}{{/crossLink}} that defines a box-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- <a href="../../examples/#geometry_BoxGeometry"><img src="../../assets/images/screenshots/BoxGeometry.png"></img></a>
+ <a href="../../examples/#geometry_primitives_box"><img src="../../assets/images/screenshots/BoxGeometry.png"></img></a>
 
  ## Overview
 
@@ -11,7 +11,7 @@
 
  ## Examples
 
- * [Textured BoxGeometry](../../examples/#geometry_BoxGeometry)
+ * [Textured BoxGeometry](../../examples/#geometry_primitives_box)
 
  ## Usage
 
@@ -171,40 +171,40 @@
             this.uv = [
 
                 // v0-v1-v2-v3 front
-                1, 1,
-                0, 1,
-                0, 0,
                 1, 0,
+                0, 0,
+                0, 1,
+                1, 1,
 
                 // v0-v3-v4-v1 right
-                0, 1,
                 0, 0,
-                1, 0,
+                0, 1,
                 1, 1,
+                1, 0,
 
                 // v0-v1-v6-v1 top
-                1, 0,
                 1, 1,
-                0, 1,
+                1, 0,
                 0, 0,
+                0, 1,
 
                 // v1-v6-v7-v2 left
-                1, 1,
-                0, 1,
-                0, 0,
                 1, 0,
+                0, 0,
+                0, 1,
+                1, 1,
 
                 // v7-v4-v3-v2 bottom
-                0, 0,
-                1, 0,
-                1, 1,
                 0, 1,
+                1, 1,
+                1, 0,
+                0, 0,
 
                 // v4-v7-v6-v1 back
-                0, 0,
-                1, 0,
+                0, 1,
                 1, 1,
-                0, 1
+                1, 0,
+                0, 0
             ];
 
             // Indices - these organise the

@@ -1,7 +1,7 @@
 /**
  A **Boundary3D** provides the 3D extents of its parent component in either the Local, World or View coordinate systems.
 
- <a href="../../examples/#animation_CameraFollowAnimation"><img src="http://i.giphy.com/l0HlHcuzAjhMQ8YSY.gif"></img></a>
+ <a href="../../examples/#animation_camera_follow_entity"><img src="http://i.giphy.com/l0HlHcuzAjhMQ8YSY.gif"></img></a>
 
  ## Overview
 
@@ -36,13 +36,13 @@
 
  ## Examples
 
- * [Entity World-space boundary](../../examples/#boundaries_Entity_worldBoundary_aabb)
- * [Entity View-space boundary](../../examples/#boundaries_Entity_viewBoundary_aabb)
- * [Entity Canvas-space boundary](../../examples/#boundaries_Entity_canvasBoundary_aabb)
- * [Flying camera to Entity World-space boundaries](../../examples/#boundaries_flyToBoundary)
- * [Model World-space boundary](../../examples/#boundaries_Model_worldBoundary_aabb)
- * [Following an Entity with a Camera](../../examples/#animation_CameraFollowAnimation)
- * [Following an Entity with a Camera, keeping Entity fitted to view volume](../../examples/#animation_CameraFollowAnimation_fitToView)
+ * [Entity World-space boundary](../../examples/#boundaries_entity_world_aabb)
+ * [Entity View-space boundary](../../examples/#boundaries_entity_view_aabb)
+ * [Entity Canvas-space boundary](../../examples/#boundaries_entity_canvas_aabb)
+ * [Flying camera to Entity World-space boundaries](../../examples/#animation_camera_flyTo_boundary)
+ * [Model World-space boundary](../../examples/#boundaries_model_world_aabb)
+ * [Following an Entity with a Camera](../../examples/#animation_camera_follow_entity)
+ * [Following an Entity with a Camera, keeping Entity fitted to view volume](../../examples/#animation_camera_follow_entity_fitToView)
 
  ## Usage
 

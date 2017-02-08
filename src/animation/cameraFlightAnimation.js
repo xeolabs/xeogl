@@ -1,7 +1,7 @@
 /**
  A **CameraFlightAnimation** jumps or flies a {{#crossLink "Camera"}}{{/crossLink}} to look at a given target.
 
- <a href="../../examples/#animation_CameraFlightAnimation_Entity"><img src="http://i.giphy.com/3o7TKP0jN800EQ99EQ.gif"></img></a>
+ <a href="../../examples/#animation_camera_flyTo_entity"><img src="http://i.giphy.com/3o7TKP0jN800EQ99EQ.gif"></img></a>
 
  ## Overview
 
@@ -23,9 +23,9 @@
 
  ## Examples
 
- * [Flying to random Entities](../../examples/#animation_CameraFlightAnimation_Entity)
- * [Flying to Boundary3D](../../examples/#animation_CameraFlightAnimation_Boundary3D)
- * [Flying to AABB](../../examples/#animation_CameraFlightAnimation_AABB)
+ * [Flying to random Entities](../../examples/#animation_camera_flyTo_entity)
+ * [Flying to Boundary3D](../../examples/#animation_camera_flyTo_boundary)
+ * [Flying to AABB](../../examples/#animation_camera_flyTo_aabb)
 
  ## Flying to an Entity
 
@@ -126,6 +126,56 @@
 
         _init: function (cfg) {
 
+            // Shows a wireframe box for target AABBs
+            this._aabbHelper = this.create({
+                type: "xeogl.Entity",
+                camera: cfg.camera,
+                geometry: this.create({
+                    type: "xeogl.AABBGeometry"
+                }),
+                material: this.create({
+                    type: "xeogl.PhongMaterial",
+                    diffuse: [0, 0, 0],
+                    ambient: [0, 0, 0],
+                    specular: [0, 0, 0],
+                    emissive: [1.0, 1.0, 0.0],
+                    lineWidth: 3
+                }),
+                visibility: this.create({
+                    type: "xeogl.Visibility",
+                    visible: false
+                }),
+                modes: this.create({
+                    type: "xeogl.Modes",
+                    collidable: false // Effectively has no boundary
+                })
+            });
+
+            // Shows a wireframe box for target AABBs
+            this._obbHelper = this.create({
+                type: "xeogl.Entity",
+                camera: cfg.camera,
+                geometry: this.create({
+                    type: "xeogl.OBBGeometry",
+                    material: this.create({
+                        type: "xeogl.PhongMaterial",
+                        diffuse: [0, 0, 0],
+                        ambient: [0, 0, 0],
+                        specular: [0, 0, 0],
+                        emissive: [1.0, 1.0, 0.0],
+                        lineWidth: 3
+                    })
+                }),
+                visibility: this.create({
+                    type: "xeogl.Visibility",
+                    visible: false
+                }),
+                modes: this.create({
+                    type: "xeogl.Modes",
+                    collidable: false // Effectively has no boundary
+                })
+            });
+
             this._look1 = math.vec3();
             this._eye1 = math.vec3();
             this._up1 = math.vec3();
@@ -152,54 +202,6 @@
             this.fitFOV = cfg.fitFOV;
             this.trail = cfg.trail;
             this.camera = cfg.camera;
-
-            // Shows a wireframe box for target AABBs
-            this._aabbHelper = this.create({
-                type: "xeogl.Entity",
-                geometry: this.create({
-                    type: "xeogl.AABBGeometry",
-                    material: this.create({
-                        type: "xeogl.PhongMaterial",
-                        diffuse: [0, 0, 0],
-                        ambient: [0, 0, 0],
-                        specular: [0, 0, 0],
-                        emissive: [1.0, 1.0, 0.0],
-                        lineWidth: 3
-                    })
-                }),
-                visibility: this.create({
-                    type: "xeogl.Visibility",
-                    visible: false
-                }),
-                modes: this.create({
-                    type: "xeogl.Modes",
-                    collidable: false // Effectively has no boundary
-                })
-            });
-
-            // Shows a wireframe box for target AABBs
-            this._obbHelper = this.create({
-                type: "xeogl.Entity",
-                geometry: this.create({
-                    type: "xeogl.OBBGeometry",
-                    material: this.create({
-                        type: "xeogl.PhongMaterial",
-                        diffuse: [0, 0, 0],
-                        ambient: [0, 0, 0],
-                        specular: [0, 0, 0],
-                        emissive: [1.0, 1.0, 0.0],
-                        lineWidth: 3
-                    })
-                }),
-                visibility: this.create({
-                    type: "xeogl.Visibility",
-                    visible: false
-                }),
-                modes: this.create({
-                    type: "xeogl.Modes",
-                    collidable: false // Effectively has no boundary
-                })
-            });
         },
 
         /**
@@ -296,11 +298,11 @@
 
                     aabb = params;
 
-                //} else if (params.length === 4) { // [x,y,z,radius]
-                //
-                //    // Argument is an OBB
-                //
-                //    sphere = params;
+                    //} else if (params.length === 4) { // [x,y,z,radius]
+                    //
+                    //    // Argument is an OBB
+                    //
+                    //    sphere = params;
 
                 } else if (params.eye || params.look || params.up) {
 
@@ -364,8 +366,10 @@
 
                     // Show boundary
 
-                    this._aabbHelper.geometry.aabb = aabb;
-                    this._aabbHelper.visibility.visible = true;
+                    if (params.showAABB !== false) {
+                        this._aabbHelper.geometry.aabb = aabb;
+                        this._aabbHelper.visibility.visible = true;
+                    }
 
                     var aabbCenter = math.getAABB3Center(aabb);
 
@@ -445,7 +449,14 @@
          * fill the canvas on arrival. Overrides {{#crossLink "CameraFlightAnimation/fitFOV:property"}}{{/crossLink}}.
          * @param [params.fit] {Boolean} Whether to fit the target to the view volume. Overrides {{#crossLink "CameraFlightAnimation/fit:property"}}{{/crossLink}}.
          */
-        jumpTo: (function () {
+        jumpTo: function (params) {
+            var self = this;
+            xeogl.scheduleTask(function () {  // Ensures that required asynch boundaries are built first
+                self._jumpTo(params);
+            });
+        },
+
+        _jumpTo: (function () {
 
             var eyeLookVec = math.vec3();
             var newEye = math.vec3();
@@ -768,6 +779,8 @@
                         component: value,
                         sceneDefault: true
                     });
+
+                    this._aabbHelper.camera = this._attached.camera;
 
                     this.stop();
                 },

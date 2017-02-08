@@ -1,7 +1,7 @@
 /**
  A **TorusGeometry** is a parameterized {{#crossLink "Geometry"}}{{/crossLink}} that defines a torus-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- <a href="../../examples/#geometry_TorusGeometry"><img src="../../assets/images/screenshots/TorusGeometry.png"></img></a>
+ <a href="../../examples/#geometry_primitives_torus"><img src="../../assets/images/screenshots/TorusGeometry.png"></img></a>
 
  ## Overview
 
@@ -14,7 +14,7 @@
  ## Examples
 
 
- * [Textured TorusGeometry](../../examples/#geometry_TorusGeometry)
+ * [Textured TorusGeometry](../../examples/#geometry_primitives_torus)
 
 
  ## Usage
@@ -145,7 +145,7 @@
                     positions.push(z + zCenter);
 
                     uvs.push(1 - (i / tubeSegments));
-                    uvs.push(1 - (j / radialSegments));
+                    uvs.push((j / radialSegments));
 
                     vec = xeogl.math.normalizeVec3(xeogl.math.subVec3([x, y, z], [centerX, centerY, centerZ], []), []);
 

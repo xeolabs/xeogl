@@ -1,7 +1,7 @@
 /**
  A **Boundary2D** is a Canvas-space 2D boundary.
 
- <a href="../../examples/#boundaries_flyToBoundary"><img src="http://i.giphy.com/3oriO8fJ8f70AfXdUA.gif"></img></a>
+ <a href="../../examples/#boundaries_entity_canvas_aabb"><img src="http://i.giphy.com/3oriO8fJ8f70AfXdUA.gif"></img></a>
 
  ## Overview
 
@@ -20,7 +20,7 @@
 
  ## Examples
 
- * [Visualizing an Entity's Canvas-space boundary](../../examples/#boundaries_Entity_canvasBoundary_aabb)
+ * [Visualizing an Entity's Canvas-space boundary](../../examples/#boundaries_entity_canvas_aabb)
 
  ## Usage
 

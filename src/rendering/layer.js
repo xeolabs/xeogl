@@ -22,8 +22,7 @@
 
  ## Examples
 
- * [Z-sorted transparent entities](../../examples/#materials_techniques_transparencySort)
- * [Clouds as billboarded and z-sorted alpha maps](../../examples/#billboards_spherical_clouds)
+ * [Clouds as billboarded and z-sorted alpha maps](../../examples/#transforms_billboard_spherical_clouds)
 
  ## Usage
 

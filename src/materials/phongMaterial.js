@@ -1,30 +1,46 @@
 /**
  A **PhongMaterial** is a {{#crossLink "Material"}}{{/crossLink}} that defines the surface appearance of
  attached {{#crossLink "Entity"}}Entities{{/crossLink}} using
- the <a href="http://en.wikipedia.org/wiki/Phong_reflection_model">Phong</a> lighting model.
+ the classic <a href="https://en.wikipedia.org/wiki/Blinn%E2%80%93Phong_shading_model">Blinn-Phong</a> lighting model.
+
+ ## Examples
+
+ | <a href="../../examples/#materials_phong_textures"><img src="../../assets/images/screenshots/PhongMaterial/textures.png"></img></a> | <a href="../../examples/#materials_phong_textures_video"><img src="../../assets/images/screenshots/PhongMaterial/videoTexture.png"></img></a> | <a href="../../examples/#materials_phong_fresnel"><img src="../../assets/images/screenshots/PhongMaterial/fresnel.png"></img></a> |
+ |:------:|:----:|:-----:|:-----:|
+ |[Phong textures](../../examples/#materials_phong_textures)|[Video texture](../../examples/#materials_phong_textures_video)| [Fresnels](../../examples/#materials_phong_fresnel)|
 
  ## Overview
 
- * PhongMaterial properties, along with {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}},
- {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} and {{#crossLink "PhongMaterial/reflectivity:property"}}{{/crossLink}},
- specify attributes that are to be **applied uniformly** across the surface of attached {{#crossLink "Geometry"}}Geometries{{/crossLink}}.
- * Most of those attributes can be textured, **effectively replacing the values set for those properties**, by
- assigning {{#crossLink "Texture"}}Textures{{/crossLink}} to the PhongMaterial's
- {{#crossLink "PhongMaterial/diffuseMap:property"}}{{/crossLink}}, {{#crossLink "PhongMaterial/specularMap:property"}}{{/crossLink}},
- {{#crossLink "PhongMaterial/emissiveMap:property"}}{{/crossLink}}, {{#crossLink "PhongMaterial/opacityMap:property"}}{{/crossLink}}
- and  {{#crossLink "PhongMaterial/reflectivityMap:property"}}{{/crossLink}} properties.
- * For example, the value of {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} will be ignored if your
- PhongMaterial also has a {{#crossLink "PhongMaterial/diffuseMap:property"}}{{/crossLink}} set to a {{#crossLink "Texture"}}Texture{{/crossLink}}.
- The {{#crossLink "Texture"}}Texture's{{/crossLink}} pixel colors directly provide the diffuse color of each fragment across the
- {{#crossLink "Geometry"}}{{/crossLink}} surface, ie. they are not multiplied by
- the {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} for each pixel, as is done in many shading systems.
- * When the {{#crossLink "Entity"}}{{/crossLink}}'s {{#crossLink "Geometry"}}{{/crossLink}} has a
- {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} set to "lines" or "points" then only the {{#crossLink "PhongMaterial"}}{{/crossLink}}'s
- {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}}, {{#crossLink "PhongMaterial/emissiveMap:property"}}{{/crossLink}},
- {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} and {{#crossLink "PhongMaterial/opacityMap:property"}}{{/crossLink}}
- will actually be applied, since those primitive types cannot be shaded.
+ * Used for rendering non-realistic objects such as "helpers", wireframe objects, labels etc.
+ * Use the physically-based {{#crossLink "MetallicMaterial"}}{{/crossLink}} or {{#crossLink "SpecularMaterial"}}{{/crossLink}} realism is required.
 
  <img src="../../../assets/images/PhongMaterial.png"></img>
+
+ The following table summarizes PhongMaterial properties:
+
+ | Property | Type | Range | Default Value | Space | Description |
+ |:--------:|:----:|:-----:|:-------------:|:-----:|:-----------:|
+ |  {{#crossLink "PhongMaterial/ambient:property"}}{{/crossLink}} | Array | [0, 1] for all components | [1,1,1,1] | linear | The RGB components of the ambient light reflected by the material. |
+ |  {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} | Array | [0, 1] for all components | [1,1,1,1] | linear | The RGB components of the diffuse light reflected by the material. |
+ |  {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}} | Array | [0, 1] for all components | [1,1,1,1] | linear | The RGB components of the specular light reflected by the material. |
+ |  {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}} | Array | [0, 1] for all components | [0,0,0] | linear | The RGB components of the light emitted by the material. |
+ | {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The transparency of the material surface (0 fully transparent, 1 fully opaque). |
+ | {{#crossLink "PhongMaterial/shininess:property"}}{{/crossLink}} | Number | [0, 128] | 80 | linear | Determines the size and sharpness of specular highlights. |
+ | {{#crossLink "PhongMaterial/reflectivity:property"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | Determines the amount of reflectivity. |
+ | {{#crossLink "PhongMaterial/diffuseMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}}. |
+ | {{#crossLink "PhongMaterial/specularMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}}. |
+ | {{#crossLink "PhongMaterial/emissiveMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Texture with RGB components multiplying by {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}}. |
+ | {{#crossLink "PhongMaterial/opacityMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}}. |
+ | {{#crossLink "PhongMaterial/occlusionMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Ambient occlusion texture multiplying by {{#crossLink "PhongMaterial/ambient:property"}}{{/crossLink}}, {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} and {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}}. |
+ | {{#crossLink "PhongMaterial/normalMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Tangent-space normal map. |
+ | {{#crossLink "PhongMaterial/diffuseFresnel:property"}}{{/crossLink}} | {{#crossLink "Fresnel"}}{{/crossLink}} |  | null |  | Fresnel term applied to {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}}. |
+ | {{#crossLink "PhongMaterial/specularFresnel:property"}}{{/crossLink}} | {{#crossLink "Fresnel"}}{{/crossLink}} |  | null |  | Fresnel term applied to {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}}. |
+ | {{#crossLink "PhongMaterial/emissiveFresnel:property"}}{{/crossLink}} | {{#crossLink "Fresnel"}}{{/crossLink}} |  | null |  | Fresnel term applied to {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}}. |
+ | {{#crossLink "PhongMaterial/reflectivityFresnel:property"}}{{/crossLink}} | {{#crossLink "Fresnel"}}{{/crossLink}} |  | null |  | Fresnel term applied to {{#crossLink "PhongMaterial/reflectivity:property"}}{{/crossLink}}. |
+ | {{#crossLink "PhongMaterial/opacityFresnel:property"}}{{/crossLink}} | {{#crossLink "Fresnel"}}{{/crossLink}} |  | null |  | Fresnel term applied to {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}}. |
+ | {{#crossLink "PhongMaterial/lineWidth:property"}}{{/crossLink}} | Number | [0..100] | 1 |  | Line width in pixels. |
+ | {{#crossLink "PhongMaterial/pointSize:property"}}{{/crossLink}} | Number | [0..100] | 1 |  | Point size in pixels. |
+
 
  ## Usage
 
@@ -33,11 +49,6 @@
  * a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "DirLight"}}{{/crossLink}},
  * a {{#crossLink "PhongMaterial"}}{{/crossLink}} which applies a {{#crossLink "Texture"}}{{/crossLink}} as a diffuse map and a specular {{#crossLink "Fresnel"}}{{/crossLink}}, and
  * a {{#crossLink "TorusGeometry"}}{{/crossLink}}.
-
- Note that xeogl will ignore the PhongMaterial's {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}}
- property, since we assigned the {{#crossLink "Texture"}}{{/crossLink}} to the PhongMaterial's
- {{#crossLink "PhongMaterial/diffuseMap:property"}}{{/crossLink}} property. The {{#crossLink "Texture"}}Texture's{{/crossLink}} pixel
- colors directly provide the diffuse color of each fragment across the {{#crossLink "Geometry"}}{{/crossLink}} surface.
 
  ```` javascript
  var entity = new xeogl.Entity({
@@ -86,7 +97,7 @@
  @param [cfg] {*} The PhongMaterial configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta=null] {String:Object} Metadata to attach to this PhongMaterial.
- @param [cfg.ambient=[0.7, 0.7, 0.8 ]] {Array of Number} PhongMaterial ambient color.
+ @param [cfg.ambient=[1.0, 1.0, 1.0 ]] {Array of Number} PhongMaterial ambient color.
  @param [cfg.diffuse=[ 1.0, 1.0, 1.0 ]] {Array of Number} PhongMaterial diffuse color.
  @param [cfg.specular=[ 1.0, 1.0, 1.0 ]] {Array of Number} PhongMaterial specular color.
  @param [cfg.emissive=[ 0.0, 0.0, 0.0 ]] {Array of Number} PhongMaterial emissive color.
@@ -96,17 +107,19 @@
  @param [cfg.reflectivity=1] {Number} Scalar in range 0-1 that controls how much {{#crossLink "CubeMap"}}CubeMap{{/crossLink}} is reflected.
  @param [cfg.lineWidth=1] {Number} Scalar that controls the width of lines for {{#crossLink "Geometry"}}{{/crossLink}} with {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} set to "lines".
  @param [cfg.pointSize=1] {Number} Scalar that controls the size of points for {{#crossLink "Geometry"}}{{/crossLink}} with {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} set to "points".
+ @param [cfg.ambientMap=null] {Texture} A ambient map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will multiply by the diffuse property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
  @param [cfg.diffuseMap=null] {Texture} A diffuse map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the diffuse property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
  @param [cfg.specularMap=null] {Texture} A specular map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the specular property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
  @param [cfg.emissiveMap=undefined] {Texture} An emissive map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the emissive property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
  @param [cfg.normalMap=undefined] {Texture} A normal map {{#crossLink "Texture"}}Texture{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
  @param [cfg.opacityMap=undefined] {Texture} An opacity map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the opacity property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
  @param [cfg.reflectivityMap=undefined] {Texture} A reflectivity control map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the reflectivity property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
- @param [cfg.diffuseFresnel=undefined] {Fresnel} A diffuse {{#crossLink "Fresnel"}}Fresnel{{/crossLink}}.
- @param [cfg.specularFresnel=undefined] {Fresnel} A specular {{#crossLink "Fresnel"}}Fresnel{{/crossLink}}.
- @param [cfg.emissiveFresnel=undefined] {Fresnel} An emissive {{#crossLink "Fresnel"}}Fresnel{{/crossLink}}.
- @param [cfg.opacityFresnel=undefined] {Fresnel} An opacity {{#crossLink "Fresnel"}}Fresnel{{/crossLink}}.
- @param [cfg.reflectivityFresnel=undefined] {Fresnel} A reflectivity {{#crossLink "Fresnel"}}Fresnel{{/crossLink}}.
+ @param [cfg.occlusionMap=null] {Texture} An occlusion map {{#crossLink "Texture"}}Texture{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
+ @param [cfg.diffuseFresnel=undefined] {Fresnel} A diffuse {{#crossLink "Fresnel"}}Fresnel{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
+ @param [cfg.specularFresnel=undefined] {Fresnel} A specular {{#crossLink "Fresnel"}}Fresnel{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
+ @param [cfg.emissiveFresnel=undefined] {Fresnel} An emissive {{#crossLink "Fresnel"}}Fresnel{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
+ @param [cfg.opacityFresnel=undefined] {Fresnel} An opacity {{#crossLink "Fresnel"}}Fresnel{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
+ @param [cfg.reflectivityFresnel=undefined] {Fresnel} A reflectivity {{#crossLink "Fresnel"}}Fresnel{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
  */
 (function () {
 
@@ -128,25 +141,11 @@
                 emissive: xeogl.math.vec3([0.0, 0.0, 0.0]),
 
                 opacity: 1.0,
-                shininess: 30.0,
+                shininess: 80.0,
                 reflectivity: 1.0,
 
                 lineWidth: 1.0,
                 pointSize: 1.0,
-
-                ambientMap: null,
-                normalMap: null,
-                diffuseMap: null,
-                specularMap: null,
-                emissiveMap: null,
-                opacityMap: null,
-                reflectivityMap: null,
-
-                diffuseFresnel: null,
-                specularFresnel: null,
-                emissiveFresnel: null,
-                opacityFresnel: null,
-                reflectivityFresnel: null,
 
                 hash: null
             });
@@ -174,19 +173,57 @@
             this.lineWidth = cfg.lineWidth;
             this.pointSize = cfg.pointSize;
 
-            this.ambientMap = cfg.ambientMap;
-            this.diffuseMap = cfg.diffuseMap;
-            this.specularMap = cfg.specularMap;
-            this.emissiveMap = cfg.emissiveMap;
-            this.opacityMap = cfg.opacityMap;
-            this.reflectivityMap = cfg.reflectivityMap;
-            this.normalMap = cfg.normalMap;
+            if (cfg.ambientMap) {
+                this.ambientMap = cfg.ambientMap;
+            }
 
-            this.diffuseFresnel = cfg.diffuseFresnel;
-            this.specularFresnel = cfg.specularFresnel;
-            this.emissiveFresnel = cfg.emissiveFresnel;
-            this.opacityFresnel = cfg.opacityFresnel;
-            this.reflectivityFresnel = cfg.reflectivityFresnel;
+            if (cfg.diffuseMap) {
+                this.diffuseMap = cfg.diffuseMap;
+            }
+
+            if (cfg.specularMap) {
+                this.specularMap = cfg.specularMap;
+            }
+
+            if (cfg.emissiveMap) {
+                this.emissiveMap = cfg.emissiveMap;
+            }
+
+            if (cfg.opacityMap) {
+                this.opacityMap = cfg.opacityMap;
+            }
+
+            if (cfg.reflectivityMap) {
+                this.reflectivityMap = cfg.reflectivityMap;
+            }
+
+            if (cfg.normalMap) {
+                this.normalMap = cfg.normalMap;
+            }
+
+            if (cfg.occlusionMap) {
+                this.occlusionMap = cfg.occlusionMap;
+            }
+
+            if (cfg.diffuseFresnel) {
+                this.diffuseFresnel = cfg.diffuseFresnel;
+            }
+
+            if (cfg.specularFresnel) {
+                this.specularFresnel = cfg.specularFresnel;
+            }
+
+            if (cfg.emissiveFresnel) {
+                this.emissiveFresnel = cfg.emissiveFresnel;
+            }
+
+            if (cfg.opacityFresnel) {
+                this.opacityFresnel = cfg.opacityFresnel;
+            }
+
+            if (cfg.reflectivityFresnel) {
+                this.reflectivityFresnel = cfg.reflectivityFresnel;
+            }
         },
 
         _props: {
@@ -197,14 +234,32 @@
              Fires a {{#crossLink "PhongMaterial/ambient:event"}}{{/crossLink}} event on change.
 
              @property ambient
-             @default [1.0, 1.0, 1.0]
+             @default [0.3, 0.3, 0.3]
              @type Float32Array
              */
             ambient: {
 
                 set: function (value) {
 
-                    this._state.ambient.set(value || [1.0, 1.0, 1.0]);
+                    var ambient = this._state.ambient;
+
+                    if (!ambient) {
+                        ambient = this._state.ambient = new Float32Array(3);
+
+                    } else if (value && ambient[0] === value[0] && ambient[1] === value[1] && ambient[2] === value[2]) {
+                        return;
+                    }
+
+                    if (value) {
+                        ambient[0] = value[0];
+                        ambient[1] = value[1];
+                        ambient[2] = value[2];
+
+                    } else {
+                        ambient[0] = .2;
+                        ambient[1] = .2;
+                        ambient[2] = .2;
+                    }
 
                     this._renderer.imageDirty = true;
 
@@ -225,7 +280,7 @@
             /**
              The PhongMaterial's diffuse color.
 
-             This property may be overridden by {{#crossLink "PhongMaterial/diffuseMap:property"}}{{/crossLink}}.
+             Multiplies by {{#crossLink "PhongMaterial/diffuseMap:property"}}{{/crossLink}}.
 
              Fires a {{#crossLink "PhongMaterial/diffuse:event"}}{{/crossLink}} event on change.
 
@@ -237,7 +292,25 @@
 
                 set: function (value) {
 
-                    this._state.diffuse.set(value || [1.0, 1.0, 1.0]);
+                    var diffuse = this._state.diffuse;
+
+                    if (!diffuse) {
+                        diffuse = this._state.diffuse = new Float32Array(3);
+
+                    } else if (value && diffuse[0] === value[0] && diffuse[1] === value[1] && diffuse[2] === value[2]) {
+                        return;
+                    }
+
+                    if (value) {
+                        diffuse[0] = value[0];
+                        diffuse[1] = value[1];
+                        diffuse[2] = value[2];
+
+                    } else {
+                        diffuse[0] = 1;
+                        diffuse[1] = 1;
+                        diffuse[2] = 1;
+                    }
 
                     this._renderer.imageDirty = true;
 
@@ -258,7 +331,7 @@
             /**
              The material's specular color.
 
-             This property may be overridden by {{#crossLink "PhongMaterial/specularMap:property"}}{{/crossLink}}.
+             Multiplies by {{#crossLink "PhongMaterial/specularMap:property"}}{{/crossLink}}.
 
              Fires a {{#crossLink "PhongMaterial/specular:event"}}{{/crossLink}} event on change.
 
@@ -270,7 +343,25 @@
 
                 set: function (value) {
 
-                    this._state.specular.set(value || [1.0, 1.0, 1.0]);
+                    var specular = this._state.specular;
+
+                    if (!specular) {
+                        specular = this._state.specular = new Float32Array(3);
+
+                    } else if (value && specular[0] === value[0] && specular[1] === value[1] && specular[2] === value[2]) {
+                        return;
+                    }
+
+                    if (value) {
+                        specular[0] = value[0];
+                        specular[1] = value[1];
+                        specular[2] = value[2];
+
+                    } else {
+                        specular[0] = 1;
+                        specular[1] = 1;
+                        specular[2] = 1;
+                    }
 
                     this._renderer.imageDirty = true;
 
@@ -291,7 +382,7 @@
             /**
              The PhongMaterial's emissive color.
 
-             This property may be overridden by {{#crossLink "PhongMaterial/emissiveMap:property"}}{{/crossLink}}.
+             Multiplies by {{#crossLink "PhongMaterial/emissiveMap:property"}}{{/crossLink}}.
 
              Fires a {{#crossLink "PhongMaterial/emissive:event"}}{{/crossLink}} event on change.
 
@@ -303,7 +394,25 @@
 
                 set: function (value) {
 
-                    this._state.emissive.set(value || [0.0, 0.0, 0.0]);
+                    var emissive = this._state.emissive;
+
+                    if (!emissive) {
+                        emissive = this._state.emissive = new Float32Array(3);
+
+                    } else if (value && emissive[0] === value[0] && emissive[1] === value[1] && emissive[2] === value[2]) {
+                        return;
+                    }
+
+                    if (value) {
+                        emissive[0] = value[0];
+                        emissive[1] = value[1];
+                        emissive[2] = value[2];
+
+                    } else {
+                        emissive[0] = 0;
+                        emissive[1] = 0;
+                        emissive[2] = 0;
+                    }
 
                     this._renderer.imageDirty = true;
 
@@ -330,7 +439,7 @@
              to {{#crossLink "Modes"}}Modes{{/crossLink}} that have {{#crossLink "Modes/transparent:property"}}transparent{{/crossLink}}
              set to **true**.
 
-             This property may be overridden by {{#crossLink "PhongMaterial/opacityMap:property"}}{{/crossLink}}.
+             Multiplies by {{#crossLink "PhongMaterial/opacityMap:property"}}{{/crossLink}}.
 
              Fires an {{#crossLink "PhongMaterial/opacity:event"}}{{/crossLink}} event on change.
 
@@ -468,7 +577,7 @@
 
              The surface will be non-reflective when this is 0, and completely mirror-like when it is 1.0.
 
-             This property may be overridden by {{#crossLink "PhongMaterial/reflectivityMap:property"}}{{/crossLink}}.
+             Multiplies by {{#crossLink "PhongMaterial/reflectivityMap:property"}}{{/crossLink}}.
 
              Fires a {{#crossLink "PhongMaterial/reflectivity:event"}}{{/crossLink}} event on change.
 
@@ -501,7 +610,7 @@
             /**
              A normal {{#crossLink "Texture"}}{{/crossLink}} attached to this PhongMaterial.
 
-             This property overrides {{#crossLink "PhongMaterial/normalMap:property"}}{{/crossLink}} when not null or undefined.
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
 
              Fires a {{#crossLink "PhongMaterial/normalMap:event"}}{{/crossLink}} event on change.
 
@@ -530,7 +639,9 @@
             /**
              An ambient {{#crossLink "Texture"}}{{/crossLink}} attached to this PhongMaterial.
 
-             This property overrides {{#crossLink "PhongMaterial/ambientMap:property"}}{{/crossLink}} when not null or undefined.
+             This property multiplies by {{#crossLink "PhongMaterial/ambient:property"}}{{/crossLink}} property.
+
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
 
              Fires a {{#crossLink "PhongMaterial/ambientMap:event"}}{{/crossLink}} event on change.
 
@@ -559,7 +670,9 @@
             /**
              A diffuse {{#crossLink "Texture"}}{{/crossLink}} attached to this PhongMaterial.
 
-             This property overrides {{#crossLink "PhongMaterial/diffuseMap:property"}}{{/crossLink}} when not null or undefined.
+             This property multiplies by {{#crossLink "PhongMaterial/diffuseMap:property"}}{{/crossLink}} when not null or undefined.
+
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
 
              Fires a {{#crossLink "PhongMaterial/diffuseMap:event"}}{{/crossLink}} event on change.
 
@@ -588,7 +701,9 @@
             /**
              A specular {{#crossLink "Texture"}}{{/crossLink}} attached to this PhongMaterial.
 
-             This property overrides {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}} when not null or undefined.
+             This property multiplies by {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}} when not null or undefined.
+
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
 
              Fires a {{#crossLink "PhongMaterial/specularMap:event"}}{{/crossLink}} event on change.
 
@@ -617,7 +732,9 @@
             /**
              An emissive {{#crossLink "Texture"}}{{/crossLink}} attached to this PhongMaterial.
 
-             This property overrides {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}} when not null or undefined.
+             This property multiplies by {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}} when not null or undefined.
+
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
 
              Fires an {{#crossLink "PhongMaterial/emissiveMap:event"}}{{/crossLink}} event on change.
 
@@ -646,7 +763,9 @@
             /**
              An opacity {{#crossLink "Texture"}}{{/crossLink}} attached to this PhongMaterial.
 
-             This property overrides {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} when not null or undefined.
+             This property multiplies by {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} when not null or undefined.
+
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
 
              Fires an {{#crossLink "PhongMaterial/opacityMap:event"}}{{/crossLink}} event on change.
 
@@ -675,7 +794,9 @@
             /**
              A reflectivity {{#crossLink "Texture"}}{{/crossLink}} attached to this PhongMaterial.
 
-             This property overrides {{#crossLink "PhongMaterial/reflectivity:property"}}{{/crossLink}} when not null or undefined.
+             This property multiplies by {{#crossLink "PhongMaterial/reflectivity:property"}}{{/crossLink}} when not null or undefined.
+
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
 
              Fires a {{#crossLink "PhongMaterial/reflectivityMap:event"}}{{/crossLink}} event on change.
 
@@ -704,6 +825,8 @@
             /**
              A reflection {{#crossLink "CubeMap"}}{{/crossLink}} attached to this PhongMaterial.
 
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
+
              Fires a {{#crossLink "PhongMaterial/reflection:event"}}{{/crossLink}} event on change.
 
              @property reflection
@@ -729,9 +852,41 @@
             },
 
             /**
+
+             An occlusion map {{#crossLink "Texture"}}{{/crossLink}} attached to this PhongMaterial.
+
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
+
+             Fires a {{#crossLink "PhongMaterial/occlusionMap:event"}}{{/crossLink}} event on change.
+
+             @property occlusionMap
+             @default undefined
+             @type {Texture}
+             */
+            occlusionMap: {
+
+                set: function (texture) {
+
+                    /**
+                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/occlusionMap:property"}}{{/crossLink}} property changes.
+
+                     @event occlusionMap
+                     @param value Number The property's new value
+                     */
+                    this._attachComponent("xeogl.Texture", "occlusionMap", texture);
+                },
+
+                get: function () {
+                    return this._attached.occlusionMap;
+                }
+            },
+
+            /**
              A diffuse {{#crossLink "Fresnel"}}{{/crossLink}} attached to this PhongMaterial.
 
-             This property overrides {{#crossLink "PhongMaterial/diffuseFresnel:property"}}{{/crossLink}} when not null or undefined.
+             This property multiplies by {{#crossLink "PhongMaterial/diffuseFresnel:property"}}{{/crossLink}} when not null or undefined.
+
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
 
              Fires a {{#crossLink "PhongMaterial/diffuseFresnel:event"}}{{/crossLink}} event on change.
 
@@ -760,7 +915,9 @@
             /**
              A specular {{#crossLink "Fresnel"}}{{/crossLink}} attached to this PhongMaterial.
 
-             This property overrides {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}} when not null or undefined.
+             This property multiplies by {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}} when not null or undefined.
+
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
 
              Fires a {{#crossLink "PhongMaterial/specularFresnel:event"}}{{/crossLink}} event on change.
 
@@ -789,7 +946,9 @@
             /**
              An emissive {{#crossLink "Fresnel"}}{{/crossLink}} attached to this PhongMaterial.
 
-             This property overrides {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}} when not null or undefined.
+             This property multiplies by {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}} when not null or undefined.
+
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
 
              Fires an {{#crossLink "PhongMaterial/emissiveFresnel:event"}}{{/crossLink}} event on change.
 
@@ -818,7 +977,9 @@
             /**
              An opacity {{#crossLink "Fresnel"}}{{/crossLink}} attached to this PhongMaterial.
 
-             This property overrides {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} when not null or undefined.
+             This property multiplies by {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} when not null or undefined.
+
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
 
              Fires an {{#crossLink "PhongMaterial/opacityFresnel:event"}}{{/crossLink}} event on change.
 
@@ -847,7 +1008,9 @@
             /**
              A reflectivity {{#crossLink "Fresnel"}}{{/crossLink}} attached to this PhongMaterial.
 
-             This property overrides {{#crossLink "PhongMaterial/reflectivity:property"}}{{/crossLink}} when not null or undefined.
+             This property multiplies by {{#crossLink "PhongMaterial/reflectivity:property"}}{{/crossLink}} when not null or undefined.
+
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
 
              Fires a {{#crossLink "PhongMaterial/reflectivityFresnel:event"}}{{/crossLink}} event on change.
 
@@ -911,50 +1074,57 @@
             var hash = ["/p"]; // 'P' for Phong
 
             if (state.normalMap) {
-                hash.push("/b");
+                hash.push("/nm");
                 if (state.normalMap.matrix) {
                     hash.push("/mat");
                 }
             }
 
             if (state.ambientMap) {
-                hash.push("/a");
+                hash.push("/am");
                 if (state.ambientMap.matrix) {
                     hash.push("/mat");
                 }
             }
 
             if (state.diffuseMap) {
-                hash.push("/d");
+                hash.push("/dm");
                 if (state.diffuseMap.matrix) {
                     hash.push("/mat");
                 }
             }
 
             if (state.specularMap) {
-                hash.push("/s");
+                hash.push("/sm");
                 if (state.specularMap.matrix) {
                     hash.push("/mat");
                 }
             }
 
             if (state.emissiveMap) {
-                hash.push("/e");
+                hash.push("/em");
                 if (state.emissiveMap.matrix) {
                     hash.push("/mat");
                 }
             }
 
             if (state.opacityMap) {
-                hash.push("/o");
+                hash.push("/opm");
                 if (state.opacityMap.matrix) {
                     hash.push("/mat");
                 }
             }
 
             if (state.reflectivityMap) {
-                hash.push("/r");
+                hash.push("/rm");
                 if (state.reflectivityMap.matrix) {
+                    hash.push("/mat");
+                }
+            }
+
+            if (state.occlusionMap) {
+                hash.push("/ocm");
+                if (state.occlusionMap.matrix) {
                     hash.push("/mat");
                 }
             }
@@ -990,10 +1160,10 @@
 
                 // Colors
 
-                ambient: this._state.ambient,
-                diffuse: this._state.diffuse,
-                specular: this._state.specular,
-                emissive: this._state.emissive
+                ambient: this._state.ambient.slice(),
+                diffuse: this._state.diffuse.slice(),
+                specular: this._state.specular.slice(),
+                emissive: this._state.emissive.slice()
             };
 
             if (this._state.opacity !== 1.0) {
@@ -1007,7 +1177,6 @@
             if (this._state.reflectivity !== 1.0) {
                 json.reflectivity = this._state.reflectivity;
             }
-
 
             // Lines and points
 
@@ -1049,6 +1218,10 @@
 
             if (components.reflectivityMap) {
                 json.reflectivityMap = components.reflectivityMap.id;
+            }
+
+            if (components.occlusionMap) {
+                json.occlusionMap = components.occlusionMap.id;
             }
 
             if (components.diffuseFresnel) {

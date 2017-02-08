@@ -15,8 +15,7 @@
 
  ## Examples
 
- * [KeyboardRotateCamera example](../../examples/#interaction_KeyboardRotateCamera)
- * [CameraControl example](../../examples/#interaction_CameraControl)
+ * [CameraControl example](../../examples/#interaction_camera_CameraControl)
 
  ## Usage
 
@@ -48,7 +47,7 @@
      firstPerson: false
  });
  ````
- @class KeyboardRotateCamera
+
  @module xeogl
  @submodule controls
  @constructor
