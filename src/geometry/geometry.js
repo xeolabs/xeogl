@@ -313,42 +313,23 @@
             this._localBoundary = null;
             this._boundaryDirty = true;
 
-
             var defaultGeometry = (!cfg.positions && !cfg.normals && !cfg.uv && !cfg.indices);
 
-            if (defaultGeometry) {
+            if (defaultGeometry) { // Default geometry is a box-shaped triangle mesh
 
                 this.primitive = cfg.primitive;
 
             } else {
 
-                var defaultLineStripGeometry = ((!cfg.primitive || cfg.primitive === "line-strip") && cfg.positions && !cfg.indices);
+                // Custom geometry
 
-                if (defaultLineStripGeometry) {
-
-                    // Line strip when only positions are given and no primitive
-
-                    var indices = [];
-                    for (var i = 0, len = cfg.positions.length / 3; i < len; i++) {
-                        indices.push(i);
-                    }
-
-                    this.primitive = "line-strip";
-                    this.positions = cfg.positions;
-                    this.indices = indices;
-
-                } else {
-
-                    // Custom geometry
-
-                    this.primitive = cfg.primitive;
-                    this.positions = cfg.positions;
-                    this.colors = cfg.colors;
-                    this.normals = cfg.normals;
-                    this.uv = cfg.uv;
-                    this.tangents = cfg.tangents;
-                    this.indices = cfg.indices;
-                }
+                this.primitive = cfg.primitive;
+                this.positions = cfg.positions;
+                this.colors = cfg.colors;
+                this.normals = cfg.normals;
+                this.uv = cfg.uv;
+                this.tangents = cfg.tangents;
+                this.indices = cfg.indices;
             }
 
             this.autoNormals = cfg.autoNormals;
@@ -549,23 +530,42 @@
             }
 
             if (this._normalsDirty) {
-                if (state.normals) {
+                if (this._autoNormals) {
+                    if (this._positions && this._indices) {
+                        this._normals = xeogl.math.buildNormals(this._positions, this._indices);
+                        this._normalsDirty = false;
+                        this._tangentsDirty = true;
+                        boundaryDirty = true;
+                    }
+                }
+                if (!this._normalsUpdate) {
+                    if (state.normals) {
+                        memoryStats.normals -= state.normals.numItems;
+                        state.normals.destroy();
+                    }
+                } else if (!state.normals) {
+                    state.normals = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._normals, this._normals.length, 3, state.usage);
+                    memoryStats.normals += state.normals.numItems;
+                } else if (this._normalsUpdateOffset === null && this._normalsUpdate.length === state.normals.length) {
+                    state.normals.setData(this._normalsUpdate);
+                } else if (this._normalsUpdateOffset === null) {
+                    if (state.normals) {
+                        memoryStats.normals -= state.normals.numItems;
+                        state.normals.destroy();
+                    }
+                    state.normals = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._normals, this._normals.length, 3, state.usage);
+                    memoryStats.normals += state.normals.numItems;
+                } else if ((this._normalsUpdateOffset + this._normalsUpdate.length) <= state.normals.length) {
+                    state.normals.setData(this._normalsUpdate, this._normalsUpdateOffset);
+                } else {
                     memoryStats.normals -= state.normals.numItems;
                     state.normals.destroy();
-                }
-
-                // Automatic normal generation
-
-                if (this._autoNormals && this._positions && this._indices) {
-                    this._normals = xeogl.math.buildNormals(this._positions, this._indices);
-                }
-
-                state.normals = this._normals ? new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._normals, this._normals.length, 3, state.usage) : null;
-                if (state.normals) {
+                    state.normals = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._normals, this._normals.length, 3, state.usage);
                     memoryStats.normals += state.normals.numItems;
                 }
                 this._normalsDirty = false;
                 this._tangentsDirty = true;
+                boundaryDirty = true;
             }
 
             this._geometryUpdateScheduled = false;
@@ -1240,7 +1240,7 @@
             this._uvsDirty = true;
 
             this._scheduleGeometryUpdate();
-            
+
             if (dirty) {
                 this._hashDirty = true;
                 this.fire("dirty", true);
@@ -1329,7 +1329,7 @@
          @param [offset=0] {Number}
          */
         setIndices: function (indices, offset) {
-            
+
             if (indices && indices.length === 0) {
                 indices = undefined;
             }
@@ -1449,19 +1449,19 @@
             hash.push("/" + state.primitive + ";");
 
             if (state.positions) {
-                hash.push("0");
+                hash.push("p");
             }
 
             if (state.colors) {
-                hash.push("1");
+                hash.push("c");
             }
 
             if (state.normals) {
-                hash.push("2");
+                hash.push("n");
             }
 
             if (state.uv) {
-                hash.push("3");
+                hash.push("u");
             }
 
             // TODO: Tangents
@@ -1515,8 +1515,8 @@
 
             // Destroy lazy-generated VBOs
 
-            if (this._tangentsData) {
-                this._tangentsData.destroy();
+            if (this._tangents) {
+                this._tangents.destroy();
             }
 
             if (this._pickPositions) {
