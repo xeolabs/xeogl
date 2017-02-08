@@ -6,7 +6,7 @@
      An **OBJGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that's loaded from a
      <a href="https://en.wikipedia.org/wiki/Wavefront_.obj_file">Wavefront .OBJ</a> file.
 
-     <a href="../../examples/#geometry_OBJGeometry_raptor"><img src="../../assets/images/screenshots/OBJGeometry.png"></img></a>
+     <a href="../../examples/#importing_obj_raptor"><img src="../../assets/images/screenshots/OBJGeometry.png"></img></a>
 
      ## Overview
 
@@ -138,12 +138,6 @@
 
                                 for (var i = 0; i < m.i_verts.length; i++) {
                                     indices.push(i);
-                                }
-
-                                // Need to flip the UV coordinates on Y-axis for SceneJS geometry
-
-                                for (var i = 1, len = uv.length; i < len; i += 2) {
-                                    uv[i] *= -1.0;
                                 }
 
                                 self.primitive = "triangles";

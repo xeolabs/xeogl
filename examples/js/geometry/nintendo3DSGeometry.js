@@ -6,7 +6,7 @@
      A **Nintendo3DSGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that's loaded from a
      <a href="https://en.wikipedia.org/wiki/Nintendo_3DS">Nintendo 3DS</a> file.
 
-     <a href="../../examples/#geometry_Nintendo3DSGeometry_lexus"><img src="../../assets/images/screenshots/Nintendo3DSGeometry.png"></img></a>
+     <a href="../../examples/#importing_3ds_lexus"><img src="../../assets/images/screenshots/Nintendo3DSGeometry.png"></img></a>
 
      ## Overview
 
@@ -129,13 +129,6 @@
                                 var m = K3D.parse.from3DS(data);
 
                                 var mesh = m.edit.objects[0].mesh;
-
-                                // Need to flip the UV coordinates on Y-axis for SceneJS geometry
-                                if (mesh.uvt) {
-                                    for (var i = 1, len = mesh.uvt.length; i < len; i += 2) {
-                                        mesh.uvt[i] *= -1.0;
-                                    }
-                                }
 
                                 self.primitive = "triangles";
                                 self.positions = mesh.vertices;

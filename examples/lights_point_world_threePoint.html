@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.min.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <a href="http://xeogl.org" target="_parent">xeogl</a> - <a href="https://en.wikipedia.org/wiki/Three-point_lighting">Three-point lighting</a> using World-space <a href="../docs/classes/PointLight.html"
+                                                               target="_parent">PointLights</a>
+</div>
+
+<script>
+
+    // Lights
+
+    var lights = new xeogl.Lights({
+        lights: [
+
+//            new xeogl.AmbientLight({
+//                color: [0.3, 0.3, 0.3],
+//                intensity: 0.9
+//            }),
+
+            new xeogl.PointLight({
+                id: "keyLight",
+                pos: [-80, 60, 80],
+                color: [1.0, 0.3, 0.3],
+                intensity: 1.0,
+                space: "world"
+            }),
+
+            new xeogl.PointLight({
+                id: "fillLight",
+                pos: [ 80, 40, 40],
+                color: [0.3, 1.0, 0.3],
+                intensity: 1.0,
+                space: "world"
+            }),
+
+            new xeogl.PointLight({
+                id: "rimLight",
+                pos: [ -20, 80, -80],
+                color: [0.6, 0.6, 0.6],
+                intensity: 1.0,
+                space: "world"
+            })
+        ]
+    });
+
+    // Sphere
+
+    new xeogl.Entity({
+        geometry: new xeogl.SphereGeometry({
+            radius: 2.0
+        }),
+        material: new xeogl.PhongMaterial({
+            diffuse: [0.7, 0.7, 0.7],
+            specular: [1.0, 1.0, 1.0],
+            emissive: [0, 0, 0],
+            opacity: 1.0
+
+        }),
+        lights: lights
+    });
+
+    // Ground plane
+
+    new xeogl.Entity({
+        geometry: new xeogl.PlaneGeometry({
+            xSize: 30,
+            zSize: 30
+        }),
+        material: new xeogl.PhongMaterial({
+            diffuseMap: new xeogl.Texture({
+                src: "textures/diffuse/uvGrid2.jpg"
+            })
+        }),
+        transform: new xeogl.Translate({
+            xyz: [0, -2.1, 0]
+        }),
+        modes: new xeogl.Modes({
+            backfaces: true
+        }),
+        lights: lights
+    });
+
+    // User camera control
+
+    new xeogl.CameraControl();
+
+    // Orbit camera
+
+    xeogl.scene.on("tick", function() {
+        xeogl.scene.camera.view.rotateEyeY(0.3);
+    });
+
+</script>
+</body>
+</html>

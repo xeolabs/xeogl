@@ -3,9 +3,7 @@
 
  ## Examples
 
- <ul>
- <li>[Drawing marks on a gearbox model](../../examples/#marking_PointMarkings)</li>
- </ul>
+TODO
 
  ## Usage
 

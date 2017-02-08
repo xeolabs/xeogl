@@ -7,11 +7,11 @@
 
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="../build/xeogl.js"></script>
+    <script src="../build/xeogl.min.js"></script>
 
 <body>
 
-<div id="infoLight">
+<div id="info">
     <a href="http://xeogl.org" target="_parent" >xeogl</a><br><br>picking <a
         href="../docs/classes/Entity.html" target="_parent">Entities</a> using an arbitrarily-positioned World-space ray
 </div>
@@ -22,7 +22,7 @@
 
     // Load glTF
     var gearbox = new xeogl.GLTFModel({
-        src: "models/gltf/gearbox/gearbox_assy.gltf"
+        src: "models/gltf/gearbox/PBR-MetalRoughness/gearbox_assy.gltf"
     });
 
     // Set initial camera position
@@ -30,6 +30,8 @@
     view.eye = [184.21, 10.54, -7.03];
     view.look = [159.20, 17.02, 3.21];
     view.up = [-0.15, 0.97, 0.13];
+
+    view.rotateEyeX(20);
 
     // Zoom camera out a bit
 
@@ -105,7 +107,6 @@
 
             // Orbit the camera
             view.rotateEyeY(xinc < 0 ? 0.2 : -0.2);
-            view.rotateEyeX(xinc < 0 ? 0.1 : -0.1);
 
             rayOrigin[0] += xinc;
             rayOrigin[1] = 12 - Math.sin(rayOrigin[0] * 2.0) * 5;

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.min.js"></script>
+
+    <script src="js/debug/debug.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <a href="http://xeogl.org" target="_parent">xeogl</a> - testing connect and disconnect
+    of a <a href="../docs/classes/PhongMaterial.html" target="_parent">PhongMaterial</a>
+    on an <a href="../docs/classes/Entity.html" target="_parent">Entity</a>
+</div>
+
+<script>
+
+    var entity = new xeogl.Entity({
+        geometry: new xeogl.SphereGeometry({
+            radius: 1.5,
+            heightSegments: 60,
+            widthSegments: 60
+        })
+    });
+
+    entity.scene.material.diffuse = [0,1,0];
+
+    var material = new xeogl.PhongMaterial({
+        diffuseMap: new xeogl.Texture({
+            src: "textures/diffuse/uvGrid2.jpg"
+        })
+    });
+
+    entity.scene.view.eye = [0, 0, 5];
+
+    var toggle = false;
+
+    setInterval(function () {
+        entity.material = toggle ? material : null;
+        toggle = !toggle;
+    }, 500);
+
+    // Orbit the eye position about the look position.
+    entity.scene.on("tick", function () {
+        entity.camera.view.rotateEyeY(-0.1);
+    });
+
+    new xeogl.CameraControl();
+
+</script>
+</body>
+</html>

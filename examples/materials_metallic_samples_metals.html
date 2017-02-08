@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.min.js"></script>
+    <script src="js/skyboxes/skybox.js"></script>
+    <script src="js/geometry/vectorTextGeometry.js"></script>
+    <script src="js/utils/materialGallery.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info" class="dark">
+    <a href="http://xeogl.org" target="_parent">xeogl</a>
+    <br><br>
+    <a
+        href="../docs/classes/MetallicMaterial.html" target="_parent">MetallicMaterial</a> - sample metals
+
+    <br><br>
+
+    <div id="menu"></div>
+</div>
+
+<script>
+
+    //-----------------------------------------------------------------------------------------------------
+    // Material definitions
+    // Metals taken from https://docs.unrealengine.com/latest/INT/Engine/Rendering/Materials/PhysicallyBased/
+    //-----------------------------------------------------------------------------------------------------
+
+    var roughnessMap = new xeogl.Texture({
+        src: "textures/roughness/goldRoughness.jpg"
+    });
+
+    materialGallery("menu", {
+        "Gold": {
+            material: {
+                type: "xeogl.MetallicMaterial",
+                baseColor: [1.0, 1.0, 1.0],
+                baseColorMap: {src: "textures/diffuse/goldAlbedo.jpg"},
+                metallic: 1.0,
+                roughness: 0.5,
+                roughnessMap: roughnessMap
+            }
+        },
+        "Rusty Steel": {
+            material: {
+                type: "xeogl.MetallicMaterial",
+                roughness: 1.0,
+                metallic: 1.0,
+                baseColorMap: {src: "textures/materials/poligon/RustMixedOnPaint012_1k/RustMixedOnPaint012_COL_VAR1_1K.jpg"},
+                roughnessMap: {src: "textures/materials/poligon/RustMixedOnPaint012_1k/RustMixedOnPaint012_REFL_1K.jpg"}
+            }
+        },
+        "Iron": {
+            material: {
+                type: "xeogl.MetallicMaterial",
+                baseColor: [0.560, 0.570, 0.580],
+                metallic: 1.0,
+                roughness: 0.5,
+                roughnessMap: roughnessMap
+            }
+        },
+        "Silver": {
+            material: {
+                type: "xeogl.MetallicMaterial",
+                baseColor: [0.972, 0.960, 0.915],
+                metallic: 1.0,
+                roughness: 0.5,
+                roughnessMap: roughnessMap
+            }
+        },
+        "Aluminium": {
+            material: {
+                type: "xeogl.MetallicMaterial",
+                baseColor: [0.913, 0.921, 0.925],
+                metallic: 1.0,
+                roughness: 0.5,
+                roughnessMap: roughnessMap
+            }
+        },
+        "Copper": {
+            material: {
+                type: "xeogl.MetallicMaterial",
+                baseColor: [0.955, 0.637, 0.538],
+                metallic: 1.0,
+                roughness: 0.5,
+                roughnessMap: roughnessMap
+            }
+        },
+        "Chromium": {
+            material: {
+                type: "xeogl.MetallicMaterial",
+                baseColor: [0.550, 0.556, 0.554],
+                metallic: 1.0,
+                roughness: 0.5,
+                roughnessMap: roughnessMap
+            }
+        },
+        "Nickel": {
+            material: {
+                type: "xeogl.MetallicMaterial",
+                baseColor: [0.660, 0.609, 0.526],
+                metallic: 1.0,
+                roughness: 0.5,
+                roughnessMap: roughnessMap
+            }
+        },
+        "Titanium": {
+            material: {
+                type: "xeogl.MetallicMaterial",
+                baseColor: [0.542, 0.497, 0.449],
+                metallic: 1.0,
+                roughness: 0.5,
+                roughnessMap: roughnessMap
+            }
+        },
+        "Cobalt": {
+            material: {
+                type: "xeogl.MetallicMaterial",
+                baseColor: [0.662, 0.655, 0.634],
+                metallic: 1.0,
+                roughness: 0.1
+            }
+        },
+        "Platinum": {
+            material: {
+                type: "xeogl.MetallicMaterial",
+                baseColor: [0.672, 0.637, 0.585],
+                metallic: 1.0,
+                roughness: 0.1
+            }
+        },
+        "Rust and paint": {
+            material: {
+                type: "xeogl.MetallicMaterial",
+                metallic: 0.5,
+                roughness: 0.5,
+                baseColorMap: {
+                    src: "textures/materials/poligon/RustMixedOnPaint012_1k/RustMixedOnPaint012_COL_VAR1_1K.jpg"
+                },
+                normalMap: {
+                    src: "textures/materials/poligon/RustMixedOnPaint012_1k/RustMixedOnPaint012_NRM_1K.jpg"
+                },
+                roughnessMap: {
+                    src: "textures/materials/poligon/RustMixedOnPaint012_1k/RustMixedOnPaint012_GLOSS_1K.jpg"
+                }
+            }
+        }
+    });
+
+</script>
+</body>
+</html>

@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeogl.js"></script>
+    <script src="../build/xeogl.min.js"></script>
 
     <script src="js/geometry/k3d.js"></script>
     <script src="js/geometry/objGeometry.js"></script>
@@ -14,7 +14,7 @@
 
 <body>
 
-<div id="infoLight">
+<div id="info">
     <a href="http://xeogl.org" target="_parent">xeogl</a><br><br>diffuse <a href="../docs/classes/Texture.html"
                                                                             target="_parent">Texture</a>
 </div>
@@ -37,8 +37,8 @@
             specularMap: new xeogl.Texture({
                 src: "textures/specular/chest_specular.png"
             }),
-            ambientMap: new xeogl.Texture({
-                src: "textures/ao/chest_ao.png"
+            occlusionMap: new xeogl.Texture({
+                src: "textures/occlusion/chest_ao.png"
             })
         }),
 

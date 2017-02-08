@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="../build/xeogl.min.js"></script>
+
+    <script src="js/geometry/k3d.js"></script>
+    <script src="js/geometry/objGeometry.js"></script>
+
+<body>
+
+<div id="info">
+    <a href="http://xeogl.org" target="_parent">xeogl</a><br><br>
+    <ul>
+        <li>Loading a <a href="http://www.cybercity3d.com/sample-data">CyberCity3D sample model</a> using an <a
+                href="../docs/classes/OBJGeometry.html" target="_parent">OBJGeometry</a></li>
+    </ul>
+</div>
+
+<div id="logos">
+    <a href="http://www.cybercity3d.com/sample-data" target="_parent"><img
+            src="../assets/images/logos/cyberCity.png"></a>
+</div>
+
+<script>
+
+    // CyberCity3D geometry loaded from .OBJ
+
+    var miamiGeometry = new xeogl.OBJGeometry({
+        src: "models/obj/CyberCity3D/Miami_Sample.obj"
+    });
+
+    // Entity on top of the "water", instancing the geometry
+
+    var city = new xeogl.Entity({
+        geometry: miamiGeometry,
+        material: new xeogl.PhongMaterial({
+            diffuse: [0.890196, 0.882353, 0.870588]
+        }),
+        transform: new xeogl.Scale({
+            xyz: [0.01, 0.01, 0.01]
+        })
+    });
+
+    // Entity below the "water" creating a fake reflection,
+    // also instancing the geometry by reflecting it in the Y-axis
+
+    var reflection = new xeogl.Entity({
+        geometry: miamiGeometry,
+        material: new xeogl.PhongMaterial({
+            diffuse: [0.890196, 0.882353, 0.870588]
+        }),
+        modes: new xeogl.Modes({
+            frontface: "cw",    // Reverse face vertex winding since we're reflecting
+            collidable: false   // Don't include in scene boundary calculation
+        }),
+        transform: new xeogl.Scale({  // Reflection transform
+            xyz: [0.01, -0.01, 0.01],
+            parent: new xeogl.Translate({
+                xyz: [0, -2.328, 0]
+            })
+        })
+    });
+
+    // The water
+
+    var water = new xeogl.Entity({
+        geometry: new xeogl.PlaneGeometry({
+            xSize: 550,
+            zSize: 550
+        }),
+        material: new xeogl.PhongMaterial({
+            diffuse: [0.0990196, 0.0982353, 0.1570588],
+            specular: [.3, .3, .3],
+            shininess: 150,
+            opacity: 0.8
+        }),
+        modes: new xeogl.Modes({
+            backfaces: true,
+            transparent: true,
+            collidable: false   // Don't include in scene boundary calculation
+        }),
+        transform: new xeogl.Translate({
+            xyz: [0, -1.185, 0]
+        })
+    });
+
+    // Initial camera pose
+
+    var view = city.camera.view;
+
+    view.look = [0, -1.5, 0];
+    view.eye = [0, -1.5, -10];
+
+    view.rotateEyeX(20);
+
+    // Orbit the camera
+
+    city.scene.on("tick", function () {
+        city.scene.camera.view.rotateEyeY(-0.1);
+    });
+
+    // Camera interaction
+
+    new xeogl.CameraControl();
+
+</script>
+</body>
+</html>

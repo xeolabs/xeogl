@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.min.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <a href="http://xeogl.org" target="_parent">xeogl</a>
+    <br><br>
+
+    <p>creating an <a href="../docs/classes/Entity.html" target="_parent">Entity</a>, then finding it by ID within
+        its <a href="../docs/classes/Scene.html" target="_parent">Scene</a> and attaching a blue <a
+                href="../docs/classes/PhongMaterial.html" target="_parent">PhongMaterial</a> to it</p>
+    <pre id="log" style="text-align: left;"></pre>
+</div>
+
+<script>
+
+
+    // Create a Entity with all defaults
+    var entity = new xeogl.Entity();
+
+    // Subscribe to change of material on our Entity.
+    // This will immediately fire a change event for the current value of that property.
+
+    entity.on("material", function (material) {
+        log("Entity's material is: " + material.id);
+    });
+
+    // Attach a new Material to the Entity.
+    // This will fire another
+
+    entity.material = new xeogl.PhongMaterial({
+        id: "myMaterial",
+        diffuse: [0.9, 0.4, 0.4]
+    });
+
+    // Subscribe to change of diffuse color on our material
+    entity.material.on("diffuse", function (diffuse) {
+        log("Entity's material's diffuse color is: " + JSON.stringify(diffuse));
+    });
+
+    // Change the material's diffuse color
+    entity.material.diffuse = [0.4, 0.4, 0.9];
+
+    // Logs text to the page
+    function log(msg) {
+        document.getElementById("log").innerText += msg + "\n";
+    }
+
+    // Orbit the eye position about the look position.
+    entity.scene.on("tick", function () {
+
+        var view = entity.camera.view;
+
+        view.rotateEyeY(-0.15);
+        view.rotateEyeX(0.05);
+    });
+
+    // Allow user camera control
+    new xeogl.CameraControl();
+
+</script>
+</body>
+</html>

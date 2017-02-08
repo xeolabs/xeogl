@@ -3,16 +3,16 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     font-size: 16px;
     line-height: 1.50;
-    color: #333332
-    padding: 10px;
+    color: #333332 padding : 10 px;
     background-color: #fff;
     text-decoration: none;
     word-spacing: normal;
     text-align: left;
     letter-spacing: 0;
     -webkit-font-smoothing: antialiased;
-    overflow: auto;
+    overflow-y: hidden;
     overflow-x: hidden;
+    margin: 0;
 }
 
 .xeolabsLogo {
@@ -25,93 +25,124 @@ body {
     width: auto;
 }
 
+#logos {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 200000;
+}
+
 #info {
-    position: relative;
+    position: absolute;
     top: 0px;
-    padding: 5px;
-    padding-top: 20px;
-    z-index: 100;
+    z-index: 200000;
     font-size: 16px;
-    text-align: center;
+    color: #ffffff !important;
+    /*font-weight: 600;*/
+    float: left;
+    left: 0px;
+    padding: 10px;
+    /*border-radius: 0 0 4px 0;*/
+    /*border-radius:6px;*/
+    height: auto;
+    text-align: left;
+    /*border: solid 1px #bdbcbc;*/
+}
+
+#menu {
+    margin: 0;
+    left:0;
+    width: auto;
+    height:100%;
+    padding: 7px;
+    z-index: 200000;
+    font-size: 16px;
+}
+
+#explorer {
+    margin: 0;
+    left:0;
+    opacity: 0.5;
+    background: black;
+    width: auto;
+    height:100%;
+    position:absolute;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    padding: 7px;
+    z-index: 200000;
+    font-size: 16px;
+}
+
+
+#menu a {
+    color: white;
+}
+
+#menu a:hover {
+    color: yellow;
+}
+
+#explorer a {
+    color: white;
+}
+
+#explorer a:hover {
+    color: yellow;
+}
+
+.dark {
+    background: black;
+    opacity: 0.6;
 }
 
 #info a {
-    font-size: 16px;
-    color: #ffffff;
-    text-decoration: underline;
-}
-
-#infoLight {
-    position: absolute;
-    top: 0;
-    /* padding: 5px; */
-    padding: 20px;
     z-index: 200000;
-    font-size: 16px;
-    /* text-align: right; */
-    color: white;
-    /*width: 100%;*/
-    float: left;
-    /*border: 1px gray solid;*/
-}
-
-#infoLight a {
-    z-index: 200000;
-    font-size: 16px;
-    color: #ffffff;
     text-decoration: underline !important;
+    color: #ffffff !important;
 }
 
-#infoDark {
-    position: absolute;
-    top: 0;
-    /* padding: 5px; */
-    padding: 20px;
-    z-index: 200000;
-    font-size: 16px;
-    /* text-align: right; */
-    color: black;
-    /*width: 100%;*/
-    float: left;
-
+#info a:hover {
+    color: #ffffff !important;
 }
 
-#infoDark a {
-    font-size: 16px;
-    color: #000000;
-    text-decoration: underline !important;
+#info p {
+    padding: 0px;
+    margin: 0px;
 }
 
-#infoTxt {
-    position: relative;
-    top: 0;
-    padding: 5px;
-    z-index: 100;
-    font-size: 20px;
-    text-align: center;
-    color: #333;
-    border: 1px white solid;
+#info ul {
+    margin: 0px;
+    padding: 0;
+    margin-left: 1em;
 }
 
-.infoTxtLight {
-    position: relative;
-    top: 0;
-    padding: 5px;
-    z-index: 100;
-    font-size: 14px;
-    text-align: left;
-    color: #FFFFFF;
-    border: 1px white solid;
+#info ul:first-child {
+    margin-top: 0;
+}
+
+#info li {
+    margin: 5px;
+    padding: 0px;
+}
+
+#log {
+    color: #9aee93;
+}
+
+#log p {
 }
 
 #dat-gui-container {
     position: absolute;
-    top: 100px;
-    right: 20px;
+    /*top: 120px;*/
+    top:0;
+    right: 0;
     z-index: 100001;
     float: right;
-    width: 300px
+    width: 320px margin-right : 60 px !important;
 }
+
 
 #header {
     background: white;
@@ -145,12 +176,6 @@ body {
     overflow: auto;
 }
 
-a {
-    color: rgb(0, 102, 204);
-    font: 14px Helvetica, arial, freesans, clean, sans-serif;
-    text-decoration: none !important;
-}
-
 a:visited {
     color: rgba(0, 102, 204, .75);
 }
@@ -167,22 +192,8 @@ a.button {
     border: 1px grey solid;
 }
 
-p {
-    margin: 0;
-    padding: 0;
-    margin-top: 15px;
-    color: #333;
-    line-height: 190%;
-    font: 14px Helvetica, arial, freesans, sans-serif;
-}
-
-#infoLight p {
-    color: #ffffff;
-}
-
 span {
     line-height: 190%;
-    font: 14px Helvetica, arial, freesans, sans-serif;
 }
 
 p:first-child {

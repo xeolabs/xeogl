@@ -1,7 +1,7 @@
 /**
  A **Heightmap** extends {{#crossLink "Geometry"}}{{/crossLink}} to define a height mapped geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- <a href="../../examples/#geometry_HeightmapGeometry"><img src="../../assets/images/screenshots/HeightmapGeometry.png"></img></a>
+ <a href="../../examples/#geometry_primitives_heightmap"><img src="../../assets/images/screenshots/HeightmapGeometry.png"></img></a>
 
  ## Overview
 
@@ -16,7 +16,7 @@
 
  ## Examples
 
- * [Textured HeightmapGeometry](../../examples/#geometry_HeightmapGeometry)
+ * [Textured HeightmapGeometry](../../examples/#geometry_primitives_heightmap)
 
  ## Usage
 
@@ -474,6 +474,10 @@
 
                 set: function (value) {
 
+                    if (this._src && this._src === value) {
+                        return;
+                    }
+
                     this._image = null;
                     this._src = value;
 
@@ -510,7 +514,15 @@
 
                 set: function (value) {
 
-                    (this._center = this._center || new xeogl.math.vec3()).set(value || [0, 0, 0]);
+                    value = value || [0, 0, 0];
+
+                    if (this._center) {
+                        if (this._center[0] === value[0] && this._center[1] === value[1] && this._center[2] === value[2]) {
+                            return;
+                        }
+                    }
+
+                    (this._center = this._center || new xeogl.math.vec3()).set(value);
 
                     this._scheduleUpdate();
 

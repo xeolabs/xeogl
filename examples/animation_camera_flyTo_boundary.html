@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.min.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <a href="http://xeogl.org" target="_parent" >xeogl</a>
+    <br><br>
+    using a <a href="../docs/classes/CameraFlightAnimation.html" target="_parent">CameraFlightAnimation</a> to fly a <a
+        href="../docs/classes/Camera.html" target="_parent">Camera</a> to <a
+        href="../docs/classes/Boundary3D.html" target="_parent">Boundary3Ds</a> of randomly selected <a
+        href="../docs/classes/Entity.html" target="_parent">Entities</a>
+</div>
+
+<script>
+
+    // Create some random entities
+
+    var entities = [];
+    var entity;
+
+    var torus = new xeogl.TorusGeometry();
+
+    for (var i = 0; i < 20; i++) {
+
+        entity = new xeogl.Entity({
+
+            geometry: torus,
+
+            transform: new xeogl.Scale({
+                xyz: [
+                    0.5 + Math.random() * 2,
+                    0.5 + Math.random() * 2,
+                    0.5 + Math.random() * 2
+                ],
+
+                parent: new xeogl.Rotate({
+                    xyz: [
+                        Math.random(),
+                        Math.random(),
+                        Math.random()
+                    ],
+                    angle: Math.random() * 360,
+
+                    parent: new xeogl.Translate({
+                        xyz: [
+                            Math.random() * 15 - 7,
+                            Math.random() * 15 - 7,
+                            Math.random() * 15 - 7
+                        ]
+                    })
+                })
+
+            }),
+
+            material: new xeogl.PhongMaterial({
+                diffuse: [
+                    Math.random(),
+                    Math.random(),
+                    Math.random()
+                ]
+            })
+        });
+
+        entities.push(entity);
+    }
+
+    // Create a cameraFlightAnimation animation
+
+    var flight = new xeogl.CameraFlightAnimation({
+        duration: 1.5,
+        fitFOV: 45
+    });
+
+    // Target boundary indicator
+
+    var boundaryIndicator = new xeogl.Entity({
+        geometry: new xeogl.AABBGeometry({
+            boundary: entities[0].worldBoundary
+        }),
+        material: new xeogl.PhongMaterial({
+            diffuse: [1.0, 1.0, 0.0],
+            emissive: [1.0, 1.0, 0.0],
+            lineWidth: 4
+        })
+    });
+
+    // Create a couple of camera controls so that
+    // user can rotate and zoom camera while demo runs
+
+    new xeogl.MouseRotateCamera({sensitivity: 0.2});
+    new xeogl.MouseZoomCamera();
+
+
+    // Periodically highlight and fly to a randomly-selected entity
+
+    var prevEntity;
+    var prevEntityDiffuse;
+
+    setInterval(function () {
+
+        if (prevEntity) {
+            prevEntity.material.diffuse = prevEntityDiffuse;
+        }
+
+        entity = entities[Math.floor(Math.random() * 10)];
+
+        prevEntity = entity;
+        prevEntityDiffuse = entity.material.diffuse;
+
+        entity.material.diffuse = [1, 1, 0];
+
+        var worldBoundary = entity.worldBoundary;
+
+        flight.flyTo(worldBoundary);
+
+        // Set target boundary to the entity's OBB
+
+        boundaryIndicator.geometry.obb = worldBoundary.obb;
+
+    }, 2000);
+
+    // Slowly the eye position about the look position.
+
+    entity.scene.on("tick",
+            function () {
+
+                var view = entity.camera.view;
+
+                view.rotateEyeY(0.3);
+                view.rotateEyeX(0.2);
+            });
+
+</script>
+</body>
+</html>

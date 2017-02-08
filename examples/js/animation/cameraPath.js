@@ -1,5 +1,5 @@
 /**
- A **CameraPath** defines spline curve along which a {{#crossLink "Camera"}}{{/crossLink}} can be animated.
+ A **CameraPath** defines a spline curve along which a {{#crossLink "Camera"}}{{/crossLink}} can be animated.
 
  * See {{#crossLink "CameraPathAnimation"}}{{/crossLink}} for usage.
 

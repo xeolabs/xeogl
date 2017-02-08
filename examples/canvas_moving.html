@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.min.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <style>
+        body {
+            background-color: #AAA;
+            padding: 5px;
+            margin: 0;
+        }
+
+        canvas {
+            display: inline-block;
+            margin: 5px;
+            box-shadow: 2px 2px 2px black;
+            top: 180px;
+            left: 20px;
+            position: absolute;
+        }
+
+        button {
+            top: 150px;
+            left: 20px;
+            position: absolute;
+        }
+    </style>
+
+<body>
+
+<div id="info">
+    <a href="http://xeogl.org" target="_parent">xeogl</a><br><br>Test to verify that the canvas overlay moves with the canvas. <br>
+    Click the button below to move the canvas, then verify that the overlay moves also by clicking on the sphere object - you should see the<br>
+    camera fly to the on the object, while momentarily showing it's aligned bounding box.
+</div>
+
+<form>
+    <button type="button" onclick="javascript:moveCanvas();">Move the canvas</button>
+</form>
+
+<canvas id="myCanvas" width="500px" height="500px"></canvas>
+
+
+<script>
+
+    var scene = new xeogl.Scene({
+        canvas: "myCanvas"
+    });
+
+    new xeogl.Entity(scene, {
+        geometry: new xeogl.SphereGeometry(scene),
+        material: new xeogl.PhongMaterial(scene, {
+            diffuseMap: new xeogl.Texture(scene, {
+                src: "textures/diffuse/uvGrid2.jpg"
+            })
+        })
+    });
+
+    scene.camera.view.eye = [0, 0, -5];
+
+    scene.on("tick", function () {
+        this.camera.view.rotateEyeY(0.5);
+        this.camera.view.rotateEyeX(0.3);
+    });
+
+    new xeogl.CameraControl(scene);
+
+    var moveCanvas = (function () {
+        var toggle = false;
+        return function () {
+            toggle = !toggle;
+            var canvas = document.getElementById("myCanvas");
+            canvas.style.left = toggle ? "400px" : "20px";
+        };
+    })();
+
+</script>
+</body>
+</html>

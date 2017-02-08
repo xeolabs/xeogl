@@ -1,7 +1,7 @@
 /**
  A **GeometryBuilder** is a builder that you can use to procedurally generate {{#crossLink "Geometry"}}Geometries{{/crossLink}}.
 
- <a href="../../examples/#generation_GeometryBuilder_wavyBlocks"><img src="http://i.giphy.com/26gJAMkOxAW5fWlb2.gif"></img></a>
+ <a href="../../examples/#geometry_generation_wavyBlocks"><img src="http://i.giphy.com/26gJAMkOxAW5fWlb2.gif"></img></a>
 
  ## Overview
 
@@ -12,7 +12,7 @@
 
  ## Examples
 
- * [Generating a 3D sine wave from boxes](../../examples/#generation_GeometryBuilder_wavyBlocks)</li>
+ * [Generating a 3D sine wave from boxes](../../examples/#geometry_generation_wavyBlocks)</li>
 
  ## Usage
 

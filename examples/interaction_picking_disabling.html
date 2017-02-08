@@ -10,7 +10,7 @@
 
 <body>
 
-<div id="infoLight">
+<div id="info" class="dark">
     <a href="http://xeogl.org" target="_parent">xeogl</a>
     <br><br>
     <ul>
@@ -18,11 +18,10 @@
                 href="../docs/classes/Entity.html" target="_parent">Entities</a></li>
         <li>picking is disabled for the red spheres</li>
         <li>
-            click something!
+            click something
         </li>
     </ul>
-    <br><br>
-    <pre id="infoTxt" style="text-align: left;"></pre>
+    <pre id="log" style="text-align: left;"></pre>
 </div>
 
 <script>
@@ -41,7 +40,7 @@
         if (buf.length > 30) {
             buf.shift();
         }
-        document.getElementById("infoTxt").innerText = buf.join("\n");
+        document.getElementById("log").innerText = buf.join("\n");
     }
 
 

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.min.js"></script>
+    <script src="js/curves/curve.js"></script>
+    <script src="js/curves/splineCurve.js"></script>
+    <script src="js/debug/debug.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <a href="http://xeogl.org" target="_parent">xeogl</a> - normal map <a href="../docs/classes/Texture.html" target="_parent">Texture</a>
+    with World-space <a href="../docs/classes/PointLight.html" target="_parent">PointLight</a> animated
+    along <a href="../docs/classes/SplineCurve.html" target="_parent">SplineCurve</a>
+</div>
+
+<script>
+
+    // Remove all default scene lights
+    xeogl.scene.lights.lights = [];
+
+    // Sphere for each of our normal-mapped objects
+    var geometry = new xeogl.SphereGeometry({
+        radius: 1.5,
+        heightSegments: 60,
+        widthSegments: 60
+    });
+    
+    // Material for each of our normal-mapped objects
+    var material = new xeogl.MetallicMaterial({
+        baseColor: [0.7, 0.7, 0.7],
+        metallic:1.0,
+        roughness: 0.6,
+        baseColorMap: new xeogl.Texture({
+            src: "textures/diffuse/chesterfieldDiffuseMap.png",
+            scale: [5, 5]
+        }),
+
+        normalMap: new xeogl.Texture({
+            src: "textures/normal/chesterfieldNormalMap.png",
+            scale: [5, 5]
+        })
+    });
+
+    // The PointLight
+    var pointLight = new xeogl.PointLight({
+        pos: [0, 0, 0],
+        color: [1.0, 1.0, 1.0],
+        intensity: 1.0,
+//        constantAttenuation: 0.2,
+//        linearAttenuation: 0.0005,
+//        quadraticAttenuation: 0.0005,
+        space: "world"
+    });
+
+    // Lights for our normal-mapped objects, containing the PointLight
+    var lights = new xeogl.Lights({
+        lights: [
+            pointLight
+        ]
+    });
+
+    // Our normal-mapped objects
+    for (var x = -15; x <= 15; x += 4) {
+        for (var z = -15; z <= 15; z += 4) {
+
+            new xeogl.Entity({
+                lights: lights,
+                geometry: geometry,
+                material: material,
+                transform: new xeogl.Translate({
+                    xyz: [x, 0, z]
+                })
+            });
+        }
+    }
+
+    var scene = xeogl.scene;
+    var view = scene.view;
+
+    view.rotateEyeX(20);
+    view.eye = [0, 20, -30];
+
+    // SplineCurve to animate PointLight along
+    var splineCurve = new xeogl.SplineCurve({
+        points: [
+            [-16, 3, -16],
+            [0, 3, -3],
+            [16, 3, -16],
+            [0, 3, 0],
+            [0, 26, 0],
+            [0, 3, 0],
+            [16, 3, 16],
+            [-16, 3, 16],
+            [-16, 3, -16]
+        ]
+    });
+
+    // Entity to show the SplineCurve
+    new xeogl.Entity({
+        geometry: new xeogl.Geometry({
+            positions: xeogl.math.flatten(splineCurve.getPoints(100))
+        }),
+        material: new xeogl.PhongMaterial({
+            diffuse: [0.5, 0.5, 0],
+            lineWidth:7,
+            opacity: 0.3
+        }),
+        modes: new xeogl.Modes({
+            transparent: true
+        }),
+        visibility: new xeogl.Visibility({
+            visible: true
+        })
+    });
+
+    // Indicator sphere to show position of PointLight
+    var pointLightIndicator = new xeogl.Entity({
+        geometry: new xeogl.SphereGeometry({
+            radius: .5
+        }),
+        material: new xeogl.PhongMaterial({
+            ambient: [0, 0, 0],
+            diffuse: [0, 0, 0],
+            emissive: [1.0, 0, 0]
+        }),
+        transform: new xeogl.Translate()
+    });
+
+    // Update position of indicator sphere in synch with PointLight's position
+    pointLight.on("pos", function (pos) {
+        pointLightIndicator.transform.xyz = pos;
+    });
+
+    // Update color of indicator sphere in synch with PointLight's color
+    pointLight.on("color", function (color) {
+        pointLightIndicator.material.emissive = color;
+    });
+
+    // Update position of PointLight in synch with animation progress along SplineCurve
+    splineCurve.on("t", function () {
+        pointLight.pos = splineCurve.point;
+    });
+
+    // Animate progress along SplineCurve
+
+    var t = 0;
+
+    scene.on("tick", function () {
+        splineCurve.t = t % 1.0;
+        t += 0.001;
+    });
+
+    // Allow user camera control
+    new xeogl.CameraControl();
+
+</script>
+</body>
+</html>

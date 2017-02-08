@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.min.js"></script>
+    <script src="js/curves/curve.js"></script>
+    <script src="js/curves/splineCurve.js"></script>
+    <script src="js/models/sceneJSModel.js"></script>
+    <script src="js/animation/cameraFollowAnimation.js"></script>
+    <script src="js/generation/geometryBuilder.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <style>
+        #info a {
+            color: #72deee;
+            font-size: 13pt;
+        }
+
+    </style>
+
+<body>
+
+<div id="info" class="dark">
+    <a href="http://xeogl.org" target="_parent">xeogl</a><br><br>
+    <ul>
+        <li>Using a <a href="../docs/classes/SceneJSModel.html" target="_parent">SceneJSModel</a> to import SceneJS
+            content into xeogl.
+        </li>
+        <li>The scene definition in this case is <a href="models/scenejs/tronTank.min.json">this JSON file</a></li>
+    </ul>
+    <div id="log">
+    </div>
+</div>
+
+<div id="logos">
+    <a href="http://scenejs.org" target="_parent"><img src="../assets/images/logos/scenejs.png"></a>
+</div>
+
+<audio autoplay="true" src="sounds/tng_commandcenter.mp3" type="audio/mpeg"></audio>
+
+
+<script>
+
+    // Everything in this demo is within xeogl's default scene, which creates the canvas for us
+    var scene = xeogl.scene;
+
+    (function () {
+
+        var cameraFollow = new xeogl.CameraFollowAnimation({fit: true});
+        var cameraFlight = new xeogl.CameraFlightAnimation();
+
+        // Fly to a target with the default camera
+        this.flyto = function (target) {
+            target = find(target);
+            if (target) {
+                cameraFollow.worldBoundary = null;
+                cameraFlight.flyTo({worldBoundary: target.worldBoundary});
+            }
+        };
+
+        // Follow a target with the default camera
+        this.follow = function (target) {
+            target = find(target);
+            if (target) {
+                cameraFlight.stop();
+                cameraFollow.worldBoundary = target.worldBoundary;
+            }
+        };
+
+        // Finds a target
+        function find(target) {
+            target = target.id ? target : xeogl.scene.components[target.id];
+            if (target && target.worldBoundary) {
+                return target;
+            }
+            return xeogl.scene;
+        }
+    })(window);
+
+    // Redefine default lights
+    scene.lights.lights = [
+
+        new xeogl.DirLight({
+            dir: [-0.5, -0.6, -0.0],
+            color: [1.0, 1.0, 1.0],
+            intensity: 1.0,
+            space: "world"
+        }),
+        new xeogl.DirLight({
+            dir: [0.5, -0.6, -0.6],
+            color: [1.0, 1.0, 1.0],
+            intensity: 1.0,
+            space: "world"
+        })
+    ];
+
+    //    scene.lights.lightMap = new xeogl.CubeTexture({
+    //        src: [
+    //            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
+    //            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png",
+    //            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png",
+    //            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png",
+    //            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png",
+    //            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png"
+    //        ]
+    //    });
+
+    //    scene.lights.reflectionMap = new xeogl.CubeTexture({
+    //        src: [
+    //            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
+    //            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
+    //            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
+    //            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
+    //            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
+    //            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
+    //        ]
+    //    });
+
+    // Set initial camera position
+    var view = scene.camera.view;
+    view.eye = [0, 0, -70];
+    view.look = [0, 0, 0];
+    view.up = [0, 1, 0];
+    view.rotateEyeX(90);
+
+    //---------------------------------------------------------------------------------
+    // Tank, animation path and camera follow behaviour
+    //---------------------------------------------------------------------------------
+
+    // Tank model
+    var tankModel = new xeogl.SceneJSModel({
+        id: "tank",
+        src: "models/scenejs/tronTank.min.json",
+
+        // Convert SceneJS Phong materials to xeogl PBR materials
+        materialWorkflow: "SpecularMaterial", // "PhongMaterial" (default) | "MetallicMaterial" | "SpecularMaterial"
+        transform: new xeogl.Rotate({ // Tank direction
+            xyz: [0, 1, 0],
+            angle: 0,
+            parent: new xeogl.Translate({ // Tank position
+                xyz: [0, 0, 0]
+            })
+        })
+    });
+
+    // Add a shadow under the tank
+    // insert it into the SceneJSModel so it rotates with the tank
+    tankModel.add({
+        type: "xeogl.Entity",
+        geometry: {
+            type: "xeogl.PlaneGeometry",
+            xSize: 16,
+            zSize: 22
+        },
+        material: {
+            type: "xeogl.PhongMaterial",
+            diffuse: [0.0, 0.0, 0.0],
+            specular: [0, 0, 0],
+            opacity: 0.3
+        },
+        modes: {
+            transparent: true
+        },
+        transform: {
+            type: "xeogl.Translate",
+            xyz: [-1, 0.1, -4]
+        }
+    });
+
+    // Follow the tank with the camera; don't keep tank fitted to view
+    follow(tankModel);
+
+    // Animation path to drive the tank along
+    var path = new xeogl.SplineCurve({
+        points: [
+            [0, 0, -1000],
+            [-300, 0, -1000],
+            [-270, 0, -500],
+            [-270, 0, 0],
+            [-370, 0, 100],
+            [-570, 0, 200],
+            [-570, 0, 300],
+            [-400, 0, 500],
+            [-300, 0, 700],
+            [-200, 0, 1000],
+            [-0, 0, 1100],
+            [200, 0, 1100],
+            [500, 0, 900],
+            [600, 0, 600],
+            [400, 0, 200],
+            [400, 0, -900],
+            [0, 0, -1000]
+        ]
+    });
+
+    // Helper to show the tank animation path
+    // leave it here and set visible whenever we need to edit the path in future
+    new xeogl.Entity({
+        geometry: {
+            positions: xeogl.math.flatten(path.getPoints(100))
+        },
+        material: {
+            type: "xeogl.PhongMaterial",
+            diffuse: [0.3, 1, 0.3],
+            emissive: [0.4, 1, 0.4],
+            lineWidth: 6
+        },
+        visibility: {
+            visible: false
+        },
+        modes: {
+            pickable: false, // Can't be picked
+            collidable: false // Does not contribute to overall scene boundary
+        }
+    });
+
+    // Attach tank to the path; move it along path and
+    // keep it pointing along the path
+    path.on("t", function () {
+        tankModel.transform.parent.xyz = this.point;
+        tankModel.transform.angle = 360 - (Math.atan2(this.tangent[2], this.tangent[0]) / xeogl.math.DEGTORAD) + 270;
+    });
+
+
+    // Allow user camera control;
+    // camera will always point at tank, but this lets us orbit and zoom
+    new xeogl.CameraControl();
+
+    //---------------------------------------------------------------------------------
+    // Procedurally-generated canyons
+    //---------------------------------------------------------------------------------
+
+    (function () {
+
+        var geometryBuilder = new xeogl.GeometryBuilder();
+
+        geometryBuilder.setShape(new xeogl.BoxGeometry({
+            xSize: 100,
+            ySize: 100,
+            zSize: 200
+        }));
+
+        // Little convenience helper to help us create boxes
+        var box = (function () {
+            var matrix = xeogl.math.mat4();
+            var math = xeogl.math;
+            return function (x, z, angle) { // Helper to create boxes
+                math.rotationMat4c(angle * math.DEGTORAD, 0, 1, 0, matrix);
+                math.translateMat4c(x, 100, z, matrix);
+                geometryBuilder.setMatrix(matrix);
+                geometryBuilder.addShape();
+            };
+        })();
+
+        box(0, -501, 91);
+        box(-100, -10, 0);
+        box(-225, 205, -61);
+        box(-450, -405, -1);
+        box(-450, -205, 1);
+        box(-570, 15, -61);
+        box(-770, 245, 31);
+        box(-470, 745, 29);
+        box(-100, 650, 31);
+        box(0, 475, 121);
+        box(220, 200, -1);
+        box(220, -400, 1);
+        box(300, 410, 31);
+        box(650, 310, 29);
+        box(560, -10, 1);
+        box(560, -400, 0);
+
+        var geometry = new xeogl.Geometry();
+
+        geometryBuilder.build(geometry);
+
+        new xeogl.Entity({
+            geometry: geometry,
+            material: {
+                type: "xeogl.SpecularMaterial",
+                diffuse: [0.7, 0.7, 0.7],
+                specular: [0.3, 0.3, 0.2],
+                glossiness: 0.1,
+                emissive: [0.1, 0.1, 0.1],
+                diffuseMap: {
+                    src: "textures/diffuse/UVCheckerMap11-1024.png",
+                    wrapS: "repeat",
+                    wrapT: "repeat",
+                    scale: [1, 1]
+                }
+            },
+            modes: {
+                backfaces: false, // Don't show backfaces, so that if camera gets buried in a box we can still see out
+                pickable: false, // Can't be picked
+                collidable: false // Does not contribute to overall scene boundary
+            }
+        });
+
+        //---------------------------------------------------------------------------------
+        // Ground plane
+        //---------------------------------------------------------------------------------
+
+        new xeogl.Entity({
+            geometry: {
+                type: "xeogl.PlaneGeometry",
+                xSize: 3000,
+                zSize: 3000
+            },
+            material: {
+                type: "xeogl.SpecularMaterial",
+                diffuse: [0.5, 0.5, 0.5],
+                specular: [0.2, 0.2, 0.2],
+                glossiness: 0.0,
+//                emissive: [0.1, 0.1, 0.1],
+                diffuseMap: {
+                    src: "textures/diffuse/UVCheckerMap11-1024.png",
+                    wrapS: "repeat",
+                    wrapT: "repeat",
+                    scale: [30, 30]
+                }
+            },
+            modes: {
+                backfaces: true, // Show backfaces
+                pickable: false, // Can't be picked
+                collidable: false // Does not contribute to overall scene boundary
+            }
+        });
+
+    })();
+
+    //---------------------------------------------------------------------------------
+    // Skybox
+    //---------------------------------------------------------------------------------
+
+    new xeogl.Entity({
+        geometry: {
+            type: "xeogl.BoxGeometry",
+            xSize: 1200,
+            ySize: 600,
+            zSize: 1200
+        },
+        material: {
+            type: "xeogl.SpecularMaterial",
+            diffuse: [0.7, 0.7, 0.7],
+            specular: [0.2, 0.2, 0.3],
+            glossiness: 0.1,
+            emissive: [0.1, 0.1, 0.1],
+            diffuseMap: {
+                src: "textures/diffuse/UVCheckerMap11-1024.png",
+                wrapS: "repeat",
+                wrapT: "repeat",
+                scale: [1, 1]
+            }
+        },
+        modes: {
+            backfaces: true, // Show backfaces
+            frontface: "ccw", // Need lighting on interior surface
+            pickable: false, // Can't be picked
+            collidable: false // Does not contribute to overall scene boundary
+        }
+    });
+
+
+    //---------------------------------------------------------------------------------
+    // Game loop - initialize once tank model has loaded
+    //---------------------------------------------------------------------------------
+
+    tankModel.on("loaded", function () {
+
+        // Slowly rotate the tank and gun
+        var gunDir = 0;
+        var gunDirInc = -0.3;
+        var zoom = 100;
+
+        // Game loop
+        tankModel.scene.on("tick", function () {
+
+            gunDir += gunDirInc;
+
+            if (gunDir < -60 || gunDir > 60) {
+                gunDirInc *= -1;
+            }
+
+            // Access the gun rotation in the Model;
+            // the first part of the IDs is the ID of the Model
+            tankModel.components["tank.gunDir"].angle = gunDir;
+
+            // Update the path animation
+            path.t = (path.t + 0.0002) % 1.0;
+
+            // Slowly orbit and zoom camera
+            zoom -= 0.1;
+            if (zoom > 60) {
+                view.rotateEyeY(-0.1);
+                view.rotateEyeX(-0.20);
+                view.zoom(-0.1);
+            } else {
+                view.rotateEyeY(0.3);
+            }
+
+        });
+    });
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+# Alias Wavefront MTL File Exported from SketchUp
+# with OBJexporter (c) 2010/2011 TIG
+# Made for 'Miami_Sample.obj'
+
+newmtl Default_Material
+Ka 0.000000 0.000000 0.000000
+Kd 0.890196 0.882353 0.870588
+Ks 0.000000 0.000000 0.000000
+d 1.000000
+
+newmtl auto
+Ka 0.000000 0.000000 0.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+d 1.000000
+
+#EOF

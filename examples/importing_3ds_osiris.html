@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="../build/xeogl.min.js"></script>
+
+    <script src="js/geometry/k3d.js"></script>
+    <script src="js/geometry/nintendo3DSGeometry.js"></script>
+
+<body>
+
+<div id="info">
+    <a href="http://xeogl.org" target="_parent">xeogl</a><br><br>loading .3DS geometry using an <a
+        href="../docs/classes/Nintendo3DSGeometry.html" target="_parent">Nintendo3DSGeometry</a>
+</div>
+
+<script>
+
+    var entity = new xeogl.Entity({
+
+        geometry: new xeogl.Nintendo3DSGeometry({
+            src: "models/3ds/osiris.3ds",
+            autoNormals: true
+        }),
+
+        material: new xeogl.PhongMaterial({
+            diffuse: [0.6, 0.6, 0.6],
+            specular: [0, 0, 0]
+        }),
+
+        // We need to rotate this particular .3DS model
+        transform: new xeogl.Rotate({
+            xyz: [1, 0, 0],
+            angle: -90,
+            parent: new xeogl.Rotate({
+                xyz: [0, 1, 0],
+                angle: 90
+            })
+        })
+    });
+
+    // Allow user camera control
+    var cameraControl = new xeogl.CameraControl();
+
+    // Fit to view as soon as the .3DS is loaded
+    entity.geometry.on("loaded", function () {
+        var cameraFlight = new xeogl.CameraFlightAnimation();
+        cameraFlight.jumpTo(entity);
+    });
+
+</script>
+</body>
+</html>

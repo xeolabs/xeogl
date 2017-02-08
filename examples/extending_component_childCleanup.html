@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.min.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <a href="http://xeogl.org" target="_parent">xeogl</a>
+    <br><br>
+
+    <ul>
+        <li>creating a new xeogl component type</li>
+        <li>making it automatically destroy its child components when destroyed</li>
+    </ul>
+    <br>
+    <pre id="log" class="logLight"></pre>
+</div>
+
+<script>
+
+    // Define the ColoredTorus component class
+
+    xeogl.ColoredTorus = xeogl.Component.extend({
+
+        type: "xeogl.ColoredTorus",
+
+        _init: function (cfg) {
+
+            this._torus = new xeogl.Entity({
+                geometry: new xeogl.TorusGeometry({ radius: 2, tube:.6 }),
+                material: new xeogl.MetallicMaterial({
+                    baseColor: [1.0, 0.5, 0.5],
+                    roughness: 0.4,
+                    metallic: 0.1
+                })
+            });
+
+            this.color = cfg.color;
+        },
+
+        _props: {
+
+            // The color of this ColoredTorus.
+
+            color: {
+
+                set: function (color) {
+                    this._torus.material.baseColor = color || [0.5, 0.5, 0.5];
+                },
+
+                get: function () {
+                    return this._torus.material.baseColor;
+                }
+            }
+        },
+
+        _destroy: function () {
+            // Nothing to do here anymore!
+        }
+    });
+
+    // Instantiate a ColoredTorus (in the default xeogl.Scene)
+
+    var coloredTorus = new xeogl.ColoredTorus({
+        color: [0.3, 1.0, 0.3]
+    });
+
+    // Count down from five seconds down to zero,
+    // then destroy the ColoredTorus
+
+    var t = 5;
+
+    var p = setInterval(function () {
+        if (t === 0) {
+            coloredTorus.destroy();
+            log("ColoredTorus destroyed.");
+            clearInterval(p);
+        } else {
+            log("Destroying ColoredTorus in " + t + " seconds...");
+        }
+        t--;
+    }, 1000);
+
+    // Logs a message to the info element at the top of this page
+
+    function log(msg) {
+        document.getElementById("log").innerHTML = msg;
+    }
+
+</script>
+</body>
+</html>

@@ -13,7 +13,7 @@
 
 <body>
 
-<div id="infoLight">
+<div id="info">
     <a href="http://xeogl.org" target="_parent">xeogl</a>
     <br><br>
     <ul>
@@ -55,10 +55,7 @@
         material: new xeogl.PhongMaterial({
             diffuseMap: new xeogl.Texture({
                 src: "textures/diffuse/uvGrid2.jpg"
-            }),
-            diffuse: [0.3, 0.3, 1],
-            lineWidth: 3,
-            pointSize: 5
+            })
         }),
         modes: new xeogl.Modes({
             backfaces: true

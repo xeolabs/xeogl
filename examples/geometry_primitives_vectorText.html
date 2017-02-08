@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.min.js"></script>
+    <script src="js/geometry/vectorTextGeometry.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <a href="http://xeogl.org" target="_parent">xeogl</a>
+    <br><br>
+    <a href="../docs/classes/VectorTextGeometry.html" target="_parent">VectorTextGeometry</a> showing the sourcecode for its
+    scene definition
+</div>
+
+<script id="source">
+
+    var entity = new xeogl.Entity({
+        geometry: new xeogl.VectorTextGeometry({
+            text: document.getElementById("source").innerText,
+            xSize: 2,
+            ySize: 2
+        }),
+        material: new xeogl.PhongMaterial({
+            emissive: [0.5, 1.0, 1.0],
+            lineWidth: 2
+
+        }),
+        lights: new xeogl.Lights({
+            lights: [] // No lights - rely on emissive color
+        }),
+        transform: new xeogl.Translate({
+            xyz: [0, 40, 0]
+        })
+    });
+
+    // Move the camera back a bit, then orbit the
+    // eye position about the look position
+
+    var scene = entity.scene;
+    var camera = scene.camera;
+    var view = camera.view;
+
+    view.zoom(120);
+
+    scene.on("tick",
+            function () {
+                view.rotateEyeY(0.2);
+                view.rotateEyeX(0.1);
+            });
+
+    // Create user camera control
+    // Make mouse zoom more sensitive
+
+    var cameraControl = new xeogl.CameraControl();
+    cameraControl.mouseZoom.sensitivity = 5;
+
+</script>
+</body>
+</html>

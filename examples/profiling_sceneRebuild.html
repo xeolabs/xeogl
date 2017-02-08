@@ -10,7 +10,7 @@
 
 <body>
 
-<div id="infoLight" style="left: 0; text-align: left; background: black; opacity: 0.6; color: white;">
+<div id="info" style="left: 0; text-align: left; background: black; opacity: 0.6; color: white;">
     <a href="http://xeogl.org" target="_parent">xeogl</a>
     <br><br>
     profiling a <a href="../docs/classes/Scene.html"
@@ -18,7 +18,7 @@
         href="../docs/classes/Entity.html"
         target="_parent">Entities</a> and <a href="../docs/classes/Geometry.html"
                                              target="_parent">Geometries</a>
-    <pre id="infoTxt"
+    <pre id="log"
          style="left: 0; text-align: left; background: black; opacity: 0.6; color: white; font-size: 14pt;">
     </pre>
 </div>
@@ -170,7 +170,7 @@
             });
 
     function logJSON(json) {
-        document.getElementById("infoTxt").innerHTML = JSON.stringify(json, null, 4);
+        document.getElementById("log").innerHTML = JSON.stringify(json, null, 4);
     }
 
 </script>

@@ -1,7 +1,7 @@
 /**
  A **VectorTextGeometry** extends {{#crossLink "Geometry"}}{{/crossLink}} to define vector text geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- <a href="../../examples/#geometry_VectorTextGeometry"><img src="../../assets/images/screenshots/VectorTextGeometry.png"></img></a>
+ <a href="../../examples/#geometry_primitives_vectorText"><img src="../../assets/images/screenshots/VectorTextGeometry.png"></img></a>
 
  ## Overview
 

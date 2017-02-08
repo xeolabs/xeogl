@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.min.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <a href="http://xeogl.org" target="_parent">xeogl</a>
+    <br><br>
+
+    <p>example of how to attach user-defined metadata to components</p>
+
+    <pre id="log" style="text-align: left;"></pre>
+</div>
+
+<script>
+
+    // Create a Entity
+
+    var entity = new xeogl.Entity({
+        meta: {
+            description: "This is my Entity!",
+            version: "0.1",
+            foo: "bar"
+        }
+    });
+
+    // Attach a new Material to the Entity.
+
+    entity.material = new xeogl.PhongMaterial({
+        id: "myMaterial",
+        diffuse: [1.0, 1.0, 0.0],
+        meta: {
+            description: "This is my PhongMaterial!",
+            version: "0.1",
+            foo: "bar"
+        }
+    });
+
+    entity.meta.version = "0.2";
+    entity.meta.bar = "foo";
+
+    logJSON(entity.meta);
+
+    // Orbit the eye position about the look position.
+    entity.scene.on("tick", function () {
+
+        var view = entity.camera.view;
+
+        view.rotateEyeY(-0.15);
+        view.rotateEyeX(0.05);
+    });
+
+    function logJSON(json) {
+        document.getElementById("log").innerHTML = JSON.stringify(json, null, 4);
+    }
+
+</script>
+</body>
+</html>

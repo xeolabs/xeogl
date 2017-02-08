@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.min.js"></script>
+    <script src="js/curves/curve.js"></script>
+    <script src="js/curves/splineCurve.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+
+<div id="info">
+    <a href="http://xeogl.org" target="_parent">xeogl</a>
+    <br><br><a href="../docs/classes/SplineCurve.html"
+               target="_parent">SplineCurve</a>
+</div>
+
+<script>
+
+    var curve = new xeogl.SplineCurve({
+        points: [
+            [-10, 0, 0],
+            [-5, 15, 0],
+            [20, 15, 0],
+            [10, 0, 0]]
+    });
+
+    // Entity to show a smooth line through the SplineCurve's control points
+    var curveHelper = new xeogl.Entity({
+        geometry: new xeogl.Geometry({
+            primitive: "line-strip",
+            positions: xeogl.math.flatten(curve.getPoints(50)),
+            indices: (function () {
+                var indices = [];
+                for (var i = 0; i < 50; i++) {
+                    indices.push(i);
+                }
+                return indices;
+            })()
+        }),
+        material: new xeogl.PhongMaterial({
+            emissive: [1, 0, 0]
+        })
+    });
+
+    var pointHelper = new xeogl.Entity({
+        geometry: new xeogl.SphereGeometry({
+            radius: 0.2
+        }),
+        material: new xeogl.PhongMaterial({
+            emissive: [1.0, 0.6, 0.6]
+        }),
+        transform: new xeogl.Translate({
+            xyz: [0, 0, 0]
+        })
+    });
+
+    var tangentHelper = new xeogl.Entity({
+        geometry: new xeogl.Geometry({
+            primitive: "lines",
+            positions: [0, 0, 0, 0, 0, 0],
+            indices: [0, 1]
+        }),
+        material: new xeogl.PhongMaterial({
+            emissive: [1.0, 0.6, 0.6],
+            lineWidth: 3
+        })
+    });
+
+    // Move the eye back a bit to fit the whole curve in view
+
+    var scene = xeogl.scene;
+
+    scene.camera.view.zoom(25);
+
+    // Spin the camera
+
+    var tick = scene.on("tick", function (e) {
+
+        curve.t = (e.time - e.startTime) * 0.00005;
+
+        var point = curve.point;
+        var tangent = curve.tangent;
+
+        pointHelper.transform.xyz = point;
+        tangentHelper.geometry.positions = [point[0], point[1], point[2], point[0] + tangent[0] * 2, point[1] + tangent[1] * 2, point[2] + tangent[2] * 2];
+
+        var view = scene.camera.view;
+
+        view.rotateEyeY(0.5);
+        view.rotateEyeX(0.2);
+    });
+
+</script>
+</body>
+</html>

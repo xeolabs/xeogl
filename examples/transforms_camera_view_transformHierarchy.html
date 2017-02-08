@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.min.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <a href="http://xeogl.org" target="_parent" >xeogl</a><br><br>a <a href="../docs/classes/Camera.html"
+                                                                          target="_parent">Camera</a> with its viewing transform
+    defined as a hierarchy containing a <a
+        href="../docs/classes/Quaternion.html" target="_parent">Quaternion</a> and a <a
+        href="../docs/classes/Translate.html" target="_parent">Translate</a>
+</div>
+
+<script>
+
+    // A Camera with its viewing transform defined as a hierarchy containing a Quaternion and a Translate
+
+    var translate = new xeogl.Translate({
+        xyz: [0, 0, -10]
+    });
+
+    var quaternion = new xeogl.Quaternion({
+        parent: translate
+    });
+
+    var camera = new xeogl.Camera({
+        view: quaternion,
+        project: new xeogl.Perspective({
+            fovy: 60,
+            near: 0.1,
+            far: 1000
+        })
+    });
+
+    var entity = new xeogl.Entity({
+        camera: camera,
+        geometry: new xeogl.BoxGeometry(),
+        material: new xeogl.PhongMaterial({
+            diffuseMap: new xeogl.Texture({
+                src: "textures/diffuse/uvGrid2.jpg"
+            })
+        })
+    });
+
+    entity.scene.on("tick",
+            function () {
+                quaternion.rotate([0, 1, 0, 0.5]);
+                quaternion.rotate([1, 0, 0, 0.7]);
+            });
+
+</script>
+</body>
+</html>

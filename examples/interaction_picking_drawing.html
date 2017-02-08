@@ -9,13 +9,11 @@
 
     <script src="js/geometry/heightmapGeometry.js"></script>
 
-    <script src="js/debug/debug.js"></script>
-
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
-<div id="infoLight">
+<div id="info">
     <a href="http://xeogl.org" target="_parent">xeogl</a>
     <br><br>
     <ul>
@@ -26,8 +24,6 @@
             hold down SPACE and move your mouse over the entity to draw on it
         </li>
     </ul>
-    <br><br>
-
 </div>
 
 <script>
@@ -60,16 +56,15 @@
 
             this._needBlit = false;
 
-            this._tick = this.scene.on("tick",
-                    function () {
-                       if (self._needBlit) {
-                           if (self._texture) {
-                               self._image.src = self._canvas.toDataURL();
-                               self._texture.image = self._image;
-                               self._needBlit = false;
-                           }
-                       }
-                    });
+            this._tick = this.scene.on("tick", function () {
+                if (self._needBlit) {
+                    if (self._texture) {
+                        self._image.src = self._canvas.toDataURL();
+                        self._texture.image = self._image;
+                        self._needBlit = false;
+                    }
+                }
+            });
 
             this.clear();
         },
@@ -81,7 +76,7 @@
         penMove: function (uv) {
 
             var x = Math.floor(uv[0] * this._canvas.width);
-            var y = Math.floor((1-uv[1]) * this._canvas.height);
+            var y = Math.floor((uv[1]) * this._canvas.height);
 
             if (!this._down) {
                 this._ctx.moveTo(x, y);
@@ -118,7 +113,6 @@
 
     var heightmap = new xeogl.Entity({
 
-        // xeogl.HeightMap is defined in ./js/geometry/heightmapGeometry.js
         geometry: new xeogl.HeightmapGeometry({
             primitive: "triangles",
             src: "textures/height/everest.png",
@@ -128,19 +122,19 @@
             xSegments: 40,
             zSegments: 40
         }),
+
         transform: new xeogl.Rotate({
             angle: 45,
-            xyz: [.5,.5, 0]
+            xyz: [.5, .5, 0]
         }),
+
         material: new xeogl.PhongMaterial({
             diffuseMap: new xeogl.Texture({
                 src: "textures/diffuse/uvGrid2.jpg"
             }),
             emissiveMap: new xeogl.Texture({
                 // Will get an image from our TextureCanvas component
-            }),
-            lineWidth: 3,
-            pointSize: 5
+            })
         })
     });
 
@@ -149,7 +143,6 @@
     var textureCanvas = new xeogl.TextureCanvas({
         texture: heightmap.material.emissiveMap
     });
-
 
     // Set initial camera position
 
@@ -161,9 +154,7 @@
     view.rotateEyeX(40);
     view.rotateEyeY(-10);
 
-
     // ------------ Interaction ------------------------------------------
-
 
     new xeogl.CameraControl();
 
@@ -171,21 +162,19 @@
 
     var spaceDown = false;
 
-    input.on("keydown",
-            function (e) {
-                if (e == input.KEY_SPACE) {
-                    textureCanvas.penDown();
-                    spaceDown = true;
-                }
-            });
+    input.on("keydown", function (e) {
+        if (e == input.KEY_SPACE) {
+            textureCanvas.penDown();
+            spaceDown = true;
+        }
+    });
 
-    input.on("keyup",
-            function (e) {
-                if (e == input.KEY_SPACE) {
-                    textureCanvas.penUp();
-                    spaceDown = false;
-                }
-            });
+    input.on("keyup", function (e) {
+        if (e == input.KEY_SPACE) {
+            textureCanvas.penUp();
+            spaceDown = false;
+        }
+    });
 
     // Whenever mouse moves, attempt to pick a triangle on a Entity,
     // then show the cartesian coordinates at the picked position within
@@ -194,57 +183,46 @@
 
     var coords;
 
-    input.on("mousemove",
-            function (_coords) {
-                coords = _coords;
-            });
+    input.on("mousemove", function (_coords) {
+        coords = _coords;
+    });
 
 
-    scene.on("tick",
-            function () {
+    scene.on("tick", function () {
 
-                if (!coords) {
-                    return;
+        if (!coords) {
+            return;
+        }
+
+        // Pick a primitive on some Entity
+
+        var hit = scene.pick({
+            canvasPos: coords,
+            pickSurface: true
+        });
+
+        if (hit && hit.worldPos && hit.normal) {
+
+            if (hit.uv) {
+
+                // UV coordinates picked
+
+                if (spaceDown) {
+                    textureCanvas.penDown();
                 }
 
-                xeogl.debug.hide("cone");
+                textureCanvas.penMove(hit.uv);
+            }
 
-                // Pick a primitive on some Entity
+        } else {
 
-                var hit = scene.pick({
-                    canvasPos: coords,
-                    pickSurface: true
-                });
+            // No Triangle picked
 
-                if (hit && hit.worldPos && hit.normal) {
-
-                    xeogl.debug
-                            .id("cone")
-                            .pos(hit.worldPos)
-                            .dir([-hit.normal[0], -hit.normal[1], -hit.normal[2]])
-                            .radius(0.3)
-                            .cone();
-
-                    if (hit.uv) {
-
-                        // UV coordinates picked
-
-                        if (spaceDown) {
-                            textureCanvas.penDown();
-                        }
-
-                        textureCanvas.penMove(hit.uv);
-                    }
-
-                } else {
-
-                    // No Triangle picked
-
-                    if (!spaceDown) {
-                        textureCanvas.penUp();
-                    }
-                }
-            });
+            if (!spaceDown) {
+                textureCanvas.penUp();
+            }
+        }
+    });
 
 </script>
 </body>

@@ -1,7 +1,7 @@
 /**
  A **StereoEffect** sets up a stereo view for its {{#crossLink "Scene"}}Scene{{/crossLink}}.
 
- <a href="../../examples/#effects_StereoEffect"><img src="../../assets/images/screenshots/StereoEffect.png"></img></a>
+ <a href="../../examples/#effects_stereo"><img src="../../assets/images/screenshots/StereoEffect.png"></img></a>
 
  ## Overview
 
@@ -11,7 +11,7 @@
 
  ## Examples
 
- * [Stereo view using a StereoEffect](../../examples/#effects_StereoEffect)
+ * [Stereo view using a StereoEffect](../../examples/#effects_stereo)
 
  ## Usage
 
@@ -120,12 +120,14 @@
                      * @event camera
                      * @param value The property's new value
                      */
-                    var camera = this._attach({
+                    this._attach({
                         name: "camera",
                         type: "xeogl.Camera",
                         component: value,
                         sceneDefault: true
                     });
+
+                    var camera = this._attached.camera;
 
                     // Ensure that Camera has a Frustum projection
 

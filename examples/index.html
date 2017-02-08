@@ -125,7 +125,7 @@
 
         #sourceButton {
             position: fixed;
-            top: 20px;
+            bottom: 20px;
             right: 20px;
             padding: 8px;
             color: #fff;
@@ -173,205 +173,260 @@
 
 <script>
 
+    // Translations for tweeted links
+
+    var publishedLinks = {
+        "animation_CameraFlightAnimation_Entity": "animation_camera_flyTo_entity",
+        "animation_CameraFlightAnimation_Boundary3D": "animation_camera_flyTo_boundary",
+        "animation_CameraFlightAnimation_AABB": "animation_camera_flyTo_aabb",
+        "animation_CameraFollowAnimation": "animation_camera_follow_entity",
+        "animation_CameraFollowAnimation_fitToView": "animation_camera_follow_entity_fitToView",
+        "animation_CameraPathAnimation_interpolate": "animation_camera_path_interpolation",
+        "animation_CameraPathAnimation_flyToFrame": "animation_camera_path_flyToFrame",
+        "animation_CameraPathAnimation_scrubToFrame": "animation_camera_path_scrubToFrame",
+        "animation_CameraPathAnimation_frameMenu": "animation_camera_path_frameMenu",
+        "boundaries_Entity_worldBoundary_aabb": "boundaries_entity_world_aabb",
+        "boundaries_Entity_worldBoundary_obb": "boundaries_entity_world_obb",
+        "boundaries_Entity_worldBoundary_sphere": "boundaries_entity_world_sphere",
+        "boundaries_Entity_viewBoundary_aabb": "boundaries_entity_view_aabb",
+        "boundaries_Entity_localBoundary_aabb": "boundaries_entity_local_aabb",
+        "boundaries_Entity_canvasBoundary_aabb": "boundaries_entity_canvas_aabb",
+        "boundaries_Model_worldBoundary_aabb": "boundaries_model_world_aabb",
+        "boundaries_flyToBoundary": "animation_camera_flyTo_entity2",
+        "demos_ui_explorer": "importing_gltf_explorer",
+        "demos_1": "demos_1",
+        "demos_2": "demos_2",
+        "geometry_heightmap": "geometry_primitives_heightmap",
+        "geometry_teapot": "geometry_primitives_teapot",
+        "geometry_OBJGeometry_raptor": "importing_obj_raptor",
+        "geometry_Nintendo3DSGeometry_lexus": "importing_obj_lexus",
+        "geometry_VectorTextGeometry": "geometry_primitives_VectorText",
+        "geometry_csg_example1": "geometry_generation_csg",
+        "generation_GeometryBuilder_wavyBlocks": "geometry_generation_wavyBlocks",
+        "interaction_picking": "interaction_picking",
+        "interaction_picking_disabling": "interaction_picking_disabling",
+        "interaction_picking_triangles": "interaction_picking_triangles",
+        "interaction_picking_triangles_normalAndUV": "interaction_picking_triangles_normalAndUV",
+        "interaction_picking_drawing": "interaction_picking_drawing",
+        "interaction_picking_performance": "interaction_picking_performance",
+        "lights_point_world": "environments_lighting_point_world_normalMap",
+        "models_GLTFModel": "importing_gltf_gearbox",
+        "models_SceneJSModel_pojo_textures": "importing_scenejs_pojo_textures",
+        "models_SceneJSModel_pojo_transparency": "importing_scenejs_pojo_transparency",
+        "models_SceneJSModel_json_textures": "importing_scenejs_json_textures",
+        "models_SceneJSModel_tronTank": "importing_scenejs_tronTank",
+        "models_Model_configureTransform": "transforms_model_configureTransform",
+        "models_Model_attachTransform": "transforms_model_attachTransform",
+        "models_Model_uniqueMaterials": "models_filter_uniqueMaterials",
+        "models_Model_bakeTransforms": "models_filter_uniqueMaterials",
+        "models_BuildableModel_city": "models_generation_city",
+        "scene_multipleScenes": "scenes_multipleScenes"
+    };
+
+
     var files = {
 
-        "Animation": [
-            "#flying cameras to targets",
-            "animation_CameraFlightAnimation_Entity",
-            "animation_CameraFlightAnimation_Boundary3D",
-            "animation_CameraFlightAnimation_AABB",
+        "Featured": [
 
-            "#following targets with cameras",
-            "animation_CameraFollowAnimation",
-            "animation_CameraFollowAnimation_fitToView",
+            "#content importing demos",
+            "importing_gltf_PBR",
+            "importing_scenejs_tronTank",
 
-            "#animating cameras along paths",
-            "animation_CameraPathAnimation_interpolate",
-            "animation_CameraPathAnimation_flyToFrame",
-            "animation_CameraPathAnimation_scrubToFrame",
-            "animation_CameraPathAnimation_frameMenu"
-        ],
-
-        "Billboards": [
-            "billboards_spherical",
-            "billboards_spherical_clouds",
-            "billboards_spherical_video",
-            "billboards_cylindrical"
-        ],
-
-        "Boundaries": [
-
-            "#entities",
-            "boundaries_Entity_worldBoundary_aabb",
-            "boundaries_Entity_worldBoundary_obb",
-            "boundaries_Entity_worldBoundary_sphere",
-            "boundaries_Entity_viewBoundary_aabb",
-            "boundaries_Entity_localBoundary_aabb",
-            "boundaries_Entity_canvasBoundary_aabb",
-
-            "#models",
-            "boundaries_Model_worldBoundary_aabb",
-
-            "#animations",
-            "boundaries_flyToBoundary"
-        ],
-
-        "Camera": [
-            "#viewing transforms",
-            "transforms_view_lookat",
-            "transforms_view_transformHierarchy",
-
-            "#projection transforms",
-            "transforms_project_perspective",
-            "transforms_project_frustum",
-            "transforms_project_ortho",
-            "transforms_project_transformHierarchy"
-        ],
-
-        "Canvas": [
-            "canvas_multipleViewports",
-            "canvas_snapshot",
-            "canvas_transparent",
-            "canvas_movingInPage"
-        ],
-
-        "Components": [
-
-            "#instantiating",
-            "components_instantiating",
-            "components_instantiating_childrenAsConfigs",
-
-            "#functionality common to all components",
-            "#change events",
-            "components_changeEvents",
-
-            "#finding components in Scenes",
-            "components_findingByID",
-            "components_findingByType",
-
-            "#metadata",
-            "components_metadata",
-
-            "#serializing",
-            "components_toJSON",
-            "components_toString",
-
-            "#cloning",
-            "components_cloning",
-
-            "#tests",
-            "components_test_defaultMaterial"
-        ],
-
-        "Curves": [
-            "curves_CubicBezierCurve",
-            "curves_QuadraticBezierCurve",
-            "curves_QuadraticBezierCurve_color",
-            "curves_SplineCurve",
-            "curves_Path"
-        ],
-
-        "Debugging": [
-            "debugging_logging",
-            "debugging_inspecting_glsl",
-            "debugging_helper"
-        ],
-
-        "Demos": [
-            "demos_ui_explorer",
-            "demos_1",
-            "demos_2"
-        ],
-
-        "Effects": [
-
-            "#Stereo",
-            "effects_StereoEffect",
-            "effects_stereo_custom",
-
-            "#ZSpace",
-            "effects_zspace_cube",
+            "#zSpace demos",
             "effects_zspace_geometries",
             "effects_zspace_gearbox",
-            "effects_zspace_gearbox_explorer",
-            "effects_zspace_buggy",
             "effects_zspace_ReciprocatingSaw",
-            "effects_zspace_drawing"
+
+            "#misc demos",
+            "importing_gltf_explorer",
+            "featured_craySupercomputer"
+        ],
+
+        "Scenes": [
+
+            "#events",
+            "scenes_events_tick",
+
+            "#components",
+            "scenes_components_instantiating",
+            "scenes_components_instantiating2",
+            "scenes_components_events",
+            "scenes_components_finding_byID",
+            "scenes_components_finding_byType",
+            "scenes_components_metadata",
+            "scenes_components_toJSON",
+            "scenes_components_toString",
+            "scenes_components_cloning",
+
+            "#multiple scenes in a page",
+            "scenes_multipleScenes"
         ],
 
         "Entities": [
-            "#xeogl entities",
-            "entities_minimal"
+
+            "#examples",
+            "entities_examples_metallicTorus"
         ],
 
-        "Extending": [
-            "#creating new component classes",
-            "extending_customComponent_basic",
-            "extending_customComponent_changeEvents",
-            "extending_customComponent_childCleanup",
-            "extending_customComponent_serializable",
-            "extending_customComponent_update"
+        "Canvas": [
+
+            "canvas_moving",
+            "canvas_transparent",
+            "canvas_snapshot",
+            "canvas_multipleViewports"
+        ],
+
+        "Lights": [
+
+            "#light sources",
+            "lights_ambient",
+
+            "lights_directional_view_threePoint",
+            "lights_directional_world_threePoint",
+
+            "lights_point_view_threePoint",
+            "lights_point_world_threePoint",
+
+            "lights_point_world_normalMap",
+
+            "#image-based lighting",
+            "lights_lightMap"
+        ],
+
+        "Skyboxes": [
+
+            "skyboxes_skybox",
+            "skyboxes_skybox_custom"
         ],
 
         "Geometry": [
 
-            "#defining",
+            "#defining geometry",
             "geometry_triangles",
             "geometry_triangles_texture",
             "geometry_triangles_vertexColors",
             "geometry_lines",
             "geometry_modifying",
 
-            "#primitives",
-            "geometry_BoxGeometry",
-            "geometry_AABBGeometry",
-            "geometry_CylinderGeometry",
-            "geometry_PlaneGeometry",
-            "geometry_HeightmapGeometry",
-            "geometry_SphereGeometry",
-            "geometry_TeapotGeometry",
-            "geometry_TorusGeometry",
+            "#geometry primitives",
+            "geometry_primitives_box",
+            "geometry_primitives_cylinder",
+            "geometry_primitives_plane",
+            "geometry_primitives_heightmap",
+            "geometry_primitives_sphere",
+            "geometry_primitives_teapot",
+            "geometry_primitives_torus",
+            "geometry_primitives_vectorText",
 
-            "#importing from Wavefront .OBJ",
-            "geometry_OBJGeometry_raptor",
+            "#geometries shaped to boundaries",
+            "geometry_primitives_AABBGeometry",
+            "geometry_primitives_OBBGeometry",
 
-            "#importing from Nintendo .3DS",
-            "geometry_Nintendo3DSGeometry_lexus",
+            "#constructive Solid Geometry (CSG)",
+            "geometry_generation_csg",
 
-            "#text",
-            "geometry_VectorTextGeometry",
-
-            "#Constructive Solid Geometry (CSG)",
-            "geometry_csg_example1"
-        ],
-
-        "Generation": [
             "#procedural generation",
-            "generation_GeometryBuilder_wavyBlocks"
+            "geometry_generation_wavyBlocks"
         ],
 
-        "Helpers": [
-            "#Utilities to help you develop scenes",
-            "helpers_axisHelper"
+        "Transforms": [
+
+            "#camera viewing transforms",
+            "transforms_camera_view_lookat",
+            "transforms_camera_view_transformHierarchy",
+
+            "#camera projection transforms",
+            "transforms_camera_project_perspective",
+            "transforms_camera_project_frustum",
+            "transforms_camera_project_ortho",
+            "transforms_camera_project_transformHierarchy",
+
+            "#transforming entities",
+            "transforms_entity_scale",
+            "transforms_entity_transformHierarchy",
+
+            "#transforming models",
+            "transforms_model_configureTransform",
+            "transforms_model_attachTransform",
+
+            "#billboarding",
+            "transforms_billboard_cylindrical",
+            "transforms_billboard_spherical",
+            "transforms_billboard_spherical_clouds"
+        ],
+
+        "Boundaries": [
+
+            "#entities",
+            "boundaries_entity_world_aabb",
+            "boundaries_entity_world_obb",
+            "boundaries_entity_world_sphere",
+            "boundaries_entity_view_aabb",
+            "boundaries_entity_local_aabb",
+            "boundaries_entity_canvas_aabb",
+
+            "#models",
+            "boundaries_model_world_aabb"
+        ],
+
+        "Materials": [
+
+            "#physical metallic/roughness",
+            "materials_metallic_fireHydrant",
+            "materials_metallic_samples_metals",
+            "materials_metallic_textures",
+            "materials_metallic_metallicVsRoughness",
+
+            "#physical specular/glossiness",
+            "materials_specular_samples",
+            "materials_specular_textures",
+            "materials_specular_specularVsGlossiness",
+
+            "#classic Blinn-Phong",
+            "materials_phong_textures",
+            "materials_phong_textures_video",
+            "materials_phong_fresnel"
+        ],
+
+        "Models": [
+
+            "#processing models",
+            "models_filter_uniqueMaterials",
+            "models_filter_bakeTransforms",
+
+            "#generating models",
+            "models_generation_city"
+        ],
+
+        "Importing": [
+
+            "#importing geometry from .OBJ",
+            "importing_obj_raptor",
+            "importing_obj_CyberCity3D",
+
+            "#importing geometry from .3DS",
+            "importing_3ds_lexus",
+
+            "#importing models from glTF",
+            "importing_gltf_gearbox",
+            "importing_gltf_PBR",
+            "importing_gltf_explorer",
+
+            "#importing models from SceneJS",
+            "importing_scenejs_pojo_textures",
+            "importing_scenejs_pojo_transparency",
+            "importing_scenejs_json_textures",
+            "importing_scenejs_tronTank"
         ],
 
         "Interaction": [
 
-            "#interacting with xeogl",
+            "#event system",
             "interaction_events",
 
-            "#basic camera controls",
-            "interaction_CameraControl",
-            "interaction_KeyboardAxisCamera",
-            "interaction_KeyboardRotateCamera",
-            "interaction_KeyboardPanCamera",
-            "interaction_KeyboardZoomCamera",
-            "interaction_MouseRotateCamera",
-            "interaction_MousePanCamera",
-            "interaction_MouseZoomCamera",
-
-            "#BIM camera controls",
-            "interaction_BIMCameraControl",
+            "#camera controls",
+            "interaction_camera_CameraControl",
+            "interaction_camera_BIMCameraControl",
 
             "#picking",
             "interaction_picking",
@@ -386,107 +441,73 @@
             "interaction_picking_raycasting_pickSurface"
         ],
 
-        "Lights": [
-            "lights_ambient",
-            "lights_directional_view",
-            "lights_directional_world",
-            "lights_point_view",
-            "lights_point_world"
+        "Animation": [
+
+            "#flying cameras to targets",
+            "animation_camera_flyTo_entity",
+            "animation_camera_flyTo_boundary",
+            "animation_camera_flyTo_aabb",
+
+            "#following targets with cameras",
+            "animation_camera_follow_entity",
+            "animation_camera_follow_entity_fitToView",
+
+            "#animating cameras along paths",
+            "animation_camera_path_frameMenu",
+            "animation_camera_path_interpolation",
+            "animation_camera_path_flyToFrame",
+            "animation_camera_path_scrubToFrame",
+
+            "#moving things along curves",
+            "animation_curves_cubicBezier",
+            "animation_curves_quadraticBezier",
+            "animation_curves_quadraticBezier_color",
+            "animation_curves_spline",
+            "animation_curves_spline_pointLight",
+            "animation_curves_path"
         ],
 
-        "Marking": [
-            "#drawing markings on things",
-            "marking_PointMarkings"
+        "Effects": [
+
+            "#stereo",
+            "effects_stereo",
+            "effects_stereo_custom",
+
+            "#ZSpace",
+            "effects_zspace_cube",
+            "effects_zspace_geometries",
+            "effects_zspace_gearbox",
+            "effects_zspace_gearbox_explorer",
+            "effects_zspace_buggy",
+            "effects_zspace_ReciprocatingSaw"
         ],
 
-        "Materials": [
+        "Extending": [
 
-            "#Phong shading",
-
-            "materials_phong_Chest",
-            "materials_phong_FireHydrant",
-            "materials_phong_texture_diffuse",
-            "materials_phong_texture_specular",
-            "materials_phong_texture_emissive",
-            "materials_phong_texture_opacity",
-            "materials_phong_texture_normalMap",
-            "materials_phong_texture_video",
-            "materials_phong_texture_animation",
-            "materials_phong_fresnel_diffuse",
-            "materials_phong_fresnel_specular",
-            "materials_phong_fresnel_opacity",
-            "materials_phong_fresnel_emissive",
-
-            "#Physically-based rendering",
-            "materials_pbr_specularGlossiness_Chest",
-            "materials_pbr_specularGlossiness_FireHydrant",
-            "materials_pbr_specularGlossiness"
-        ],
-
-        "Models": [
-
-            "#transforming",
-            "models_Model_configureTransform",
-            "models_Model_attachTransform",
-
-            "#modifying",
-            "models_Model_uniqueMaterials",
-            "models_Model_bakeTransforms",
-
-            "#generating",
-            "models_BuildableModel_city",
-
-            "#importing glTF",
-            "models_GLTFModel_gearbox",
-            "models_GLTFModel_buggy",
-            "models_GLTFModel_ReciprocatingSaw",
-            "models_GLTFModel_duck",
-
-            "#importing SceneJS content",
-            "models_SceneJSModel_pojo_textures",
-            "models_SceneJSModel_pojo_transparency",
-            "models_SceneJSModel_json_textures",
-            "models_SceneJSModel_tronTank"
+            "#creating new component classes",
+            "extending_component_basic",
+            "extending_component_changeEvents",
+            "extending_component_childCleanup",
+            "extending_component_serializable",
+            "extending_component_update"
         ],
 
         "Profiling": [
+
             "#measuring xeogl performance",
             "profiling_statistics",
             "profiling_sceneRebuild"
         ],
 
-        "Scene": [
-            "#multiple scenes in a page",
-            "scene_multipleScenes",
+        "Debugging": [
 
-            "#events",
-            "scene_events_tick"
-        ],
+            "#getting diagnostics",
+            "debugging_logging",
+            "debugging_inspecting_glsl",
+            "debugging_helper",
 
-        "Skyboxes": [
-            "skyboxes_skybox",
-            "skyboxes_customSkybox"
-        ],
-
-        "Techniques": [
-            "#Z-sorting transparent entities",
-            "materials_techniques_transparencySort"
-        ],
-
-        "Transforms": [
-
-            "#viewing transforms",
-            "transforms_view_lookat",
-            "transforms_view_transformHierarchy",
-
-            "#projection transforms",
-            "transforms_project_perspective",
-            "transforms_project_frustum",
-            "transforms_project_ortho",
-            "transforms_project_transformHierarchy",
-
-            "#modeling transforms",
-            "transforms_model_transformHierarchy"
+            "#gnomon helper in the corner",
+            "debugging_helpers_axisHelper"
         ]
     };
 
@@ -583,6 +604,8 @@
     }
 
     var load = function (file) {
+
+        file = publishedLinks[file] || file;
 
         if (file.indexOf(".html", file.length - 5) !== -1) {
             window.location = "./" + file + ".html";

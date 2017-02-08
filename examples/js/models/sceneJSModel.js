@@ -6,7 +6,7 @@
      A **SceneJSModel** is a {{#crossLink "Model"}}{{/crossLink}} that
      imports content from the JSON-based <a href="http://scenejs.org">SceneJS</a> scene definition format.
 
-     <a href="../../examples/#models_SceneJSModel_tronTank"><img src="http://i.giphy.com/l3vR50pFTpEbJTztS.gif"></img></a>
+     <a href="../../examples/#importing_scenejs_tronTank"><img src="http://i.giphy.com/l3vR50pFTpEbJTztS.gif"></img></a>
 
      ## Overview
 
@@ -19,12 +19,13 @@
      the SceneJSModel to clear itself and load fresh components.
      * Can be transformed within World-space by attaching it to a {{#crossLink "Transform"}}{{/crossLink}}.
      * Provides its World-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}}.
+     * Can be configured to do a best-effort conversion of SceneJS Phong materials into xeogl's PBR {{#crossLink "PBRMetalness"}}{{/crossLink}} or {{#crossLink "SpecularMaterials"}}{{/crossLink}}.
 
      <img src="../../../assets/images/SceneJSModel.png"></img>
 
      ## SceneJS Support
 
-     SceneJSModel was developed to import the [Tron Tank model](../../examples/#models_SceneJSModel_tronTank). As such,
+     SceneJSModel was developed to import the [Tron Tank model](../../examples/#importing_scenejs_tronTank). As such,
      it only imports a limited subset of the SceneJS scene definition API. <b>Use with caution</b> and be prepared to
      fix and contribute missing functionality!
 
@@ -51,10 +52,10 @@
 
      ## Examples
 
-     * [Importing POJO defining geometry with diffuse, specular and normal maps](../../examples/#models_SceneJSModel_pojo_textures)
-     * [Importing POJO defining transparent geometry](../../examples/#models_SceneJSModel_pojo_transparency)
-     * [Importing JSON file defining geometry with diffuse, specular and normal maps](../../examples/#models_SceneJSModel_json_textures)
-     * [Importing JSON file defining the SceneJS Tron Tank](../../examples/#models_SceneJSModel_tronTank)
+     * [Importing POJO defining geometry with diffuse, specular and normal maps](../../examples/#importing_scenejs_pojo_textures)
+     * [Importing POJO defining transparent geometry](../../examples/#importing_scenejs_pojo_transparency)
+     * [Importing JSON file defining geometry with diffuse, specular and normal maps](../../examples/#importing_scenejs_json_textures)
+     * [Importing JSON file defining the SceneJS Tron Tank](../../examples/#importing_scenejs_tronTank)
 
      ## Usage
 
@@ -187,6 +188,22 @@
         });
      ````
 
+     #### Converting materials to PBR
+
+     ````javascript
+     var pbrSpecularTankModel = new xeogl.SceneJSModel({
+        src: "models/scenejs/tronTank.json",
+        materialWorkflow: "SpecularMaterial"
+     });
+     ````
+
+     ````javascript
+     var pbrMetalnessTankModel = new xeogl.SceneJSModel({
+        src: "models/scenejs/tronTank.json",
+        materialWorkflow: "MetallicMaterial"
+     });
+     ````
+
      @class SceneJSModel
      @module xeogl
      @submodule models
@@ -197,6 +214,7 @@
      @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
      generated automatically when omitted.
      @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this SceneJSModel.
+     @param [cfg.materialWorkflow] {String} Selects material workflow - "classic" | "pbrMatalness" | "pbrSpecular"
      @param [cfg.src] {String} Path to a SceneJS JSON scene description file.
      @param [cfg.data] {String} Path to a SceneJS JSON scene description file.
      @extends Geometry
@@ -211,12 +229,62 @@
 
             this._src = null;
 
+            this.materialWorkflow = cfg.materialWorkflow;
+
             this.src = cfg.src;
 
             this.data = cfg.data;
         },
 
         _props: {
+
+            /**
+             Selects which xeogl material type to create from each SceneJS Phong material.
+
+             Causes the SceneJSModel to attempt a best-effort conversion.
+
+             Update this at any time to reconvert the materials.
+
+             Fires a {{#crossLink "SceneJSModel/materialWorkFlow:event"}}{{/crossLink}} event on change.
+
+             @property materialWorkflow
+             @type {*}
+             */
+            materialWorkflow: {
+
+                set: function (value) {
+
+                    value = value || "PhongMaterial";
+
+                    if (value !== "MetallicMaterial" && value !== "SpecularMaterial" && value !== "PhongMaterial") {
+                        this.error("Unsupported value for 'materialWorkflow' - defaulting to 'PhongMaterial'");
+                        value = "PhongMaterial";
+                    }
+
+                    if (this._materialWorkflow === value) {
+                        return;
+                    }
+
+                    this._materialWorkflow = value;
+
+                    //this.destroyAll();
+                    //
+                    //this._src = null;
+                    //
+                    //this._parse(this._materialWorkflow, null, null, null);
+
+                    /**
+                     Fired whenever this SceneJSModel's  {{#crossLink "SceneJSModel/materialWorkflow:property"}}{{/crossLink}} property changes.
+                     @event materialWorkflow
+                     @param value The property's new value
+                     */
+                    this.fire("materialWorkflow", this._materialWorkflow);
+                },
+
+                get: function () {
+                    return this._materialWorkflow;
+                }
+            },
 
             /**
              Path to the SceneJS JSON scene description file.
@@ -382,16 +450,43 @@
                     var specular = (scenejsSpecular && scenejsSpecularColor) ? [scenejsSpecular * scenejsSpecularColor.r, scenejsSpecular * scenejsSpecularColor.g, scenejsSpecular * scenejsSpecularColor.b] : null;
                     var emissive = (scenejsEmit && diffuse) ? [scenejsEmit * diffuse[0], scenejsEmit * diffuse[1], scenejsEmit * diffuse[2]] : null;
 
-                    material = this.add({
-                        type: "xeogl.PhongMaterial",
-                        id: this._createID(node),
-                        ambient: [1,1,1],
-                        diffuse: diffuse,
-                        specular: specular,
-                       // shininess: node.shine,
-                        emissive: emissive,
-                        opacity: node.alpha
-                    });
+                    switch (this._materialWorkflow) {
+                        case "MetallicMaterial":
+                            material = this.add({
+                                type: "xeogl.MetallicMaterial",
+                                id: this._createID(node),
+                                baseColor: diffuse,
+                                metallic: 1.0,
+                                roughness: 0.3,
+                                emissive: emissive,
+                                opacity: node.alpha
+                            });
+                            break;
+
+                        case "SpecularMaterial":
+                            material = this.add({
+                                type: "xeogl.SpecularMaterial",
+                                id: this._createID(node),
+                                diffuse: diffuse,
+                                specular: specular,
+                                glossiness: 0.5,
+                                emissive: emissive,
+                                opacity: node.alpha
+                            });
+                            break;
+
+                        default:
+                            material = this.add({
+                                type: "xeogl.PhongMaterial",
+                                id: this._createID(node),
+                                ambient: [.2,.2,.2],
+                                diffuse: diffuse,
+                                specular: specular,
+                                // shininess: node.shine,
+                                emissive: emissive,
+                                opacity: node.alpha
+                            });
+                    }
 
                     break;
 
@@ -610,6 +705,9 @@
 
         _getJSON: function () {
             var json = {};
+            if (this._materialWorkflow) {
+                json.materialWorkflow = materialWorkflow;
+            }
             if (this._src) {
                 json.src = src;
             } else if (this._data) {

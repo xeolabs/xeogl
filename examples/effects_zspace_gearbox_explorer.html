@@ -18,15 +18,14 @@
 
     <script src="libs/gl-matrix-min.js"></script>
     <!--<script src="js/effects/zSpace.js"></script>-->
-    <script src="js/effects/zSpaceEffect_complete.js"></script>
-    <script src="js/controls/zSpaceStylusControl.js"></script>
+    <script src="js/zspace/zSpaceEffect_complete.js"></script>
+    <script src="js/zspace/zSpaceStylusControl.js"></script>
 
     <script src="js/effects/highlightEntityEffect.js"></script>
 
 <body>
 
-<div id="infoLight"
-     style="left: 0; text-align: left; background: black; opacity: 0.7; padding: 8px; color: white; font-size: 14pt;">
+<div id="info">
     <a href="http://xeogl.org" target="_parent" >xeogl</a><br>
     <ul>
         <li><span>using <a
@@ -39,7 +38,7 @@
                                                                       target="_parent">Entity</a></span></li>
     </ul>
 
-    <span id="log" style="color:red;font-size: 16px"></span>
+    <div id="log" style="color:red;"></div>
 </div>
 
 <div id="explorerPanel"

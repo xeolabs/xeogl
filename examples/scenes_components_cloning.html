@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.min.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <a href="http://xeogl.org" target="_parent">xeogl</a>
+    <br><br>
+    cloning an <a href="../docs/classes/Entity.html" target="_parent">Entity</a> 200 times
+</div>
+
+<script>
+
+    // Create a prototype Entity with all defaults.
+
+    var entity = new xeogl.Entity({
+
+        geometry: new xeogl.TorusGeometry({
+            radius: 1.0,
+            tube: 0.3,
+            radialSegments: 32,
+            tubeSegments: 24,
+            arc: Math.PI * 2.0
+        })
+    });
+
+    // Make a bunch of clones of the Entity,
+    // each at a random position.
+
+
+    for (var i = 0; i < 200; i++) {
+
+        var color = [
+            0.4 + Math.random() * 0.6,
+            0.4 + Math.random() * 0.6,
+            0.4 + Math.random() * 0.6
+        ];
+
+
+        entity.clone({
+
+            transform: new xeogl.Rotate({
+                xyz: [
+                    Math.random(),
+                    Math.random(),
+                    Math.random()
+                ],
+                angle: Math.random() * 360,
+
+                parent: new xeogl.Translate({
+                    xyz: [
+                        Math.random() * 20 - 10,
+                        Math.random() * 20 - 10,
+                        Math.random() * 20 - 10
+                    ]
+                })
+
+            }),
+
+            material: new xeogl.PhongMaterial({
+                diffuse: color,
+                specular: color
+            })
+        });
+    }
+
+    // Move the camera back a bit
+
+    entity.camera.view.zoom(20);
+
+    // Orbit the eye position about the look position.
+
+    entity.scene.on("tick", function () {
+        entity.camera.view.rotateEyeY(-0.1);
+    });
+
+    new xeogl.CameraControl();
+
+</script>
+</body>
+</html>

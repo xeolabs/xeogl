@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="../build/xeogl.min.js"></script>
+    <script src="js/generation/geometryBuilder.js"></script>
+    <script src="js/generation/voxelGeometryBuilder.js"></script>
+    <script src="js/animation/cameraFollowAnimation.js"></script>
+
+<body>
+
+<div id="info">
+    <a href="http://xeogl.org" target="_parent">xeogl</a><br><br>
+    <ul>
+        <li>Procedurally generating a <a href="../docs/classes/Geometry.html" target="_parent">Geometry</a> with a <a
+                href="../docs/classes/VoxelGeometryBuilder.html" target="_parent">VoxelGeometryBuilder</a>.
+        </li>
+        <li>This is a single <a href="../docs/classes/Geometry.html" target="_parent">Geometry</a>, rendered with a
+            single WebGL draw call.
+        </li>
+    </ul>
+</div>
+
+<script>
+
+    //-----------------------------------------------------------------------------
+    // Entity we'll scale
+    //-----------------------------------------------------------------------------
+
+    var entity = new xeogl.Entity({
+        geometry: new xeogl.TorusGeometry(),
+        material: new xeogl.PhongMaterial({
+            diffuseMap: new xeogl.Texture({
+                src: "textures/diffuse/uvGrid2.jpg"
+            })
+        }),
+        transform: new xeogl.Rotate({
+            xyz: [0, 1, 0],
+            angle: 0
+        })
+    });
+
+    //-----------------------------------------------------------------------------
+    // Entity we'll print to
+    //-----------------------------------------------------------------------------
+
+
+    var aabb = xeogl.math.AABB3(entity.worldBoundary.aabb);
+
+    aabb[0] += 4;
+    aabb[3] += 4;
+
+    var voxels = new xeogl.Entity({
+        geometry: new xeogl.Geometry(),
+        material: new xeogl.PhongMaterial({
+            diffuse: [0.5, 0.5, 0.8],
+            specular: [0.2, 0.2, 0.2]
+        })
+    });
+
+    // Show boundary of printed entity
+    new xeogl.Entity({
+        geometry: new xeogl.AABBGeometry({
+            aabb: aabb
+        }),
+        material: new xeogl.PhongMaterial({
+            emissive: [1.0, 0.0, 0.0]
+        })
+    });
+
+    //    new xeogl.CameraFollowAnimation({
+    //        worldBoundary: voxels.worldBoundary,
+    //        fly: false,
+    //        fit: true,
+    //        fitFOV: 45
+    //    });
+
+
+    //-----------------------------------------------------------------------------
+    // Our voxel builder
+    //-----------------------------------------------------------------------------
+
+
+    var vgb = new xeogl.VoxelGeometryBuilder({
+        aabb: aabb,
+        resolution: [100, 100, 100]
+    });
+
+    for (var x = aabb[0], xmax = aabb[3], xinc = vgb.voxelSize[0]; x < xmax; x += xinc) {
+        for (var y = aabb[1], ymax = aabb[4], yinc = vgb.voxelSize[1]; y < ymax; y += yinc) {
+
+            var z = aabb[2] + ((aabb[5] - aabb[2]) * 0.5);
+
+          //  z += Math.sin(x * 0.1) * 2.0;
+
+            vgb.writeVoxel([x, y, z]);
+        }
+    }
+
+    vgb.setShape(new xeogl.BoxGeometry());
+
+    vgb.build(voxels.geometry);
+
+    var scene = xeogl.scene;
+
+    var view = scene.camera.view;
+
+    view.eye = [0, 0, -10];
+    view.look = [0, 0, 0];
+    view.up = [0, 1, 0];
+
+    new xeogl.CameraControl();
+
+    //    view.rotateEyeX(20);
+    //
+    //    scene.on("tick", function () {
+    //        entity.transform.angle += 0.5;
+    //    });
+
+</script>
+</body>
+</html>
