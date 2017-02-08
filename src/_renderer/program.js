@@ -107,11 +107,17 @@
         this.errorLog = null;
 
         this.draw = new xeogl.renderer.webgl.Program(this.stats, gl, this.source.vertexDraw, this.source.fragmentDraw);
+        this.shadow = new xeogl.renderer.webgl.Program(this.stats, gl, this.source.vertexShadow, this.source.fragmentShadow);
         this.pickObject = new xeogl.renderer.webgl.Program(this.stats, gl, this.source.vertexPickObject, this.source.fragmentPickObject);
         this.pickPrimitive = new xeogl.renderer.webgl.Program(this.stats, gl, this.source.vertexPickPrimitive, this.source.fragmentPickPrimitive);
 
         if (!this.draw.allocated) {
             this.errorLog = ["Draw program failed to allocate"].concat(this.draw.errorLog);
+            return;
+        }
+
+        if (!this.shadow.allocated) {
+            this.errorLog = ["Shadow program failed to allocate"].concat(this.shadow.errorLog);
             return;
         }
 
@@ -132,6 +138,11 @@
             return;
         }
 
+        if (!this.shadow.compiled) {
+            this.errorLog = ["Shadow program failed to compile"].concat(this.shadow.errorLog);
+            return;
+        }
+
         if (!this.pickObject.compiled) {
             this.errorLog = ["Object-picking program failed to compile"].concat(this.pickObject.errorLog);
             return;
@@ -149,6 +160,11 @@
             return;
         }
 
+        if (!this.shadow.linked) {
+            this.errorLog = ["Shadow program failed to link"].concat(this.shadow.errorLog);
+            return;
+        }
+
         if (!this.pickObject.linked) {
             this.errorLog = ["Object-picking program failed to link"].concat(this.pickObject.errorLog);
             return;
@@ -163,6 +179,11 @@
 
         if (!this.draw.validated) {
             this.errorLog = ["Draw program failed to validate"].concat(this.draw.errorLog);
+            return;
+        }
+
+        if (!this.shadow.validated) {
+            this.errorLog = ["Shadow program failed to validate"].concat(this.shadow.errorLog);
             return;
         }
 

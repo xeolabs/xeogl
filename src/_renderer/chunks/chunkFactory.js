@@ -103,6 +103,7 @@
     xeogl.renderer.ChunkFactory.prototype.putChunk = function (chunk) {
 
         if (chunk.useCount === 0) { // In case of excess puts
+            console.error("xeogl.renderer.Chunkfactory.putChunk: chunk put too many times!");
             return;
         }
 

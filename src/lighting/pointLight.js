@@ -1,7 +1,7 @@
 /**
  A **PointLight** defines a positional light source that originates from a single point and spreads outward in all directions, to illuminate attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- <a href="../../examples/#lights_point_world"><img src="http://i.giphy.com/3o6ZsZoFGIOJ2nlmN2.gif"></img></a>
+ <a href="../../examples/#lights_point_world_normalMap"><img src="http://i.giphy.com/3o6ZsZoFGIOJ2nlmN2.gif"></img></a>
 
  ## Overview
 
@@ -19,8 +19,9 @@
 
  ## Examples
 
- * [View-space point light](../../examples/#lights_point_view)
- * [World-space point light](../../examples/#lights_point_world)
+ * [View-space positional three-point lighting](../../examples/#lights_point_view_threePoint)
+ * [World-space positional three-point lighting](../../examples/#lights_point_world_threePoint)
+ * [World-space point light and normal map](../../examples/#lights_point_world_normalMap)
 
  ## Usage
 

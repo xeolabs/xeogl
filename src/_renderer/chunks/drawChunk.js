@@ -27,6 +27,16 @@
             }
         },
 
+        shadow: function (frameCtx) {
+            var state = this.state;
+            var gl = this.program.gl;
+
+            if (state.indices) {
+                gl.drawElements(state.primitive, state.indices.numItems, state.indices.itemType, 0);
+                frameCtx.drawElements++;
+            }
+        },
+
         pickObject: function (frameCtx) {
 
             var state = this.state;
