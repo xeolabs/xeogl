@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
     <script src="js/skyboxes/skybox.js"></script>
 
     <script src="js/libs/dat.gui.min.js"></script>
@@ -29,7 +29,6 @@
 </div>
 
 
-
 <div id="dat-gui-container" class="lower">
 </div>
 
@@ -38,8 +37,13 @@
     const models = {
         "Helmet with PBR metal/rough": {
             src: "models/gltf/DamagedHelmetModified/glTF/DamagedHelmetModified.gltf",
-            desc: "glTF damaged helmet model with metallic/roughness PBR materials - <a href='models.gltf/DamagedHelmetModified/README.md'>more info</a>"
+            desc: "glTF damaged helmet model with metallic/roughness PBR materials - <a href='https://github.com/javagl/gltfTestModels/tree/master/DamagedHelmetModified'>more info</a>"
         },
+//        "Simple Spheres with PBR metal/rough": {
+//          src: "models/gltf/SimpleSpheres/glTF/SimpleSpheres.gltf",
+//            desc: "glTF test spheres for metal/rough workflow - <a href='https://github.com/javagl/gltfTestModels/tree/master/SimpleSpheres'>more info</a>"
+//        },
+
         "Microphone with PBR metal/rough": {
             src: "models/gltf/Microphone/PBR-MetalRoughness/Microphone.gltf",
             desc: "glTF microphone model with metallic/roughness PBR materials, courtesy of Sketchfab",
@@ -157,7 +161,7 @@
     var model = new xeogl.GLTFModel({});
 
     model.on("loaded", function () { // Auto-fit model to view
-        xeogl.scheduleTask(function() { // FIXME - needed to ensure that model has loaded
+        xeogl.scheduleTask(function () { // FIXME - needed to ensure that model has loaded
             cameraFlight.jumpTo({
                 worldBoundary: model.worldBoundary,
                 fit: true,

@@ -1156,7 +1156,7 @@
                 } else {
                     add("textureCoord = texturePos.xy;");
                 }
-                add("emissive += texture2D(xeo_uEmissiveMap, textureCoord).rgb;");
+                add("emissive *= texture2D(xeo_uEmissiveMap, textureCoord).rgb;");
             }
 
             if (geometry.uv && material.opacityMap) {

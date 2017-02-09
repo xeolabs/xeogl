@@ -9737,7 +9737,7 @@ var Canvas2Image = (function () {
                 } else {
                     add("textureCoord = texturePos.xy;");
                 }
-                add("emissive += texture2D(xeo_uEmissiveMap, textureCoord).rgb;");
+                add("emissive *= texture2D(xeo_uEmissiveMap, textureCoord).rgb;");
             }
 
             if (geometry.uv && material.opacityMap) {
@@ -32076,32 +32076,39 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         handleMaterial: {
             value: function (entryID, description, userInfo) {
 
-                var extensions = description.extensions;
+                var technique = description.technique;
                 var material;
 
-                if (extensions && extensions.FRAUNHOFER_materials_pbr) {
-                    var pbr = extensions.FRAUNHOFER_materials_pbr;
-                    var materialModel = pbr.materialModel;
-                    var values = pbr.values || {};
-
-                    switch (materialModel) {
-                        case "PBR_metal_roughness":
-                            material = this._parseMetallicMaterial(entryID, values, userInfo);
-                            break;
-
-                        case "PBR_specular_glossiness":
-                            material = this._parseSpecularMaterial(entryID, values, userInfo);
-                            break;
-
-                        default:
-                            material = this._parseMetallicMaterial(entryID, values, userInfo);
-                    }
-
-                } else if (description.technique === "technique_Standard") {
-                    material = this._parseMetallicMaterial(entryID, description.values || {}, userInfo);
+                if (technique === "pbrTechnique") {
+                    material = this._parseMetallicMaterial(entryID, description.values, userInfo);
 
                 } else {
-                    material = this._parsePhongMaterial(entryID, description.values || {}, userInfo);
+                    var extensions = description.extensions;
+
+                    if (extensions && extensions.FRAUNHOFER_materials_pbr) {
+                        var pbr = extensions.FRAUNHOFER_materials_pbr;
+                        var materialModel = pbr.materialModel;
+                        var values = pbr.values || {};
+
+                        switch (materialModel) {
+                            case "PBR_metal_roughness":
+                                material = this._parseMetallicMaterial(entryID, values, userInfo);
+                                break;
+
+                            case "PBR_specular_glossiness":
+                                material = this._parseSpecularMaterial(entryID, values, userInfo);
+                                break;
+
+                            default:
+                                material = this._parseMetallicMaterial(entryID, values, userInfo);
+                        }
+
+                    } else if (description.technique === "technique_Standard") {
+                        material = this._parseMetallicMaterial(entryID, description.values || {}, userInfo);
+
+                    } else {
+                        material = this._parsePhongMaterial(entryID, description.values || {}, userInfo);
+                    }
                 }
 
                 this.model.add(material);
@@ -32165,6 +32172,18 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                     entry = this.resources.getEntry(values.occlusionTexture);
                     if (entry) {
                         cfg.occlusionMap = entry.object;
+                    }
+                }
+
+                var emissionFactor = values.emissionFactor;
+                if (emissionFactor) {
+                    cfg.emissive = emissionFactor;
+                }
+
+                if (values.emissionTexture) {
+                    entry = this.resources.getEntry(values.emissionTexture);
+                    if (entry) {
+                        cfg.emissiveMap = entry.object;
                     }
                 }
 
