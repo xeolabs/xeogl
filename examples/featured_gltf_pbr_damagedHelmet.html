@@ -6,7 +6,10 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
     <script src="../build/xeogl.min.js"></script>
-    <script src="js/skyboxes/skybox.js"></script>
+
+    <script src="libs/gl-matrix-min.js"></script>
+    <script src="js/zspace/zSpaceEffect_complete.js"></script>
+    <script src="js/zspace/zSpaceStylusControl.js"></script>
 
     <link href="css/styles.css" rel="stylesheet"/>
 
@@ -15,43 +18,12 @@
 <script>
 
     //-----------------------------------------------------------------------------------------------------
-    // Environment
+    // Lighting
     //-----------------------------------------------------------------------------------------------------
-
-    new xeogl.Skybox({
-        src: "textures/skybox/uffizi_vert_cross.jpg",
-        size: 1000, // Default
-        active: true
-    });
 
     var lights = xeogl.scene.lights;
 
-    lights.lights = [
-
-        new xeogl.DirLight({
-            id: "keyLight",
-            dir: [0.8, -0.6, -0.8],
-            color: [1.0, 1.0, 1.0],
-            intensity: 1.0,
-            space: "view"
-        }),
-
-        new xeogl.DirLight({
-            id: "fillLight",
-            dir: [-0.8, -0.4, -0.4],
-            color: [0.7, 0.7, 0.7],
-            intensity: 1.0,
-            space: "view"
-        }),
-
-        new xeogl.DirLight({
-            id: "rimLight",
-            dir: [0.2, -0.8, 0.8],
-            color: [1.0, 1.0, 0.9],
-            intensity: 1.0,
-            space: "view"
-        })
-    ];
+    lights.lights = [];
 
     lights.lightMap = new xeogl.CubeTexture({
         src: [
@@ -76,45 +48,68 @@
     });
 
     //-----------------------------------------------------------------------------------------------------
-    // Camera interaction and animation
+    // Camera animation and user control
     //-----------------------------------------------------------------------------------------------------
-
-    new xeogl.CameraControl();
 
     var spinning = true;
 
     var view = xeogl.scene.camera.view;
 
+    view.eye = [-2.0412752628326416, 0.000010520219802856445, -1.8574140071868896];
+    view.look = [0, 0, 0];
+    view.up = [0, 1, 0];
     view.rotateEyeY(230);
 
     xeogl.scene.on("tick", function () { // Slowly orbit the camera
         if (spinning) {
-            view.rotateEyeY(-0.1);
+            view.rotateEyeY(-0.05);
         }
     });
 
-    view.eye = [-2.0412752628326416, 0.000010520219802856445, -1.8574140071868896];
-    view.look = [0, 0, 0];
-    view.up = [0,1,0];
+    new xeogl.CameraControl(); // User camera control
 
+    //---------------------------------------------------
+    // Create a zSpace effect and stylus control
+    //---------------------------------------------------
 
-    var cameraFlight = new xeogl.CameraFlightAnimation();
+    var zspaceEffect = new xeogl.ZSpaceEffect({canvasOffset: [330, 0]});
+    new xeogl.ZSpaceStylusControl();
 
-    //-----------------------------------------------------------------------------------------------------
-    // glTF model
-    //-----------------------------------------------------------------------------------------------------
+    zspaceEffect.on("supported", function (supported) {
+        if (supported) {
+            // We're running on a zSpace display! Adjust the camera
+            // a little bit to account for display's special projection transform.
+            view.zoom(2);
+            view.rotateEyeX(30);
+        }
+    });
 
-    var model = new xeogl.GLTFModel({
+    //---------------------------------------------------
+    // Load the helmet model
+    //---------------------------------------------------
+
+    var helmet = new xeogl.GLTFModel({
         src: "models/gltf/DamagedHelmetModified/glTF/DamagedHelmetModified.gltf"
     });
 
-    model.on("loaded", function () { // Auto-fit model to view
-        cameraFlight.jumpTo({
-            worldBoundary: model.worldBoundary,
-            fit: true,
-            fitFOV: 50
-        });
+    //--------------------------------------------------------------------
+    // This particular model has only one entity, which is the the helmet.
+    // Get the entity and animate it's material's emissivity factor,
+    // which makes the helmet's glowing HUD display appear to flicker.
+    //--------------------------------------------------------------------
+
+    helmet.on("loaded", function () {
+        for (var id in helmet.entities) {
+            if (helmet.entities.hasOwnProperty(id)) {
+                var entity = helmet.entities[id];
+                xeogl.scene.on("tick", function () {
+                    entity.material.emissive = (Math.random() < 0.05) ? [0, 0, 0] : [1, 1, 1];
+                });
+                return;
+            }
+        }
     });
+
 
 </script>
 </body>
