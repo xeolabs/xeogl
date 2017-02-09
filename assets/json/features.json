@@ -1,0 +1,46 @@
+{
+  "Scene graph": [
+    "Data-driven",
+    "Dynamically-editable",
+    "GPU-accelerated picking",
+    "Measurable performance",
+    "Lost WebGL Context Recovery",
+    "Extensible"
+  ],
+
+  "Optimizations": [
+    "See the <a href='https://github.com/xeolabs/xeogl/wiki/Implementation-Notes' target='_wiki'>wiki</a> for implementation notes on optimizations in xeogl."
+  ],
+
+  "Animation": [
+  ],
+
+  "Rendering": [
+    "[[Metallic|materials_metallic_fireHydrant]] and [[specular|materials_specular_samples]] PBR workflows",
+    "[[Blinn-Phong workflow|materials_phong_textures]]"
+  ],
+
+  "Modeling": [
+    "[[Procedural modeling|models_BuildableModel_city]]",
+    "[[Procedural geometry|generation_GeometryBuilder_wavyBlocks]]",
+    "[[Dynamic geometry|geometry_modifying]]",
+    "[[CSG|geometry_csg_example1]]",
+    "[[Parameterized primitives|geometry_primitives_torus]]",
+    "[[Transform hierarchies|transforms_model_transformHierarchy]]",
+    "[[Video textures|materials_texture_video]]",
+    "[[Texture animation|materials_texture_animation]]"
+  ],
+
+  "Importers": [
+    "[[glTF|importing_gltf_gearbox]], [[SceneJS|importing_scenejs_tronTank]], [[.OBJ|importing_obj_raptor]], [[.3DS|importing_3ds_lexus]]"
+  ],
+
+  "Effects": [
+    "[[zSpace|effects_zspace_gearbox]], [[Stereo|effects_stereo]]"
+  ],
+
+  "Resources": [
+    "[[API docs|xeogl.org/docs]]",
+    "[[Live examples|xeogl.org/examples]]"
+  ]
+}

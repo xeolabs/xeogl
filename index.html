@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<!--[if IE 9]>
+<html lang="en" class="ie9"> <![endif]-->
+<!--[if !IE]><!-->
+<html lang="en">
+<!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <title>xeogl - WebGL-based 3D visualization engine</title>
+    <meta name="author" content="xeolabs.com">
+    <meta property="og:url" content="http://www.xeogl.org"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:title" content="xeogl - WebGL-based 3D visualization engine"/>
+    <meta property="og:description"
+          content="A highly-optimized 3D visualization framework with an API that's fun to use"/>
+    <meta property="og:image" content="http://www.xeogl.org/assets/images/example1.png"/>
+
+    <!-- Mobile Meta -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="assets/images/favicon.ico">
+
+
+    <!-- Bootstrap core CSS -->
+    <!--<link href="assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">-->
+
+    <!-- Font Awesome CSS -->
+    <!--<link href="assets/fonts/font-awesome/css/font-awesome.css" rel="stylesheet">-->
+
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
+    <link href='https://fonts.googleapis.com/css?family=Exo+2:400,800,900,700,600,500|Roboto:100,300,400,500,700,900'
+          rel='stylesheet' type='text/css'>
+
+    <!-- Plugins -->
+    <link href="assets/css/animations.css" rel="stylesheet">
+
+    <!-- Worthy core CSS file -->
+    <link href="assets/css/style.css" rel="stylesheet">
+
+    <!-- Custom css -->
+    <link href="assets/css/custom.css" rel="stylesheet">
+
+    <!-- Prettify -->
+    <link href="assets/css/prettify.css" rel="stylesheet"/>
+
+
+    <script src="assets/js/prettify.js"></script>
+
+</head>
+
+<body class="no-trans">
+<div id="fb-root"></div>
+<script>(function (d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s);
+    js.id = id;
+    js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.5&appId=132893453432205";
+    fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<!-- scrollToTop -->
+<!-- ================ -->
+<div class="scrollToTop"><i class="icon-up-open-big"></i></div>
+
+<!-- header start -->
+<!-- ================ -->
+
+<header class="header fixed clearfix navbar navbar-fixed-top">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+
+                <!-- header-left start -->
+                <!-- ================ -->
+                <div class="header-left clearfix">
+
+                    <!--&lt;!&ndash; logo &ndash;&gt;-->
+                    <!--<div class="logo smooth-scroll">-->
+                    <!--<a href="#banner"><img id="logo" src="assets/images/mesh_logo.png" alt="xeogl"></a>-->
+                    <!--</div>-->
+
+                    <!-- name-and-slogan -->
+                    <div class="site-name-and-slogan smooth-scroll">
+                        <div class="site-name"><a href="#banner">xeogl</a></div>
+                        <div class="site-slogan">3D visualization for the Web</div>
+                    </div>
+
+                </div>
+                <!-- header-left end -->
+
+            </div>
+            <div class="col-md-8">
+
+                <!-- header-right start -->
+                <!-- ================ -->
+                <div class="header-right clearfix">
+
+                    <!-- main-navigation start -->
+                    <!-- ================ -->
+                    <div class="main-navigation animated">
+
+                        <!-- navbar start -->
+                        <!-- ================ -->
+                        <nav class="navbar navbar-default" role="navigation">
+                            <div class="container-fluid">
+
+                                <!-- Toggle get grouped for better mobile display -->
+                                <div class="navbar-header">
+                                    <button type="button" class="navbar-toggle" data-toggle="collapse"
+                                            data-target="#navbar-collapse-1">
+                                        <span class="sr-only">Toggle navigation</span>
+                                        <span class="icon-bar"></span>
+                                        <span class="icon-bar"></span>
+                                        <span class="icon-bar"></span>
+                                    </button>
+                                </div>
+
+                                <!-- Collect the nav links, forms, and other content for toggling -->
+                                <div class="collapse navbar-collapse scrollspy smooth-scroll" id="navbar-collapse-1">
+                                    <ul class="nav navbar-nav navbar-right">
+                                        <li class="active"><a href="#banner">Home</a></li>
+                                        <li><a href="#introduction">Introduction</a></li>
+                                        <li><a href="#features">Features</a></li>
+                                        <li><a href="../examples" target="_parent">Examples</a></li>
+                                        <li><a href="../docs" target="_parent">API Docs</a></li>
+                                        <li><a href="https://github.com/xeolabs/xeogl" target="_parent">GitHub</a></li>
+                                        <li>
+                                            <a href="https://github.com/xeolabs/xeogl/archive/master.zip">Download</a>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                            </div>
+                        </nav>
+                        <!-- navbar end -->
+
+                    </div>
+                    <!-- main-navigation end -->
+
+                </div>
+                <!-- header-right end -->
+
+            </div>
+        </div>
+    </div>
+</header>
+<!-- header end -->
+
+<!-- banner start -->
+<!-- ================ -->
+<div id="banner" class="banner">
+
+    <iframe id="demoLink" style="width:100%; height:100%; pointer-events:all;"
+            src="../examples/featured_heroSpot2.html"></iframe>
+
+    <div class="banner-caption">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 object-non-visible" data-animation-effect="fadeIn">
+                    <h1 class="title">An open source engine<br>for Web-based 3D visualization</h1>
+
+                    <p class="lead">Created by <a target="_parent"
+                                                  href="http://twitter.com/xeographics">@xeographics</a></p>
+
+                    <script>!function (d, s, id) {
+                        var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/.test(d.location) ? 'http' : 'https';
+                        if (!d.getElementById(id)) {
+                            js = d.createElement(s);
+                            js.id = id;
+                            js.src = p + '://platform.twitter.com/widgets.js';
+                            fjs.parentNode.insertBefore(js, fjs);
+                        }
+                    }(document, 'script', 'twitter-wjs');</script>
+
+
+                    <br><br>
+                    <br><br>
+
+                    <p class="lead"><a href="https://github.com/xeolabs/xeogl/archive/master.zip"
+                                       class="btn btn-default btn-lg">Download xeogl</a></p>
+
+                    <p class="lead">or <a href="https://github.com/xeolabs/xeogl">clone the repository</a></p>
+                    <br><br><br>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- banner end -->
+
+
+<!-- section start -->
+<!-- ================ -->
+<div class="section introduction clearfix object-non-visible" data-animation-effect="fadeIn">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1 id="introduction" class="title"><span>xeogl</span> Introduction</h1>
+
+
+                <div class="row">
+                    <div class="col-md-6">
+
+                        <h2>Functional overview</h2>
+
+                        <p>xeogl is a WebGL-based 3D engine that's geared towards visualization applications
+                            in science, technology, engineering and mathematics (STEM).
+                        </p>
+
+                        <p>xeogl focuses on letting you:</p>
+
+                        <ul>
+                            <li>load models from formats such as <a href="https://www.khronos.org/gltf">glTF</a>,</li>
+                            <li>view models with WebVR, <a href="http://zspace.com">zSpace</a> etc,</li>
+                            <li>script model components,</li>
+                            <li>apply visual emphasis affects,</li>
+                            <li>navigate components with the camera,</li>
+                            <li>interact with components using mouse, stylus etc.,</li>
+                            <li>efficiently query component boundaries,</li>
+                            <li>profile performance and</li>
+                            <li>define new component types.</li>
+                        </ul>
+
+                        <p>xeogl is:</p>
+
+                        <ul>
+                            <li>open source (<a href="https://github.com/xeolabs/xeogl/blob/master/MIT-LICENSE">MIT</a>),
+                            </li>
+                            <li>data driven,</li>
+                            <li>easy to learn, with defaults for everything, and</li>
+                            <li>optimized to render a lot of detail very quickly.</li>
+                        </ul>
+                        <p></p>
+
+                        <h2>In production</h2>
+
+                        <p>xeogl is running in production as the 3D engine within <a
+                                href="http://xeolabs.com/articles/xeogl-in-bimsurfer">BIMSurfer</a>, the open source
+                            tool
+                            for Web-based visualization and evaluation of Building Information Models (BIM).<br><br>BIMSurfer
+                            is
+                            used within a variety of apps, so it's effectively battle-testing xeogl with large models
+                            on a variety of operating systems and hardware.</p>
+
+
+                        <iframe width="560" height="315" src="https://www.youtube.com/embed/tCHwEA2HqU8?rel=0"
+                                frameborder="0" allowfullscreen></iframe>
+
+                        <h2>Scene definition</h2>
+
+                        <p>Scene definition is extremely easy, with xeogl providing defaults for virtually everything,
+                            making it easy to learn. If you get stuck, xeogl has detailed <a
+                                    href="http://xeogl.org/docs">API docs</a> and <a
+                                    href="http://xeogl.org/examples">examples</a>, plus a
+                            <a href="https://github.com/xeolabs/xeogl/wiki" target="_wiki">wiki</a> with tutorials.</p>
+                        <br>
+
+                        <p>To get started, first include <a
+                                href="https://github.com/xeolabs/xeogl/tree/master/build/">xeogl.js</a>
+                            in your
+                            HTML
+                            page:</p>
+                        <pre>&lt;script src="xeogl.min.js"&gt;&lt;/script&gt;</pre>
+                        <br>
+
+                        <p>Then define your 3D scene as an entity-component graph, as shown
+                            below. Note how a scene is
+                            basically a bunch of <a href="http://xeogl.org/docs/classes/Component.html"
+                                                    target="_parent">components</a> that are
+                            tied
+                            together by <a href="http://xeogl.org/docs/classes/Entity.html"
+                                           target="_parent">entities</a>. In this example xeogl is quietly providing
+                            lots of
+                            default components for us, but we can override those with our own when we need more control.
+                        </p>
+
+                        <pre class="prettyprint lang-javascript">// In this example we'll add components to the default scene,
+// which will automatically create a WebGL canvas for us
+
+var geometry = new xeogl.TorusGeometry({
+    radius: 1.0,
+    tube: 0.3,
+    radialSegments: 120,
+    tubeSegments: 60
+});
+
+var material = new xeogl.MetallicMaterial({ // PBR
+    baseColorMap: new xeogl.Texture({
+        src: "textures/diffuse/uvGrid2.jpg"
+    }),
+    roughnessMap: new xeogl.Texture({
+        src: "textures/roughness/goldRoughness.jpg"
+    })
+});
+
+var entity = new xeogl.Entity({
+    geometry: geometry,
+    material: material
+});</pre>
+
+
+                        <a href="http://xeogl.org/examples/#entities_examples_metallicTorus"><img
+                                src="assets/images/example1.png"></a>
+
+                        <a href="http://xeogl.org/examples/#importing_gltf_gearbox"><img
+                                src="assets/images/conceptScene.png"></a>
+
+                    </div>
+                    <div class="col-md-6">
+                        <h2>Editing scenes</h2>
+
+                        <p>You can modify everything in your scene dynamically. Create and destroy components, link
+                            or unlink
+                            them to each other, update their properties etc.<br><br>Let's add <a
+                                    href="http://xeogl.org/docs/classes/Rotate.html" target="_parent">rotation</a> and
+                            <a
+                                    href="http://xeogl.org/docs/classes/Scale.html" target="_parent">scale</a> to our
+                            torus, then increase its size:</p>
+
+                        <pre class="prettyprint lang-javascript">// Rotate and scale our torus entity
+entity.transform = new xeogl.Rotate({
+    xyz: [0,1,0],
+    angle : 0,
+    parent: new xeogl.Scale({
+        xyz: [2, 2, 2]
+    })
+});
+
+// Bump up its thickness and radius
+entity.geometry.radius *= 2.0;
+entity.geometry.tube *= 2.0; </pre>
+
+                        <h2>Animating scenes</h2>
+
+                        <p>Animate scenes by updating component properties. Almost everything in xeogl
+                            fires change events that you can subscribe to, which is convenient for scripting and
+                            extension.</p>
+
+                        <pre class="prettyprint lang-javascript">// Listen for updates to the rotation angle
+entity.transform.on("angle", function(value) {
+    console.log("Rotation angle is now: " + value);
+});
+
+// Update the rotation angle, which fires our listener
+entity.transform.angle = 90.0;</pre>
+                        <br>
+
+                        <p>Let's start our torus spinning:</p>
+                        <pre class="prettyprint lang-javascript">entity.scene.on("tick", function () {
+    entity.transform.angle += 0.5;
+});</pre>
+
+                        <h2>Importing models</h2>
+
+                        <p>Got a model you want to quickly view in the browser? Use some of xeogl's higher-level
+                            components,
+                            which are built on the components we just saw in the previous example. Let's load a glTF
+                            model of a gearbox:</p>
+                        <pre class="prettyprint lang-javascript">// Load a glTF model into the scene
+var model = new xeogl.GLTFModel({
+    src: "models/gltf/gearbox/gearbox_assy.gltf"
+});
+
+// Fit the model in view as soon as it's loaded
+model.on("loaded", function() {
+    var cameraFlight = new xeogl.CameraFlight());
+    cameraFlight.flyTo(model);
+});
+
+// Use a BIM-style camera control to navigate
+// the model with the mouse and keyboard
+var cameraControl = new xeogl.BIMCameraControl();</pre>
+                        <a href="http://xeogl.org/examples/#importing_gltf_gearbox"><img
+                                src="assets/images/glTF_gearbox_medium.png"></a>
+
+                        <h2>Viewing effects</h2>
+
+                        <p>Want to view your model in stereo? Just drop in a component to activate the desired effect.
+                            Let's
+                            view our model with simple split-screen stereo:</p>
+                        <pre class="prettyprint lang-javascript">var stereoEffect = new xeogl.StereoEffect({
+    eyeSep: 1.2,
+    focalDist: 20,
+    aperture: 45,
+});</pre>
+                        <a href="http://xeogl.org/examples/#effects_stereo"><img
+                                src="assets/images/StereoEffect.png"></a>
+
+                        <br>
+
+                        <p>How about fishtank VR with quad-buffered stereo, 3D tracking eyewear and stylus interaction?
+                            Drop in some components so that we can explore our model on a zSpace display:</p>
+                        <pre class="prettyprint lang-javascript">// Deactivate the previous effect
+stereoEffect.destroy();
+
+// Activate zSpace effect with quad-buffered stereo
+var zspaceEffect = new xeogl.ZSpaceEffect();
+
+// Activate the zSpace stylus
+var zspaceStylusControl = new xeogl.ZSpaceStylusControl();</pre>
+
+                        <a href="http://xeogl.org/examples/#effects_zspace_gearbox"><img src="assets/images/zspaceUser.png"></a>
+
+                        <!--<h4>Performance</h4>-->
+                        <!--<p>As we create and update our scene, xeogl is busy internally, calculating matrices, generating-->
+                        <!--geometry, allocating buffers, compiling shaders,-->
+                        <!--and so on. At the same time, xeogl continues to render frames at an acceptable-->
+                        <!--rate in order to keep apps feeling responsive. To achieve this, xeogl amortizes the work-->
+                        <!--across multiple frames by organizing it into a stream of tasks, executing a few of the tasks-->
+                        <!--on-->
+                        <!--each frame.</p>-->
+
+                        <h2>Learn More</h2>
+
+                        <ul>
+                            <li><a
+                                    href="http://xeogl.org/docs" target="_parent">API reference</a></li>
+                            <li><a
+                                    href="https://github.com/xeolabs/xeogl/wiki" target="_wiki">Wiki</a></li>
+                            <li><a
+                                    href="http://xeogl.org/examples/#materials_fresnel_specular" target="_parent">Examples</a>
+                            </li>
+                        </ul>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- section end -->
+
+
+<!-- section start -->
+<!-- ================ -->
+<div class="section features">
+    <div id="featureList" class="container object-non-visible" data-animation-effect="fadeIn">
+        <h1 id="features" class="title"><span>xeogl</span> Features</h1>
+
+        <div class="space"></div>
+
+        <!-- features get appended here by JS at the end of this page -->
+
+    </div>
+</div>
+<!-- section end -->
+
+
+<!-- footer start -->
+<!-- ================ -->
+<footer id="footer">
+
+    <!-- .footer start -->
+    <!-- ================ -->
+    <div class="footer section">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-6">
+
+                    <p class="lead"><a href="https://github.com/xeolabs/xeogl/archive/master.zip"
+                                       class="btn btn-default btn-lg">Download xeogl</a></p>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- .footer end -->
+
+    <!-- .subfooter start -->
+    <!-- ================ -->
+    <div class="subfooter">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <p class="text-center">Copyright © 2016 xeogl by <a target="_parent" href="http://xeolabs.com">xeoLabs</a>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- .subfooter end -->
+
+</footer>
+<!-- footer end -->
+
+<!-- JavaScript files placed at the end of the document so the pages load faster
+================================================== -->
+<!-- Jquery and Bootstap core js files -->
+<script type="text/javascript" src="assets/plugins/jquery.min.js"></script>
+<script type="text/javascript" src="assets/bootstrap/js/bootstrap.min.js"></script>
+
+<!-- Modernizr javascript -->
+<script type="text/javascript" src="assets/plugins/modernizr.js"></script>
+
+<!-- Isotope javascript -->
+<script type="text/javascript" src="assets/plugins/isotope/isotope.pkgd.min.js"></script>
+
+<!-- Backstretch javascript -->
+<script type="text/javascript" src="assets/plugins/jquery.backstretch.min.js"></script>
+
+<!-- Appear javascript -->
+<script type="text/javascript" src="assets/plugins/jquery.appear.js"></script>
+
+<!-- Initialization of Plugins -->
+<script type="text/javascript" src="assets/js/template.js"></script>
+
+<!-- Custom Scripts -->
+<script type="text/javascript" src="assets/js/custom.js"></script>
+
+</body>
+</html>
