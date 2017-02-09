@@ -4,9 +4,9 @@
 
  ## Examples
 
- | <a href="../../examples/#importing_gltf_PBR"><img src="../../assets/images/screenshots/SpecularMaterial/telephone.png"></img></a> | <a href="../../examples/#materials_specular_materials"><img src="../../assets/images/screenshots/SpecularMaterial/materials.png"></img></a> | <a href="../../examples/#materials_specular_textures"><img src="../../assets/images/screenshots/SpecularMaterial/textures.png"></img></a> | <a href="../../examples/#materials_specular_specularVsGlossiness"><img src="../../assets/images/screenshots/SpecularMaterial/specVsGloss.png"></img></a> |
+ | <a href="../../examples/#importing_gltf_PBR"><img src="../../assets/images/screenshots/SpecularMaterial/telephone.png"></img></a> | <a href="../../examples/#materials_specular_samples"><img src="../../assets/images/screenshots/SpecularMaterial/materials.png"></img></a> | <a href="../../examples/#materials_specular_textures"><img src="../../assets/images/screenshots/SpecularMaterial/textures.png"></img></a> | <a href="../../examples/#materials_specular_specularVsGlossiness"><img src="../../assets/images/screenshots/SpecularMaterial/specVsGloss.png"></img></a> |
  |:------:|:----:|:-----:|:-----:|
- |[glTF models with PBR materials](../../examples/#importing_gltf_PBR)|[Sample materials ](../../examples/#materials_specular_materials) | [Texturing spec/gloss channels](../../examples/#materials_specular_textures) | [Specular Vs. glossiness](../../examples/#materials_specular_specularVsGlossiness) |
+ |[glTF models with PBR materials](../../examples/#importing_gltf_PBR)|[Sample materials ](../../examples/#materials_specular_samples) | [Texturing spec/gloss channels](../../examples/#materials_specular_textures) | [Specular Vs. glossiness](../../examples/#materials_specular_specularVsGlossiness) |
 
  ## Overview
 
@@ -48,7 +48,7 @@
 
  Here's a closeup of the sphere we'll create:
 
- <a href="../../examples/#materials_specular_materials"><img src="../../assets/images/screenshots/SpecularMaterial/plaster.png"></img></a>
+ <a href="../../examples/#materials_specular_samples"><img src="../../assets/images/screenshots/SpecularMaterial/plaster.png"></img></a>
 
  Our plastered sphere {{#crossLink "Entity"}}{{/crossLink}} has:
 

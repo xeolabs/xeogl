@@ -263,7 +263,7 @@
         // Try to recycle a free chunk
 
         if (chunkType.freeChunksLen &gt; 0) {
-       //     chunk = chunkType.freeChunks[--chunkType.freeChunksLen];
+            chunk = chunkType.freeChunks[--chunkType.freeChunksLen];
         }
 
         if (chunk) {
@@ -306,7 +306,7 @@
 
             delete chunkType.chunks[chunk.id];
 
-       //     chunkType.freeChunks[chunkType.freeChunksLen++] = chunk;
+            chunkType.freeChunks[chunkType.freeChunksLen++] = chunk;
         }
     };
 

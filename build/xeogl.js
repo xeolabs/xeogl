@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2017-02-08
+ * Built on 2017-02-09
  *
  * MIT License
  * Copyright 2017, Lindsay Kay
@@ -10126,7 +10126,7 @@ var Canvas2Image = (function () {
         // Try to recycle a free chunk
 
         if (chunkType.freeChunksLen > 0) {
-       //     chunk = chunkType.freeChunks[--chunkType.freeChunksLen];
+            chunk = chunkType.freeChunks[--chunkType.freeChunksLen];
         }
 
         if (chunk) {
@@ -10169,7 +10169,7 @@ var Canvas2Image = (function () {
 
             delete chunkType.chunks[chunk.id];
 
-       //     chunkType.freeChunks[chunkType.freeChunksLen++] = chunk;
+            chunkType.freeChunks[chunkType.freeChunksLen++] = chunk;
         }
     };
 
@@ -30873,12 +30873,6 @@ TODO
          * @method destroyAll
          */
         destroyAll: function () {
-            this.iterate(function (component) {
-                component.destroy();
-            });
-        },
-
-        XdestroyAll: function () {
 
             // For efficiency, destroy Entities first to avoid
             // xeogl's automatic default component substitutions
@@ -30895,11 +30889,11 @@ TODO
                     for (id in components) {
                         if (components.hasOwnProperty(id)) {
                             component = components[id];
-                            //   if (component.isType("xeogl.Entity")) {
-                            list.push(component);
-                            //} else {
-                            //    list.unshift(component);
-                            //}
+                            if (component.isType("xeogl.Entity")) {
+                                list.push(component);
+                            } else {
+                                list.unshift(component);
+                            }
                         }
                     }
                 }
@@ -31835,7 +31829,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
             return null;
         }
-    }
+    },
 });
 ;/**
  * Private xeogl glTF loader core.
@@ -34058,9 +34052,9 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  ## Examples
 
- | <a href="../../examples/#importing_gltf_PBR"><img src="../../assets/images/screenshots/SpecularMaterial/telephone.png"></img></a> | <a href="../../examples/#materials_specular_materials"><img src="../../assets/images/screenshots/SpecularMaterial/materials.png"></img></a> | <a href="../../examples/#materials_specular_textures"><img src="../../assets/images/screenshots/SpecularMaterial/textures.png"></img></a> | <a href="../../examples/#materials_specular_specularVsGlossiness"><img src="../../assets/images/screenshots/SpecularMaterial/specVsGloss.png"></img></a> |
+ | <a href="../../examples/#importing_gltf_PBR"><img src="../../assets/images/screenshots/SpecularMaterial/telephone.png"></img></a> | <a href="../../examples/#materials_specular_samples"><img src="../../assets/images/screenshots/SpecularMaterial/materials.png"></img></a> | <a href="../../examples/#materials_specular_textures"><img src="../../assets/images/screenshots/SpecularMaterial/textures.png"></img></a> | <a href="../../examples/#materials_specular_specularVsGlossiness"><img src="../../assets/images/screenshots/SpecularMaterial/specVsGloss.png"></img></a> |
  |:------:|:----:|:-----:|:-----:|
- |[glTF models with PBR materials](../../examples/#importing_gltf_PBR)|[Sample materials ](../../examples/#materials_specular_materials) | [Texturing spec/gloss channels](../../examples/#materials_specular_textures) | [Specular Vs. glossiness](../../examples/#materials_specular_specularVsGlossiness) |
+ |[glTF models with PBR materials](../../examples/#importing_gltf_PBR)|[Sample materials ](../../examples/#materials_specular_samples) | [Texturing spec/gloss channels](../../examples/#materials_specular_textures) | [Specular Vs. glossiness](../../examples/#materials_specular_specularVsGlossiness) |
 
  ## Overview
 
@@ -34102,7 +34096,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  Here's a closeup of the sphere we'll create:
 
- <a href="../../examples/#materials_specular_materials"><img src="../../assets/images/screenshots/SpecularMaterial/plaster.png"></img></a>
+ <a href="../../examples/#materials_specular_samples"><img src="../../assets/images/screenshots/SpecularMaterial/plaster.png"></img></a>
 
  Our plastered sphere {{#crossLink "Entity"}}{{/crossLink}} has:
 
@@ -35031,9 +35025,9 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  ## Examples
 
- | <a href="../../examples/#importing_gltf_PBR"><img src="../../assets/images/screenshots/MetallicMaterial/helmet.png"></img></a> | <a href="../../examples/#materials_metallic_FireHydrant"><img src="../../assets/images/screenshots/MetallicMaterial/hydrant3.png"></img></a> | <a href="../../examples/#materials_metallic_materials_metals"><img src="../../assets/images/screenshots/MetallicMaterial/metals.png"></img></a> | <a href="../../examples/#materials_metallic_metallicVsRoughness"><img alt="Metallic Vs Roughness" src="../../assets/images/screenshots/MetallicMaterial/metalVsRough.png"></img></a> |
+ | <a href="../../examples/#importing_gltf_PBR"><img src="../../assets/images/screenshots/MetallicMaterial/helmet.png"></img></a> | <a href="../../examples/#materials_metallic_fireHydrant"><img src="../../assets/images/screenshots/MetallicMaterial/hydrant3.png"></img></a> | <a href="../../examples/#materials_metallic_samples_metals"><img src="../../assets/images/screenshots/MetallicMaterial/metals.png"></img></a> | <a href="../../examples/#materials_metallic_metallicVsRoughness"><img alt="Metallic Vs Roughness" src="../../assets/images/screenshots/MetallicMaterial/metalVsRough.png"></img></a> |
  |:------:|:----:|:-----:|:-----:|
- |[glTF models with PBR materials](../../examples/#importing_gltf_PBR)|[Fire hydrant model](../../examples/#materials_metallic_FireHydrant)| [Sample metal materials ](../../examples/#materials_metallic_materials_metals)|[Metallic Vs. roughness](../../examples/#materials_metallic_metallicVsRoughness)|
+ |[glTF models with PBR materials](../../examples/#importing_gltf_PBR)|[Fire hydrant model](../../examples/#materials_metallic_fireHydrant)| [Sample metal materials ](../../examples/#materials_metallic_samples_metals)|[Metallic Vs. roughness](../../examples/#materials_metallic_metallicVsRoughness)|
 
  ## Overview
 
@@ -35071,7 +35065,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  ## Usage
 
- In the example below we'll create the [yellow fire hydrant](../../examples/#materials_metallic_FireHydrant) shown in the example screen shots above. Our hydrant {{#crossLink "Entity"}}{{/crossLink}} has:
+ In the example below we'll create the [yellow fire hydrant](../../examples/#materials_metallic_fireHydrant) shown in the example screen shots above. Our hydrant {{#crossLink "Entity"}}{{/crossLink}} has:
 
  * a {{#crossLink "OBJGeometry"}}{{/crossLink}} which loads the fire hydrant mesh from an .OBJ file,
  * a {{#crossLink "Lights"}}{{/crossLink}} containing {{#crossLink "DirLight"}}DirLights{{/crossLink}}, plus {{#crossLink "CubeTexture"}}CubeTextures{{/crossLink}} for light and reflection maps, and
