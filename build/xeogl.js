@@ -30658,6 +30658,14 @@ TODO
              */
             this.types = {};
 
+            /**
+             * The {{#crossLink "Entity"}}Entity{{/crossLink}} component instances within this Model, mapped to their IDs.
+             *
+             * @property entities
+             * @type {{String:Entity}}
+             */
+            this.entities = {};
+
             // Subscriptions to "destroyed" events from components
             this._onDestroyed = {};
 
@@ -30822,6 +30830,8 @@ TODO
                         rootTransform.parent = self._dummyRootTransform;
                     }
                 }
+
+                this.entities[component.id] = component;
             }
 
             if (component.worldBoundary) {
@@ -30925,6 +30935,7 @@ TODO
             }
 
             delete this.components[componentId];
+            delete this.entities[componentId];
 
             // Unsubscribe from component destruction
 
@@ -32634,7 +32645,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
      ## Examples
 
      * [glTF gearbox](../../examples/#importing_gltf_gearbox)
-     * [glTF models with PBR materials](../../examples/#importing_gltf_PBR)
+     * [glTF models with PBR materials](../../examples/#importing_gltf_pbr)
      * [glTF gearbox with entity explorer](../../examples/#importing_gltf_explorer)
      * [Ensuring individual materials on GLTFModel entities](../../examples/#models_filter_uniqueMaterials)
      * [Baking transform hierarchies in a GLTFModel](../../examples/#models_filter_bakeTransforms)
@@ -34071,9 +34082,9 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  ## Examples
 
- | <a href="../../examples/#importing_gltf_PBR"><img src="../../assets/images/screenshots/SpecularMaterial/telephone.png"></img></a> | <a href="../../examples/#materials_specular_samples"><img src="../../assets/images/screenshots/SpecularMaterial/materials.png"></img></a> | <a href="../../examples/#materials_specular_textures"><img src="../../assets/images/screenshots/SpecularMaterial/textures.png"></img></a> | <a href="../../examples/#materials_specular_specularVsGlossiness"><img src="../../assets/images/screenshots/SpecularMaterial/specVsGloss.png"></img></a> |
+ | <a href="../../examples/#importing_gltf_pbr"><img src="../../assets/images/screenshots/SpecularMaterial/telephone.png"></img></a> | <a href="../../examples/#materials_specular_samples"><img src="../../assets/images/screenshots/SpecularMaterial/materials.png"></img></a> | <a href="../../examples/#materials_specular_textures"><img src="../../assets/images/screenshots/SpecularMaterial/textures.png"></img></a> | <a href="../../examples/#materials_specular_specularVsGlossiness"><img src="../../assets/images/screenshots/SpecularMaterial/specVsGloss.png"></img></a> |
  |:------:|:----:|:-----:|:-----:|
- |[glTF models with PBR materials](../../examples/#importing_gltf_PBR)|[Sample materials ](../../examples/#materials_specular_samples) | [Texturing spec/gloss channels](../../examples/#materials_specular_textures) | [Specular Vs. glossiness](../../examples/#materials_specular_specularVsGlossiness) |
+ |[glTF models with PBR materials](../../examples/#importing_gltf_pbr)|[Sample materials ](../../examples/#materials_specular_samples) | [Texturing spec/gloss channels](../../examples/#materials_specular_textures) | [Specular Vs. glossiness](../../examples/#materials_specular_specularVsGlossiness) |
 
  ## Overview
 
@@ -35044,9 +35055,9 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  ## Examples
 
- | <a href="../../examples/#importing_gltf_PBR"><img src="../../assets/images/screenshots/MetallicMaterial/helmet.png"></img></a> | <a href="../../examples/#materials_metallic_fireHydrant"><img src="../../assets/images/screenshots/MetallicMaterial/hydrant3.png"></img></a> | <a href="../../examples/#materials_metallic_samples_metals"><img src="../../assets/images/screenshots/MetallicMaterial/metals.png"></img></a> | <a href="../../examples/#materials_metallic_metallicVsRoughness"><img alt="Metallic Vs Roughness" src="../../assets/images/screenshots/MetallicMaterial/metalVsRough.png"></img></a> |
+ | <a href="../../examples/#importing_gltf_pbr"><img src="../../assets/images/screenshots/MetallicMaterial/helmet.png"></img></a> | <a href="../../examples/#materials_metallic_fireHydrant"><img src="../../assets/images/screenshots/MetallicMaterial/hydrant3.png"></img></a> | <a href="../../examples/#materials_metallic_samples_metals"><img src="../../assets/images/screenshots/MetallicMaterial/metals.png"></img></a> | <a href="../../examples/#materials_metallic_metallicVsRoughness"><img alt="Metallic Vs Roughness" src="../../assets/images/screenshots/MetallicMaterial/metalVsRough.png"></img></a> |
  |:------:|:----:|:-----:|:-----:|
- |[glTF models with PBR materials](../../examples/#importing_gltf_PBR)|[Fire hydrant model](../../examples/#materials_metallic_fireHydrant)| [Sample metal materials ](../../examples/#materials_metallic_samples_metals)|[Metallic Vs. roughness](../../examples/#materials_metallic_metallicVsRoughness)|
+ |[glTF models with PBR materials](../../examples/#importing_gltf_pbr)|[Fire hydrant model](../../examples/#materials_metallic_fireHydrant)| [Sample metal materials ](../../examples/#materials_metallic_samples_metals)|[Metallic Vs. roughness](../../examples/#materials_metallic_metallicVsRoughness)|
 
  ## Overview
 

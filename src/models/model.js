@@ -261,6 +261,14 @@
              */
             this.types = {};
 
+            /**
+             * The {{#crossLink "Entity"}}Entity{{/crossLink}} component instances within this Model, mapped to their IDs.
+             *
+             * @property entities
+             * @type {{String:Entity}}
+             */
+            this.entities = {};
+
             // Subscriptions to "destroyed" events from components
             this._onDestroyed = {};
 
@@ -425,6 +433,8 @@
                         rootTransform.parent = self._dummyRootTransform;
                     }
                 }
+
+                this.entities[component.id] = component;
             }
 
             if (component.worldBoundary) {
@@ -528,6 +538,7 @@
             }
 
             delete this.components[componentId];
+            delete this.entities[componentId];
 
             // Unsubscribe from component destruction
 
