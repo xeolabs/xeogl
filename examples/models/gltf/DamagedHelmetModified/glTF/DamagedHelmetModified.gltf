@@ -92,12 +92,6 @@
     "image_Default_albedo_9098" : {
       "uri" : "Default_albedo.jpg"
     },
-    "image_Default_MetalSmooth_21596_metallic" : {
-      "uri" : "Default_MetalSmooth_metallic.jpg"
-    },
-    "image_Default_MetalSmooth_21596_roughness" : {
-      "uri" : "Default_MetalSmooth_roughness.jpg"
-    },
     "image_Default_MetalSmooth_21596_metallicRoughness" : {
       "uri" : "Default_MetalSmooth_metallicRoughness.jpg"
     },
@@ -111,20 +105,6 @@
       "uri" : "Default_emissive.jpg"
     }
   },
-  "materials" : {
-    "material_Helmet_mat_9926" : {
-      "name" : "Helmet_mat",
-      "technique" : "technique_Standard",
-      "values" : {
-        "baseColor" : [ 1, 1, 1, 1 ],
-        "baseColorTexture" : [ "texture_Default_albedo_9098" ],
-        "metallic" : [ 0.75 ],
-        "roughness" : [ 0.75 ],
-        "metallicRoughnessTexture" : [ "texture_Default_MetalSmooth_21596_metallicRoughness" ],
-        "normalTexture" : [ "texture_Default_normal_22700" ]
-      }
-    }
-  },
   "meshes" : {
     "mesh_helmet_LP_25516Helmet" : {
       "name" : "mesh_helmet_LP_25516Helmet",
@@ -136,7 +116,7 @@
           "TANGENT" : "accessor_tangents_helmet_LP_25516"
         },
         "indices" : "accessor_indices_0_helmet_LP_25516",
-        "material" : "material_Helmet_mat_9926",
+        "material" : "pbrMaterial",
         "mode" : 4
       } ]
     }
@@ -145,13 +125,6 @@
     "node_Helmet" : {
       "name" : "Helmet",
       "meshes" : [ "mesh_helmet_LP_25516Helmet" ]
-    }
-  },
-  "programs" : {
-    "program_Standard" : {
-      "attributes" : [ "a_position", "a_normal", "a_tangent", "a_texCoord0" ],
-      "fragmentShader" : "frag",
-      "vertexShader" : "vert"
     }
   },
   "samplers" : {
@@ -168,141 +141,205 @@
       "nodes" : [ "node_Helmet" ]
     }
   },
+
+  "programs" : {
+    "pbrProgram" : {
+      "attributes" : [ "a_position", "a_normal", "a_tangent", "a_texCoord0" ],
+      "fragmentShader" : "pbrFragmentShader",
+      "vertexShader" : "pbrVertexShader"
+    }
+  },
   "shaders" : {
-    "vert" : {
-      "uri" : "pbr-vert.glsl",
+    "pbrVertexShader" : {
+      "uri" : "pbr.vert",
       "type" : 35633
     },
-    "frag" : {
-      "uri" : "pbr-frag.glsl",
+    "pbrFragmentShader" : {
+      "uri" : "pbr.frag",
       "type" : 35632
     }
   },
+
+
+  "materials" : {
+    "pbrMaterial" : {
+      "technique" : "pbrTechnique",
+      "values" : {
+        "baseColorFactor" : [ 2.0, 2.0, 2.0, 1.0 ],
+        "baseColorTexture" : "baseColorTexture",
+        "metallicFactor" : [ 0.8 ],
+        "roughnessFactor" : [ 1.0 ],
+        "metallicRoughnessTexture" : "metallicRoughnessTexture",
+        "normalTexture" : "normalTexture",
+        "normalScale" : [ 1.0 ],
+        "emissionTexture" : "emissionTexture",
+        "emissionFactor" : [ 1.0, 1.0, 1.0 ],
+        "occlusionTexture" : "occlusionTexture",
+        "occlusionStrength" : [ 1.0 ]
+      }
+    }
+  },
   "techniques" : {
-    "technique_Standard" : {
+    "pbrTechnique" : {
+      "program" : "pbrProgram",
       "parameters" : {
         "position" : {
-          "type" : 35665,
+          "type" : 35666,
           "semantic" : "POSITION"
         },
         "normal" : {
-          "type" : 35665,
+          "type" : 35666,
           "semantic" : "NORMAL"
         },
         "tangent" : {
           "type" : 35666,
           "semantic" : "TANGENT"
         },
-        "texCoord0" : {
-          "type" : 35664,
-          "semantic" : "TEXCOORD_0"
-        },
-        "mvpMatrix" : {
+
+        "modelViewMatrix" : {
           "type" : 35676,
-          "semantic" : "MODELVIEWPROJECTION"
+          "semantic" : "MODELVIEW"
+        },
+        "projectionMatrix" : {
+          "type" : 35676,
+          "semantic" : "PROJECTION"
         },
         "normalMatrix" : {
           "type" : 35675,
           "semantic" : "MODELVIEWINVERSETRANSPOSE"
         },
-        "baseColor" : {
+
+        "baseColorFactor" : {
           "type" : 35666
         },
         "baseColorTexture" : {
           "type" : 35678
         },
-        "metallic" : {
+        "baseColorTexCoord" : {
+          "semantic": "TEXCOORD_0",
+          "type" : 35664
+        },
+
+        "metallicFactor" : {
           "type" : 5126
         },
-        "metallicTexture" : {
-          "type" : 35678
-        },
-        "roughness" : {
+        "roughnessFactor" : {
           "type" : 5126
         },
-        "roughnessTexture" : {
+        "metallicRoughnessTexture" : {
           "type" : 35678
         },
+        "metallicRoughnessTexCoord" : {
+          "semantic": "TEXCOORD_0",
+          "type" : 35664
+        },
+
         "normalTexture" : {
           "type" : 35678
         },
-        "lightPosition" : {
-          "type" : 35665,
-          "value" : [ 10, 10, 10 ]
+        "normalTexCoord" : {
+          "semantic": "TEXCOORD_0",
+          "type" : 35664
+        },
+        "normalScale" : {
+          "type" : 5126
+        },
+
+        "occlusionTexture" : {
+          "type" : 35678
+        },
+        "occlusionTexCoord" : {
+          "semantic": "TEXCOORD_0",
+          "type" : 35664
+        },
+        "occlusionStrength" : {
+          "type" : 5126
+        },
+
+        "emissionTexture" : {
+          "type" : 35678
+        },
+        "emissionTexCoord" : {
+          "semantic": "TEXCOORD_0",
+          "type" : 35664
+        },
+        "emissionFactor" : {
+          "type" : 35665
         }
+
       },
       "attributes" : {
         "a_position" : "position",
         "a_normal" : "normal",
         "a_tangent" : "tangent",
-        "a_texCoord0" : "texCoord0"
+        "a_baseColorTexCoord" : "baseColorTexCoord",
+        "a_metallicRoughnessTexCoord" : "metallicRoughnessTexCoord",
+        "a_normalTexCoord" : "normalTexCoord",
+        "a_occlusionTexCoord" : "occlusionTexCoord",
+        "a_emissionTexCoord" : "emissionTexCoord"
       },
-      "program" : "program_Standard",
       "uniforms" : {
-        "u_mvpMatrix" : "mvpMatrix",
+        "u_modelViewMatrix" : "modelViewMatrix",
+        "u_projectionMatrix" : "projectionMatrix",
         "u_normalMatrix" : "normalMatrix",
-        "u_baseColor" : "baseColor",
+        "u_baseColorFactor" : "baseColorFactor",
         "u_baseColorTexture" : "baseColorTexture",
-        "u_metallic" : "metallic",
-        "u_metallicTexture" : "metallicTexture",
-        "u_roughness" : "roughness",
-        "u_roughnessTexture" : "roughnessTexture",
+        "u_metallicFactor" : "metallicFactor",
+        "u_roughnessFactor" : "roughnessFactor",
+        "u_metallicRoughnessTexture" : "metallicRoughnessTexture",
         "u_normalTexture" : "normalTexture",
-        "u_lightPosition" : "lightPosition"
+        "u_normalScale" : "normalScale",
+        "u_occlusionTexture" : "occlusionTexture",
+        "u_occlusionStrength" : "occlusionStrength",
+        "u_emissionTexture" : "emissionTexture",
+        "u_emissionFactor" : "emissionFactor"
       },
       "states" : {
         "enable" : [ 2884, 2929 ]
       }
     }
   },
+
   "textures" : {
-    "texture_Default_albedo_9098" : {
+    "baseColorTexture" : {
       "format" : 6408,
       "internalFormat" : 6408,
       "sampler" : "sampler_1_0_m",
       "source" : "image_Default_albedo_9098",
       "target" : 3553,
-      "type" : 5121,
-      "XflipY":true
+      "type" : 5121
     },
-    "texture_Default_MetalSmooth_21596_metallicRoughness" : {
+    "metallicRoughnessTexture" : {
       "format" : 6408,
       "internalFormat" : 6408,
       "sampler" : "sampler_1_0_m",
       "source" : "image_Default_MetalSmooth_21596_metallicRoughness",
       "target" : 3553,
-      "type" : 5121,
-      "XflipY":true
+      "type" : 5121
     },
-    "texture_Default_normal_22700" : {
-      "extras" : {
-        "yUp" : false
-      },
+    "normalTexture" : {
       "format" : 6408,
       "internalFormat" : 6408,
       "sampler" : "sampler_1_0_m",
       "source" : "image_Default_normal_22700",
       "target" : 3553,
-      "type" : 5121,
-      "XflipY":true
+      "type" : 5121
     },
-    "texture_Default_AO_25064" : {
+    "occlusionTexture" : {
       "format" : 6408,
       "internalFormat" : 6408,
       "sampler" : "sampler_1_0_m",
       "source" : "image_Default_AO_25064",
       "target" : 3553,
-      "type" : 5121,
-      "XflipY":true
+      "type" : 5121
     },
-    "texture_Default_emissive_22780" : {
+    "emissionTexture" : {
       "format" : 6408,
       "internalFormat" : 6408,
       "sampler" : "sampler_1_0_m",
       "source" : "image_Default_emissive_22780",
       "target" : 3553,
-      "type" : 5121,
-      "XflipY":true
+      "type" : 5121
     }
   }
 }
