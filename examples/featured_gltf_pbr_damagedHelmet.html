@@ -47,43 +47,6 @@
         ]
     });
 
-    //-----------------------------------------------------------------------------------------------------
-    // Camera animation and user control
-    //-----------------------------------------------------------------------------------------------------
-
-    var spinning = true;
-
-    var view = xeogl.scene.camera.view;
-
-    view.eye = [-2.0412752628326416, 0.000010520219802856445, -1.8574140071868896];
-    view.look = [0, 0, 0];
-    view.up = [0, 1, 0];
-    view.rotateEyeY(340);
-
-    xeogl.scene.on("tick", function () { // Slowly orbit the camera
-        if (spinning) {
-            view.rotateEyeY(-0.05);
-        }
-    });
-
-    new xeogl.CameraControl(); // User camera control
-
-    //---------------------------------------------------
-    // Create a zSpace effect and stylus control
-    //---------------------------------------------------
-
-    var zspaceEffect = new xeogl.ZSpaceEffect({canvasOffset: [330, 0]});
-    new xeogl.ZSpaceStylusControl();
-
-    zspaceEffect.on("supported", function (supported) {
-        if (supported) {
-            // We're running on a zSpace display! Adjust the camera
-            // a little bit to account for display's special projection transform.
-            view.zoom(2);
-            view.rotateEyeX(30);
-        }
-    });
-
     //---------------------------------------------------
     // Load the helmet model
     //---------------------------------------------------
@@ -92,22 +55,61 @@
         src: "models/gltf/DamagedHelmetModified/glTF/DamagedHelmetModified.gltf"
     });
 
-    //--------------------------------------------------------------------
-    // This particular model has only one entity, which is the the helmet.
-    // Get the entity and animate it's material's emissivity factor,
-    // which makes the helmet's glowing HUD display appear to flicker.
-    //--------------------------------------------------------------------
-
     helmet.on("loaded", function () {
+
+        //--------------------------------------------------------------------
+        // This particular model has only one entity, which is the the helmet.
+        // Get the entity and animate it's material's emissivity factor,
+        // which makes the helmet's glowing HUD display appear to flicker.
+        //--------------------------------------------------------------------
+
         for (var id in helmet.entities) {
             if (helmet.entities.hasOwnProperty(id)) {
                 var entity = helmet.entities[id];
                 xeogl.scene.on("tick", function () {
                     entity.material.emissive = (Math.random() < 0.05) ? [0, 0, 0] : [1, 1, 1];
                 });
-                return;
+                break; // Only one entity
             }
         }
+
+        //-----------------------------------------------------------------------------------------------------
+        // Camera animation and user control
+        //-----------------------------------------------------------------------------------------------------
+
+        var spinning = true;
+
+        var view = xeogl.scene.camera.view;
+
+        view.eye = [-2.0412752628326416, 0.000010520219802856445, -1.8574140071868896];
+        view.look = [0, 0, 0];
+        view.up = [0, 1, 0];
+        view.rotateEyeY(340);
+
+        xeogl.scene.on("tick", function () { // Slowly orbit the camera
+            if (spinning) {
+                view.rotateEyeY(-0.05);
+            }
+        });
+
+        new xeogl.CameraControl(); // User camera control
+
+        //---------------------------------------------------
+        // Create a zSpace effect and stylus control
+        //---------------------------------------------------
+
+        var zspaceEffect = new xeogl.ZSpaceEffect({canvasOffset: [330, 0]});
+        new xeogl.ZSpaceStylusControl();
+
+        zspaceEffect.on("supported", function (supported) {
+            if (supported) {
+                // We're running on a zSpace display! Adjust the camera
+                // a little bit to account for display's special projection transform.
+                view.zoom(2);
+                view.rotateEyeX(30);
+            }
+        });
+
     });
 
 
