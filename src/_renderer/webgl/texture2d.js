@@ -2,15 +2,68 @@
 
     "use strict";
 
-    xeogl.renderer.webgl.Texture2D = function (gl) {
+    xeogl.renderer.webgl.Texture2D = function (gl, target) {
 
         this.gl = gl;
 
-        this.target = gl.TEXTURE_2D;
+        this.target = target || gl.TEXTURE_2D;
 
         this.texture = gl.createTexture();
 
+        this.setPreloadColor([0,0,0,0]); // Prevents "there is no texture bound to the unit 0" error
+
         this.allocated = true;
+    };
+
+    xeogl.renderer.webgl.Texture2D.prototype.setPreloadColor = (function () {
+
+        var color = new Uint8Array([0, 0, 0, 1]);
+
+        return function (value) {
+
+            if (!value) {
+                color[0] = 0;
+                color[1] = 0;
+                color[2] = 0;
+                color[3] = 255;
+            } else {
+                color[0] = Math.floor(value[0] * 255);
+                color[1] = Math.floor(value[1] * 255);
+                color[2] = Math.floor(value[2] * 255);
+                color[3] = Math.floor((value[3] !== undefined ? value[3] : 1) * 255);
+            }
+
+            var gl = this.gl;
+
+            gl.bindTexture(this.target, this.texture);
+            gl.texParameteri(this.target, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+            gl.texParameteri(this.target, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+
+            if (this.target === gl.TEXTURE_CUBE_MAP) {
+
+                var faces = [
+                    gl.TEXTURE_CUBE_MAP_POSITIVE_X,
+                    gl.TEXTURE_CUBE_MAP_NEGATIVE_X,
+                    gl.TEXTURE_CUBE_MAP_POSITIVE_Y,
+                    gl.TEXTURE_CUBE_MAP_NEGATIVE_Y,
+                    gl.TEXTURE_CUBE_MAP_POSITIVE_Z,
+                    gl.TEXTURE_CUBE_MAP_NEGATIVE_Z
+                ];
+
+                for (var i = 0, len = faces.length; i < len; i++) {
+                    gl.texImage2D(faces[i], 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, color);
+                }
+
+            } else {
+                gl.texImage2D(this.target, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, color);
+            }
+
+            gl.bindTexture(this.target, null);
+        };
+    })();
+
+    xeogl.renderer.webgl.Texture2D.prototype.setTarget = function (target) {
+        this.target = target || this.gl.TEXTURE_2D;
     };
 
     xeogl.renderer.webgl.Texture2D.prototype.setImage = function (image, props) {
@@ -21,7 +74,29 @@
 
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, props.flipY);
 
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+        if (this.target === gl.TEXTURE_CUBE_MAP) {
+
+            if (xeogl._isArray(image)) {
+
+                var images = image;
+
+                var faces = [
+                    gl.TEXTURE_CUBE_MAP_POSITIVE_X,
+                    gl.TEXTURE_CUBE_MAP_NEGATIVE_X,
+                    gl.TEXTURE_CUBE_MAP_POSITIVE_Y,
+                    gl.TEXTURE_CUBE_MAP_NEGATIVE_Y,
+                    gl.TEXTURE_CUBE_MAP_POSITIVE_Z,
+                    gl.TEXTURE_CUBE_MAP_NEGATIVE_Z
+                ];
+
+                for (var i = 0, len = faces.length; i < len; i++) {
+                    gl.texImage2D(faces[i], 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, images[i]);
+                }
+            }
+
+        } else {
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+        }
 
         gl.bindTexture(this.target, null);
     };

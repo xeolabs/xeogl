@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.min.js"></script>
+    <script src="js/skyboxes/skybox.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<script>
+
+    //-----------------------------------------------------------------------------------------------------
+    // Environment
+    //-----------------------------------------------------------------------------------------------------
+
+    new xeogl.Skybox({
+        src: "textures/skybox/uffizi_vert_cross.jpg",
+        size: 1000, // Default
+        active: true
+    });
+
+    var lights = xeogl.scene.lights;
+
+    lights.lights = [
+        new xeogl.DirLight({
+            id: "keyLight",
+            dir: [0.8, -0.6, -0.8],
+            color: [1.0, 1.0, 1.0],
+            intensity: 1.0,
+            space: "view"
+        }),
+
+        new xeogl.DirLight({
+            id: "fillLight",
+            dir: [-0.8, -0.4, -0.4],
+            color: [0.7, 0.7, 0.7],
+            intensity: 1.0,
+            space: "view"
+        }),
+
+        new xeogl.DirLight({
+            id: "rimLight",
+            dir: [0.2, -0.8, 0.8],
+            color: [1.0, 1.0, 0.9],
+            intensity: 1.0,
+            space: "view"
+        })
+    ];
+
+    lights.lightMap = new xeogl.CubeTexture({
+        src: [
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png"
+        ]
+    });
+
+    lights.reflectionMap = new xeogl.CubeTexture({
+        src: [
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
+        ]
+    });
+
+    //-----------------------------------------------------------------------------------------------------
+    // Camera interaction and animation
+    //-----------------------------------------------------------------------------------------------------
+
+    new xeogl.CameraControl();
+
+    var spinning = true;
+
+    var view = xeogl.scene.camera.view;
+
+    view.rotateEyeY(230);
+
+    xeogl.scene.on("tick", function () { // Slowly orbit the camera
+        if (spinning) {
+            view.rotateEyeY(-0.1);
+        }
+    });
+
+    var cameraFlight = new xeogl.CameraFlightAnimation();
+
+    //-----------------------------------------------------------------------------------------------------
+    // glTF model
+    //-----------------------------------------------------------------------------------------------------
+
+    var model = new xeogl.GLTFModel({
+        src: "models/gltf/DamagedHelmetModified/glTF/DamagedHelmetModified.gltf"
+    });
+
+    model.on("loaded", function () { // Auto-fit model to view
+        cameraFlight.jumpTo({
+            worldBoundary: model.worldBoundary,
+            fit: true,
+            fitFOV: 50
+        });
+    });
+
+</script>
+</body>
+</html>
