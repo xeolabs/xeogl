@@ -4,9 +4,9 @@
 
  ## Examples
 
- | <a href="../../examples/#importing_gltf_PBR"><img src="../../assets/images/screenshots/MetallicMaterial/helmet.png"></img></a> | <a href="../../examples/#materials_metallic_FireHydrant"><img src="../../assets/images/screenshots/MetallicMaterial/hydrant3.png"></img></a> | <a href="../../examples/#materials_metallic_materials_metals"><img src="../../assets/images/screenshots/MetallicMaterial/metals.png"></img></a> | <a href="../../examples/#materials_metallic_metallicVsRoughness"><img alt="Metallic Vs Roughness" src="../../assets/images/screenshots/MetallicMaterial/metalVsRough.png"></img></a> |
+ | <a href="../../examples/#importing_gltf_PBR"><img src="../../assets/images/screenshots/MetallicMaterial/helmet.png"></img></a> | <a href="../../examples/#materials_metallic_fireHydrant"><img src="../../assets/images/screenshots/MetallicMaterial/hydrant3.png"></img></a> | <a href="../../examples/#materials_metallic_samples_metals"><img src="../../assets/images/screenshots/MetallicMaterial/metals.png"></img></a> | <a href="../../examples/#materials_metallic_metallicVsRoughness"><img alt="Metallic Vs Roughness" src="../../assets/images/screenshots/MetallicMaterial/metalVsRough.png"></img></a> |
  |:------:|:----:|:-----:|:-----:|
- |[glTF models with PBR materials](../../examples/#importing_gltf_PBR)|[Fire hydrant model](../../examples/#materials_metallic_FireHydrant)| [Sample metal materials ](../../examples/#materials_metallic_materials_metals)|[Metallic Vs. roughness](../../examples/#materials_metallic_metallicVsRoughness)|
+ |[glTF models with PBR materials](../../examples/#importing_gltf_PBR)|[Fire hydrant model](../../examples/#materials_metallic_fireHydrant)| [Sample metal materials ](../../examples/#materials_metallic_samples_metals)|[Metallic Vs. roughness](../../examples/#materials_metallic_metallicVsRoughness)|
 
  ## Overview
 
@@ -44,7 +44,7 @@
 
  ## Usage
 
- In the example below we'll create the [yellow fire hydrant](../../examples/#materials_metallic_FireHydrant) shown in the example screen shots above. Our hydrant {{#crossLink "Entity"}}{{/crossLink}} has:
+ In the example below we'll create the [yellow fire hydrant](../../examples/#materials_metallic_fireHydrant) shown in the example screen shots above. Our hydrant {{#crossLink "Entity"}}{{/crossLink}} has:
 
  * a {{#crossLink "OBJGeometry"}}{{/crossLink}} which loads the fire hydrant mesh from an .OBJ file,
  * a {{#crossLink "Lights"}}{{/crossLink}} containing {{#crossLink "DirLight"}}DirLights{{/crossLink}}, plus {{#crossLink "CubeTexture"}}CubeTextures{{/crossLink}} for light and reflection maps, and
