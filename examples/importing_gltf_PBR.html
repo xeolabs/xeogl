@@ -157,10 +157,12 @@
     var model = new xeogl.GLTFModel({});
 
     model.on("loaded", function () { // Auto-fit model to view
-        cameraFlight.jumpTo({
-            worldBoundary: model.worldBoundary,
-            fit: true,
-            fitFOV: 50
+        xeogl.scheduleTask(function() { // FIXME - needed to ensure that model has loaded
+            cameraFlight.jumpTo({
+                worldBoundary: model.worldBoundary,
+                fit: true,
+                fitFOV: 50
+            });
         });
     });
 
