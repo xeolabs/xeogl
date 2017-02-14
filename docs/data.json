@@ -20379,7 +20379,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 447,
+            "line": 444,
             "description": "Fired whenever an individual {{#crossLink \"Component\"}}{{/crossLink}} is added to this {{#crossLink \"Model\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "added",
@@ -20396,7 +20396,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 483,
+            "line": 485,
             "description": "Destroys all {{#crossLink \"Component\"}}Components{{/crossLink}} in this Model.",
             "itemtype": "method",
             "name": "destroyAll",
@@ -20406,7 +20406,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 519,
+            "line": 521,
             "description": "Removes all {{#crossLink \"Component\"}}Components{{/crossLink}} from this Model.",
             "itemtype": "method",
             "name": "removeAll",
@@ -20416,7 +20416,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 570,
+            "line": 572,
             "description": "Fired whenever an individual {{#crossLink \"Component\"}}{{/crossLink}} is removed from this {{#crossLink \"Model\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "removed",
@@ -20433,7 +20433,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 582,
+            "line": 584,
             "description": "Iterates with a callback over the {{#crossLink \"Component\"}}Components{{/crossLink}} in this Model.",
             "itemtype": "method",
             "name": "iterate",
@@ -20457,7 +20457,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 601,
+            "line": 603,
             "description": "The Local-to-World-space (modelling) {{#crossLink \"Transform\"}}{{/crossLink}} attached to this Model.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this Model.\n\nInternally, the given {{#crossLink \"Transform\"}}{{/crossLink}} will be inserted above each top-most\n{{#crossLink \"Transform\"}}Transform{{/crossLink}} that the Model attaches to\nits {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nFires an {{#crossLink \"Model/transform:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "transform",
@@ -20468,7 +20468,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 619,
+            "line": 621,
             "description": "Fired whenever this Model's {{#crossLink \"Model/transform:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "transform",
@@ -20484,7 +20484,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 642,
+            "line": 644,
             "description": "World-space 3D boundary enclosing all the components in this Model.\n\nIf you call {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} on this boundary, then\nthis property will be assigned to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance next\ntime you reference it.",
             "itemtype": "property",
             "name": "worldBoundary",
@@ -24056,6 +24056,36 @@
         {
             "file": "examples/js/animation/cameraPath.js",
             "line": 212,
+            "description": "Gets eye, look and up vectors on this CameraPath at a given instant.",
+            "params": [
+                {
+                    "name": "t",
+                    "description": "Time instant.",
+                    "type": "Number"
+                },
+                {
+                    "name": "eye",
+                    "description": "The eye position to update.",
+                    "type": "Float32Array"
+                },
+                {
+                    "name": "look",
+                    "description": "The look position to update.",
+                    "type": "Float32Array"
+                },
+                {
+                    "name": "up",
+                    "description": "The up vector to update.",
+                    "type": "Float32Array"
+                }
+            ],
+            "class": "CameraPath",
+            "module": "xeogl",
+            "submodule": "animation"
+        },
+        {
+            "file": "examples/js/animation/cameraPath.js",
+            "line": 227,
             "description": "Removes all frames from this CameraPath.",
             "class": "CameraPath",
             "module": "xeogl",
@@ -28210,8 +28240,12 @@
             "line": " examples/js/animation/cameraPath.js:179"
         },
         {
-            "message": "Missing item type\nRemoves all frames from this CameraPath.",
+            "message": "Missing item type\nGets eye, look and up vectors on this CameraPath at a given instant.",
             "line": " examples/js/animation/cameraPath.js:212"
+        },
+        {
+            "message": "Missing item type\nRemoves all frames from this CameraPath.",
+            "line": " examples/js/animation/cameraPath.js:227"
         },
         {
             "message": "Missing item type\nControls camera with mouse and keyboard, handles selection of entities and rotation point.",
