@@ -11,10 +11,8 @@
 <body>
 
 <div id="info">
-    <a href="http://xeogl.org" target="_parent">xeogl</a>
-    <br><br>
-    <p>demonstrates some change events fired by components</p>
-    <pre id="log" style="text-align: left;"></pre>
+   <h1>demonstrates some change events fired by components</h1>
+    <pre id="log"></pre>
 </div>
 
 <script>
@@ -26,7 +24,7 @@
     // This will immediately fire a change event for the current value of that property.
 
     entity.on("material", function (material) {
-        log("Entity's material is: " + material.id);
+        log("entity's material is: " + material.id);
     });
 
     // Attach a new Material to the Entity.
@@ -39,7 +37,7 @@
 
     // Subscribe to change of diffuse color on our material
     entity.material.on("diffuse", function (diffuse) {
-        log("Entity's material's diffuse color is: " + JSON.stringify(diffuse));
+        log("entity's material's diffuse color is: " + JSON.stringify(diffuse));
     });
 
     // Change the material's diffuse color

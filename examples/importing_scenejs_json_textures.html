@@ -14,15 +14,7 @@
 <body>
 
 <div id="info">
-    <a href="http://xeogl.org" target="_parent">xeogl</a><br><br>
-    <ul>
-        <li>Using a <a href="../docs/classes/SceneJSModel.html" target="_parent">SceneJSModel</a> component to import SceneJS content into xeogl.
-        </li>
-        <li>The scene definition in this case is JSON loaded from a file, as opposed to a POJO that's set directly on the SceneJSModel.
-        </li>
-        <li>This scene definition contains a geometry with diffuse, specular and normal maps.
-        </li>
-    </ul>
+    <h1><a href="../docs/classes/SceneJSModel.html" target="_parent">SceneJSModel</a> imported from a SceneJS <a href="./models/scenejs/texturedBox.json"  target="_other">JSON file</a></h1>
 </div>
 
 <div id="logos">
@@ -60,7 +52,7 @@
     model.on("loaded", function() {
         model.scene.on("tick", function () {
             var rotate = model.components["spinningBox.boxRotateY"];
-            rotate.angle += 0.5;
+            rotate.angle += 0.2;
         });
     });
 

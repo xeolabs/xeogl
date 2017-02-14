@@ -5,40 +5,29 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
     <script src="js/animation/cameraFollowAnimation.js"></script>
+
+    <script src="js/libs/dat.gui.min.js"></script>
 
 <body>
 
 <div id="info">
 
-    <a href="http://xeogl.org" target="_parent">xeogl</a>
-    <br><br>
-    <ul>
-        <li>Using a <a href="../docs/classes/CameraFollowAnimation.html" target="_parent">CameraFollowAnimation</a> to
-            automatically follow an
-            <a href="../docs/classes/Entity.html" target="_parent">Entity</a>'s World-space
-            <a href="../docs/classes/Boundary3D.html" target="_parent">Boundary3D</a> with the <a
-                    href="../docs/classes/Boundary3D.html" target="_parent">Camera</a></li>
-        <li>The CameraFollowAnimation's <a href="../docs/classes/CameraFollowAnimation.html#property_fit"
-                                           target="_parent">fit</a> property is set true, which causes it to
-            automatically keep the Boundary fitted to the view volume
-        </li>
-        <li>Although you can orbit the Boundary3D with the mouse, note that you can't control the distance of the
-            Camera, since the CameraFollowAnimation automatically controls that in order to automatically fit the
-            Boundary3D to the view volume
-        </li>
-    </ul>
+    <h1><a href="../docs/classes/CameraFollowAnimation.html" target="_parent">CameraFollowAnimation</a> - tracking an
+        <a href="../docs/classes/Entity.html" target="_parent">Entity</a></h1>
 
-    <pre id="log" style="text-align: left; color:#77FF77; border:0;"></pre>
+</div>
+
+<div id="dat-gui-container">
 </div>
 
 <script>
 
     // ------------------------------------------------------------------
-    // Create a cloud of tori
+    // Create a cloud of entities
     // ------------------------------------------------------------------
 
     var torusGeometry = new xeogl.TorusGeometry({
@@ -59,7 +48,6 @@
                     Math.random()
                 ],
                 angle: Math.random() * 360,
-
                 parent: new xeogl.Translate({
                     xyz: [
                         Math.random() * 15 - 7,
@@ -100,18 +88,14 @@
 
         transform: new xeogl.Scale({
             xyz: [0.5, 0.5, 0.5],
-
             parent: rotate1 = new xeogl.Rotate({
                 xyz: [1, 1, 0],
                 angle: 45,
-
                 parent: rotate2 = new xeogl.Rotate({
                     xyz: [1, 0, 1],
                     angle: 25,
-
                     parent: new xeogl.Translate({
                         xyz: [5, 0, 0],
-
                         parent: rotate3 = new xeogl.Rotate({
                             xyz: [0, 0, 1],
                             angle: 40
@@ -128,7 +112,7 @@
     // ------------------------------------------------------------------
 
     var scene = tumblingTorus.scene; // We can get the default Scene from any of our components
-
+    var spin = false; // Orbits camera when true
     var a = 0;
 
     scene.on("tick", function () {
@@ -150,11 +134,9 @@
     // shape of the torus' World-space boundary.
 
     new xeogl.Entity({
-
         geometry: new xeogl.AABBGeometry({
             boundary: tumblingTorus.worldBoundary
         }),
-
         material: new xeogl.PhongMaterial({
             diffuse: [0.0, 0.0, 0.0],
             specular: [0.0, 0.0, 0.0],
@@ -175,10 +157,10 @@
     // to follow the tumbling torus' World-space boundary
     // ------------------------------------------------------------------
 
-    new xeogl.CameraFollowAnimation({
+    var followAnimation = new xeogl.CameraFollowAnimation({
         worldBoundary: tumblingTorus.worldBoundary,
         fly: false,
-        fit: true, // <<------------- Fits the target to the view volume
+        fit: false,
         fitFOV: 35
     });
 
@@ -188,6 +170,54 @@
     // ------------------------------------------------------------------
 
     scene.camera.view.gimbalLockY = false;
+
+    //------------------------------------------------------------------
+    // Option to slowly orbit camera
+    //------------------------------------------------------------------
+
+    scene.on("tick", function () {
+        if (spin) {
+            scene.camera.view.rotateEyeY(0.2);
+            scene.camera.view.rotateEyeX(0.1);
+        }
+    });
+
+    scene.camera.view.zoom(-25);
+    scene.camera.view.rotateEyeY(30);
+    scene.camera.view.rotateEyeX(20);
+
+    //------------------------------------------------------------------
+    // GUI
+    //------------------------------------------------------------------
+
+    var Menu = function () {
+
+        this.message = "xeogl.CameraFollowAnimation";
+
+        this["fit"] = followAnimation.fit;
+        this["fitFOV"] = followAnimation.fitFOV;
+        this["spin"] = spin;
+
+        var self = this;
+
+        var update = function () {
+            followAnimation.fit = self["fit"];
+            followAnimation.fitFOV = self["fitFOV"];
+            spin = self["spin"];
+            requestAnimationFrame(update);
+        };
+
+        update();
+    };
+
+    var gui = new dat.GUI({autoPlace: false});
+    document.getElementById('dat-gui-container').appendChild(gui.domElement);
+    var menu = new Menu();
+    var folder = gui.addFolder('xeogl.CameraFollowAnimation');
+    folder.add(menu, 'fit', followAnimation.fit);
+    folder.add(menu, 'fitFOV', 5, 90);
+    folder.add(menu, 'spin', spin);
+    folder.open();
 
 </script>
 </body>

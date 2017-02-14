@@ -134,7 +134,7 @@
                                 self.positions = mesh.vertices;
                                 self.uv = mesh.uvt;
                                 self.normals = null;
-                               // self.autoNormals = true;
+                          //   self.autoNormals = true;
                                 self.indices = mesh.indices;
                                 self.tangents = null;
 

@@ -17,7 +17,7 @@
 
  ## Examples
 
- * [Modelling transform hierarchy](../../examples/#transforms_entity_transformHierarchy)
+ * [Modelling transform hierarchy](../../examples/#transforms_entity_hierarchy)
  * [Attaching transforms to Models, via constructor](../../examples/#transforms_model_configureTransform)
  * [Attaching transforms to Models, via property](../../examples/#transforms_model_attachTransform)
 

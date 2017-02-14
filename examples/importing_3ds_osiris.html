@@ -24,11 +24,11 @@
     var entity = new xeogl.Entity({
 
         geometry: new xeogl.Nintendo3DSGeometry({
-            src: "models/3ds/osiris.3ds",
-            autoNormals: true
+            src: "models/3ds/osiris.3ds"
         }),
 
         material: new xeogl.PhongMaterial({
+           // emissive: [.4,.4,.4],
             diffuse: [0.6, 0.6, 0.6],
             specular: [0, 0, 0]
         }),

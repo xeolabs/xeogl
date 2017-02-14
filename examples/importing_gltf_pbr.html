@@ -19,14 +19,13 @@
 
 <body>
 
-<div id="info" class="dark">
-    <a href="http://xeogl.org" target="_parent">xeogl</a><br><br>
+<div id="info">
+    <h1><a href="../docs/classes/GLTFModel.html"
+           target="_parent">GLTFModel</a> imported from .gltf files with physically-based materials</h1>
+
     <ul>
-        <li><a
-                href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - loading sample glTF models with
-            physically-based materials
-        </li>
-        <li>See also docs on <a href="../docs/classes/MetallicMaterial.html"
+        <li>See docs: <a href="../docs/classes/GLTFModel.html"
+                         target="_parent">GLTFModel</a>, <a href="../docs/classes/MetallicMaterial.html"
                                 target="_parent">MetallicMaterial</a> and <a
                 href="../docs/classes/SpecularMaterial.html" target="_parent">SpecularMaterial</a></li>
     </ul>
@@ -79,7 +78,7 @@
     var skybox = new xeogl.Skybox({
         src: "textures/skybox/uffizi_vert_cross.jpg",
         size: 1000, // Default
-        active: true
+        active: false
     });
 
     var dirLights = [
@@ -178,7 +177,7 @@
     // Create a zSpace effect and stylus control
     //---------------------------------------------------
 
-    var zspaceEffect = new xeogl.ZSpaceEffect({  canvasOffset: [330, 0] });
+    var zspaceEffect = new xeogl.ZSpaceEffect({canvasOffset: [330, 0]});
     var zspaceStylusControl = new xeogl.ZSpaceStylusControl();
 
     //-----------------------------------------------------------------------------------------------------

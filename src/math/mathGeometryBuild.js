@@ -20,9 +20,8 @@
         var ab = math.vec3();
         var ac = math.vec3();
         var crossVec = math.vec3();
-        var normVec = math.vec3();
 
-        return function (positions, indices) {
+        return function (positions, indices, normals) {
 
             var i;
             var len;
@@ -52,6 +51,8 @@
                 math.subVec3(b, a, ab);
                 math.subVec3(c, a, ac);
 
+                var normVec = math.vec3();
+
                 math.normalizeVec3(math.cross3Vec3(ab, ac, crossVec), normVec);
 
                 if (!nvecs[j0]) {
@@ -69,19 +70,27 @@
                 nvecs[j2].push(normVec);
             }
 
-            var normals = new Float32Array(positions.length);
+            normals = (normals && normals.length === positions.length) ? normals : new Float32Array(positions.length);
 
-            // now go through and average out everything
-            for (i = 0, len = nvecs.length; i < len; i++) {
-                var count = nvecs[i].length;
-                var x = 0;
-                var y = 0;
-                var z = 0;
+            var count;
+            var x;
+            var y;
+            var z;
+
+            for (i = 0, len = nvecs.length; i < len; i++) {  // Now go through and average out everything
+
+                count = nvecs[i].length;
+
+                x = 0;
+                y = 0;
+                z = 0;
+
                 for (var j = 0; j < count; j++) {
                     x += nvecs[i][j][0];
                     y += nvecs[i][j][1];
                     z += nvecs[i][j][2];
                 }
+
                 normals[i * 3] = (x / count);
                 normals[i * 3 + 1] = (y / count);
                 normals[i * 3 + 2] = (z / count);

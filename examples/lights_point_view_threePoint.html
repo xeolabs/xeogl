@@ -12,8 +12,9 @@
 <body>
 
 <div id="info">
-    <a href="http://xeogl.org" target="_parent">xeogl</a> - <a href="https://en.wikipedia.org/wiki/Three-point_lighting">Three-point lighting</a> using View-space <a href="../docs/classes/PointLight.html"
-                                                               target="_parent">PointLights</a>
+    <h1>three-point lighting with View-space <a
+            href="../docs/classes/PointLight.html"
+            target="_parent">PointLights</a></h1>
 </div>
 
 <script>
@@ -38,7 +39,7 @@
 
             new xeogl.PointLight({
                 id: "fillLight",
-                pos: [ 80, 40, 40],
+                pos: [80, 40, 40],
                 color: [0.3, 1.0, 0.3],
                 intensity: 1.0,
                 space: "view"
@@ -46,7 +47,7 @@
 
             new xeogl.PointLight({
                 id: "rimLight",
-                pos: [ -20, 80, -80],
+                pos: [-20, 80, -80],
                 color: [0.6, 0.6, 0.6],
                 intensity: 1.0,
                 space: "view"
@@ -97,7 +98,7 @@
 
     // Orbit camera
 
-    xeogl.scene.on("tick", function() {
+    xeogl.scene.on("tick", function () {
         xeogl.scene.camera.view.rotateEyeY(0.3);
     });
 

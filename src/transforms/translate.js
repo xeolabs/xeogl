@@ -12,7 +12,7 @@
 
  ## Examples
 
- * [Modeling transform hierarchy](../../examples/#transforms_entity_transformHierarchy)
+ * [Modeling transform hierarchy](../../examples/#transforms_entity_hierarchy)
 
  ## Usage
 

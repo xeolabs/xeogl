@@ -11,8 +11,7 @@
 <body>
 
 <div id="info">
-    <a href="http://xeogl.org" target="_parent" >xeogl</a><br><br>
-    <a href="../docs/classes/Geometry.html" target="_parent">Geometry</a> with triangles and per-vertex colors
+    <h1><a href="../docs/classes/Geometry.html" target="_parent">Geometry</a> triangle mesh with vertex colors</h1>
 </div>
 
 <script>
@@ -210,24 +209,17 @@
         // node's frontFace flag as "cw", instead of
         // the default "ccw".
         indices: [
-            0, 1, 2,
-            0, 2, 3,
+            0, 1, 2, 0, 2, 3,
             // front
-            4, 5, 6,
-            4, 6, 7,
+            4, 5, 6, 4, 6, 7,
             // right
-            8, 9, 10,
-            8, 10, 11,
+            8, 9, 10, 8, 10, 11,
             // top
-            12, 13, 14,
-            12, 14, 15,
+            12, 13, 14, 12, 14, 15,
             // left
-            16, 17, 18,
-            16, 18, 19,
+            16, 17, 18, 16, 18, 19,
             // bottom
-            20, 21, 22,
-            20, 22, 23
-
+            20, 21, 22, 20, 22, 23
         ]
     });
 
@@ -237,11 +229,12 @@
 
     entity.scene.camera.view.zoom(-5);
 
-    entity.scene.on("tick",
-            function () {
-                entity.camera.view.rotateEyeY(0.6);
-                entity.camera.view.rotateEyeX(0.3);
-            });
+    entity.scene.on("tick", function () {
+        entity.camera.view.rotateEyeY(0.2);
+        entity.camera.view.rotateEyeX(0.1);
+    });
+
+    new xeogl.CameraControl();
 
 </script>
 </body>

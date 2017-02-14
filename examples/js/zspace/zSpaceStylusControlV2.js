@@ -57,7 +57,7 @@
  // Handle missing zSpace support
  zspaceEffect.on("supported", function (supported) {
      if (!supported) {
-         document.getElementById("log").innerText = "This computer is not a zSpace viewer - defaulting to standard xeogl camera controls. ";
+         document.getElementById("log").innerText = "Not a zSpace display ";
      }
  });
  ````

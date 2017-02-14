@@ -13,10 +13,10 @@
 <body>
 
 <div id="info">
-    <a href="http://xeogl.org" target="_parent" >xeogl</a><br><br>
-    Constructive Solid Geometry (CSG) using <a href="http://evanw.github.io/csg.js/" target="_external">csg.js</a>,
+    <h1>Constructive Solid Geometry (CSG) using <a href="http://evanw.github.io/csg.js/" target="_external">csg.js</a>
+    </h1>
     <br>
-    based on the <a href="https://jsfiddle.net/philmaker/0e3hw1d4/" target="_external">JSFiddle example</a> provided by <a
+    based on the <a href="https://jsfiddle.net/philmaker/0e3hw1d4/" target="_external">JSFiddle example</a> by <a
         href="https://twitter.com/philmaker1" target="_external">@philmaker1</a>
 </div>
 
@@ -75,8 +75,8 @@
     // Orbit the camera
 
     entity.scene.on('tick', function () {
-        entity.camera.view.rotateEyeY(0.6);
-        entity.camera.view.rotateEyeX(0.3);
+        entity.camera.view.rotateEyeY(0.2);
+        entity.camera.view.rotateEyeX(0.1);
     });
 
     // Utility function to convert a csg.js shape to a xeogl.Geometry
@@ -88,22 +88,21 @@
         var normals = [];
         var triangles = [];
 
-        shape.toPolygons().map(
-                function (polygon) {
+        shape.toPolygons().map(function (polygon) {
 
-                    var indices = polygon.vertices.map(function (vertex) {
-                        var key = JSON.stringify(vertex);
-                        if (!(key in map)) {
-                            map[key] = unique.length;
-                            unique.push(vertex);
-                        }
-                        return map[key];
-                    });
+            var indices = polygon.vertices.map(function (vertex) {
+                var key = JSON.stringify(vertex);
+                if (!(key in map)) {
+                    map[key] = unique.length;
+                    unique.push(vertex);
+                }
+                return map[key];
+            });
 
-                    for (var i = 2; i < indices.length; i++) {
-                        triangles.push(indices[0], indices[i - 1], indices[i]);
-                    }
-                });
+            for (var i = 2; i < indices.length; i++) {
+                triangles.push(indices[0], indices[i - 1], indices[i]);
+            }
+        });
 
         unique.forEach(function (v) {
             positions.push(v.pos.x, v.pos.y, v.pos.z);
@@ -120,6 +119,8 @@
             normals: normals
         });
     }
+
+    new xeogl.CameraControl();
 
 </script>
 </body>

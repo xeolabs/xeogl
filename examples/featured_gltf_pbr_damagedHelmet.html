@@ -67,7 +67,7 @@
             if (helmet.entities.hasOwnProperty(id)) {
                 var entity = helmet.entities[id];
                 xeogl.scene.on("tick", function () {
-                    entity.material.emissive = (Math.random() < 0.05) ? [0, 0, 0] : [1, 1, 1];
+                    entity.material.emissive = (Math.random() < 0.02) ? [0, 0, 0] : [1, 1, 1];
                 });
                 break; // Only one entity
             }
@@ -82,7 +82,7 @@
         var view = xeogl.scene.camera.view;
 
         view.eye = [-2.0412752628326416, 0.000010520219802856445, -1.8574140071868896];
-        view.look = [0, 0, 0];
+        view.look = [0, -.15, 0];
         view.up = [0, 1, 0];
         view.rotateEyeY(340);
 
@@ -92,7 +92,8 @@
             }
         });
 
-        new xeogl.CameraControl(); // User camera control
+        var cameraControl = new xeogl.CameraControl(); // User camera control
+        cameraControl.mouseZoom.sensitivity = 0.1;
 
         //---------------------------------------------------
         // Create a zSpace effect and stylus control
@@ -107,6 +108,8 @@
                 // a little bit to account for display's special projection transform.
                 view.zoom(2);
                 view.rotateEyeX(30);
+            } else {
+                view.zoom(-.5);
             }
         });
 

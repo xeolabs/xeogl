@@ -1,7 +1,7 @@
 /**
  A **CameraFlightAnimation** jumps or flies a {{#crossLink "Camera"}}{{/crossLink}} to look at a given target.
 
- <a href="../../examples/#animation_camera_flyTo_entity"><img src="http://i.giphy.com/3o7TKP0jN800EQ99EQ.gif"></img></a>
+ <a href="../../examples/#animation_camera_flight"><img src="http://i.giphy.com/3o7TKP0jN800EQ99EQ.gif"></img></a>
 
  ## Overview
 
@@ -23,9 +23,7 @@
 
  ## Examples
 
- * [Flying to random Entities](../../examples/#animation_camera_flyTo_entity)
- * [Flying to Boundary3D](../../examples/#animation_camera_flyTo_boundary)
- * [Flying to AABB](../../examples/#animation_camera_flyTo_aabb)
+ * [Flying to random Entities](../../examples/#animation_camera_flight)
 
  ## Flying to an Entity
 
@@ -138,8 +136,8 @@
                     diffuse: [0, 0, 0],
                     ambient: [0, 0, 0],
                     specular: [0, 0, 0],
-                    emissive: [1.0, 1.0, 0.0],
-                    lineWidth: 3
+                    emissive: [0.5, 1.0, 0.5],
+                    lineWidth: 2
                 }),
                 visibility: this.create({
                     type: "xeogl.Visibility",
@@ -162,8 +160,8 @@
                         diffuse: [0, 0, 0],
                         ambient: [0, 0, 0],
                         specular: [0, 0, 0],
-                        emissive: [1.0, 1.0, 0.0],
-                        lineWidth: 3
+                        emissive: [0.5, 1.0, 0.5],
+                        lineWidth: 2
                     })
                 }),
                 visibility: this.create({

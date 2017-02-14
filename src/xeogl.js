@@ -333,6 +333,10 @@
                 }));
         },
 
+        set scene(value) {
+            this._scene = value;
+        },
+
         /**
          * Registers a scene on xeogl.
          * This is called within the xeogl.Scene constructor.

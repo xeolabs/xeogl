@@ -10,49 +10,50 @@
 
     <style>
         body {
-            background-image: url(textures/diffuse/uvGrid2.jpg);
+            background-image: url(textures/diffuse/UVCheckerMap11-1024.png);
             background-size: cover;
             background-repeat: no-repeat;
         }
 
         canvas {
-            display: inline-block;
-            margin: 5px;
+            position:absolute;
+            width:100%;
+            height:100%;
         }
     </style>
 
 </head>
 <body>
-<div id="info" style="background:black; opacity: 0.8; margin-top:10px">
-    <a href="http://xeogl.org" target="_parent" >xeogl</a><br><br>transparent <a
-        href="../docs/classes/Canvas.html"
-        target="_parent">Canvas</a> with background image
+<div id="info">
+    <h1>transparent external <a href="../docs/classes/Canvas.html" target="_parent">Canvas</a> with background image</h1>
 </div>
 
-<canvas id="myCanvas" width="800px" height="800px"></canvas>
+<canvas id="myCanvas" ></canvas>
 
 <script>
 
-    // Not using the default Scene, so that we can
-    // bind our Scene to our custom canvas
-    var scene = new xeogl.Scene({
+    // Create the default scene ourselves so we can
+    // have a transparent canvas on it
+    xeogl.scene = new xeogl.Scene({
         canvas: "myCanvas",
         transparent: true
     });
 
+    var scene = xeogl.scene;
+
     // Torus entity
-    new xeogl.Entity(scene, {
-        geometry: new xeogl.TorusGeometry(scene, {
+    new xeogl.Entity({
+        geometry: new xeogl.TorusGeometry({
             radius: 1.0,
             tube: 0.3,
             radialSegments: 32,
             tubeSegments: 24,
             arc: Math.PI * 2.0
         }),
-        material: new xeogl.PhongMaterial(scene, {
+        material: new xeogl.PhongMaterial({
             ambient: [0.9, 0.3, 0.9],
             shininess: 30,
-            diffuseMap: new xeogl.Texture(scene, {
+            diffuseMap: new xeogl.Texture({
                 src: "textures/diffuse/uvGrid2.jpg"
             })
         })
@@ -62,14 +63,11 @@
     scene.camera.view.eye = [0, 0, -4];
 
     // Orbit the camera
-    scene.on("tick",
-            function () {
-
-                var view = scene.camera.view;
-
-                view.rotateEyeY(0.6);
-                view.rotateEyeX(0.3);
-            });
+    scene.on("tick", function () {
+        var view = scene.camera.view;
+        view.rotateEyeY(0.2);
+        view.rotateEyeX(0.1);
+    });
 
     // Allow user interaction
     new xeogl.CameraControl(scene);

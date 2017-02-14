@@ -192,7 +192,7 @@
 /**
  A **CameraFlightAnimation** jumps or flies a {{#crossLink &quot;Camera&quot;}}{{/crossLink}} to look at a given target.
 
- &lt;a href=&quot;../../examples/#animation_camera_flyTo_entity&quot;&gt;&lt;img src=&quot;http://i.giphy.com/3o7TKP0jN800EQ99EQ.gif&quot;&gt;&lt;/img&gt;&lt;/a&gt;
+ &lt;a href=&quot;../../examples/#animation_camera_flight&quot;&gt;&lt;img src=&quot;http://i.giphy.com/3o7TKP0jN800EQ99EQ.gif&quot;&gt;&lt;/img&gt;&lt;/a&gt;
 
  ## Overview
 
@@ -214,9 +214,7 @@
 
  ## Examples
 
- * [Flying to random Entities](../../examples/#animation_camera_flyTo_entity)
- * [Flying to Boundary3D](../../examples/#animation_camera_flyTo_boundary)
- * [Flying to AABB](../../examples/#animation_camera_flyTo_aabb)
+ * [Flying to random Entities](../../examples/#animation_camera_flight)
 
  ## Flying to an Entity
 
@@ -329,8 +327,8 @@
                     diffuse: [0, 0, 0],
                     ambient: [0, 0, 0],
                     specular: [0, 0, 0],
-                    emissive: [1.0, 1.0, 0.0],
-                    lineWidth: 3
+                    emissive: [0.5, 1.0, 0.5],
+                    lineWidth: 2
                 }),
                 visibility: this.create({
                     type: &quot;xeogl.Visibility&quot;,
@@ -353,8 +351,8 @@
                         diffuse: [0, 0, 0],
                         ambient: [0, 0, 0],
                         specular: [0, 0, 0],
-                        emissive: [1.0, 1.0, 0.0],
-                        lineWidth: 3
+                        emissive: [0.5, 1.0, 0.5],
+                        lineWidth: 2
                     })
                 }),
                 visibility: this.create({

@@ -10,13 +10,9 @@
 
 <body>
 
-<div id="info" style="left: 0; text-align: left; background: black; opacity: 0.7; color: white;">
-    <a href="http://xeogl.org" target="_parent">xeogl</a>
-    <br><br>
-    getting a <a href="../docs/classes/Scene.html"
-                 target="_parent">Scene's</a> runtime statistics
-    <pre id="log"
-         style="left: 0; text-align: left; background: black; opacity: 0.7; color: white; font-size: 14pt;">
+<div id="info">
+    <h1>profiling xeogl runtime performance</h1>
+    <pre id="log">
     </pre>
 </div>
 
@@ -68,13 +64,14 @@
 
     var scene = xeogl.scene;
 
-    scene.camera.view.zoom(100);
+    scene.camera.view.zoom(170);
+
+    new xeogl.CameraControl();
 
     // Spin camera
     // Log statistics
 
-    scene.on("tick",
-            function () {
+    scene.on("tick", function () {
 
                 // Spin camera
 
@@ -92,7 +89,8 @@
 
 
     function logJSON(json) {
-        document.getElementById("log").innerHTML = JSON.stringify(json, null, 4);
+        json.client.browser = json.client.browser.substring(0,10) + "...";
+        document.getElementById("log").innerHTML = "xeogl.stats = " + JSON.stringify(json, null, 4);
     }
 
 </script>

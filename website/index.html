@@ -83,7 +83,10 @@
                     <!-- name-and-slogan -->
                     <div class="site-name-and-slogan smooth-scroll">
                         <div class="site-name"><a href="#banner">xeogl</a></div>
-                        <div class="site-slogan">3D visualization for the Web</div>
+
+                        <div class="site-slogan">data-driven webgl from <a target="_parent"
+                                                                           href="http://twitter.com/xeographics">@xeographics</a>
+                        </div>
                     </div>
 
                 </div>
@@ -151,42 +154,51 @@
 <!-- ================ -->
 <div id="banner" class="banner">
 
-    <iframe id="demoLink" style="background: black; border: 0; position:absolute; right: 0; width:80%; height:100%; pointer-events:all;"
+    <iframe id="demoLink"
+            style="background: black; border: 0; position:absolute; right: 0; width:100%; height:100%; pointer-events:all;"
             src="../examples/featured_gltf_pbr_damagedHelmet.html"></iframe>
 
-    <div class="banner-caption">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-8 object-non-visible" data-animation-effect="fadeIn">
-                    <h1 class="title">An open source engine<br>for Web-based 3D visualization</h1>
+    <!--<iframe id="demoLink" style="background: black; border: 0; position:absolute; right: 0; width:100%; height:100%; pointer-events:all;"-->
+    <!--src="../examples/effects_zspace_ReciprocatingSaw.html"></iframe>-->
 
-                    <p class="lead">Created by <a target="_parent"
-                                                  href="http://twitter.com/xeographics">@xeographics</a></p>
+    <!--<iframe id="demoLink" style="background: black;  border: 0; width:100%; height:100%; pointer-events:all;"-->
+    <!--src="../examples/#featured_gltf_pbr_damagedHelmet"></iframe>-->
 
-                    <script>!function (d, s, id) {
-                        var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/.test(d.location) ? 'http' : 'https';
-                        if (!d.getElementById(id)) {
-                            js = d.createElement(s);
-                            js.id = id;
-                            js.src = p + '://platform.twitter.com/widgets.js';
-                            fjs.parentNode.insertBefore(js, fjs);
-                        }
-                    }(document, 'script', 'twitter-wjs');</script>
+    <!--<div class="banner-caption">-->
+    <!--<div class="container">-->
+    <!--<div class="row">-->
+    <!--<div class="col-md-8 object-non-visible" data-animation-effect="fadeIn">-->
+    <!--<h1 class="title">An open source engine<br>for Web-based 3D visualization</h1>-->
+
+    <!--<p class="lead">Created by <a target="_parent"-->
+    <!--href="http://twitter.com/xeographics">@xeographics</a></p>-->
+
+    <!--<script>!function (d, s, id) {-->
+    <!--var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/.test(d.location) ? 'http' : 'https';-->
+    <!--if (!d.getElementById(id)) {-->
+    <!--js = d.createElement(s);-->
+    <!--js.id = id;-->
+    <!--js.src = p + '://platform.twitter.com/widgets.js';-->
+    <!--fjs.parentNode.insertBefore(js, fjs);-->
+    <!--}-->
+    <!--}(document, 'script', 'twitter-wjs');</script>-->
 
 
-                    <br><br>
-                    <br><br>
+    <!--<br><br>-->
+    <!--<br><br>-->
 
-                    <p class="lead"><a href="https://github.com/xeolabs/xeogl/archive/master.zip"
-                                       class="btn btn-default btn-lg">Download xeogl</a></p>
+    <!--<p class="lead"><a href="https://github.com/xeolabs/xeogl/archive/master.zip"-->
+    <!--class="btn btn-default btn-lg">Download xeogl</a></p>-->
 
-                    <p class="lead">or <a href="https://github.com/xeolabs/xeogl">clone the repository</a></p>
-                    <br><br><br>
+    <!--<p class="lead">or <a href="https://github.com/xeolabs/xeogl">clone the repository</a></p>-->
+    <!--<br><br><br>-->
 
-                </div>
-            </div>
-        </div>
-    </div>
+    <!--</div>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--</div>-->
+
+
 </div>
 <!-- banner end -->
 
@@ -209,28 +221,17 @@
                             in science, technology, engineering and mathematics (STEM).
                         </p>
 
-                        <p>xeogl focuses on letting you:</p>
-
-                        <ul>
-                            <li>load models from formats such as <a href="https://www.khronos.org/gltf">glTF</a>,</li>
-                            <li>view models with WebVR, <a href="http://zspace.com">zSpace</a> etc,</li>
-                            <li>script model components,</li>
-                            <li>apply visual emphasis affects,</li>
-                            <li>navigate components with the camera,</li>
-                            <li>interact with components using mouse, stylus etc.,</li>
-                            <li>efficiently query component boundaries,</li>
-                            <li>profile performance and</li>
-                            <li>define new component types.</li>
-                        </ul>
-
                         <p>xeogl is:</p>
 
                         <ul>
                             <li>open source (<a href="https://github.com/xeolabs/xeogl/blob/master/MIT-LICENSE">MIT</a>),
                             </li>
+                            <li>component-based,</li>
                             <li>data driven,</li>
-                            <li>easy to learn, with defaults for everything, and</li>
-                            <li>optimized to render a lot of detail very quickly.</li>
+                            <li>imports <a href="https://www.khronos.org/gltf">glTF</a>,</li>
+                            <li>has a <a href="http://localhost:8080/examples/#materials_metallic_fireHydrant">physically-based renderer</a></li>
+                            <li>easy to use, with defaults for everything, and</li>
+                            <li>optimized to render lots of detail.</li>
                         </ul>
                         <p></p>
 
@@ -250,8 +251,8 @@
 
                         <h2>Scene definition</h2>
 
-                        <p>Scene definition is extremely easy, with xeogl providing defaults for virtually everything,
-                            making it easy to learn. If you get stuck, xeogl has detailed <a
+                        <p>Scene definition is designed to be convenient, with xeogl providing sensible defaults for virtually everything.
+                            If you get stuck, xeogl has detailed <a
                                     href="http://xeogl.org/docs">API docs</a> and <a
                                     href="http://xeogl.org/examples">examples</a>, plus a
                             <a href="https://github.com/xeolabs/xeogl/wiki" target="_wiki">wiki</a> with tutorials.</p>
@@ -276,9 +277,7 @@
                             default components for us, but we can override those with our own when we need more control.
                         </p>
 
-                        <pre class="prettyprint lang-javascript">// In this example we'll add components to the default scene,
-// which will automatically create a WebGL canvas for us
-
+                        <pre class="prettyprint lang-javascript">
 var geometry = new xeogl.TorusGeometry({
     radius: 1.0,
     tube: 0.3,
@@ -286,7 +285,7 @@ var geometry = new xeogl.TorusGeometry({
     tubeSegments: 60
 });
 
-var material = new xeogl.MetallicMaterial({ // PBR
+var material = new xeogl.MetallicMaterial({
     baseColorMap: new xeogl.Texture({
         src: "textures/diffuse/uvGrid2.jpg"
     }),
@@ -358,13 +357,11 @@ entity.transform.angle = 90.0;</pre>
                             components,
                             which are built on the components we just saw in the previous example. Let's load a glTF
                             model of a gearbox:</p>
-                        <pre class="prettyprint lang-javascript">// Load a glTF model into the scene
-var model = new xeogl.GLTFModel({
+                        <pre class="prettyprint lang-javascript">var model = new xeogl.GLTFModel({
     src: "models/gltf/gearbox/gearbox_assy.gltf"
 });
 
-// Fit the model in view as soon as it's loaded
-model.on("loaded", function() {
+model.on("loaded", function() { // Fit to view
     var cameraFlight = new xeogl.CameraFlight());
     cameraFlight.flyTo(model);
 });
@@ -401,16 +398,8 @@ var zspaceEffect = new xeogl.ZSpaceEffect();
 // Activate the zSpace stylus
 var zspaceStylusControl = new xeogl.ZSpaceStylusControl();</pre>
 
-                        <a href="http://xeogl.org/examples/#effects_zspace_gearbox"><img src="assets/images/zspaceUser.png"></a>
-
-                        <!--<h4>Performance</h4>-->
-                        <!--<p>As we create and update our scene, xeogl is busy internally, calculating matrices, generating-->
-                        <!--geometry, allocating buffers, compiling shaders,-->
-                        <!--and so on. At the same time, xeogl continues to render frames at an acceptable-->
-                        <!--rate in order to keep apps feeling responsive. To achieve this, xeogl amortizes the work-->
-                        <!--across multiple frames by organizing it into a stream of tasks, executing a few of the tasks-->
-                        <!--on-->
-                        <!--each frame.</p>-->
+                        <a href="http://xeogl.org/examples/#effects_zspace_gearbox"><img
+                                src="assets/images/zspaceUser.png"></a>
 
                         <h2>Learn More</h2>
 

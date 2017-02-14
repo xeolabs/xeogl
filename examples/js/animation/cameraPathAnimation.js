@@ -105,7 +105,7 @@
      nextFrame();
  });
  ````
-<br>
+ <br>
  ### 3. Jumping directly to each frame on a path
 
  In this example, we'll use the CameraPathAnimation's {{#crossLink "CameraPathAnimation/scrubToFrame"}}{{/crossLink}} method
@@ -173,7 +173,7 @@
 
             this._playingFromT = 0;
             this._playingToT = 0;
-            this._playingRate = 0.001;
+            this._playingRate = cfg.playingRate || 1.0;
             this._playingDir = 1.0;
 
             this.cameraPath = cfg.cameraPath;
@@ -197,6 +197,9 @@
                 return;
             }
 
+           var f = 0.002;
+           //var f = 1.0;
+
             switch (this.state) {
 
                 case this.SCRUBBING:
@@ -204,7 +207,7 @@
 
                 case this.PLAYING:
 
-                    this._t += this._playingRate;
+                    this._t += this._playingRate * f;
 
                     cameraPath.loadFrame(this._t, camera);
 
@@ -212,7 +215,7 @@
 
                 case this.PLAYING_TO:
 
-                    var t = this._t + (this._playingRate * this._playingDir);
+                    var t = this._t + (this._playingRate * f * this._playingDir);
 
                     //t = this._ease(t, this._playingFromT, this._playingToT, this._playingToT - this._playingFromT);
 
@@ -293,6 +296,23 @@
 
                 get: function () {
                     return this._cameraFlightAnimation.camera;
+                }
+            },
+
+            /**
+             The rate at which this CameraPathAnimation plays.
+
+             @property rate
+             @type Number
+             */
+            rate: {
+
+                set: function (value) {
+                    this._playingRate = value;
+                },
+
+                get: function () {
+                    return this._playingRate;
                 }
             }
         },

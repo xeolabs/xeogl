@@ -281,7 +281,7 @@
                 }
 
                 this.positions = positions;
-                this.normals = positions;
+                this.normals = null;
                 this.uv = uvs;
                 this.indices = indices;
 

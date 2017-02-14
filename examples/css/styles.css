@@ -1,10 +1,9 @@
 body {
-
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-    font-size: 16px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 15px;
     line-height: 1.50;
-    color: #333332 padding : 10 px;
-    background-color: #fff;
+    color: white;
+    background-color: black;
     text-decoration: none;
     word-spacing: normal;
     text-align: left;
@@ -15,15 +14,33 @@ body {
     margin: 0;
 }
 
-.xeolabsLogo {
-    background-image: url("../images/a-xeolabs-project.png");
+
+
+#viewer {
     position: absolute;
-    left: 0;
-    top: 0;
-    z-index: 900;
-    height: auto;
-    width: auto;
+    left: 300px;
+    width: -webkit-calc(100% - 300px); /* Safari */
+    width: calc(100% - 300px);
+    height: 100%;
+    border: 0px;
+    background-color: black;
 }
+
+#sourceButton {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 8px;
+    color: #fff;
+    background-color: #02550b;
+    opacity: 0.7;
+}
+
+#sourceButton:hover {
+    cursor: pointer;
+    opacity: 1;
+}
+
 
 #logos {
     position: absolute;
@@ -36,8 +53,6 @@ body {
     position: absolute;
     top: 0px;
     z-index: 200000;
-    font-size: 16px;
-    color: #ffffff !important;
     /*font-weight: 600;*/
     float: left;
     left: 0px;
@@ -56,13 +71,11 @@ body {
     height:100%;
     padding: 7px;
     z-index: 200000;
-    font-size: 16px;
 }
 
 #explorer {
     margin: 0;
     left:0;
-    opacity: 0.5;
     background: black;
     width: auto;
     height:100%;
@@ -71,24 +84,27 @@ body {
     overflow-x: hidden;
     padding: 7px;
     z-index: 200000;
-    font-size: 16px;
 }
-
 
 #menu a {
     color: white;
+    text-decoration: none;
+
 }
 
 #menu a:hover {
     color: yellow;
+    text-decoration: underline;
 }
 
 #explorer a {
     color: white;
+    text-decoration: none;
 }
 
 #explorer a:hover {
     color: yellow;
+    text-decoration: underline;
 }
 
 .dark {
@@ -98,12 +114,13 @@ body {
 
 #info a {
     z-index: 200000;
-    text-decoration: underline !important;
+    text-decoration: none;
     color: #ffffff !important;
 }
 
 #info a:hover {
     color: #ffffff !important;
+    text-decoration: underline;
 }
 
 #info p {
@@ -142,7 +159,6 @@ body {
     float: right;
     width: 320px margin-right : 60 px !important;
 }
-
 
 #header {
     background: white;
@@ -206,18 +222,16 @@ h1, h2, h3 {
 }
 
 h1 {
-    font-size: 80px;
-    line-height: 1.5;
-    padding: 0;
-    padding-top: 20px;
-    margin: 0;
-    color: #0075ba;
+    color: #fffbf2;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 15px;
+    font-size: 18px;
+    font-weight: normal;
 }
 
 h1 a {
-    font-size: 80px;
-    font-weight: normal;
-    -webkit-transform-origin: 0% 100%;
+    color: #fffbfb;
 }
 
 h2 {
@@ -230,8 +244,7 @@ h2 {
     padding-bottom: 0px;
     margin-bottom: 0;
     letter-spacing: 0px;
-    text-transform: uppercase;
-    border-bottom: 2px solid #d4d4d4;
+    /*border-bottom: 2px solid #d4d4d4;*/
     color: #4E7A4A;
 }
 
@@ -259,31 +272,6 @@ p.subSectionTip {
 a.subSubSection {
     padding-left: 22px;
     background: url("../images/bullet-point.png") no-repeat 8px 2px !important;
-}
-
-#tagsContainer {
-    width: 380px;
-    background: #ffffff;
-}
-
-#tagsContainer p.operation {
-    padding-bottom: 15px;
-    padding-top: 10px;
-    padding-left: 2px;
-}
-
-#tagsContainer span.selected {
-    background: #63FF4D;
-    padding-right: 5px;
-    padding-left: 5px;
-    border: 1px solid rgb(101, 184, 101);
-}
-
-#tagsContainer span.unselected {
-    background: #F0EEEE;
-    padding-right: 5px;
-    padding-left: 5px;
-    border: 1px solid #DDDADA;
 }
 
 #pageMenuContainer {
@@ -345,3 +333,94 @@ ul ul {
     margin-top: 0;
 }
 
+
+#contents {
+    position: absolute;
+    width: 300px;
+    height: calc(100% - 50px);
+    /*overflow-Y: scroll;*/
+    /*overflow-x: hidden;*/
+    background: black;
+    overflow:auto;
+}
+
+#contents a {
+    text-decoration: none;
+}
+
+#contents h1 {
+    color: #78ce73;
+    margin-top: 30px;
+    margin-bottom: 40px;
+    font-size: 25px;
+    font-weight: normal;
+    text-decoration: none !important;
+}
+
+#contents h1 a {
+    color: #78ce73;
+}
+
+#contents h2 {
+    color: #78ce73;
+    font-size: 20px;
+    font-weight: normal;
+    padding-top: 20px;
+    padding-bottom: 10px;
+    text-decoration: none;
+}
+
+#contents #list {
+    padding: 0px 20px;
+    line-height: 18px;
+    overflow-x: hidden;
+}
+
+#contents #list .link {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+    padding-top: 1px;
+    text-decoration: none;
+    font-weight: normal;
+    background: black;
+    cursor: pointer;
+    line-height: 1.5em;
+}
+
+#contents #list .selected {
+    margin-left: -5px !important;
+    padding-left: 5px !important;
+    padding-top: 0;
+    padding-bottom: 0;
+    color: #000000;
+    border: 1px solid #676767;
+    background: #FFFF44;
+}
+
+#contents #list .link:hover {
+    text-decoration: underline;
+}
+
+#contents #list .info {
+    color: #78ce73;
+    text-decoration: none;
+    font-style: italic;
+    font-size: 14px;
+    background-color: black;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    margin-top: 15px;
+    margin-bottom: 4px;
+}
+
+#contents #list .infoFirst {
+    color: #78ce73;
+    text-decoration: none;
+    font-style: italic;
+    font-size: 14px;
+    background-color: black;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    margin-top: 0;
+    margin-bottom: 4px;
+}

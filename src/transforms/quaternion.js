@@ -12,7 +12,7 @@
 
  ## Examples
 
- * [Viewing transform hierarchy](../../examples/#transforms_camera_view_transformHierarchy)
+ * [Viewing transform hierarchy](../../examples/#transforms_camera_view_hierarchy)
 
  ## Usage
 

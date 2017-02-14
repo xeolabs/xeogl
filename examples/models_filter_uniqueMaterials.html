@@ -12,11 +12,8 @@
 <body>
 
 <div id="info">
-    <a href="http://xeogl.org" target="_parent" >xeogl</a><br><br>importing glTF using a <a
-        href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> then ensuring that each
-    <a href="../docs/classes/Entity.html" target="_parent">Entity</a><br>gets its own copy of its
-    <a href="../docs/classes/PhongMaterial.html" target="_parent">PhongMaterial</a>, which we then
-    adjust to a random color
+    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - supporting emphasis effects by ensuring that each
+    <a href="../docs/classes/Entity.html" target="_parent">Entity</a> has its own <a href="../docs/classes/PhongMaterial.html" target="_parent">PhongMaterial</a></h1>
 </div>
 
 <div id="logos">
@@ -74,11 +71,10 @@
         new xeogl.CameraControl();
 
         // Slowly orbit camera about model
-        gearbox.scene.on("tick",
-                function () {
-                    view.rotateEyeY(0.3);
-                    view.rotateEyeX(0.1);
-                });
+        gearbox.scene.on("tick", function () {
+            view.rotateEyeY(0.1);
+            view.rotateEyeX(0.05);
+        });
     });
 
 </script>

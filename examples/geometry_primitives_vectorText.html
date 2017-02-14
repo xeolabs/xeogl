@@ -13,10 +13,9 @@
 <body>
 
 <div id="info">
-    <a href="http://xeogl.org" target="_parent">xeogl</a>
-    <br><br>
-    <a href="../docs/classes/VectorTextGeometry.html" target="_parent">VectorTextGeometry</a> showing the sourcecode for its
-    scene definition
+    <h1><a href="../docs/classes/VectorTextGeometry.html" target="_parent">VectorTextGeometry</a> showing the sourcecode
+        for
+        this example</h1>
 </div>
 
 <script id="source">
@@ -28,38 +27,18 @@
             ySize: 2
         }),
         material: new xeogl.PhongMaterial({
-            emissive: [0.5, 1.0, 1.0],
+            emissive: [0.4, 0.8, 0.4],
             lineWidth: 2
 
         }),
-        lights: new xeogl.Lights({
-            lights: [] // No lights - rely on emissive color
-        }),
         transform: new xeogl.Translate({
-            xyz: [0, 40, 0]
+            xyz: [-40, 30, 0]
         })
     });
 
-    // Move the camera back a bit, then orbit the
-    // eye position about the look position
+    entity.camera.view.zoom(90);
 
-    var scene = entity.scene;
-    var camera = scene.camera;
-    var view = camera.view;
-
-    view.zoom(120);
-
-    scene.on("tick",
-            function () {
-                view.rotateEyeY(0.2);
-                view.rotateEyeX(0.1);
-            });
-
-    // Create user camera control
-    // Make mouse zoom more sensitive
-
-    var cameraControl = new xeogl.CameraControl();
-    cameraControl.mouseZoom.sensitivity = 5;
+    new xeogl.CameraControl();
 
 </script>
 </body>

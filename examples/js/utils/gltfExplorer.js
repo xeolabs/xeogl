@@ -1,5 +1,10 @@
 var gltfExplorer = function (menuId, files) {
 
+    window.onload = function () {
+        var div = document.getElementById(menuId);
+        Ps.initialize(div);
+    };
+
     if (files.length === 0) {
         return;
     }
@@ -128,7 +133,7 @@ var gltfExplorer = function (menuId, files) {
         var entities = model.types["xeogl.Entity"];
         var entity;
 
-        var html = ["<ul>"];
+        var html = [""];
 
         for (var entityId in entities) {
             if (entities.hasOwnProperty(entityId)) {
@@ -156,11 +161,11 @@ var gltfExplorer = function (menuId, files) {
                 model.add(entity.material);
                 model.add(entity.modes);
 
-                html.push("<li><a href='javascript:flyTo(\"" + entity.id + "\")'>" + ( entity.meta.name || "unnamed") + "</a></li>")
+                html.push("<a href='javascript:flyTo(\"" + entity.id + "\")'>" + ( entity.meta.name || "unnamed") + "</a><br>")
             }
         }
 
-        html.push("</ul>");
+        //html.push("</ul>");
 
         document.getElementById(menuId).innerHTML = html.join("");
 

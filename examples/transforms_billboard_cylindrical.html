@@ -11,9 +11,9 @@
 <body>
 
 <div id="info">
-    <a href="http://xeogl.org" target="_parent" >xeogl</a>
+    <a href="http://xeogl.org" target="_parent">xeogl</a>
     <br><br>
-   1000 cylindrical <a href="../docs/classes/Billboard.html" target="_parent">Billboards</a>
+    1000 cylindrical <a href="../docs/classes/Billboard.html" target="_parent">Billboards</a>
 </div>
 
 <script>
@@ -27,6 +27,7 @@
     });
 
     var material = new xeogl.PhongMaterial({
+        emissive: [1, 1, 1],
         emissiveMap: new xeogl.Texture({
             src: "textures/diffuse/teapot.jpg"
         })
@@ -67,7 +68,7 @@
                 var view = scene.camera.view;
 
                 view.rotateEyeY(0.2);
-               // view.rotateEyeX(0.1);
+                // view.rotateEyeX(0.1);
             });
 
     // Control camera with mouse and keyboard

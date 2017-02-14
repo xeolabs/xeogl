@@ -378,7 +378,14 @@
              */
             this.contextAttr = cfg.contextAttr || {};
             this.contextAttr.alpha = this.transparent;
-            this.contextAttr.preserveDrawingBuffer = false;
+
+            if (this.contextAttr.alpha === undefined || this.contextAttr.alpha === null) {
+                this.contextAttr.alphs = this.transparent;
+            }
+
+            if (this.contextAttr.preserveDrawingBuffer === undefined || this.contextAttr.preserveDrawingBuffer === null) {
+                this.contextAttr.preserveDrawingBuffer = false;
+            }
 
             if (!cfg.canvas) {
 

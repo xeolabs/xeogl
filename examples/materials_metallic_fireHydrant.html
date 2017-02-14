@@ -19,8 +19,9 @@
 <body>
 
 <div id="info">
-    <a href="http://xeogl.org" target="_parent">xeogl</a><br><br>Physically-based rendering using <a
-        href="../docs/classes/MetallicMaterial.html" target="_parent">MetallicMaterial</a>
+    <h1>
+        Physically-based rendering using <a href="../docs/classes/MetallicMaterial.html"
+                                            target="_parent">MetallicMaterial</a></h1>
 </div>
 <div id="dat-gui-container">
 </div>
@@ -78,11 +79,10 @@
         ]
     });
 
-    var lights = new xeogl.Lights({
-        lights: dirLights,
-        // lightMap: lightMap,
-        reflectionMap: reflectionMap
-    });
+    var lights = xeogl.scene.lights;
+
+    lights.lights = dirLights;
+    lights.reflectionMap = reflectionMap;
 
     var baseColorMap = new xeogl.Texture({
         src: "textures/diffuse/fire_hydrant_Base_Color.png"
@@ -100,9 +100,9 @@
         src: "textures/metallic/fire_hydrant_Metallic.png"
     });
 
-//    var metallicRoughnessMap = new xeogl.Texture({
-//        src: "textures/metallicRoughness/fire_hydrant_MetallicRoughness.png"
-//    });
+    //    var metallicRoughnessMap = new xeogl.Texture({
+    //        src: "textures/metallicRoughness/fire_hydrant_MetallicRoughness.png"
+    //    });
 
     var occlusionMap = new xeogl.Texture({
         src: "textures/occlusion/fire_hydrant_Mixed_AO.png"
@@ -114,10 +114,8 @@
             src: "models/obj/FireHydrantMesh.obj"
         }),
 
-        lights: lights,
-
         material: new xeogl.MetallicMaterial({
-            baseColor: [1,1,1],
+            baseColor: [1, 1, 1],
             metallic: 1.0,
             roughness: 1.0,
             baseColorMap: baseColorMap,
@@ -155,7 +153,7 @@
         hydrant.scene.on("tick", function () { // Start orbiting the camera
             if (spinning) {
                 hydrant.scene.camera.view.rotateEyeY(0.2);
-            //    hydrant.scene.camera.view.zoom(-.05);
+                //    hydrant.scene.camera.view.zoom(-.05);
             }
         });
     });

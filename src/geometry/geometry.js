@@ -204,7 +204,7 @@
  @param [cfg.colors] {Array of Number} Vertex colors.
  @param [cfg.tangents] {Array of Number} Vertex tangents.
  @param [cfg.indices] {Array of Number} Indices array.
- @param [cfg.autoNormals] {Boolean} Set true to automatically generate normal vectors from the positions and indices, if those are supplied.
+ @param [cfg.autoNormals=false] {Boolean} Set true to automatically generate normal vectors from the positions and indices, if those are supplied.
  @extends Component
  */
 (function () {
@@ -234,6 +234,7 @@
                 uv: null,
                 tangents: null,
                 indices: null,
+                autoNormals: false,
 
                 hash: "",
 
@@ -429,7 +430,7 @@
                 this._positionsDirty = false;
                 this._tangentsDirty = true;
                 this._pickVBOsDirty = true;
-                if (this._autoNormals) {
+                if (state.autoNormals) {
                     this._normalsDirty = true;
                 }
                 boundaryDirty = true;
@@ -523,19 +524,20 @@
                 this._indicesDirty = false;
                 this._tangentsDirty = true;
                 this._pickVBOsDirty = true;
-                if (this._autoNormals) {
+                if (state.autoNormals) {
                     this._normalsDirty = true;
                 }
                 boundaryDirty = true;
             }
 
             if (this._normalsDirty) {
-                if (this._autoNormals) {
+                if (state.autoNormals) {
                     if (this._positions && this._indices) {
-                        this._normals = xeogl.math.buildNormals(this._positions, this._indices);
+                        this._normals = xeogl.math.buildNormals(this._positions, this._indices, this._normals);
                         this._normalsDirty = false;
                         this._tangentsDirty = true;
-                        boundaryDirty = true;
+                        this._normalsUpdate = this._normals;
+                        this._normalsUpdateOffset = null;
                     }
                 }
                 if (!this._normalsUpdate) {
@@ -1019,15 +1021,18 @@
 
                     value = !!value;
 
-                    if (this._autoNormals === value) {
+                    if (this._state.autoNormals === value) {
                         return;
                     }
 
-                    this._autoNormals = value;
+                    this._state.autoNormals = value;
 
                     this._normalsDirty = true;
 
                     this._scheduleGeometryUpdate();
+
+                    this._hashDirty = true;
+                    this.fire("dirty", true);
 
                     /**
                      * Fired whenever this Geometry's {{#crossLink "Geometry/autoNormals:property"}}{{/crossLink}} property changes.
@@ -1035,11 +1040,11 @@
                      * @type Boolean
                      * @param value The property's new value
                      */
-                    this.fire("autoNormals", this._autoNormals);
+                    this.fire("autoNormals", this._state.autoNormals);
                 },
 
                 get: function () {
-                    return this._autoNormals;
+                    return this._state.autoNormals;
                 }
             }
         },
@@ -1456,7 +1461,7 @@
                 hash.push("c");
             }
 
-            if (state.normals) {
+            if (state.normals || state.autoNormals) {
                 hash.push("n");
             }
 
@@ -1477,14 +1482,21 @@
                 this._doUpdate();
             }
 
-            return {
+            var json = {
                 primitive: this._state.primitiveName,
                 positions: this._positions,
-                normals: this._normals,
                 uv: this._uvs,
                 colors: this._colors,
                 indices: this._indices
             };
+
+            if (this._state.autoNormals) {
+                json.autoNormals = true;
+            } else {
+                json.normals = this._normals;
+            }
+
+            return json;
         },
 
         _destroy: function () {

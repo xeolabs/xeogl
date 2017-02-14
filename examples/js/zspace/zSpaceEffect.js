@@ -25,13 +25,10 @@
  Use these examples as boilerplates to get started:
 
  <ul>
- <li>[zSpace cube](../../examples/#effects_zspace_cube)</li>
  <li>[zSpace with random geometries](../../examples/#effects_zspace_geometries)</li>
  <li>[zSpace with glTF gearbox model](../../examples/#effects_zspace_gearbox)</li>
- <li>[zSpace with glTF gearbox model and entity explorer](../../examples/#effects_zspace_gearbox_explorer)</li>
  <li>[zSpace with glTF reciprocating saw model](../../examples/#effects_zspace_ReciprocatingSaw)</li>
  </ul>
-
 
  ## Usage
 
