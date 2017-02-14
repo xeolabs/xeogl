@@ -7,12 +7,13 @@
 
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
 
 <body>
 
 <div id="info">
-    <h1>picking <a href="../docs/classes/Entity.html" target="_parent">Entities</a> using an arbitrary World-space ray</h1>
+    <h1>picking <a href="../docs/classes/Entity.html" target="_parent">Entities</a> using an arbitrary World-space ray
+    </h1>
 </div>
 
 <script>
@@ -74,8 +75,8 @@
         };
 
         this.setHighlighted = function (highlighted) {
-            entity.material.emissive = highlighted ? [1.0, 0.5, 0.5] : [0.5, 0.3, 0.3];
-            entity.material.lineWidth = highlighted ? 4 : 2;
+            entity.material.emissive = highlighted ? [0.5, 1.0, 0.5] : [0.5, 0.3, 0.3];
+            entity.material.lineWidth = highlighted ? 6 : 2;
         };
     })();
 
@@ -125,18 +126,22 @@
                 direction: rayDirection
             });
 
-            if (hit && (!lastEntity || hit.entity.id !== lastEntity.id)) {
+            if (hit) {
 
-                if (lastEntity) {
-                    lastEntity.material.emissive = lastEmissive;
+                if (!lastEntity || hit.entity.id !== lastEntity.id) {
+
+                    if (lastEntity) {
+                        lastEntity.material.emissive = lastEmissive;
+                    }
+
+                    lastEntity = hit.entity;
+                    lastEmissive = hit.entity.material.emissive.slice();
+
+                    hit.entity.material.emissive = [0.5, 1, 0.5];
+
+                    rayHelper.setHighlighted(true);
+
                 }
-
-                lastEntity = hit.entity;
-                lastEmissive = hit.entity.material.emissive.slice();
-
-                hit.entity.material.emissive = [1, 0, 0];
-
-                rayHelper.setHighlighted(true);
 
             } else {
 
