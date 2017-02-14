@@ -438,7 +438,7 @@
     for (var key in files) {
         var section = files[key];
         var div = document.createElement('h2');
-        div.textContent = _index++ + "." + key;
+        div.textContent = _index++ + ". " + key;
         container.appendChild(div);
         catDivs[key] = div;
         for (var i = 0; i < section.length; i++) {

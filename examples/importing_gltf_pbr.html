@@ -26,7 +26,7 @@
     <ul>
         <li>See docs: <a href="../docs/classes/GLTFModel.html"
                          target="_parent">GLTFModel</a>, <a href="../docs/classes/MetallicMaterial.html"
-                                target="_parent">MetallicMaterial</a> and <a
+                                                            target="_parent">MetallicMaterial</a> and <a
                 href="../docs/classes/SpecularMaterial.html" target="_parent">SpecularMaterial</a></li>
     </ul>
 </div>
@@ -161,15 +161,13 @@
     // glTF model
     //-----------------------------------------------------------------------------------------------------
 
-    var model = new xeogl.GLTFModel({});
+    var model = new xeogl.GLTFModel();
 
-    model.on("loaded", function () { // Auto-fit model to view
-        xeogl.scheduleTask(function () { // FIXME - needed to ensure that model has loaded
-            cameraFlight.jumpTo({
-                worldBoundary: model.worldBoundary,
-                fit: true,
-                fitFOV: 50
-            });
+    model.worldBoundary.on("updated", function () { // Auto-fit model to view
+        cameraFlight.jumpTo({
+            worldBoundary: model.worldBoundary,
+            fit: true,
+            fitFOV: 50
         });
     });
 

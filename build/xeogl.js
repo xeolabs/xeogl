@@ -30710,7 +30710,7 @@ TODO
             // Subscriptions to "updated" events from components' worldBoundaries
             this._onWorldBoundaryUpdated = {};
 
-            this._aabbDirty = true;
+            this._aabbDirty = false;
 
             // Dummy transform to make it easy to graft user-supplied transforms above added entities
             this._dummyRootTransform = this.create({
@@ -30874,9 +30874,6 @@ TODO
 
             if (component.worldBoundary) {
                 this._onWorldBoundaryUpdated[component.id] = component.worldBoundary.on("updated", this._updated, this);
-                if (!this._aabbDirty) {
-                    this._setAABBDirty();
-                }
             }
 
             /**
@@ -30912,6 +30909,11 @@ TODO
              * @event updated
              */
             this.fire("updated");
+
+            if (!this._aabbDirty) {
+                this._setAABBDirty();
+            }
+
             this._dirty = false;
         },
 
@@ -31098,7 +31100,7 @@ TODO
                             type: "xeogl.Boundary3D",
 
                             getDirty: function () {
-                                if (self._aabbDirty) {
+                                if (self._aabbDirty || !self._aabb) {
                                     self._buildAABB();
                                     self._aabbDirty = false;
                                     return true;
