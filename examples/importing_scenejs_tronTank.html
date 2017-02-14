@@ -25,7 +25,8 @@
 <body>
 
 <div id="info">
-    <h1><a href="../docs/classes/SceneJSModel.html" target="_parent">SceneJSModel</a> imported from a SceneJS <a href="models/scenejs/tronTank.min.json" target="_other">JSON file</a></h1>
+    <h1><a href="../docs/classes/SceneJSModel.html" target="_parent">SceneJSModel</a> imported from a SceneJS <a
+            href="models/scenejs/tronTank.min.json" target="_other">JSON file</a></h1>
 </div>
 
 <div id="logos">
@@ -78,39 +79,40 @@
 
         new xeogl.DirLight({
             dir: [-0.5, -0.6, -0.0],
-            color: [1.0, 1.0, 1.0],
-            intensity: 1.0,
+            color: [1.0, 0.8, 0.8],
+            intensity: 0.6,
             space: "world"
         }),
+
         new xeogl.DirLight({
             dir: [0.5, -0.6, -0.6],
-            color: [1.0, 1.0, 1.0],
-            intensity: 1.0,
+            color: [0.8, 0.8, 1.0],
+            intensity: 0.6,
             space: "world"
         })
     ];
 
-    //    scene.lights.lightMap = new xeogl.CubeTexture({
-    //        src: [
-    //            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
-    //            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png",
-    //            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png",
-    //            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png",
-    //            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png",
-    //            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png"
-    //        ]
-    //    });
+    scene.lights.lightMap = new xeogl.CubeTexture({
+        src: [
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png"
+        ]
+    });
 
-    //    scene.lights.reflectionMap = new xeogl.CubeTexture({
-    //        src: [
-    //            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
-    //            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
-    //            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
-    //            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
-    //            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
-    //            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
-    //        ]
-    //    });
+    //        scene.lights.reflectionMap = new xeogl.CubeTexture({
+    //            src: [
+    //                "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
+    //                "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
+    //                "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
+    //                "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
+    //                "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
+    //                "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
+    //            ]
+    //        });
 
     // Set initial camera position
     var view = scene.camera.view;

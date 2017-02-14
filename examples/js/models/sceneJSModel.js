@@ -457,7 +457,7 @@
                                 id: this._createID(node),
                                 baseColor: diffuse,
                                 metallic: 1.0,
-                                roughness: 0.3,
+                                roughness: 0.4,
                                 emissive: emissive,
                                 opacity: node.alpha
                             });
