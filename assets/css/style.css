@@ -208,6 +208,7 @@ blockquote {
     position: relative;
     color: #fff;
     background: black;
+
 }
 
 .banner-image {
@@ -223,7 +224,7 @@ blockquote {
     right: 0;
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.0);
-    content: "";
+    /*content: "";*/
 }
 
 .banner-caption {
