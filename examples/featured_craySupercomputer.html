@@ -29,7 +29,7 @@
             color: [1.0, 1.0, 1.0],
             intensity: 1.0,
             space: "world",
-            //linearAttenuation: 0.010,
+            linearAttenuation: 0.010,
             quadrahticAttenuation: 0.0038
         }),
         new xeogl.PointLight({
@@ -37,7 +37,7 @@
             color: [1.0, 1.0, 1.0],
             intensity: 1.0,
             space: "world",
-            // linearAttenuation: 0.010,
+            linearAttenuation: 0.010,
             quadrathicAttenuation: 0.0038
         })
         ,
@@ -839,7 +839,7 @@
     });
 
     var greenLED = new xeogl.PhongMaterial({
-        emissive: [0.3, 1.0, 0.3]
+        emissive: [0.6, 1.0, 0.6]
     });
 
 
@@ -926,28 +926,12 @@
 
     var input = scene.input;
 
-    input.on("mouseclicked",
-            function (coords) {
-
-                var hit = scene.pick({
-                    canvasPos: coords
-                });
-
-                if (hit) {
-                    if (hit.entity && hit.entity.id === "logo") {
-                        //     window.location = "http://www.openloop.com/education/classes/sjsu_engr/engr_compOrg/spring2002/studentProjects/Andie_Hioki/Cray1withAdd.htm";
-                    }
-                }
-            });
-
     //  camera.view.pan([0,-2,0])
     camera.view.rotateEyeY(180 - 15);
 
 
     scene.on("tick", function () {
         camera.view.rotateEyeY(0.07);
-
-
     });
 
     setInterval(function () {
