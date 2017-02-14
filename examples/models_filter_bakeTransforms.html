@@ -12,9 +12,7 @@
 <body>
 
 <div id="info">
-    <a href="http://xeogl.org" target="_parent" >xeogl</a><br><br>importing glTF using a <a
-        href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a><br>then optimizing the modelling
-    transforms by baking hierarchies into single matrices
+    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - optimizing by baking transform hierarchies</h1>
 </div>
 
 <div id="logos">
@@ -72,11 +70,10 @@
         new xeogl.CameraControl();
 
         // Slowly orbit camera about model
-        gearbox.scene.on("tick",
-                function () {
-                    view.rotateEyeY(0.3);
-                    view.rotateEyeX(0.1);
-                });
+        gearbox.scene.on("tick", function () {
+            view.rotateEyeY(0.1);
+            view.rotateEyeX(0.05);
+        });
     });
 
 </script>

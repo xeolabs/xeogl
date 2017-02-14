@@ -1147,9 +1147,9 @@
                                 //    intensity: 1.0
                                 //}),
 
-                                new xeogl.AmbientLight(this, {
-                                    color: [0.5, 0.5, 0.55]
-                                }),
+                                //new xeogl.AmbientLight(this, {
+                                //    color: [0.5, 0.5, 0.55]
+                                //}),
 
                                 //new xeogl.SpotLight(this, {
                                 //    id: "default.light1",

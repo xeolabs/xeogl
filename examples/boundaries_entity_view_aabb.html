@@ -11,16 +11,15 @@
 <body>
 
 <div id="info">
-    <a href="http://xeogl.org" target="_parent" >xeogl</a><br><br>
-    Visualizing an <a href="../docs/classes/Entity.html" target="_parent">Entity's</a> View-space <a
-        href="../docs/classes/Boundary3D.html" target="_parent">Boundary3D</a> as we animate the Entity's modeling transforms
-
+    <h1>visualizing an <a href="../docs/classes/Entity.html" target="_parent">Entity's</a> View-space <a
+            href="../docs/classes/Boundary3D.html" target="_parent">Boundary3D</a> as we animate the Entity's modeling
+        transforms</h1>
     <pre id="log" style="text-align: left; color:#77FF77; border:0;"></pre>
 </div>
 
 <script>
 
-    new  xeogl.CameraControl();
+    new xeogl.CameraControl();
 
     // ------------------------------------------------------------------
     // Create a tumbling red torus
@@ -88,10 +87,9 @@
 
     var viewBoundary = torus.viewBoundary;
 
-    viewBoundary.on("updated",
-            function () {
-                log("torus.viewBoundary.aabb", viewBoundary.aabb);
-            });
+    viewBoundary.on("updated", function () {
+        log("torus.viewBoundary.aabb", viewBoundary.aabb);
+    });
 
     function log(event, params) {
         var str = event + " = " + JSON.stringify(params, "\n", 4);

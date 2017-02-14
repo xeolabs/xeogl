@@ -24,16 +24,8 @@
 
 <body>
 
-<div id="info" class="dark">
-    <a href="http://xeogl.org" target="_parent">xeogl</a><br><br>
-    <ul>
-        <li>Using a <a href="../docs/classes/SceneJSModel.html" target="_parent">SceneJSModel</a> to import SceneJS
-            content into xeogl.
-        </li>
-        <li>The scene definition in this case is <a href="models/scenejs/tronTank.min.json">this JSON file</a></li>
-    </ul>
-    <div id="log">
-    </div>
+<div id="info">
+    <h1><a href="../docs/classes/SceneJSModel.html" target="_parent">SceneJSModel</a> imported from a SceneJS <a href="models/scenejs/tronTank.min.json" target="_other">JSON file</a></h1>
 </div>
 
 <div id="logos">
@@ -334,34 +326,34 @@
     //---------------------------------------------------------------------------------
     // Skybox
     //---------------------------------------------------------------------------------
-
-    new xeogl.Entity({
-        geometry: {
-            type: "xeogl.BoxGeometry",
-            xSize: 1200,
-            ySize: 600,
-            zSize: 1200
-        },
-        material: {
-            type: "xeogl.SpecularMaterial",
-            diffuse: [0.7, 0.7, 0.7],
-            specular: [0.2, 0.2, 0.3],
-            glossiness: 0.1,
-            emissive: [0.1, 0.1, 0.1],
-            diffuseMap: {
-                src: "textures/diffuse/UVCheckerMap11-1024.png",
-                wrapS: "repeat",
-                wrapT: "repeat",
-                scale: [1, 1]
-            }
-        },
-        modes: {
-            backfaces: true, // Show backfaces
-            frontface: "ccw", // Need lighting on interior surface
-            pickable: false, // Can't be picked
-            collidable: false // Does not contribute to overall scene boundary
-        }
-    });
+    //
+    //    new xeogl.Entity({
+    //        geometry: {
+    //            type: "xeogl.BoxGeometry",
+    //            xSize: 1200,
+    //            ySize: 600,
+    //            zSize: 1200
+    //        },
+    //        material: {
+    //            type: "xeogl.SpecularMaterial",
+    //            diffuse: [0.7, 0.7, 0.7],
+    //            specular: [0.2, 0.2, 0.3],
+    //            glossiness: 0.1,
+    //            emissive: [0.1, 0.1, 0.1],
+    //            diffuseMap: {
+    //                src: "textures/diffuse/UVCheckerMap11-1024.png",
+    //                wrapS: "repeat",
+    //                wrapT: "repeat",
+    //                scale: [1, 1]
+    //            }
+    //        },
+    //        modes: {
+    //            backfaces: true, // Show backfaces
+    //            frontface: "ccw", // Need lighting on interior surface
+    //            pickable: false, // Can't be picked
+    //            collidable: false // Does not contribute to overall scene boundary
+    //        }
+    //    });
 
 
     //---------------------------------------------------------------------------------

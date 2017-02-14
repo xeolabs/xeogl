@@ -314,7 +314,7 @@
 
         function hasNormals() {
             var primitive = states.geometry.primitiveName;
-            if (states.geometry.normals &amp;&amp; (primitive === &quot;triangles&quot; || primitive === &quot;triangle-strip&quot; || primitive === &quot;triangle-fan&quot;)) {
+            if ((states.geometry.autoNormals || states.geometry.normals) &amp;&amp; (primitive === &quot;triangles&quot; || primitive === &quot;triangle-strip&quot; || primitive === &quot;triangle-fan&quot;)) {
                 return true;
             }
             return false;
@@ -1250,6 +1250,10 @@
                 add(&quot;vec3 diffuse = vec3(1.0, 1.0, 1.0);&quot;);
             }
 
+            if (geometry.colors) {
+                add(&quot;diffuse *= xeo_vColor.rgb;&quot;);
+            }
+
             if (material.emissive) {
                 add(&quot;vec3 emissive = xeo_uEmissive;&quot;); // Emissive default is (0,0,0), so initializing here
             } else {
@@ -1266,6 +1270,10 @@
                 add(&quot;float opacity = xeo_uOpacity;&quot;);
             } else {
                 add(&quot;float opacity = 1.0;&quot;);
+            }
+
+            if (geometry.colors) {
+                add(&quot;opacity *= xeo_vColor.a;&quot;);
             }
 
             if (material.glossiness !== undefined) {

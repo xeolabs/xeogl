@@ -12,14 +12,7 @@
 <body>
 
 <div id="info">
-    <a href="http://xeogl.org" target="_parent">xeogl</a><br><br>
-    <ul>
-        <li>Picking an <a
-                href="../docs/classes/Entity.html" target="_parent">Entity</a> with a World-space ray, finding
-            intersection on surface
-        </li>
-        <li>Learn more in the <a href="http://xeolabs.com/articles/xeogl-picking/" target="_parent">tutorial</a></li>
-    </ul>
+    <h1>picking <a href="../docs/classes/Entity.html" target="_parent">Entities</a> using an arbitrary World-space ray - finding position at intersect</h1>
 </div>
 
 <script>
@@ -38,28 +31,6 @@
             "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png"
         ]
     });
-
-//    xeogl.scene.lights.lights = [
-//        new xeogl.AmbientLight({
-//            color: [0.7, 0.7, 0.8]
-//        }),
-//        new xeogl.PointLight({
-//            pos: [-80, 60, 80],
-//            color: [1.0, 1.0, 1.0],
-//            space: "view"
-//        }),
-//        new xeogl.PointLight({
-//            pos: [80, 40, 40],
-//            color: [1.0, 1.0, 1.0],
-//            space: "view"
-//        }),
-//        new xeogl.PointLight({
-//            pos: [-20, 80, -80],
-//            color: [1.0, 1.0, 1.0],
-//            space: "view"
-//        })
-//    ];
-
 
     //--------------------------------------------
     // Load glTF model and set up camera
@@ -151,8 +122,8 @@
 
     //--------------------------------------------------------------------
 
-    var rayOrigin = new Float32Array([169.20, 17.02, -20.0]);
-    var rayDirection = new Float32Array([0, 10, 60]);
+    var rayOrigin = new Float32Array([169.20, 17.02, -10.0]);
+    var rayDirection = new Float32Array([0, 10, 30]);
 
     var xinc = -0.04;
     var i = 0;

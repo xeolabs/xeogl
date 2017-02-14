@@ -11,7 +11,9 @@
 <body>
 
 <div id="info">
-    <a href="http://xeogl.org" target="_parent" >xeogl</a><br><br>
+    <h1>visualizing the Local-space boundary of an <a href="../docs/classes/Entity.html" target="_parent">Entity</a>
+        with a
+        <a href="../docs/classes/AABBGeometry.html" target="_parent">AABBGeometry</a></h1>
 </div>
 
 <script>
@@ -72,7 +74,7 @@
         var rotate1 = new xeogl.Rotate({
             xyz: [1, 0, 1],
             angle: 25,
-            parent:translate
+            parent: translate
         });
 
         var rotate2 = new xeogl.Rotate({
@@ -90,11 +92,10 @@
 
         var a = 0;
 
-        rotate1.scene.on("tick",
-                function () {
-                    rotate0.angle = a*0.1;
-                    rotate1.angle = a+=4;
-                });
+        rotate1.scene.on("tick", function () {
+            rotate0.angle = a * 0.1;
+            rotate1.angle = a += 4;
+        });
 
         return scale
 

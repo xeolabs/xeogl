@@ -7,7 +7,7 @@ function materialGallery(menuId, cfg) {
     var skybox = new xeogl.Skybox({
         src: "textures/skybox/uffizi_vert_cross.jpg",
         size: 1000, // Default
-        active: true
+        active: false
     });
 
     //-----------------------------------------------------------------------------------------------------
@@ -73,13 +73,13 @@ function materialGallery(menuId, cfg) {
     //-----------------------------------------------------------------------------------------------------
 
     (function () {
-        var html = ["<ul>"];
+        var html = [""];
         for (var id in cfg) {
             if (cfg.hasOwnProperty(id)) {
-                html.push("<li><a href='javascript:flyTo(\"" + id + "\")'>" + id + "</a></li>")
+                html.push("<a href='javascript:flyTo(\"" + id + "\")'>" + id + "</a><br>")
             }
         }
-        html.push("</ul>");
+        //html.push("</ul>");
         document.getElementById(menuId).innerHTML = html.join("");
     })();
 

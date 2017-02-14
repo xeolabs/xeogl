@@ -20,13 +20,12 @@
 <body>
 
 <div id="info">
-    <a href="http://xeogl.org" target="_parent" >xeogl</a><br>
-        using <a
-                href="../docs/classes/GLTFModel.html"
-                target="_parent">GLTFModel</a> and <a
-                href="../docs/classes/ZSpaceEffect.html"
-                target="_parent">ZSpaceEffect</a> components to view a glTF model in zSpace VR<br>
-    <div id="log" style="color:red;"></div>
+    <h1><a
+            href="../docs/classes/GLTFModel.html"
+            target="_parent">GLTFModel</a> viewed with a <a
+            href="../docs/classes/ZSpaceEffect.html"
+            target="_parent">ZSpaceEffect</a></h1>
+    <div id="log" style="color:red"></div>
 </div>
 
 <script>
@@ -35,44 +34,17 @@
     // Load a glTF gearbox model into the default Scene
     //----------------------------------------------------------------------------
 
-    var gearbox = new xeogl.GLTFModel({
-        src: "models/gltf/gearbox/gearbox_assy.gltf"
-    });
-
-    gearbox.on("loaded", function () {
-
-        //---------------------------------------------------------------------------------------
-        // When the GLTFModel has loaded, iterate over all the Entities in the GLTFModel:
-        //
-        // 1. Ensure that each Entity has its own Material and Modes components, so that
-        // we can set it transparent individually. Add the Material and Modes to the GLTFModel
-        // so that they get destroyed whenever the GLTFModel is destroyed or reloaded.
-        //
-        // 2. Flatten each Entity's transform hierarchy down to one Transform.
-        //---------------------------------------------------------------------------------------
-
-        var entities = gearbox.types["xeogl.Entity"];
-        var entity;
-
-        for (var entityId in entities) {
-            if (entities.hasOwnProperty(entityId)) {
-
-                entity = entities[entityId];
-
-                // Ensure the Entity has its own unique Material
-                // Add the Material and Modes to the GLTFModel
-                // so that they get destroyed automatically
-
-                gearbox.add(entity.material = entity.material.clone());
-            }
-        }
+    var model = new xeogl.GLTFModel({
+        //src: "models/gltf/gearbox/gearbox_assy.gltf"
+        //src: "models/gltf/gearbox/gearbox_assy.gltf"
+        src: "models/gltf/gearbox/PBR-MetalRoughness/gearbox_assy.gltf"
     });
 
     //----------------------------------------------------------------------------
     // Set initial camera position
     //----------------------------------------------------------------------------
 
-    var view = gearbox.scene.camera.view;
+    var view = model.scene.camera.view;
 
     view.gimbalLockY = false;
 
@@ -80,7 +52,9 @@
     view.look = [159.20, 17.02, 3.21];
     view.up = [-0.15, 0.97, 0.13];
 
-    var scene = gearbox.scene;
+    view.rotateEyeY(60);
+
+    var scene = model.scene;
 
     //----------------------------------------------------------------------------
     // Allow camera control with keyboard and mouse
@@ -94,14 +68,13 @@
 
     var zspaceEffect = new xeogl.ZSpaceEffect({
         canvasOffset: [330, 0]
-        //canvasOffset: [0, 0]
     });
-
-    var zspaceStylusControl = new xeogl.ZSpaceStylusControl();
 
     zspaceEffect.on("supported", function (supported) {
         if (!supported) {
-            document.getElementById("log").innerText = "This computer is not a zSpace viewer - defaulting to standard xeogl camera controls. ";
+            document.getElementById("log").innerText = "Not a zSpace display ";
+        } else {
+            new xeogl.ZSpaceStylusControl();
         }
     });
 

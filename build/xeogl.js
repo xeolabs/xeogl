@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2017-02-09
+ * Built on 2017-02-14
  *
  * MIT License
  * Copyright 2017, Lindsay Kay
@@ -345,6 +345,10 @@
             return this._scene || (this._scene = new window.xeogl.Scene({
                     id: "default.scene"
                 }));
+        },
+
+        set scene(value) {
+            this._scene = value;
         },
 
         /**
@@ -4698,9 +4702,8 @@ var Canvas2Image = (function () {
         var ab = math.vec3();
         var ac = math.vec3();
         var crossVec = math.vec3();
-        var normVec = math.vec3();
 
-        return function (positions, indices) {
+        return function (positions, indices, normals) {
 
             var i;
             var len;
@@ -4730,6 +4733,8 @@ var Canvas2Image = (function () {
                 math.subVec3(b, a, ab);
                 math.subVec3(c, a, ac);
 
+                var normVec = math.vec3();
+
                 math.normalizeVec3(math.cross3Vec3(ab, ac, crossVec), normVec);
 
                 if (!nvecs[j0]) {
@@ -4747,19 +4752,27 @@ var Canvas2Image = (function () {
                 nvecs[j2].push(normVec);
             }
 
-            var normals = new Float32Array(positions.length);
+            normals = (normals && normals.length === positions.length) ? normals : new Float32Array(positions.length);
 
-            // now go through and average out everything
-            for (i = 0, len = nvecs.length; i < len; i++) {
-                var count = nvecs[i].length;
-                var x = 0;
-                var y = 0;
-                var z = 0;
+            var count;
+            var x;
+            var y;
+            var z;
+
+            for (i = 0, len = nvecs.length; i < len; i++) {  // Now go through and average out everything
+
+                count = nvecs[i].length;
+
+                x = 0;
+                y = 0;
+                z = 0;
+
                 for (var j = 0; j < count; j++) {
                     x += nvecs[i][j][0];
                     y += nvecs[i][j][1];
                     z += nvecs[i][j][2];
                 }
+
                 normals[i * 3] = (x / count);
                 normals[i * 3 + 1] = (y / count);
                 normals[i * 3 + 2] = (z / count);
@@ -6477,7 +6490,7 @@ var Canvas2Image = (function () {
             if (offset || offset === 0) {
                 this.gl.bufferSubData(this.type, offset * this.itemByteSize, data);
             } else {
-                this.gl.bufferData(this.type, data);
+                this.gl.bufferData(this.type, data, this.usage);
             }
 
             this.gl.bindBuffer(this.type, null);
@@ -8704,7 +8717,7 @@ var Canvas2Image = (function () {
 
         function hasNormals() {
             var primitive = states.geometry.primitiveName;
-            if (states.geometry.normals && (primitive === "triangles" || primitive === "triangle-strip" || primitive === "triangle-fan")) {
+            if ((states.geometry.autoNormals || states.geometry.normals) && (primitive === "triangles" || primitive === "triangle-strip" || primitive === "triangle-fan")) {
                 return true;
             }
             return false;
@@ -9640,6 +9653,10 @@ var Canvas2Image = (function () {
                 add("vec3 diffuse = vec3(1.0, 1.0, 1.0);");
             }
 
+            if (geometry.colors) {
+                add("diffuse *= xeo_vColor.rgb;");
+            }
+
             if (material.emissive) {
                 add("vec3 emissive = xeo_uEmissive;"); // Emissive default is (0,0,0), so initializing here
             } else {
@@ -9656,6 +9673,10 @@ var Canvas2Image = (function () {
                 add("float opacity = xeo_uOpacity;");
             } else {
                 add("float opacity = 1.0;");
+            }
+
+            if (geometry.colors) {
+                add("opacity *= xeo_vColor.a;");
             }
 
             if (material.glossiness !== undefined) {
@@ -14277,9 +14298,9 @@ var Canvas2Image = (function () {
                                 //    intensity: 1.0
                                 //}),
 
-                                new xeogl.AmbientLight(this, {
-                                    color: [0.5, 0.5, 0.55]
-                                }),
+                                //new xeogl.AmbientLight(this, {
+                                //    color: [0.5, 0.5, 0.55]
+                                //}),
 
                                 //new xeogl.SpotLight(this, {
                                 //    id: "default.light1",
@@ -15260,7 +15281,7 @@ var Canvas2Image = (function () {
 ;/**
  A **CameraFlightAnimation** jumps or flies a {{#crossLink "Camera"}}{{/crossLink}} to look at a given target.
 
- <a href="../../examples/#animation_camera_flyTo_entity"><img src="http://i.giphy.com/3o7TKP0jN800EQ99EQ.gif"></img></a>
+ <a href="../../examples/#animation_camera_flight"><img src="http://i.giphy.com/3o7TKP0jN800EQ99EQ.gif"></img></a>
 
  ## Overview
 
@@ -15282,9 +15303,7 @@ var Canvas2Image = (function () {
 
  ## Examples
 
- * [Flying to random Entities](../../examples/#animation_camera_flyTo_entity)
- * [Flying to Boundary3D](../../examples/#animation_camera_flyTo_boundary)
- * [Flying to AABB](../../examples/#animation_camera_flyTo_aabb)
+ * [Flying to random Entities](../../examples/#animation_camera_flight)
 
  ## Flying to an Entity
 
@@ -15397,8 +15416,8 @@ var Canvas2Image = (function () {
                     diffuse: [0, 0, 0],
                     ambient: [0, 0, 0],
                     specular: [0, 0, 0],
-                    emissive: [1.0, 1.0, 0.0],
-                    lineWidth: 3
+                    emissive: [0.5, 1.0, 0.5],
+                    lineWidth: 2
                 }),
                 visibility: this.create({
                     type: "xeogl.Visibility",
@@ -15421,8 +15440,8 @@ var Canvas2Image = (function () {
                         diffuse: [0, 0, 0],
                         ambient: [0, 0, 0],
                         specular: [0, 0, 0],
-                        emissive: [1.0, 1.0, 0.0],
-                        lineWidth: 3
+                        emissive: [0.5, 1.0, 0.5],
+                        lineWidth: 2
                     })
                 }),
                 visibility: this.create({
@@ -16221,7 +16240,7 @@ var Canvas2Image = (function () {
 
  * [Perspective Camera](../../examples/#transforms_camera_project_perspective)
  * [Orthographic Camera](../../examples/#transforms_camera_project_ortho)
- * [Automatically following an Entity with a Camera](../../examples/#animation_camera_follow_entity)
+ * [Automatically following an Entity with a Camera](../../examples/#animation_camera_follow)
  * [Animating a Camera along a path](../../examples/#animation_camera_path_interpolation)
 
  ## Usage
@@ -16578,7 +16597,14 @@ var Canvas2Image = (function () {
              */
             this.contextAttr = cfg.contextAttr || {};
             this.contextAttr.alpha = this.transparent;
-            this.contextAttr.preserveDrawingBuffer = false;
+
+            if (this.contextAttr.alpha === undefined || this.contextAttr.alpha === null) {
+                this.contextAttr.alphs = this.transparent;
+            }
+
+            if (this.contextAttr.preserveDrawingBuffer === undefined || this.contextAttr.preserveDrawingBuffer === null) {
+                this.contextAttr.preserveDrawingBuffer = false;
+            }
 
             if (!cfg.canvas) {
 
@@ -21512,7 +21538,7 @@ var Canvas2Image = (function () {
  @param [cfg.colors] {Array of Number} Vertex colors.
  @param [cfg.tangents] {Array of Number} Vertex tangents.
  @param [cfg.indices] {Array of Number} Indices array.
- @param [cfg.autoNormals] {Boolean} Set true to automatically generate normal vectors from the positions and indices, if those are supplied.
+ @param [cfg.autoNormals=false] {Boolean} Set true to automatically generate normal vectors from the positions and indices, if those are supplied.
  @extends Component
  */
 (function () {
@@ -21542,6 +21568,7 @@ var Canvas2Image = (function () {
                 uv: null,
                 tangents: null,
                 indices: null,
+                autoNormals: false,
 
                 hash: "",
 
@@ -21737,7 +21764,7 @@ var Canvas2Image = (function () {
                 this._positionsDirty = false;
                 this._tangentsDirty = true;
                 this._pickVBOsDirty = true;
-                if (this._autoNormals) {
+                if (state.autoNormals) {
                     this._normalsDirty = true;
                 }
                 boundaryDirty = true;
@@ -21831,19 +21858,20 @@ var Canvas2Image = (function () {
                 this._indicesDirty = false;
                 this._tangentsDirty = true;
                 this._pickVBOsDirty = true;
-                if (this._autoNormals) {
+                if (state.autoNormals) {
                     this._normalsDirty = true;
                 }
                 boundaryDirty = true;
             }
 
             if (this._normalsDirty) {
-                if (this._autoNormals) {
+                if (state.autoNormals) {
                     if (this._positions && this._indices) {
-                        this._normals = xeogl.math.buildNormals(this._positions, this._indices);
+                        this._normals = xeogl.math.buildNormals(this._positions, this._indices, this._normals);
                         this._normalsDirty = false;
                         this._tangentsDirty = true;
-                        boundaryDirty = true;
+                        this._normalsUpdate = this._normals;
+                        this._normalsUpdateOffset = null;
                     }
                 }
                 if (!this._normalsUpdate) {
@@ -22327,15 +22355,18 @@ var Canvas2Image = (function () {
 
                     value = !!value;
 
-                    if (this._autoNormals === value) {
+                    if (this._state.autoNormals === value) {
                         return;
                     }
 
-                    this._autoNormals = value;
+                    this._state.autoNormals = value;
 
                     this._normalsDirty = true;
 
                     this._scheduleGeometryUpdate();
+
+                    this._hashDirty = true;
+                    this.fire("dirty", true);
 
                     /**
                      * Fired whenever this Geometry's {{#crossLink "Geometry/autoNormals:property"}}{{/crossLink}} property changes.
@@ -22343,11 +22374,11 @@ var Canvas2Image = (function () {
                      * @type Boolean
                      * @param value The property's new value
                      */
-                    this.fire("autoNormals", this._autoNormals);
+                    this.fire("autoNormals", this._state.autoNormals);
                 },
 
                 get: function () {
-                    return this._autoNormals;
+                    return this._state.autoNormals;
                 }
             }
         },
@@ -22764,7 +22795,7 @@ var Canvas2Image = (function () {
                 hash.push("c");
             }
 
-            if (state.normals) {
+            if (state.normals || state.autoNormals) {
                 hash.push("n");
             }
 
@@ -22785,14 +22816,21 @@ var Canvas2Image = (function () {
                 this._doUpdate();
             }
 
-            return {
+            var json = {
                 primitive: this._state.primitiveName,
                 positions: this._positions,
-                normals: this._normals,
                 uv: this._uvs,
                 colors: this._colors,
                 indices: this._indices
             };
+
+            if (this._state.autoNormals) {
+                json.autoNormals = true;
+            } else {
+                json.normals = this._normals;
+            }
+
+            return json;
         },
 
         _destroy: function () {
@@ -41337,7 +41375,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 ;/**
  A **Boundary3D** provides the 3D extents of its parent component in either the Local, World or View coordinate systems.
 
- <a href="../../examples/#animation_camera_follow_entity"><img src="http://i.giphy.com/l0HlHcuzAjhMQ8YSY.gif"></img></a>
+ <a href="../../examples/#animation_camera_follow"><img src="http://i.giphy.com/l0HlHcuzAjhMQ8YSY.gif"></img></a>
 
  ## Overview
 
@@ -41377,8 +41415,8 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  * [Entity Canvas-space boundary](../../examples/#boundaries_entity_canvas_aabb)
  * [Flying camera to Entity World-space boundaries](../../examples/#animation_camera_flyTo_boundary)
  * [Model World-space boundary](../../examples/#boundaries_model_world_aabb)
- * [Following an Entity with a Camera](../../examples/#animation_camera_follow_entity)
- * [Following an Entity with a Camera, keeping Entity fitted to view volume](../../examples/#animation_camera_follow_entity_fitToView)
+ * [Following an Entity with a Camera](../../examples/#animation_camera_follow)
+ * [Following an Entity with a Camera, keeping Entity fitted to view volume](../../examples/#animation_camera_follow_fitToView)
 
  ## Usage
 
@@ -41720,7 +41758,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  ## Examples
 
- * [Modelling transform hierarchy](../../examples/#transforms_entity_transformHierarchy)
+ * [Modelling transform hierarchy](../../examples/#transforms_entity_hierarchy)
  * [Attaching transforms to Models, via constructor](../../examples/#transforms_model_configureTransform)
  * [Attaching transforms to Models, via property](../../examples/#transforms_model_attachTransform)
 
@@ -42171,7 +42209,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  ## Examples
 
- * [Modeling transform hierarchy](../../examples/#transforms_entity_transformHierarchy)
+ * [Modeling transform hierarchy](../../examples/#transforms_entity_hierarchy)
 
  ## Usage
 
@@ -42364,7 +42402,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  ## Examples
 
- * [Viewing transform hierarchy](../../examples/#transforms_camera_view_transformHierarchy)
+ * [Viewing transform hierarchy](../../examples/#transforms_camera_view_hierarchy)
 
  ## Usage
 
@@ -42542,8 +42580,8 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  ## Examples
 
- * [Modeling transform hierarchy](../../examples/#transforms_entity_transformHierarchy)
- * [Projection transform hierarchy](../../examples/#transforms_camera_project_transformHierarchy)
+ * [Modeling transform hierarchy](../../examples/#transforms_entity_hierarchy)
+ * [Projection transform hierarchy](../../examples/#transforms_camera_project_hierarchy)
 
  ## Usage
 
@@ -42697,7 +42735,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  ## Examples
 
- * [Modeling transform hierarchy](../../examples/#transforms_entity_transformHierarchy)
+ * [Modeling transform hierarchy](../../examples/#transforms_entity_hierarchy)
 
  ## Usage
 

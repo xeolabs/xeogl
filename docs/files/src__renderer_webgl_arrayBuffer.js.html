@@ -319,7 +319,7 @@
             if (offset || offset === 0) {
                 this.gl.bufferSubData(this.type, offset * this.itemByteSize, data);
             } else {
-                this.gl.bufferData(this.type, data);
+                this.gl.bufferData(this.type, data, this.usage);
             }
 
             this.gl.bindBuffer(this.type, null);

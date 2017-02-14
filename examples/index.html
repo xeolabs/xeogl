@@ -2,150 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
+
     <title>xeogl - Examples</title>
-
-    <!--Examples viewer adapted from the one over at THREE.js -->
-    <!-- threejs.com -->
-
 
     <link href='https://fonts.googleapis.com/css?family=Exo+2:400,800,900,700,600,500|Roboto:100,300,400,500,700,900'
           rel='stylesheet' type='text/css'>
 
-    <style>
+    <link href="css/styles.css" rel="stylesheet"/>
+    <link href="libs/perfect-scrollbar.css" rel="stylesheet"/>
+    <script src="libs/perfect-scrollbar.min.js"></script>
 
-
-        body {
-            font-family: 'Roboto', sans-serif;
-            font-size: 15px;
-            line-height: 1.50;
-            color: #333332 background-color : #ffffff;
-
-            font-weight: normal;
-            font-style: normal;
-            background-color: #e8e8e8;
-            margin: 0;
-            overflow: hidden;
-        }
-
-        a {
-            /*color: #2194CE;*/
-            color: #3a7445;
-            text-decoration: none;
-        }
-
-        h1 {
-            margin-top: 30px;
-            margin-bottom: 40px;
-            font-size: 25px;
-            font-weight: normal;
-        }
-
-        h2 {
-            font-size: 20px;
-            font-weight: normal;
-            padding-top: 10px;
-        }
-
-        #panel {
-            position: absolute;
-            width: 330px;
-            height: 100%;
-            overflow-Y: scroll;
-            overflow-x: hidden;
-            background: #fafafa;
-
-        }
-
-        #panel #list {
-            padding: 0px 20px;
-            line-height: 18px;
-            overflow-x: hidden;
-        }
-
-        #panel #list .link {
-            margin-left: 0 !important;
-            padding-left: 0 !important;
-            padding-top: 1px;
-            /*color: #2194CE;*/
-            color: #3d7749;
-            text-decoration: none;
-            font-weight: normal;
-            background: #FFFFFF;
-            cursor: pointer;
-            line-height: 1.5em;
-        }
-
-        #panel #list .selected {
-            margin-left: -5px !important;
-            padding-left: 5px !important;
-            padding-top: 0;
-            padding-bottom: 0;
-            color: #000000;
-            border: 1px solid #676767;
-            background: #FFFF44;
-        }
-
-        #panel #list .link:hover {
-            text-decoration: underline;
-        }
-
-        #panel #list .info {
-            color: #71705a;
-            text-decoration: none;
-            font-style: italic;
-            font-size: 14px;
-            background-color: aliceblue;
-            padding-top: 4px;
-            padding-bottom: 4px;
-            margin-top: 15px;
-            margin-bottom: 4px;
-        }
-
-        #panel #list .infoFirst {
-            color: #71705a;
-            text-decoration: none;
-            font-style: italic;
-            font-size: 14px;
-            background-color: aliceblue;
-            padding-top: 4px;
-            padding-bottom: 4px;
-            margin-top: 0;
-            margin-bottom: 4px;
-        }
-
-        #viewer {
-            position: absolute;
-            left: 330px;
-            width: -webkit-calc(100% - 330px); /* Safari */
-            width: calc(100% - 330px);
-            height: 100%;
-            border: 0px;
-            background-color: #8d8d8d;
-        }
-
-        #sourceButton {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 8px;
-            color: #fff;
-            background-color: #02550b;
-            opacity: 0.7;
-        }
-
-        #sourceButton:hover {
-            cursor: pointer;
-            opacity: 1;
-        }
-
-        .contents {
-            padding-top: 0;
-            padding-bottom: 0;
-        }
-
-    </style>
 </head>
 <body>
+
 <script type="text/javascript">
 
     //    var _gaq = _gaq || [];
@@ -163,8 +32,9 @@
 
 </script>
 
-<div id="panel">
-    <div id="list">
+
+<div id="contents" class="container">
+    <div id="list"  class="content">
         <h1><a href="../index.html">xeogl</a> / Examples</h1>
     </div>
 </div>
@@ -172,6 +42,11 @@
 <iframe id="viewer"></iframe>
 
 <script>
+
+    window.onload = function () {
+        var div = document.getElementById('contents');
+        Ps.initialize(div);
+    };
 
     // Translations for tweeted links
 
@@ -223,7 +98,6 @@
         "scene_multipleScenes": "scenes_multipleScenes"
     };
 
-
     var files = {
 
         "Featured": [
@@ -244,10 +118,10 @@
 
         "Scenes": [
 
-            "#events",
+            "#",
             "scenes_events_tick",
 
-            "#components",
+            "#",
             "scenes_components_instantiating",
             "scenes_components_instantiating2",
             "scenes_components_events",
@@ -258,13 +132,13 @@
             "scenes_components_toString",
             "scenes_components_cloning",
 
-            "#multiple scenes in a page",
+            "#",
             "scenes_multipleScenes"
         ],
 
         "Entities": [
 
-            "#examples",
+            "#",
             "entities_examples_metallicTorus"
         ],
 
@@ -278,18 +152,19 @@
 
         "Lights": [
 
-            "#light sources",
+            "#",
             "lights_ambient",
 
+            "#",
             "lights_directional_view_threePoint",
             "lights_directional_world_threePoint",
 
+            "#",
             "lights_point_view_threePoint",
             "lights_point_world_threePoint",
-
             "lights_point_world_normalMap",
 
-            "#image-based lighting",
+            "#",
             "lights_lightMap"
         ],
 
@@ -301,14 +176,14 @@
 
         "Geometry": [
 
-            "#defining geometry",
+            "#",
             "geometry_triangles",
             "geometry_triangles_texture",
             "geometry_triangles_vertexColors",
             "geometry_lines",
             "geometry_modifying",
 
-            "#geometry primitives",
+            "#",
             "geometry_primitives_box",
             "geometry_primitives_cylinder",
             "geometry_primitives_plane",
@@ -322,10 +197,8 @@
             "geometry_primitives_AABBGeometry",
             "geometry_primitives_OBBGeometry",
 
-            "#constructive Solid Geometry (CSG)",
+            "#",
             "geometry_generation_csg",
-
-            "#procedural generation",
             "geometry_generation_wavyBlocks"
         ],
 
@@ -333,17 +206,17 @@
 
             "#camera viewing transforms",
             "transforms_camera_view_lookat",
-            "transforms_camera_view_transformHierarchy",
+            "transforms_camera_view_hierarchy",
 
             "#camera projection transforms",
             "transforms_camera_project_perspective",
             "transforms_camera_project_frustum",
             "transforms_camera_project_ortho",
-            "transforms_camera_project_transformHierarchy",
+            "transforms_camera_project_hierarchy",
 
             "#transforming entities",
             "transforms_entity_scale",
-            "transforms_entity_transformHierarchy",
+            "transforms_entity_hierarchy",
 
             "#transforming models",
             "transforms_model_configureTransform",
@@ -410,7 +283,6 @@
             "#importing models from glTF",
             "importing_gltf_gearbox",
             "importing_gltf_pbr",
-            "importing_gltf_pbr_damagedHelmet",
             "importing_gltf_explorer",
 
             "#importing models from SceneJS",
@@ -445,13 +317,10 @@
         "Animation": [
 
             "#flying cameras to targets",
-            "animation_camera_flyTo_entity",
-            "animation_camera_flyTo_boundary",
-            "animation_camera_flyTo_aabb",
+            "animation_camera_flight",
 
             "#following targets with cameras",
-            "animation_camera_follow_entity",
-            "animation_camera_follow_entity_fitToView",
+            "animation_camera_follow",
 
             "#animating cameras along paths",
             "animation_camera_path_frameMenu",
@@ -475,11 +344,8 @@
             "effects_stereo_custom",
 
             "#ZSpace",
-            "effects_zspace_cube",
             "effects_zspace_geometries",
             "effects_zspace_gearbox",
-            "effects_zspace_gearbox_explorer",
-            "effects_zspace_buggy",
             "effects_zspace_ReciprocatingSaw"
         ],
 
@@ -505,7 +371,6 @@
             "#getting diagnostics",
             "debugging_logging",
             "debugging_inspecting_glsl",
-            "debugging_helper",
 
             "#gnomon helper in the corner",
             "debugging_helpers_axisHelper"
@@ -540,8 +405,10 @@
     // Table of contents
     var div = document.createElement('h2');
     div.textContent = "Contents";
+
     container.appendChild(div);
     container.appendChild(document.createElement('hr'));
+
     for (var key in files) {
         var section = files[key];
         var div = document.createElement('div');
@@ -574,9 +441,10 @@
         catDivs[key] = div;
         for (var i = 0; i < section.length; i++) {
             var file = section[i];
-            if (file.charAt(0) == "#") {
+            if (false && file.charAt(0) == "#") {
                 var div = document.createElement('div');
-                div.textContent = "// " + file.substring(1);
+                //div.textContent = "// " + file.substring(1);
+                div.textContent = "";
                 div.className = (i == 0 ? 'infoFirst' : 'info');
                 container.appendChild(div);
                 continue;
@@ -640,7 +508,7 @@
     }, 200);
 
     function scrollIntoView(div) {
-        document.getElementById("panel").scrollTop = documentOffsetTop(div) - (window.innerHeight / 6 );
+        document.getElementById("contents").scrollTop = documentOffsetTop(div) - (window.innerHeight / 6 );
         ;
     }
 

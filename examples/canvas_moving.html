@@ -10,23 +10,24 @@
 
     <style>
         body {
-            background-color: #AAA;
+            background-color: black;
             padding: 5px;
             margin: 0;
         }
 
         canvas {
             display: inline-block;
-            margin: 5px;
+            margin: 0;
             box-shadow: 2px 2px 2px black;
             top: 180px;
-            left: 20px;
+            left: 10px;
             position: absolute;
+            border: 1px white solid;
         }
 
         button {
             top: 150px;
-            left: 20px;
+            left: 10px;
             position: absolute;
         }
     </style>
@@ -34,9 +35,9 @@
 <body>
 
 <div id="info">
-    <a href="http://xeogl.org" target="_parent">xeogl</a><br><br>Test to verify that the canvas overlay moves with the canvas. <br>
-    Click the button below to move the canvas, then verify that the overlay moves also by clicking on the sphere object - you should see the<br>
-    camera fly to the on the object, while momentarily showing it's aligned bounding box.
+   <h1>test to verify that the canvas overlay moves with the canvas</h1>
+    <br>click the button below to move the canvas, then verify that the overlay moves also by clicking on the sphere object - you should see the<br>
+    camera fly to the on the object, while momentarily showing it's aligned bounding box
 </div>
 
 <form>
@@ -75,7 +76,7 @@
         return function () {
             toggle = !toggle;
             var canvas = document.getElementById("myCanvas");
-            canvas.style.left = toggle ? "400px" : "20px";
+            canvas.style.left = toggle ? "400px" : "10px";
         };
     })();
 

@@ -15,8 +15,7 @@
 <body>
 
 <div id="info">
-    <a href="http://xeogl.org" target="_parent">xeogl</a><br><br>loading .3DS geometry using an <a
-        href="../docs/classes/Nintendo3DSGeometry.html" target="_parent">Nintendo3DSGeometry</a>
+    <h1><a href="../docs/classes/Nintendo3DSGeometry.html" target="_parent">Nintendo3DSGeometry</a> imported from a Nintendo .3DS file</h1>
 </div>
 
 <script>
@@ -28,6 +27,7 @@
         }),
 
         material: new xeogl.PhongMaterial({
+            emissive: [1, 1, 1],
             emissiveMap: new xeogl.Texture({  // .3DS has no normals so relies on emissive illumination
                 src: "models/3ds/lexus.jpg"
             })
@@ -45,7 +45,7 @@
     });
 
     // Allow user camera control
-    var cameraControl = new xeogl.CameraControl();
+    new xeogl.CameraControl();
 
     // Fit to view as soon as the .3DS is loaded
     entity.geometry.on("loaded", function () {

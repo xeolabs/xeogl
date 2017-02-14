@@ -11,10 +11,9 @@
 
 <body>
 
-<div id="info" class="dark">
-    <a href="http://xeogl.org" target="_parent">xeogl</a> - <a
-        href="js/controls/bimCameraControl.js" target="_parent">BIMCameraControl</a>
-    <br>
+<div id="info">
+    <h1><a
+        href="js/controls/bimCameraControl.js" target="_parent">BIMCameraControl</a></h1>
     <br>
     controls:
     <ul>
@@ -32,61 +31,48 @@
 
 <script>
 
-    // Create a prototype Entity with all defaults.
-
-    var entity = new xeogl.Entity({
-        geometry: new xeogl.TorusGeometry({
-            radius: 1.0,
-            tube: 0.3,
-            radialSegments: 32,
-            tubeSegments: 24,
-            arc: Math.PI * 2.0
+    var camera = new xeogl.Camera({
+        view: new xeogl.Lookat({
+            gimbalLockY: false // Default is true
         })
     });
 
-    // Make a bunch of clones of the Entity,
-    // each at a random position.
-
-    for (var i = 0; i < 200; i++) {
-
-        var color = [
-            0.4 + Math.random() * 0.6,
-            0.4 + Math.random() * 0.6,
-            0.4 + Math.random() * 0.6
-        ];
-
-        entity.clone({
-            transform: new xeogl.Rotate({
-                xyz: [
-                    Math.random(),
-                    Math.random(),
-                    Math.random()
-                ],
-                angle: Math.random() * 360,
-                parent: new xeogl.Translate({
-                    xyz: [
-                        Math.random() * 20 - 10,
-                        Math.random() * 20 - 10,
-                        Math.random() * 20 - 10
-                    ]
-                })
-            }),
-            material: new xeogl.PhongMaterial({
-                diffuse: color,
-                specular: color
-            })
-        });
-    }
-
-    xeogl.scene.camera.view.look = [0, 0, 0];
-    xeogl.scene.camera.view.eye = [10, 0, 0];
-    xeogl.scene.camera.view.up = [0, 0, 1];
-
-    var bimCameraControl = new xeogl.BIMCameraControl({
-        camera: xeogl.scene.camera
+    var material = new xeogl.PhongMaterial({
+        diffuseMap: new xeogl.Texture({
+            src: "textures/diffuse/uvGrid2.jpg"
+        })
     });
 
-    var cameraFlightAnimation = new xeogl.CameraFlightAnimation();
+    var geometry = new xeogl.BoxGeometry();
+
+    var size = 5;
+    var inc = 5;
+
+    for (var x = -size; x <= size; x += inc) {
+        for (var y = -size; y <= size; y += inc) {
+            for (var z = -size; z <= size; z += inc) {
+
+                new xeogl.Entity({
+                    id: "entity + " + x + "." + y + "." + z,
+                    camera: camera,
+                    geometry: geometry,
+                    material: material,
+                    transform: new xeogl.Translate({
+                        xyz: [x, y, z]
+                    })
+                });
+
+            }
+        }
+    }
+
+    var bimCameraControl = new xeogl.BIMCameraControl({
+        camera: camera
+    });
+
+    var cameraFlightAnimation = new xeogl.CameraFlightAnimation({
+        camera: camera
+    });
 
     bimCameraControl.on("pick", function (hit) {
         cameraFlightAnimation.flyTo({

@@ -20,14 +20,12 @@
 <body>
 
 <div id="info">
-    <a href="http://xeogl.org" target="_parent">xeogl</a><br>
-    using a <a
-        href="../docs/classes/ZSpaceEffect.html"
-        target="_parent">ZSpaceEffect</a> to view a bunch of <a
-        href="../docs/classes/Entity.html"
-        target="_parent">Entities</a> in zSpace VR<br>
-
-    <div id="log" style="color:red;"></div>
+    <h1><a
+            href="../docs/classes/Entity.html"
+            target="_parent">Entities</a> viewed with a <a
+            href="../docs/classes/ZSpaceEffect.html"
+            target="_parent">ZSpaceEffect</a></h1>
+    <div id="log" style="color:red"></div>
 </div>
 
 <script>
@@ -94,7 +92,7 @@
 
     zspaceEffect.on("supported", function (supported) {
         if (!supported) {
-            document.getElementById("log").innerText = "This computer is not a zSpace viewer - defaulting to standard xeogl camera controls. ";
+            document.getElementById("log").innerText = "Not a zSpace display ";
         }
     });
 

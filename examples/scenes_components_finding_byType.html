@@ -11,12 +11,10 @@
 <body>
 
 <div id="info">
-    <a href="http://xeogl.org" target="_parent">xeogl</a>
-    <br><br>
-    creating an <a href="../docs/classes/Entity.html" target="_parent">Entity</a>, then finding it by Type within
+   <h1>creating an <a href="../docs/classes/Entity.html" target="_parent">Entity</a>, then finding it by Type within
     its <a href="../docs/classes/Scene.html" target="_parent">Scene</a> and attaching a red <a
-        href="../docs/classes/PhongMaterial.html" target="_parent">PhongMaterial</a> to it
-    <pre id="log" style="text-align: left;"></pre>
+        href="../docs/classes/PhongMaterial.html" target="_parent">PhongMaterial</a> to it</h1>
+    <pre id="log"></pre>
 </div>
 
 <script>
@@ -35,14 +33,14 @@
     // Get our Entity
     var entity = entities["myObject"];
 
-    log("Entity found: \"" + entity.id + "\"");
+    log("entity found: \"" + entity.id + "\"");
 
     // Attach a new Material to it
     entity.material = new xeogl.PhongMaterial(scene, {
         diffuse: [1.0, 0.0, 0.0]
     });
 
-    log("Attached red material to entity.");
+    log("attached red material to entity");
 
     // Orbit the eye position about the look position.
     entity.scene.on("tick", function () {

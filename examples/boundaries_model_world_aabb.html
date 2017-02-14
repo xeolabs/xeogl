@@ -11,16 +11,9 @@
 <body>
 
 <div id="info">
-    <a href="http://xeogl.org" target="_parent">xeogl</a>
-    <br><br>
-    a <a href="../docs/classes/Model.html" target="_parent">Model</a> containing
-    1000 animated <a href="../docs/classes/Entity.html" target="_parent">Entities</a>
+    <h1>a <a href="../docs/classes/Model.html" target="_parent">Model</a> containing
+        1000 animated <a href="../docs/classes/Entity.html" target="_parent">Entities</a></h1>
     <br>
-    <br>
-    controls:
-    <ul>
-        <li>mouse drag, arrow keys - orbit</li><li>Z,X  - pan forwards and backwards</li><li>A,D  - pan left and right</li><li>W,S  - pan up and down</li><li>1,2,3,4,5,6 - select axis-aligned view</li><li>click on entity to fly to it</li><li>shift-click entity to fly to its boundary</li><li>mouse wheel or '+' and '-' keys to zoom in and out</li>
-    </ul>
       <pre id="log">
     </pre>
 </div>
@@ -32,7 +25,7 @@
 
     // Entity which shows the boundary of the Model
     // as a wireframe box
-     new xeogl.Entity({
+    new xeogl.Entity({
         geometry: new xeogl.AABBGeometry({
             boundary: model.worldBoundary
         }),
@@ -69,7 +62,7 @@
             var entity = new xeogl.Entity({
                 geometry: boxGeometry,
                 material: material,
-                transform:new xeogl.Rotate({
+                transform: new xeogl.Rotate({
                     xyz: [Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1],
                     angle: 0,
                     parent: new xeogl.Translate({
@@ -124,13 +117,12 @@
 
     // Orbit the camera
 
-    scene.on("tick",
-            function () {
-                var view = scene.camera.view;
-                view.rotateEyeY(0.2);
+    scene.on("tick", function () {
+        var view = scene.camera.view;
+        view.rotateEyeY(0.2);
 
-                logJSON(xeogl.stats.frame);
-            });
+        logJSON(xeogl.stats.frame);
+    });
 
     // Permit user camera control
 
@@ -139,7 +131,7 @@
 
 
     function logJSON(json) {
-        document.getElementById("log").innerHTML = JSON.stringify(json, null, 4);
+        document.getElementById("log").innerHTML = "xeogl.stats.frame = " + JSON.stringify(json, null, 4);
     }
 
 

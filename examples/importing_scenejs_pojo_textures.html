@@ -14,16 +14,7 @@
 <body>
 
 <div id="info">
-    <a href="http://xeogl.org" target="_parent">xeogl</a><br><br>
-    <ul>
-        <li>Using a <a href="../docs/classes/SceneJSModel.html" target="_parent">SceneJSModel</a> component to import SceneJS content into xeogl.
-        </li>
-        <li>The scene definition in this case is a POJO that's set directly on the SceneJSModel, as opposed to JSON loaded from a
-            file.
-        </li>
-        <li>This scene definition contains a geometry with diffuse, specular and normal maps.
-        </li>
-    </ul>
+    <h1><a href="../docs/classes/SceneJSModel.html" target="_parent">SceneJSModel</a> imported from a SceneJS POJO</h1>
 </div>
 
 <div id="logos">
@@ -136,7 +127,7 @@
     // Spin the model
     model.scene.on("tick", function () {
         var rotate = model.components["spinningBox.boxRotateY"];
-        rotate.angle += 0.5;
+        rotate.angle += 0.2;
     });
 
     // Allow user camera control

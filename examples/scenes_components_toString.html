@@ -11,10 +11,8 @@
 <body>
 
 <div id="info">
-    <a href="http://xeogl.org" target="_parent">xeogl</a>
-    <br><br>
-    serializing a component to a string
-    <pre id="log" style="text-align: left">
+    <h1>serializing a  <a href="../docs/classes/PhongMaterial.html" target="_parent">PhongMaterial</a> to a string</h1>
+    <pre id="log">
     </pre>
 </div>
 
@@ -24,7 +22,10 @@
 
     var material = new xeogl.PhongMaterial({
         id: "myMaterial",
-        diffuse: [1.0, 0.0, 0.0]
+        specular: [1.0, 0.0, 0.0],
+        diffuseMap: new xeogl.Texture({
+            src: "textures/diffuse/uvGrid2.jpg"
+        })
     });
 
     // Create a Entity with the PhongMaterial and all other defaults
@@ -49,7 +50,7 @@
     log(str);
 
     function log(str) {
-        document.getElementById("log").innerHTML = "'" + str + "'";
+        document.getElementById("log").innerHTML = "material.string = '" + str + "'";
     }
 
 </script>

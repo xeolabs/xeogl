@@ -11,16 +11,17 @@
     <script src="js/utils/materialGallery.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
+    <style>
+        body {
+            background: black;
+        }
+    </style>
+
 <body>
 
-<div id="info" class="dark">
-    <a href="http://xeogl.org" target="_parent">xeogl</a>
-    <br><br>
-    <a
-        href="../docs/classes/MetallicMaterial.html" target="_parent">MetallicMaterial</a> - sample metals
-
-    <br><br>
-
+<div id="info">
+    <h1><a href="../docs/classes/MetallicMaterial.html" target="_parent">MetallicMaterial</a> example metals</h1>
+    <br>
     <div id="menu"></div>
 </div>
 
@@ -30,6 +31,10 @@
     // Material definitions
     // Metals taken from https://docs.unrealengine.com/latest/INT/Engine/Rendering/Materials/PhysicallyBased/
     //-----------------------------------------------------------------------------------------------------
+
+    xeogl.scene = new xeogl.Scene({
+        transparent: true
+    });
 
     var roughnessMap = new xeogl.Texture({
         src: "textures/roughness/goldRoughness.jpg"
