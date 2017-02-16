@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.min.js"></script>
+    <script src="js/geometry/vectorTextGeometry.js"></script>
+    <script src="js/helpers/axisHelper.js"></script>
+    <script src="js/geometry/heightmapGeometry.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <h1><a href="js/helpers/axisHelper.js" target="_parent">AxisHelper</a> (bottom left of canvas) showing the directions of the World-space axis</h1>
+</div>
+
+<script>
+
+    // Creating a Camera with a perspective projection
+
+    var lookat = new xeogl.Lookat({
+        eye: [0, 0, -14],
+        look: [0, 0, 0],
+        up: [0, 1, 0]
+    });
+
+    var perspective = new xeogl.Perspective({
+        fovy: 60,
+        near: 0.1,
+        far: 1000
+    });
+
+    var camera = new xeogl.Camera({
+        view: lookat,
+        project: perspective
+    });
+
+    var entity = new xeogl.Entity({
+        camera: camera,
+        geometry: new xeogl.HeightmapGeometry({ // xeogl.HeightMap is defined in ./js/geometry/heightmapGeometry.js
+            primitive: "triangles",
+            src: "textures/height/mountain.png",
+            xSize: 10,
+            ySize: 5,
+            zSize: 10,
+            xSegments: 70,
+            zSegments: 70,
+            lod: 1.0, // Default
+            autoNormals: true // Default
+        }),
+        material: new xeogl.PhongMaterial({
+            diffuseMap: new xeogl.Texture({
+                src: "textures/diffuse/uvGrid2.jpg"
+            })
+        }),
+        modes: new xeogl.Modes({
+            backfaces: true
+        })
+    });
+
+    entity.scene.on("tick",
+            function () {
+                camera.view.rotateEyeY(0.5);
+                camera.view.rotateEyeX(0.3);
+            });
+
+    new xeogl.AxisHelper({
+        lookat: lookat,
+        visible: true,
+        size: [200, 200]
+    });
+
+    new xeogl.CameraControl({camera: camera});
+
+</script>
+</body>
+</html>

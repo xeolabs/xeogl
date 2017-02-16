@@ -2,7 +2,7 @@
  A **BuildableModel** is a {{#crossLink "Model"}}{{/crossLink}} that provides a "stateful builder" API through which you can
  procedurally generate xeogl content.
 
- <a href="../../examples/#models_BuildableModel_city"><img src="http://i.giphy.com/l0HlPJO1AN01Lz27e.gif"></img></a>
+ <a href="../../examples/#models_generation_city"><img src="http://i.giphy.com/l0HlPJO1AN01Lz27e.gif"></img></a>
 
  ## Overview
 
@@ -16,7 +16,7 @@
 
  ## Examples
 
- * [Generating a city with a BuildableModel](../../examples/#models_BuildableModel_city)</li>
+ * [Generating a city with a BuildableModel](../../examples/#models_generation_city)</li>
 
  ## Usage
 

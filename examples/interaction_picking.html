@@ -10,18 +10,9 @@
 
 <body>
 
-<div id="infoLight">
-    <a href="http://xeogl.org" target="_parent">xeogl</a>
-    <br><br>
-    <ul>
-        <li>
-            picking <a href="../docs/classes/Entity.html" target="_parent">Entities</a>
-        </li>
-        <li>
-            click something!
-        </li>
-    </ul>
-    <pre id="infoTxt" style="text-align: left;"></pre>
+<div id="info">
+    <h1>click on <a href="../docs/classes/Entity.html" target="_parent">Entities</a> to pick them</h1>
+    <pre id="log"></pre>
 </div>
 
 <script>
@@ -40,7 +31,7 @@
         if (buf.length > 30) {
             buf.shift();
         }
-        document.getElementById("infoTxt").innerText = buf.join("\n");
+        document.getElementById("log").innerText = buf.join("\n");
     }
 
 
@@ -97,27 +88,25 @@
 
     var input = scene.input;
 
-    input.on("mouseclicked",
-            function (coords) {
+    input.on("mouseclicked", function (coords) {
 
-                log("Clicked: (" + coords[0] + ", " + coords[1] + ")");
+        log("clicked: (" + coords[0] + ", " + coords[1] + ")");
 
-                var hit = scene.pick({
-                    canvasPos: coords
-                });
+        var hit = scene.pick({
+            canvasPos: coords
+        });
 
-                if (hit) {
-                    log("Picked Entity '" + hit.entity.id + "'");
+        if (hit) {
+            log("picked Entity '" + hit.entity.id + "'");
 
-                    hit.entity.material.emissive = [1, 1, 0];
+            hit.entity.material.emissive = [1, 1, 0];
 
-                } else {
-                    log("Nothing picked.");
-                }
+        } else {
+            log("nothing picked");
+        }
 
-
-                log();
-            });
+        log();
+    });
 
 </script>
 </body>

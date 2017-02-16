@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.min.js"></script>
+
+    <script src="js/skyboxes/skybox.js"></script>
+    <script src="js/geometry/vectorTextGeometry.js"></script>
+
+    <script src="js/libs/dat.gui.min.js"></script>
+
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <h1><a
+            href="../docs/classes/MetallicMaterial.html" target="_parent">MetallicMaterial</a> - metallic Vs.
+        roughness</h1>
+</div>
+<div id="dat-gui-container">
+</div>
+
+<script>
+
+    //-----------------------------------------------------------------------------------------------------
+    // Environment
+    //-----------------------------------------------------------------------------------------------------
+
+    var skybox = new xeogl.Skybox({
+        src: "textures/skybox/uffizi_vert_cross.jpg",
+        active: false
+    });
+
+    var dirLights = [
+        new xeogl.DirLight({
+            id: "keyLight",
+            dir: [0.8, -0.6, -0.8],
+            color: [0.8, 0.8, 0.8],
+            intensity: 1.0,
+            space: "view"
+        }),
+
+        new xeogl.DirLight({
+            id: "fillLight",
+            dir: [-0.8, -0.4, -0.4],
+            color: [0.4, 0.4, 0.5],
+            intensity: 1.0,
+            space: "view"
+        }),
+
+        new xeogl.DirLight({
+            id: "rimLight",
+            dir: [0.2, -0.8, 0.8],
+            color: [0.8, 0.8, 0.8],
+            intensity: 1.0,
+            space: "view"
+        })
+    ];
+
+    var lightMap = new xeogl.CubeTexture({
+        src: [
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png"
+        ]
+    });
+
+    var reflectionMap = new xeogl.CubeTexture({
+        src: [
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
+        ]
+    });
+
+    // Using the default Scene and it's default Lights
+
+    var lights = new xeogl.Lights({
+        lights: dirLights,
+        lightMap: lightMap,
+        reflectionMap: reflectionMap
+    });
+
+    //--------------------------------------------------------------------------------------
+    //  Spheres
+    //--------------------------------------------------------------------------------------
+
+    var steps = 4;
+    var inc = 4;
+    var width = steps * inc;
+    var halfSide = width / 2;
+    var min = -halfSide;
+    var max = halfSide;
+    var metallic = 0;
+    var metallicInc = 1.0 / steps;
+    var roughness = 0;
+    var roughnessInc = 1.0 / steps;
+    var material;
+    var entities = [];
+
+    var geometry = new xeogl.SphereGeometry({
+        radius: 1.7,
+        heightSegments: 60,
+        widthSegments: 60
+    });
+
+    for (var x = min; x <= max; x += inc) {
+
+        metallic = 0;
+
+        for (var y = max; y >= min; y -= inc) {
+
+            entities.push(new xeogl.Entity({
+                geometry: geometry,
+                material: new xeogl.MetallicMaterial({
+                    baseColor: [0.6, 0.6, 0.6],
+                    metallic: metallic,
+                    roughness: roughness,
+
+                    specularF0: 0.5,
+                    opacity: 1
+                }),
+                modes: new xeogl.Modes({
+                    transparent: false
+                }),
+                transform: new xeogl.Translate({
+                    xyz: [x, y, 0]
+                }),
+                lights: lights
+            }));
+
+            metallic += metallicInc;
+        }
+
+        roughness += roughnessInc;
+    }
+
+    //--------------------------------------------------------------------------------------
+    //  Axis labels
+    //--------------------------------------------------------------------------------------
+
+    var labelMaterial = new xeogl.PhongMaterial({
+        emissive: [1, 1, 1],
+        ambient: [0, 0, 0],
+        diffuse: [0, 0, 0],
+        lineWidth: 2
+
+    });
+
+    new xeogl.Entity({
+        geometry: new xeogl.VectorTextGeometry({
+            text: "0 ---------- Roughness -----------> 1",
+            xSize: .5,
+            ySize: .5
+        }),
+        material: labelMaterial,
+        transform: new xeogl.Translate({
+            xyz: [min, min - inc, 0]
+        }),
+        modes: {
+            collidable: false
+        }
+    });
+
+    new xeogl.Entity({
+        geometry: new xeogl.VectorTextGeometry({
+            text: "0 ----------- Metallic -----------> 1",
+            xSize: .5,
+            ySize: .5
+        }),
+        material: labelMaterial,
+        transform: new xeogl.Rotate({
+            xyz: [0, 0, 1],
+            angle: 270,
+            parent: new xeogl.Translate({
+                xyz: [min - inc, max, 0]
+            })
+        }),
+        modes: {
+            collidable: false
+        }
+    });
+
+
+    //--------------------------------------------------------------------------------------
+    //  Camera setup
+    //--------------------------------------------------------------------------------------
+
+    new xeogl.CameraControl(); // Allow user camera interaction
+
+    var view = xeogl.scene.camera.view; // Move eye position back a bit
+    view.eye = [0, 0, 25];
+
+    //------------------------------------------------------------------------------------------------------------------
+    //  GUI
+    //------------------------------------------------------------------------------------------------------------------
+
+    (function () {
+
+        var entity = entities[0];
+        var material = entity.material;
+
+        var Menu = function () {
+
+            this.message = "xeogl.MetallicMaterial";
+
+            this["baseColor"] = typedToJS(material.baseColor);
+            this["emissive"] = typedToJS(material.emissive);
+            this["opacity"] = material.opacity;
+            this["specularF0"] = material.specularF0;
+
+            this["lightMap"] = !!lights.lightMap;
+            this["reflectionMap"] = !!lights.reflectionMap;
+            this["dirLights"] = !!(lights.lights && lights.lights.length > 0);
+            this["skybox"] = !!skybox.active;
+
+            var self = this;
+
+            // This is actually quite inefficient because it continually updates
+            // the scene graph, forcing frames to continually re-render.
+            // Your GPU's not going to like it, but it's just for a quick and dirty demo.
+
+            var textured = true;
+
+            var update = function () {
+
+                for (var i = 0; i < entities.length; i++) {
+
+                    entity = entities[i];
+                    var material = entity.material;
+
+                    material.baseColor = JSToTyped(self["baseColor"]);
+                    material.emissive = JSToTyped(self["emissive"]);
+                    material.opacity = self["opacity"];
+                    material.specularF0 = self["specularF0"];
+                    entity.modes.transparent = (material.opacity < 1);
+
+                    if (self["lightMap"] !== !!lights.lightMap) {
+                        lights.lightMap = self["lightMap"] ? lightMap : null;
+                    }
+
+                    if (self["reflectionMap"] !== !!lights.reflectionMap) {
+                        lights.reflectionMap = self["reflectionMap"] ? reflectionMap : null;
+                    }
+
+                    if (self["dirLights"] !== !!(lights.lights && lights.lights.length > 0)) {
+                        lights.lights = self["dirLights"] ? dirLights : [];
+                    }
+
+                    if (self["skybox"] !== skybox.active) {
+                        skybox.active = self["skybox"];
+                    }
+                }
+
+                requestAnimationFrame(update);
+            };
+
+            update();
+        };
+
+        var gui = new dat.GUI({autoPlace: false, width: 300});
+
+        document.getElementById('dat-gui-container').appendChild(gui.domElement);
+
+        var menu = new Menu();
+
+        var materialFolder = gui.addFolder('MetallicMaterial');
+        materialFolder.addColor(menu, 'baseColor', [255, 255, 255]);
+        materialFolder.addColor(menu, 'emissive', [0, 0, 0]);
+        materialFolder.add(menu, 'opacity', 0.0, 1.0);
+        materialFolder.add(menu, 'specularF0', 0.0, 1.0);
+
+        var lightsFolder = gui.addFolder('Environment');
+        lightsFolder.add(menu, 'lightMap', true);
+        lightsFolder.add(menu, 'reflectionMap', true);
+        lightsFolder.add(menu, 'dirLights', true);
+        lightsFolder.add(menu, 'skybox', true);
+
+        materialFolder.open();
+        lightsFolder.open();
+
+        function typedToJS(arry) {
+            return [arry[0] * 255, arry[1] * 255, arry[2] * 255];
+        }
+
+        function JSToTyped(arry) {
+            return [arry[0] / 255, arry[1] / 255, arry[2] / 255];
+        }
+
+    })();
+
+
+</script>
+</body>
+</html>

@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title>PhongMaterial - xeogl</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link href='https://fonts.googleapis.com/css?family=Exo+2:400,800,900,700,600,500|Roboto:100,300,400,500,700,900'  rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
     <link rel="icon" href="../assets/favicon.ico">
@@ -15,7 +16,7 @@
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
 
-                <h1 style="color:white;"><a href="../../">xeogl</a> / <a href="../../docs">API Docs</a></h1>
+                <h1 class="projectTitle"><a href="../../">xeogl</a> / <a href="../../docs">API Docs</a></h1>
 
         </div>
         <div class="yui3-u-1-4 version">
@@ -56,11 +57,13 @@
                                 <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
+                                <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
                                 <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
+                                <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
                                 <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
@@ -75,20 +78,13 @@
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
-                                <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
-                                <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
-                                <li><a href="../classes/KeyboardRotateCamera.html">KeyboardRotateCamera</a></li>
-                                <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
+                                <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
-                                <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
-                                <li><a href="../classes/MousePickEntity.html">MousePickEntity</a></li>
-                                <li><a href="../classes/MouseRotateCamera.html">MouseRotateCamera</a></li>
-                                <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
@@ -99,15 +95,20 @@
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/PointMarkings.html">PointMarkings</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
+                                <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
+                                <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
+                                <li><a href="../classes/SpecularMaterial.html">SpecularMaterial</a></li>
                                 <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/Spinner.html">Spinner</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
+                                <li><a href="../classes/SpotLight.html">SpotLight</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
@@ -142,6 +143,7 @@
                                 <li><a href="..//modules/input.html">input</a></li>
                                 <li><a href="..//modules/interaction.html">interaction</a></li>
                                 <li><a href="..//modules/lighting.html">lighting</a></li>
+                                <li><a href="..//modules/marking.html">marking</a></li>
                                 <li><a href="..//modules/materials.html">materials</a></li>
                                 <li><a href="..//modules/math.html">math</a></li>
                                 <li><a href="..//modules/models.html">models</a></li>
@@ -149,6 +151,7 @@
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
                                 <li><a href="..//modules/xeogl.html">xeogl</a></li>
+                                <li><a href="..//modules/zspace.html">zspace</a></li>
                             </ul>
                         </div>
                     </div>
@@ -201,74 +204,248 @@
 
 <div class="box intro">
     <p>A <strong>PhongMaterial</strong> is a <a href="../classes/Material.html" class="crosslink">Material</a> that defines the surface appearance of
- attached <a href="../classes/Entity.html" class="crosslink">Entities</a> using
- the <a href="http://en.wikipedia.org/wiki/Phong_reflection_model">Phong</a> lighting model.</p>
+attached <a href="../classes/Entity.html" class="crosslink">Entities</a> using
+the classic <a href="https://en.wikipedia.org/wiki/Blinn%E2%80%93Phong_shading_model">Blinn-Phong</a> lighting model.</p>
+<h2 id="examples">Examples</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><a href="../../examples/#materials_phong_textures"><img src="../../assets/images/screenshots/PhongMaterial/textures.png"></img></a></th>
+<th style="text-align:center"><a href="../../examples/#materials_phong_textures_video"><img src="../../assets/images/screenshots/PhongMaterial/videoTexture.png"></img></a></th>
+<th style="text-align:center"><a href="../../examples/#materials_phong_fresnel"><img src="../../assets/images/screenshots/PhongMaterial/fresnel.png"></img></a></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><a href="../../examples/#materials_phong_textures">Phong textures</a></td>
+<td style="text-align:center"><a href="../../examples/#materials_phong_textures_video">Video texture</a></td>
+<td style="text-align:center"><a href="../../examples/#materials_phong_fresnel">Fresnels</a></td>
+</tr>
+</tbody>
+</table>
 <h2 id="overview">Overview</h2>
 <ul>
-<li>PhongMaterial properties, along with <a href="../classes/PhongMaterial.html#property_emissive" class="crosslink">emissive</a>,
-<a href="../classes/PhongMaterial.html#property_opacity" class="crosslink">opacity</a> and <a href="../classes/PhongMaterial.html#property_reflectivity" class="crosslink">reflectivity</a>,
-specify attributes that are to be <strong>applied uniformly</strong> across the surface of attached <a href="../classes/Geometry.html" class="crosslink">Geometries</a>.<ul>
-<li>Most of those attributes can be textured, <strong>effectively replacing the values set for those properties</strong>, by
-assigning <a href="../classes/Texture.html" class="crosslink">Textures</a> to the PhongMaterial&#39;s
-<a href="../classes/PhongMaterial.html#property_diffuseMap" class="crosslink">diffuseMap</a>, <a href="../classes/PhongMaterial.html#property_specularMap" class="crosslink">specularMap</a>,
-<a href="../classes/PhongMaterial.html#property_emissiveMap" class="crosslink">emissiveMap</a>, <a href="../classes/PhongMaterial.html#property_opacityMap" class="crosslink">opacityMap</a>
-and  <a href="../classes/PhongMaterial.html#property_reflectivityMap" class="crosslink">reflectivityMap</a> properties.</li>
-<li>For example, the value of <a href="../classes/PhongMaterial.html#property_diffuse" class="crosslink">diffuse</a> will be ignored if your
-PhongMaterial also has a <a href="../classes/PhongMaterial.html#property_diffuseMap" class="crosslink">diffuseMap</a> set to a <a href="../classes/Texture.html" class="crosslink">Texture</a>.
-The <a href="../classes/Texture.html" class="crosslink">Texture&#39;s</a> pixel colors directly provide the diffuse color of each fragment across the
-<a href="../classes/Geometry.html" class="crosslink">Geometry</a> surface, ie. they are not multiplied by
-the <a href="../classes/PhongMaterial.html#property_diffuse" class="crosslink">diffuse</a> for each pixel, as is done in many shading systems.</li>
-<li>When the <a href="../classes/Entity.html" class="crosslink">Entity</a>&#39;s <a href="../classes/Geometry.html" class="crosslink">Geometry</a> has a
-<a href="../classes/Geometry.html#property_primitive" class="crosslink">primitive</a> set to "lines" or "points" then only the <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a>&#39;s
-<a href="../classes/PhongMaterial.html#property_emissive" class="crosslink">emissive</a>, <a href="../classes/PhongMaterial.html#property_emissiveMap" class="crosslink">emissiveMap</a>,
-<a href="../classes/PhongMaterial.html#property_opacity" class="crosslink">opacity</a> and <a href="../classes/PhongMaterial.html#property_opacityMap" class="crosslink">opacityMap</a>
-will actually be applied, since those primitive types cannot be shaded.
-<img src="../../../assets/images/PhongMaterial.png"></img><h2 id="usage">Usage</h2>
-In this example we have an Entity with</li>
+<li>Used for rendering non-realistic objects such as "helpers", wireframe objects, labels etc.</li>
+<li>Use the physically-based <a href="../classes/MetallicMaterial.html" class="crosslink">MetallicMaterial</a> or <a href="../classes/SpecularMaterial.html" class="crosslink">SpecularMaterial</a> realism is required.</li>
 </ul>
-</li>
-<li>a <a href="../classes/Lights.html" class="crosslink">Lights</a> containing an <a href="../classes/AmbientLight.html" class="crosslink">AmbientLight</a> and a <a href="../classes/DirLight.html" class="crosslink">DirLight</a>,<ul>
+<p><img src="../../../assets/images/PhongMaterial.png"></img></p>
+<p>The following table summarizes PhongMaterial properties:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Property</th>
+<th style="text-align:center">Type</th>
+<th style="text-align:center">Range</th>
+<th style="text-align:center">Default Value</th>
+<th style="text-align:center">Space</th>
+<th style="text-align:center">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><a href="../classes/PhongMaterial.html#property_ambient" class="crosslink">ambient</a></td>
+<td style="text-align:center">Array</td>
+<td style="text-align:center">[0, 1] for all components</td>
+<td style="text-align:center">[1,1,1,1]</td>
+<td style="text-align:center">linear</td>
+<td style="text-align:center">The RGB components of the ambient light reflected by the material.</td>
+</tr>
+<tr>
+<td style="text-align:center"><a href="../classes/PhongMaterial.html#property_diffuse" class="crosslink">diffuse</a></td>
+<td style="text-align:center">Array</td>
+<td style="text-align:center">[0, 1] for all components</td>
+<td style="text-align:center">[1,1,1,1]</td>
+<td style="text-align:center">linear</td>
+<td style="text-align:center">The RGB components of the diffuse light reflected by the material.</td>
+</tr>
+<tr>
+<td style="text-align:center"><a href="../classes/PhongMaterial.html#property_specular" class="crosslink">specular</a></td>
+<td style="text-align:center">Array</td>
+<td style="text-align:center">[0, 1] for all components</td>
+<td style="text-align:center">[1,1,1,1]</td>
+<td style="text-align:center">linear</td>
+<td style="text-align:center">The RGB components of the specular light reflected by the material.</td>
+</tr>
+<tr>
+<td style="text-align:center"><a href="../classes/PhongMaterial.html#property_emissive" class="crosslink">emissive</a></td>
+<td style="text-align:center">Array</td>
+<td style="text-align:center">[0, 1] for all components</td>
+<td style="text-align:center">[0,0,0]</td>
+<td style="text-align:center">linear</td>
+<td style="text-align:center">The RGB components of the light emitted by the material.</td>
+</tr>
+<tr>
+<td style="text-align:center"><a href="../classes/PhongMaterial.html#property_opacity" class="crosslink">opacity</a></td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">[0, 1]</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">linear</td>
+<td style="text-align:center">The transparency of the material surface (0 fully transparent, 1 fully opaque).</td>
+</tr>
+<tr>
+<td style="text-align:center"><a href="../classes/PhongMaterial.html#property_shininess" class="crosslink">shininess</a></td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">[0, 128]</td>
+<td style="text-align:center">80</td>
+<td style="text-align:center">linear</td>
+<td style="text-align:center">Determines the size and sharpness of specular highlights.</td>
+</tr>
+<tr>
+<td style="text-align:center"><a href="../classes/PhongMaterial.html#property_reflectivity" class="crosslink">reflectivity</a></td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">[0, 1]</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">linear</td>
+<td style="text-align:center">Determines the amount of reflectivity.</td>
+</tr>
+<tr>
+<td style="text-align:center"><a href="../classes/PhongMaterial.html#property_diffuseMap" class="crosslink">diffuseMap</a></td>
+<td style="text-align:center"><a href="../classes/Texture.html" class="crosslink">Texture</a></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">null</td>
+<td style="text-align:center">sRGB</td>
+<td style="text-align:center">Texture RGB components multiplying by <a href="../classes/PhongMaterial.html#property_diffuse" class="crosslink">diffuse</a>. If the fourth component (A) is present, it multiplies by <a href="../classes/PhongMaterial.html#property_opacity" class="crosslink">opacity</a>.</td>
+</tr>
+<tr>
+<td style="text-align:center"><a href="../classes/PhongMaterial.html#property_specularMap" class="crosslink">specularMap</a></td>
+<td style="text-align:center"><a href="../classes/Texture.html" class="crosslink">Texture</a></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">null</td>
+<td style="text-align:center">sRGB</td>
+<td style="text-align:center">Texture RGB components multiplying by <a href="../classes/PhongMaterial.html#property_specular" class="crosslink">specular</a>. If the fourth component (A) is present, it multiplies by <a href="../classes/PhongMaterial.html#property_opacity" class="crosslink">opacity</a>.</td>
+</tr>
+<tr>
+<td style="text-align:center"><a href="../classes/PhongMaterial.html#property_emissiveMap" class="crosslink">emissiveMap</a></td>
+<td style="text-align:center"><a href="../classes/Texture.html" class="crosslink">Texture</a></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">null</td>
+<td style="text-align:center">linear</td>
+<td style="text-align:center">Texture with RGB components multiplying by <a href="../classes/PhongMaterial.html#property_emissive" class="crosslink">emissive</a>.</td>
+</tr>
+<tr>
+<td style="text-align:center"><a href="../classes/PhongMaterial.html#property_opacityMap" class="crosslink">opacityMap</a></td>
+<td style="text-align:center"><a href="../classes/Texture.html" class="crosslink">Texture</a></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">null</td>
+<td style="text-align:center">linear</td>
+<td style="text-align:center">Texture with first component multiplying by <a href="../classes/PhongMaterial.html#property_opacity" class="crosslink">opacity</a>.</td>
+</tr>
+<tr>
+<td style="text-align:center"><a href="../classes/PhongMaterial.html#property_occlusionMap" class="crosslink">occlusionMap</a></td>
+<td style="text-align:center"><a href="../classes/Texture.html" class="crosslink">Texture</a></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">null</td>
+<td style="text-align:center">linear</td>
+<td style="text-align:center">Ambient occlusion texture multiplying by <a href="../classes/PhongMaterial.html#property_ambient" class="crosslink">ambient</a>, <a href="../classes/PhongMaterial.html#property_diffuse" class="crosslink">diffuse</a> and <a href="../classes/PhongMaterial.html#property_specular" class="crosslink">specular</a>.</td>
+</tr>
+<tr>
+<td style="text-align:center"><a href="../classes/PhongMaterial.html#property_normalMap" class="crosslink">normalMap</a></td>
+<td style="text-align:center"><a href="../classes/Texture.html" class="crosslink">Texture</a></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">null</td>
+<td style="text-align:center">linear</td>
+<td style="text-align:center">Tangent-space normal map.</td>
+</tr>
+<tr>
+<td style="text-align:center"><a href="../classes/PhongMaterial.html#property_diffuseFresnel" class="crosslink">diffuseFresnel</a></td>
+<td style="text-align:center"><a href="../classes/Fresnel.html" class="crosslink">Fresnel</a></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">null</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">Fresnel term applied to <a href="../classes/PhongMaterial.html#property_diffuse" class="crosslink">diffuse</a>.</td>
+</tr>
+<tr>
+<td style="text-align:center"><a href="../classes/PhongMaterial.html#property_specularFresnel" class="crosslink">specularFresnel</a></td>
+<td style="text-align:center"><a href="../classes/Fresnel.html" class="crosslink">Fresnel</a></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">null</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">Fresnel term applied to <a href="../classes/PhongMaterial.html#property_specular" class="crosslink">specular</a>.</td>
+</tr>
+<tr>
+<td style="text-align:center"><a href="../classes/PhongMaterial.html#property_emissiveFresnel" class="crosslink">emissiveFresnel</a></td>
+<td style="text-align:center"><a href="../classes/Fresnel.html" class="crosslink">Fresnel</a></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">null</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">Fresnel term applied to <a href="../classes/PhongMaterial.html#property_emissive" class="crosslink">emissive</a>.</td>
+</tr>
+<tr>
+<td style="text-align:center"><a href="../classes/PhongMaterial.html#property_reflectivityFresnel" class="crosslink">reflectivityFresnel</a></td>
+<td style="text-align:center"><a href="../classes/Fresnel.html" class="crosslink">Fresnel</a></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">null</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">Fresnel term applied to <a href="../classes/PhongMaterial.html#property_reflectivity" class="crosslink">reflectivity</a>.</td>
+</tr>
+<tr>
+<td style="text-align:center"><a href="../classes/PhongMaterial.html#property_opacityFresnel" class="crosslink">opacityFresnel</a></td>
+<td style="text-align:center"><a href="../classes/Fresnel.html" class="crosslink">Fresnel</a></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">null</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">Fresnel term applied to <a href="../classes/PhongMaterial.html#property_opacity" class="crosslink">opacity</a>.</td>
+</tr>
+<tr>
+<td style="text-align:center"><a href="../classes/PhongMaterial.html#property_lineWidth" class="crosslink">lineWidth</a></td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">[0..100]</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">Line width in pixels.</td>
+</tr>
+<tr>
+<td style="text-align:center"><a href="../classes/PhongMaterial.html#property_pointSize" class="crosslink">pointSize</a></td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">[0..100]</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">Point size in pixels.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="usage">Usage</h2>
+<p>In this example we have an Entity with</p>
+<ul>
+<li>a <a href="../classes/Lights.html" class="crosslink">Lights</a> containing an <a href="../classes/AmbientLight.html" class="crosslink">AmbientLight</a> and a <a href="../classes/DirLight.html" class="crosslink">DirLight</a>,</li>
 <li>a <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a> which applies a <a href="../classes/Texture.html" class="crosslink">Texture</a> as a diffuse map and a specular <a href="../classes/Fresnel.html" class="crosslink">Fresnel</a>, and</li>
-<li>a <a href="../classes/TorusGeometry.html" class="crosslink">TorusGeometry</a>.
-Note that xeogl will ignore the PhongMaterial&#39;s <a href="../classes/PhongMaterial.html#property_diffuse" class="crosslink">diffuse</a>
-property, since we assigned the <a href="../classes/Texture.html" class="crosslink">Texture</a> to the PhongMaterial&#39;s
-<a href="../classes/PhongMaterial.html#property_diffuseMap" class="crosslink">diffuseMap</a> property. The <a href="../classes/Texture.html" class="crosslink">Texture&#39;s</a> pixel
-colors directly provide the diffuse color of each fragment across the <a href="../classes/Geometry.html" class="crosslink">Geometry</a> surface.<pre class="code prettyprint"><code class="lang-javascript">var entity = new xeogl.Entity({
-lights: new xeogl.Lights({
-    lights: [
-        new xeogl.AmbientLight({
-            color: [0.7, 0.7, 0.7]
-        }),
-        new xeogl.DirLight({
-            dir: [-1, -1, -1],
-            color: [0.5, 0.7, 0.5],
-            intensity: [1.0, 1.0, 1.0],
-            space: "view"
-        })
-    ]
-}),
-material: new xeogl.PhongMaterial({
-    ambient: [0.3, 0.3, 0.3],
-    diffuse: [0.5, 0.5, 0.0],   // Ignored, since we have assigned a Texture to diffuseMap, below
-    diffuseMap: new xeogl.Texture({
-        src: "diffuseMap.jpg"
-    }),
-    specular: [1, 1, 1],
-    specularFresnel: new xeogl.Fresnel({
-        leftColor: [1.0, 1.0, 1.0],
-        rightColor: [0.0, 0.0, 0.0],
-        power: 4
-    }),
-    shininess: 80, // Default
-    opacity: 1.0 // Default
-}),
-geometry: new xeogl.TorusGeometry()
+<li>a <a href="../classes/TorusGeometry.html" class="crosslink">TorusGeometry</a>.</li>
+</ul>
+<pre class="code prettyprint"><code class="lang-javascript">var entity = new xeogl.Entity({
+
+   lights: new xeogl.Lights({
+       lights: [
+           new xeogl.AmbientLight({
+               color: [0.7, 0.7, 0.7]
+           }),
+           new xeogl.DirLight({
+               dir: [-1, -1, -1],
+               color: [0.5, 0.7, 0.5],
+               intensity: [1.0, 1.0, 1.0],
+               space: "view"
+           })
+       ]
+   }),
+
+   material: new xeogl.PhongMaterial({
+       ambient: [0.3, 0.3, 0.3],
+       diffuse: [0.5, 0.5, 0.0],   // Ignored, since we have assigned a Texture to diffuseMap, below
+       diffuseMap: new xeogl.Texture({
+           src: "diffuseMap.jpg"
+       }),
+       specular: [1, 1, 1],
+       specularFresnel: new xeogl.Fresnel({
+           leftColor: [1.0, 1.0, 1.0],
+           rightColor: [0.0, 0.0, 0.0],
+           power: 4
+       }),
+       shininess: 80, // Default
+       opacity: 1.0 // Default
+   }),
+
+   geometry: new xeogl.TorusGeometry()
 });
 </code></pre>
-</li>
-</ul>
-</li>
-</ul>
 
 </div>
 
@@ -322,7 +499,7 @@ geometry: new xeogl.TorusGeometry()
         
                             <div class="param-description">
                                 <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a>, creates this PhongMaterial within the
-         default <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted</p>
+        default <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted</p>
         
                             </div>
         
@@ -362,7 +539,7 @@ geometry: new xeogl.TorusGeometry()
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[ambient=[0.7, 0.7, 0.8 ]]</code>
+                                            <code class="param-name optional">[ambient=[1.0, 1.0, 1.0 ]]</code>
                                             <span class="type">Array of Number</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
@@ -412,7 +589,7 @@ geometry: new xeogl.TorusGeometry()
         
                                         <div class="param-description">
                                             <p>Scalar in range 0-1 that controls opacity, where 0 is completely transparent and 1 is completely opaque.
-         Only applies while <a href="../classes/Modes.html" class="crosslink">Modes</a> <a href="../classes/Modes.html#property_transparent" class="crosslink">transparent</a> equals <code>true</code>.</p>
+        Only applies while <a href="../classes/Modes.html" class="crosslink">Modes</a> <a href="../classes/Modes.html#property_transparent" class="crosslink">transparent</a> equals <code>true</code>.</p>
         
                                         </div>
         
@@ -462,6 +639,17 @@ geometry: new xeogl.TorusGeometry()
         
                                     </li>
                                     <li class="param">
+                                            <code class="param-name optional">[ambientMap=null]</code>
+                                            <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>A ambient map <a href="../classes/Texture.html" class="crosslink">Texture</a>, which will multiply by the diffuse property. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PhongMaterial.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
                                             <code class="param-name optional">[diffuseMap=null]</code>
                                             <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
@@ -484,7 +672,7 @@ geometry: new xeogl.TorusGeometry()
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[emissiveMap=null]</code>
+                                            <code class="param-name optional">[emissiveMap=undefined]</code>
                                             <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
@@ -495,7 +683,7 @@ geometry: new xeogl.TorusGeometry()
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[normalMap=null]</code>
+                                            <code class="param-name optional">[normalMap=undefined]</code>
                                             <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
@@ -506,7 +694,7 @@ geometry: new xeogl.TorusGeometry()
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[opacityMap=null]</code>
+                                            <code class="param-name optional">[opacityMap=undefined]</code>
                                             <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
@@ -517,7 +705,7 @@ geometry: new xeogl.TorusGeometry()
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[reflectivityMap=null]</code>
+                                            <code class="param-name optional">[reflectivityMap=undefined]</code>
                                             <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
@@ -528,56 +716,67 @@ geometry: new xeogl.TorusGeometry()
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[diffuseFresnel=null]</code>
-                                            <span class="type"><a href="../classes/Fresnel.html" class="crosslink">Fresnel</a></span>
+                                            <code class="param-name optional">[occlusionMap=null]</code>
+                                            <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>A diffuse <a href="../classes/Fresnel.html" class="crosslink">Fresnel</a>.</p>
+                                            <p>An occlusion map <a href="../classes/Texture.html" class="crosslink">Texture</a>. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PhongMaterial.</p>
         
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[specularFresnel=null]</code>
+                                            <code class="param-name optional">[diffuseFresnel=undefined]</code>
                                             <span class="type"><a href="../classes/Fresnel.html" class="crosslink">Fresnel</a></span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>A specular <a href="../classes/Fresnel.html" class="crosslink">Fresnel</a>.</p>
+                                            <p>A diffuse <a href="../classes/Fresnel.html" class="crosslink">Fresnel</a>. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PhongMaterial.</p>
         
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[emissiveFresnel=null]</code>
+                                            <code class="param-name optional">[specularFresnel=undefined]</code>
                                             <span class="type"><a href="../classes/Fresnel.html" class="crosslink">Fresnel</a></span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>An emissive <a href="../classes/Fresnel.html" class="crosslink">Fresnel</a>.</p>
+                                            <p>A specular <a href="../classes/Fresnel.html" class="crosslink">Fresnel</a>. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PhongMaterial.</p>
         
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[opacityFresnel=null]</code>
+                                            <code class="param-name optional">[emissiveFresnel=undefined]</code>
                                             <span class="type"><a href="../classes/Fresnel.html" class="crosslink">Fresnel</a></span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>An opacity <a href="../classes/Fresnel.html" class="crosslink">Fresnel</a>.</p>
+                                            <p>An emissive <a href="../classes/Fresnel.html" class="crosslink">Fresnel</a>. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PhongMaterial.</p>
         
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[reflectivityFresnel=null]</code>
+                                            <code class="param-name optional">[opacityFresnel=undefined]</code>
                                             <span class="type"><a href="../classes/Fresnel.html" class="crosslink">Fresnel</a></span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>A reflectivity <a href="../classes/Fresnel.html" class="crosslink">Fresnel</a>.</p>
+                                            <p>An opacity <a href="../classes/Fresnel.html" class="crosslink">Fresnel</a>. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PhongMaterial.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[reflectivityFresnel=undefined]</code>
+                                            <span class="type"><a href="../classes/Fresnel.html" class="crosslink">Fresnel</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>A reflectivity <a href="../classes/Fresnel.html" class="crosslink">Fresnel</a>. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PhongMaterial.</p>
         
                                         </div>
         
@@ -717,6 +916,10 @@ geometry: new xeogl.TorusGeometry()
 
                             </li>
                             <li class="index-item property">
+                                <a href="#property_occlusionMap">occlusionMap</a>
+
+                            </li>
+                            <li class="index-item property">
                                 <a href="#property_opacity">opacity</a>
 
                             </li>
@@ -833,6 +1036,10 @@ geometry: new xeogl.TorusGeometry()
 
                             </li>
                             <li class="index-item event">
+                                <a href="#event_occlusionMap">occlusionMap</a>
+
+                            </li>
+                            <li class="index-item event">
                                 <a href="#event_opacity">opacity</a>
 
                             </li>
@@ -915,7 +1122,7 @@ geometry: new xeogl.TorusGeometry()
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_create">Component</a>:
-        <a href="../files/src_component.js.html#l904"><code>src&#x2F;component.js:904</code></a>
+        <a href="../files/src_component.js.html#l895"><code>src&#x2F;component.js:895</code></a>
         </p>
 
 
@@ -1006,7 +1213,7 @@ component - you can specify the component ID in the <code>cfg</code> parameter.<
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_component.js.html#l1085"><code>src&#x2F;component.js:1085</code></a>
+        <a href="../files/src_component.js.html#l1076"><code>src&#x2F;component.js:1076</code></a>
         </p>
 
 
@@ -1048,7 +1255,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_error">Component</a>:
-        <a href="../files/src_component.js.html#l587"><code>src&#x2F;component.js:587</code></a>
+        <a href="../files/src_component.js.html#l578"><code>src&#x2F;component.js:578</code></a>
         </p>
 
 
@@ -1112,7 +1319,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_fire">Component</a>:
-        <a href="../files/src_component.js.html#l404"><code>src&#x2F;component.js:404</code></a>
+        <a href="../files/src_component.js.html#l395"><code>src&#x2F;component.js:395</code></a>
         </p>
 
 
@@ -1195,7 +1402,7 @@ any subsequent notifications on the event as they are made.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_isType">Component</a>:
-        <a href="../files/src_component.js.html#l355"><code>src&#x2F;component.js:355</code></a>
+        <a href="../files/src_component.js.html#l346"><code>src&#x2F;component.js:346</code></a>
         </p>
 
 
@@ -1273,7 +1480,7 @@ myRotate.isType(xeogl.Entity); // Returns false, because xeogl.Rotate does not (
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_log">Component</a>:
-        <a href="../files/src_component.js.html#l542"><code>src&#x2F;component.js:542</code></a>
+        <a href="../files/src_component.js.html#l533"><code>src&#x2F;component.js:533</code></a>
         </p>
 
 
@@ -1331,7 +1538,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_off">Component</a>:
-        <a href="../files/src_component.js.html#l496"><code>src&#x2F;component.js:496</code></a>
+        <a href="../files/src_component.js.html#l487"><code>src&#x2F;component.js:487</code></a>
         </p>
 
 
@@ -1396,7 +1603,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_on">Component</a>:
-        <a href="../files/src_component.js.html#l453"><code>src&#x2F;component.js:453</code></a>
+        <a href="../files/src_component.js.html#l444"><code>src&#x2F;component.js:444</code></a>
         </p>
 
 
@@ -1490,7 +1697,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_once">Component</a>:
-        <a href="../files/src_component.js.html#l521"><code>src&#x2F;component.js:521</code></a>
+        <a href="../files/src_component.js.html#l512"><code>src&#x2F;component.js:512</code></a>
         </p>
 
 
@@ -1570,7 +1777,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_warn">Component</a>:
-        <a href="../files/src_component.js.html#l567"><code>src&#x2F;component.js:567</code></a>
+        <a href="../files/src_component.js.html#l558"><code>src&#x2F;component.js:558</code></a>
         </p>
 
 
@@ -1622,7 +1829,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l195"><code>src&#x2F;materials&#x2F;phongMaterial.js:195</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l231"><code>src&#x2F;materials&#x2F;phongMaterial.js:231</code></a>
                             </p>
                     
                     
@@ -1634,7 +1841,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         </div>
                     
-                            <p><strong>Default:</strong> [1.0, 1.0, 1.0]</p>
+                            <p><strong>Default:</strong> [0.3, 0.3, 0.3]</p>
                     
                     
                     </div>
@@ -1649,7 +1856,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l531"><code>src&#x2F;materials&#x2F;phongMaterial.js:531</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l639"><code>src&#x2F;materials&#x2F;phongMaterial.js:639</code></a>
                             </p>
                     
                     
@@ -1657,12 +1864,13 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>An ambient <a href="../classes/Texture.html" class="crosslink">Texture</a> attached to this PhongMaterial.</p>
-                    <p>This property overrides <a href="../classes/PhongMaterial.html#property_ambientMap" class="crosslink">ambientMap</a> when not null or undefined.</p>
+                    <p>This property multiplies by <a href="../classes/PhongMaterial.html#property_ambient" class="crosslink">ambient</a> property.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PhongMaterial.</p>
                     <p>Fires a <a href="../classes/PhongMaterial.html#event_ambientMap" class="crosslink">ambientMap</a> event on change.</p>
                     
                         </div>
                     
-                            <p><strong>Default:</strong> null</p>
+                            <p><strong>Default:</strong> undefined</p>
                     
                     
                     </div>
@@ -1677,7 +1885,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l279"><code>src&#x2F;component.js:279</code></a>
+                            <a href="../files/src_component.js.html#l270"><code>src&#x2F;component.js:270</code></a>
                             </p>
                     
                     
@@ -1702,7 +1910,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l226"><code>src&#x2F;materials&#x2F;phongMaterial.js:226</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l280"><code>src&#x2F;materials&#x2F;phongMaterial.js:280</code></a>
                             </p>
                     
                     
@@ -1710,7 +1918,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>The PhongMaterial&#39;s diffuse color.</p>
-                    <p>This property may be overridden by <a href="../classes/PhongMaterial.html#property_diffuseMap" class="crosslink">diffuseMap</a>.</p>
+                    <p>Multiplies by <a href="../classes/PhongMaterial.html#property_diffuseMap" class="crosslink">diffuseMap</a>.</p>
                     <p>Fires a <a href="../classes/PhongMaterial.html#event_diffuse" class="crosslink">diffuse</a> event on change.</p>
                     
                         </div>
@@ -1730,7 +1938,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l732"><code>src&#x2F;materials&#x2F;phongMaterial.js:732</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l884"><code>src&#x2F;materials&#x2F;phongMaterial.js:884</code></a>
                             </p>
                     
                     
@@ -1738,12 +1946,13 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>A diffuse <a href="../classes/Fresnel.html" class="crosslink">Fresnel</a> attached to this PhongMaterial.</p>
-                    <p>This property overrides <a href="../classes/PhongMaterial.html#property_diffuseFresnel" class="crosslink">diffuseFresnel</a> when not null or undefined.</p>
+                    <p>This property multiplies by <a href="../classes/PhongMaterial.html#property_diffuseFresnel" class="crosslink">diffuseFresnel</a> when not null or undefined.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PhongMaterial.</p>
                     <p>Fires a <a href="../classes/PhongMaterial.html#event_diffuseFresnel" class="crosslink">diffuseFresnel</a> event on change.</p>
                     
                         </div>
                     
-                            <p><strong>Default:</strong> null</p>
+                            <p><strong>Default:</strong> undefined</p>
                     
                     
                     </div>
@@ -1758,7 +1967,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l560"><code>src&#x2F;materials&#x2F;phongMaterial.js:560</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l670"><code>src&#x2F;materials&#x2F;phongMaterial.js:670</code></a>
                             </p>
                     
                     
@@ -1766,12 +1975,13 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>A diffuse <a href="../classes/Texture.html" class="crosslink">Texture</a> attached to this PhongMaterial.</p>
-                    <p>This property overrides <a href="../classes/PhongMaterial.html#property_diffuseMap" class="crosslink">diffuseMap</a> when not null or undefined.</p>
+                    <p>This property multiplies by <a href="../classes/PhongMaterial.html#property_diffuseMap" class="crosslink">diffuseMap</a> when not null or undefined.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PhongMaterial.</p>
                     <p>Fires a <a href="../classes/PhongMaterial.html#event_diffuseMap" class="crosslink">diffuseMap</a> event on change.</p>
                     
                         </div>
                     
-                            <p><strong>Default:</strong> null</p>
+                            <p><strong>Default:</strong> undefined</p>
                     
                     
                     </div>
@@ -1786,7 +1996,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l292"><code>src&#x2F;materials&#x2F;phongMaterial.js:292</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l382"><code>src&#x2F;materials&#x2F;phongMaterial.js:382</code></a>
                             </p>
                     
                     
@@ -1794,7 +2004,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>The PhongMaterial&#39;s emissive color.</p>
-                    <p>This property may be overridden by <a href="../classes/PhongMaterial.html#property_emissiveMap" class="crosslink">emissiveMap</a>.</p>
+                    <p>Multiplies by <a href="../classes/PhongMaterial.html#property_emissiveMap" class="crosslink">emissiveMap</a>.</p>
                     <p>Fires a <a href="../classes/PhongMaterial.html#event_emissive" class="crosslink">emissive</a> event on change.</p>
                     
                         </div>
@@ -1814,7 +2024,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l790"><code>src&#x2F;materials&#x2F;phongMaterial.js:790</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l946"><code>src&#x2F;materials&#x2F;phongMaterial.js:946</code></a>
                             </p>
                     
                     
@@ -1822,12 +2032,13 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>An emissive <a href="../classes/Fresnel.html" class="crosslink">Fresnel</a> attached to this PhongMaterial.</p>
-                    <p>This property overrides <a href="../classes/PhongMaterial.html#property_emissive" class="crosslink">emissive</a> when not null or undefined.</p>
+                    <p>This property multiplies by <a href="../classes/PhongMaterial.html#property_emissive" class="crosslink">emissive</a> when not null or undefined.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PhongMaterial.</p>
                     <p>Fires an <a href="../classes/PhongMaterial.html#event_emissiveFresnel" class="crosslink">emissiveFresnel</a> event on change.</p>
                     
                         </div>
                     
-                            <p><strong>Default:</strong> null</p>
+                            <p><strong>Default:</strong> undefined</p>
                     
                     
                     </div>
@@ -1842,7 +2053,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l618"><code>src&#x2F;materials&#x2F;phongMaterial.js:618</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l732"><code>src&#x2F;materials&#x2F;phongMaterial.js:732</code></a>
                             </p>
                     
                     
@@ -1850,12 +2061,13 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>An emissive <a href="../classes/Texture.html" class="crosslink">Texture</a> attached to this PhongMaterial.</p>
-                    <p>This property overrides <a href="../classes/PhongMaterial.html#property_emissive" class="crosslink">emissive</a> when not null or undefined.</p>
+                    <p>This property multiplies by <a href="../classes/PhongMaterial.html#property_emissive" class="crosslink">emissive</a> when not null or undefined.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PhongMaterial.</p>
                     <p>Fires an <a href="../classes/PhongMaterial.html#event_emissiveMap" class="crosslink">emissiveMap</a> event on change.</p>
                     
                         </div>
                     
-                            <p><strong>Default:</strong> null</p>
+                            <p><strong>Default:</strong> undefined</p>
                     
                     
                     </div>
@@ -1871,7 +2083,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_id">Component</a>:
-                            <a href="../files/src_component.js.html#l270"><code>src&#x2F;component.js:270</code></a>
+                            <a href="../files/src_component.js.html#l261"><code>src&#x2F;component.js:261</code></a>
                             </p>
                     
                     
@@ -1896,7 +2108,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_isDefault">Component</a>:
-                            <a href="../files/src_component.js.html#l262"><code>src&#x2F;component.js:262</code></a>
+                            <a href="../files/src_component.js.html#l253"><code>src&#x2F;component.js:253</code></a>
                             </p>
                     
                     
@@ -1922,7 +2134,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_json">Component</a>:
-                            <a href="../files/src_component.js.html#l1024"><code>src&#x2F;component.js:1024</code></a>
+                            <a href="../files/src_component.js.html#l1015"><code>src&#x2F;component.js:1015</code></a>
                             </p>
                     
                     
@@ -1947,7 +2159,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l405"><code>src&#x2F;materials&#x2F;phongMaterial.js:405</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l513"><code>src&#x2F;materials&#x2F;phongMaterial.js:513</code></a>
                             </p>
                     
                     
@@ -1974,7 +2186,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_metadata">Component</a>:
-                            <a href="../files/src_component.js.html#l254"><code>src&#x2F;component.js:254</code></a>
+                            <a href="../files/src_component.js.html#l245"><code>src&#x2F;component.js:245</code></a>
                             </p>
                     
                     
@@ -1999,7 +2211,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l502"><code>src&#x2F;materials&#x2F;phongMaterial.js:502</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l610"><code>src&#x2F;materials&#x2F;phongMaterial.js:610</code></a>
                             </p>
                     
                     
@@ -2007,12 +2219,40 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>A normal <a href="../classes/Texture.html" class="crosslink">Texture</a> attached to this PhongMaterial.</p>
-                    <p>This property overrides <a href="../classes/PhongMaterial.html#property_normalMap" class="crosslink">normalMap</a> when not null or undefined.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PhongMaterial.</p>
                     <p>Fires a <a href="../classes/PhongMaterial.html#event_normalMap" class="crosslink">normalMap</a> event on change.</p>
                     
                         </div>
                     
-                            <p><strong>Default:</strong> null</p>
+                            <p><strong>Default:</strong> undefined</p>
+                    
+                    
+                    </div>
+                    <div id="property_occlusionMap" class="property item">
+                        <h3 class="name"><code>occlusionMap</code></h3>
+                        <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_materials_phongMaterial.js.html#l854"><code>src&#x2F;materials&#x2F;phongMaterial.js:854</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>An occlusion map <a href="../classes/Texture.html" class="crosslink">Texture</a> attached to this PhongMaterial.
+                    Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PhongMaterial.
+                    Fires a <a href="../classes/PhongMaterial.html#event_occlusionMap" class="crosslink">occlusionMap</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> undefined</p>
                     
                     
                     </div>
@@ -2027,7 +2267,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l325"><code>src&#x2F;materials&#x2F;phongMaterial.js:325</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l433"><code>src&#x2F;materials&#x2F;phongMaterial.js:433</code></a>
                             </p>
                     
                     
@@ -2039,7 +2279,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     <p>Attached <a href="../classes/Entity.html" class="crosslink">Entities</a> will appear transparent only if they are also attached
                     to <a href="../classes/Modes.html" class="crosslink">Modes</a> that have <a href="../classes/Modes.html#property_transparent" class="crosslink">transparent</a>
                     set to <strong>true</strong>.</p>
-                    <p>This property may be overridden by <a href="../classes/PhongMaterial.html#property_opacityMap" class="crosslink">opacityMap</a>.</p>
+                    <p>Multiplies by <a href="../classes/PhongMaterial.html#property_opacityMap" class="crosslink">opacityMap</a>.</p>
                     <p>Fires an <a href="../classes/PhongMaterial.html#event_opacity" class="crosslink">opacity</a> event on change.</p>
                     
                         </div>
@@ -2059,7 +2299,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l819"><code>src&#x2F;materials&#x2F;phongMaterial.js:819</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l977"><code>src&#x2F;materials&#x2F;phongMaterial.js:977</code></a>
                             </p>
                     
                     
@@ -2067,12 +2307,13 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>An opacity <a href="../classes/Fresnel.html" class="crosslink">Fresnel</a> attached to this PhongMaterial.</p>
-                    <p>This property overrides <a href="../classes/PhongMaterial.html#property_opacity" class="crosslink">opacity</a> when not null or undefined.</p>
+                    <p>This property multiplies by <a href="../classes/PhongMaterial.html#property_opacity" class="crosslink">opacity</a> when not null or undefined.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PhongMaterial.</p>
                     <p>Fires an <a href="../classes/PhongMaterial.html#event_opacityFresnel" class="crosslink">opacityFresnel</a> event on change.</p>
                     
                         </div>
                     
-                            <p><strong>Default:</strong> null</p>
+                            <p><strong>Default:</strong> undefined</p>
                     
                     
                     </div>
@@ -2087,7 +2328,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l647"><code>src&#x2F;materials&#x2F;phongMaterial.js:647</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l763"><code>src&#x2F;materials&#x2F;phongMaterial.js:763</code></a>
                             </p>
                     
                     
@@ -2095,12 +2336,13 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>An opacity <a href="../classes/Texture.html" class="crosslink">Texture</a> attached to this PhongMaterial.</p>
-                    <p>This property overrides <a href="../classes/PhongMaterial.html#property_opacity" class="crosslink">opacity</a> when not null or undefined.</p>
+                    <p>This property multiplies by <a href="../classes/PhongMaterial.html#property_opacity" class="crosslink">opacity</a> when not null or undefined.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PhongMaterial.</p>
                     <p>Fires an <a href="../classes/PhongMaterial.html#event_opacityMap" class="crosslink">opacityMap</a> event on change.</p>
                     
                         </div>
                     
-                            <p><strong>Default:</strong> null</p>
+                            <p><strong>Default:</strong> undefined</p>
                     
                     
                     </div>
@@ -2115,7 +2357,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l436"><code>src&#x2F;materials&#x2F;phongMaterial.js:436</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l544"><code>src&#x2F;materials&#x2F;phongMaterial.js:544</code></a>
                             </p>
                     
                     
@@ -2142,7 +2384,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l705"><code>src&#x2F;materials&#x2F;phongMaterial.js:705</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l825"><code>src&#x2F;materials&#x2F;phongMaterial.js:825</code></a>
                             </p>
                     
                     
@@ -2150,11 +2392,12 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>A reflection CubeMap attached to this PhongMaterial.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PhongMaterial.</p>
                     <p>Fires a <a href="../classes/PhongMaterial.html#event_reflection" class="crosslink">reflection</a> event on change.</p>
                     
                         </div>
                     
-                            <p><strong>Default:</strong> null</p>
+                            <p><strong>Default:</strong> undefined</p>
                     
                     
                     </div>
@@ -2169,7 +2412,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l467"><code>src&#x2F;materials&#x2F;phongMaterial.js:467</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l575"><code>src&#x2F;materials&#x2F;phongMaterial.js:575</code></a>
                             </p>
                     
                     
@@ -2178,7 +2421,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="description">
                             <p>Scalar in range 0-1 that controls how much CubeMap is reflected by this PhongMaterial.</p>
                     <p>The surface will be non-reflective when this is 0, and completely mirror-like when it is 1.0.</p>
-                    <p>This property may be overridden by <a href="../classes/PhongMaterial.html#property_reflectivityMap" class="crosslink">reflectivityMap</a>.</p>
+                    <p>Multiplies by <a href="../classes/PhongMaterial.html#property_reflectivityMap" class="crosslink">reflectivityMap</a>.</p>
                     <p>Fires a <a href="../classes/PhongMaterial.html#event_reflectivity" class="crosslink">reflectivity</a> event on change.</p>
                     
                         </div>
@@ -2198,7 +2441,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l848"><code>src&#x2F;materials&#x2F;phongMaterial.js:848</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l1008"><code>src&#x2F;materials&#x2F;phongMaterial.js:1008</code></a>
                             </p>
                     
                     
@@ -2206,12 +2449,13 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>A reflectivity <a href="../classes/Fresnel.html" class="crosslink">Fresnel</a> attached to this PhongMaterial.</p>
-                    <p>This property overrides <a href="../classes/PhongMaterial.html#property_reflectivity" class="crosslink">reflectivity</a> when not null or undefined.</p>
+                    <p>This property multiplies by <a href="../classes/PhongMaterial.html#property_reflectivity" class="crosslink">reflectivity</a> when not null or undefined.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PhongMaterial.</p>
                     <p>Fires a <a href="../classes/PhongMaterial.html#event_reflectivityFresnel" class="crosslink">reflectivityFresnel</a> event on change.</p>
                     
                         </div>
                     
-                            <p><strong>Default:</strong> null</p>
+                            <p><strong>Default:</strong> undefined</p>
                     
                     
                     </div>
@@ -2226,7 +2470,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l676"><code>src&#x2F;materials&#x2F;phongMaterial.js:676</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l794"><code>src&#x2F;materials&#x2F;phongMaterial.js:794</code></a>
                             </p>
                     
                     
@@ -2234,12 +2478,13 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>A reflectivity <a href="../classes/Texture.html" class="crosslink">Texture</a> attached to this PhongMaterial.</p>
-                    <p>This property overrides <a href="../classes/PhongMaterial.html#property_reflectivity" class="crosslink">reflectivity</a> when not null or undefined.</p>
+                    <p>This property multiplies by <a href="../classes/PhongMaterial.html#property_reflectivity" class="crosslink">reflectivity</a> when not null or undefined.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PhongMaterial.</p>
                     <p>Fires a <a href="../classes/PhongMaterial.html#event_reflectivityMap" class="crosslink">reflectivityMap</a> event on change.</p>
                     
                         </div>
                     
-                            <p><strong>Default:</strong> null</p>
+                            <p><strong>Default:</strong> undefined</p>
                     
                     
                     </div>
@@ -2255,7 +2500,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_scene">Component</a>:
-                            <a href="../files/src_component.js.html#l207"><code>src&#x2F;component.js:207</code></a>
+                            <a href="../files/src_component.js.html#l198"><code>src&#x2F;component.js:198</code></a>
                             </p>
                     
                     
@@ -2280,7 +2525,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l370"><code>src&#x2F;materials&#x2F;phongMaterial.js:370</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l478"><code>src&#x2F;materials&#x2F;phongMaterial.js:478</code></a>
                             </p>
                     
                     
@@ -2310,7 +2555,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l259"><code>src&#x2F;materials&#x2F;phongMaterial.js:259</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l331"><code>src&#x2F;materials&#x2F;phongMaterial.js:331</code></a>
                             </p>
                     
                     
@@ -2318,7 +2563,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>The material&#39;s specular color.</p>
-                    <p>This property may be overridden by <a href="../classes/PhongMaterial.html#property_specularMap" class="crosslink">specularMap</a>.</p>
+                    <p>Multiplies by <a href="../classes/PhongMaterial.html#property_specularMap" class="crosslink">specularMap</a>.</p>
                     <p>Fires a <a href="../classes/PhongMaterial.html#event_specular" class="crosslink">specular</a> event on change.</p>
                     
                         </div>
@@ -2338,7 +2583,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l761"><code>src&#x2F;materials&#x2F;phongMaterial.js:761</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l915"><code>src&#x2F;materials&#x2F;phongMaterial.js:915</code></a>
                             </p>
                     
                     
@@ -2346,12 +2591,13 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>A specular <a href="../classes/Fresnel.html" class="crosslink">Fresnel</a> attached to this PhongMaterial.</p>
-                    <p>This property overrides <a href="../classes/PhongMaterial.html#property_specular" class="crosslink">specular</a> when not null or undefined.</p>
+                    <p>This property multiplies by <a href="../classes/PhongMaterial.html#property_specular" class="crosslink">specular</a> when not null or undefined.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PhongMaterial.</p>
                     <p>Fires a <a href="../classes/PhongMaterial.html#event_specularFresnel" class="crosslink">specularFresnel</a> event on change.</p>
                     
                         </div>
                     
-                            <p><strong>Default:</strong> null</p>
+                            <p><strong>Default:</strong> undefined</p>
                     
                     
                     </div>
@@ -2366,7 +2612,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l589"><code>src&#x2F;materials&#x2F;phongMaterial.js:589</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l701"><code>src&#x2F;materials&#x2F;phongMaterial.js:701</code></a>
                             </p>
                     
                     
@@ -2374,12 +2620,13 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>A specular <a href="../classes/Texture.html" class="crosslink">Texture</a> attached to this PhongMaterial.</p>
-                    <p>This property overrides <a href="../classes/PhongMaterial.html#property_specular" class="crosslink">specular</a> when not null or undefined.</p>
+                    <p>This property multiplies by <a href="../classes/PhongMaterial.html#property_specular" class="crosslink">specular</a> when not null or undefined.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this PhongMaterial.</p>
                     <p>Fires a <a href="../classes/PhongMaterial.html#event_specularMap" class="crosslink">specularMap</a> event on change.</p>
                     
                         </div>
                     
-                            <p><strong>Default:</strong> null</p>
+                            <p><strong>Default:</strong> undefined</p>
                     
                     
                     </div>
@@ -2398,7 +2645,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_component.js.html#l1052"><code>src&#x2F;component.js:1052</code></a>
+                            <a href="../files/src_component.js.html#l1043"><code>src&#x2F;component.js:1043</code></a>
                             </p>
                     
                     
@@ -2424,7 +2671,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_superTypes">Component</a>:
-                            <a href="../files/src_component.js.html#l336"><code>src&#x2F;component.js:336</code></a>
+                            <a href="../files/src_component.js.html#l327"><code>src&#x2F;component.js:327</code></a>
                             </p>
                     
                     
@@ -2456,7 +2703,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_type">Component</a>:
-                            <a href="../files/src_component.js.html#l322"><code>src&#x2F;component.js:322</code></a>
+                            <a href="../files/src_component.js.html#l313"><code>src&#x2F;component.js:313</code></a>
                             </p>
                     
                     
@@ -2490,7 +2737,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l212"><code>src&#x2F;materials&#x2F;phongMaterial.js:212</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l266"><code>src&#x2F;materials&#x2F;phongMaterial.js:266</code></a>
                             </p>
                     
                     
@@ -2532,7 +2779,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l546"><code>src&#x2F;materials&#x2F;phongMaterial.js:546</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l656"><code>src&#x2F;materials&#x2F;phongMaterial.js:656</code></a>
                             </p>
                     
                     
@@ -2574,7 +2821,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l1155"><code>src&#x2F;component.js:1155</code></a>
+                            <a href="../files/src_component.js.html#l1146"><code>src&#x2F;component.js:1146</code></a>
                             </p>
                     
                     
@@ -2599,7 +2846,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l245"><code>src&#x2F;materials&#x2F;phongMaterial.js:245</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l317"><code>src&#x2F;materials&#x2F;phongMaterial.js:317</code></a>
                             </p>
                     
                     
@@ -2641,7 +2888,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l747"><code>src&#x2F;materials&#x2F;phongMaterial.js:747</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l901"><code>src&#x2F;materials&#x2F;phongMaterial.js:901</code></a>
                             </p>
                     
                     
@@ -2683,7 +2930,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l575"><code>src&#x2F;materials&#x2F;phongMaterial.js:575</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l687"><code>src&#x2F;materials&#x2F;phongMaterial.js:687</code></a>
                             </p>
                     
                     
@@ -2725,7 +2972,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l311"><code>src&#x2F;materials&#x2F;phongMaterial.js:311</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l419"><code>src&#x2F;materials&#x2F;phongMaterial.js:419</code></a>
                             </p>
                     
                     
@@ -2767,7 +3014,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l805"><code>src&#x2F;materials&#x2F;phongMaterial.js:805</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l963"><code>src&#x2F;materials&#x2F;phongMaterial.js:963</code></a>
                             </p>
                     
                     
@@ -2809,7 +3056,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l633"><code>src&#x2F;materials&#x2F;phongMaterial.js:633</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l749"><code>src&#x2F;materials&#x2F;phongMaterial.js:749</code></a>
                             </p>
                     
                     
@@ -2851,7 +3098,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l422"><code>src&#x2F;materials&#x2F;phongMaterial.js:422</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l530"><code>src&#x2F;materials&#x2F;phongMaterial.js:530</code></a>
                             </p>
                     
                     
@@ -2893,7 +3140,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l517"><code>src&#x2F;materials&#x2F;phongMaterial.js:517</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l625"><code>src&#x2F;materials&#x2F;phongMaterial.js:625</code></a>
                             </p>
                     
                     
@@ -2901,6 +3148,48 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Fired whenever this PhongMaterial&#39;s <a href="../classes/PhongMaterial.html#property_normalMap" class="crosslink">normalMap</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Number The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_occlusionMap" class="events item">
+                        <h3 class="name"><code>occlusionMap</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_materials_phongMaterial.js.html#l870"><code>src&#x2F;materials&#x2F;phongMaterial.js:870</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this PhongMaterial&#39;s <a href="../classes/PhongMaterial.html#property_occlusionMap" class="crosslink">occlusionMap</a> property changes.</p>
                     
                         </div>
                     
@@ -2935,7 +3224,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l356"><code>src&#x2F;materials&#x2F;phongMaterial.js:356</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l464"><code>src&#x2F;materials&#x2F;phongMaterial.js:464</code></a>
                             </p>
                     
                     
@@ -2977,7 +3266,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l834"><code>src&#x2F;materials&#x2F;phongMaterial.js:834</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l994"><code>src&#x2F;materials&#x2F;phongMaterial.js:994</code></a>
                             </p>
                     
                     
@@ -3019,7 +3308,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l662"><code>src&#x2F;materials&#x2F;phongMaterial.js:662</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l780"><code>src&#x2F;materials&#x2F;phongMaterial.js:780</code></a>
                             </p>
                     
                     
@@ -3061,7 +3350,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l453"><code>src&#x2F;materials&#x2F;phongMaterial.js:453</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l561"><code>src&#x2F;materials&#x2F;phongMaterial.js:561</code></a>
                             </p>
                     
                     
@@ -3103,7 +3392,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l718"><code>src&#x2F;materials&#x2F;phongMaterial.js:718</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l840"><code>src&#x2F;materials&#x2F;phongMaterial.js:840</code></a>
                             </p>
                     
                     
@@ -3145,7 +3434,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l488"><code>src&#x2F;materials&#x2F;phongMaterial.js:488</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l596"><code>src&#x2F;materials&#x2F;phongMaterial.js:596</code></a>
                             </p>
                     
                     
@@ -3187,7 +3476,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l863"><code>src&#x2F;materials&#x2F;phongMaterial.js:863</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l1025"><code>src&#x2F;materials&#x2F;phongMaterial.js:1025</code></a>
                             </p>
                     
                     
@@ -3229,7 +3518,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l691"><code>src&#x2F;materials&#x2F;phongMaterial.js:691</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l811"><code>src&#x2F;materials&#x2F;phongMaterial.js:811</code></a>
                             </p>
                     
                     
@@ -3271,7 +3560,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l391"><code>src&#x2F;materials&#x2F;phongMaterial.js:391</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l499"><code>src&#x2F;materials&#x2F;phongMaterial.js:499</code></a>
                             </p>
                     
                     
@@ -3313,7 +3602,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l278"><code>src&#x2F;materials&#x2F;phongMaterial.js:278</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l368"><code>src&#x2F;materials&#x2F;phongMaterial.js:368</code></a>
                             </p>
                     
                     
@@ -3355,7 +3644,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l776"><code>src&#x2F;materials&#x2F;phongMaterial.js:776</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l932"><code>src&#x2F;materials&#x2F;phongMaterial.js:932</code></a>
                             </p>
                     
                     
@@ -3397,7 +3686,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_phongMaterial.js.html#l604"><code>src&#x2F;materials&#x2F;phongMaterial.js:604</code></a>
+                            <a href="../files/src_materials_phongMaterial.js.html#l718"><code>src&#x2F;materials&#x2F;phongMaterial.js:718</code></a>
                             </p>
                     
                     

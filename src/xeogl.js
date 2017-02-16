@@ -62,6 +62,7 @@
             info.MAX_CUBE_MAP_SIZE = gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE);
             info.MAX_RENDERBUFFER_SIZE = gl.getParameter(gl.MAX_RENDERBUFFER_SIZE);
             info.MAX_TEXTURE_UNITS = gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+            info.MAX_TEXTURE_IMAGE_UNITS = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
             info.MAX_VERTEX_ATTRIBS = gl.getParameter(gl.MAX_VERTEX_ATTRIBS);
             info.MAX_VERTEX_UNIFORM_VECTORS = gl.getParameter(gl.MAX_VERTEX_UNIFORM_VECTORS);
             info.MAX_FRAGMENT_UNIFORM_VECTORS = gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_VECTORS);
@@ -143,6 +144,9 @@
          * @type {{String:xeogl.Scene}}
          */
         this.scenes = {};
+
+        // Used for throttling FPS for each Scene
+        this._scenesRenderInfo = {};
 
         /**
          * For each component type, a list of its supertypes, ordered upwards in the hierarchy.
@@ -266,11 +270,31 @@
             }
 
             function render() {
+
                 var scenes = self.scenes;
+                var scenesRenderInfo = self._scenesRenderInfo;
+                var scene;
+                var renderInfo;
+                var ticksPerRender;
+
                 var forceRender = false;
                 for (id in scenes) {
                     if (scenes.hasOwnProperty(id)) {
-                        scenes[id].render(forceRender);
+
+                        scene = scenes[id];
+                        renderInfo = scenesRenderInfo[id];
+
+                        ticksPerRender = scene.ticksPerRender;
+
+                        if (renderInfo.ticksPerRender !== ticksPerRender) {
+                            renderInfo.ticksPerRender = ticksPerRender;
+                            renderInfo.renderCountdown = ticksPerRender;
+                        }
+
+                        if (--renderInfo.renderCountdown === 0) {
+                            scene.render(forceRender);
+                            renderInfo.renderCountdown = ticksPerRender;
+                        }
                     }
                 }
             }
@@ -309,6 +333,10 @@
                 }));
         },
 
+        set scene(value) {
+            this._scene = value;
+        },
+
         /**
          * Registers a scene on xeogl.
          * This is called within the xeogl.Scene constructor.
@@ -339,6 +367,13 @@
 
             this.scenes[scene.id] = scene;
 
+            var ticksPerRender = scene.ticksPerRender;
+
+            this._scenesRenderInfo[scene.id] = {
+                ticksPerRender: ticksPerRender,
+                renderCountdown: ticksPerRender
+            };
+
             this.stats.components.scenes++;
 
             var self = this;
@@ -351,6 +386,7 @@
                     self._sceneIDMap.removeItem(scene.id);
 
                     delete self.scenes[scene.id];
+                    delete self._scenesRenderInfo[scene.id];
 
                     self.stats.components.scenes--;
                 });
@@ -617,6 +653,20 @@
          */
         _inQuotes: function (id) {
             return this._isNumeric(id) ? ("" + id) : ("'" + id + "'");
+        },
+
+        /**
+         * Returns the concatenation of two typed arrays.
+         * @param a
+         * @param b
+         * @returns {*|a}
+         * @private
+         */
+        _concat: function (a, b) {
+            var c = new a.constructor(a.length + b.length);
+            c.set(a);
+            c.set(b, a.length);
+            return c;
         }
     };
 

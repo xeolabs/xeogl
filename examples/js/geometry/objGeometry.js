@@ -3,10 +3,10 @@
     "use strict";
 
     /**
-     An **ObjGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that's loaded from a
+     An **OBJGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that's loaded from a
      <a href="https://en.wikipedia.org/wiki/Wavefront_.obj_file">Wavefront .OBJ</a> file.
 
-     <a href="../../examples/#geometry_OBJGeometry_raptor"><img src="../../assets/images/screenshots/OBJGeometry.png"></img></a>
+     <a href="../../examples/#importing_obj_raptor"><img src="../../assets/images/screenshots/OBJGeometry.png"></img></a>
 
      ## Overview
 
@@ -106,7 +106,11 @@
                         return;
                     }
 
-                    //this._taskId = this.taskStarted("Loading .OBJ");
+                    // Increment processes represented by loading spinner
+                    // Spinner appears as soon as count is non-zero
+
+                    var spinner = this.scene.canvas.spinner;
+                    spinner.processes++;
 
                     this._src = value;
 
@@ -136,12 +140,6 @@
                                     indices.push(i);
                                 }
 
-                                // Need to flip the UV coordinates on Y-axis for SceneJS geometry
-
-                                for (var i = 1, len = uv.length; i < len; i += 2) {
-                                    uv[i] *= -1.0;
-                                }
-
                                 self.primitive = "triangles";
                                 self.positions = positions;
                                 if (uv.length > 0) {
@@ -156,17 +154,19 @@
 
                                 self.indices = indices;
 
+                                spinner.processes--;
+
                                 self.fire("loaded", true);
                             });
                         },
 
                         function (msg) {
 
+                            spinner.processes--;
+
                             self.error("Failed to load .OBJ file: " + msg);
 
                             self.fire("failed", msg);
-
-                            //self._taskId = self.taskFailed(self._taskId);
                         });
 
                     /**

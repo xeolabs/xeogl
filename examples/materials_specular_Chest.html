@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.min.js"></script>
+
+    <script src="js/geometry/k3d.js"></script>
+    <script src="js/skyboxes/skybox.js"></script>
+    <script src="js/geometry/objGeometry.js"></script>
+
+    <script src="js/libs/dat.gui.min.js"></script>
+
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <a href="http://xeogl.org" target="_parent">xeogl</a><br><br>Physically-based rendering using <a
+        href="../docs/classes/SpecularMaterial.html" target="_parent">SpecularMaterial</a>
+</div>
+<div id="dat-gui-container">
+</div>
+
+<script>
+
+    var skybox = new xeogl.Skybox({
+        src: "textures/skybox/uffizi_vert_cross.jpg",
+        size: 1000, // Default
+        active: false // This demo actually looks cooler without skybox, but you can enable it
+    });
+
+    var dirLights = [
+        new xeogl.DirLight({
+            dir: [0.8, -0.6, -0.8],
+            color: [1.0, 0.9, 0.9],
+            intensity: 1.0,
+            space: "view"
+        }),
+
+        new xeogl.DirLight({
+            dir: [-0.8, -0.4, -0.4],
+            color: [1.0, 0.9, 0.9],
+            intensity: 1.0,
+            space: "view"
+        }),
+
+        new xeogl.DirLight({
+            dir: [0.2, -0.8, 0.8],
+            color: [1.0, 0.9, 0.9],
+            intensity: 1.0,
+            space: "view"
+        })
+    ];
+
+    var lightMap = new xeogl.CubeTexture({
+        src: [
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png"
+        ]
+    });
+
+    var reflectionMap = new xeogl.CubeTexture({
+        src: [
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
+        ]
+    });
+
+    var lights = new xeogl.Lights({
+        lights: dirLights,
+        // lightMap: lightMap,
+        reflectionMap: reflectionMap
+    });
+
+    var diffuseMap = new xeogl.Texture({
+        src: "textures/diffuse/chest_albedo.png"
+    });
+
+    var normalMap = new xeogl.Texture({
+        src: "textures/normal/chest_normal.png"
+    });
+
+    var specularMap = new xeogl.Texture({
+        src: "textures/specular/chest_specular.png"
+    });
+
+    var glossinessMap = new xeogl.Texture({
+        src: "textures/specular/chest_specular.png"
+    });
+
+    var occlusionMap = new xeogl.Texture({
+        src: "textures/occlusion/chest_ao.png"
+    });
+
+    var entity = new xeogl.Entity({
+        geometry: new xeogl.OBJGeometry({
+            src: "models/obj/Chest.obj"
+        }),
+        lights: lights,
+        material: new xeogl.SpecularMaterial({
+            diffuseMap: diffuseMap,
+            specularMap: specularMap,
+            glossinessMap: glossinessMap,
+            occlusionMap: occlusionMap,
+            normalMap: normalMap
+        }),
+        modes: new xeogl.Modes({
+            transparent: false
+        }),
+        transform: new xeogl.Scale({
+            xyz: [50, 50, 50]
+        })
+    });
+
+    entity.camera.view.rotateEyeX(25); // Orbit camera a bit
+    entity.camera.view.rotateEyeY(180); // Orbit camera a bit
+
+    var spinning = true;
+
+    entity.geometry.on("loaded", function () { // Fit to view as soon as OBJ is loaded
+
+        (new xeogl.CameraFlightAnimation()).jumpTo({
+            worldBoundary: entity.worldBoundary,
+            fit: true,
+            fitFOV: 45
+        });
+
+        entity.scene.camera.view.rotateEyeY(180);
+
+        entity.scene.on("tick", function () { // Start orbiting the camera
+            if (spinning) {
+                entity.scene.camera.view.rotateEyeY(0.2);
+                //    entity.scene.camera.view.zoom(-.05);
+            }
+        });
+    });
+
+    new xeogl.CameraControl(); // Allow user camera control
+
+    //------------------ GUI ---------------------------------
+
+    var Menu = function () {
+
+        this.message = "xeogl.SpecularMaterial";
+
+        var material = entity.material;
+
+        this["diffuse"] = typedToJS(material.diffuse);
+        this["specular"] = typedToJS(material.specular);
+        this["glossiness"] = material.glossiness;
+        this["emissive"] = typedToJS(material.emissive);
+        this["reflectivity"] = material.reflectivity;
+        this["opacity"] = material.opacity;
+
+        this["diffuseMap"] = !!material.diffuseMap;
+        this["specularMap"] = !!material.specularMap;
+        this["glossinessMap"] = !!material.glossinessMap;
+        this["normalMap"] = !!material.normalMap;
+        this["occlusionMap"] = !!material.occlusionMap;
+
+        this["lightMap"] = !!lights.lightMap;
+        this["reflectionMap"] = !!lights.reflectionMap;
+        this["dirLights"] = !!(lights.lights && lights.lights.length > 0);
+        this["skybox"] = !!skybox.active;
+        this["spinning"] = true;
+
+        var self = this;
+
+        // This is actually quite inefficient because it continually updates
+        // the scene graph, forcing frames to continually re-render.
+        // Your GPU's not going to like it, but it's just for a quick and dirty demo.
+
+        var textured = true;
+
+        var update = function () {
+
+            material.diffuse = JSToTyped(self["diffuse"]);
+            material.emissive = JSToTyped(self["emissive"]);
+            material.specular = JSToTyped(["specular"]);
+            material.glossiness = self["glossiness"];
+            material.reflectivity = self["reflectivity"];
+            material.opacity = self["opacity"];
+
+            entity.modes.transparent = (material.opacity < 1);
+
+            if (self["diffuseMap"] !== !!material.diffuseMap) {
+                material.diffuseMap = self["diffuseMap"] ? diffuseMap : null;
+            }
+
+            if (self["specularMap"] !== !!material.specularMap) {
+                material.specularMap = self["specularMap"] ? specularMap : null;
+            }
+
+            if (self["glossinessMap"] !== !!material.glossinessMap) {
+                material.glossinessMap = self["glossinessMap"] ? glossinessMap : null;
+            }
+
+            if (self["normalMap"] !== !!material.normalMap) {
+                material.normalMap = self["normalMap"] ? normalMap : null;
+            }
+
+            if (self["occlusionMap"] !== !!material.occlusionMap) {
+                material.occlusionMap = self["occlusionMap"] ? occlusionMap : null;
+            }
+
+            if (self["lightMap"] !== !!lights.lightMap) {
+                lights.lightMap = self["lightMap"] ? lightMap : null;
+            }
+
+            if (self["reflectionMap"] !== !!lights.reflectionMap) {
+                lights.reflectionMap = self["reflectionMap"] ? reflectionMap : null;
+            }
+
+            if (self["dirLights"] !== !!(lights.lights && lights.lights.length > 0)) {
+                lights.lights = self["dirLights"] ? dirLights : [];
+            }
+
+            if (self["skybox"] !== skybox.active) {
+                skybox.active = self["skybox"];
+            }
+
+            if (self["spinning"] !== spinning) {
+                spinning = self["spinning"];
+            }
+
+            requestAnimationFrame(update);
+        };
+
+        update();
+    };
+
+    var gui = new dat.GUI({autoPlace: false, width: 300});
+
+    document.getElementById('dat-gui-container').appendChild(gui.domElement);
+
+    var menu = new Menu();
+
+    var materialFolder = gui.addFolder('SpecularMaterial');
+    materialFolder.addColor(menu, 'diffuse', [255, 255, 255]);
+    materialFolder.addColor(menu, 'specular', [255, 255, 255]);
+    materialFolder.add(menu, 'glossiness', 0.0, 1.0);
+    materialFolder.add(menu, 'reflectivity', 0.0, 1.0);
+    materialFolder.addColor(menu, 'emissive', [0, 0, 0]);
+    materialFolder.add(menu, 'opacity', 0.0, 1.0);
+
+    materialFolder.add(menu, 'diffuseMap', true);
+    materialFolder.add(menu, 'specularMap', true);
+    materialFolder.add(menu, 'glossinessMap', true);
+    materialFolder.add(menu, 'normalMap', true);
+    materialFolder.add(menu, 'occlusionMap', true);
+    materialFolder.open();
+
+    var lightsFolder = gui.addFolder('Lights');
+    lightsFolder.add(menu, 'lightMap', true);
+    lightsFolder.add(menu, 'reflectionMap', true);
+    lightsFolder.add(menu, 'dirLights', true);
+    lightsFolder.add(menu, 'skybox', true);
+    lightsFolder.add(menu, 'spinning', true);
+    lightsFolder.open();
+
+    function typedToJS(arry) {
+        return [arry[0] * 255, arry[1] * 255, arry[2] * 255];
+    }
+
+    function JSToTyped(arry) {
+        return [arry[0] / 255, arry[1] / 255, arry[2] / 255];
+    }
+
+</script>
+</body>
+</html>

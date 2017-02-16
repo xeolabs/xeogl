@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title>CameraFlightAnimation - xeogl</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link href='https://fonts.googleapis.com/css?family=Exo+2:400,800,900,700,600,500|Roboto:100,300,400,500,700,900'  rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
     <link rel="icon" href="../assets/favicon.ico">
@@ -15,7 +16,7 @@
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
 
-                <h1 style="color:white;"><a href="../../">xeogl</a> / <a href="../../docs">API Docs</a></h1>
+                <h1 class="projectTitle"><a href="../../">xeogl</a> / <a href="../../docs">API Docs</a></h1>
 
         </div>
         <div class="yui3-u-1-4 version">
@@ -56,11 +57,13 @@
                                 <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
+                                <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
                                 <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
+                                <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
                                 <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
@@ -75,20 +78,13 @@
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
-                                <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
-                                <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
-                                <li><a href="../classes/KeyboardRotateCamera.html">KeyboardRotateCamera</a></li>
-                                <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
+                                <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
-                                <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
-                                <li><a href="../classes/MousePickEntity.html">MousePickEntity</a></li>
-                                <li><a href="../classes/MouseRotateCamera.html">MouseRotateCamera</a></li>
-                                <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
@@ -99,15 +95,20 @@
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/PointMarkings.html">PointMarkings</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
+                                <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
+                                <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
+                                <li><a href="../classes/SpecularMaterial.html">SpecularMaterial</a></li>
                                 <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/Spinner.html">Spinner</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
+                                <li><a href="../classes/SpotLight.html">SpotLight</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
@@ -142,6 +143,7 @@
                                 <li><a href="..//modules/input.html">input</a></li>
                                 <li><a href="..//modules/interaction.html">interaction</a></li>
                                 <li><a href="..//modules/lighting.html">lighting</a></li>
+                                <li><a href="..//modules/marking.html">marking</a></li>
                                 <li><a href="..//modules/materials.html">materials</a></li>
                                 <li><a href="..//modules/math.html">math</a></li>
                                 <li><a href="..//modules/models.html">models</a></li>
@@ -149,6 +151,7 @@
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
                                 <li><a href="..//modules/xeogl.html">xeogl</a></li>
+                                <li><a href="..//modules/zspace.html">zspace</a></li>
                             </ul>
                         </div>
                     </div>
@@ -201,7 +204,7 @@
 
 <div class="box intro">
     <p>A <strong>CameraFlightAnimation</strong> jumps or flies a <a href="../classes/Camera.html" class="crosslink">Camera</a> to look at a given target.</p>
-<p><a href="../../examples/#animation_CameraFlightAnimation_Entity"><img src="http://i.giphy.com/3o7TKP0jN800EQ99EQ.gif"></img></a></p>
+<p><a href="../../examples/#animation_camera_flight"><img src="http://i.giphy.com/3o7TKP0jN800EQ99EQ.gif"></img></a></p>
 <h2 id="overview">Overview</h2>
 <ul>
 <li>Requires that the <a href="../classes/Camera.html" class="crosslink">Camera</a> have a <a href="../classes/Lookat.html" class="crosslink">Lookat</a> for its <a href="../classes/Camera.html#property_view" class="crosslink">view</a> transform.</li>
@@ -221,9 +224,7 @@ and <a href="../classes/CameraFlightAnimation.html#property_fitFOV" class="cross
 occupies a certain amount of the field-of-view.</p>
 <h2 id="examples">Examples</h2>
 <ul>
-<li><a href="../../examples/#animation_CameraFlightAnimation_Entity">Flying to random Entities</a></li>
-<li><a href="../../examples/#animation_CameraFlightAnimation_Boundary3D">Flying to Boundary3D</a></li>
-<li><a href="../../examples/#animation_CameraFlightAnimation_AABB">Flying to AABB</a></li>
+<li><a href="../../examples/#animation_camera_flight">Flying to random Entities</a></li>
 </ul>
 <h2 id="flying-to-an-entity">Flying to an Entity</h2>
 <p>Flying to an <a href="../classes/Entity.html" class="crosslink">Entity</a> (which provides a World-space
@@ -620,10 +621,6 @@ cameraFlight.flyTo(aabb);
                                 <a href="#property_projTransform">projTransform</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_reflection">reflection</a>
-
-                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_scene">scene</a>
 
@@ -727,7 +724,7 @@ cameraFlight.flyTo(aabb);
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_animation_cameraFlightAnimation.js.html#l716"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:716</code></a>
+        <a href="../files/src_animation_cameraFlightAnimation.js.html#l725"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:725</code></a>
         </p>
 
 
@@ -771,7 +768,7 @@ cameraFlight.flyTo(aabb);
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_create">Component</a>:
-        <a href="../files/src_component.js.html#l904"><code>src&#x2F;component.js:904</code></a>
+        <a href="../files/src_component.js.html#l895"><code>src&#x2F;component.js:895</code></a>
         </p>
 
 
@@ -907,7 +904,7 @@ component - you can specify the component ID in the <code>cfg</code> parameter.<
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_component.js.html#l1085"><code>src&#x2F;component.js:1085</code></a>
+        <a href="../files/src_component.js.html#l1076"><code>src&#x2F;component.js:1076</code></a>
         </p>
 
 
@@ -949,7 +946,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_error">Component</a>:
-        <a href="../files/src_component.js.html#l587"><code>src&#x2F;component.js:587</code></a>
+        <a href="../files/src_component.js.html#l578"><code>src&#x2F;component.js:578</code></a>
         </p>
 
 
@@ -1013,7 +1010,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_fire">Component</a>:
-        <a href="../files/src_component.js.html#l404"><code>src&#x2F;component.js:404</code></a>
+        <a href="../files/src_component.js.html#l395"><code>src&#x2F;component.js:395</code></a>
         </p>
 
 
@@ -1289,7 +1286,7 @@ fill the canvas on arrival. Overrides <a href="../classes/CameraFlightAnimation.
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_animation_cameraFlightAnimation.js.html#l426"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:426</code></a>
+        <a href="../files/src_animation_cameraFlightAnimation.js.html#l428"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:428</code></a>
         </p>
 
 
@@ -1444,7 +1441,7 @@ fill the canvas on arrival. Overrides <a href="../classes/CameraFlightAnimation.
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_isType">Component</a>:
-        <a href="../files/src_component.js.html#l355"><code>src&#x2F;component.js:355</code></a>
+        <a href="../files/src_component.js.html#l346"><code>src&#x2F;component.js:346</code></a>
         </p>
 
 
@@ -1522,7 +1519,7 @@ myRotate.isType(xeogl.Entity); // Returns false, because xeogl.Rotate does not (
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_log">Component</a>:
-        <a href="../files/src_component.js.html#l542"><code>src&#x2F;component.js:542</code></a>
+        <a href="../files/src_component.js.html#l533"><code>src&#x2F;component.js:533</code></a>
         </p>
 
 
@@ -1580,7 +1577,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_off">Component</a>:
-        <a href="../files/src_component.js.html#l496"><code>src&#x2F;component.js:496</code></a>
+        <a href="../files/src_component.js.html#l487"><code>src&#x2F;component.js:487</code></a>
         </p>
 
 
@@ -1645,7 +1642,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_on">Component</a>:
-        <a href="../files/src_component.js.html#l453"><code>src&#x2F;component.js:453</code></a>
+        <a href="../files/src_component.js.html#l444"><code>src&#x2F;component.js:444</code></a>
         </p>
 
 
@@ -1739,7 +1736,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_once">Component</a>:
-        <a href="../files/src_component.js.html#l521"><code>src&#x2F;component.js:521</code></a>
+        <a href="../files/src_component.js.html#l512"><code>src&#x2F;component.js:512</code></a>
         </p>
 
 
@@ -1813,7 +1810,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_animation_cameraFlightAnimation.js.html#l683"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:683</code></a>
+        <a href="../files/src_animation_cameraFlightAnimation.js.html#l692"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:692</code></a>
         </p>
 
 
@@ -1851,7 +1848,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_warn">Component</a>:
-        <a href="../files/src_component.js.html#l567"><code>src&#x2F;component.js:567</code></a>
+        <a href="../files/src_component.js.html#l558"><code>src&#x2F;component.js:558</code></a>
         </p>
 
 
@@ -1903,7 +1900,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l195"><code>src&#x2F;_renderer&#x2F;renderer.js:195</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l197"><code>src&#x2F;_renderer&#x2F;renderer.js:197</code></a>
                             </p>
                     
                     
@@ -1928,7 +1925,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_animation_cameraFlightAnimation.js.html#l742"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:742</code></a>
+                            <a href="../files/src_animation_cameraFlightAnimation.js.html#l751"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:751</code></a>
                             </p>
                     
                     
@@ -1957,7 +1954,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l223"><code>src&#x2F;_renderer&#x2F;renderer.js:223</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l225"><code>src&#x2F;_renderer&#x2F;renderer.js:225</code></a>
                             </p>
                     
                     
@@ -1982,7 +1979,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l146"><code>src&#x2F;_renderer&#x2F;renderer.js:146</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l155"><code>src&#x2F;_renderer&#x2F;renderer.js:155</code></a>
                             </p>
                     
                     
@@ -2007,7 +2004,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l209"><code>src&#x2F;_renderer&#x2F;renderer.js:209</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l211"><code>src&#x2F;_renderer&#x2F;renderer.js:211</code></a>
                             </p>
                     
                     
@@ -2032,7 +2029,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l111"><code>src&#x2F;_renderer&#x2F;renderer.js:111</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l120"><code>src&#x2F;_renderer&#x2F;renderer.js:120</code></a>
                             </p>
                     
                     
@@ -2057,7 +2054,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l139"><code>src&#x2F;_renderer&#x2F;renderer.js:139</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l148"><code>src&#x2F;_renderer&#x2F;renderer.js:148</code></a>
                             </p>
                     
                     
@@ -2082,7 +2079,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l216"><code>src&#x2F;_renderer&#x2F;renderer.js:216</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l218"><code>src&#x2F;_renderer&#x2F;renderer.js:218</code></a>
                             </p>
                     
                     
@@ -2107,7 +2104,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l279"><code>src&#x2F;component.js:279</code></a>
+                            <a href="../files/src_component.js.html#l270"><code>src&#x2F;component.js:270</code></a>
                             </p>
                     
                     
@@ -2132,7 +2129,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_animation_cameraFlightAnimation.js.html#l780"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:780</code></a>
+                            <a href="../files/src_animation_cameraFlightAnimation.js.html#l791"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:791</code></a>
                             </p>
                     
                     
@@ -2160,7 +2157,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_animation_cameraFlightAnimation.js.html#l813"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:813</code></a>
+                            <a href="../files/src_animation_cameraFlightAnimation.js.html#l824"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:824</code></a>
                             </p>
                     
                     
@@ -2191,7 +2188,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_animation_cameraFlightAnimation.js.html#l848"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:848</code></a>
+                            <a href="../files/src_animation_cameraFlightAnimation.js.html#l859"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:859</code></a>
                             </p>
                     
                     
@@ -2219,7 +2216,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l244"><code>src&#x2F;_renderer&#x2F;renderer.js:244</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l246"><code>src&#x2F;_renderer&#x2F;renderer.js:246</code></a>
                             </p>
                     
                     
@@ -2245,7 +2242,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_id">Component</a>:
-                            <a href="../files/src_component.js.html#l270"><code>src&#x2F;component.js:270</code></a>
+                            <a href="../files/src_component.js.html#l261"><code>src&#x2F;component.js:261</code></a>
                             </p>
                     
                     
@@ -2270,7 +2267,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_isDefault">Component</a>:
-                            <a href="../files/src_component.js.html#l262"><code>src&#x2F;component.js:262</code></a>
+                            <a href="../files/src_component.js.html#l253"><code>src&#x2F;component.js:253</code></a>
                             </p>
                     
                     
@@ -2296,7 +2293,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_json">Component</a>:
-                            <a href="../files/src_component.js.html#l1024"><code>src&#x2F;component.js:1024</code></a>
+                            <a href="../files/src_component.js.html#l1015"><code>src&#x2F;component.js:1015</code></a>
                             </p>
                     
                     
@@ -2321,7 +2318,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l125"><code>src&#x2F;_renderer&#x2F;renderer.js:125</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l134"><code>src&#x2F;_renderer&#x2F;renderer.js:134</code></a>
                             </p>
                     
                     
@@ -2346,7 +2343,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l153"><code>src&#x2F;_renderer&#x2F;renderer.js:153</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l162"><code>src&#x2F;_renderer&#x2F;renderer.js:162</code></a>
                             </p>
                     
                     
@@ -2371,7 +2368,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l160"><code>src&#x2F;_renderer&#x2F;renderer.js:160</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l169"><code>src&#x2F;_renderer&#x2F;renderer.js:169</code></a>
                             </p>
                     
                     
@@ -2396,7 +2393,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_metadata">Component</a>:
-                            <a href="../files/src_component.js.html#l254"><code>src&#x2F;component.js:254</code></a>
+                            <a href="../files/src_component.js.html#l245"><code>src&#x2F;component.js:245</code></a>
                             </p>
                     
                     
@@ -2421,7 +2418,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l174"><code>src&#x2F;_renderer&#x2F;renderer.js:174</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l176"><code>src&#x2F;_renderer&#x2F;renderer.js:176</code></a>
                             </p>
                     
                     
@@ -2446,7 +2443,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l118"><code>src&#x2F;_renderer&#x2F;renderer.js:118</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l127"><code>src&#x2F;_renderer&#x2F;renderer.js:127</code></a>
                             </p>
                     
                     
@@ -2471,7 +2468,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l188"><code>src&#x2F;_renderer&#x2F;renderer.js:188</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l190"><code>src&#x2F;_renderer&#x2F;renderer.js:190</code></a>
                             </p>
                     
                     
@@ -2479,31 +2476,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Projection transform render state.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_reflection" class="property item">
-                        <h3 class="name"><code>reflection</code></h3>
-                        <span class="type">renderer.Reflect</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l167"><code>src&#x2F;_renderer&#x2F;renderer.js:167</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Environmental reflection render state.</p>
                     
                         </div>
                     
@@ -2522,7 +2494,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_scene">Component</a>:
-                            <a href="../files/src_component.js.html#l207"><code>src&#x2F;component.js:207</code></a>
+                            <a href="../files/src_component.js.html#l198"><code>src&#x2F;component.js:198</code></a>
                             </p>
                     
                     
@@ -2547,7 +2519,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l230"><code>src&#x2F;_renderer&#x2F;renderer.js:230</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l232"><code>src&#x2F;_renderer&#x2F;renderer.js:232</code></a>
                             </p>
                     
                     
@@ -2572,7 +2544,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l237"><code>src&#x2F;_renderer&#x2F;renderer.js:237</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l239"><code>src&#x2F;_renderer&#x2F;renderer.js:239</code></a>
                             </p>
                     
                     
@@ -2597,7 +2569,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l132"><code>src&#x2F;_renderer&#x2F;renderer.js:132</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l141"><code>src&#x2F;_renderer&#x2F;renderer.js:141</code></a>
                             </p>
                     
                     
@@ -2622,7 +2594,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l202"><code>src&#x2F;_renderer&#x2F;renderer.js:202</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l204"><code>src&#x2F;_renderer&#x2F;renderer.js:204</code></a>
                             </p>
                     
                     
@@ -2651,7 +2623,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_component.js.html#l1052"><code>src&#x2F;component.js:1052</code></a>
+                            <a href="../files/src_component.js.html#l1043"><code>src&#x2F;component.js:1043</code></a>
                             </p>
                     
                     
@@ -2677,7 +2649,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_superTypes">Component</a>:
-                            <a href="../files/src_component.js.html#l336"><code>src&#x2F;component.js:336</code></a>
+                            <a href="../files/src_component.js.html#l327"><code>src&#x2F;component.js:327</code></a>
                             </p>
                     
                     
@@ -2708,7 +2680,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_animation_cameraFlightAnimation.js.html#l878"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:878</code></a>
+                            <a href="../files/src_animation_cameraFlightAnimation.js.html#l889"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:889</code></a>
                             </p>
                     
                     
@@ -2740,7 +2712,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_animation_cameraFlightAnimation.js.html#l118"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:118</code></a>
+                            <a href="../files/src_animation_cameraFlightAnimation.js.html#l116"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:116</code></a>
                             </p>
                     
                     
@@ -2765,7 +2737,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l251"><code>src&#x2F;_renderer&#x2F;renderer.js:251</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l253"><code>src&#x2F;_renderer&#x2F;renderer.js:253</code></a>
                             </p>
                     
                     
@@ -2790,7 +2762,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l181"><code>src&#x2F;_renderer&#x2F;renderer.js:181</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l183"><code>src&#x2F;_renderer&#x2F;renderer.js:183</code></a>
                             </p>
                     
                     
@@ -2815,7 +2787,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l104"><code>src&#x2F;_renderer&#x2F;renderer.js:104</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l113"><code>src&#x2F;_renderer&#x2F;renderer.js:113</code></a>
                             </p>
                     
                     
@@ -2846,7 +2818,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_animation_cameraFlightAnimation.js.html#l758"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:758</code></a>
+                            <a href="../files/src_animation_cameraFlightAnimation.js.html#l767"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:767</code></a>
                             </p>
                     
                     
@@ -2889,7 +2861,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l1155"><code>src&#x2F;component.js:1155</code></a>
+                            <a href="../files/src_component.js.html#l1146"><code>src&#x2F;component.js:1146</code></a>
                             </p>
                     
                     
@@ -2914,7 +2886,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_animation_cameraFlightAnimation.js.html#l797"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:797</code></a>
+                            <a href="../files/src_animation_cameraFlightAnimation.js.html#l808"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:808</code></a>
                             </p>
                     
                     
@@ -2956,7 +2928,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_animation_cameraFlightAnimation.js.html#l833"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:833</code></a>
+                            <a href="../files/src_animation_cameraFlightAnimation.js.html#l844"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:844</code></a>
                             </p>
                     
                     
@@ -2999,7 +2971,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_animation_cameraFlightAnimation.js.html#l864"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:864</code></a>
+                            <a href="../files/src_animation_cameraFlightAnimation.js.html#l875"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:875</code></a>
                             </p>
                     
                     
@@ -3041,7 +3013,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_animation_cameraFlightAnimation.js.html#l894"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:894</code></a>
+                            <a href="../files/src_animation_cameraFlightAnimation.js.html#l905"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:905</code></a>
                             </p>
                     
                     

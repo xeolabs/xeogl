@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title>CameraPathAnimation - xeogl</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link href='https://fonts.googleapis.com/css?family=Exo+2:400,800,900,700,600,500|Roboto:100,300,400,500,700,900'  rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
     <link rel="icon" href="../assets/favicon.ico">
@@ -15,7 +16,7 @@
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
 
-                <h1 style="color:white;"><a href="../../">xeogl</a> / <a href="../../docs">API Docs</a></h1>
+                <h1 class="projectTitle"><a href="../../">xeogl</a> / <a href="../../docs">API Docs</a></h1>
 
         </div>
         <div class="yui3-u-1-4 version">
@@ -56,11 +57,13 @@
                                 <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
+                                <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
                                 <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
+                                <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
                                 <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
@@ -75,20 +78,13 @@
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
-                                <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
-                                <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
-                                <li><a href="../classes/KeyboardRotateCamera.html">KeyboardRotateCamera</a></li>
-                                <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
+                                <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
-                                <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
-                                <li><a href="../classes/MousePickEntity.html">MousePickEntity</a></li>
-                                <li><a href="../classes/MouseRotateCamera.html">MouseRotateCamera</a></li>
-                                <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
@@ -99,15 +95,20 @@
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/PointMarkings.html">PointMarkings</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
+                                <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
+                                <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
+                                <li><a href="../classes/SpecularMaterial.html">SpecularMaterial</a></li>
                                 <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/Spinner.html">Spinner</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
+                                <li><a href="../classes/SpotLight.html">SpotLight</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
@@ -142,6 +143,7 @@
                                 <li><a href="..//modules/input.html">input</a></li>
                                 <li><a href="..//modules/interaction.html">interaction</a></li>
                                 <li><a href="..//modules/lighting.html">lighting</a></li>
+                                <li><a href="..//modules/marking.html">marking</a></li>
                                 <li><a href="..//modules/materials.html">materials</a></li>
                                 <li><a href="..//modules/math.html">math</a></li>
                                 <li><a href="..//modules/models.html">models</a></li>
@@ -149,6 +151,7 @@
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
                                 <li><a href="..//modules/xeogl.html">xeogl</a></li>
+                                <li><a href="..//modules/zspace.html">zspace</a></li>
                             </ul>
                         </div>
                     </div>
@@ -210,17 +213,17 @@
 <p><img src="../../../assets/images/CameraPathAnimation.png"></img></p>
 <h2 id="examples">Examples</h2>
 <ul>
-<li><a href="../../examples/#animation_CameraPathAnimation_interpolate">Interpolating a Camera along a path</a></li>
-<li><a href="../../examples/#animation_CameraPathAnimation_flyToFrame">Flying directly to each frame on a path</a></li>
-<li><a href="../../examples/#animation_CameraPathAnimation_scrubToFrame">Jumping directly to each frame on a path</a></li>
-<li><a href="../../examples/#animation_CameraPathAnimation_frameMenu">A menu of Camera waypoints to fly to</a></li>
+<li><a href="../../examples/#animation_camera_path_interpolation">Interpolating a Camera along a path</a></li>
+<li><a href="../../examples/#animation_camera_path_flyToFrame">Flying directly to each frame on a path</a></li>
+<li><a href="../../examples/#animation_camera_path_scrubToFrame">Jumping directly to each frame on a path</a></li>
+<li><a href="../../examples/#animation_camera_path_frameMenu">A menu of Camera waypoints to fly to</a></li>
 </ul>
 <h2 id="usage">Usage</h2>
 <h3 id="1-interpolating-a-camera-along-a-path">1. Interpolating a Camera along a path</h3>
 <p>In this example we&#39;ll use the CameraPathAnimation&#39;s
 <a href="../classes/CameraPathAnimation.html#method_play" class="crosslink">play</a> method to smoothly <b>interpolate</b>
 the default <a href="../classes/Camera.html" class="crosslink">Camera</a> along a <a href="../classes/CameraPath.html" class="crosslink">CameraPath</a>:</p>
-<p><a href="../../examples/#animation_CameraPathAnimation_interpolate"><img src="http://i.giphy.com/l0MYDGMYzdFf6TqRW.gif"></img></a></p>
+<p><a href="../../examples/#animation_camera_path_interpolation"><img src="http://i.giphy.com/l0MYDGMYzdFf6TqRW.gif"></img></a></p>
 <pre class="code prettyprint"><code class="lang-Javascript">// Load a model from glTF
 
 var gearbox = new xeogl.GLTFModel({
@@ -279,7 +282,7 @@ gearbox.on("loaded", function () {
 <h3 id="2-flying-directly-to-each-frame-on-a-path">2. Flying directly to each frame on a path</h3>
 <p>In this example, we&#39;ll use the CameraPathAnimation&#39;s <a href="../classes/CameraPathAnimation.html#method_flyToFrame" class="crosslink">flyToFrame</a> method
 to <b>fly</b> the <a href="../classes/Camera.html" class="crosslink">Camera</a> directly to each frame on the <a href="../classes/CameraPath.html" class="crosslink">CameraPath</a>:</p>
-<p><a href="../../examples/#animation_CameraPathAnimation_flyToFrame"><img src="http://i.giphy.com/l3vQYNjsnAQwPBeYU.giff"></img></a></p>
+<p><a href="../../examples/#animation_camera_path_flyToFrame"><img src="http://i.giphy.com/l3vQYNjsnAQwPBeYU.gif"></img></a></p>
 <pre class="code prettyprint"><code class="lang-javascript">var i = 0;
 var dir = 1;
 
@@ -298,7 +301,7 @@ gearbox.on("loaded", function () {
 <h3 id="3-jumping-directly-to-each-frame-on-a-path">3. Jumping directly to each frame on a path</h3>
 <p>In this example, we&#39;ll use the CameraPathAnimation&#39;s <a href="../classes/CameraPathAnimation.html#method_scrubToFrame" class="crosslink">scrubToFrame</a> method
 to <b>jump</b> the <a href="../classes/Camera.html" class="crosslink">Camera</a> directly to each frame on the <a href="../classes/CameraPath.html" class="crosslink">CameraPath</a>:</p>
-<p><a href="../../examples/#animation_CameraPathAnimation_scrubToFrame"><img src="http://i.giphy.com/l0Hlyqk7kewTjSBZ6.gif"></img></a></p>
+<p><a href="../../examples/#animation_camera_path_scrubToFrame"><img src="http://i.giphy.com/l0Hlyqk7kewTjSBZ6.gif"></img></a></p>
 <pre class="code prettyprint"><code class="lang-javascript">var i = 0;
 var dir = 1;
 
@@ -561,6 +564,10 @@ gearbox.on("loaded", function () {
                                 <a href="#property_metadata">metadata</a>
 
                             </li>
+                            <li class="index-item property">
+                                <a href="#property_rate">rate</a>
+
+                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_scene">scene</a>
 
@@ -628,7 +635,7 @@ gearbox.on("loaded", function () {
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_create">Component</a>:
-        <a href="../files/src_component.js.html#l904"><code>src&#x2F;component.js:904</code></a>
+        <a href="../files/src_component.js.html#l895"><code>src&#x2F;component.js:895</code></a>
         </p>
 
 
@@ -719,7 +726,7 @@ component - you can specify the component ID in the <code>cfg</code> parameter.<
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_component.js.html#l1085"><code>src&#x2F;component.js:1085</code></a>
+        <a href="../files/src_component.js.html#l1076"><code>src&#x2F;component.js:1076</code></a>
         </p>
 
 
@@ -761,7 +768,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_error">Component</a>:
-        <a href="../files/src_component.js.html#l587"><code>src&#x2F;component.js:587</code></a>
+        <a href="../files/src_component.js.html#l578"><code>src&#x2F;component.js:578</code></a>
         </p>
 
 
@@ -825,7 +832,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_fire">Component</a>:
-        <a href="../files/src_component.js.html#l404"><code>src&#x2F;component.js:404</code></a>
+        <a href="../files/src_component.js.html#l395"><code>src&#x2F;component.js:395</code></a>
         </p>
 
 
@@ -908,7 +915,7 @@ any subsequent notifications on the event as they are made.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/examples_js_animation_cameraPathAnimation.js.html#l360"><code>examples&#x2F;js&#x2F;animation&#x2F;cameraPathAnimation.js:360</code></a>
+        <a href="../files/examples_js_animation_cameraPathAnimation.js.html#l380"><code>examples&#x2F;js&#x2F;animation&#x2F;cameraPathAnimation.js:380</code></a>
         </p>
 
 
@@ -978,7 +985,7 @@ any subsequent notifications on the event as they are made.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_isType">Component</a>:
-        <a href="../files/src_component.js.html#l355"><code>src&#x2F;component.js:355</code></a>
+        <a href="../files/src_component.js.html#l346"><code>src&#x2F;component.js:346</code></a>
         </p>
 
 
@@ -1056,7 +1063,7 @@ myRotate.isType(xeogl.Entity); // Returns false, because xeogl.Rotate does not (
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_log">Component</a>:
-        <a href="../files/src_component.js.html#l542"><code>src&#x2F;component.js:542</code></a>
+        <a href="../files/src_component.js.html#l533"><code>src&#x2F;component.js:533</code></a>
         </p>
 
 
@@ -1114,7 +1121,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_off">Component</a>:
-        <a href="../files/src_component.js.html#l496"><code>src&#x2F;component.js:496</code></a>
+        <a href="../files/src_component.js.html#l487"><code>src&#x2F;component.js:487</code></a>
         </p>
 
 
@@ -1179,7 +1186,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_on">Component</a>:
-        <a href="../files/src_component.js.html#l453"><code>src&#x2F;component.js:453</code></a>
+        <a href="../files/src_component.js.html#l444"><code>src&#x2F;component.js:444</code></a>
         </p>
 
 
@@ -1273,7 +1280,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_once">Component</a>:
-        <a href="../files/src_component.js.html#l521"><code>src&#x2F;component.js:521</code></a>
+        <a href="../files/src_component.js.html#l512"><code>src&#x2F;component.js:512</code></a>
         </p>
 
 
@@ -1347,7 +1354,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/examples_js_animation_cameraPathAnimation.js.html#l300"><code>examples&#x2F;js&#x2F;animation&#x2F;cameraPathAnimation.js:300</code></a>
+        <a href="../files/examples_js_animation_cameraPathAnimation.js.html#l320"><code>examples&#x2F;js&#x2F;animation&#x2F;cameraPathAnimation.js:320</code></a>
         </p>
 
 
@@ -1385,7 +1392,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/examples_js_animation_cameraPathAnimation.js.html#l334"><code>examples&#x2F;js&#x2F;animation&#x2F;cameraPathAnimation.js:334</code></a>
+        <a href="../files/examples_js_animation_cameraPathAnimation.js.html#l354"><code>examples&#x2F;js&#x2F;animation&#x2F;cameraPathAnimation.js:354</code></a>
         </p>
 
 
@@ -1440,7 +1447,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/examples_js_animation_cameraPathAnimation.js.html#l313"><code>examples&#x2F;js&#x2F;animation&#x2F;cameraPathAnimation.js:313</code></a>
+        <a href="../files/examples_js_animation_cameraPathAnimation.js.html#l333"><code>examples&#x2F;js&#x2F;animation&#x2F;cameraPathAnimation.js:333</code></a>
         </p>
 
 
@@ -1495,7 +1502,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/examples_js_animation_cameraPathAnimation.js.html#l413"><code>examples&#x2F;js&#x2F;animation&#x2F;cameraPathAnimation.js:413</code></a>
+        <a href="../files/examples_js_animation_cameraPathAnimation.js.html#l433"><code>examples&#x2F;js&#x2F;animation&#x2F;cameraPathAnimation.js:433</code></a>
         </p>
 
 
@@ -1550,7 +1557,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/examples_js_animation_cameraPathAnimation.js.html#l386"><code>examples&#x2F;js&#x2F;animation&#x2F;cameraPathAnimation.js:386</code></a>
+        <a href="../files/examples_js_animation_cameraPathAnimation.js.html#l406"><code>examples&#x2F;js&#x2F;animation&#x2F;cameraPathAnimation.js:406</code></a>
         </p>
 
 
@@ -1599,7 +1606,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/examples_js_animation_cameraPathAnimation.js.html#l447"><code>examples&#x2F;js&#x2F;animation&#x2F;cameraPathAnimation.js:447</code></a>
+        <a href="../files/examples_js_animation_cameraPathAnimation.js.html#l467"><code>examples&#x2F;js&#x2F;animation&#x2F;cameraPathAnimation.js:467</code></a>
         </p>
 
 
@@ -1637,7 +1644,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_warn">Component</a>:
-        <a href="../files/src_component.js.html#l567"><code>src&#x2F;component.js:567</code></a>
+        <a href="../files/src_component.js.html#l558"><code>src&#x2F;component.js:558</code></a>
         </p>
 
 
@@ -1689,7 +1696,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_animation_cameraPathAnimation.js.html#l271"><code>examples&#x2F;js&#x2F;animation&#x2F;cameraPathAnimation.js:271</code></a>
+                            <a href="../files/examples_js_animation_cameraPathAnimation.js.html#l274"><code>examples&#x2F;js&#x2F;animation&#x2F;cameraPathAnimation.js:274</code></a>
                             </p>
                     
                     
@@ -1717,7 +1724,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_animation_cameraPathAnimation.js.html#l247"><code>examples&#x2F;js&#x2F;animation&#x2F;cameraPathAnimation.js:247</code></a>
+                            <a href="../files/examples_js_animation_cameraPathAnimation.js.html#l250"><code>examples&#x2F;js&#x2F;animation&#x2F;cameraPathAnimation.js:250</code></a>
                             </p>
                     
                     
@@ -1743,7 +1750,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l279"><code>src&#x2F;component.js:279</code></a>
+                            <a href="../files/src_component.js.html#l270"><code>src&#x2F;component.js:270</code></a>
                             </p>
                     
                     
@@ -1769,7 +1776,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_id">Component</a>:
-                            <a href="../files/src_component.js.html#l270"><code>src&#x2F;component.js:270</code></a>
+                            <a href="../files/src_component.js.html#l261"><code>src&#x2F;component.js:261</code></a>
                             </p>
                     
                     
@@ -1794,7 +1801,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_isDefault">Component</a>:
-                            <a href="../files/src_component.js.html#l262"><code>src&#x2F;component.js:262</code></a>
+                            <a href="../files/src_component.js.html#l253"><code>src&#x2F;component.js:253</code></a>
                             </p>
                     
                     
@@ -1820,7 +1827,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_json">Component</a>:
-                            <a href="../files/src_component.js.html#l1024"><code>src&#x2F;component.js:1024</code></a>
+                            <a href="../files/src_component.js.html#l1015"><code>src&#x2F;component.js:1015</code></a>
                             </p>
                     
                     
@@ -1845,7 +1852,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_metadata">Component</a>:
-                            <a href="../files/src_component.js.html#l254"><code>src&#x2F;component.js:254</code></a>
+                            <a href="../files/src_component.js.html#l245"><code>src&#x2F;component.js:245</code></a>
                             </p>
                     
                     
@@ -1853,6 +1860,31 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Arbitrary, user-defined metadata on this component.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_rate" class="property item">
+                        <h3 class="name"><code>rate</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_animation_cameraPathAnimation.js.html#l302"><code>examples&#x2F;js&#x2F;animation&#x2F;cameraPathAnimation.js:302</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The rate at which this CameraPathAnimation plays.</p>
                     
                         </div>
                     
@@ -1871,7 +1903,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_scene">Component</a>:
-                            <a href="../files/src_component.js.html#l207"><code>src&#x2F;component.js:207</code></a>
+                            <a href="../files/src_component.js.html#l198"><code>src&#x2F;component.js:198</code></a>
                             </p>
                     
                     
@@ -1900,7 +1932,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_component.js.html#l1052"><code>src&#x2F;component.js:1052</code></a>
+                            <a href="../files/src_component.js.html#l1043"><code>src&#x2F;component.js:1043</code></a>
                             </p>
                     
                     
@@ -1926,7 +1958,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_superTypes">Component</a>:
-                            <a href="../files/src_component.js.html#l336"><code>src&#x2F;component.js:336</code></a>
+                            <a href="../files/src_component.js.html#l327"><code>src&#x2F;component.js:327</code></a>
                             </p>
                     
                     
@@ -1992,7 +2024,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_animation_cameraPathAnimation.js.html#l286"><code>examples&#x2F;js&#x2F;animation&#x2F;cameraPathAnimation.js:286</code></a>
+                            <a href="../files/examples_js_animation_cameraPathAnimation.js.html#l289"><code>examples&#x2F;js&#x2F;animation&#x2F;cameraPathAnimation.js:289</code></a>
                             </p>
                     
                     
@@ -2034,7 +2066,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l1155"><code>src&#x2F;component.js:1155</code></a>
+                            <a href="../files/src_component.js.html#l1146"><code>src&#x2F;component.js:1146</code></a>
                             </p>
                     
                     

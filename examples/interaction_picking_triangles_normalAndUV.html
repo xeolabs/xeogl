@@ -17,18 +17,9 @@
 
 <body>
 
-<div id="infoLight">
-    <a href="http://xeogl.org" target="_parent">xeogl</a>
-    <br><br>
-    <ul>
-        <li>
-            ray picking demo
-        </li>
-        <li>
-            move your mouse over the objects!
-        </li>
-    </ul>
-    <br><br>
+<div id="info">
+    <h1>raycasting to find position, UV and normal on <a  href="../docs/classes/Entity.html" target="_parent">Entity</a> surfaces</h1>
+    <br>
     <img id="diffuseTexture" src="textures/diffuse/uvGrid2.jpg" width="400px" height="400px">
 
     <div id="uvPos"
@@ -61,10 +52,7 @@
     var material = new xeogl.PhongMaterial({
         diffuseMap: new xeogl.Texture({
             src: "textures/diffuse/uvGrid2.jpg"
-        }),
-        diffuse: [0.3, 0.3, 1],
-        lineWidth: 3,
-        pointSize: 5
+        })
     });
 
     // A Entity that we can pick - a heightmap with a diffuse map

@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title>src/materials/texture.js - xeogl</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link href='https://fonts.googleapis.com/css?family=Exo+2:400,800,900,700,600,500|Roboto:100,300,400,500,700,900'  rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
     <link rel="icon" href="../assets/favicon.ico">
@@ -15,7 +16,7 @@
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
 
-                <h1 style="color:white;"><a href="../../">xeogl</a> / <a href="../../docs">API Docs</a></h1>
+                <h1 class="projectTitle"><a href="../../">xeogl</a> / <a href="../../docs">API Docs</a></h1>
 
         </div>
         <div class="yui3-u-1-4 version">
@@ -56,11 +57,13 @@
                                 <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
+                                <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
                                 <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
+                                <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
                                 <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
@@ -75,20 +78,13 @@
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
-                                <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
-                                <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
-                                <li><a href="../classes/KeyboardRotateCamera.html">KeyboardRotateCamera</a></li>
-                                <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
+                                <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
-                                <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
-                                <li><a href="../classes/MousePickEntity.html">MousePickEntity</a></li>
-                                <li><a href="../classes/MouseRotateCamera.html">MouseRotateCamera</a></li>
-                                <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
@@ -99,15 +95,20 @@
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/PointMarkings.html">PointMarkings</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
+                                <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
+                                <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
+                                <li><a href="../classes/SpecularMaterial.html">SpecularMaterial</a></li>
                                 <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/Spinner.html">Spinner</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
+                                <li><a href="../classes/SpotLight.html">SpotLight</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
@@ -142,6 +143,7 @@
                                 <li><a href="..//modules/input.html">input</a></li>
                                 <li><a href="..//modules/interaction.html">interaction</a></li>
                                 <li><a href="..//modules/lighting.html">lighting</a></li>
+                                <li><a href="..//modules/marking.html">marking</a></li>
                                 <li><a href="..//modules/materials.html">materials</a></li>
                                 <li><a href="..//modules/math.html">math</a></li>
                                 <li><a href="..//modules/models.html">models</a></li>
@@ -149,6 +151,7 @@
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
                                 <li><a href="..//modules/xeogl.html">xeogl</a></li>
+                                <li><a href="..//modules/zspace.html">zspace</a></li>
                             </ul>
                         </div>
                     </div>
@@ -189,33 +192,28 @@
 /**
  A **Texture** specifies a texture map.
 
- &lt;a href=&quot;../../examples/#materials_texture_diffuse&quot;&gt;&lt;img src=&quot;../../assets/images/screenshots/TorusGeometry.png&quot;&gt;&lt;/img&gt;&lt;/a&gt;
-
  ## Overview
 
- * Textures are grouped within {{#crossLink &quot;PhongMaterial&quot;}}PhongMaterials{{/crossLink}}s, which are attached to
+ * Textures are grouped within {{#crossLink &quot;Material&quot;}}Materials{{/crossLink}}, which are attached to
  {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
- To create a Texture from an image file, set the Texture&#x27;s {{#crossLink &quot;Texture/src:property&quot;}}{{/crossLink}}
+ * To create a Texture from an image file, set the Texture&#x27;s {{#crossLink &quot;Texture/src:property&quot;}}{{/crossLink}}
  property to the image file path.
- To create a Texture from an HTMLImageElement, set the Texture&#x27;s {{#crossLink &quot;Texture/image:property&quot;}}{{/crossLink}}
+ * To create a Texture from an HTMLImageElement, set the Texture&#x27;s {{#crossLink &quot;Texture/image:property&quot;}}{{/crossLink}}
  property to the HTMLImageElement.
- To render color images of {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} to a Texture, set the Texture&#x27;s {{#crossLink &quot;Texture/target:property&quot;}}{{/crossLink}}
+ * To render color images of {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} to a Texture, set the Texture&#x27;s {{#crossLink &quot;Texture/target:property&quot;}}{{/crossLink}}
  property to a {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}} that is attached to those {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
- Similarly, to render depth images of {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} to a Texture, set the Texture&#x27;s {{#crossLink &quot;Texture/target:property&quot;}}{{/crossLink}}
+ * Similarly, to render depth images of {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} to a Texture, set the Texture&#x27;s {{#crossLink &quot;Texture/target:property&quot;}}{{/crossLink}}
  property to a {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
- For special effects, we often use rendered Textures in combination with {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}} and {{#crossLink &quot;Stage&quot;}}Stages{{/crossLink}}.
+ * For special effects, we often use rendered Textures in combination with {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}} and {{#crossLink &quot;Stage&quot;}}Stages{{/crossLink}}.
 
- &lt;img src=&quot;../../../assets/images/Texture.png&quot;&gt;&lt;/img&gt;
+ &lt;img src=&quot;../../assets/images/Texture.png&quot;&gt;&lt;/img&gt;
 
  ## Examples
 
- * [Diffuse Texture](../../examples/#materials_texture_diffuse)
- * [Specular Texture](../../examples/#materials_texture_specular)
- * [Opacity Texture](../../examples/#materials_texture_opacity)
- * [Emissive Texture](../../examples/#materials_texture_emissive)
- * [Normal map](../../examples/#materials_texture_normalMap)
- * [Diffuse Video Texture](../../examples/#materials_texture_video)
- * [Texture Animation](../../examples/#materials_texture_animation)
+ * [Textures on MetallicMaterials](../../examples/#materials_metallic_textures)
+ * [Textures on SpecularMaterials](../../examples/#materials_specGloss_textures)
+ * [Textures on PhongMaterials](../../examples/#materials_phong_textures)
+ * [Video texture](../../examples/#materials_phong_textures_video)
 
  ## Usage
 
@@ -302,7 +300,7 @@
 
             this._state = new xeogl.renderer.Texture({
 
-                texture: null,  // xeogl.renderer.webgl.Texture2D
+                texture : new xeogl.renderer.webgl.Texture2D( this.scene.canvas.gl),
                 matrix: null,   // Float32Array
 
                 // Texture properties
@@ -311,9 +309,7 @@
                 magFilter: null,
                 wrapS: null,
                 wrapT: null,
-                flipY: null,
-
-                pageTableTexture: null
+                flipY: false
             });
 
             // Data source
@@ -321,8 +317,6 @@
             this._src = null;   // URL string
             this._image = null; // HTMLImageElement
             this._target = null;// xeogl.RenderTarget
-
-            this._pageTable = null; // Float32Array
 
             // Transformation
 
@@ -432,6 +426,8 @@
 
                     state.texture.setImage(this._image, state);
 
+                    state.renderable = true;
+
                     this._imageDirty = false;
                     this._propsDirty = true; // May now need to regenerate mipmaps etc
                 }
@@ -507,35 +503,8 @@
                 this._propsDirty = false;
             }
 
-            if (this._pageTableDirty) {
-
-                if (this._image) {
-
-                    if (this._onTargetActive) {
-                        this._target.off(this._onTargetActive);
-                        this._onTargetActive = null;
-                    }
-
-                    if (state.texture &amp;&amp; state.texture.renderBuffer) {
-
-                        // Detach from &quot;virtual texture&quot; provided by render target
-                        state.texture = null;
-                    }
-
-                    if (!state.texture) {
-                        state.texture = new xeogl.renderer.webgl.Texture2D(gl);
-                    }
-
-                    state.texture.setImage(this._image, state);
-
-                    this._imageDirty = false;
-                    this._propsDirty = true; // May now need to regenerate mipmaps etc
-                }
-            }
-
             this._renderer.imageDirty = true;
         },
-
 
         _loadSrc: function (src) {
 
@@ -748,36 +717,6 @@
 
                 get: function () {
                     return this._attached.target;
-                }
-            },
-
-            /**
-             * Page table for sparse virtual texturing.
-             *
-             * Fires an {{#crossLink &quot;Texture/pageTable:event&quot;}}{{/crossLink}} event on change.
-             *
-             * @property pageTable
-             * @default null
-             * @type {Float32Array}
-             */
-            pageTable: {
-
-                set: function (value) {
-
-                    this._pageTable = value;
-
-                    this._imageDirty = true;
-
-                    /**
-                     * Fired whenever this Texture&#x27;s  {{#crossLink &quot;Texture/pageTable:property&quot;}}{{/crossLink}} property changes.
-                     * @event pageTable
-                     * @param value {Float32Array} The property&#x27;s new value
-                     */
-                    this.fire(&quot;pageTable&quot;, this._pageTable);
-                },
-
-                get: function () {
-                    return this._state._pageTable;
                 }
             },
 
@@ -1194,10 +1133,6 @@
             } else if (this._image) {
                 // TODO: Image data
                 // json.src = image.src;
-            }
-
-            if (false &amp;&amp; this._state.pageTable !== false) {
-                json.pageTable = this._state.pageTable;
             }
 
             return json;

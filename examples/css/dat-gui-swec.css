@@ -101,6 +101,10 @@
     outline-width: 1.5px
 }
 
+.dg.main {
+    width: 400px;
+}
+
 .dg.main .close-button {
     background: -moz-linear-gradient(center top, #ededed 34%, #dfdfdf 71%);
     background: -ms-linear-gradient(top, #ededed 34%, #dfdfdf 71%);

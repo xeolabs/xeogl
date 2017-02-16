@@ -1,7 +1,7 @@
 /**
  A **PlaneGeometry** is a parameterized {{#crossLink "Geometry"}}{{/crossLink}} that defines a plane-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- <a href="../../examples/#geometry_PlaneGeometry"><img src="../../assets/images/screenshots/PlaneGeometry.png"></img></a>
+ <a href="../../examples/#geometry_primitives_plane"><img src="../../assets/images/screenshots/PlaneGeometry.png"></img></a>
 
  ## Overview
 
@@ -13,7 +13,7 @@
  
  ## Examples
 
- * [Textured PlaneGeometry](../../examples/#geometry_PlaneGeometry)
+ * [Textured PlaneGeometry](../../examples/#geometry_primitives_plane)
 
  ## Usage
 

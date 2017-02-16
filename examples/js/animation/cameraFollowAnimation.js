@@ -2,7 +2,7 @@
  A **CameraFollowAnimation** makes a {{#crossLink "Camera"}}{{/crossLink}} dynamically follow a
  World-space {{#crossLink "Boundary3D"}}{{/crossLink}} in order to keep it entirely in view.
 
- <a href="../../examples/#animation_CameraFollowAnimation"><img src="http://i.giphy.com/l0HlHcuzAjhMQ8YSY.gif"></img></a>
+ <a href="../../examples/#animation_camera_follow_entity"><img src="http://i.giphy.com/l0HlHcuzAjhMQ8YSY.gif"></img></a>
 
  ## Overview
 
@@ -16,8 +16,8 @@
 
  ## Examples
 
- * [Following an Entity with a Camera](../../examples/#animation_CameraFollowAnimation)
- * [Following an Entity with a Camera, keeping Entity fitted to view volume](../../examples/#animation_CameraFollowAnimation_fitToView)
+ * [Following an Entity with a Camera](../../examples/#animation_camera_follow_entity)
+ * [Following an Entity with a Camera, keeping Entity fitted to view volume](../../examples/#animation_camera_follow_entity_fitToView)
 
  ## Usage
 

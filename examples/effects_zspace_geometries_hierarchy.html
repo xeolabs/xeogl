@@ -7,19 +7,19 @@
 
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="../build/xeogl.js"></script>
+    <script src="../build/xeogl.min.js"></script>
 
     <!-- ZSpaceEffect is insulated from changes to the zSpace WebVR API by
      the "ZSpace" utility class provided by zSpace, which depends on glmatrix. -->
 
     <script src="libs/gl-matrix-min.js"></script>
     <!--<script src="js/effects/zSpace.js"></script>-->
-    <script src="js/effects/zSpaceEffect_complete.js"></script>
-    <script src="js/controls/zSpaceStylusControl.js"></script>
+    <script src="js/zspace/zSpaceEffect_complete.js"></script>
+    <script src="js/zspace/zSpaceStylusControl.js"></script>
 
 <body>
 
-<div id="infoLight"
+<div id="info"
      style="left: 0; text-align: left; background: black; opacity: 0.7; padding: 8px; color: white; font-size: 14pt;">
     <span><a href="http://xeogl.org" target="_parent" >xeogl</a><br>
         using a <a
@@ -27,7 +27,7 @@
                 target="_parent">ZSpaceEffect</a> to view a bunch of <a
                 href="../docs/classes/Entity.html"
                 target="_parent">Entities</a> in zSpace VR</span><br>
-    <span id="log" style="color:red;font-size: 16px"></span>
+    <span id="log" style="color:red;"></span>
 </div>
 
 <script>
@@ -96,7 +96,7 @@
 
     zspaceEffect.on("supported", function (supported) {
         if (!supported) {
-            document.getElementById("log").innerText = "This computer is not a zSpace viewer - defaulting to standard xeogl camera controls. ";
+            document.getElementById("log").innerText = "Not a zSpace display ";
         }
     });
 

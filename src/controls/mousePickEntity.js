@@ -3,8 +3,7 @@
 
  ## Examples
 
- * [MousePickEntity example](../../examples/#interaction_MousePickEntity)
- * [CameraControl example](../../examples/#interaction_CameraControl)
+ * [CameraControl example](../../examples/#interaction_camera_CameraControl)
 
  ## Usage
 
@@ -48,7 +47,7 @@
  });
  ````
 
- @class MousePickEntity
+
  @module xeogl
  @submodule controls
  @constructor

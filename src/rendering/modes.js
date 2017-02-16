@@ -66,6 +66,8 @@
  @param [cfg.frontface="ccw"] {Boolean} The winding order for {{#crossLink "Geometry"}}Geometry{{/crossLink}} front faces - "cw" for clockwise, or "ccw" for counter-clockwise.
  @param [cfg.collidable=true] {Boolean} Whether attached {{#crossLink "Entity"}}Entities{{/crossLink}} are included in boundary-related calculations. Set this false if the
  {{#crossLink "Entity"}}Entities{{/crossLink}} are things like helpers or indicators that should not be included in boundary calculations.
+ @param [cfg.castShadow=true] {Boolean} Whether attached {{#crossLink "Entity"}}Entities{{/crossLink}} cast shadows.
+ @param [cfg.receiveShadow=true] {Boolean} Whether attached {{#crossLink "Entity"}}Entities{{/crossLink}} receive shadows.
  @extends Component
  */
 (function () {
@@ -84,7 +86,10 @@
                 transparent: null,
                 backfaces: null,
                 frontface: null, // Boolean for speed; true == "ccw", false == "cw"
-                collidable: null
+                collidable: null,
+                castShadow: null,
+                receiveShadow: null,
+                hash: ""
             });
 
             this.pickable = cfg.pickable;
@@ -93,6 +98,8 @@
             this.backfaces = cfg.backfaces;
             this.frontface = cfg.frontface;
             this.collidable = cfg.collidable;
+            this.castShadow = cfg.castShadow;
+            this.receiveShadow = cfg.receiveShadow;
         },
 
         _props: {
@@ -339,6 +346,83 @@
                 get: function () {
                     return this._state.collidable;
                 }
+            },
+
+
+            /**
+             Whether attached {{#crossLink "Entity"}}Entities{{/crossLink}} casts shadows.
+
+             Fires a {{#crossLink "Modes/castShadow:event"}}{{/crossLink}} event on change.
+
+             @property castShadow
+             @default true
+             @type Boolean
+             */
+            castShadow: {
+
+                set: function (value) {
+
+                    value = value !== false;
+
+                    if (value === this._state.castShadow) {
+                        return;
+                    }
+
+                    this._state.castShadow = value;
+
+                    this._renderer.imageDirty = true; // Re-render in next shadow map generation pass
+
+                    /**
+                     Fired whenever this Modes' {{#crossLink "Modes/castShadow:property"}}{{/crossLink}} property changes.
+
+                     @event castShadow
+                     @param value The property's new value
+                     */
+                    this.fire("castShadow", this._state.castShadow);
+                },
+
+                get: function () {
+                    return this._state.castShadow;
+                }
+            },
+
+            /**
+             Whether attached {{#crossLink "Entity"}}Entities{{/crossLink}} receives shadows.
+
+             Fires a {{#crossLink "Modes/receiveShadow:event"}}{{/crossLink}} event on change.
+
+             @property receiveShadow
+             @default true
+             @type Boolean
+             */
+            receiveShadow: {
+
+                set: function (value) {
+
+                    value = value !== false;
+
+                    if (value === this._state.receiveShadow) {
+                        return;
+                    }
+
+                    this._state.receiveShadow = value;
+
+                    this._state.hash = value ? "/mod/rs;" : "/mod;";
+
+                    this.fire("dirty"); // Now need to (re)compile shaders to include/exclude shadow mapping
+
+                    /**
+                     Fired whenever this Modes' {{#crossLink "Modes/receiveShadow:property"}}{{/crossLink}} property changes.
+
+                     @event receiveShadow
+                     @param value The property's new value
+                     */
+                    this.fire("receiveShadow", this._state.receiveShadow);
+                },
+
+                get: function () {
+                    return this._state.receiveShadow;
+                }
             }
         },
 
@@ -353,7 +437,9 @@
                 transparent: this._state.transparent,
                 backfaces: this._state.backfaces,
                 frontface: this._state.frontface,
-                collidable: this._state.collidable
+                collidable: this._state.collidable,
+                castShadow: this._state.castShadow,
+                receiveShadow: this._state.receiveShadow
             };
         },
 

@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title>src/lighting/lights.js - xeogl</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link href='https://fonts.googleapis.com/css?family=Exo+2:400,800,900,700,600,500|Roboto:100,300,400,500,700,900'  rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
     <link rel="icon" href="../assets/favicon.ico">
@@ -15,7 +16,7 @@
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
 
-                <h1 style="color:white;"><a href="../../">xeogl</a> / <a href="../../docs">API Docs</a></h1>
+                <h1 class="projectTitle"><a href="../../">xeogl</a> / <a href="../../docs">API Docs</a></h1>
 
         </div>
         <div class="yui3-u-1-4 version">
@@ -56,11 +57,13 @@
                                 <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
+                                <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
                                 <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
+                                <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
                                 <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
@@ -75,20 +78,13 @@
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
-                                <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
-                                <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
-                                <li><a href="../classes/KeyboardRotateCamera.html">KeyboardRotateCamera</a></li>
-                                <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
+                                <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
-                                <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
-                                <li><a href="../classes/MousePickEntity.html">MousePickEntity</a></li>
-                                <li><a href="../classes/MouseRotateCamera.html">MouseRotateCamera</a></li>
-                                <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
@@ -99,15 +95,20 @@
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/PointMarkings.html">PointMarkings</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
+                                <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
+                                <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
+                                <li><a href="../classes/SpecularMaterial.html">SpecularMaterial</a></li>
                                 <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/Spinner.html">Spinner</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
+                                <li><a href="../classes/SpotLight.html">SpotLight</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
@@ -142,6 +143,7 @@
                                 <li><a href="..//modules/input.html">input</a></li>
                                 <li><a href="..//modules/interaction.html">interaction</a></li>
                                 <li><a href="..//modules/lighting.html">lighting</a></li>
+                                <li><a href="..//modules/marking.html">marking</a></li>
                                 <li><a href="..//modules/materials.html">materials</a></li>
                                 <li><a href="..//modules/math.html">math</a></li>
                                 <li><a href="..//modules/models.html">models</a></li>
@@ -149,6 +151,7 @@
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
                                 <li><a href="..//modules/xeogl.html">xeogl</a></li>
+                                <li><a href="..//modules/zspace.html">zspace</a></li>
                             </ul>
                         </div>
                     </div>
@@ -196,51 +199,84 @@
  * {{#crossLink &quot;AmbientLight&quot;}}AmbientLight{{/crossLink}}s, which are fixed-intensity and fixed-color, and
  affect all the {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} equally,
  * {{#crossLink &quot;PointLight&quot;}}PointLight{{/crossLink}}s, which emit light that
- originates from a single point and spreads outward in all directions, and
+ originates from a single point and spreads outward in all directions,
  * {{#crossLink &quot;DirLight&quot;}}DirLight{{/crossLink}}s, which illuminate all the
- {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} equally from a given direction
+ {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} equally from a given direction and may cast shadows, and
+ * {{#crossLink &quot;SpotLight&quot;}}SpotLight{{/crossLink}}s, which eminate from a position in a given direction and may cast shadows.
+
+ A Lights can also have two other components that define environmental reflection and irradiance:
+
+ * {{#crossLink &quot;Lights/lightMap:property&quot;}}{{/crossLink}} set to a {{#crossLink &quot;CubeTexture&quot;}}{{/crossLink}}, and
+ * {{#crossLink &quot;Lights/reflectionMap:property&quot;}}{{/crossLink}} set to a {{#crossLink &quot;CubeTexture&quot;}}{{/crossLink}}.
 
  &lt;img src=&quot;../../../assets/images/Lights.png&quot;&gt;&lt;/img&gt;
 
+ ## Examples
+
+ * [Light and reflection maps](../../examples/#materials_metallic_fireHydrant)
+ * [World-space point lighting with normal map](../../examples/#lights_point_world_normalMap)
+ * [View-space directional three-point lighting](../../examples/#lights_directional_view_threePoint)
+ * [View-space positional three-point lighting](../../examples/#lights_point_world_threePoint)
+ * [World-space directional three-point lighting](../../examples/#lights_directional_world_threePoint)
+ * [World-space positional three-point lighting](../../examples/#lights_point_world_threePoint)
+
  ## Usage
 
- &#x60;&#x60;&#x60;&#x60; javascript
- var entity = new xeogl.Entity({
+ &#x60;&#x60;&#x60;&#x60;javascript
+ new xeogl.Entity({
 
-     lights: new xeogl.Lights({
-         lights: [
-
-             new xeogl.AmbientLight({
-                 color: [0.7, 0.7, 0.7]
-             })
-
-             new xeogl.DirLight({
-                 dir:         [-1, -1, -1],
-                 color:       [0.5, 0.7, 0.5],
-                 intensity:   1.0,
-                 space:      &quot;view&quot;  // Other option is &quot;world&quot;, for World-space
-             }),
-
-             new xeogl.PointLight({
-                 pos: [0, 100, 100],
-                 color: [0.5, 0.7, 0.5],
-                 intensity: 1
-                 constantAttenuation: 0,
-                 linearAttenuation: 0,
-                 quadraticAttenuation: 0,
-                 space: &quot;view&quot;
-             })
-         ]
+    lights: new xeogl.Lights({
+        lights: [
+            new xeogl.DirLight({
+                dir: [0.8, -0.6, -0.8],
+                color: [0.8, 0.8, 0.8],
+                space: &quot;view&quot;
+            }),
+            new xeogl.DirLight({
+                dir: [-0.8, -0.4, -0.4],
+                color: [0.4, 0.4, 0.5],
+                space: &quot;view&quot;
+            }),
+            new xeogl.DirLight({
+                dir: [0.2, -0.8, 0.8],
+                color: [0.8, 0.8, 0.8],
+                space: &quot;view&quot;
+            })
+        ],
+        lightMap: new xeogl.CubeTexture({
+            src: [
+                &quot;textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png&quot;,
+                &quot;textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png&quot;,
+                &quot;textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png&quot;,
+                &quot;textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png&quot;,
+                &quot;textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png&quot;,
+                &quot;textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png&quot;
+            ]
+        }),
+        reflectionMap: new xeogl.CubeTexture({
+            src: [
+                &quot;textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png&quot;,
+                &quot;textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png&quot;,
+                &quot;textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png&quot;,
+                &quot;textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png&quot;,
+                &quot;textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png&quot;,
+                &quot;textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png&quot;
+            ]
+        })
     }),
 
-    material: new xeogl.PhongMaterial({
-        ambient:    [0.3, 0.3, 0.3],
-        diffuse:    [0.7, 0.7, 0.7],
-        specular:   [1. 1, 1],
-        shininess:  30
+    material: new xeogl.MetallicMaterial({
+        roughness: 1.0,
+        metallic: 1.0,
+        baseColorMap: new xeogl.Texture({
+            src: &quot;textures/materials/poligon/RustMixedOnPaint012_1k/RustMixedOnPaint012_COL_VAR1_1K.jpg&quot;
+        }),
+        roughnessMap: new xeogl.Texture({
+            src: &quot;textures/materials/poligon/RustMixedOnPaint012_1k/RustMixedOnPaint012_REFL_1K.jpg&quot;
+        })
     }),
 
-    geometry: new xeogl.BoxGeometry()
+    geometry: new xeogl.SphereGeometry()
  });
  &#x60;&#x60;&#x60;&#x60;
 
@@ -254,6 +290,8 @@
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Lights.
  @param [cfg.lights] {{Array of String|Entity}} Array of light source IDs or instances.
+ @param [cfg.lightMap=undefined] {CubeTexture} A light map {{#crossLink &quot;CubeTexture&quot;}}{{/crossLink}}. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this PhongMaterial.
+ @param [cfg.reflectionMap=undefined] {CubeTexture} A reflection map {{#crossLink &quot;CubeTexture&quot;}}{{/crossLink}}. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this PhongMaterial.
  @extends Component
  */
 (function () {
@@ -272,8 +310,6 @@
                 hash: &quot;&quot;
             });
 
-            this._dirty = true;
-
             // Array of child light source components
             this._lights = [];
 
@@ -284,32 +320,40 @@
             this._destroyedSubs = [];
 
             // Add initial light source components
-            this.lights = cfg.lights;
+            if (cfg.lights) {
+                this.lights = cfg.lights;
+            }
+
+            if (cfg.lightMap) {
+                this.lightMap = cfg.lightMap;
+            }
+
+            if (cfg.reflectionMap) {
+                this.reflectionMap = cfg.reflectionMap;
+            }
         },
 
         _props: {
 
             /**
-             The light sources in this Lights.
-
-             That that, when removing or inserting light sources, you must reassign this property to the modified array,
-             so that this Lights able to detect that lights sources were actually added or removed. For example:
-
-             &#x60;&#x60;&#x60;&#x60;javascript
-             var lights = myLights.lights;
-
-             lights.push(new xeogl.PointLight({...}));
-
-             myLights.lights = lights; // This way, the xeogl.Lights component is able to detect that the new light was added.
-             &#x60;&#x60;&#x60;&#x60;
-
-             We&#x27;ll be able to relax this once JavaScript gets the (proper) ability to observe array updates.
-
-             Fires a {{#crossLink &quot;Lights/lights:event&quot;}}{{/crossLink}} event on change.
-
-             @property lights
-             @default []
-             @type {{Array of AmbientLight, PointLight and DirLight}}
+             * The light sources in this Lights.
+             *
+             * Note that when removing or inserting light sources, you must reassign this property to the modified array,
+             * so that this Lights able to detect that lights sources were actually added or removed. For example:
+             *
+             * &#x60;&#x60;&#x60;&#x60;javascript
+             * var lights = myLights.lights;
+             * lights.push(new xeogl.PointLight({...}));
+             * myLights.lights = lights; // This way, the xeogl.Lights component is able to detect that the new light was added.
+             * &#x60;&#x60;&#x60;&#x60;
+             *
+             * We&#x27;ll be able to relax this once JavaScript gets the (proper) ability to observe array updates.
+             *
+             * Fires a {{#crossLink &quot;Lights/lights:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property lights
+             * @default []
+             * @type {{Array of AmbientLight, PointLight, DirLight or SpotLight}}
              */
             lights: {
 
@@ -354,8 +398,6 @@
                                 self._dirtySubs = self._dirtySubs.slice(i, i + 1);
                                 self._destroyedSubs = self._destroyedSubs.slice(i, i + 1);
 
-                                self._dirty = true;
-
                                 self.fire(&quot;dirty&quot;, true);
                                 self.fire(&quot;lights&quot;, self._lights);
 
@@ -384,8 +426,8 @@
 
                         var type = light.type;
 
-                        if (type !== &quot;xeogl.AmbientLight&quot; &amp;&amp; type !== &quot;xeogl.DirLight&quot; &amp;&amp; type !== &quot;xeogl.PointLight&quot;) {
-                            this.error(&quot;Component &quot; + xeogl._inQuotes(light.id) + &quot; is not an xeogl.AmbientLight, xeogl.DirLight or xeogl.PointLight &quot;);
+                        if (type !== &quot;xeogl.AmbientLight&quot; &amp;&amp; type !== &quot;xeogl.DirLight&quot; &amp;&amp; type !== &quot;xeogl.PointLight&quot; &amp;&amp; type !== &quot;xeogl.SpotLight&quot;) {
+                            this.error(&quot;Component &quot; + xeogl._inQuotes(light.id) + &quot; is not an xeogl.AmbientLight, xeogl.DirLight, xeogl.PointLight or xeogl.SpotLight&quot;);
                             continue;
                         }
 
@@ -396,14 +438,109 @@
                         this._destroyedSubs.push(light.on(&quot;destroyed&quot;, lightDestroyed));
                     }
 
-                    this._dirty = true;
-
                     this.fire(&quot;dirty&quot;, true);
+
+                    /**
+                     Fired whenever this Lights&#x27;s {{#crossLink &quot;Lights/lights:property&quot;}}{{/crossLink}} property changes.
+
+                     @event lights
+                     @param value Number The property&#x27;s new value
+                     */
                     this.fire(&quot;lights&quot;, this._lights);
                 },
 
                 get: function () {
                     return this._lights;
+                }
+            },
+
+            /**
+             A {{#crossLink &quot;CubeTexture&quot;}}{{/crossLink}} that defines the brightness of the
+             surfaces of attached {{#crossLink &quot;Entities&quot;}}{{/crossLink}}.
+
+             Must be within the same {{#crossLink &quot;Scene&quot;}}{{/crossLink}} as this Lights.
+
+             Fires a {{#crossLink &quot;Lights/lightMap:event&quot;}}{{/crossLink}} event on change.
+
+             @property lightMap
+             @default undefined
+             @type {CubeTexture}
+             */
+            lightMap: {
+
+                set: function (texture) {
+
+                    /**
+                     Fired whenever this Lights&#x27;s {{#crossLink &quot;Lights/lightMap:property&quot;}}{{/crossLink}} property changes.
+
+                     @event lightMap
+                     @param value Number The property&#x27;s new value
+                     */
+                    this._attachComponent(&quot;xeogl.CubeTexture&quot;, &quot;lightMap&quot;, texture);
+                },
+
+                get: function () {
+                    return this._attached.lightMap;
+                }
+            },
+
+            /**
+             A {{#crossLink &quot;CubeTexture&quot;}}{{/crossLink}} that defines a background image that is reflected in the
+             surfaces of attached {{#crossLink &quot;Entities&quot;}}{{/crossLink}}.
+
+             Must be within the same {{#crossLink &quot;Scene&quot;}}{{/crossLink}} as this Lights.
+
+             Fires a {{#crossLink &quot;Lights/reflectionMap:event&quot;}}{{/crossLink}} event on change.
+
+             @property reflectionMap
+             @default undefined
+             @type {CubeTexture}
+             */
+            reflectionMap: {
+
+                set: function (texture) {
+
+                    /**
+                     Fired whenever this Lights&#x27;s {{#crossLink &quot;Lights/reflectionMap:property&quot;}}{{/crossLink}} property changes.
+
+                     @event reflectionMap
+                     @param value Number The property&#x27;s new value
+                     */
+                    this._attachComponent(&quot;xeogl.CubeTexture&quot;, &quot;reflectionMap&quot;, texture);
+                },
+
+                get: function () {
+                    return this._attached.reflectionMap;
+                }
+            }
+        },
+
+        _attachComponent: function (expectedType, name, component) {
+            component = this._attach({
+                name: name,
+                type: expectedType,
+                component: component,
+                sceneDefault: false,
+                on: {
+                    destroyed: {
+                        callback: function () {
+                            this._state[name] = null;
+                            this._hashDirty = true;
+                        },
+                        scope: this
+                    }
+                }
+            });
+            this._state[name] = component ? component._state : undefined; // FIXME: Accessing _state breaks encapsulation
+            this._hashDirty = true;
+        },
+
+        _shadowsDirty: function () {
+            var light;
+            for (var i = 0, len = this._lights.length; i &lt; len; i++) {
+                light = this._lights[i]._state;
+                if (light.shadow) {
+                    light.shadowDirty = true;
                 }
             }
         },
@@ -412,39 +549,43 @@
 
             var state = this._state;
 
-            if (this._dirty) {
+            state.lights = [];
 
-                state.lights = [];
-
-                for (var i = 0, len = this._lights.length; i &lt; len; i++) {
-                    state.lights.push(this._lights[i]._state);
-                }
-
-                this._makeHash();
-
-                this._dirty = false;
+            for (var i = 0, len = this._lights.length; i &lt; len; i++) {
+                state.lights.push(this._lights[i]._state);
             }
+
+            this._makeHash();
 
             this._renderer.lights = state;
         },
 
         _makeHash: function () {
 
-            var lights = this._state.lights;
-
-            if (lights.length === 0) {
-                return &quot;;&quot;;
-            }
-
             var hash = [];
+
+            var state = this._state;
+
+            var lights = state.lights;
+
             var light;
 
             for (var i = 0, len = lights.length; i &lt; len; i++) {
-
                 light = lights[i];
-
+                hash.push(&quot;/&quot;);
                 hash.push(light.type);
                 hash.push((light.space === &quot;world&quot;) ? &quot;w&quot; : &quot;v&quot;);
+                if (light.shadow) {
+                    hash.push(&quot;sh&quot;);
+                }
+            }
+
+            if (state.lightMap) {
+                hash.push(&quot;/lm&quot;);
+            }
+
+            if (state.reflectionMap) {
+                hash.push(&quot;/rm&quot;);
             }
 
             hash.push(&quot;;&quot;);
@@ -454,15 +595,25 @@
 
         _getJSON: function () {
 
-            var lightIds = [];
+            var json = {
+                lights: []
+            };
+
+            var components = this._attached;
 
             for (var i = 0, len = this._lights.length; i &lt; len; i++) {
-                lightIds.push(this._lights[i].id);
+                json.lights.push(this._lights[i].id);
             }
 
-            return {
-                lights: lightIds
-            };
+            if (components.lightMap) {
+                json.lightMap = components.lightMap.id;
+            }
+
+            if (components.reflectionMap) {
+                json.reflectionMap = components.reflectionMap.id;
+            }
+
+            return json.lights;
         },
 
         _destroy: function () {

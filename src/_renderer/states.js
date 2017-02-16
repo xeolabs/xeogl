@@ -14,7 +14,7 @@
 
      renderer.State
      @module xeogl
-     
+
      @constructor
      @param cfg {*} Configs
      */
@@ -48,7 +48,7 @@
 
      renderer.Visibility
      @module xeogl
-     
+
      @constructor
      @param cfg {*} Configs
      @param cfg.visible {Boolean} Flag which controls visibility of the associated render objects.
@@ -80,7 +80,7 @@
 
      renderer.Mode
      @module xeogl
-     
+
      @constructor
      @param cfg {*} Configs
      @param cfg.pickable {Boolean} Flag which controls pickability of the associated render objects.
@@ -99,7 +99,7 @@
 
      renderer.Layer
      @module xeogl
-     
+
      @constructor
      @param cfg {*} Configs
      @param cfg.priority {Number} Layer render priority.
@@ -115,7 +115,7 @@
 
      renderer.Stage
      @module xeogl
-     
+
      @constructor
      @param cfg {*} Configs
      @param cfg.priority {Number} Stage render priority.
@@ -131,7 +131,7 @@
 
      renderer.DepthBuf
      @module xeogl
-     
+
      @constructor
      @param cfg {*} Configs
      @param cfg.clearDepth {Number} Clear depth
@@ -148,7 +148,7 @@
 
      renderer.ColorBuf
      @module xeogl
-     
+
      @constructor
      @param cfg {*} Configs
      @param cfg.blendEnabled {Boolean} Indicates if blending is enebled for
@@ -165,7 +165,7 @@
 
      renderer.Lights
      @module xeogl
-     
+
      @constructor
      @param cfg {*} Configs
      @param cfg.colorMask {Array of Object} The light sources
@@ -181,7 +181,7 @@
 
      renderer.PhongMaterial
      @module xeogl
-     
+
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
@@ -192,16 +192,31 @@
 
     /**
 
-     Environmental reflection state.
+     PBR specular-glossiness material state.
 
-     renderer.Reflect
+     renderer.SpecularMaterial
      @module xeogl
-     
+
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
      */
-    xeogl.renderer.Reflect = xeogl.renderer.State.extend({
+    xeogl.renderer.SpecularMaterial = xeogl.renderer.State.extend({
+        _ids: new xeogl.utils.Map({})
+    });
+
+    /**
+
+     PBR metallic-roughness material state.
+
+     renderer.MetallicMaterial
+     @module xeogl
+
+     @constructor
+     @param cfg {*} Configs
+     @extends renderer.State
+     */
+    xeogl.renderer.MetallicMaterial = xeogl.renderer.State.extend({
         _ids: new xeogl.utils.Map({})
     });
 
@@ -211,7 +226,7 @@
 
      renderer.Transform
      @module xeogl
-     
+
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
@@ -226,7 +241,7 @@
 
      renderer.Billboard
      @module xeogl
-     
+
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
@@ -257,7 +272,7 @@
 
      renderer.RenderTarget
      @module xeogl
-     
+
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
@@ -275,7 +290,7 @@
 
      renderer.Clips
      @module xeogl
-     
+
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
@@ -290,7 +305,7 @@
 
      renderer.MorphTargets
      @module xeogl
-     
+
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
@@ -305,7 +320,7 @@
 
      renderer.Shader
      @module xeogl
-     
+
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
@@ -320,7 +335,7 @@
 
      renderer.ShaderParams
      @module xeogl
-     
+
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
@@ -335,7 +350,7 @@
 
      renderer.Texture
      @module xeogl
-     
+
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
@@ -344,6 +359,20 @@
         _ids: new xeogl.utils.Map({})
     });
 
+    /**
+
+     Cube texture state.
+
+     renderer.CubeTexture
+     @module xeogl
+
+     @constructor
+     @param cfg {*} Configs
+     @extends renderer.State
+     */
+    xeogl.renderer.CubeTexture = xeogl.renderer.State.extend({
+        _ids: new xeogl.utils.Map({})
+    });
 
     /**
 
@@ -351,7 +380,7 @@
 
      renderer.Fresnel
      @module xeogl
-     
+
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
@@ -367,7 +396,7 @@
 
      renderer.Geometry
      @module xeogl
-     
+
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
@@ -382,7 +411,7 @@
 
      renderer.ProgramState
      @module xeogl
-     
+
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
@@ -407,5 +436,4 @@
         _ids: new xeogl.utils.Map({})
     });
 })();
-
 

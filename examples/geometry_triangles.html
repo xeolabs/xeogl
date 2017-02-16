@@ -10,9 +10,8 @@
 
 <body>
 
-<div id="infoLight">
-    <a href="http://xeogl.org" target="_parent" >xeogl</a><br><br>
-    defining a simple <a href="../docs/classes/Geometry.html" target="_parent">Geometry</a> with triangles
+<div id="info">
+    <h1>basic <a href="../docs/classes/Geometry.html" target="_parent">Geometry</a> triangle mesh</h1>
 </div>
 
 <script>
@@ -154,11 +153,12 @@
         material: material
     });
 
-    entity.scene.on("tick",
-            function () {
-                entity.camera.view.rotateEyeY(0.6);
-                entity.camera.view.rotateEyeX(0.3);
-            });
+    entity.scene.on("tick", function () {
+        entity.camera.view.rotateEyeY(0.2);
+        entity.camera.view.rotateEyeX(0.1);
+    });
+
+    new xeogl.CameraControl();
 
 </script>
 </body>

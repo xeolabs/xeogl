@@ -5,7 +5,7 @@
     /**
      A **GLTFModel** is a {{#crossLink "Model"}}{{/crossLink}} that loads itself from a <a href="https://github.com/KhronosGroup/glTF" target = "_other">glTF</a> file.
 
-     <a href="../../examples/#models_GLTFModel_gearbox"><img src="../../../assets/images/gltf/glTF_gearbox_squashed.png"></img></a>
+     <a href="../../examples/#importing_gltf_gearbox"><img src="../../../assets/images/gltf/glTF_gearbox_squashed.png"></img></a>
 
      ## Overview
 
@@ -14,27 +14,24 @@
      property to the location of a valid glTF file.
      * You can set {{#crossLink "GLTFModel/src:property"}}{{/crossLink}} to a new file path at any time, which causes
      the GLTFModel to clear itself and load components from the new file.
-     * Can be transformed within World-space by attached it to a {{#crossLink "Transform"}}{{/crossLink}}.
+     * Can be transformed within World-space by attaching it to a {{#crossLink "Transform"}}{{/crossLink}}.
      * Provides its World-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}}.
 
      <img src="../../../assets/images/GLTFModel.png"></img>
 
      ## Tutorials
 
-     * [Importing glTF](https://github.com/xeolabs/xeogl/wiki/Models-glTF)
+     * [Importing glTF](https://github.com/xeolabs/xeogl/wiki/Importing-glTF)
 
      ## Examples
 
-     * [Gearbox](../../examples/#models_GLTFModel_gearbox)
-     * [Buggy](../../examples/#models_GLTFModel_buggy)
-     * [Reciprocating Saw](../../examples/#models_GLTFModel_ReciprocatingSaw)
-     * [Textured Duck](../../examples/#models_GLTFModel_duck)
-     * [GLTFModel with entity explorer UI](../../examples/#demos_ui_explorer)
-     * [Fly camera to GLTFModel entities](../../examples/#boundaries_flyToBoundary)
-     * [Ensuring individual materials on GLTFModel entities](../../examples/#models__uniqueMaterials)
-     * [Baking transform hierarchies](../../examples/#models_bakeTransforms)
-     * [Attaching transforms to GLTFModel, via constructor](../../examples/#models_configureTransform)
-     * [Attaching transforms to GLTFModel, via property](../../examples/#models_attachTransform)
+     * [glTF gearbox](../../examples/#importing_gltf_gearbox)
+     * [glTF models with PBR materials](../../examples/#importing_gltf_pbr)
+     * [glTF gearbox with entity explorer](../../examples/#importing_gltf_explorer)
+     * [Ensuring individual materials on GLTFModel entities](../../examples/#models_filter_uniqueMaterials)
+     * [Baking transform hierarchies in a GLTFModel](../../examples/#models_filter_bakeTransforms)
+     * [Attaching transforms to a GLTFModel, via constructor](../../examples/#transforms_model_configureTransform)
+     * [Attaching transforms to a GLTFModel, via property](../../examples/#transforms_model_attachTransform)
 
      @class GLTFModel
      @module xeogl
@@ -63,16 +60,6 @@
             this._super(cfg);
 
             this._src = null;
-
-            if (!cfg.src) {
-                this.error("Config missing: 'src'");
-                return;
-            }
-
-            if (!xeogl._isString(cfg.src)) {
-                this.error("Value for config 'src' should be a string");
-                return;
-            }
 
             this.src = cfg.src;
         },
@@ -131,7 +118,7 @@
                     // Increment processes represented by loading spinner
                     // Spinner appears as soon as count is non-zero
 
-                    var spinner = self.scene.canvas.spinner;
+                    var spinner = this.scene.canvas.spinner;
                     spinner.processes++;
 
                     glTFLoader.load(userInfo, options, function () {
@@ -140,12 +127,9 @@
                         // Spinner disappears if the count is now zero
                         spinner.processes--;
 
-                        /**
-                         Fired whenever this GLTFModel has finished loading components from the glTF file
-                         specified by {{#crossLink "GLTFModel/src:property"}}{{/crossLink}}.
-                         @event loaded
-                         */
-                        self.fire("loaded");
+                        xeogl.scheduleTask(function () {
+                            self.fire("loaded", true);
+                        });
                     });
 
                     /**
@@ -164,7 +148,7 @@
 
         _getJSON: function () {
 
-            var json =  {};
+            var json = {};
 
             if (this.src) {
                 json.src = this._src;

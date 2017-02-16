@@ -19,9 +19,9 @@
  ## Examples
 
  <ul>
- <li>[Simple SplineCurve example](../../examples/#curves_SplineCurve)</li>
- <li>[Moving a PointLight along a SplineCurve](../../examples/#lights_point_world)</li>
- <li>[Path example](../../examples/#curves_Path)</li>
+ <li>[Simple SplineCurve example](../../examples/#animation_curves_spline)</li>
+ <li>[Moving a PointLight along a SplineCurve](../../examples/#animation_curves_spline_pointLight)</li>
+ <li>[Path example](../../examples/#animation_curves_path)</li>
  </ul>
 
  ## Usage

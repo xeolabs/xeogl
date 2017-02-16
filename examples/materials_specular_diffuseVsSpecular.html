@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.min.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <h1><a href="../docs/classes/Entity.html" target="_parent">Entities</a> with <a
+            href="../docs/classes/SpecularMaterial.html"
+            target="_parent">SpecularMaterials</a> of varying specular VS specular</h1>
+</div>
+
+<script>
+
+    // Entities with materials
+
+    var geometry = new xeogl.SphereGeometry({
+        radius: 1.5,
+        heightSegments: 60,
+        widthSegments: 60
+    });
+
+    var lenSide = 10;
+    var halfSide = lenSide / 2;
+    var inc = 4;
+    var min = -halfSide * inc;
+    var max = halfSide * inc;
+    var steps = (max - min) / inc;
+    var specular = 0;
+    var specularInc = 1.0 / steps;
+    var diffuse = 0;
+    var diffuseInc = 1.0 / steps;
+
+    for (var x = min; x <= max; x += inc) {
+
+        diffuse = 0;
+        specular += specularInc;
+
+        for (var z = min; z <= max; z += inc) {
+
+            new xeogl.Entity({
+                geometry: geometry,
+                material: new xeogl.SpecularMaterial({
+                    diffuse: [diffuse, diffuse, diffuse],
+                    specular: [specular, specular, specular],
+                    glossiness: 1,
+                    opacity: 1
+                }),
+                transform: new xeogl.Translate({
+                    xyz: [x, 0, z]
+                })
+            });
+
+            diffuse += diffuseInc;
+        }
+    }
+
+    // Camera control/animation
+
+    new xeogl.CameraControl();
+
+    var view = xeogl.scene.camera.view;
+    view.rotateEyeX(20);
+    view.rotateEyeY(20);
+    view.zoom(-60);
+
+</script>
+</body>
+</html>

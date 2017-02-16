@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.min.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <h1>serializing a  <a href="../docs/classes/PhongMaterial.html" target="_parent">PhongMaterial</a> to a string</h1>
+    <pre id="log">
+    </pre>
+</div>
+
+<script>
+
+    // Create a PhongMaterial
+
+    var material = new xeogl.PhongMaterial({
+        id: "myMaterial",
+        specular: [1.0, 0.0, 0.0],
+        diffuseMap: new xeogl.Texture({
+            src: "textures/diffuse/uvGrid2.jpg"
+        })
+    });
+
+    // Create a Entity with the PhongMaterial and all other defaults
+
+    var entity = new xeogl.Entity({
+        material: material
+    });
+
+    // Orbit the eye position about the look position.
+    entity.scene.on("tick", function () {
+
+        var view = entity.camera.view;
+
+        view.rotateEyeY(-0.15);
+        view.rotateEyeX(0.05);
+    });
+
+    // Get string representation of the PhongMaterial
+
+    var str = material.string;
+
+    log(str);
+
+    function log(str) {
+        document.getElementById("log").innerHTML = "material.string = '" + str + "'";
+    }
+
+</script>
+</body>
+</html>

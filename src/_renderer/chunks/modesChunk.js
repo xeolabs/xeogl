@@ -49,7 +49,8 @@
                         // Entering a transparency bin
 
                         gl.enable(gl.BLEND);
-                        gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+                        //gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+                        gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
                         frameCtx.blendEnabled = true;
                     } else {
 
@@ -60,6 +61,36 @@
                     }
                 }
                 frameCtx.transparent = transparent;
+            }
+        },
+
+        shadow: function (frameCtx) {
+
+            var state = this.state;
+            var gl = this.program.gl;
+
+            var backfaces = state.backfaces;
+            if (frameCtx.backfaces !== backfaces) {
+                if (backfaces) {
+                    gl.disable(gl.CULL_FACE);
+                } else {
+                    gl.enable(gl.CULL_FACE);
+                }
+                frameCtx.backfaces = backfaces;
+            }
+
+            var frontface = state.frontface;
+            if (frameCtx.frontface !== frontface) {
+
+                // frontface is boolean for speed,
+                // true == "ccw", false == "cw"
+
+                if (frontface) {
+                    gl.frontFace(gl.CCW);
+                } else {
+                    gl.frontFace(gl.CW);
+                }
+                frameCtx.frontface = frontface;
             }
         },
 

@@ -1,7 +1,7 @@
 /**
  A **SphereGeometry** is a parameterized {{#crossLink "Geometry"}}{{/crossLink}} that defines a sphere-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- <a href="../../examples/#geometry_SphereGeometry"><img src="../../assets/images/screenshots/SphereGeometry.png"></img></a>
+ <a href="../../examples/#geometry_primitives_sphere"><img src="../../assets/images/screenshots/SphereGeometry.png"></img></a>
 
  ## Overview
  
@@ -13,7 +13,7 @@
  ## Examples
 
 
- * [Textured SphereGeometry](../../examples/#geometry_SphereGeometry)
+ * [Textured SphereGeometry](../../examples/#geometry_primitives_sphere)
 
 
  ## Usage
@@ -142,7 +142,7 @@
                     y = cosTheta;
                     z = sinPhi * sinTheta;
                     u = 1.0 - j / widthSegments;
-                    v = 1.0 - i / heightSegments;
+                    v = i / heightSegments;
 
                     normals.push(x);
                     normals.push(y);

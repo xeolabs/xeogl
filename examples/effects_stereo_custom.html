@@ -10,11 +10,8 @@
 
 <body>
 
-<div id="infoLight">
-    <a href="http://xeogl.org" target="_parent" >xeogl</a><br><br>custom stereo view<br><br>
-    <ul>
-        <li>Click in the right half-space to pick objects</li>
-    </ul>
+<div id="info">
+    <h1>custom stereo view</h1>
 </div>
 
 <script>
@@ -33,14 +30,13 @@
     view.look = [159.20, 17.02, 3.21];
     view.up = [-0.15, 0.97, 0.13];
 
-    scene.on("tick",
-            function () {
+    scene.on("tick", function () {
 
-                var view = scene.camera.view;
+        var view = scene.camera.view;
 
-                view.rotateEyeY(0.6);
-                view.rotateEyeX(0.3);
-            });
+        view.rotateEyeY(0.2);
+        //view.rotateEyeX(0.1);
+    });
 
 
     // Configure Scene to render twice for each frame
@@ -162,19 +158,15 @@
     // Intercept Scene after each render
     // After the second pass we'll restore the viewpoint
 
-    scene.on("rendered",
-            function (e) {
-
-                switch (e.pass) {
-                    case 1:
-
-                        view.eye = eye;
-                        view.look = look;
-                        view.up = up;
-
-                        break;
-                }
-            });
+    scene.on("rendered", function (e) {
+        switch (e.pass) {
+            case 1:
+                view.eye = eye;
+                view.look = look;
+                view.up = up;
+                break;
+        }
+    });
 
     new xeogl.CameraControl();
 

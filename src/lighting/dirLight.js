@@ -7,17 +7,19 @@
  * DirLights are grouped, along with other light source types, within {{#crossLink "Lights"}}Lights{{/crossLink}} components,
  which are attached to {{#crossLink "Entity"}}Entities{{/crossLink}}.
  * DirLights have a direction, but no position.
+ * The direction is the **direction that the light is emitted in**.
  * DirLights may be defined in either **World** or **View** coordinate space. When in World-space, their direction
  is relative to the World coordinate system, and will appear to move as the {{#crossLink "Camera"}}{{/crossLink}} moves.
  When in View-space, their direction is relative to the View coordinate system, and will behave as if fixed to the viewer's
  head as the {{#crossLink "Camera"}}{{/crossLink}} moves.
+ * A DirLight can also have a {{#crossLink "Shadow"}}{{/crossLink}} component, to configure it to cast a shadow.
 
  <img src="../../../assets/images/DirLight.png"></img>
 
  ## Examples
 
- * [View-space directional light](../../examples/#lights_directional_view)
- * [World-space directional light](../../examples/#lights_directional_world)
+ * [View-space directional three-point lighting](../../examples/#lights_directional_view_threePoint)
+ * [World-space directional three-point lighting](../../examples/#lights_directional_world_threePoint)
 
  ## Usage
 
@@ -64,12 +66,14 @@
  @param [cfg.color=[0.7, 0.7, 0.8 ]] {Float32Array} The color of this DirLight.
  @param [cfg.intensity=1.0 ] {Number} The intensity of this DirLight.
  @param [cfg.space="view"] {String} The coordinate system the DirLight is defined in - "view" or "space".
-
+ @param [cfg.shadow=undefined] {Shadow} Defines a {{#crossLink "Shadow"}}{{/crossLink}} that is cast by this DirLight. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this DirLight.
  @extends Component
  */
 (function () {
 
     "use strict";
+
+    var math = xeogl.math;
 
     xeogl.DirLight = xeogl.Component.extend({
 
@@ -77,18 +81,75 @@
 
         _init: function (cfg) {
 
+            var self = this;
+
             this._state = {
                 type: "dir",
                 dir: xeogl.math.vec3([1.0, 1.0, 1.0]),
                 color: xeogl.math.vec3([0.7, 0.7, 0.8]),
                 intensity: 1.0,
-                space: "view"
+                space: "view",
+
+                shadow: null, // Shadow state, describes how to apply shadows
+
+                // Set true whenever the shadow map needs re-rendering as a result of
+                // associated Entities having moved or changed shape
+                shadowDirty: true,
+
+                getShadowViewMatrix: function () {
+                    return self._getShadowViewMatrix();
+                },
+
+                getShadowProjMatrix: function () {
+                    return self._getShadowProjMatrix();
+                },
+
+                getShadowRenderBuf: function () {
+                    return self._getShadowRenderBuf();
+                }
             };
 
             this.dir = cfg.dir;
             this.color = cfg.color;
             this.intensity = cfg.intensity;
             this.space = cfg.space;
+            this.shadow = cfg.shadow;
+        },
+
+        _getShadowViewMatrix: (function () {
+            var look = math.vec3();
+            var up = math.vec3([0, 1, 0]);
+            return function () {
+                if (!this._shadowViewMatrix) {
+                    this._shadowViewMatrix = math.identityMat4();
+                }
+                // if (this._shadowViewMatrixDirty) {
+            //    math.addVec3(this._state.pos, this._state.dir, look);
+                //math.lookAtMat4v(this._state.pos, look, up, this._shadowViewMatrix);
+                 math.lookAtMat4v([0,-100, 0], [0,0,0], up, this._shadowViewMatrix);
+                this._shadowViewMatrixDirty = false;
+                //   }
+                return this._shadowViewMatrix;
+            };
+        })(),
+
+        _getShadowProjMatrix: function () {
+            if (!this._shadowProjMatrix) {
+                this._shadowProjMatrix = math.identityMat4();
+            }
+            //if (this._shadowProjMatrixDirty) { // TODO: Set when canvas resizes
+            var canvas = this.scene.canvas.canvas;
+            math.perspectiveMat4(45, canvas.clientWidth / canvas.clientHeight, 0.1, 1000.0, this._shadowProjMatrix);
+            this._shadowProjMatrixDirty = false;
+            // }
+            return this._shadowProjMatrix;
+        },
+
+        _getShadowRenderBuf: function () {
+            if (!this._shadowRenderBuf) {
+                this._shadowRenderBuf = new xeogl.renderer.webgl.RenderBuffer(this.scene.canvas.canvas, this.scene.canvas.gl);
+            }
+            return this._shadowRenderBuf;
         },
 
         _props: {
@@ -220,17 +281,71 @@
                 get: function () {
                     return this._state.space;
                 }
+            },
+
+            /**
+
+             Defines a {{#crossLink "Shadow"}}{{/crossLink}} that is cast by this DirLight.
+
+             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this DirLight.
+
+             Fires a {{#crossLink "DirLight/shadow:event"}}{{/crossLink}} event on change.
+
+             @property shadow
+             @default undefined
+             @type {Shadow}
+             */
+            shadow: {
+
+                set: function (texture) {
+
+                    /**
+                     Fired whenever this DirLight's {{#crossLink "DirLight/shadow:property"}}{{/crossLink}} property changes.
+
+                     @event shadow
+                     @param value Number The property's new value
+                     */
+                    this._attachComponent("xeogl.Shadow", "shadow", texture);
+                },
+
+                get: function () {
+                    return this._attached.shadow;
+                }
             }
         },
 
+        _attachComponent: function (expectedType, name, component) {
+            component = this._attach({
+                name: name,
+                type: expectedType,
+                component: component,
+                sceneDefault: false,
+                on: {
+                    destroyed: {
+                        callback: function () {
+                            this._state[name] = null;
+                            this._hashDirty = true;
+                        },
+                        scope: this
+                    }
+                }
+            });
+            this._state[name] = component ? component._state : null; // FIXME: Accessing _state breaks encapsulation
+            this._hashDirty = true;
+        },
+
         _getJSON: function () {
-            return {
+            var json = {
                 type: this._state.type,
                 dir: this._state.dir,
                 color: this._state.color,
                 intensity: this._state.intensity,
                 space: this._state.space
             };
+            if (this._attached.shadow) {
+                json.shadow = this._attached.shadow.id
+            }
+            return json;
         }
     });
 

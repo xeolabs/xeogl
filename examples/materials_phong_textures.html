@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.min.js"></script>
+    <script src="js/skyboxes/skybox.js"></script>
+    <script src="js/geometry/vectorTextGeometry.js"></script>
+    <script src="js/utils/materialGallery.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <h1><a
+            href="../docs/classes/PhongMaterial.html" target="_parent">PhongMaterial</a> with various <a
+            href="../docs/classes/Texture.html" target="_parent">Textures</a></h1>
+
+    <br>
+
+    <div id="menu"></div>
+</div>
+
+<script>
+
+    var diffuseMap = new xeogl.Texture({
+        src: "textures/diffuse/uvGrid2.jpg",
+        minFilter: "linearMipmapLinear",
+        magFiler: "linear",
+        wrapS: "repeat",
+        wrapT: "repeat",
+        translate: [0, 0],
+        scale: [1, 1],
+        rotate: 0,
+        flipY: false // Default
+    });
+
+    materialGallery("menu", {
+
+        "Diffuse map": {
+            material: {
+                type: "xeogl.PhongMaterial",
+                ambient: [0.0, 0.0, 0.0],
+                diffuse: [1.0, 1.0, 1.0],
+                shininess: 80,
+                opacity: 1.0,
+                diffuseMap: diffuseMap
+            }
+        },
+        "Specular map": {
+            material: {
+                type: "xeogl.PhongMaterial",
+                ambient: [0.0, 0.0, 0.0],
+                diffuse: [0.3, 0.3, 0.5],
+                specular: [1.0, 0.4, 0.4],
+                shininess: 20,
+                opacity: 1.0,
+                specularMap: {
+                    src: "textures/diffuse/crossGridColorMap.jpg",
+                    minFilter: "linearMipmapLinear",
+                    magFiler: "linear",
+                    wrapS: "repeat",
+                    wrapT: "repeat",
+                    translate: [0, 0],
+                    scale: [1, 1],
+                    rotate: 0
+
+                }
+            }
+        },
+        "Emissive map": {
+            material: {
+                type: "xeogl.PhongMaterial",
+                id: "emissiveMaterial",
+                ambient: [0, 0, 0],
+                shininess: 80,
+                diffuse: [0.160, 0.170, 0.180],
+                emissive: [0.8, 0.2, 0.0],
+                specular: [1, 1, 1],
+                opacity: 1.0,
+                emissiveMap: {
+                    src: "textures/emissive/emissiveMap.jpg",
+                    minFilter: "linearMipmapLinear",
+                    magFiler: "linear",
+                    wrapS: "repeat",
+                    wrapT: "repeat",
+                    translate: [0, 0],
+                    scale: [1, 1],
+                    rotate: 0
+                }
+            }
+        },
+        "Opacity map": {
+            material: {
+                type: "xeogl.PhongMaterial",
+                ambient: [0.3, 0.3, 0.3],
+                shininess: 30,
+                diffuse: [0.1, 0.1, 0.4],
+                opacity: 1.0,
+                opacityMap: {
+                    src: "textures/diffuse/crossGridColorMap.jpg",
+                    minFilter: "linearMipmapLinear",
+                    magFiler: "linear",
+                    wrapS: "repeat",
+                    wrapT: "repeat",
+                    translate: [0, 0],
+                    scale: [1, 1],
+                    rotate: 0
+                }
+            }
+        },
+        "Normal map": {
+            material: {
+                type: "xeogl.PhongMaterial",
+                diffuseMap: { // Just to help show the normal map
+                    src: "textures/diffuse/chesterfieldDiffuseMap.png",
+                    scale: [5, 5]
+                },
+                normalMap: {
+                    src: "textures/normal/chesterfieldNormalMap.png",
+                    scale: [5, 5]
+                }
+            }
+        },
+        "Animated texture": {
+            material: {
+                type: "xeogl.PhongMaterial",
+                id: "textureScaleMaterial",
+                diffuseMap: {
+                    src: "textures/diffuse/crossGridColorMap.jpg"
+                }
+            }
+        }
+    });
+
+    // Animate the emissive map
+
+    (function () {
+        var m = xeogl.scene.components["emissiveMaterial"];
+        var f = 0.4;
+        var inc = 0.005;
+        xeogl.scene.on("tick", function () {
+            if (f > 0.7 || f < 0.1) {
+                inc = -inc;
+            }
+            m.emissive = [f, 0, 0];
+            f += inc;
+        });
+    })();
+
+
+    // Animate the texture scale
+
+    (function () {
+        var m = xeogl.scene.components["textureScaleMaterial"];
+        var s = 0.4;
+        var inc = 0.001;
+        xeogl.scene.on("tick", function () {
+            if (s > 0.6 || s < 0.4) {
+                inc = -inc;
+            }
+            m.diffuseMap.scale = [s, s];
+            s += inc;
+        });
+    })();
+
+
+</script>
+</body>
+</html>

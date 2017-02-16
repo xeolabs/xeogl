@@ -10,11 +10,9 @@
 
 <body>
 
-<div id="infoLight">
-    <a href="http://xeogl.org" target="_parent" >xeogl</a><br><br>
-    <br><br>
-    handling input events
-    <pre id="infoTxt" style="text-align: left;"></pre>
+<div id="info">
+    <h1>handling input events</h1>
+    <pre id="log"></pre>
 </div>
 
 <script>
@@ -81,7 +79,7 @@
         if (buf.length > 30) {
             buf.shift();
         }
-        document.getElementById("infoTxt").innerText = buf.join("\n");
+        document.getElementById("log").innerText = buf.join("\n");
     }
 
 </script>

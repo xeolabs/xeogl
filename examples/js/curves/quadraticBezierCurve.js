@@ -21,8 +21,8 @@
  ## Examples
 
  <ul>
- <li>[Tweening position along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve)</li>
- <li>[Tweening color along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve_color)</li>
+ <li>[Tweening position along a QuadraticBezierCurve](../../examples/#animation_curves_quadraticBezier)</li>
+ <li>[Tweening color along a QuadraticBezierCurve](../../examples/#animation_curves_quadraticBezier_color)</li>
  <li>[Path example](../../examples/#curves_Path)</li>
  </ul>
 

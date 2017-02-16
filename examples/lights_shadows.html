@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.min.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <a href="http://xeogl.org" target="_parent">xeogl</a> - World-space <a
+        href="../docs/classes/DirLight.html" target="_parent">DirLight</a> with a <a
+        href="../docs/classes/Shadow.html" target="_parent">Shadow</a>
+</div>
+
+<canvas id="myCanvas1" width="500px" height="500px"></canvas>
+
+<script>
+
+    var canvas = document.getElementById("myCanvas1");
+
+    canvas.getContext("webgl");
+
+    var scene = new xeogl.Scene({
+        canvas: "myCanvas1",
+        backgroundColor: [0.3, 0.6, 0.9]
+    });
+
+
+    // Lights
+
+    var lights = new xeogl.Lights(scene, {
+        lights: [
+
+//            new xeogl.AmbientLight({
+//                color: [0.3, 0.3, 0.3],
+//                intensity: 0.9
+//            }),
+
+            new xeogl.SpotLight(scene, {
+                pos: [0, 60, 0],
+                dir: [0, -1, 0],
+                color: [1.0, 1.0, 1.0],
+                intensity: 1.0,
+                space: "world",
+                Xshadow: new xeogl.Shadow(scene, {})
+            }),
+
+            new xeogl.DirLight(scene, {
+                dir: [0,-1,0],
+                color: [1.0, 1.0, 1.0],
+                intensity: 1.0,
+                space: "world",
+                shadow: new xeogl.Shadow(scene, {})
+            })
+        ]
+    });
+
+    // Sphere
+
+    new xeogl.Entity(scene, {
+        geometry: new xeogl.SphereGeometry(scene, {
+            radius: 2.0
+        }),
+        transform: new xeogl.Translate(scene, {
+            xyz: [0, 1.0, 0]
+        }),
+        material: new xeogl.PhongMaterial(scene, {
+            diffuse: [1.0, 1.0, 1.0],
+            specular: [1.0, 1.0, 1.0],
+            emissive: [0, 0, 0],
+            opacity: 1.0
+
+        }),
+        lights: lights
+    });
+
+    // Ground plane
+
+    new xeogl.Entity(scene, {
+        geometry: new xeogl.PlaneGeometry(scene, {
+            xSize: 30,
+            zSize: 30
+        }),
+        material: new xeogl.PhongMaterial(scene, {
+            diffuseMap: new xeogl.Texture(scene, {
+                src: "textures/diffuse/uvGrid2.jpg"
+            })
+        }),
+        transform: new xeogl.Translate(scene, {
+            xyz: [0, -2.1, 0]
+        }),
+        modes: new xeogl.Modes(scene, {
+            backfaces: true
+        }),
+        lights: lights
+    });
+
+    // User camera control
+
+    new xeogl.CameraControl(scene);
+
+    // Orbit camera
+
+    scene.on("tick", function () {
+        scene.camera.view.rotateEyeY(0.3);
+    });
+
+</script>
+</body>
+</html>

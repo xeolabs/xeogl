@@ -9,9 +9,19 @@
         build: function () {
         },
 
-        draw: function (frameCtx) {
-            this.program.draw.bind();
+        shadow: function (frameCtx) {
+            this.program.shadow.bind();
             frameCtx.useProgram++;
+        },
+
+        draw: function (frameCtx) {
+
+            var draw = this.program.draw;
+
+            draw.bind();
+
+            frameCtx.useProgram++;
+            frameCtx.textureUnit = 0;
         },
 
         pickObject: function () {

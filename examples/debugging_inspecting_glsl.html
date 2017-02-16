@@ -10,12 +10,9 @@
 
 <body>
 
-<div id="infoLight">
-    <a href="http://xeogl.org" target="_parent">xeogl</a>
-    <br><br>
-
-    <p>demonstrates how to inspect the GLSL shader for a Entity</p>
-    <pre id="infoTxt" style="text-align: left;"></pre>
+<div id="info">
+    <h1>logging the GLSL shader for a Entity</h1>
+    <pre id="log" ></pre>
 </div>
 
 <script>
@@ -23,11 +20,11 @@
     var buf = [];
 
     function log(data) {
-        buf.push(JSON.stringify(data, null, "\t"));
+        buf.push(JSON.stringify(data, null, "  "));
         if (buf.length > 30) {
             buf.shift();
         }
-        document.getElementById("infoTxt").innerText = buf.join("\n");
+        document.getElementById("log").innerText = buf.join("\n");
     }
 
     var entity = new xeogl.Entity({

@@ -10,16 +10,9 @@
 
 <body>
 
-<div id="infoLight" style="left: 0; text-align: left; background: black; opacity: 0.6; color: white;">
-    <a href="http://xeogl.org" target="_parent">xeogl</a>
-    <br><br>
-    profiling a <a href="../docs/classes/Scene.html"
-                 target="_parent">Scene's</a> runtime performance while continually rebuilding its <a
-        href="../docs/classes/Entity.html"
-        target="_parent">Entities</a> and <a href="../docs/classes/Geometry.html"
-                                             target="_parent">Geometries</a>
-    <pre id="infoTxt"
-         style="left: 0; text-align: left; background: black; opacity: 0.6; color: white; font-size: 14pt;">
+<div id="info">
+    <h1>profiling xeogl runtime performance while dynamically rebuilding the scene</h1>
+    <pre id="log">
     </pre>
 </div>
 
@@ -115,7 +108,7 @@
 
     var scene = xeogl.scene;
 
-    scene.camera.view.zoom(190);
+    scene.camera.view.zoom(270);
 
     // Spin camera
     // Log statistics
@@ -127,50 +120,50 @@
     var upper = batchLen;
 
 
-    scene.on("tick",
-            function () {
+    scene.on("tick", function () {
 
-                if (++count > 5) {
+        if (++count > 5) {
 
-                    count = 0;
+            count = 0;
 
-                    for (var i = lower; i < upper; i++) {
+            for (var i = lower; i < upper; i++) {
 
-                        entity = entities[i];
+                entity = entities[i];
 
-                        gi = entityGeometry[i];
-                        entityGeometry[i] = gi = (gi < 3 ? gi + 1 : 0);
-                        entity.geometry = geometries[gi];
+                gi = entityGeometry[i];
+                entityGeometry[i] = gi = (gi < 3 ? gi + 1 : 0);
+                entity.geometry = geometries[gi];
 
-                        mi = entityMaterial[i];
-                        entityMaterial[i] = mi = (mi < 3 ? mi + 1 : 0);
-                        entity.material = materials[mi];
-                    }
+                mi = entityMaterial[i];
+                entityMaterial[i] = mi = (mi < 3 ? mi + 1 : 0);
+                entity.material = materials[mi];
+            }
 
-                    if (lower + (batchLen * 2) < numEntities) {
-                        lower += batchLen;
-                    } else {
-                        lower = 0;
-                    }
-                    upper = lower + batchLen;
-                }
+            if (lower + (batchLen * 2) < numEntities) {
+                lower += batchLen;
+            } else {
+                lower = 0;
+            }
+            upper = lower + batchLen;
+        }
 
-                // Spin camera
+        // Spin camera
 
-                var view = scene.camera.view;
+        var view = scene.camera.view;
 
-                view.rotateEyeY(0.5);
-                view.rotateEyeX(0.3);
+        view.rotateEyeY(0.5);
+        view.rotateEyeX(0.3);
 
-                // Get stats from xeogl and log them
+        // Get stats from xeogl and log them
 
-                var stats = xeogl.stats;
+        var stats = xeogl.stats;
 
-                logJSON(stats);
-            });
+        logJSON(stats);
+    });
 
     function logJSON(json) {
-        document.getElementById("infoTxt").innerHTML = JSON.stringify(json, null, 4);
+        json.client.browser = json.client.browser.substring(0, 10) + "...";
+        document.getElementById("log").innerHTML = "xeogl.stats = " + JSON.stringify(json, null, 4);
     }
 
 </script>

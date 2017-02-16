@@ -3,17 +3,193 @@
     "use strict";
 
     /**
-     A **Model** is a unit of content within a xeogl {{#crossLink "Scene"}}{{/crossLink}}.
+     A **Model** is a group of {{#crossLink "Component"}}Components{{/crossLink}} within a xeogl {{#crossLink "Scene"}}{{/crossLink}}.
 
      ## Overview
 
-     * A Model is a container of {{#crossLink "Component"}}Components{{/crossLink}}.
-     * Can be transformed within World-space by attaching it to a {{#crossLink "Transform"}}{{/crossLink}}.
-     * Provides its World-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}}.
-     * Subclassed by {{#crossLink "GLTFModel"}}{{/crossLink}}, which loads glTF files.
-     * Subclassed by {{#crossLink "BuildableModel"}}{{/crossLink}}, which provides a fluent API for building itself.
+     * A Model manages the lifecycle of its components, automatically deleting them when the Model is deleted.
+     * Can be attached to a hierarchy of {{#crossLink "Transform"}}Transforms{{/crossLink}}, to transform its components as a group, within World-space.
+     * Provides the collective World-space boundary of its components as a {{#crossLink "Boundary3D"}}{{/crossLink}}, which
+     updates its extents automatically as components are added and removed, or Transforms are updated.
+
+     A Model is subclassed by (at least):
+
+     * {{#crossLink "GLTFModel"}}{{/crossLink}}, which loads its components from glTF files.
+     * {{#crossLink "SceneJSModel"}}{{/crossLink}}, which loads its components from SceneJS scene definitions.
+     * {{#crossLink "BuildableModel"}}{{/crossLink}}, which provides a fluent API for building its components.
 
      <img src="../../../assets/images/Model.png"></img>
+
+     ## Usage
+
+     ### Adding and removing components to a Model
+
+     When adding components to a Model, it's usually easiest to just add their configuration objects and let the Model
+     internally instantiate them, as shown below.
+
+     Note that a Model manages the lifecycles of all the components contained within it, destroying them when we destroy
+     the Model or call its {{#crossLink "Model/destroyAll:method"}}{{/crossLink}} method.
+
+     ````javascript
+     var model = new xeogl.Model();
+
+     var geometry = model.add({
+            type: "xeogl.TorusGeometry"
+        });
+
+     var material = model.add({
+            type: "xeogl.PhongMaterial"
+            diffuse: [0.4, 0.4, 9.0]
+        });
+
+     model.add({
+            type: "xeogl.Entity",
+            geometry: geometry,
+            material: material
+        });
+     ````
+
+     As shown below, we can also add our own component instances, supplying either the objects or their IDs.
+
+     Note that the components must be in the same {{#crossLink "Scene"}}{{/crossLink}} as the model.
+
+     ````javascript
+     // Add our component object
+     model.add(new xeogl.Entity({
+            geometry: geometry,
+            material: material
+        }));
+
+     // Instantiate our component and add it by ID:
+     var material2 = new xeogl.PhongMaterial({
+            id: "myMaterial",
+            diffuse: [0.4, 1.0, 9.0]
+        });
+
+     model.add("myMaterial");
+     ````
+
+     Since xeogl aims to be as declarative as possible, we can also add components immediately,
+     via the Model's constructor:
+
+     ````javascript
+     var model2 = new xeogl.Model({
+            components: [
+                {
+                    type: "xeogl.TorusGeometry"
+                    id: "myTorusGeometry"
+                },
+                {
+                    type: "xeogl.PhongMaterial"
+                    id: "myPhongMaterial",
+                    diffuse: [0.4, 0.4, 9.0]
+                },
+                {
+                    type: "xeogl.Entity",
+                    geometry: "myTorusGeometry",
+                    material: "myPhongMaterial"
+                }
+            ]
+        });
+     ````
+
+     ### Transforming a Model
+
+     As well as allowing us organize the lifecycle of groups of components, a Model also lets us transform them as a group.
+
+     We can attach a modeling {{#crossLink "Transform"}}{{/crossLink}} to our Model, as a either a
+     configuration object or a component instance:
+
+     ```` Javascript
+     // Attach transforms as a configuration object:
+     model.transform = {
+        type: "xeogl.Translate",
+        xyz: [-35, 0, 0],
+        parent: {
+            type: "xeogl.Rotate",
+            xyz: [0, 1, 0],
+            angle: 45
+        }
+     };
+
+     // Attach our own transform instances:
+     model.transform = new xeogl.Translate({
+        xyz: [-35, 0, 0],
+        parent: new xeogl.Rotate({
+            xyz: [0, 1, 0],
+            angle: 45
+        })
+     });
+     ````
+
+     We can also provide the transforms to the Model constructor, as either configuration objects or instances.
+
+     Here we'll provide them as configuration objects:
+
+     ```` Javascript
+     // Model internally instantiates our transform components:
+     var model3 = new xeogl.Model({
+        transform: {
+            type: "xeogl.Translate",
+            xyz: [-35, 0, 0],
+            parent: {
+                type: "xeogl.Rotate",
+                xyz: [0, 1, 0],
+                angle: 45
+            }
+        }
+     });
+
+     ````
+
+     Note that, as with the components we added before, the Model will manage the lifecycles of our transform components,
+     destroying them when we destroy the Model or call its {{#crossLink "Model/destroyAll:method"}}{{/crossLink}} method.
+
+     ### Getting the World-space boundary of a Model
+
+     A Model's {{#crossLink "Model/worldBoundary:property"}}{{/crossLink}} property is a {{#crossLink "Boundary3D"}}{{/crossLink}}
+     that provides the collective World-space boundary of all its components. The {{#crossLink "Boundary3D"}}{{/crossLink}} will
+     automatically adjust its extents whenever we add or remove components to its Model, or whenever we update the Model's transforms.
+
+     Let's get the {{#crossLink "Boundary3D"}}{{/crossLink}} from our first Model, subscribe to changes on its extents,
+     then animate one of the Model's transforms, which will cause the {{#crossLink "Boundary3D"}}{{/crossLink}} to fire an
+     {{#crossLink "Boundary3D/updated:event"}}{{/crossLink}} event each time its extents change:
+
+     ```` Javascript
+     var worldBoundary = model.worldBoundary;
+
+     worldBoundary.on("updated", function() {
+
+            // See docs on xeogl.Boundary3D for
+            // the format of these properties
+
+            obb = worldBoundary.obb;
+            aabb = worldBoundary.aabb;
+            center = worldBoundary.center;
+            sphere = worldBoundary.sphere();
+            //...
+    });
+
+     model.scene.on("tick", function() {
+            model.transform.parent.angle += 0.2;
+        });
+     ````
+
+     Since xeogl is all about lazy-execution to avoid needless work, the {{#crossLink "Boundary3D"}}{{/crossLink}} will
+     only actually recompute its extents the first time we read its {{#crossLink "Boundary3D/obb:property"}}{{/crossLink}},
+     {{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}}, {{#crossLink "Boundary3D/center:property"}}{{/crossLink}},
+     {{#crossLink "Boundary3D/center:property"}}{{/crossLink}} or
+     {{#crossLink "Boundary3D/sphere:property"}}{{/crossLink}} properties after it fired its
+     last {{#crossLink "Boundary3D/updated:event"}}{{/crossLink}} event.
+
+     Also, the Model lazy-instantiates its {{#crossLink "Boundary3D"}}{{/crossLink}} the first time we reference
+     the Model's {{#crossLink "Model/worldBoundary:property"}}{{/crossLink}} property. Since the {{#crossLink "Boundary3D"}}{{/crossLink}}
+     is going to hang around in memory and fire {{#crossLink "Boundary3D/updated:event"}}{{/crossLink}} events each time we add or
+     remove components, or animate transforms, for efficiency we should destroy the {{#crossLink "Boundary3D"}}{{/crossLink}}
+     as soon as we no longer need it.
+
+     Finally, when we destroy a Model, it will also destroy its {{#crossLink "Boundary3D"}}{{/crossLink}}, if it
+     currently has one.
 
      @class Model
      @module xeogl
@@ -29,6 +205,7 @@
      Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this Model. Internally, the given
      {{#crossLink "Transform"}}{{/crossLink}} will be inserted above each top-most {{#crossLink "Transform"}}Transform{{/crossLink}}
      that the Model attaches to its {{#crossLink "Entity"}}Entities{{/crossLink}}.
+     @param [cfg.components] {Array} Array of {{#crossLink "Components"}}{{/crossLink}} to add initially, given as IDs, configuration objects or instances.
      @extends Component
      */
     xeogl.Model = xeogl.Component.extend({
@@ -84,13 +261,21 @@
              */
             this.types = {};
 
+            /**
+             * The {{#crossLink "Entity"}}Entity{{/crossLink}} component instances within this Model, mapped to their IDs.
+             *
+             * @property entities
+             * @type {{String:Entity}}
+             */
+            this.entities = {};
+
             // Subscriptions to "destroyed" events from components
             this._onDestroyed = {};
 
             // Subscriptions to "updated" events from components' worldBoundaries
             this._onWorldBoundaryUpdated = {};
 
-            this._aabbDirty = true;
+            this._aabbDirty = false;
 
             // Dummy transform to make it easy to graft user-supplied transforms above added entities
             this._dummyRootTransform = this.create({
@@ -101,14 +286,17 @@
             this.transform = cfg.transform;
 
             if (cfg.components) {
-                this.add(cfg.components);
+                var components = cfg.components;
+                for (var i = 0, len = components.length; i , len; i++) {
+                    this.add(components[i]);
+                }
             }
         },
 
         /**
-         * Adds one or more {{#crossLink "Component"}}Components{{/crossLink}} to this Model.
+         * Adds a {{#crossLink "Component"}}Component{{/crossLink}} or subtype to this Model.
          *
-         * The {{#crossLink "Component"}}Component(s){{/crossLink}} may be specified by instance, ID or type.
+         * The {{#crossLink "Component"}}Component(s){{/crossLink}} may be specified by ID, instance, JSON definition or type.
          *
          * See class comment for usage examples.
          *
@@ -117,31 +305,20 @@
          * Fires an {{#crossLink "Model/added:event"}}{{/crossLink}} event.
          *
          * @method add
-         * @param {Array of Component} components Array of {{#crossLink "Component"}}Components{{/crossLink}} instances.
+         * @param {Number|String|*|Component} component ID, definition or instance of a {{#crossLink "Component"}}Component{{/crossLink}} type or subtype.
          */
-        add: function (components) {
-
-            components = xeogl._isArray(components) ? components : [components];
-
-            for (var i = 0, len = components.length; i < len; i++) {
-                this._add(components[i]);
-            }
-        },
-
-        _add: function (c) {
+        add: function (component) {
 
             var componentId;
-            var component;
-            var type;
             var types;
 
-            if (xeogl._isNumeric(c) || xeogl._isString(c)) {
+            if (xeogl._isNumeric(component) || xeogl._isString(component)) {
 
-                if (this.scene.types[c]) {
+                if (this.scene.types[component]) {
 
                     // Component type
 
-                    type = c;
+                    type = component;
 
                     types = this.scene.types[type];
 
@@ -162,36 +339,27 @@
 
                     // Component ID
 
-                    component = this.scene.components[c];
+                    component = this.scene.components[component];
 
                     if (!component) {
-                        this.warn("Component not found: " + xeogl._inQuotes(c));
+                        this.warn("Component not found: " + xeogl._inQuotes(component));
                         return;
                     }
                 }
 
-            } else if (xeogl._isObject(c)) {
+            } else if (xeogl._isObject(component)) {
 
                 // Component config given
 
-                var type = c.type || "xeogl.Component";
+                var type = component.type || "xeogl.Component";
 
                 if (!xeogl._isComponentType(type)) {
                     this.error("Not a xeogl component type: " + type);
                     return;
                 }
 
-                component = new window[type](this.scene, c);
+                component = new window[type](this.scene, component);
 
-            } else if (c.type) {
-
-                // Component instance
-
-                component = c;
-
-            } else {
-
-                return;
             }
 
             if (component.scene !== this.scene) {
@@ -265,13 +433,12 @@
                         rootTransform.parent = self._dummyRootTransform;
                     }
                 }
+
+                this.entities[component.id] = component;
             }
 
             if (component.worldBoundary) {
-                this._onWorldBoundaryUpdated[c.id] = component.worldBoundary.on("updated", this._updated, this);
-                if (!this._aabbDirty) {
-                    this._setAABBDirty();
-                }
+                this._onWorldBoundaryUpdated[component.id] = component.worldBoundary.on("updated", this._updated, this);
             }
 
             /**
@@ -281,9 +448,13 @@
              */
             this.fire("added", component);
 
+         //   this.log("Mode.added:" + component.id);
+
             if (!this._dirty) {
                 this._scheduleUpdate();
             }
+
+            return component;
         },
 
         _scheduleUpdate: function () {
@@ -303,6 +474,11 @@
              * @event updated
              */
             this.fire("updated");
+
+            if (!this._aabbDirty) {
+                this._setAABBDirty();
+            }
+
             this._dirty = false;
         },
 
@@ -313,11 +489,35 @@
          */
         destroyAll: function () {
 
-            this.iterate(function (component) {
-                component.destroy();
-            });
-        },
+            // For efficiency, destroy Entities first to avoid
+            // xeogl's automatic default component substitutions
 
+            var type;
+            var list = [];
+            var components;
+            var component;
+            var id;
+
+            for (type in this.types) {
+                if (this.types.hasOwnProperty(type)) {
+                    components = this.types[type];
+                    for (id in components) {
+                        if (components.hasOwnProperty(id)) {
+                            component = components[id];
+                            if (component.isType("xeogl.Entity")) {
+                                list.push(component);
+                            } else {
+                                list.unshift(component);
+                            }
+                        }
+                    }
+                }
+            }
+
+            while (list.length > 0) {
+                list.pop().destroy();
+            }
+        },
         /**
          * Removes all {{#crossLink "Component"}}Components{{/crossLink}} from this Model.
          *
@@ -340,6 +540,7 @@
             }
 
             delete this.components[componentId];
+            delete this.entities[componentId];
 
             // Unsubscribe from component destruction
 
@@ -464,7 +665,7 @@
                             type: "xeogl.Boundary3D",
 
                             getDirty: function () {
-                                if (self._aabbDirty) {
+                                if (self._aabbDirty || !self._aabb) {
                                     self._buildAABB();
                                     self._aabbDirty = false;
                                     return true;

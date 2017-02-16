@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.min.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <style>
+        body {
+            background-color: black;
+            padding: 5px;
+            margin: 0;
+        }
+
+        #myCanvas1 {
+            display: inline-block;
+            margin: 10px;
+            border: 1px solid white;
+            position:absolute;
+            top: 60px;
+            left: 0;
+        }
+
+        #myCanvas2 {
+            display: inline-block;
+            margin: 10px;
+            border: 1px solid white;
+            position:absolute;
+            top: 60px;
+            left: 420px;
+        }
+
+        #myCanvas3 {
+            display: inline-block;
+            margin: 10px;
+            border: 1px solid white;
+            position:absolute;
+            top: 480px;
+            left: 0px;
+        }
+    </style>
+
+<body>
+
+<div id="info">
+   <h1>multiple <a
+        href="../docs/classes/Scene.html"
+        target="_parent">Scenes</a> in a page</h1>
+</div>
+
+<canvas id="myCanvas1" class="multiCanvas" width="400px" height="400px" style="  background-image: url(textures/diffuse/uvGrid2.jpg);"></canvas>
+<canvas id="myCanvas2" class="multiCanvas" width="400px" height="400px"></canvas>
+<canvas id="myCanvas3" class="multiCanvas" width="400px" height="400px"></canvas>
+
+<script>
+
+    //-----------------------------
+    // Scene 1
+    //-----------------------------
+
+    xeogl.scene = new xeogl.Scene({
+        canvas: "myCanvas1",
+        //backgroundColor: [0.3, 0.6, 0.9]
+        transparent: true
+    });
+
+    new xeogl.Entity({
+        geometry: new xeogl.TorusGeometry({
+            radius: 1.0,
+            tube: 0.3,
+            radialSegments: 120,
+            tubeSegments: 60
+        }),
+        material: new xeogl.MetallicMaterial({
+            baseColorMap: new xeogl.Texture({
+                src: "textures/diffuse/uvGrid2.jpg"
+            }),
+            roughnessMap: new xeogl.Texture({
+                src: "textures/roughness/goldRoughness.jpg"
+            })
+        })
+    });
+
+    xeogl.scene.camera.view.eye = [0, 0, -4];
+
+    xeogl.scene.on("tick", function () {
+        this.camera.view.rotateEyeY(0.5);
+        this.camera.view.rotateEyeX(0.3);
+    });
+
+    new xeogl.CameraControl();
+
+    //-----------------------------
+    // Scene 2
+    //-----------------------------
+
+    xeogl.scene = new xeogl.Scene({
+        canvas: "myCanvas2"
+    });
+
+    new xeogl.Entity({
+        geometry: new xeogl.BoxGeometry(),
+        material: new xeogl.PhongMaterial({
+            diffuseMap: new xeogl.Texture({
+                src: "textures/diffuse/uvgrid.jpg"
+            })
+        })
+    });
+
+    xeogl.scene.camera.view.eye = [0, 0, -5];
+
+    xeogl.scene.on("tick", function () {
+        this.camera.view.rotateEyeY(0.2);
+        this.camera.view.rotateEyeX(-0.1);
+    });
+
+    new xeogl.CameraControl();
+
+    //-----------------------------
+    // Scene 3
+    //-----------------------------
+
+    xeogl.scene = new xeogl.Scene({
+        canvas: "myCanvas3"
+    });
+
+    var view = xeogl.scene.camera.view;
+
+    view.eye = [184.21, 10.54, -7.03];
+    view.look = [159.20, 17.02, 3.21];
+    view.up = [-0.15, 0.97, 0.13];
+
+    var gearbox = new xeogl.GLTFModel({
+        src: "models/gltf/gearbox/gearbox_assy.gltf"
+    });
+
+    xeogl.scene.on("tick", function () {
+        this.camera.view.rotateEyeY(-0.2);
+        this.camera.view.rotateEyeX(0.1);
+    });
+
+    new xeogl.CameraControl();
+
+
+</script>
+</body>
+</html>

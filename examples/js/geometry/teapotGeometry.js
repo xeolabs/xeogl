@@ -2,12 +2,12 @@
  A **TeapotGeometry** defines a [Utah Teapot](https://en.wikipedia.org/wiki/Utah_teapot) geometry for attached
  {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- <a href="../../examples/#geometry_TeapotGeometry"><img src="../../assets/images/screenshots/TeapotGeometry.png"></img></a>
+ <a href="../../examples/#geometry_primitives_teapot"><img src="../../assets/images/screenshots/TeapotGeometry.png"></img></a>
 
  ## Examples
 
  <ul>
- <li>[TeapotGeometry example](../../examples/#geometry_TeapotGeometry)</li>
+ <li>[TeapotGeometry example](../../examples/#geometry_primitives_teapot)</li>
  </ul>
 
  ## Usage

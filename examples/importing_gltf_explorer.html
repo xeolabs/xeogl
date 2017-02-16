@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="../build/xeogl.min.js"></script>
+
+    <link href="libs/perfect-scrollbar.css" rel="stylesheet"/>
+    <script src="libs/perfect-scrollbar.min.js"></script>
+    <script src="js/utils/gltfExplorer.js"></script>
+
+<body>
+
+<div id="explorer" class="dark">
+</div>
+
+<div id="info" style="left :220px;">
+    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> with an <a
+            href="../docs/classes/Entity.html" target="_parent">Entity</a> explorer</h1>
+</div>
+
+<div id="logos">
+    <a href="https://www.khronos.org/gltf" target="_parent"><img src="../assets/images/logos/gltf.png"></a>
+</div>
+
+<script>
+
+    gltfExplorer("explorer", [
+
+        {
+            src: "models/gltf/gearbox/gearbox_assy.gltf"
+        },
+
+        {
+            src: "models/gltf/Reciprocating_Saw/pbr/Reciprocating_Saw.gltf",
+            eye: [-36.58, 400.01, 2.26],
+            look: [-102.97, 0.0, 19.36],
+            up: [0.00, 0.0, -1.0]
+        }
+    ]);
+
+</script>
+</body>
+</html>

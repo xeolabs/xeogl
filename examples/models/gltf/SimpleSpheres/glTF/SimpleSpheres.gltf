@@ -1,0 +1,690 @@
+{
+  "scenes" : {
+    "scene0" : {
+      "nodes" : [ "root" ]
+    }
+  },
+  "materials" : {
+    "material_m0_r0" : {
+      "technique" : "pbrTechnique",
+      "values" : {
+        "metallicFactor" : [ 0.0 ],
+        "roughnessFactor" : [ 0.0 ]
+      }
+    },
+    "material_m0_r25" : {
+      "technique" : "pbrTechnique",
+      "values" : {
+        "metallicFactor" : [ 0.0 ],
+        "roughnessFactor" : [ 0.25 ]
+      }
+    },
+    "material_m0_r50" : {
+      "technique" : "pbrTechnique",
+      "values" : {
+        "metallicFactor" : [ 0.0 ],
+        "roughnessFactor" : [ 0.5 ]
+      }
+    },
+    "material_m0_r75" : {
+      "technique" : "pbrTechnique",
+      "values" : {
+        "metallicFactor" : [ 0.0 ],
+        "roughnessFactor" : [ 0.75 ]
+      }
+    },
+    "material_m0_r100" : {
+      "technique" : "pbrTechnique",
+      "values" : {
+        "metallicFactor" : [ 0.0 ],
+        "roughnessFactor" : [ 1.0 ]
+      }
+    },
+    "material_m25_r0" : {
+      "technique" : "pbrTechnique",
+      "values" : {
+        "metallicFactor" : [ 0.25 ],
+        "roughnessFactor" : [ 0.0 ]
+      }
+    },
+    "material_m25_r25" : {
+      "technique" : "pbrTechnique",
+      "values" : {
+        "metallicFactor" : [ 0.25 ],
+        "roughnessFactor" : [ 0.25 ]
+      }
+    },
+    "material_m25_r50" : {
+      "technique" : "pbrTechnique",
+      "values" : {
+        "metallicFactor" : [ 0.25 ],
+        "roughnessFactor" : [ 0.5 ]
+      }
+    },
+    "material_m25_r75" : {
+      "technique" : "pbrTechnique",
+      "values" : {
+        "metallicFactor" : [ 0.25 ],
+        "roughnessFactor" : [ 0.75 ]
+      }
+    },
+    "material_m25_r100" : {
+      "technique" : "pbrTechnique",
+      "values" : {
+        "metallicFactor" : [ 0.25 ],
+        "roughnessFactor" : [ 1.0 ]
+      }
+    },
+    "material_m50_r0" : {
+      "technique" : "pbrTechnique",
+      "values" : {
+        "metallicFactor" : [ 0.5 ],
+        "roughnessFactor" : [ 0.0 ]
+      }
+    },
+    "material_m50_r25" : {
+      "technique" : "pbrTechnique",
+      "values" : {
+        "metallicFactor" : [ 0.5 ],
+        "roughnessFactor" : [ 0.25 ]
+      }
+    },
+    "material_m50_r50" : {
+      "technique" : "pbrTechnique",
+      "values" : {
+        "metallicFactor" : [ 0.5 ],
+        "roughnessFactor" : [ 0.5 ]
+      }
+    },
+    "material_m50_r75" : {
+      "technique" : "pbrTechnique",
+      "values" : {
+        "metallicFactor" : [ 0.5 ],
+        "roughnessFactor" : [ 0.75 ]
+      }
+    },
+    "material_m50_r100" : {
+      "technique" : "pbrTechnique",
+      "values" : {
+        "metallicFactor" : [ 0.5 ],
+        "roughnessFactor" : [ 1.0 ]
+      }
+    },
+    "material_m75_r0" : {
+      "technique" : "pbrTechnique",
+      "values" : {
+        "metallicFactor" : [ 0.75 ],
+        "roughnessFactor" : [ 0.0 ]
+      }
+    },
+    "material_m75_r25" : {
+      "technique" : "pbrTechnique",
+      "values" : {
+        "metallicFactor" : [ 0.75 ],
+        "roughnessFactor" : [ 0.25 ]
+      }
+    },
+    "material_m75_r50" : {
+      "technique" : "pbrTechnique",
+      "values" : {
+        "metallicFactor" : [ 0.75 ],
+        "roughnessFactor" : [ 0.5 ]
+      }
+    },
+    "material_m75_r75" : {
+      "technique" : "pbrTechnique",
+      "values" : {
+        "metallicFactor" : [ 0.75 ],
+        "roughnessFactor" : [ 0.75 ]
+      }
+    },
+    "material_m75_r100" : {
+      "technique" : "pbrTechnique",
+      "values" : {
+        "metallicFactor" : [ 0.75 ],
+        "roughnessFactor" : [ 1.0 ]
+      }
+    },
+    "material_m100_r0" : {
+      "technique" : "pbrTechnique",
+      "values" : {
+        "metallicFactor" : [ 1.0 ],
+        "roughnessFactor" : [ 0.0 ]
+      }
+    },
+    "material_m100_r25" : {
+      "technique" : "pbrTechnique",
+      "values" : {
+        "metallicFactor" : [ 1.0 ],
+        "roughnessFactor" : [ 0.25 ]
+      }
+    },
+    "material_m100_r50" : {
+      "technique" : "pbrTechnique",
+      "values" : {
+        "metallicFactor" : [ 1.0 ],
+        "roughnessFactor" : [ 0.5 ]
+      }
+    },
+    "material_m100_r75" : {
+      "technique" : "pbrTechnique",
+      "values" : {
+        "metallicFactor" : [ 1.0 ],
+        "roughnessFactor" : [ 0.75 ]
+      }
+    },
+    "material_m100_r100" : {
+      "technique" : "pbrTechnique",
+      "values" : {
+        "metallicFactor" : [ 1.0 ],
+        "roughnessFactor" : [ 1.0 ]
+      }
+    }
+  },
+  "meshes" : {
+    "mesh_m0_r0" : {
+      "primitives" : [ {
+        "attributes" : {
+          "POSITION" : "positionsAccessor",
+          "NORMAL" : "normalsAccessor"
+        },
+        "indices" : "indicesAccessor",
+        "material" : "material_m0_r0",
+        "mode" : 4
+      } ]
+    },
+    "mesh_m0_r25" : {
+      "primitives" : [ {
+        "attributes" : {
+          "POSITION" : "positionsAccessor",
+          "NORMAL" : "normalsAccessor"
+        },
+        "indices" : "indicesAccessor",
+        "material" : "material_m0_r25",
+        "mode" : 4
+      } ]
+    },
+    "mesh_m0_r50" : {
+      "primitives" : [ {
+        "attributes" : {
+          "POSITION" : "positionsAccessor",
+          "NORMAL" : "normalsAccessor"
+        },
+        "indices" : "indicesAccessor",
+        "material" : "material_m0_r50",
+        "mode" : 4
+      } ]
+    },
+    "mesh_m0_r75" : {
+      "primitives" : [ {
+        "attributes" : {
+          "POSITION" : "positionsAccessor",
+          "NORMAL" : "normalsAccessor"
+        },
+        "indices" : "indicesAccessor",
+        "material" : "material_m0_r75",
+        "mode" : 4
+      } ]
+    },
+    "mesh_m0_r100" : {
+      "primitives" : [ {
+        "attributes" : {
+          "POSITION" : "positionsAccessor",
+          "NORMAL" : "normalsAccessor"
+        },
+        "indices" : "indicesAccessor",
+        "material" : "material_m0_r100",
+        "mode" : 4
+      } ]
+    },
+    "mesh_m25_r0" : {
+      "primitives" : [ {
+        "attributes" : {
+          "POSITION" : "positionsAccessor",
+          "NORMAL" : "normalsAccessor"
+        },
+        "indices" : "indicesAccessor",
+        "material" : "material_m25_r0",
+        "mode" : 4
+      } ]
+    },
+    "mesh_m25_r25" : {
+      "primitives" : [ {
+        "attributes" : {
+          "POSITION" : "positionsAccessor",
+          "NORMAL" : "normalsAccessor"
+        },
+        "indices" : "indicesAccessor",
+        "material" : "material_m25_r25",
+        "mode" : 4
+      } ]
+    },
+    "mesh_m25_r50" : {
+      "primitives" : [ {
+        "attributes" : {
+          "POSITION" : "positionsAccessor",
+          "NORMAL" : "normalsAccessor"
+        },
+        "indices" : "indicesAccessor",
+        "material" : "material_m25_r50",
+        "mode" : 4
+      } ]
+    },
+    "mesh_m25_r75" : {
+      "primitives" : [ {
+        "attributes" : {
+          "POSITION" : "positionsAccessor",
+          "NORMAL" : "normalsAccessor"
+        },
+        "indices" : "indicesAccessor",
+        "material" : "material_m25_r75",
+        "mode" : 4
+      } ]
+    },
+    "mesh_m25_r100" : {
+      "primitives" : [ {
+        "attributes" : {
+          "POSITION" : "positionsAccessor",
+          "NORMAL" : "normalsAccessor"
+        },
+        "indices" : "indicesAccessor",
+        "material" : "material_m25_r100",
+        "mode" : 4
+      } ]
+    },
+    "mesh_m50_r0" : {
+      "primitives" : [ {
+        "attributes" : {
+          "POSITION" : "positionsAccessor",
+          "NORMAL" : "normalsAccessor"
+        },
+        "indices" : "indicesAccessor",
+        "material" : "material_m50_r0",
+        "mode" : 4
+      } ]
+    },
+    "mesh_m50_r25" : {
+      "primitives" : [ {
+        "attributes" : {
+          "POSITION" : "positionsAccessor",
+          "NORMAL" : "normalsAccessor"
+        },
+        "indices" : "indicesAccessor",
+        "material" : "material_m50_r25",
+        "mode" : 4
+      } ]
+    },
+    "mesh_m50_r50" : {
+      "primitives" : [ {
+        "attributes" : {
+          "POSITION" : "positionsAccessor",
+          "NORMAL" : "normalsAccessor"
+        },
+        "indices" : "indicesAccessor",
+        "material" : "material_m50_r50",
+        "mode" : 4
+      } ]
+    },
+    "mesh_m50_r75" : {
+      "primitives" : [ {
+        "attributes" : {
+          "POSITION" : "positionsAccessor",
+          "NORMAL" : "normalsAccessor"
+        },
+        "indices" : "indicesAccessor",
+        "material" : "material_m50_r75",
+        "mode" : 4
+      } ]
+    },
+    "mesh_m50_r100" : {
+      "primitives" : [ {
+        "attributes" : {
+          "POSITION" : "positionsAccessor",
+          "NORMAL" : "normalsAccessor"
+        },
+        "indices" : "indicesAccessor",
+        "material" : "material_m50_r100",
+        "mode" : 4
+      } ]
+    },
+    "mesh_m75_r0" : {
+      "primitives" : [ {
+        "attributes" : {
+          "POSITION" : "positionsAccessor",
+          "NORMAL" : "normalsAccessor"
+        },
+        "indices" : "indicesAccessor",
+        "material" : "material_m75_r0",
+        "mode" : 4
+      } ]
+    },
+    "mesh_m75_r25" : {
+      "primitives" : [ {
+        "attributes" : {
+          "POSITION" : "positionsAccessor",
+          "NORMAL" : "normalsAccessor"
+        },
+        "indices" : "indicesAccessor",
+        "material" : "material_m75_r25",
+        "mode" : 4
+      } ]
+    },
+    "mesh_m75_r50" : {
+      "primitives" : [ {
+        "attributes" : {
+          "POSITION" : "positionsAccessor",
+          "NORMAL" : "normalsAccessor"
+        },
+        "indices" : "indicesAccessor",
+        "material" : "material_m75_r50",
+        "mode" : 4
+      } ]
+    },
+    "mesh_m75_r75" : {
+      "primitives" : [ {
+        "attributes" : {
+          "POSITION" : "positionsAccessor",
+          "NORMAL" : "normalsAccessor"
+        },
+        "indices" : "indicesAccessor",
+        "material" : "material_m75_r75",
+        "mode" : 4
+      } ]
+    },
+    "mesh_m75_r100" : {
+      "primitives" : [ {
+        "attributes" : {
+          "POSITION" : "positionsAccessor",
+          "NORMAL" : "normalsAccessor"
+        },
+        "indices" : "indicesAccessor",
+        "material" : "material_m75_r100",
+        "mode" : 4
+      } ]
+    },
+    "mesh_m100_r0" : {
+      "primitives" : [ {
+        "attributes" : {
+          "POSITION" : "positionsAccessor",
+          "NORMAL" : "normalsAccessor"
+        },
+        "indices" : "indicesAccessor",
+        "material" : "material_m100_r0",
+        "mode" : 4
+      } ]
+    },
+    "mesh_m100_r25" : {
+      "primitives" : [ {
+        "attributes" : {
+          "POSITION" : "positionsAccessor",
+          "NORMAL" : "normalsAccessor"
+        },
+        "indices" : "indicesAccessor",
+        "material" : "material_m100_r25",
+        "mode" : 4
+      } ]
+    },
+    "mesh_m100_r50" : {
+      "primitives" : [ {
+        "attributes" : {
+          "POSITION" : "positionsAccessor",
+          "NORMAL" : "normalsAccessor"
+        },
+        "indices" : "indicesAccessor",
+        "material" : "material_m100_r50",
+        "mode" : 4
+      } ]
+    },
+    "mesh_m100_r75" : {
+      "primitives" : [ {
+        "attributes" : {
+          "POSITION" : "positionsAccessor",
+          "NORMAL" : "normalsAccessor"
+        },
+        "indices" : "indicesAccessor",
+        "material" : "material_m100_r75",
+        "mode" : 4
+      } ]
+    },
+    "mesh_m100_r100" : {
+      "primitives" : [ {
+        "attributes" : {
+          "POSITION" : "positionsAccessor",
+          "NORMAL" : "normalsAccessor"
+        },
+        "indices" : "indicesAccessor",
+        "material" : "material_m100_r100",
+        "mode" : 4
+      } ]
+    }
+  },
+  "nodes" : {
+    "root" : {
+      "children" : [ "node_m0_r0", "node_m0_r25", "node_m0_r50", "node_m0_r75", "node_m0_r100", "node_m25_r0", "node_m25_r25", "node_m25_r50", "node_m25_r75", "node_m25_r100", "node_m50_r0", "node_m50_r25", "node_m50_r50", "node_m50_r75", "node_m50_r100", "node_m75_r0", "node_m75_r25", "node_m75_r50", "node_m75_r75", "node_m75_r100", "node_m100_r0", "node_m100_r25", "node_m100_r50", "node_m100_r75", "node_m100_r100" ]
+    },
+    "node_m0_r0" : {
+      "meshes" : [ "mesh_m0_r0" ],
+      "translation" : [ -5.0, -5.0, 0.0 ]
+    },
+    "node_m0_r25" : {
+      "meshes" : [ "mesh_m0_r25" ],
+      "translation" : [ -5.0, -2.5, 0.0 ]
+    },
+    "node_m0_r50" : {
+      "meshes" : [ "mesh_m0_r50" ],
+      "translation" : [ -5.0, 0.0, 0.0 ]
+    },
+    "node_m0_r75" : {
+      "meshes" : [ "mesh_m0_r75" ],
+      "translation" : [ -5.0, 2.5, 0.0 ]
+    },
+    "node_m0_r100" : {
+      "meshes" : [ "mesh_m0_r100" ],
+      "translation" : [ -5.0, 5.0, 0.0 ]
+    },
+    "node_m25_r0" : {
+      "meshes" : [ "mesh_m25_r0" ],
+      "translation" : [ -2.5, -5.0, 0.0 ]
+    },
+    "node_m25_r25" : {
+      "meshes" : [ "mesh_m25_r25" ],
+      "translation" : [ -2.5, -2.5, 0.0 ]
+    },
+    "node_m25_r50" : {
+      "meshes" : [ "mesh_m25_r50" ],
+      "translation" : [ -2.5, 0.0, 0.0 ]
+    },
+    "node_m25_r75" : {
+      "meshes" : [ "mesh_m25_r75" ],
+      "translation" : [ -2.5, 2.5, 0.0 ]
+    },
+    "node_m25_r100" : {
+      "meshes" : [ "mesh_m25_r100" ],
+      "translation" : [ -2.5, 5.0, 0.0 ]
+    },
+    "node_m50_r0" : {
+      "meshes" : [ "mesh_m50_r0" ],
+      "translation" : [ 0.0, -5.0, 0.0 ]
+    },
+    "node_m50_r25" : {
+      "meshes" : [ "mesh_m50_r25" ],
+      "translation" : [ 0.0, -2.5, 0.0 ]
+    },
+    "node_m50_r50" : {
+      "meshes" : [ "mesh_m50_r50" ],
+      "translation" : [ 0.0, 0.0, 0.0 ]
+    },
+    "node_m50_r75" : {
+      "meshes" : [ "mesh_m50_r75" ],
+      "translation" : [ 0.0, 2.5, 0.0 ]
+    },
+    "node_m50_r100" : {
+      "meshes" : [ "mesh_m50_r100" ],
+      "translation" : [ 0.0, 5.0, 0.0 ]
+    },
+    "node_m75_r0" : {
+      "meshes" : [ "mesh_m75_r0" ],
+      "translation" : [ 2.5, -5.0, 0.0 ]
+    },
+    "node_m75_r25" : {
+      "meshes" : [ "mesh_m75_r25" ],
+      "translation" : [ 2.5, -2.5, 0.0 ]
+    },
+    "node_m75_r50" : {
+      "meshes" : [ "mesh_m75_r50" ],
+      "translation" : [ 2.5, 0.0, 0.0 ]
+    },
+    "node_m75_r75" : {
+      "meshes" : [ "mesh_m75_r75" ],
+      "translation" : [ 2.5, 2.5, 0.0 ]
+    },
+    "node_m75_r100" : {
+      "meshes" : [ "mesh_m75_r100" ],
+      "translation" : [ 2.5, 5.0, 0.0 ]
+    },
+    "node_m100_r0" : {
+      "meshes" : [ "mesh_m100_r0" ],
+      "translation" : [ 5.0, -5.0, 0.0 ]
+    },
+    "node_m100_r25" : {
+      "meshes" : [ "mesh_m100_r25" ],
+      "translation" : [ 5.0, -2.5, 0.0 ]
+    },
+    "node_m100_r50" : {
+      "meshes" : [ "mesh_m100_r50" ],
+      "translation" : [ 5.0, 0.0, 0.0 ]
+    },
+    "node_m100_r75" : {
+      "meshes" : [ "mesh_m100_r75" ],
+      "translation" : [ 5.0, 2.5, 0.0 ]
+    },
+    "node_m100_r100" : {
+      "meshes" : [ "mesh_m100_r100" ],
+      "translation" : [ 5.0, 5.0, 0.0 ]
+    }
+  },
+  
+  
+  
+  "buffers" : {
+    "geometryBuffer" : {
+      "uri" : "sphere_T5120_P4N4.bin",
+      "byteLength" : 522240
+    }
+  },
+  "bufferViews" : {
+    "indicesBufferView" : {
+      "buffer" : "geometryBuffer",
+      "byteOffset" : 0,
+      "byteLength" : 30720,
+      "target": 34963
+    },
+    "attributesBufferView" : {
+      "buffer" : "geometryBuffer",
+      "byteOffset" : 30720,
+      "byteLength" : 491520,
+      "target": 34962
+    }
+  },
+  "accessors" : {
+    "indicesAccessor" : {
+      "bufferView" : "indicesBufferView",
+      "byteOffset" : 0,
+      "componentType" : 5123,
+      "count" : 15360,
+      "type" : "SCALAR",
+      "min" : [ 0 ],
+      "max" : [ 15359 ]
+    },
+    "positionsAccessor" : {
+      "bufferView" : "attributesBufferView",
+      "byteOffset" : 0,
+      "componentType" : 5126,
+      "count" : 15360,
+      "type" : "VEC4",
+      "min" : [ -1.0, -1.0, -1.0, 1.0 ],
+      "max" : [ 1.0, 1.0, 1.0, 1.0 ]
+    },
+    "normalsAccessor" : {
+      "bufferView" : "attributesBufferView",
+      "byteOffset" : 245760,
+      "componentType" : 5126,
+      "count" : 15360,
+      "type" : "VEC4",
+      "min" : [ -1.0, -1.0, -1.0, 1.0 ],
+      "max" : [ 1.0, 1.0, 1.0, 1.0 ]
+    }
+  },
+  
+  "programs" : {
+    "pbrProgram" : {
+      "attributes" : [ "a_position", "a_normal" ],
+      "fragmentShader" : "pbrFragmentShader",
+      "vertexShader" : "pbrVertexShader"
+    }
+  },
+  "shaders" : {
+    "pbrVertexShader" : {
+      "uri" : "pbr.vert",
+      "type" : 35633
+    },
+    "pbrFragmentShader" : {
+      "uri" : "pbr.frag",
+      "type" : 35632
+    }
+  },
+  "techniques" : {
+    "pbrTechnique" : {
+      "program" : "pbrProgram",
+      "parameters" : {
+        "position" : {
+          "type" : 35666,
+          "semantic" : "POSITION"
+        },
+        "normal" : {
+          "type" : 35666,
+          "semantic" : "NORMAL"
+        },
+        
+        "modelViewMatrix" : {
+          "type" : 35676,
+          "semantic" : "MODELVIEW"
+        },
+        "projectionMatrix" : {
+          "type" : 35676,
+          "semantic" : "PROJECTION"
+        },
+        "normalMatrix" : {
+          "type" : 35675,
+          "semantic" : "MODELVIEWINVERSETRANSPOSE"
+        },
+        
+        "metallicFactor" : {
+          "type" : 5126
+        },
+        "roughnessFactor" : {
+          "type" : 5126
+        }
+        
+      },
+      "attributes" : {
+        "a_position" : "position",
+        "a_normal" : "normal"
+      },
+      "uniforms" : {
+        "u_modelViewMatrix" : "modelViewMatrix",
+        "u_normalMatrix" : "normalMatrix",
+        "u_projectionMatrix" : "projectionMatrix",
+        "u_metallicFactor" : "metallicFactor",
+        "u_roughnessFactor" : "roughnessFactor"
+      },
+      "states" : {
+        "enable" : [ 2884, 2929 ]
+      }
+    }
+  },
+  "asset" : {
+    "version" : "1.1"
+  }
+  
+}

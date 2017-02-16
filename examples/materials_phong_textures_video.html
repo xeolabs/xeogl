@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.min.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <h1><a
+            href="../docs/classes/PhongMaterial.html" target="_parent">PhongMaterial</a> with video <a
+            href="../docs/classes/Texture.html"
+            target="_parent">Texture</a></h1>
+</div>
+
+<script>
+
+    var geometry = new xeogl.BoxGeometry({
+        xSize: 1,
+        ySize: 1,
+        zSize: 1
+    });
+
+    var diffuseMap = new xeogl.Texture();
+
+    var material = new xeogl.PhongMaterial({
+        diffuseMap: diffuseMap
+    });
+
+    var entity = new xeogl.Entity({
+        geometry: geometry,
+        material: material,
+
+        // Show backfaces
+        modes: new xeogl.Modes({
+            backfaces: true
+        })
+    });
+
+    entity.camera.view.zoom(-5);
+
+    // Create hidden video canvas
+
+    var video = document.createElement("video");
+    video.style.display = "none";
+    video.setAttribute("loop", "loop");
+    video.autoplay = true;
+    video.muted = true; // <<------------- Muted so that we don't drive you bonkers each time you load this example
+    document.getElementsByTagName("body")[0].appendChild(video);
+    video.src = "textures/diffuse/bunny.ogg";
+
+    var self = this;
+
+    entity.scene.on("tick", function () {
+
+        // Transfer video frame into texture
+
+        if (video.readyState > 0) {
+            if (video.height <= 0) {
+                video.style.display = "";
+                video.height = video.offsetHeight;
+                video.width = video.offsetWidth;
+                video.style.display = "none";
+            }
+
+            diffuseMap.image = video;
+        }
+
+        // Spin camera
+
+        var view = entity.scene.camera.view;
+
+        view.rotateEyeY(0.2);
+        view.rotateEyeX(0.1);
+    });
+
+    new xeogl.CameraControl();
+
+</script>
+</body>
+</html>

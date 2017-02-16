@@ -16,11 +16,10 @@
 
  ## Examples
 
- * [Perspective Camera](../../examples/#transforms_project_perspective)
- * [Orthographic Camera](../../examples/#transforms_project_ortho)
- * [Flying a Camera to ](../../examples/#animation_CameraFlightAnimation_AABB)
- * [Automatically following an Entity with a Camera](../../examples/#animation_CameraFollowAnimation)
- * [Animating a Camera along a path](../../examples/#animation_CameraPathAnimation_interpolate)
+ * [Perspective Camera](../../examples/#transforms_camera_project_perspective)
+ * [Orthographic Camera](../../examples/#transforms_camera_project_ortho)
+ * [Automatically following an Entity with a Camera](../../examples/#animation_camera_follow)
+ * [Animating a Camera along a path](../../examples/#animation_camera_path_interpolation)
 
  ## Usage
 

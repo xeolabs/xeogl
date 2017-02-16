@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title>Skybox - xeogl</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link href='https://fonts.googleapis.com/css?family=Exo+2:400,800,900,700,600,500|Roboto:100,300,400,500,700,900'  rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
     <link rel="icon" href="../assets/favicon.ico">
@@ -15,7 +16,7 @@
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
 
-                <h1 style="color:white;"><a href="../../">xeogl</a> / <a href="../../docs">API Docs</a></h1>
+                <h1 class="projectTitle"><a href="../../">xeogl</a> / <a href="../../docs">API Docs</a></h1>
 
         </div>
         <div class="yui3-u-1-4 version">
@@ -56,11 +57,13 @@
                                 <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
+                                <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
                                 <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
+                                <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
                                 <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
@@ -75,20 +78,13 @@
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
-                                <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
-                                <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
-                                <li><a href="../classes/KeyboardRotateCamera.html">KeyboardRotateCamera</a></li>
-                                <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
+                                <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
-                                <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
-                                <li><a href="../classes/MousePickEntity.html">MousePickEntity</a></li>
-                                <li><a href="../classes/MouseRotateCamera.html">MouseRotateCamera</a></li>
-                                <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
@@ -99,15 +95,20 @@
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/PointMarkings.html">PointMarkings</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
+                                <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
+                                <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
+                                <li><a href="../classes/SpecularMaterial.html">SpecularMaterial</a></li>
                                 <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/Spinner.html">Spinner</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
+                                <li><a href="../classes/SpotLight.html">SpotLight</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
@@ -142,6 +143,7 @@
                                 <li><a href="..//modules/input.html">input</a></li>
                                 <li><a href="..//modules/interaction.html">interaction</a></li>
                                 <li><a href="..//modules/lighting.html">lighting</a></li>
+                                <li><a href="..//modules/marking.html">marking</a></li>
                                 <li><a href="..//modules/materials.html">materials</a></li>
                                 <li><a href="..//modules/math.html">math</a></li>
                                 <li><a href="..//modules/models.html">models</a></li>
@@ -149,6 +151,7 @@
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
                                 <li><a href="..//modules/xeogl.html">xeogl</a></li>
+                                <li><a href="..//modules/zspace.html">zspace</a></li>
                             </ul>
                         </div>
                     </div>
@@ -207,7 +210,7 @@ for associated Entities.</p>
 <h2 id="examples">Examples</h2>
 <ul>
 <li><a href="../../examples/#skyboxes_skybox">Basic Skybox</a></li>
-<li><a href="../../examples/#skyboxes_customSkybox">Custom Skybox</a></li>
+<li><a href="../../examples/#skyboxes_skybox_custom">Custom Skybox</a></li>
 </ul>
 
 <h2 id="usage">Usage</h2>
@@ -370,6 +373,17 @@ scene.on("tick", function () {
                                         </div>
         
                                     </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[active=true]</code>
+                                            <span class="type">Boolean</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>True when this Skybox is visible.</p>
+        
+                                        </div>
+        
+                                    </li>
                                 </ul>
                         </li>
                     </ul>
@@ -397,6 +411,14 @@ scene.on("tick", function () {
                     <h3>Methods</h3>
 
                     <ul class="index-list methods extends">
+                            <li class="index-item method">
+                                <a href="#method_build">build</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_clearVoxel">clearVoxel</a>
+
+                            </li>
                             <li class="index-item method inherited">
                                 <a href="#method_create">create</a>
 
@@ -433,8 +455,20 @@ scene.on("tick", function () {
                                 <a href="#method_once">once</a>
 
                             </li>
+                            <li class="index-item method">
+                                <a href="#method_reset">reset</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_setShape">setShape</a>
+
+                            </li>
                             <li class="index-item method inherited">
                                 <a href="#method_warn">warn</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_writeVoxel">writeVoxel</a>
 
                             </li>
                     </ul>
@@ -444,6 +478,10 @@ scene.on("tick", function () {
                     <h3>Properties</h3>
 
                     <ul class="index-list properties extends">
+                            <li class="index-item property">
+                                <a href="#property_active">active</a>
+
+                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_destroyed">destroyed</a>
 
@@ -492,6 +530,10 @@ scene.on("tick", function () {
                     <h3>Events</h3>
 
                     <ul class="index-list events extends">
+                            <li class="index-item event">
+                                <a href="#event_active">active</a>
+
+                            </li>
                             <li class="index-item event inherited">
                                 <a href="#event_destroyed">destroyed</a>
 
@@ -507,6 +549,135 @@ scene.on("tick", function () {
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
 
+<div id="method_build" class="method item">
+    <h3 class="name"><code>build</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>geometry</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type"></span>
+        </span>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                    <p>Provided by the <a href="../modules/generation.html">generation</a> module.</p>
+                <p>
+                Defined in
+        <a href="../files/examples_js_generation_voxelGeometryBuilder.js.html#l180"><code>examples&#x2F;js&#x2F;generation&#x2F;voxelGeometryBuilder.js:180</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Loads all the voxels accumulated from previous calls to VoxelGeometryBuilder/writeVoxel:method into
+a target <a href="../classes/Geometry.html" class="crosslink">Geometry</a>.</p>
+<p>Retains all that state afterwards, so that you can continue to call this method to add the state to
+other <a href="../classes/Geometry.html" class="crosslink">Geometries</a>.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">geometry</code>
+                        <span class="type"><a href="../classes/Geometry.html" class="crosslink">Geometry</a></span>
+
+
+                    <div class="param-description">
+                        <p>The target <a href="../classes/Geometry.html" class="crosslink">Geometry</a>.</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                    <p>this</p>
+
+            </div>
+        </div>
+
+
+</div>
+<div id="method_clearVoxel" class="method item">
+    <h3 class="name"><code>clearVoxel</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>pos</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+
+    <div class="meta">
+                    <p>Provided by the <a href="../modules/generation.html">generation</a> module.</p>
+                <p>
+                Defined in
+        <a href="../files/examples_js_generation_voxelGeometryBuilder.js.html#l139"><code>examples&#x2F;js&#x2F;generation&#x2F;voxelGeometryBuilder.js:139</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Clears a voxel.</p>
+<p>Ignored if the voxel is already clear, or if the given position
+falls outside this VoxelGeometryBuilder&#39;s voxel space extents.</p>
+<p>It&#39;s OK to just blindly clear voxels that are already clear, there is little performance penalty.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">pos</code>
+                        <span class="type">Float32Array</span>
+
+
+                    <div class="param-description">
+                        <p>3D Voxel position.</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
 <div id="method_create" class="method item inherited">
     <h3 class="name"><code>create</code></h3>
 
@@ -535,7 +706,7 @@ scene.on("tick", function () {
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_create">Component</a>:
-        <a href="../files/src_component.js.html#l904"><code>src&#x2F;component.js:904</code></a>
+        <a href="../files/src_component.js.html#l895"><code>src&#x2F;component.js:895</code></a>
         </p>
 
 
@@ -626,7 +797,7 @@ component - you can specify the component ID in the <code>cfg</code> parameter.<
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_component.js.html#l1085"><code>src&#x2F;component.js:1085</code></a>
+        <a href="../files/src_component.js.html#l1076"><code>src&#x2F;component.js:1076</code></a>
         </p>
 
 
@@ -668,7 +839,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_error">Component</a>:
-        <a href="../files/src_component.js.html#l587"><code>src&#x2F;component.js:587</code></a>
+        <a href="../files/src_component.js.html#l578"><code>src&#x2F;component.js:578</code></a>
         </p>
 
 
@@ -732,7 +903,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_fire">Component</a>:
-        <a href="../files/src_component.js.html#l404"><code>src&#x2F;component.js:404</code></a>
+        <a href="../files/src_component.js.html#l395"><code>src&#x2F;component.js:395</code></a>
         </p>
 
 
@@ -815,7 +986,7 @@ any subsequent notifications on the event as they are made.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_isType">Component</a>:
-        <a href="../files/src_component.js.html#l355"><code>src&#x2F;component.js:355</code></a>
+        <a href="../files/src_component.js.html#l346"><code>src&#x2F;component.js:346</code></a>
         </p>
 
 
@@ -893,7 +1064,7 @@ myRotate.isType(xeogl.Entity); // Returns false, because xeogl.Rotate does not (
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_log">Component</a>:
-        <a href="../files/src_component.js.html#l542"><code>src&#x2F;component.js:542</code></a>
+        <a href="../files/src_component.js.html#l533"><code>src&#x2F;component.js:533</code></a>
         </p>
 
 
@@ -951,7 +1122,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_off">Component</a>:
-        <a href="../files/src_component.js.html#l496"><code>src&#x2F;component.js:496</code></a>
+        <a href="../files/src_component.js.html#l487"><code>src&#x2F;component.js:487</code></a>
         </p>
 
 
@@ -1016,7 +1187,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_on">Component</a>:
-        <a href="../files/src_component.js.html#l453"><code>src&#x2F;component.js:453</code></a>
+        <a href="../files/src_component.js.html#l444"><code>src&#x2F;component.js:444</code></a>
         </p>
 
 
@@ -1110,7 +1281,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_once">Component</a>:
-        <a href="../files/src_component.js.html#l521"><code>src&#x2F;component.js:521</code></a>
+        <a href="../files/src_component.js.html#l512"><code>src&#x2F;component.js:512</code></a>
         </p>
 
 
@@ -1168,6 +1339,122 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
 </div>
+<div id="method_reset" class="method item">
+    <h3 class="name"><code>reset</code></h3>
+
+        <span class="paren">()</span>
+
+        <span class="returns-inline">
+            <span class="type"></span>
+        </span>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                    <p>Provided by the <a href="../modules/generation.html">generation</a> module.</p>
+                <p>
+                Defined in
+        <a href="../files/examples_js_generation_voxelGeometryBuilder.js.html#l224"><code>examples&#x2F;js&#x2F;generation&#x2F;voxelGeometryBuilder.js:224</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Resets this VoxelGeometryBuilder, clearing all the state previously accumulated with
+ VoxelGeometryBuilder/setVoxel:method and
+ VoxelGeometryBuilder/setShape:method.</p>
+
+    </div>
+
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                    <p>this</p>
+
+            </div>
+        </div>
+
+
+</div>
+<div id="method_setShape" class="method item">
+    <h3 class="name"><code>setShape</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>shape</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type"></span>
+        </span>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                    <p>Provided by the <a href="../modules/generation.html">generation</a> module.</p>
+                <p>
+                Defined in
+        <a href="../files/examples_js_generation_voxelGeometryBuilder.js.html#l107"><code>examples&#x2F;js&#x2F;generation&#x2F;voxelGeometryBuilder.js:107</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Sets the shape that the VoxelGeometryBuilder/build:method will add
+to target <a href="../classes/Geometry.html" class="crosslink">Geometries</a> for each voxel.</p>
+<p>The shape can be either a <a href="../classes/Geometry.html" class="crosslink">Geometry</a> or a JavaScript object containing vertex
+and index arrays.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">shape</code>
+                        <span class="type"><a href="../classes/Geometry.html" class="crosslink">Geometry</a> | </span>
+
+
+                    <div class="param-description">
+                        <p>The shape to add.</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                    <p>this</p>
+
+            </div>
+        </div>
+
+
+</div>
 <div id="method_warn" class="method item inherited">
     <h3 class="name"><code>warn</code></h3>
 
@@ -1190,7 +1477,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_warn">Component</a>:
-        <a href="../files/src_component.js.html#l567"><code>src&#x2F;component.js:567</code></a>
+        <a href="../files/src_component.js.html#l558"><code>src&#x2F;component.js:558</code></a>
         </p>
 
 
@@ -1226,11 +1513,97 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
 </div>
+<div id="method_writeVoxel" class="method item">
+    <h3 class="name"><code>writeVoxel</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>pos</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+
+    <div class="meta">
+                    <p>Provided by the <a href="../modules/generation.html">generation</a> module.</p>
+                <p>
+                Defined in
+        <a href="../files/examples_js_generation_voxelGeometryBuilder.js.html#l123"><code>examples&#x2F;js&#x2F;generation&#x2F;voxelGeometryBuilder.js:123</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Writes a voxel.</p>
+<p>Ignored if the voxel is already written, or if the given position
+falls outside this VoxelGeometryBuilder&#39;s voxel space extents.</p>
+<p>It&#39;s OK to just blindly write voxels that have already been written, there is little performance penalty.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">pos</code>
+                        <span class="type">Float32Array</span>
+
+
+                    <div class="param-description">
+                        <p>3D Voxel position.</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
             </div>
 
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
+                    <div id="property_active" class="property item">
+                        <h3 class="name"><code>active</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_skyboxes_skybox.js.html#l250"><code>examples&#x2F;js&#x2F;skyboxes&#x2F;skybox.js:250</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Indicates whether this Skybox is visible or not.</p>
+                    <p>Fires a <a href="../classes/Skybox.html#event_active" class="crosslink">active</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> false</p>
+                    
+                    
+                    </div>
                     <div id="property_destroyed" class="property item inherited">
                         <h3 class="name"><code>destroyed</code></h3>
                         <span class="type">Boolean</span>
@@ -1242,7 +1615,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l279"><code>src&#x2F;component.js:279</code></a>
+                            <a href="../files/src_component.js.html#l270"><code>src&#x2F;component.js:270</code></a>
                             </p>
                     
                     
@@ -1268,7 +1641,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_id">Component</a>:
-                            <a href="../files/src_component.js.html#l270"><code>src&#x2F;component.js:270</code></a>
+                            <a href="../files/src_component.js.html#l261"><code>src&#x2F;component.js:261</code></a>
                             </p>
                     
                     
@@ -1293,7 +1666,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_isDefault">Component</a>:
-                            <a href="../files/src_component.js.html#l262"><code>src&#x2F;component.js:262</code></a>
+                            <a href="../files/src_component.js.html#l253"><code>src&#x2F;component.js:253</code></a>
                             </p>
                     
                     
@@ -1319,7 +1692,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_json">Component</a>:
-                            <a href="../files/src_component.js.html#l1024"><code>src&#x2F;component.js:1024</code></a>
+                            <a href="../files/src_component.js.html#l1015"><code>src&#x2F;component.js:1015</code></a>
                             </p>
                     
                     
@@ -1344,7 +1717,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_metadata">Component</a>:
-                            <a href="../files/src_component.js.html#l254"><code>src&#x2F;component.js:254</code></a>
+                            <a href="../files/src_component.js.html#l245"><code>src&#x2F;component.js:245</code></a>
                             </p>
                     
                     
@@ -1370,7 +1743,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_scene">Component</a>:
-                            <a href="../files/src_component.js.html#l207"><code>src&#x2F;component.js:207</code></a>
+                            <a href="../files/src_component.js.html#l198"><code>src&#x2F;component.js:198</code></a>
                             </p>
                     
                     
@@ -1395,7 +1768,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_skyboxes_skybox.js.html#l194"><code>examples&#x2F;js&#x2F;skyboxes&#x2F;skybox.js:194</code></a>
+                            <a href="../files/examples_js_skyboxes_skybox.js.html#l219"><code>examples&#x2F;js&#x2F;skyboxes&#x2F;skybox.js:219</code></a>
                             </p>
                     
                     
@@ -1426,7 +1799,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_component.js.html#l1052"><code>src&#x2F;component.js:1052</code></a>
+                            <a href="../files/src_component.js.html#l1043"><code>src&#x2F;component.js:1043</code></a>
                             </p>
                     
                     
@@ -1452,7 +1825,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_superTypes">Component</a>:
-                            <a href="../files/src_component.js.html#l336"><code>src&#x2F;component.js:336</code></a>
+                            <a href="../files/src_component.js.html#l327"><code>src&#x2F;component.js:327</code></a>
                             </p>
                     
                     
@@ -1484,7 +1857,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_type">Component</a>:
-                            <a href="../files/src_component.js.html#l322"><code>src&#x2F;component.js:322</code></a>
+                            <a href="../files/src_component.js.html#l313"><code>src&#x2F;component.js:313</code></a>
                             </p>
                     
                     
@@ -1507,6 +1880,48 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="events" class="api-class-tabpanel">
                 <h2 class="off-left">Events</h2>
 
+                    <div id="event_active" class="events item">
+                        <h3 class="name"><code>active</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_skyboxes_skybox.js.html#l265"><code>examples&#x2F;js&#x2F;skyboxes&#x2F;skybox.js:265</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Skybox&#39;s <a href="../classes/Skybox.html#property_active" class="crosslink">active</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Boolean</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
                     <div id="event_destroyed" class="events item inherited">
                         <h3 class="name"><code>destroyed</code></h3>
                         <span class="type"></span>
@@ -1518,7 +1933,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l1155"><code>src&#x2F;component.js:1155</code></a>
+                            <a href="../files/src_component.js.html#l1146"><code>src&#x2F;component.js:1146</code></a>
                             </p>
                     
                     
@@ -1543,7 +1958,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_skyboxes_skybox.js.html#l211"><code>examples&#x2F;js&#x2F;skyboxes&#x2F;skybox.js:211</code></a>
+                            <a href="../files/examples_js_skyboxes_skybox.js.html#l236"><code>examples&#x2F;js&#x2F;skyboxes&#x2F;skybox.js:236</code></a>
                             </p>
                     
                     

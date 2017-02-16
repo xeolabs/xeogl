@@ -17,11 +17,13 @@ YUI.add("yuidoc-meta", function(Y) {
         "CameraPath",
         "CameraPathAnimation",
         "Canvas",
+        "CardboardEffect",
         "Clip",
         "Clips",
         "ColorBuf",
         "Component",
         "Configs",
+        "CubeTexture",
         "CubicBezierCurve",
         "Cull",
         "Curve",
@@ -36,20 +38,13 @@ YUI.add("yuidoc-meta", function(Y) {
         "GeometryBuilder",
         "HeightmapGeometry",
         "Input",
-        "KeyboardAxisCamera",
-        "KeyboardPanCamera",
-        "KeyboardRotateCamera",
-        "KeyboardZoomCamera",
         "Layer",
         "Lights",
         "Lookat",
         "Material",
+        "MetallicMaterial",
         "Model",
         "Modes",
-        "MousePanCamera",
-        "MousePickEntity",
-        "MouseRotateCamera",
-        "MouseZoomCamera",
         "Nintendo3DSGeometry",
         "OBBGeometry",
         "OBJGeometry",
@@ -60,15 +55,20 @@ YUI.add("yuidoc-meta", function(Y) {
         "PhongMaterial",
         "PlaneGeometry",
         "PointLight",
+        "PointMarkings",
         "QuadraticBezierCurve",
         "Quaternion",
         "Rotate",
         "Scale",
         "Scene",
+        "SceneJSModel",
+        "Shadow",
         "Skybox",
+        "SpecularMaterial",
         "SphereGeometry",
         "Spinner",
         "SplineCurve",
+        "SpotLight",
         "Stage",
         "Stationary",
         "StereoEffect",
@@ -102,13 +102,15 @@ YUI.add("yuidoc-meta", function(Y) {
         "input",
         "interaction",
         "lighting",
+        "marking",
         "materials",
         "math",
         "models",
         "rendering",
         "skyboxes",
         "transforms",
-        "xeogl"
+        "xeogl",
+        "zspace"
     ],
     "allModules": [
         {
@@ -192,6 +194,11 @@ YUI.add("yuidoc-meta", function(Y) {
             "description": "Components for defining light sources."
         },
         {
+            "displayName": "marking",
+            "name": "marking",
+            "description": "Components for drawing marks on entities."
+        },
+        {
             "displayName": "materials",
             "name": "materials",
             "description": "Components to define the surface appearance of Entities."
@@ -225,6 +232,11 @@ YUI.add("yuidoc-meta", function(Y) {
             "displayName": "xeogl",
             "name": "xeogl",
             "description": "The xeogl namespace."
+        },
+        {
+            "displayName": "zspace",
+            "name": "zspace",
+            "description": "Components for zSpace integration"
         }
     ]
 } };

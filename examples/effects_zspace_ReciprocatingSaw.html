@@ -14,21 +14,20 @@
 
     <script src="libs/gl-matrix-min.js"></script>
     <!--<script src="js/effects/zSpace.js"></script>-->
-    <script src="js/effects/zSpaceEffect_complete.js"></script>
-    <script src="js/controls/zSpaceStylusControl.js"></script>
+    <script src="js/zspace/zSpaceEffect_complete.js"></script>
+    <script src="js/zspace/zSpaceStylusControl.js"></script>
 
 <body>
 
-<div id="infoLight"
-     style="left: 0; text-align: left; background: black; opacity: 0.7; padding: 8px; color: white; font-size: 14pt;">
-    <span><a href="http://xeogl.org" target="_parent" >xeogl</a><br>
-        using <a
-                href="../docs/classes/GLTFModel.html"
-                target="_parent">GLTFModel</a> and <a
-                href="../docs/classes/ZSpaceEffect.html"
-                target="_parent">ZSpaceEffect</a> components to view a glTF model in zSpace VR</span><br>
-    <span id="log" style="color:red;font-size: 16px"></span>
+<div id="info">
+    <h1><a
+            href="../docs/classes/GLTFModel.html"
+            target="_parent">GLTFModel</a> viewed with a <a
+            href="../docs/classes/ZSpaceEffect.html"
+            target="_parent">ZSpaceEffect</a></h1>
+    <div id="log" style="color:red"></div>
 </div>
+
 
 <script>
 
@@ -37,7 +36,7 @@
     //----------------------------------------------------------------------------
 
     var model = new xeogl.GLTFModel({
-        src: "models/gltf/Reciprocating_Saw/Reciprocating_Saw.gltf"
+        src: "models/gltf/Reciprocating_Saw/pbr/Reciprocating_Saw.gltf"
     });
 
     model.on("loaded", function () {
@@ -116,7 +115,7 @@
 
     zspaceEffect.on("supported", function (supported) {
         if (!supported) {
-            document.getElementById("log").innerText = "This computer is not a zSpace viewer - defaulting to standard xeogl camera controls. ";
+            document.getElementById("log").innerText = "Not a zSpace display ";
         }
     });
 

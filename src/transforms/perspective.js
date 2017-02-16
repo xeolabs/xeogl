@@ -11,7 +11,7 @@
 
  ## Examples
 
- * [Camera with perspective projection](../../examples/#transforms_project_perspective)
+ * [Camera with perspective projection](../../examples/#transforms_camera_project_perspective)
 
  ## Usage
 

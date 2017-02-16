@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.min.js"></script>
+
+    <script src="js/geometry/k3d.js"></script>
+    <script src="js/geometry/objGeometry.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <a href="http://xeogl.org" target="_parent">xeogl</a><br><br>diffuse <a href="../docs/classes/Texture.html"
+                                                                            target="_parent">Texture</a>
+</div>
+
+<script>
+
+    var chest = new xeogl.Entity({
+
+        geometry: new xeogl.OBJGeometry({
+            src: "models/obj/Chest.obj"
+        }),
+
+        material: new xeogl.PhongMaterial({
+            diffuseMap: new xeogl.Texture({
+                src: "textures/diffuse/chest_albedo.png"
+            }),
+            normalMap: new xeogl.Texture({
+                src: "textures/normal/chest_normal.png"
+            }),
+            specularMap: new xeogl.Texture({
+                src: "textures/specular/chest_specular.png"
+            }),
+            occlusionMap: new xeogl.Texture({
+                src: "textures/occlusion/chest_ao.png"
+            })
+        }),
+
+        transform: new xeogl.Scale({
+            xyz: [50, 50, 50]
+        })
+    });
+
+    chest.camera.view.rotateEyeX(25); // Orbit camera a bit
+
+    chest.geometry.on("loaded", function () { // Fit to view as soon as OBJ is loaded
+
+        (new xeogl.CameraFlightAnimation()).jumpTo({
+            worldBoundary: chest.worldBoundary,
+            fit: true,
+            fitFOV: 45
+        });
+
+        chest.scene.on("tick", function () { // Start orbiting the camera
+            chest.scene.camera.view.rotateEyeY(-0.1);
+        });
+    });
+
+    new xeogl.CameraControl(); // Allow user camera control
+
+</script>
+</body>
+</html>

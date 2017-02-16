@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title>src/rendering/modes.js - xeogl</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link href='https://fonts.googleapis.com/css?family=Exo+2:400,800,900,700,600,500|Roboto:100,300,400,500,700,900'  rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
     <link rel="icon" href="../assets/favicon.ico">
@@ -15,7 +16,7 @@
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
 
-                <h1 style="color:white;"><a href="../../">xeogl</a> / <a href="../../docs">API Docs</a></h1>
+                <h1 class="projectTitle"><a href="../../">xeogl</a> / <a href="../../docs">API Docs</a></h1>
 
         </div>
         <div class="yui3-u-1-4 version">
@@ -56,11 +57,13 @@
                                 <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
+                                <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
                                 <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
+                                <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
                                 <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
@@ -75,20 +78,13 @@
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
-                                <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
-                                <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
-                                <li><a href="../classes/KeyboardRotateCamera.html">KeyboardRotateCamera</a></li>
-                                <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
+                                <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
-                                <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
-                                <li><a href="../classes/MousePickEntity.html">MousePickEntity</a></li>
-                                <li><a href="../classes/MouseRotateCamera.html">MouseRotateCamera</a></li>
-                                <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
@@ -99,15 +95,20 @@
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/PointMarkings.html">PointMarkings</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
+                                <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
+                                <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
+                                <li><a href="../classes/SpecularMaterial.html">SpecularMaterial</a></li>
                                 <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/Spinner.html">Spinner</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
+                                <li><a href="../classes/SpotLight.html">SpotLight</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
@@ -142,6 +143,7 @@
                                 <li><a href="..//modules/input.html">input</a></li>
                                 <li><a href="..//modules/interaction.html">interaction</a></li>
                                 <li><a href="..//modules/lighting.html">lighting</a></li>
+                                <li><a href="..//modules/marking.html">marking</a></li>
                                 <li><a href="..//modules/materials.html">materials</a></li>
                                 <li><a href="..//modules/math.html">math</a></li>
                                 <li><a href="..//modules/models.html">models</a></li>
@@ -149,6 +151,7 @@
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
                                 <li><a href="..//modules/xeogl.html">xeogl</a></li>
+                                <li><a href="..//modules/zspace.html">zspace</a></li>
                             </ul>
                         </div>
                     </div>
@@ -254,6 +257,8 @@
  @param [cfg.frontface=&quot;ccw&quot;] {Boolean} The winding order for {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} front faces - &quot;cw&quot; for clockwise, or &quot;ccw&quot; for counter-clockwise.
  @param [cfg.collidable=true] {Boolean} Whether attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} are included in boundary-related calculations. Set this false if the
  {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} are things like helpers or indicators that should not be included in boundary calculations.
+ @param [cfg.castShadow=true] {Boolean} Whether attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} cast shadows.
+ @param [cfg.receiveShadow=true] {Boolean} Whether attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} receive shadows.
  @extends Component
  */
 (function () {
@@ -272,7 +277,10 @@
                 transparent: null,
                 backfaces: null,
                 frontface: null, // Boolean for speed; true == &quot;ccw&quot;, false == &quot;cw&quot;
-                collidable: null
+                collidable: null,
+                castShadow: null,
+                receiveShadow: null,
+                hash: &quot;&quot;
             });
 
             this.pickable = cfg.pickable;
@@ -281,6 +289,8 @@
             this.backfaces = cfg.backfaces;
             this.frontface = cfg.frontface;
             this.collidable = cfg.collidable;
+            this.castShadow = cfg.castShadow;
+            this.receiveShadow = cfg.receiveShadow;
         },
 
         _props: {
@@ -527,6 +537,83 @@
                 get: function () {
                     return this._state.collidable;
                 }
+            },
+
+
+            /**
+             Whether attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} casts shadows.
+
+             Fires a {{#crossLink &quot;Modes/castShadow:event&quot;}}{{/crossLink}} event on change.
+
+             @property castShadow
+             @default true
+             @type Boolean
+             */
+            castShadow: {
+
+                set: function (value) {
+
+                    value = value !== false;
+
+                    if (value === this._state.castShadow) {
+                        return;
+                    }
+
+                    this._state.castShadow = value;
+
+                    this._renderer.imageDirty = true; // Re-render in next shadow map generation pass
+
+                    /**
+                     Fired whenever this Modes&#x27; {{#crossLink &quot;Modes/castShadow:property&quot;}}{{/crossLink}} property changes.
+
+                     @event castShadow
+                     @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;castShadow&quot;, this._state.castShadow);
+                },
+
+                get: function () {
+                    return this._state.castShadow;
+                }
+            },
+
+            /**
+             Whether attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} receives shadows.
+
+             Fires a {{#crossLink &quot;Modes/receiveShadow:event&quot;}}{{/crossLink}} event on change.
+
+             @property receiveShadow
+             @default true
+             @type Boolean
+             */
+            receiveShadow: {
+
+                set: function (value) {
+
+                    value = value !== false;
+
+                    if (value === this._state.receiveShadow) {
+                        return;
+                    }
+
+                    this._state.receiveShadow = value;
+
+                    this._state.hash = value ? &quot;/mod/rs;&quot; : &quot;/mod;&quot;;
+
+                    this.fire(&quot;dirty&quot;); // Now need to (re)compile shaders to include/exclude shadow mapping
+
+                    /**
+                     Fired whenever this Modes&#x27; {{#crossLink &quot;Modes/receiveShadow:property&quot;}}{{/crossLink}} property changes.
+
+                     @event receiveShadow
+                     @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;receiveShadow&quot;, this._state.receiveShadow);
+                },
+
+                get: function () {
+                    return this._state.receiveShadow;
+                }
             }
         },
 
@@ -541,7 +628,9 @@
                 transparent: this._state.transparent,
                 backfaces: this._state.backfaces,
                 frontface: this._state.frontface,
-                collidable: this._state.collidable
+                collidable: this._state.collidable,
+                castShadow: this._state.castShadow,
+                receiveShadow: this._state.receiveShadow
             };
         },
 

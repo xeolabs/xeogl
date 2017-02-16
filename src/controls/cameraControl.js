@@ -2,47 +2,37 @@
  A **CameraControl** pans, rotates and zooms a {{#crossLink "Camera"}}{{/crossLink}} with the mouse and keyboard,
  as well as switches it between preset left, right, anterior, posterior, superior and inferior views.
 
- A CameraControl contains the following control sub-components, each of which handle an aspect of interaction:
+ ## Overview
 
- * {{#crossLink "KeyboardPanCamera"}}{{/crossLink}} pans the camera with the W,S,A,D,X and Z keys
- * {{#crossLink "MousePanCamera"}}{{/crossLink}} pans horizontally and vertically by dragging the mouse with left and right buttons down
- * {{#crossLink "KeyboardRotateCamera"}}{{/crossLink}} rotates the camera with the arrow keys
- * {{#crossLink "MouseRotateCamera"}}{{/crossLink}} rotates the camera by dragging with the left mouse button down
- * {{#crossLink "KeyboardZoomCamera"}}{{/crossLink}} zooms the *eye* position closer and further from the *look* position with the + and - keys
- * {{#crossLink "MouseZoomCamera"}}{{/crossLink}} zooms the *eye* closer and further from *look* using the mousewheel
- * {{#crossLink "KeyboardAxisCamera"}}{{/crossLink}} between preset left, right, anterior, posterior, superior and inferior views using keys 1-6
- * {{#crossLink "MousePickEntity"}}{{/crossLink}} TODO
- * {{#crossLink "cameraFlightAnimation"}}{{/crossLink}} TODO
+ * CameraControl requires that its pans both {{#crossLink "Camera"}}Camera{{/crossLink}} have a {{#crossLink "Lookat"}}{{/crossLink}} for its {{#crossLink "Camera/view:property"}}viewing transform{{/crossLink}}.
+ * The table below shows what CameraControl does for various user input.
+ <br>
 
- A CameraControl provides these control sub-components as read-only properties, which allows them to be individually configured (or deactivated) as required.
-
- * Activating or deactivating a CameraControl will activate or deactivate all its control sub-components.
- * Attaching a different {{#crossLink "Camera"}}{{/crossLink}} to the CameraControl will also attach that
- {{#crossLink "Camera"}}{{/crossLink}} to all the control sub-components.
- * The control sub-components are not supposed to be re-attached to a different {{#crossLink "Camera"}}{{/crossLink}} than the owner CameraControl.
- * A CameraControl manages the life-cycles of its control sub-components, destroying them when the CameraControl is destroyed.
-
- <img src="../../../assets/images/CameraControl.png"></img>
+ | Input | Result |
+ |:--------:|:----:|
+ | Mouse drag, arrow keys | orbits {{#crossLink "Lookat/eye:property"}}camera.view.eye{{/crossLink}} around {{#crossLink "Lookat/look:property"}}camera.view.look{{/crossLink}}|
+ | Z,X keys | pans both {{#crossLink "Lookat/eye:property"}}camera.view.eye{{/crossLink}} and {{#crossLink "Lookat/look:property"}}camera.view.look{{/crossLink}} forwards and backwards  along the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}->{{#crossLink "Lookat/look:property"}}look{{/crossLink}} vector. |
+ | A,D keys | pans both {{#crossLink "Lookat/eye:property"}}camera.view.eye{{/crossLink}} and {{#crossLink "Lookat/look:property"}}camera.view.look{{/crossLink}} sideways, along the vector perpendicular to {{#crossLink "Lookat/eye:property"}}{{/crossLink}}->{{#crossLink "Lookat/look:property"}}look{{/crossLink}} and {{#crossLink "Lookat/eye:property"}}{{/crossLink}}->{{#crossLink "Lookat/up:property"}}up{{/crossLink}}. |
+ | W,S keys | pans both {{#crossLink "Lookat/eye:property"}}camera.view.eye{{/crossLink}} and {{#crossLink "Lookat/look:property"}}camera.view.look{{/crossLink}} up and down, along the {{#crossLink "Lookat/up:property"}}up{{/crossLink}} vector. |
+ | 1,2,3,4,5,6 keys | Align {{#crossLink "Lookat"}}camera.view{{/crossLink}} to look at center of entire {{#crossLink "Scene"}}{{/crossLink}} from vantage points on the -X, +X, -Z, +Z, -Y and +Y World-space axis. |
+ | Click on {{#crossLink "Entity"}}{{/crossLink}} | Flies {{#crossLink "Lookat"}}camera.view{{/crossLink}} to look at {{#crossLink "Entity"}}{{/crossLink}}, stops when filling the canvas. |
+ | Mouse wheel or '+' and '-' keys | moves {{#crossLink "Lookat/eye:property"}}camera.view.eye{{/crossLink}} towards and away from {{#crossLink "Lookat/look:property"}}camera.view.look{{/crossLink}}. |
 
  ## Examples
 
- * [CameraControl example](../../examples/#interaction_CameraControl)
- * [KeyboardRotateCamera example](../../examples/#interaction_KeyboardRotateCamera)
- * [KeyboardPanCamera example](../../examples/#interaction_KeyboardPanCamera)
- * [KeyboardZoomCamera example](../../examples/#interaction_KeyboardZoomCamera)
- * [KeyboardRotateCamera example](../../examples/#interaction_KeyboardRotateCamera)
- * [KeyboardPanCamera example](../../examples/#interaction_KeyboardPanCamera)
- * [KeyboardZoomCamera example](../../examples/#interaction_KeyboardZoomCamera)
+ * [CameraControl example](../../examples/#interaction_camera_CameraControl)
 
  ## Usage
 
  ````Javascript
  var camera = new xeogl.Camera({
+
      view: new xeogl.Lookat({
          eye: [0, 0, 10],
          look: [0, 0, 0],
          up: [0, 1, 0]
      }),
+
      project: new xeogl.Perspective({
          fovy: 60,
          near: 0.1,
@@ -56,18 +46,13 @@
  });
 
  var cameraControl = new xeogl.CameraControl({
-     camera: entity.camera,
+     camera: camera,
 
      // "First person" mode rotates look about eye.
      // By default however, we orbit eye about look.
      firstPerson: false
  });
 
- // Reduce the sensitivity of mouse rotation
- cameraControl.mouseRotate.sensitivity = 0.7;
-
- // Disable switching between preset views
- cameraControl.keyboardAxis.active = false;
  ````
 
  @class CameraControl
@@ -114,11 +99,10 @@
 
         _init: function (cfg) {
 
-            var scene = this.scene;
-
             // Shows a bounding box around each Entity we fly to
             this._boundaryHelper = this.create({
                 type: "xeogl.Entity",
+                camera: cfg.camera,
                 geometry: this.create({
                     type: "xeogl.AABBGeometry"
                 }),
@@ -142,100 +126,56 @@
                 })
             });
 
-            /**
-             * The {{#crossLink "KeyboardAxisCamera"}}{{/crossLink}} within this CameraControl.
-             *
-             * @property keyboardAxis
-             * @final
-             * @type KeyboardAxisCamera
-             */
-            this.keyboardAxis = this.create(xeogl.KeyboardAxisCamera, {
+            this.keyboardAxis = this.create({
+                type: "xeogl.KeyboardAxisCamera",
                 camera: cfg.camera
             });
 
-            /**
-             * The {{#crossLink "KeyboardRotateCamera"}}{{/crossLink}} within this CameraControl.
-             *
-             * @property keyboardOrbit
-             * @final
-             * @type KeyboardRotateCamera
-             */
-            this.keyboardRotate = this.create(xeogl.KeyboardRotateCamera, {
+            this.keyboardRotate = this.create({
+                type: "xeogl.KeyboardRotateCamera",
                 camera: cfg.camera
             });
 
-            /**
-             * The {{#crossLink "MouseRotateCamera"}}{{/crossLink}} within this CameraControl.
-             *
-             * @property mouseRotate
-             * @final
-             * @type MouseRotateCamera
-             */
-            this.mouseRotate = this.create(xeogl.MouseRotateCamera, {
+            this.mouseRotate = this.create({
+                type: "xeogl.MouseRotateCamera",
                 camera: cfg.camera
             });
 
-            /**
-             * The {{#crossLink "KeyboardPanCamera"}}{{/crossLink}} within this CameraControl.
-             *
-             * @property keyboardPan
-             * @final
-             * @type KeyboardPanCamera
-             */
-            this.keyboardPan = this.create(xeogl.KeyboardPanCamera, {
+            this.keyboardPan = this.create({
+                type: "xeogl.KeyboardPanCamera",
                 camera: cfg.camera
             });
 
-            /**
-             * The {{#crossLink "MousePanCamera"}}{{/crossLink}} within this CameraControl.
-             *
-             * @property mousePan
-             * @final
-             * @type MousePanCamera
-             */
-            this.mousePan = this.create(xeogl.MousePanCamera, {
+            this.mousePan = this.create({
+                type: "xeogl.MousePanCamera",
                 camera: cfg.camera
             });
 
-            /**
-             * The {{#crossLink "KeyboardZoomCamera"}}{{/crossLink}} within this CameraControl.
-             *
-             * @property keyboardZoom
-             * @final
-             * @type KeyboardZoomCamera
-             */
-            this.keyboardZoom = this.create(xeogl.KeyboardZoomCamera, {
+            this.keyboardZoom = this.create({
+                type: "xeogl.KeyboardZoomCamera",
                 camera: cfg.camera
             });
 
-            /**
-             * The {{#crossLink "MouseZoomCamera"}}{{/crossLink}} within this CameraControl.
-             *
-             * @property mouseZoom
-             * @final
-             * @type MouseZoomCamera
-             */
-            this.mouseZoom = this.create(xeogl.MouseZoomCamera, {
+            this.mouseZoom = this.create({
+                type: "xeogl.MouseZoomCamera",
                 camera: cfg.camera
             });
 
-            /**
-             * The {{#crossLink "MousePickEntity"}}{{/crossLink}} within this CameraControl.
-             *
-             * @property mousePickEntity
-             * @final
-             * @type MousePickEntity
-             */
-            this.mousePickEntity = this.create(xeogl.MousePickEntity, {
+            this.mousePickEntity = this.create({
+                type: "xeogl.MousePickEntity",
                 pickSurface: true
             });
 
             this.mousePickEntity.on("pick", this._entityPicked, this);
 
-            this.mousePickEntity.on("nopick",
-                function () {
-                    //alert("Nothing picked");
-                });
+            this.mousePickEntity.on("nopick", function () {
+                var aabb = this.scene.worldBoundary.aabb;
+                this._boundaryHelper.geometry.aabb = aabb;
+                this.cameraFlight.flyTo({
+                        aabb: aabb
+                    },
+                    this._hideEntityBoundary, this);
+            }, this);
 
             /**
              * The {{#crossLink "cameraFlightAnimation"}}{{/crossLink}} within this CameraControl.
@@ -244,7 +184,8 @@
              * @final
              * @type cameraFlightAnimation
              */
-            this.cameraFlight = this.create(xeogl.CameraFlightAnimation, {
+            this.cameraFlight = this.create({
+                type: "xeogl.CameraFlightAnimation",
                 camera: cfg.camera,
                 duration: 0.5
             });
@@ -373,6 +314,7 @@
 
                     var camera = this._attached.camera;
 
+                    this._boundaryHelper.camera = camera;
                     this.keyboardAxis.camera = camera;
                     this.keyboardRotate.camera = camera;
                     this.mouseRotate.camera = camera;

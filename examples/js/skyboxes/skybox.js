@@ -9,7 +9,7 @@
 
  <ul>
  <li>[Basic Skybox](../../examples/#skyboxes_skybox)</li>
- <li>[Custom Skybox](../../examples/#skyboxes_customSkybox)</li>
+ <li>[Custom Skybox](../../examples/#skyboxes_skybox_custom)</li>
  </ul>
 
  ## Usage
@@ -74,6 +74,7 @@
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Skybox.
  @param [cfg.src=[null]] {String} Path to skybox texture
  @param [cfg.size=1000] {Number} Size of this Skybox, given as the distance from the center at [0,0,0] to each face.
+ @param [cfg.active=true] {Boolean} True when this Skybox is visible.
  @extends Component
  */
 (function () {
@@ -151,9 +152,26 @@
                     },
                     "geometryInstance"), // Use same Geometry for all Skyboxes
 
-                transform: this.create({ // Scale the box
+                Xtransform: this.create({ // Scale the box
                     type: "xeogl.Scale",
                     xyz: [2000, 2000, 2000] // Overridden when we initialize the 'size' property, below
+                }),
+
+                transform: this.create({ // Scale the box
+                    type: "xeogl.Rotate",
+                    xyz: [0, 0, 1],
+                    angle: -90,
+
+                    parent: this.create({ // Scale the box
+                        type: "xeogl.Rotate",
+                        xyz: [0, 1, 0],
+                        angle: -90,
+
+                        parent: this.create({ // Scale the box
+                            type: "xeogl.Scale",
+                            xyz: [2000, 2000, 2000] // Overridden when we initialize the 'size' property, below
+                        })
+                    })
                 }),
 
                 material: this.create({ // Emissive map of sky, no diffuse, ambient or specular reflection
@@ -161,6 +179,7 @@
                         ambient: [0, 0, 0],
                         diffuse: [0, 0, 0],
                         specular: [0, 0, 0],
+                        emissive: [1, 1, 1],
                         emissiveMap: this.create({
                             type: "xeogl.Texture",
                             src: cfg.src
@@ -173,6 +192,11 @@
                         active: true
                     },
                     "stationaryInstance"), // Use same Stationary for all SkyBoxes
+
+                visibility: this.create({
+                    type: "xeogl.Visibility",
+                    visible: false
+                }),
 
                 modes: this.create({
                         type: "xeogl.Modes",
@@ -187,6 +211,7 @@
             });
 
             this.size = cfg.size; // Sets 'xyz' property on the Entity's Scale transform
+            this.active = cfg.active;
         },
 
         _props: {
@@ -206,7 +231,7 @@
 
                     this._size = value || 1000;
 
-                    this._skyboxEntity.transform.xyz = [this._size, this._size, this._size];
+                    this._skyboxEntity.transform.parent.parent.xyz = [this._size, this._size, this._size];
 
                     /**
                      Fired whenever this Skybox's {{#crossLink "Skybox/size:property"}}{{/crossLink}} property changes.
@@ -220,12 +245,42 @@
                 get: function () {
                     return this._size;
                 }
+            },
+
+            /**
+             Indicates whether this Skybox is visible or not.
+
+             Fires a {{#crossLink "Skybox/active:event"}}{{/crossLink}} event on change.
+
+             @property active
+             @default false
+             @type Boolean
+             */
+            active: {
+
+                set: function (value) {
+
+                    this._skyboxEntity.visibility.visible = value;
+
+                    /**
+                     Fired whenever this Skybox's {{#crossLink "Skybox/active:property"}}{{/crossLink}} property changes.
+
+                     @event active
+                     @param value {Boolean} The property's new value
+                     */
+                    this.fire("active", this._skyboxEntity.visibility.visible);
+                },
+
+                get: function () {
+                    return this._skyboxEntity.visibility.visible;
+                }
             }
         },
 
         _getJSON: function () {
             return {
                 src: this._skyboxEntity.material.emissiveMap.src,
+                active: this._active,
                 size: this._size
             };
         }

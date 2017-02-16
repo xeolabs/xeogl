@@ -1,5 +1,5 @@
 /**
- A **CameraPath** defines spline curve along which a {{#crossLink "Camera"}}{{/crossLink}} can be animated.
+ A **CameraPath** defines a spline curve along which a {{#crossLink "Camera"}}{{/crossLink}} can be animated.
 
  * See {{#crossLink "CameraPathAnimation"}}{{/crossLink}} for usage.
 
@@ -210,6 +210,21 @@
         })(),
 
         /**
+         Gets eye, look and up vectors on this CameraPath at a given instant.
+
+         @param {Number} t Time instant.
+         @param {Float32Array} eye The eye position to update.
+         @param {Float32Array} look The look position to update.
+         @param {Float32Array} up The up vector to update.
+         */
+        sampleFrame: function (t, eye, look, up) {
+            t = t < 0.0 ? 0.0 : (t > 1.0 ? 1.0 : t);
+            this._eyeCurve.getPoint(t, eye);
+            this._lookCurve.getPoint(t, look);
+            this._upCurve.getPoint(t, up);
+        },
+
+        /**
          Removes all frames from this CameraPath.
          */
         clearFrames: function () {
@@ -222,7 +237,8 @@
         _getJSON: function () {
 
             var json = {
-                frames: []            };
+                frames: []
+            };
 
             var eyePoints = this._eyeCurve.points;
             var lookPoints = this._lookCurve.points;

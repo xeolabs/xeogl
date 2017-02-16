@@ -11,10 +11,10 @@
 
  ## Examples
 
- * [Interpolating a Camera along a path](../../examples/#animation_CameraPathAnimation_interpolate)
- * [Flying directly to each frame on a path](../../examples/#animation_CameraPathAnimation_flyToFrame)
- * [Jumping directly to each frame on a path](../../examples/#animation_CameraPathAnimation_scrubToFrame)
- * [A menu of Camera waypoints to fly to](../../examples/#animation_CameraPathAnimation_frameMenu)
+ * [Interpolating a Camera along a path](../../examples/#animation_camera_path_interpolation)
+ * [Flying directly to each frame on a path](../../examples/#animation_camera_path_flyToFrame)
+ * [Jumping directly to each frame on a path](../../examples/#animation_camera_path_scrubToFrame)
+ * [A menu of Camera waypoints to fly to](../../examples/#animation_camera_path_frameMenu)
 
  ## Usage
 
@@ -24,7 +24,7 @@
  {{#crossLink "CameraPathAnimation/play"}}{{/crossLink}} method to smoothly <b>interpolate</b>
  the default {{#crossLink "Camera"}}{{/crossLink}} along a {{#crossLink "CameraPath"}}{{/crossLink}}:
 
- <a href="../../examples/#animation_CameraPathAnimation_interpolate"><img src="http://i.giphy.com/l0MYDGMYzdFf6TqRW.gif"></img></a>
+ <a href="../../examples/#animation_camera_path_interpolation"><img src="http://i.giphy.com/l0MYDGMYzdFf6TqRW.gif"></img></a>
 
  ````Javascript
  // Load a model from glTF
@@ -88,7 +88,7 @@
  In this example, we'll use the CameraPathAnimation's {{#crossLink "CameraPathAnimation/flyToFrame"}}{{/crossLink}} method
  to <b>fly</b> the {{#crossLink "Camera"}}{{/crossLink}} directly to each frame on the {{#crossLink "CameraPath"}}{{/crossLink}}:
 
- <a href="../../examples/#animation_CameraPathAnimation_flyToFrame"><img src="http://i.giphy.com/l3vQYNjsnAQwPBeYU.giff"></img></a>
+ <a href="../../examples/#animation_camera_path_flyToFrame"><img src="http://i.giphy.com/l3vQYNjsnAQwPBeYU.gif"></img></a>
 
  ````javascript
  var i = 0;
@@ -105,13 +105,13 @@
      nextFrame();
  });
  ````
-<br>
+ <br>
  ### 3. Jumping directly to each frame on a path
 
  In this example, we'll use the CameraPathAnimation's {{#crossLink "CameraPathAnimation/scrubToFrame"}}{{/crossLink}} method
  to <b>jump</b> the {{#crossLink "Camera"}}{{/crossLink}} directly to each frame on the {{#crossLink "CameraPath"}}{{/crossLink}}:
 
- <a href="../../examples/#animation_CameraPathAnimation_scrubToFrame"><img src="http://i.giphy.com/l0Hlyqk7kewTjSBZ6.gif"></img></a>
+ <a href="../../examples/#animation_camera_path_scrubToFrame"><img src="http://i.giphy.com/l0Hlyqk7kewTjSBZ6.gif"></img></a>
 
  ````javascript
  var i = 0;
@@ -173,7 +173,7 @@
 
             this._playingFromT = 0;
             this._playingToT = 0;
-            this._playingRate = 0.001;
+            this._playingRate = cfg.playingRate || 1.0;
             this._playingDir = 1.0;
 
             this.cameraPath = cfg.cameraPath;
@@ -197,6 +197,9 @@
                 return;
             }
 
+           var f = 0.002;
+           //var f = 1.0;
+
             switch (this.state) {
 
                 case this.SCRUBBING:
@@ -204,7 +207,7 @@
 
                 case this.PLAYING:
 
-                    this._t += this._playingRate;
+                    this._t += this._playingRate * f;
 
                     cameraPath.loadFrame(this._t, camera);
 
@@ -212,7 +215,7 @@
 
                 case this.PLAYING_TO:
 
-                    var t = this._t + (this._playingRate * this._playingDir);
+                    var t = this._t + (this._playingRate * f * this._playingDir);
 
                     //t = this._ease(t, this._playingFromT, this._playingToT, this._playingToT - this._playingFromT);
 
@@ -293,6 +296,23 @@
 
                 get: function () {
                     return this._cameraFlightAnimation.camera;
+                }
+            },
+
+            /**
+             The rate at which this CameraPathAnimation plays.
+
+             @property rate
+             @type Number
+             */
+            rate: {
+
+                set: function (value) {
+                    this._playingRate = value;
+                },
+
+                get: function () {
+                    return this._playingRate;
                 }
             }
         },

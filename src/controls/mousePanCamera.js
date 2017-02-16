@@ -15,8 +15,7 @@
 
  ## Examples
 
- * [MousePanCamera example](../../examples/#interaction_MousePanCamera)
- * [CameraControl example](../../examples/#interaction_CameraControl)
+ * [CameraControl example](../../examples/#interaction_camera_CameraControl)
 
  ## Usage
 
@@ -44,7 +43,7 @@
  });
  ````
 
- @class MousePanCamera
+
  @module xeogl
  @submodule controls
  @constructor

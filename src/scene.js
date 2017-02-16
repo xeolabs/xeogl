@@ -192,8 +192,9 @@
  @param [cfg.webgl2=true] {Boolean} Set this false when we **don't** want to use WebGL 2 for our Scene; the Scene will fall
  back on WebGL 1 if not available. This property will be deprecated when WebGL 2 is supported everywhere.
  @param [cfg.components] {Array(Object)} JSON array containing parameters for {{#crossLink "Component"}}Component{{/crossLink}} subtypes to immediately create within the Scene.
- @param [cfg.passes=1] The number of times this Scene renders per frame.
- @param [cfg.clearEachPass=false] When doing multiple passes per frame, specifies whether to clear the
+ @param [cfg.ticksPerRender=1] {Number} The number of {{#crossLink "Scene/tick:property"}}{{/crossLink}} that happen between each render or this Scene.
+ @param [cfg.passes=1] {Number} The number of times this Scene renders per frame.
+ @param [cfg.clearEachPass=false] {Boolean} When doing multiple passes per frame, specifies whether to clear the
  canvas before each pass (true) or just before the first pass (false).
  @param [cfg.transparent=false] {Boolean} Whether or not the canvas is transparent.
  @param [cfg.backgroundColor] {Float32Array} RGBA color for canvas background, when canvas is not transparent. Overridden by backgroundImage.
@@ -373,6 +374,7 @@
 
             this._initDefaults();
 
+            this.ticksPerRender = cfg.ticksPerRender;
             this.passes = cfg.passes;
             this.clearEachPass = cfg.clearEachPass;
         },
@@ -399,7 +401,6 @@
             dummy = this.lights;
             dummy = this.material;
             dummy = this.morphTargets;
-            dummy = this.reflect;
             dummy = this.shader;
             dummy = this.shaderParams;
             dummy = this.stage;
@@ -416,7 +417,8 @@
                 // User-supplied ID
 
                 if (this.components[c.id]) {
-                    this.error("Component " + xeogl._inQuotes(c.id) + " already exists in Scene");
+                    this.error("Component " + xeogl._inQuotes(c.id) + " already exists in Scene - ignoring ID, will randomly-generate instead");
+            //        c.id = this._componentIDMap.addItem(c);
                     return;
                 }
             } else {
@@ -605,7 +607,53 @@
         _props: {
 
             /**
+             * The number of {{#crossLink "Scene/tick:property"}}{{/crossLink}} that happen between each render or this Scene.
+             *
+             * Fires a {{#crossLink "Scene/ticksPerRender:event"}}{{/crossLink}} event on change.
+             *
+             * @property ticksPerRender
+             * @default 1
+             * @type Number
+             */
+            ticksPerRender: {
+
+                set: function (value) {
+
+                    if (value === undefined || value === null) {
+                        value = 1;
+
+                    } else if (!xeogl._isNumeric(value) || value <= 0) {
+
+                        this.error("Unsupported value for 'ticksPerRender': '" + value +
+                            "' - should be an integer greater than zero.");
+
+                        value = 1;
+                    }
+
+                    if (value === this._ticksPerRender) {
+                        return;
+                    }
+
+                    this._ticksPerRender = value;
+
+                    /**
+                     Fired whenever this Scene's {{#crossLink "Scene/ticksPerRender:property"}}{{/crossLink}} property changes.
+
+                     @event ticksPerRender
+                     @param value {Boolean} The property's new value
+                     */
+                    this.fire("ticksPerRender", this._ticksPerRender);
+                },
+
+                get: function () {
+                    return this._ticksPerRender;
+                }
+            },
+
+            /**
              * The number of times this Scene renders per frame.
+             *
+             * Fires a {{#crossLink "Scene/passes:event"}}{{/crossLink}} event on change.
              *
              * @property passes
              * @default 1
@@ -651,6 +699,8 @@
             /**
              * When doing multiple passes per frame, specifies whether to clear the
              * canvas before each pass (true) or just before the first pass (false).
+             *
+             * Fires a {{#crossLink "Scene/clearEachPass:event"}}{{/crossLink}} event on change.
              *
              * @property clearEachPass
              * @default false
@@ -1091,27 +1141,45 @@
 
                             lights: [
 
-                                // Ambient light source #0
-                                new xeogl.AmbientLight(this, {
-                                    id: "default.light0",
-                                    color: [0.45, 0.45, 0.5],
-                                    intensity: 0.9
-                                }),
+                                //new xeogl.AmbientLight(this, {
+                                //    id: "default.light0",
+                                //    color: [0.55, 0.55, 0.6],
+                                //    intensity: 1.0
+                                //}),
 
-                                // Directional light source #1
+                                //new xeogl.AmbientLight(this, {
+                                //    color: [0.5, 0.5, 0.55]
+                                //}),
+
+                                //new xeogl.SpotLight(this, {
+                                //    id: "default.light1",
+                                //    pos: [0.8, -0.6, -0.8],
+                                //    dir: [0.8, -0.6, -0.8],
+                                //    color: [1.0, 1.0, 1.0],
+                                //    intensity: 1.0,
+                                //    space: "view"
+                                //}),
+
                                 new xeogl.DirLight(this, {
-                                    id: "default.light1",
-                                    dir: [-0.5, 0.5, -0.6],
-                                    color: [0.8, 0.8, 0.7],
+                                    id: "default.light2",
+                                    dir: [0.8, -0.6, -0.8],
+                                    color: [1.0, 1.0, 1.0],
                                     intensity: 1.0,
                                     space: "view"
                                 }),
-                                //
-                                // Directional light source #2
+
                                 new xeogl.DirLight(this, {
-                                    id: "default.light2",
-                                    dir: [0.5, -0.5, -0.6],
+                                    id: "default.light3",
+                                    dir: [-0.8, -0.3, -0.4],
                                     color: [0.8, 0.8, 0.8],
+                                    intensity: 1.0,
+                                    space: "view"
+                                }),
+
+                                new xeogl.DirLight(this, {
+                                    id: "default.light4",
+                                    dir: [0.2, -0.8, 0.8],
+                                    color: [0.7, 0.7, 0.7],
                                     intensity: 1.0,
                                     space: "view"
                                 })
@@ -1161,29 +1229,6 @@
                     return this.components["default.morphTargets"] ||
                         new xeogl.MorphTargets(this, {
                             id: "default.morphTargets",
-                            isDefault: true
-                        });
-                }
-            },
-
-            /**
-             * The default {{#crossLink "Reflect"}}Reflect{{/crossLink}} provided by this Scene,
-             * (which is initially an empty {{#crossLink "Reflect"}}Reflect{{/crossLink}} that has no effect).
-             *
-             * This {{#crossLink "Reflect"}}Reflect{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.reflect",
-             * with all other properties initialised to their default values.
-             *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "Reflect"}}Reflect{{/crossLink}} by default.
-             * @property reflect
-             * @final
-             * @type Reflect
-             */
-            reflect: {
-                get: function () {
-                    return this.components["default.reflect"] ||
-                        new xeogl.Reflect(this, {
-                            id: "default.reflect",
                             isDefault: true
                         });
                 }
@@ -1484,8 +1529,6 @@
             var tempVec4a = math.vec4();
             var tempVec4b = math.vec4();
             var tempVec4c = math.vec4();
-            var tempVec4d = math.vec4();
-            var tempVec4e = math.vec4();
 
             var tempVec3 = math.vec3();
             var tempVec3b = math.vec3();
@@ -1498,77 +1541,6 @@
             var tempVec3i = math.vec3();
             var tempVec3j = math.vec3();
             var tempVec3k = math.vec3();
-
-            var tempMat4 = math.mat4();
-            var tempMat4b = math.mat4();
-            var tempMat4c = math.mat4();
-
-            // Given a Entity and canvas coordinates, gets a Local-space ray.
-            function canvasPosToLocalRay(entity, canvasPos, localRayOrigin, localRayDir) {
-
-                var canvas = entity.scene.canvas.canvas;
-
-                var modelMat = entity.transform.leafMatrix;
-                var viewMat = entity.camera.view.matrix;
-                var projMat = entity.camera.project.matrix;
-
-                var vmMat = math.mulMat4(viewMat, modelMat, tempMat4);
-                var pvMat = math.mulMat4(projMat, vmMat, tempMat4b);
-                var pvMatInverse = math.inverseMat4(pvMat, tempMat4c);
-
-                // Calculate clip space coordinates, which will be in range
-                // of x=[-1..1] and y=[-1..1], with y=(+1) at top
-
-                var canvasWidth = canvas.width;
-                var canvasHeight = canvas.height;
-
-                var clipX = (canvasPos[0] - canvasWidth / 2) / (canvasWidth / 2);  // Calculate clip space coordinates
-                var clipY = -(canvasPos[1] - canvasHeight / 2) / (canvasHeight / 2);
-
-                tempVec4a[0] = clipX;
-                tempVec4a[1] = clipY;
-                tempVec4a[2] = -1;
-                tempVec4a[3] = 1;
-
-                math.transformVec4(pvMatInverse, tempVec4a, tempVec4b);
-                math.mulVec4Scalar(tempVec4b, 1 / tempVec4b[3]);
-
-                tempVec4c[0] = clipX;
-                tempVec4c[1] = clipY;
-                tempVec4c[2] = 1;
-                tempVec4c[3] = 1;
-
-                math.transformVec4(pvMatInverse, tempVec4c, tempVec4d);
-                math.mulVec4Scalar(tempVec4d, 1 / tempVec4d[3]);
-
-                localRayOrigin[0] = tempVec4d[0];
-                localRayOrigin[1] = tempVec4d[1];
-                localRayOrigin[2] = tempVec4d[2];
-
-                math.subVec3(tempVec4d, tempVec4b, localRayDir);
-
-                math.normalizeVec3(localRayDir);
-            }
-
-            // Transforms a ray from World-space to Local-space
-            function worldRayToLocalRay(entity, worldRayOrigin, worldRayDir, localRayOrigin, localRayDir) {
-
-                var modelMat = entity.transform.leafMatrix;
-                var modelMatInverse = math.inverseMat4(modelMat, tempMat4);
-
-                tempVec4a[0] = worldRayOrigin[0];
-                tempVec4a[1] = worldRayOrigin[1];
-                tempVec4a[2] = worldRayOrigin[2];
-                tempVec4a[3] = 1;
-
-                math.transformVec4(modelMatInverse, tempVec4a, tempVec4b);
-
-                localRayOrigin[0] = tempVec4b[0];
-                localRayOrigin[1] = tempVec4b[1];
-                localRayOrigin[2] = tempVec4b[2];
-
-                math.transformVec3(modelMatInverse, worldRayDir, localRayDir);
-            }
 
             return function (params) {
 
@@ -1644,10 +1616,10 @@
                                 if (params.canvasPos) {
                                     canvasPos = params.canvasPos;
                                     hit.canvasPos = params.canvasPos;
-                                    canvasPosToLocalRay(entity, canvasPos, localRayOrigin, localRayDir);
+                                    math.canvasPosToLocalRay(entity.camera, entity, canvasPos, localRayOrigin, localRayDir);
 
                                 } else if (params.origin && params.direction) {
-                                    worldRayToLocalRay(entity, params.origin, params.direction, localRayOrigin, localRayDir);
+                                    math.worldRayToLocalRay(entity, params.origin, params.direction, localRayOrigin, localRayDir);
                                 }
 
                                 math.normalizeVec3(localRayDir);
@@ -1712,8 +1684,8 @@
                                     nc[2] = normals[ic3 + 2];
 
                                     var normal = math.addVec3(math.addVec3(
-                                        math.mulVec3Scalar(na, bary[0], tempVec3),
-                                        math.mulVec3Scalar(nb, bary[1], tempVec3b), tempVec3c),
+                                            math.mulVec3Scalar(na, bary[0], tempVec3),
+                                            math.mulVec3Scalar(nb, bary[1], tempVec3b), tempVec3c),
                                         math.mulVec3Scalar(nc, bary[2], tempVec3d), tempVec3e);
 
                                     hit.normal = math.transformVec3(entity.transform.leafMatrix, normal, tempVec3f);
@@ -1866,7 +1838,8 @@
             // Component does not yet exist
 
             if (cfg && cfg.id && this.components[cfg.id]) {
-                this.error("Component " + xeogl._inQuotes(cfg.id) + " already exists in Scene");
+                this.error("Component " + xeogl._inQuotes(cfg.id) + " already exists in Scene - ignoring ID, will randomly-generate instead");
+                //cfg.id = undefined;
                 return null;
             }
 
@@ -1931,7 +1904,7 @@
                 if (this._dirtyEntities.hasOwnProperty(id)) {
                     entity = this._dirtyEntities[id];
                     if (entity._valid()) {
-                        entity._compile();
+                        entity._compileAsynch();
                         delete this._dirtyEntities[id];
                         countCompiledEntities++;
                     }

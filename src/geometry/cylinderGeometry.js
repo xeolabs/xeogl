@@ -1,7 +1,7 @@
 /**
  A **CylinderGeometry** is a parameterized {{#crossLink "Geometry"}}{{/crossLink}} that defines a cylinder-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- <a href="../../examples/#geometry_CylinderGeometry"><img src="../../assets/images/screenshots/CylinderGeometry.png"></img></a>
+ <a href="../../examples/#geometry_primitives_cylinder"><img src="../../assets/images/screenshots/CylinderGeometry.png"></img></a>
 
  ## Overview
 
@@ -13,7 +13,7 @@
 
  ## Examples
 
- * [Textured CylinderGeometry](../../examples/#geometry_CylinderGeometry)
+ * [Textured CylinderGeometry](../../examples/#geometry_primitives_cylinder)
 
  ## Usage
 
@@ -157,7 +157,7 @@
                     normals.push(currentRadius * z);
 
                     uvs.push((i * radialLength));
-                    uvs.push(1 - h * 1 / heightSegments);
+                    uvs.push(h * 1 / heightSegments);
 
                     positions.push((currentRadius * x) + centerX);
                     positions.push((currentHeight) + centerY);

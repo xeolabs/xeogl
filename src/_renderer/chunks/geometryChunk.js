@@ -18,6 +18,8 @@
             this._aTangentDraw = draw.getAttribute("xeo_aTangent");
             this._aColorDraw = draw.getAttribute("xeo_aColor");
 
+            this._aPositionShadow = this.program.shadow.getAttribute("xeo_aPosition");
+
             var pickObject = this.program.pickObject;
             this._aPositionPickObject = pickObject.getAttribute("xeo_aPosition");
 
@@ -56,6 +58,21 @@
                 // now that we know that we need it
 
                 this._aTangentDraw.bindFloatArrayBuffer(state.getTangents());
+                frameCtx.bindArray++;
+            }
+
+            if (state.indices) {
+                state.indices.bind();
+                frameCtx.bindArray++;
+            }
+        },
+
+        shadow: function (frameCtx) {
+
+            var state = this.state;
+
+            if (this._aPositionShadow) {
+                this._aPositionShadow.bindFloatArrayBuffer(state.positions);
                 frameCtx.bindArray++;
             }
 

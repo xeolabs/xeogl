@@ -12,11 +12,14 @@
      * @param {String} fragmentPickPrimitive Fragment shader source for primitive picking.
      * @param {String} vertexDraw Vertex shader source for drawing.
      * @param {String} fragmentDraw Fragment shader source for drawing.
+     * @param {String} vertexShadow Vertex shader source for drawing the shadow buffer.
+     * @param {String} fragmentShadow Fragment shader source for drawing the shadow buffer.
      */
     xeogl.renderer.ProgramSource = function (hash,
-                                           vertexPickObject, fragmentPickObject,
-                                           vertexPickPrimitive, fragmentPickPrimitive,
-                                           vertexDraw, fragmentDraw) {
+                                             vertexPickObject, fragmentPickObject,
+                                             vertexPickPrimitive, fragmentPickPrimitive,
+                                             vertexDraw, fragmentDraw,
+                                             vertexShadow, fragmentShadow) {
 
         /**
          * Hash code identifying the capabilities of the {@link xeogl.renderer.Program} that is compiled from this source
@@ -59,6 +62,18 @@
          * @type {Array of String}
          */
         this.fragmentDraw = fragmentDraw;
+
+        /**
+         * Vertex shader source for rendering shadow buffer.
+         * @type {Array of String}
+         */
+        this.vertexShadow = vertexShadow;
+
+        /**
+         * Fragment shader source for rendering shadow buffer.
+         * @type {Array of String}
+         */
+        this.fragmentShadow = fragmentShadow;
 
         /**
          * Count of {@link xeogl.renderer.Program}s compiled from this program source code

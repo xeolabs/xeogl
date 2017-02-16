@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.min.js"></script>
+    <script src="js/skyboxes/skybox.js"></script>
+    <script src="js/geometry/vectorTextGeometry.js"></script>
+    <script src="js/utils/materialGallery.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <h1><a
+            href="../docs/classes/SpecularMaterial.html" target="_parent">SpecularMaterial</a> with various <a
+            href="../docs/classes/Texture.html" target="_parent">Textures</a></h1>
+
+    <br>
+
+    <div id="menu"></div>
+</div>
+
+<script>
+
+    new materialGallery("menu", {
+        "Diffuse map": {
+            material: {
+                type: "xeogl.SpecularMaterial",
+                diffuse: [1.0, 1.0, 1.0],
+                specular: [0.4, 0.4, 0.4],
+                glossiness: 0.0,
+                opacity: 1.0,
+                diffuseMap: {
+                    src: "textures/diffuse/uvGrid2.jpg"
+                }
+            }
+        },
+        "Specular map": {
+            material: {
+                type: "xeogl.SpecularMaterial",
+                diffuse: [0.7, 0.7, 0.7],
+                specular: [1.0, 1.0, 1.0],
+                glossiness: 0.5,
+                opacity: 1.0,
+                specularMap: {
+                    src: "textures/specular/crosshatchSpecularMap.jpg"
+                }
+            }
+        },
+        "Glossiness map": {
+            material: {
+                type: "xeogl.SpecularMaterial",
+                diffuse: [0.7, 0.3, 0.3],
+                specular: [1.0, 1.0, 1.0],
+                glossiness: 1.0,
+                opacity: 1.0,
+                glossinessMap: {
+                    src: "textures/glossiness/crosshatchGlossinessMap.jpg"
+                }
+            }
+        },
+
+        "Emissive map": {
+            material: {
+                type: "xeogl.SpecularMaterial",
+                diffuse: [0.560, 0.570, 0.580],
+                emissive: [0.8, 0.2, 0.0],
+                specular: [1.0, 1.0, 1.0],
+                glossiness: 0.5,
+                opacity: 1.0,
+                emissiveMap: {
+                    src: "textures/emissive/emissiveMap.jpg"
+                }
+            }
+        },
+
+        "Opacity map": {
+            material: {
+                type: "xeogl.SpecularMaterial",
+                diffuse: [0.6, 0.2, 0.2],
+                specular: [0.2, 0.5, 0.2],
+                glossiness: 0.5,
+                opacity: 1.0,
+                opacityMap: {
+                    src: "textures/opacity/crosshatchOpacityMap.jpg"
+                }
+            }
+        },
+        "Normal map": {
+            material: {
+                type: "xeogl.SpecularMaterial",
+                diffuse: [0.5, 0.27, 0.074],
+                specular: [0.8, 0.6, 0.1],
+                glossiness: 0.1,
+                opacity: 1.0,
+                normalMap: {
+                    src: "textures/normal/chesterfieldNormalMap.png",
+                    scale: [6, 6]
+                }
+            }
+        }
+    });
+
+</script>
+</body>
+</html>

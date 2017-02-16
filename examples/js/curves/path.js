@@ -14,10 +14,10 @@
 
  ## Examples
 
- * [CubicBezierCurve example](../../examples/#curves_CubicBezierCurve)
- * [Tweening position along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve)
- * [Tweening color along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve_color)
- * [SplineCurve example](../../examples/#curves_SplineCurve)
+ * [CubicBezierCurve example](../../examples/#animation_curves_cubicBezier)
+ * [Tweening position along a QuadraticBezierCurve](../../examples/#animation_curves_quadraticBezier)
+ * [Tweening color along a QuadraticBezierCurve](../../examples/#animation_curves_quadraticBezier_color)
+ * [SplineCurve example](../../examples/#animation_curves_spline)
  * [Path example](../../examples/#curves_Path)
 
  ## Usage

@@ -1,7 +1,7 @@
 /**
  An **OBBGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that shows the extents of a World-space entity-oriented bounding box (OBB).
 
- <a href="../../examples/#geometry_OBBGeometry"><img src="http://i.giphy.com/3o6ZsSVy0NKXZ1vDSo.gif"></img></a>
+ <a href="../../examples/#geometry_primitives_OBBGeometry"><img src="http://i.giphy.com/3o6ZsSVy0NKXZ1vDSo.gif"></img></a>
 
  ## Overview
 
@@ -12,7 +12,7 @@
 
  ## Examples
 
- * [Rendering an OBBGeometry](../../examples/#geometry_OBBGeometry)
+ * [Rendering an OBBGeometry](../../examples/#geometry_primitives_OBBGeometry)
 
  ## Usage
 

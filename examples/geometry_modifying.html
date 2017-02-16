@@ -10,12 +10,9 @@
 
 <body>
 
-<div id="infoLight">
-    <a href="http://xeogl.org" target="_parent" >xeogl</a>
-    <br>
-    <br>
-    dynamically modifying a <a href="../docs/classes/Geometry.html"
-                                target="_parent">Geometry</a>
+<div id="info">
+    <h1>dynamically modifying a <a href="../docs/classes/Geometry.html"
+                                target="_parent">Geometry</a></h1>
 </div>
 
 <script>
@@ -25,7 +22,8 @@
 
     // The Geometry we'll dynamically modify
     var geometry = new xeogl.Geometry({
-        primitive: "triangles"
+        primitive: "triangles",
+        usage: "dynamic"  // Hint to WebGL that we'll be dynamically updating the Geometry
     });
 
     // Entity that uses our Geometry
@@ -35,7 +33,6 @@
             diffuseMap: new xeogl.Texture({
                 src: "textures/diffuse/uvGrid2.jpg"
             }),
-            diffuse: [0.3, 0.3, 1],
             lineWidth: 3,
             pointSize: 5
         })

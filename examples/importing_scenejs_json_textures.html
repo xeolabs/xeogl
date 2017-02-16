@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.min.js"></script>
+
+    <script src="js/models/sceneJSModel.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <h1><a href="../docs/classes/SceneJSModel.html" target="_parent">SceneJSModel</a> imported from a SceneJS <a href="./models/scenejs/texturedBox.json"  target="_other">JSON file</a></h1>
+</div>
+
+<div id="logos">
+    <a href="http://scenejs.org" target="_parent"><img src="../assets/images/logos/scenejs.png"></a>
+</div>
+
+<script>
+
+    var model = new xeogl.SceneJSModel({
+
+        id: "spinningBox",
+
+        // Path to JSON scene definition
+        src: "./models/scenejs/texturedBox.json",
+
+        // Remember that we can also attach modelling transforms to models;
+        // these are just here to illustrate.
+        transform: new xeogl.Scale({
+            xyz: [1, 1, 1],
+            parent: new xeogl.Translate({
+                xyz: [0, 0, 0]
+            })
+        })
+    });
+
+    // Set initial camera position
+    var view = model.scene.camera.view;
+    view.eye = [0, 0, -25];
+    view.look = [0, 0, 0];
+    view.up = [0, 1, 0];
+    view.rotateEyeX(30);
+
+    // Spin the model when it has loaded;
+    // we must wait for the model to load before we access its components
+    model.on("loaded", function() {
+        model.scene.on("tick", function () {
+            var rotate = model.components["spinningBox.boxRotateY"];
+            rotate.angle += 0.2;
+        });
+    });
+
+    // Allow user camera control
+    new xeogl.CameraControl();
+
+</script>
+</body>
+</html>

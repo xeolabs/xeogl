@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="../build/xeogl.min.js"></script>
+
+<body>
+
+<div id="info">
+    <a href="http://xeogl.org" target="_parent">xeogl</a><br><br>
+    <ul>
+        <li>TODO</li>
+    </ul>
+</div>
+
+<script>
+
+    //----------------------------------------------------------------------------------
+    // Create something to draw on
+    //----------------------------------------------------------------------------------
+
+
+    new xeogl.Entity({
+        geometry: new xeogl.TorusGeometry(),
+        material: new xeogl.PhongMaterial({
+            ambient: [0.9, 0.3, 0.9],
+            shininess: 30,
+            diffuseMap: new xeogl.Texture({
+                src: "textures/diffuse/uvGrid2.jpg"
+            })
+        }),
+        transform: new xeogl.Translate({
+            xyz: [0, 0, 0]
+        })
+    });
+
+
+//    var gearbox = new xeogl.GLTFModel({
+//        src: "models/gltf/gearbox/gearbox_assy.gltf"
+//    });
+//
+//    // Set initial camera position
+//    var view = gearbox.scene.camera.view;
+//    view.eye = [184.21, 10.54, -7.03];
+//    view.look = [159.20, 17.02, 3.21];
+//    view.up = [-0.15, 0.97, 0.13];
+
+
+    //----------------------------------------------------------------------------------
+    // Our drawing helper, containing a geometry that is a bunch of points
+    //----------------------------------------------------------------------------------
+
+    var drawing = new (function () {
+
+        const MAX_POINTS = 100000;
+        var positions = new Float32Array(MAX_POINTS * 3);
+        var indices = new Uint16Array(MAX_POINTS);
+
+        // Initialize the indices to reference the positions
+        for (var i = 0; i < MAX_POINTS; i++) {
+            indices[i] = i;
+        }
+
+        // Entity that shows the drawing
+        var entity = new xeogl.Entity({
+            geometry: new xeogl.Geometry({ // Geometry containing the drawing points
+                primitive: "points",
+                positions: positions,
+                indices: indices
+            }),
+            material: new xeogl.PhongMaterial({
+                emissive: [1.0, 0.0, 0.0],
+                diffuse: [0,0,0],
+                ambient: [0,0,0],
+                pointSize: 8
+            }),
+            visibility: new xeogl.Visibility({ // Visible as soon as something is drawn
+                visible: false
+            })
+        });
+
+        var numPoints = 0;
+        var tempVec3 = xeogl.math.vec3();
+
+        /**
+         * Draws a point at the given pick hit
+         */
+        this.draw = function (hit) {
+            if (hit.worldPos && hit.normal) {  // FIXME: Occasionally worldPos is undefined - ray-triangle intersection issues?
+                var worldPos = hit.worldPos;
+                var normal = hit.normal;
+                tempVec3[0] = worldPos[0] + normal[0] * 0.05;
+                tempVec3[1] = worldPos[1] + normal[1] * 0.05;
+                tempVec3[2] = worldPos[2] + normal[2] * 0.05;
+                entity.geometry.setPositions(tempVec3, numPoints * 3);
+                numPoints++;
+                entity.visibility.visible = true;
+            }
+        };
+
+        /**
+         * Gets the contents of this drawing as a Float32Array
+         */
+        this.getData = function () {
+            return entity.geometry.positions.slice(0, numPoints * 3);
+        };
+
+        /**
+         * Sets the contents of this drawing from a Float32Array
+         */
+        this.setData = function (data) {
+            var i = 0;
+            var len = data.length;
+            while (i < len) {
+                positions[i] = data[i];
+                i++;
+            }
+            numPoints = len;
+            len = positions.length;
+            while (i < len) {
+                positions[i] = 0;
+                i++;
+            }
+            entity.geometry.positions = positions;
+        };
+    })();
+
+    //----------------------------------------------------------------------------------
+    // Create a point at each point we pick on the surface of our entity
+    //----------------------------------------------------------------------------------
+
+    var scene = xeogl.scene; // Using default scene for this example
+    var input = scene.input;
+
+    input.on("mousemove", function (coords) {
+
+        var hit = scene.pick({
+            canvasPos: coords,
+            pickSurface: true
+        });
+
+        if (hit) { 
+            drawing.draw(hit);
+        }
+    });
+
+    //----------------------------------------------------------------------------------
+    // Allow user camera control
+    //----------------------------------------------------------------------------------
+
+    new xeogl.CameraControl();
+
+</script>
+</body>
+</html>

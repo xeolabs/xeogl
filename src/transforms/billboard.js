@@ -1,7 +1,7 @@
 /**
  A **Billboard** is a modelling {{#crossLink "Transform"}}{{/crossLink}} that causes associated {{#crossLink "Entity"}}Entities{{/crossLink}} to be always oriented towards the Camera.
 
- <a href="../../examples/#billboards_spherical"><img src="http://i.giphy.com/l3vR13LcnTuQGMInu.gif"></img></a>
+ <a href="../../examples/#transforms_billboard_spherical"><img src="http://i.giphy.com/l3vR13LcnTuQGMInu.gif"></img></a>
 
  ## Overview
 
@@ -13,10 +13,9 @@
 
  ## Examples
 
- * [Spherical billboards](../../examples/#billboards_spherical)
- * [Cylindrical billboards](../../examples/#billboards_cylindrical)
- * [Clouds using billboards](../../examples/#billboards_spherical_clouds)
- * [Spherical billboards with video textures](../../examples/#billboards_spherical_video)
+ * [Spherical billboards](../../examples/#transforms_billboard_spherical)
+ * [Cylindrical billboards](../../examples/#transforms_billboard_cylindrical)
+ * [Clouds using billboards](../../examples/#transforms_billboard_spherical_clouds)
 
  ## Usage
 

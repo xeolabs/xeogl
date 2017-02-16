@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.min.js"></script>
+
+    <script src="libs/gl-matrix-min.js"></script>
+    <script src="js/zspace/zSpaceEffect_complete.js"></script>
+    <script src="js/zspace/zSpaceStylusControl.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<script>
+
+    //-----------------------------------------------------------------------------------------------------
+    // Lighting
+    //-----------------------------------------------------------------------------------------------------
+
+    var lights = xeogl.scene.lights;
+
+    lights.lights = [];
+
+    lights.lightMap = new xeogl.CubeTexture({
+        src: [
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png"
+        ]
+    });
+
+    lights.reflectionMap = new xeogl.CubeTexture({
+        src: [
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
+        ]
+    });
+
+    //---------------------------------------------------
+    // Load the helmet model
+    //---------------------------------------------------
+
+    var helmet = new xeogl.GLTFModel({
+        src: "models/gltf/DamagedHelmetModified/glTF/DamagedHelmetModified.gltf"
+    });
+
+    helmet.on("loaded", function () {
+
+        //--------------------------------------------------------------------
+        // This particular model has only one entity, which is the the helmet.
+        // Get the entity and animate it's material's emissivity factor,
+        // which makes the helmet's glowing HUD display appear to flicker.
+        //--------------------------------------------------------------------
+
+        for (var id in helmet.entities) {
+            if (helmet.entities.hasOwnProperty(id)) {
+                var entity = helmet.entities[id];
+                xeogl.scene.on("tick", function () {
+                    entity.material.emissive = (Math.random() < 0.02) ? [0, 0, 0] : [1, 1, 1];
+                });
+                break; // Only one entity
+            }
+        }
+
+        //-----------------------------------------------------------------------------------------------------
+        // Camera animation and user control
+        //-----------------------------------------------------------------------------------------------------
+
+        var spinning = true;
+
+        var view = xeogl.scene.camera.view;
+
+        view.eye = [-2.0412752628326416, 0.000010520219802856445, -1.8574140071868896];
+        view.look = [0, -.15, 0];
+        view.up = [0, 1, 0];
+        view.rotateEyeY(340);
+
+        xeogl.scene.on("tick", function () { // Slowly orbit the camera
+            if (spinning) {
+                view.rotateEyeY(-0.05);
+            }
+        });
+
+        var cameraControl = new xeogl.CameraControl(); // User camera control
+        cameraControl.mouseZoom.sensitivity = 0.1;
+
+        //---------------------------------------------------
+        // Create a zSpace effect and stylus control
+        //---------------------------------------------------
+
+        var zspaceEffect = new xeogl.ZSpaceEffect({canvasOffset: [330, 0]});
+        new xeogl.ZSpaceStylusControl();
+
+        zspaceEffect.on("supported", function (supported) {
+            if (supported) {
+                // We're running on a zSpace display! Adjust the camera
+                // a little bit to account for display's special projection transform.
+                view.zoom(2);
+                view.rotateEyeX(30);
+            } else {
+                view.zoom(-.5);
+            }
+        });
+
+    });
+
+
+</script>
+</body>
+</html>

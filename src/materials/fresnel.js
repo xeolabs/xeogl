@@ -1,7 +1,7 @@
 /**
  A **Fresnel** specifies a Fresnel effect for attached {{#crossLink "PhongMaterial"}}PhongMaterials{{/crossLink}}.
 
- <a href="../../examples/#materials_fresnel_specular"><img src="../../assets/images/screenshots/diffuseFresnel.png"></img></a>
+ <a href="../../examples/#materials_phong_fresnel"><img src="../../assets/images/screenshots/PhongMaterial/fresnelWide.png"></img></a>
 
  ## Overview
 
@@ -10,10 +10,7 @@
 
  ## Examples
 
- * [Diffuse Fresnel](../../examples/#materials_fresnel_diffuse)
- * [Specular Fresnel](../../examples/#materials_fresnel_specular)
- * [Opacity Fresnel](../../examples/#materials_fresnel_opacity)
- * [Emissive Fresnel](../../examples/#materials_fresnel_emissive)
+ * [PhongMaterials with Fresnels](../../examples/#materials_phong_fresnel)
 
  <img src="../../../assets/images/Fresnel.png"></img>
 

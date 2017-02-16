@@ -13,18 +13,9 @@
 
 <body>
 
-<div id="infoLight">
-    <a href="http://xeogl.org" target="_parent">xeogl</a>
-    <br><br>
-    <ul>
-        <li>
-            ray picking performance demo with 1000 <a href="../docs/classes/Entity.html" target="_parent">Entities</a>
-        </li>
-        <li>
-            move your mouse over an entity!
-        </li>
-    </ul>
-    <br><br>
+<div id="info">
+    <h1>raycasting 1000 <a href="../docs/classes/Entity.html" target="_parent">Entities</a> to find intersection position, UV and normal</h1>
+    <br>
     <img id="diffuseTexture" src="textures/diffuse/uvGrid2.jpg" width="400px" height="400px">
 
     <div id="uvPos"
@@ -33,6 +24,27 @@
 </div>
 
 <script>
+
+    var showWorldPos = (function () {
+        var pointHelper = new xeogl.Entity({
+            geometry: new xeogl.SphereGeometry({
+                radius: 0.1
+            }),
+            material: new xeogl.PhongMaterial({
+                diffuse: [0.6, 1.0, 0.6],
+                emissive: [0.3, 0.6, 0.3]
+            }),
+            transform: new xeogl.Translate({
+                xyz: [0, 0, 0]
+            }),
+            modes: new xeogl.Modes({
+                pickable: false
+            })
+        });
+        return function (worldPos, normal) { // TODO: show fragment normal vector
+            pointHelper.transform.xyz = worldPos;
+        };
+    })();
 
     var showUVPos = (function () {
         var textureImg = document.getElementById("diffuseTexture");
@@ -47,7 +59,7 @@
                 return;
             }
             uvPosDiv.style.left = Math.floor(left + uv[0] * width) + "px";
-            uvPosDiv.style.top = Math.floor(top + height - (uv[1] * height)) + "px"; // Correct for our texture Y-flipping
+            uvPosDiv.style.top = Math.floor(top + (uv[1] * height)) + "px"; // Correct for our texture Y-flipping
         }
     })();
 
@@ -67,13 +79,9 @@
     var halfWidth = width / 2;
 
     for (var i = 0; i < 1000; i++) {
-
         new xeogl.Entity({
-
             geometry: geometry,
-
             material: material,
-
             transform: new xeogl.Translate({
                 xyz: [
                     Math.random() * width - halfWidth,
@@ -86,7 +94,7 @@
     var scene = xeogl.scene;
 
 
-    scene.camera.view.zoom(0.5);
+    scene.camera.view.zoom(20);
     scene.camera.view.rotateEyeY(45);
     scene.camera.view.rotateEyeX(45);
 
@@ -107,18 +115,16 @@
         lastCoords = coords;
     });
 
-    cameraControl.cameraFlight.on("started",
-            function () {
-                showUVPos(null);
-                xeogl.debug.hide("cone");
-            });
+    cameraControl.cameraFlight.on("started", function () {
+        showUVPos(null);
+        xeogl.debug.hide("cone");
+    });
 
-    cameraControl.cameraFlight.on("stopped",
-            function () {
-                if (lastCoords) {
-                    pick(lastCoords);
-                }
-            });
+    cameraControl.cameraFlight.on("stopped", function () {
+        if (lastCoords) {
+            pick(lastCoords);
+        }
+    });
 
     function pick(coords) {
 
@@ -139,20 +145,11 @@
 
             // Entity picked
 
-            if (hit.worldPos && hit.normal) {
-
-                xeogl.debug
-                        .id("cone")
-                        .pos(hit.worldPos)
-                        .dir([-hit.normal[0], -hit.normal[1], -hit.normal[2]])
-                        .radius(0.3)
-                        .cone();
+            if (hit.worldPos) {
+                showWorldPos(hit.worldPos, hit.normal);
             }
 
             if (hit.uv) {
-
-                // UV coordinates picked
-
                 showUVPos(hit.uv);
             }
 

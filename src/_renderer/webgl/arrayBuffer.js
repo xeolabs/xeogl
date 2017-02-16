@@ -24,10 +24,42 @@
 
         this.type = type;
 
-        this.itemType = data.constructor == Uint8Array   ? gl.UNSIGNED_BYTE :
-            data.constructor == Uint16Array  ? gl.UNSIGNED_SHORT :
-                data.constructor == Uint32Array  ? gl.UNSIGNED_INT :
-                    gl.FLOAT;
+        switch (data.constructor) {
+
+            case Uint8Array:
+                this.itemType = gl.UNSIGNED_BYTE;
+                this.itemByteSize = 1;
+                break;
+
+            case Int8Array:
+                this.itemType = gl.BYTE;
+                this.itemByteSize = 1;
+                break;
+
+            case  Uint16Array:
+                this.itemType = gl.UNSIGNED_SHORT;
+                this.itemByteSize = 2;
+                break;
+
+            case  Int16Array:
+                this.itemType = gl.SHORT;
+                this.itemByteSize = 2;
+                break;
+
+            case Uint32Array:
+                this.itemType = gl.UNSIGNED_INT;
+                this.itemByteSize = 4;
+                break;
+
+            case Int32Array:
+                this.itemType = gl.INT;
+                this.itemByteSize = 4;
+                break;
+
+            default:
+                this.itemType = gl.FLOAT;
+                this.itemByteSize = 4;
+        }
 
         this.usage = usage;
 
@@ -91,14 +123,15 @@
 
             // No reallocation needed
 
+            this.gl.bindBuffer(this.type, this._handle);
+
             if (offset || offset === 0) {
-
-                this.gl.bufferSubData(this.type, offset, data);
-
+                this.gl.bufferSubData(this.type, offset * this.itemByteSize, data);
             } else {
-
-                this.gl.bufferData(this.type, data);
+                this.gl.bufferData(this.type, data, this.usage);
             }
+
+            this.gl.bindBuffer(this.type, null);
         }
     };
 

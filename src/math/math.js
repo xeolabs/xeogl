@@ -756,6 +756,7 @@
             };
         })(),
 
+
         /**
          * Duplicates a 4x4 identity matrix.
          * @method dupMat4

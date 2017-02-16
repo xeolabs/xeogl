@@ -1,7 +1,7 @@
 /**
  An **BoundingSphereGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that shows the extents of a World-space bounding sphere.
 
- <a href="../../examples/#boundaries_Entity_worldBoundary_sphere"><img src="http://i.giphy.com/3oz8xRv4g56Y4pZKWk.gif"></img></a>
+ <a href="../../examples/#boundaries_entity_world_sphere"><img src="http://i.giphy.com/3oz8xRv4g56Y4pZKWk.gif"></img></a>
 
  ## Overview
 
@@ -12,7 +12,7 @@
 
  ## Examples
 
- * [Rendering a BoundingSphereGeometry](../../examples/#boundaries_Entity_worldBoundary_sphere)
+ * [Rendering a BoundingSphereGeometry](../../examples/#boundaries_entity_world_sphere)
 
  ## Usage
 

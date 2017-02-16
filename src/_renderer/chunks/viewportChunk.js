@@ -18,6 +18,11 @@
             this.program.gl.viewport(boundary[0], boundary[1], boundary[2], boundary[3]);
         },
 
+        shadow: function () {
+            var boundary = this.state.boundary;
+            this.program.gl.viewport(boundary[0], boundary[1], boundary[2], boundary[3]);
+        },
+
         pickObject: function () {
             var boundary = this.state.boundary;
             this.program.gl.viewport(boundary[0], boundary[1], boundary[2], boundary[3]);

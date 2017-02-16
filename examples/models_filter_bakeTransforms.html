@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="../build/xeogl.min.js"></script>
+
+<body>
+
+<div id="info">
+    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - optimizing by baking transform hierarchies</h1>
+</div>
+
+<div id="logos">
+    <a href="https://www.khronos.org/gltf" target="_parent"><img src="../assets/images/logos/gltf.png"></a>
+</div>
+
+<script>
+
+    // Entity's loaded from glTF will sometimes have complex
+    // transform hierarchies that we don't need to animate.
+    //
+    // This demo shows how to reduce those transform hierarchies down to
+    // a single level, with no more that one transform component per entity.
+
+    // Load glTF gearbox model
+    var gearbox = new xeogl.GLTFModel({
+        id: "gearbox",
+        src: "models/gltf/gearbox/gearbox_assy.gltf"
+    });
+
+    gearbox.on("loaded", function () {
+
+        gearbox.iterate(function (c) {
+
+            if (c.isType("xeogl.Entity")) {
+
+                var entity = c;
+
+                if (entity.transform && entity.transform.parent) {
+
+                    // If an entity has a transform that has a parent, then the entity's
+                    // transform hierarchy needs collapsing. Bake the hierarchy into
+                    // a matrix on a single xeogl.Transform and set that as the entity's new transform.
+
+                    entity.transform =  new xeogl.Transform({
+                        matrix: entity.transform.leafMatrix
+                    });
+
+                    // Store the new transform in the GLTFModel so that
+                    // it gets destroyed when the GLTFModel is destroyed or reloaded
+
+                    gearbox.add(entity.transform);
+                }
+            }
+        });
+
+        // Set initial camera position
+        var view = gearbox.scene.camera.view;
+
+        view.eye = [184.21, 10.54, -7.03];
+        view.look = [159.20, 17.02, 3.21];
+        view.up = [-0.15, 0.97, 0.13];
+
+        // Allow user camera control
+        new xeogl.CameraControl();
+
+        // Slowly orbit camera about model
+        gearbox.scene.on("tick", function () {
+            view.rotateEyeY(0.1);
+            view.rotateEyeX(0.05);
+        });
+    });
+
+</script>
+</body>
+</html>

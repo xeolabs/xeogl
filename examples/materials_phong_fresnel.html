@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.min.js"></script>
+    <script src="js/skyboxes/skybox.js"></script>
+    <script src="js/geometry/vectorTextGeometry.js"></script>
+    <script src="js/utils/materialGallery.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <h1><a
+            href="../docs/classes/PhongMaterial.html" target="_parent">PhongMaterial</a> with various <a
+            href="../docs/classes/Fresnel.html" target="_parent">Fresnels</a></h1>
+
+    <br>
+
+    <div id="menu"></div>
+</div>
+
+<script>
+
+    var diffuseMap = new xeogl.Texture({
+        src: "textures/diffuse/uvGrid2.jpg"
+    });
+
+    materialGallery("menu", {
+
+        "Opacity Fresnel": {
+            material: {
+                type: "xeogl.PhongMaterial",
+                ambient: [0.3, 0.3, 0.3],
+                diffuse: [0.6, 0.6, 1.0],
+                shininess: 80,
+                // diffuseMap: diffuseMap,
+                opacity: 1.0,
+                opacityFresnel: {
+                    edgeBias: 0.2,
+                    centerBias: 0.8,
+                    edgeColor: [1.0, 1.0, 1.0],
+                    centerColor: [0.0, 0.0, 0.0],
+                    power: 1.0
+                }
+            }
+        },
+
+        "Emissive Fresnel": {
+            material: {
+                type: "xeogl.PhongMaterial",
+                ambient: [0.0, 0.0, 0.0],
+                diffuse: [0.5, 0.5, 0.5],
+                emissive: [1, 0, 0],
+                shininess: 80,
+                diffuseMap: diffuseMap,
+                emissiveFresnel: {
+                    edgeBias: 0.0,
+                    centerBias: 0.7,
+                    edgeColor: [1.0, 1.0, 0.0],
+                    centerColor: [0.0, 0.0, 0.0],
+                    power: 2.0
+                }
+            }
+        },
+
+        "Diffuse Fresnel": {
+            material: {
+                type: "xeogl.PhongMaterial",
+                ambient: [0.3, 0.3, 0.3],
+                diffuse: [1.0, 1.0, 1.0],
+                shininess: 80,
+                diffuseMap: diffuseMap,
+                diffuseFresnel: {
+                    edgeBias: 0.0,
+                    centerBias: 0.6,
+                    edgeColor: [1.0, 1.0, 1.0],
+                    centerColor: [0.0, 0.0, 0.0],
+                    power: 3.0
+                }
+            }
+        },
+
+        "Specular Fresnel": {
+            material: {
+                type: "xeogl.PhongMaterial",
+                ambient: [0.0, 0.0, 0.0],
+                diffuse: [1.0, 1.0, 1.0],
+                specular: [1.0, 1.0, 1.0],
+                shininess: 20,
+                diffuseMap: diffuseMap,
+                specularFresnel: {
+                    edgeBias: 0.0,
+                    centerBias: 0.8,
+                    power: 1.0,
+                    edgeColor: [1.0, 1.0, 1.0],
+                    centerColor: [0.0, 0.0, 0.0]
+                }
+            }
+        }
+    });
+
+</script>
+</body>
+</html>

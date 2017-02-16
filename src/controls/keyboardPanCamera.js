@@ -14,8 +14,7 @@
 
  ## Examples
 
- * [KeyboardPanCamera example](../../examples/#interaction_KeyboardPanCamera)
- * [CameraControl example](../../examples/#interaction_CameraControl)
+ * [CameraControl example](../../examples/#interaction_camera_CameraControl)
 
  ## Usage
 
@@ -43,7 +42,7 @@
  });
  ````
 
- @class KeyboardPanCamera
+
  @module xeogl
  @submodule controls
  @constructor

@@ -8,8 +8,7 @@
 
  ## Examples
 
- * [MouseZoomCamera example](../../examples/#interaction_MouseZoomCamera)
- * [CameraControl example](../../examples/#interaction_CameraControl)
+ * [CameraControl example](../../examples/#interaction_camera_CameraControl)
 
  ## Usage
 
@@ -36,7 +35,7 @@
      camera: camera
  });
  ````
- @class MouseZoomCamera
+
  @module xeogl
  @submodule controls
  @constructor

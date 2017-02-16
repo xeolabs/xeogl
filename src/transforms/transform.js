@@ -17,9 +17,9 @@
 
  ## Examples
 
- * [Modelling transform hierarchy](../../examples/#transforms_model_hierarchy)
- * [Attaching transforms to Models, via constructor](../../examples/#importing_gltf_techniques_configTransform)
- * [Attaching transforms to Models, via property](../../examples/#importing_gltf_techniques_attachTransform)
+ * [Modelling transform hierarchy](../../examples/#transforms_entity_hierarchy)
+ * [Attaching transforms to Models, via constructor](../../examples/#transforms_model_configureTransform)
+ * [Attaching transforms to Models, via property](../../examples/#transforms_model_attachTransform)
 
  ## Usage
 

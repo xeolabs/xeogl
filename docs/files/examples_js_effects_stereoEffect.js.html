@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title>examples/js/effects/stereoEffect.js - xeogl</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link href='https://fonts.googleapis.com/css?family=Exo+2:400,800,900,700,600,500|Roboto:100,300,400,500,700,900'  rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
     <link rel="icon" href="../assets/favicon.ico">
@@ -15,7 +16,7 @@
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
 
-                <h1 style="color:white;"><a href="../../">xeogl</a> / <a href="../../docs">API Docs</a></h1>
+                <h1 class="projectTitle"><a href="../../">xeogl</a> / <a href="../../docs">API Docs</a></h1>
 
         </div>
         <div class="yui3-u-1-4 version">
@@ -56,11 +57,13 @@
                                 <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
+                                <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
                                 <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
+                                <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
                                 <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
@@ -75,20 +78,13 @@
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
-                                <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
-                                <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
-                                <li><a href="../classes/KeyboardRotateCamera.html">KeyboardRotateCamera</a></li>
-                                <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
+                                <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
-                                <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
-                                <li><a href="../classes/MousePickEntity.html">MousePickEntity</a></li>
-                                <li><a href="../classes/MouseRotateCamera.html">MouseRotateCamera</a></li>
-                                <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
@@ -99,15 +95,20 @@
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/PointMarkings.html">PointMarkings</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
+                                <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
+                                <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
+                                <li><a href="../classes/SpecularMaterial.html">SpecularMaterial</a></li>
                                 <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/Spinner.html">Spinner</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
+                                <li><a href="../classes/SpotLight.html">SpotLight</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
@@ -142,6 +143,7 @@
                                 <li><a href="..//modules/input.html">input</a></li>
                                 <li><a href="..//modules/interaction.html">interaction</a></li>
                                 <li><a href="..//modules/lighting.html">lighting</a></li>
+                                <li><a href="..//modules/marking.html">marking</a></li>
                                 <li><a href="..//modules/materials.html">materials</a></li>
                                 <li><a href="..//modules/math.html">math</a></li>
                                 <li><a href="..//modules/models.html">models</a></li>
@@ -149,6 +151,7 @@
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
                                 <li><a href="..//modules/xeogl.html">xeogl</a></li>
+                                <li><a href="..//modules/zspace.html">zspace</a></li>
                             </ul>
                         </div>
                     </div>
@@ -189,17 +192,17 @@
 /**
  A **StereoEffect** sets up a stereo view for its {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
 
- &lt;a href=&quot;../../examples/#effects_StereoEffect&quot;&gt;&lt;img src=&quot;../../assets/images/screenshots/StereoEffect.png&quot;&gt;&lt;/img&gt;&lt;/a&gt;
+ &lt;a href=&quot;../../examples/#effects_stereo&quot;&gt;&lt;img src=&quot;../../assets/images/screenshots/StereoEffect.png&quot;&gt;&lt;/img&gt;&lt;/a&gt;
 
  ## Overview
 
- * Use a StereoEffect as a base class for split-view VR effects.
+ * Based on technique described in [this article by Paul Bourke](http://paulbourke.net/stereographics/stereorender/).
 
  &lt;img src=&quot;../../../assets/images/StereoEffect.png&quot;&gt;&lt;/img&gt;
 
  ## Examples
 
- * [Stereo view using a StereoEffect](../../examples/#effects_StereoEffect)
+ * [Stereo view using a StereoEffect](../../examples/#effects_stereo)
 
  ## Usage
 
@@ -213,9 +216,7 @@
  });
 
  var stereoEffect = new xeogl.StereoEffect({
-     eyeSep: 0.2, // Default
-     focalLength: 20, // Default
-     aperture: 45, // Default
+     fov: 45, // Default
      active: true // Default
  });
  &#x60;&#x60;&#x60;&#x60;
@@ -229,11 +230,7 @@
          look: [0, 0, 0],
          up: [0, 1, 0]
      }),
-     project: new xeogl.Perspective({
-         fovy: 60,
-         near: 0.1,
-         far: 1000
-     })
+     project: new xeogl.Frustum()
  });
 
  var viewport = new xeogl.Viewport();
@@ -247,9 +244,7 @@
  var stereoEffect = new xeogl.StereoEffect({
      camera: camera,
      viewport: viewport,
-     eyeSep: 0.2, // Default
-     focalLength: 20, // Default
-     aperture: 45, // Default
+     fov: 45, // Default
      active: true // Default
  });
  &#x60;&#x60;&#x60;&#x60;
@@ -270,9 +265,7 @@
  @param [cfg.viewport] {String|Viewport} ID or instance of a {{#crossLink &quot;Viewport&quot;}}Viewport{{/crossLink}} for this StereoEffect.
  Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this StereoEffect. Defaults to the
  parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/viewport:property&quot;}}viewport{{/crossLink}}.
- @param [cfg.eyeSep=0.2] Number Interpupillary distance (the distance between the center of the pupils of the two eyes).
- @param [cfg.focalLength=20] Focal length.
- @param [cfg.aperture=45] Aperture angle in degrees.
+ @param [cfg.fov=45] Field-of-view angle in degrees.
  @param [cfg.active=true] {Boolean} Whether or not this StereoEffect is active.
  @extends Entity
  */
@@ -280,17 +273,14 @@
 
     &quot;use strict&quot;;
 
-    xeogl.StereoEffect = xeogl.Entity.extend({
+    xeogl.StereoEffect = xeogl.Component.extend({
 
         type: &quot;xeogl.StereoEffect&quot;,
 
         _init: function (cfg) {
-
             this.camera = cfg.camera;
             this.viewport = cfg.viewport;
-            this.eyeSep = cfg.eyeSep;
-            this.focalLength = cfg.focalLength;
-            this.aperture = cfg.aperture;
+            this.fov = cfg.fov;
             this.active = cfg.active !== false;
         },
 
@@ -321,18 +311,18 @@
                      * @event camera
                      * @param value The property&#x27;s new value
                      */
-                    var camera = this._attach({
+                    this._attach({
                         name: &quot;camera&quot;,
                         type: &quot;xeogl.Camera&quot;,
                         component: value,
-                        sceneDefault: true,
-                        //onAdded: this._transformUpdated,
-                        onAddedScope: this
+                        sceneDefault: true
                     });
+
+                    var camera = this._attached.camera;
 
                     // Ensure that Camera has a Frustum projection
 
-                    if (camera.project.type !== &quot;xeogl.Frustum&quot;) {
+                    if (!camera.project.isType(&quot;xeogl.Frustum&quot;)) {
                         this.warn(&quot;Replacing camera&#x27;s projection with a xeogl.Frustum (needed for stereo)&quot;);
                         camera.project = camera.project.create(xeogl.Frustum);
                     }
@@ -368,9 +358,7 @@
                         name: &quot;viewport&quot;,
                         type: &quot;xeogl.Viewport&quot;,
                         component: value,
-                        sceneDefault: true,
-                        //onAdded: this._transformUpdated,
-                        onAddedScope: this
+                        sceneDefault: true
                     });
                 },
 
@@ -380,104 +368,36 @@
             },
 
             /**
-             * Interpupillary distance (the distance between the center of the pupils of the two eyes).
+             * Field-of-view angle in degrees.
              *
-             * Fires an {{#crossLink &quot;StereoEffect/eyeSep:event&quot;}}{{/crossLink}} event on change.
+             * Fires an {{#crossLink &quot;StereoEffect/fov:event&quot;}}{{/crossLink}} event on change.
              *
-             * @property eyeSep
-             * @type Number
-             * @default 0.2
-             */
-            eyeSep: {
-
-                set: function (value) {
-
-                    value = value || 0.2;
-
-                    if (this._eyeSep === value) {
-                        return;
-                    }
-
-                    this._eyeSep = value;
-
-                    /**
-                     * Fired whenever this StereoEffect&#x27;s {{#crossLink &quot;StereoEffect/eyeSep:property&quot;}}{{/crossLink}} property changes.
-                     * @event eyeSep
-                     * @param value The property&#x27;s new value
-                     */
-                    this.fire(&#x27;eyeSep&#x27;, this._eyeSep);
-                },
-
-                get: function () {
-                    return this._eyeSep;
-                }
-            },
-
-            /**
-             * Focal length.
-             *
-             * Fires an {{#crossLink &quot;StereoEffect/focalLength:event&quot;}}{{/crossLink}} event on change.
-             *
-             * @property focalLength
-             * @type Number
-             * @default 20
-             */
-            focalLength: {
-
-                set: function (value) {
-
-                    value = value || 20;
-
-                    if (this._focalLength === value) {
-                        return;
-                    }
-
-                    this._focalLength = value;
-
-                    /**
-                     * Fired whenever this StereoEffect&#x27;s {{#crossLink &quot;StereoEffect/focalLength:property&quot;}}{{/crossLink}} property changes.
-                     * @event focalLength
-                     * @param value The property&#x27;s new value
-                     */
-                    this.fire(&#x27;focalLength&#x27;, this._focalLength);
-                },
-
-                get: function () {
-                    return this._focalLength;
-                }
-            },
-
-            /**
-             * Aperture angle in degrees.
-             *
-             * Fires an {{#crossLink &quot;StereoEffect/aperture:event&quot;}}{{/crossLink}} event on change.
-             *
-             * @property aperture
+             * @property fov
              * @type Number
              * @default 45
              */
-            aperture: {
+            fov: {
 
                 set: function (value) {
 
                     value = value || 45;
 
-                    if (this._aperture === value) {
+                    if (this._fov === value) {
                         return;
                     }
 
-                    this._aperture = value;
+                    this._fov = value;
 
                     /**
-                     * Fired whenever this StereoEffect&#x27;s {{#crossLink &quot;StereoEffect/aperture:property&quot;}}{{/crossLink}} property changes.
-                     * @event aperture
+                     * Fired whenever this StereoEffect&#x27;s {{#crossLink &quot;StereoEffect/fov:property&quot;}}{{/crossLink}} property changes.
+                     * @event fov
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&#x27;aperture&#x27;, this._aperture);
+                    this.fire(&#x27;fov&#x27;, this._fov);
                 },
 
                 get: function () {
-                    return this._aperture;
+                    return this._fov;
                 }
             },
 
@@ -530,11 +450,11 @@
 
             var canvasBoundary;
 
-            var eye;
-            var look;
-            var up;
-
             var math = xeogl.math;
+            var eye = math.vec3();
+            var look = math.vec3();
+            var up = math.vec3();
+            var eyeLook = math.vec3();
             var eyeVec = math.vec3();
             var sepVec = math.vec3();
             var leftEye = math.vec3();
@@ -546,130 +466,129 @@
 
             var self = this;
 
-            this._onSceneRendering = scene.on(&quot;rendering&quot;,
-                function (e) {
+            this._onSceneRendering = scene.on(&quot;rendering&quot;, function (e) {
 
-                    // We&#x27;ll rely on the Scene&#x27;s Default Camera and Viewport
-                    // but we need to replace the Camera&#x27;s projection with Frustum
+                // We&#x27;ll rely on the Scene&#x27;s Default Camera and Viewport
+                // but we need to replace the Camera&#x27;s projection with Frustum
 
-                    var camera = self._attached.camera;
-                    if (!camera) {
-                        self.error(&quot;Can&#x27;t activate: no xeogl.Camera attached&quot;);
-                        return;
-                    }
+                var camera = self._attached.camera;
+                if (!camera) {
+                    self.error(&quot;Can&#x27;t activate: no xeogl.Camera attached&quot;);
+                    return;
+                }
 
-                    var viewport = self._attached.viewport;
-                    if (!viewport) {
-                        self.error(&quot;Can&#x27;t activate: no xeogl.Viewport attached&quot;);
-                        return;
-                    }
+                var viewport = self._attached.viewport;
+                if (!viewport) {
+                    self.error(&quot;Can&#x27;t activate: no xeogl.Viewport attached&quot;);
+                    return;
+                }
 
-                    var view = camera.view;
+                var view = camera.view;
 
-                    var frustum = camera.project; // Need to replace the Camera&#x27;s projection with Frustum
+                var frustum = camera.project;
 
-                    viewport.autoBoundary = false;
+                viewport.autoBoundary = false;
 
-                    var canvas = scene.canvas;
+                var canvas = scene.canvas;
 
-                    var eyeSep = self._eyeSep;
-                    var near = 0.1;
-                    var DTOR = 0.0174532925;
-                    var radians = DTOR * self._aperture / 2;
-                    var wd2 = near * Math.tan(radians);
-                    var ndfl = near / self._focalLength;
+                var focalLength = -Math.abs(math.lenVec3(math.subVec3(view.look, view.eye, eyeLook)));
+                var eyeSep = (1 / 30) * focalLength;
+                var near = 0.1;
+                var DTOR = 0.0174532925;
+                var radians = DTOR * self._fov / 2;
+                var wd2 = near * Math.tan(radians);
+                var ndfl = near / focalLength;
 
-                    canvasBoundary = canvas.boundary;
+                canvasBoundary = canvas.boundary;
 
-                    var canvasWidth = canvasBoundary[2];
-                    var canvasHeight = canvasBoundary[3];
-                    var halfCanvasWidth = Math.round(canvasWidth / 2);
-                    var halfCanvasHeight = Math.round(canvasHeight / 2);
-                    var canvasAspectRatio = canvasWidth / canvasHeight;
+                var canvasWidth = canvasBoundary[2];
+                var canvasHeight = canvasBoundary[3];
+                var halfCanvasWidth = Math.round(canvasWidth / 2);
+                var halfCanvasHeight = Math.round(canvasHeight / 2);
+                var canvasAspectRatio = canvasWidth / canvasHeight;
 
-                    switch (e.pass) {
+                switch (e.pass) {
 
-                        case 0:
+                    case 0:
 
-                            eye = view.eye.slice();
-                            look = view.look.slice();
-                            up = view.up.slice();
+                        eye.set(view.eye);
+                        look.set(view.look);
+                        up.set(view.up);
 
-                            math.subVec3(look, eye, eyeVec);
-                            math.cross3Vec3(up, eyeVec, sepVec);
-                            math.normalizeVec3(sepVec);
-                            math.mulVec3Scalar(sepVec, eyeSep / 2.0);
+                        math.subVec3(look, eye, eyeVec);
+                        math.cross3Vec3(up, eyeVec, sepVec);
+                        math.normalizeVec3(sepVec);
+                        math.mulVec3Scalar(sepVec, eyeSep / 2.0);
 
-                            // Find left and right viewpoints
+                        // Find left and right viewpoints
 
-                            math.subVec3(eye, sepVec, leftEye);
-                            math.subVec3(look, sepVec, leftLook);
+                        math.subVec3(eye, sepVec, leftEye);
+                        math.subVec3(look, sepVec, leftLook);
 
-                            math.addVec3(eye, sepVec, rightEye);
-                            math.addVec3(look, sepVec, rightLook);
+                        math.addVec3(eye, sepVec, rightEye);
+                        math.addVec3(look, sepVec, rightLook);
 
-                            // Set view transform to left side
+                        // Set view transform to left side
 
-                            view.eye = leftEye;
-                            view.look = leftLook;
+                        view.eye = leftEye;
+                        view.look = leftLook;
 
-                            // Set projection frustum to left half of view space
+                        // Set projection frustum to left half of view space
 
-                            frustum.left = -canvasAspectRatio * wd2 - 0.5 * eyeSep * ndfl;
-                            frustum.right = canvasAspectRatio * wd2 - 0.5 * eyeSep * ndfl;
-                            frustum.top = wd2 * 2;
-                            frustum.bottom = -wd2 * 2;
+                        frustum.left = -canvasAspectRatio * wd2 - 0.5 * eyeSep * ndfl;
+                        frustum.right = canvasAspectRatio * wd2 - 0.5 * eyeSep * ndfl;
+                        frustum.top = wd2 * 2;
+                        frustum.bottom = -wd2 * 2;
 
-                            // Set viewport to left half of canvas
+                        // Set viewport to left half of canvas
 
-                            viewport.boundary = [0, 0, halfCanvasWidth, canvasHeight];
+                        viewport.boundary = [0, 0, halfCanvasWidth, canvasHeight];
 
-                            break;
+                        break;
 
-                        case 1:
+                    case 1:
 
-                            // Set view transform to right side
+                        // Set view transform to right side
 
-                            view.eye = rightEye;
-                            view.look = rightLook;
+                        view.eye = rightEye;
+                        view.look = rightLook;
 
-                            // Set projection frustum to left half of view space
+                        // Set projection frustum to left half of view space
 
-                            frustum.left = -canvasAspectRatio * wd2 + 0.5 * eyeSep * ndfl;
-                            frustum.right = canvasAspectRatio * wd2 + 0.5 * eyeSep * ndfl;
-                            frustum.top = wd2 * 2;
-                            frustum.bottom = -wd2 * 2;
+                        frustum.left = -canvasAspectRatio * wd2 + 0.5 * eyeSep * ndfl;
+                        frustum.right = canvasAspectRatio * wd2 + 0.5 * eyeSep * ndfl;
+                        frustum.top = wd2 * 2;
+                        frustum.bottom = -wd2 * 2;
 
-                            // Set viewport to right half of canvas
+                        // Set viewport to right half of canvas
 
-                            viewport.boundary = [halfCanvasWidth, 0, halfCanvasWidth, canvasHeight];
+                        viewport.boundary = [halfCanvasWidth, 0, halfCanvasWidth, canvasHeight];
 
-                            break;
-                    }
-                });
+                        break;
+                }
+            });
 
             // Intercept Scene after each render
             // After the second pass we&#x27;ll restore the thispoint
 
-            self._onSceneRendered = scene.on(&quot;rendered&quot;,
-                function (e) {
+            self._onSceneRendered = scene.on(&quot;rendered&quot;, function (e) {
 
-                    var camera = self._attached.camera;
-                    if (!camera) {
-                        return;
-                    }
-                    var view = camera.view;
+                var camera = self._attached.camera;
+                if (!camera) {
+                    return;
+                }
+                var view = camera.view;
 
-                    switch (e.pass) {
-                        case 1:
+                switch (e.pass) {
+                    case 1:
 
-                            view.eye = eye;
-                            view.look = look;
-                            view.up = up;
+                        view.eye = eye;
+                        view.look = look;
+                        view.up = up;
 
-                            break;
-                    }
-                });
+                        break;
+                }
+            });
         },
 
         _deactivate: function () {
@@ -684,6 +603,7 @@
         _getJSON: function () {
 
             var json = {
+                fov: this._fov,
                 active: this._active
             };
 

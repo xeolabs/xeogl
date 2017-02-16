@@ -2,144 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
+
     <title>xeogl - Examples</title>
 
-    <!--Examples viewer adapted from the one over at THREE.js -->
-    <!-- threejs.com -->
+    <link href='https://fonts.googleapis.com/css?family=Exo+2:400,800,900,700,600,500|Roboto:100,300,400,500,700,900'
+          rel='stylesheet' type='text/css'>
 
-    <style>
+    <link href="css/styles.css" rel="stylesheet"/>
+    <link href="libs/perfect-scrollbar.css" rel="stylesheet"/>
+    <script src="libs/perfect-scrollbar.min.js"></script>
 
-        body {
-            font-family: 'Raleway', sans-serif;
-            font-size: 15px;
-            font-weight: normal;
-            font-style: normal;
-            background-color: #e8e8e8;
-            margin: 0;
-            overflow: hidden;
-            line-height: 1.50;
-            color: #333333;
-        }
-
-        a {
-            /*color: #2194CE;*/
-            color: #3a7445;
-            text-decoration: none;
-        }
-
-        h1 {
-            margin-top: 30px;
-            margin-bottom: 40px;
-            font-size: 25px;
-            font-weight: normal;
-        }
-
-        h2 {
-            font-size: 20px;
-            font-weight: normal;
-            padding-top: 10px;
-        }
-
-        #panel {
-            position: absolute;
-            width: 330px;
-            height: 100%;
-            overflow-Y: scroll;
-            overflow-x: hidden;
-            background: #fafafa;
-
-        }
-
-        #panel #list {
-            padding: 0px 20px;
-            line-height: 18px;
-            overflow-x: hidden;
-        }
-
-        #panel #list .link {
-            margin-left: 0 !important;
-            padding-left: 0 !important;
-            padding-top: 1px;
-            padding-bottom: 1px;
-            /*color: #2194CE;*/
-            color: #3d7749;
-            text-decoration: none;
-            font-weight: normal;
-            background: #FFFFFF;
-            cursor: pointer;
-        }
-
-        #panel #list .selected {
-            margin-left: -5px !important;
-            padding-left: 5px !important;
-            padding-top: 0;
-            padding-bottom: 0;
-            color: #000000;
-            border: 1px solid #676767;
-            background: #FFFF44;
-        }
-
-        #panel #list .link:hover {
-            text-decoration: underline;
-        }
-
-        #panel #list .info {
-            color: #71705a;
-            text-decoration: none;
-            font-style: italic;
-            font-size: 14px;
-            background-color: aliceblue;
-            padding-top: 4px;
-            padding-bottom: 4px;
-            margin-top: 15px;
-            margin-bottom: 4px;
-        }
-
-        #panel #list .infoFirst {
-            color: #71705a;
-            text-decoration: none;
-            font-style: italic;
-            font-size: 14px;
-            background-color: aliceblue;
-            padding-top: 4px;
-            padding-bottom: 4px;
-            margin-top: 0;
-            margin-bottom: 4px;
-        }
-
-        #viewer {
-            position: absolute;
-            left: 330px;
-            width: -webkit-calc(100% - 330px); /* Safari */
-            width: calc(100% - 330px);
-            height: 100%;
-            border: 0px;
-            background-color: #8d8d8d;
-        }
-
-        #sourceButton {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 8px;
-            color: #fff;
-            background-color: #02550b;
-            opacity: 0.7;
-        }
-
-        #sourceButton:hover {
-            cursor: pointer;
-            opacity: 1;
-        }
-
-        .contents {
-            padding-top: 0;
-            padding-bottom: 0;
-        }
-
-    </style>
 </head>
 <body>
+
 <script type="text/javascript">
 
     //    var _gaq = _gaq || [];
@@ -157,8 +32,9 @@
 
 </script>
 
-<div id="panel">
-    <div id="list">
+
+<div id="contents" class="container">
+    <div id="list" class="content">
         <h1><a href="../index.html">xeogl</a> / Examples</h1>
     </div>
 </div>
@@ -167,208 +43,265 @@
 
 <script>
 
+    window.onload = function () {
+        var div = document.getElementById('contents');
+        Ps.initialize(div);
+    };
+
+    // Translations for tweeted links
+
+    var publishedLinks = {
+        "animation_CameraFlightAnimation_Entity": "animation_camera_flyTo_entity",
+        "animation_CameraFlightAnimation_Boundary3D": "animation_camera_flyTo_boundary",
+        "animation_CameraFlightAnimation_AABB": "animation_camera_flyTo_aabb",
+        "animation_CameraFollowAnimation": "animation_camera_follow_entity",
+        "animation_CameraFollowAnimation_fitToView": "animation_camera_follow_entity_fitToView",
+        "animation_CameraPathAnimation_interpolate": "animation_camera_path_interpolation",
+        "animation_CameraPathAnimation_flyToFrame": "animation_camera_path_flyToFrame",
+        "animation_CameraPathAnimation_scrubToFrame": "animation_camera_path_scrubToFrame",
+        "animation_CameraPathAnimation_frameMenu": "animation_camera_path_frameMenu",
+        "boundaries_Entity_worldBoundary_aabb": "boundaries_entity_world_aabb",
+        "boundaries_Entity_worldBoundary_obb": "boundaries_entity_world_obb",
+        "boundaries_Entity_worldBoundary_sphere": "boundaries_entity_world_sphere",
+        "boundaries_Entity_viewBoundary_aabb": "boundaries_entity_view_aabb",
+        "boundaries_Entity_localBoundary_aabb": "boundaries_entity_local_aabb",
+        "boundaries_Entity_canvasBoundary_aabb": "boundaries_entity_canvas_aabb",
+        "boundaries_Model_worldBoundary_aabb": "boundaries_model_world_aabb",
+        "boundaries_flyToBoundary": "animation_camera_flyTo_entity2",
+        "demos_ui_explorer": "importing_gltf_explorer",
+        "demos_1": "demos_1",
+        "demos_2": "demos_2",
+        "geometry_heightmap": "geometry_primitives_heightmap",
+        "geometry_teapot": "geometry_primitives_teapot",
+        "geometry_OBJGeometry_raptor": "importing_obj_raptor",
+        "geometry_Nintendo3DSGeometry_lexus": "importing_obj_lexus",
+        "geometry_VectorTextGeometry": "geometry_primitives_VectorText",
+        "geometry_csg_example1": "geometry_generation_csg",
+        "generation_GeometryBuilder_wavyBlocks": "geometry_generation_wavyBlocks",
+        "interaction_picking": "interaction_picking",
+        "interaction_picking_disabling": "interaction_picking_disabling",
+        "interaction_picking_triangles": "interaction_picking_triangles",
+        "interaction_picking_triangles_normalAndUV": "interaction_picking_triangles_normalAndUV",
+        "interaction_picking_drawing": "interaction_picking_drawing",
+        "interaction_picking_performance": "interaction_picking_performance",
+        "lights_point_world": "environments_lighting_point_world_normalMap",
+        "models_GLTFModel": "importing_gltf_gearbox",
+        "models_SceneJSModel_pojo_textures": "importing_scenejs_pojo_textures",
+        "models_SceneJSModel_pojo_transparency": "importing_scenejs_pojo_transparency",
+        "models_SceneJSModel_json_textures": "importing_scenejs_json_textures",
+        "models_SceneJSModel_tronTank": "importing_scenejs_tronTank",
+        "models_Model_configureTransform": "transforms_model_configureTransform",
+        "models_Model_attachTransform": "transforms_model_attachTransform",
+        "models_Model_uniqueMaterials": "models_filter_uniqueMaterials",
+        "models_Model_bakeTransforms": "models_filter_uniqueMaterials",
+        "models_BuildableModel_city": "models_generation_city",
+        "scene_multipleScenes": "scenes_multipleScenes"
+    };
+
     var files = {
 
-        "Animation": [
-            "#flying cameras to targets",
-            "animation_CameraFlightAnimation_Entity",
-            "animation_CameraFlightAnimation_Boundary3D",
-            "animation_CameraFlightAnimation_AABB",
+        "Featured": [
 
-            "#following targets with cameras",
-            "animation_CameraFollowAnimation",
-            "animation_CameraFollowAnimation_fitToView",
+            "#content importing demos",
+            "featured_gltf_pbr_damagedHelmet",
+            "importing_gltf_explorer",
+            "importing_scenejs_tronTank",
+            "importing_obj_CyberCity3D",
 
-            "#animating cameras along paths",
-            "animation_CameraPathAnimation_interpolate",
-            "animation_CameraPathAnimation_flyToFrame",
-            "animation_CameraPathAnimation_scrubToFrame",
-            "animation_CameraPathAnimation_frameMenu"
-        ],
-
-        "Billboards": [
-            "billboards_spherical",
-            "billboards_spherical_clouds",
-            "billboards_spherical_video",
-            "billboards_cylindrical"
-        ],
-
-        "Boundaries": [
-
-            "#entities",
-            "boundaries_Entity_worldBoundary_aabb",
-            "boundaries_Entity_worldBoundary_obb",
-            "boundaries_Entity_worldBoundary_sphere",
-            "boundaries_Entity_viewBoundary_aabb",
-            "boundaries_Entity_localBoundary_aabb",
-            "boundaries_Entity_canvasBoundary_aabb",
-
-            "#models",
-            "boundaries_Model_worldBoundary_aabb",
-
-            "#animations",
-            "boundaries_flyToBoundary"
-        ],
-
-        "Camera": [
-            "#viewing transforms",
-            "transforms_view_lookat",
-            "transforms_view_transformHierarchy",
-
-            "#projection transforms",
-            "transforms_project_perspective",
-            "transforms_project_frustum",
-            "transforms_project_ortho",
-            "transforms_project_transformHierarchy",
-
-            "#animation",
-            "animation_CameraPathAnimation"
-        ],
-
-        "Canvas": [
-            "canvas_multipleViewports",
-            "canvas_snapshot",
-            "canvas_transparent",
-            "canvas_movingInPage"
-        ],
-
-        "Components": [
-
-            "#instantiating",
-            "components_instantiating",
-            "components_instantiating_childrenAsConfigs",
-
-            "#functionality common to all components",
-            "#change events",
-            "components_changeEvents",
-
-            "#finding components in Scenes",
-            "components_findingByID",
-            "components_findingByType",
-
-            "#metadata",
-            "components_metadata",
-
-            "#serializing",
-            "components_toJSON",
-            "components_toString",
-
-            "#cloning",
-            "components_cloning",
-
-            "#tests",
-            "components_test_defaultMaterial"
-        ],
-
-        "Curves": [
-            "curves_CubicBezierCurve",
-            "curves_QuadraticBezierCurve",
-            "curves_QuadraticBezierCurve_color",
-            "curves_SplineCurve",
-            "curves_Path"
-        ],
-
-        "Debugging": [
-            "debugging_logging",
-            "debugging_inspecting_glsl",
-            "debugging_helper"
-        ],
-
-        "Demos": [
-            "demos_ui_explorer",
-            "demos_1",
-            "demos_2"
-        ],
-
-        "Effects": [
-
-            "#Stereo",
-            "effects_StereoEffect",
-            "effects_stereo_custom",
-
-            "#ZSpace",
-            "effects_zspace_cube",
+            "#zSpace demos",
             "effects_zspace_geometries",
             "effects_zspace_gearbox",
-            "effects_zspace_gearbox_explorer",
-            "effects_zspace_buggy",
             "effects_zspace_ReciprocatingSaw",
-            "effects_zspace_drawing"
+
+            "#misc demos",
+
+            "featured_craySupercomputer"
+        ],
+
+        "Scenes": [
+
+            "#",
+            "scenes_events_tick",
+
+            "#",
+            "scenes_components_instantiating",
+            "scenes_components_instantiating2",
+            "scenes_components_events",
+            "scenes_components_finding_byID",
+            "scenes_components_finding_byType",
+            "scenes_components_metadata",
+            "scenes_components_toJSON",
+            "scenes_components_toString",
+            "scenes_components_cloning",
+
+            "#",
+            "scenes_multipleScenes"
         ],
 
         "Entities": [
-            "#xeogl entities",
-            "entities_minimal"
+
+            "#",
+            "entities_examples_metallicTorus"
         ],
 
-        "Extending": [
-            "#creating new component classes",
-            "extending_customComponent_basic",
-            "extending_customComponent_changeEvents",
-            "extending_customComponent_childCleanup",
-            "extending_customComponent_serializable",
-            "extending_customComponent_update"
+        "Canvas": [
+
+            "canvas_moving",
+            "canvas_transparent",
+            "canvas_snapshot",
+            "canvas_multipleViewports"
+        ],
+
+        "Lights": [
+
+            "#",
+            "lights_ambient",
+
+            "#",
+            "lights_directional_view_threePoint",
+            "lights_directional_world_threePoint",
+
+            "#",
+            "lights_point_view_threePoint",
+            "lights_point_world_threePoint",
+            "lights_point_world_normalMap",
+
+            "#",
+            "lights_lightMap"
+        ],
+
+        "Skyboxes": [
+
+            "skyboxes_skybox",
+            "skyboxes_skybox_custom"
         ],
 
         "Geometry": [
 
-            "#defining",
+            "#",
             "geometry_triangles",
             "geometry_triangles_texture",
             "geometry_triangles_vertexColors",
             "geometry_lines",
             "geometry_modifying",
 
-            "#primitives",
-            "geometry_BoxGeometry",
-            "geometry_AABBGeometry",
-            "geometry_CylinderGeometry",
-            "geometry_PlaneGeometry",
-            "geometry_HeightmapGeometry",
-            "geometry_SphereGeometry",
-            "geometry_TeapotGeometry",
-            "geometry_TorusGeometry",
+            "#",
+            "geometry_primitives_box",
+            "geometry_primitives_cylinder",
+            "geometry_primitives_plane",
+            "geometry_primitives_heightmap",
+            "geometry_primitives_sphere",
+            "geometry_primitives_teapot",
+            "geometry_primitives_torus",
+            "geometry_primitives_vectorText",
 
-            "#importing from Wavefront .OBJ",
-            "geometry_OBJGeometry_raptor",
+            "#geometries shaped to boundaries",
+            "geometry_primitives_AABBGeometry",
+            "geometry_primitives_OBBGeometry",
 
-            "#importing from Nintendo .3DS",
-            "geometry_Nintendo3DSGeometry_lexus",
-
-            "#text",
-            "geometry_VectorTextGeometry",
-
-            "#Constructive Solid Geometry (CSG)",
-            "geometry_csg_example1"
+            "#",
+            "geometry_generation_csg",
+            "geometry_generation_wavyBlocks"
         ],
 
-        "Generation": [
-            "#procedural generation",
-            "generation_GeometryBuilder_wavyBlocks"
+        "Transforms": [
+
+            "#camera viewing transforms",
+            "transforms_camera_view_lookat",
+            "transforms_camera_view_hierarchy",
+
+            "#camera projection transforms",
+            "transforms_camera_project_perspective",
+            "transforms_camera_project_frustum",
+            "transforms_camera_project_ortho",
+            "transforms_camera_project_hierarchy",
+
+            "#transforming entities",
+            "transforms_entity_scale",
+            "transforms_entity_hierarchy",
+
+            "#transforming models",
+            "transforms_model_configureTransform",
+            "transforms_model_attachTransform",
+
+            "#billboarding",
+            "transforms_billboard_cylindrical",
+            "transforms_billboard_spherical",
+            "transforms_billboard_spherical_clouds"
         ],
 
-        "Helpers": [
-            "#Utilities to help you develop scenes",
-            "helpers_axisHelper"
+        "Boundaries": [
+
+            "#entities",
+            "boundaries_entity_world_aabb",
+            "boundaries_entity_world_obb",
+            "boundaries_entity_world_sphere",
+            "boundaries_entity_view_aabb",
+            "boundaries_entity_local_aabb",
+            "boundaries_entity_canvas_aabb",
+
+            "#models",
+            "boundaries_model_world_aabb"
+        ],
+
+        "Materials": [
+
+            "#physical metallic/roughness",
+            "materials_metallic_fireHydrant",
+            "materials_metallic_samples_metals",
+            "materials_metallic_textures",
+            "materials_metallic_metallicVsRoughness",
+
+            "#physical specular/glossiness",
+            "materials_specular_samples",
+            "materials_specular_textures",
+            "materials_specular_specularVsGlossiness",
+
+            "#classic Blinn-Phong",
+            "materials_phong_textures",
+            "materials_phong_textures_video",
+            "materials_phong_fresnel"
+        ],
+
+        "Models": [
+
+            "#processing models",
+            "models_filter_uniqueMaterials",
+            "models_filter_bakeTransforms",
+
+            "#generating models",
+            "models_generation_city"
+        ],
+
+        "Importing": [
+
+            "#importing geometry from .OBJ",
+            "importing_obj_raptor",
+            "importing_obj_CyberCity3D",
+
+            "#importing geometry from .3DS",
+            "importing_3ds_lexus",
+
+            "#importing models from glTF",
+            "importing_gltf_gearbox",
+            "importing_gltf_pbr",
+            "importing_gltf_explorer",
+
+            "#importing models from SceneJS",
+            "importing_scenejs_pojo_textures",
+            "importing_scenejs_pojo_transparency",
+            "importing_scenejs_json_textures",
+            "importing_scenejs_tronTank"
         ],
 
         "Interaction": [
 
-            "#interacting with xeogl",
+            "#event system",
             "interaction_events",
 
-            "#basic camera controls",
-            "interaction_CameraControl",
-            "interaction_KeyboardAxisCamera",
-            "interaction_KeyboardRotateCamera",
-            "interaction_KeyboardPanCamera",
-            "interaction_KeyboardZoomCamera",
-            "interaction_MouseRotateCamera",
-            "interaction_MousePanCamera",
-            "interaction_MouseZoomCamera",
-
-            "#BIM camera controls",
-            "interaction_BIMCameraControl",
+            "#camera controls",
+            "interaction_camera_CameraControl",
+            "interaction_camera_BIMCameraControl",
 
             "#picking",
             "interaction_picking",
@@ -380,99 +313,69 @@
 
             "#raycasting",
             "interaction_picking_raycasting",
-            "interaction_picking_raycasting_triangles"
+            "interaction_picking_raycasting_pickSurface"
         ],
 
-        "Lights": [
-            "lights_ambient",
-            "lights_directional_view",
-            "lights_directional_world",
-            "lights_point_view",
-            "lights_point_world"
+        "Animation": [
+
+            "#flying cameras to targets",
+            "animation_camera_flight",
+
+            "#following targets with cameras",
+            "animation_camera_follow",
+
+            "#animating cameras along paths",
+            "animation_camera_path_frameMenu",
+            "animation_camera_path_interpolation",
+            "animation_camera_path_flyToFrame",
+            "animation_camera_path_scrubToFrame",
+
+            "#moving things along curves",
+            "animation_curves_cubicBezier",
+            "animation_curves_quadraticBezier",
+            "animation_curves_quadraticBezier_color",
+            "animation_curves_spline",
+            "animation_curves_spline_pointLight",
+            "animation_curves_path"
         ],
 
-        "Materials": [
-            "materials_phong",
+        "Effects": [
 
-            "#texture",
-            "materials_texture_diffuse",
-            "materials_texture_specular",
-            "materials_texture_emissive",
-            "materials_texture_opacity",
-            "materials_texture_reflectivity",
-            "materials_texture_normalMap",
-            "materials_texture_video",
-            "materials_texture_procedural",
-            "materials_texture_animation",
+            "#stereo",
+            "effects_stereo",
+            "effects_stereo_custom",
 
-            "#fresnel",
-            "materials_fresnel_diffuse",
-            "materials_fresnel_specular",
-            "materials_fresnel_opacity",
-            "materials_fresnel_emissive",
-
-            "#Z-sorting transparent entities",
-            "materials_techniques_transparencySort"
+            "#ZSpace",
+            "effects_zspace_geometries",
+            "effects_zspace_gearbox",
+            "effects_zspace_ReciprocatingSaw"
         ],
 
-        "Models": [
+        "Extending": [
 
-            "#transforming",
-            "models_configureTransform",
-            "models_attachTransform",
-
-            "#modifying",
-            "models_uniqueMaterials",
-            "models_bakeTransforms",
-
-            "#generating",
-            "models_BuildableModel_city",
-
-            "#loading from glTF",
-            "models_GLTFModel_gearbox",
-            "models_GLTFModel_buggy",
-            "models_GLTFModel_ReciprocatingSaw",
-            "models_GLTFModel_duck"
+            "#creating new component classes",
+            "extending_component_basic",
+            "extending_component_changeEvents",
+            "extending_component_childCleanup",
+            "extending_component_serializable",
+            "extending_component_update"
         ],
 
         "Profiling": [
+
             "#measuring xeogl performance",
             "profiling_statistics",
             "profiling_sceneRebuild"
         ],
 
-        "Scene": [
-            "#multiple scenes in a page",
-            "scene_multipleScenes",
+        "Debugging": [
 
-            "#events",
-            "scene_events_tick"
-        ],
+            "#getting diagnostics",
+            "debugging_logging",
+            "debugging_inspecting_glsl",
 
-        "Skyboxes": [
-            "skyboxes_skybox",
-            "skyboxes_customSkybox"
-        ],
-
-        "Techniques": [
-            "#Z-sorting transparent entities",
-            "materials_techniques_transparencySort"
-        ],
-
-        "Transforms": [
-
-            "#viewing transforms",
-            "transforms_view_lookat",
-            "transforms_view_transformHierarchy",
-
-            "#projection transforms",
-            "transforms_project_perspective",
-            "transforms_project_frustum",
-            "transforms_project_ortho",
-            "transforms_project_transformHierarchy",
-
-            "#modeling transforms",
-            "transforms_model_transformHierarchy"
+            "#gnomon helper in the corner",
+            "debugging_helpers_axisHelper"
         ]
     };
 
@@ -489,7 +392,7 @@
     sourceButton.textContent = 'View source';
 
     sourceButton.addEventListener('click', function (event) {
-        window.open( 'https://github.com/xeolabs/xeogl/blob/master/examples/' + selected + '.html' );
+        window.open('https://github.com/xeolabs/xeogl/blob/master/examples/' + selected + '.html');
     }, false);
 
     sourceButton.style.display = 'none';
@@ -504,8 +407,10 @@
     // Table of contents
     var div = document.createElement('h2');
     div.textContent = "Contents";
+
     container.appendChild(div);
     container.appendChild(document.createElement('hr'));
+
     for (var key in files) {
         var section = files[key];
         var div = document.createElement('div');
@@ -525,7 +430,6 @@
     }
 
     container.appendChild(document.createElement('hr'));
-    container.appendChild(document.createElement('br'));
 
     _index = 1;
 
@@ -534,14 +438,15 @@
     for (var key in files) {
         var section = files[key];
         var div = document.createElement('h2');
-        div.textContent = _index++ + "." + key;
+        div.textContent = _index++ + ". " + key;
         container.appendChild(div);
         catDivs[key] = div;
         for (var i = 0; i < section.length; i++) {
             var file = section[i];
-            if (file.charAt(0) == "#") {
+            if (false && file.charAt(0) == "#") {
                 var div = document.createElement('div');
-                div.textContent = "// " + file.substring(1);
+                //div.textContent = "// " + file.substring(1);
+                div.textContent = "";
                 div.className = (i == 0 ? 'infoFirst' : 'info');
                 container.appendChild(div);
                 continue;
@@ -570,6 +475,8 @@
     }
 
     var load = function (file) {
+
+        file = publishedLinks[file] || file;
 
         if (file.indexOf(".html", file.length - 5) !== -1) {
             window.location = "./" + file + ".html";
@@ -600,10 +507,11 @@
             load(window.location.hash.substring(1));
             hash = window.location.hash;
         }
-    });
+    }, 200);
 
     function scrollIntoView(div) {
-        document.getElementById("panel").scrollTop = documentOffsetTop(div) - (window.innerHeight / 6 );;
+        document.getElementById("contents").scrollTop = documentOffsetTop(div) - (window.innerHeight / 6 );
+        ;
     }
 
     function documentOffsetTop(div) {

@@ -1,7 +1,7 @@
 /**
  An **AABBGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that shows the extents of a World-space axis-aligned bounding box (AABB).
 
- <a href="../../examples/#geometry_AABBGeometry"><img src="http://i.giphy.com/3o6ZsSVy0NKXZ1vDSo.gif"></img></a>
+ <a href="../../examples/#geometry_primitives_AABBGeometry"><img src="http://i.giphy.com/3o6ZsSVy0NKXZ1vDSo.gif"></img></a>
 
  ## Overview
 
@@ -12,7 +12,7 @@
 
  ## Examples
 
- * [Rendering an AABBGeometry](../../examples/#geometry_AABBGeometry)
+ * [Rendering an AABBGeometry](../../examples/#geometry_primitives_AABBGeometry)
 
  ## Usage
 

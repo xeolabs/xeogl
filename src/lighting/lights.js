@@ -8,51 +8,84 @@
  * {{#crossLink "AmbientLight"}}AmbientLight{{/crossLink}}s, which are fixed-intensity and fixed-color, and
  affect all the {{#crossLink "Entity"}}Entities{{/crossLink}} equally,
  * {{#crossLink "PointLight"}}PointLight{{/crossLink}}s, which emit light that
- originates from a single point and spreads outward in all directions, and
+ originates from a single point and spreads outward in all directions,
  * {{#crossLink "DirLight"}}DirLight{{/crossLink}}s, which illuminate all the
- {{#crossLink "Entity"}}Entities{{/crossLink}} equally from a given direction
+ {{#crossLink "Entity"}}Entities{{/crossLink}} equally from a given direction and may cast shadows, and
+ * {{#crossLink "SpotLight"}}SpotLight{{/crossLink}}s, which eminate from a position in a given direction and may cast shadows.
+
+ A Lights can also have two other components that define environmental reflection and irradiance:
+
+ * {{#crossLink "Lights/lightMap:property"}}{{/crossLink}} set to a {{#crossLink "CubeTexture"}}{{/crossLink}}, and
+ * {{#crossLink "Lights/reflectionMap:property"}}{{/crossLink}} set to a {{#crossLink "CubeTexture"}}{{/crossLink}}.
 
  <img src="../../../assets/images/Lights.png"></img>
 
+ ## Examples
+
+ * [Light and reflection maps](../../examples/#materials_metallic_fireHydrant)
+ * [World-space point lighting with normal map](../../examples/#lights_point_world_normalMap)
+ * [View-space directional three-point lighting](../../examples/#lights_directional_view_threePoint)
+ * [View-space positional three-point lighting](../../examples/#lights_point_world_threePoint)
+ * [World-space directional three-point lighting](../../examples/#lights_directional_world_threePoint)
+ * [World-space positional three-point lighting](../../examples/#lights_point_world_threePoint)
+
  ## Usage
 
- ```` javascript
- var entity = new xeogl.Entity({
+ ````javascript
+ new xeogl.Entity({
 
-     lights: new xeogl.Lights({
-         lights: [
-
-             new xeogl.AmbientLight({
-                 color: [0.7, 0.7, 0.7]
-             })
-
-             new xeogl.DirLight({
-                 dir:         [-1, -1, -1],
-                 color:       [0.5, 0.7, 0.5],
-                 intensity:   1.0,
-                 space:      "view"  // Other option is "world", for World-space
-             }),
-
-             new xeogl.PointLight({
-                 pos: [0, 100, 100],
-                 color: [0.5, 0.7, 0.5],
-                 intensity: 1
-                 constantAttenuation: 0,
-                 linearAttenuation: 0,
-                 quadraticAttenuation: 0,
-                 space: "view"
-             })
-         ]
+    lights: new xeogl.Lights({
+        lights: [
+            new xeogl.DirLight({
+                dir: [0.8, -0.6, -0.8],
+                color: [0.8, 0.8, 0.8],
+                space: "view"
+            }),
+            new xeogl.DirLight({
+                dir: [-0.8, -0.4, -0.4],
+                color: [0.4, 0.4, 0.5],
+                space: "view"
+            }),
+            new xeogl.DirLight({
+                dir: [0.2, -0.8, 0.8],
+                color: [0.8, 0.8, 0.8],
+                space: "view"
+            })
+        ],
+        lightMap: new xeogl.CubeTexture({
+            src: [
+                "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
+                "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png",
+                "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png",
+                "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png",
+                "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png",
+                "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png"
+            ]
+        }),
+        reflectionMap: new xeogl.CubeTexture({
+            src: [
+                "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
+                "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
+                "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
+                "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
+                "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
+                "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
+            ]
+        })
     }),
 
-    material: new xeogl.PhongMaterial({
-        ambient:    [0.3, 0.3, 0.3],
-        diffuse:    [0.7, 0.7, 0.7],
-        specular:   [1. 1, 1],
-        shininess:  30
+    material: new xeogl.MetallicMaterial({
+        roughness: 1.0,
+        metallic: 1.0,
+        baseColorMap: new xeogl.Texture({
+            src: "textures/materials/poligon/RustMixedOnPaint012_1k/RustMixedOnPaint012_COL_VAR1_1K.jpg"
+        }),
+        roughnessMap: new xeogl.Texture({
+            src: "textures/materials/poligon/RustMixedOnPaint012_1k/RustMixedOnPaint012_REFL_1K.jpg"
+        })
     }),
 
-    geometry: new xeogl.BoxGeometry()
+    geometry: new xeogl.SphereGeometry()
  });
  ````
 
@@ -66,6 +99,8 @@
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Lights.
  @param [cfg.lights] {{Array of String|Entity}} Array of light source IDs or instances.
+ @param [cfg.lightMap=undefined] {CubeTexture} A light map {{#crossLink "CubeTexture"}}{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
+ @param [cfg.reflectionMap=undefined] {CubeTexture} A reflection map {{#crossLink "CubeTexture"}}{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
  @extends Component
  */
 (function () {
@@ -84,8 +119,6 @@
                 hash: ""
             });
 
-            this._dirty = true;
-
             // Array of child light source components
             this._lights = [];
 
@@ -96,32 +129,40 @@
             this._destroyedSubs = [];
 
             // Add initial light source components
-            this.lights = cfg.lights;
+            if (cfg.lights) {
+                this.lights = cfg.lights;
+            }
+
+            if (cfg.lightMap) {
+                this.lightMap = cfg.lightMap;
+            }
+
+            if (cfg.reflectionMap) {
+                this.reflectionMap = cfg.reflectionMap;
+            }
         },
 
         _props: {
 
             /**
-             The light sources in this Lights.
-
-             That that, when removing or inserting light sources, you must reassign this property to the modified array,
-             so that this Lights able to detect that lights sources were actually added or removed. For example:
-
-             ````javascript
-             var lights = myLights.lights;
-
-             lights.push(new xeogl.PointLight({...}));
-
-             myLights.lights = lights; // This way, the xeogl.Lights component is able to detect that the new light was added.
-             ````
-
-             We'll be able to relax this once JavaScript gets the (proper) ability to observe array updates.
-
-             Fires a {{#crossLink "Lights/lights:event"}}{{/crossLink}} event on change.
-
-             @property lights
-             @default []
-             @type {{Array of AmbientLight, PointLight and DirLight}}
+             * The light sources in this Lights.
+             *
+             * Note that when removing or inserting light sources, you must reassign this property to the modified array,
+             * so that this Lights able to detect that lights sources were actually added or removed. For example:
+             *
+             * ````javascript
+             * var lights = myLights.lights;
+             * lights.push(new xeogl.PointLight({...}));
+             * myLights.lights = lights; // This way, the xeogl.Lights component is able to detect that the new light was added.
+             * ````
+             *
+             * We'll be able to relax this once JavaScript gets the (proper) ability to observe array updates.
+             *
+             * Fires a {{#crossLink "Lights/lights:event"}}{{/crossLink}} event on change.
+             *
+             * @property lights
+             * @default []
+             * @type {{Array of AmbientLight, PointLight, DirLight or SpotLight}}
              */
             lights: {
 
@@ -166,8 +207,6 @@
                                 self._dirtySubs = self._dirtySubs.slice(i, i + 1);
                                 self._destroyedSubs = self._destroyedSubs.slice(i, i + 1);
 
-                                self._dirty = true;
-
                                 self.fire("dirty", true);
                                 self.fire("lights", self._lights);
 
@@ -196,8 +235,8 @@
 
                         var type = light.type;
 
-                        if (type !== "xeogl.AmbientLight" && type !== "xeogl.DirLight" && type !== "xeogl.PointLight") {
-                            this.error("Component " + xeogl._inQuotes(light.id) + " is not an xeogl.AmbientLight, xeogl.DirLight or xeogl.PointLight ");
+                        if (type !== "xeogl.AmbientLight" && type !== "xeogl.DirLight" && type !== "xeogl.PointLight" && type !== "xeogl.SpotLight") {
+                            this.error("Component " + xeogl._inQuotes(light.id) + " is not an xeogl.AmbientLight, xeogl.DirLight, xeogl.PointLight or xeogl.SpotLight");
                             continue;
                         }
 
@@ -208,14 +247,109 @@
                         this._destroyedSubs.push(light.on("destroyed", lightDestroyed));
                     }
 
-                    this._dirty = true;
-
                     this.fire("dirty", true);
+
+                    /**
+                     Fired whenever this Lights's {{#crossLink "Lights/lights:property"}}{{/crossLink}} property changes.
+
+                     @event lights
+                     @param value Number The property's new value
+                     */
                     this.fire("lights", this._lights);
                 },
 
                 get: function () {
                     return this._lights;
+                }
+            },
+
+            /**
+             A {{#crossLink "CubeTexture"}}{{/crossLink}} that defines the brightness of the
+             surfaces of attached {{#crossLink "Entities"}}{{/crossLink}}.
+
+             Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this Lights.
+
+             Fires a {{#crossLink "Lights/lightMap:event"}}{{/crossLink}} event on change.
+
+             @property lightMap
+             @default undefined
+             @type {CubeTexture}
+             */
+            lightMap: {
+
+                set: function (texture) {
+
+                    /**
+                     Fired whenever this Lights's {{#crossLink "Lights/lightMap:property"}}{{/crossLink}} property changes.
+
+                     @event lightMap
+                     @param value Number The property's new value
+                     */
+                    this._attachComponent("xeogl.CubeTexture", "lightMap", texture);
+                },
+
+                get: function () {
+                    return this._attached.lightMap;
+                }
+            },
+
+            /**
+             A {{#crossLink "CubeTexture"}}{{/crossLink}} that defines a background image that is reflected in the
+             surfaces of attached {{#crossLink "Entities"}}{{/crossLink}}.
+
+             Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this Lights.
+
+             Fires a {{#crossLink "Lights/reflectionMap:event"}}{{/crossLink}} event on change.
+
+             @property reflectionMap
+             @default undefined
+             @type {CubeTexture}
+             */
+            reflectionMap: {
+
+                set: function (texture) {
+
+                    /**
+                     Fired whenever this Lights's {{#crossLink "Lights/reflectionMap:property"}}{{/crossLink}} property changes.
+
+                     @event reflectionMap
+                     @param value Number The property's new value
+                     */
+                    this._attachComponent("xeogl.CubeTexture", "reflectionMap", texture);
+                },
+
+                get: function () {
+                    return this._attached.reflectionMap;
+                }
+            }
+        },
+
+        _attachComponent: function (expectedType, name, component) {
+            component = this._attach({
+                name: name,
+                type: expectedType,
+                component: component,
+                sceneDefault: false,
+                on: {
+                    destroyed: {
+                        callback: function () {
+                            this._state[name] = null;
+                            this._hashDirty = true;
+                        },
+                        scope: this
+                    }
+                }
+            });
+            this._state[name] = component ? component._state : undefined; // FIXME: Accessing _state breaks encapsulation
+            this._hashDirty = true;
+        },
+
+        _shadowsDirty: function () {
+            var light;
+            for (var i = 0, len = this._lights.length; i < len; i++) {
+                light = this._lights[i]._state;
+                if (light.shadow) {
+                    light.shadowDirty = true;
                 }
             }
         },
@@ -224,39 +358,43 @@
 
             var state = this._state;
 
-            if (this._dirty) {
+            state.lights = [];
 
-                state.lights = [];
-
-                for (var i = 0, len = this._lights.length; i < len; i++) {
-                    state.lights.push(this._lights[i]._state);
-                }
-
-                this._makeHash();
-
-                this._dirty = false;
+            for (var i = 0, len = this._lights.length; i < len; i++) {
+                state.lights.push(this._lights[i]._state);
             }
+
+            this._makeHash();
 
             this._renderer.lights = state;
         },
 
         _makeHash: function () {
 
-            var lights = this._state.lights;
-
-            if (lights.length === 0) {
-                return ";";
-            }
-
             var hash = [];
+
+            var state = this._state;
+
+            var lights = state.lights;
+
             var light;
 
             for (var i = 0, len = lights.length; i < len; i++) {
-
                 light = lights[i];
-
+                hash.push("/");
                 hash.push(light.type);
                 hash.push((light.space === "world") ? "w" : "v");
+                if (light.shadow) {
+                    hash.push("sh");
+                }
+            }
+
+            if (state.lightMap) {
+                hash.push("/lm");
+            }
+
+            if (state.reflectionMap) {
+                hash.push("/rm");
             }
 
             hash.push(";");
@@ -266,15 +404,25 @@
 
         _getJSON: function () {
 
-            var lightIds = [];
+            var json = {
+                lights: []
+            };
+
+            var components = this._attached;
 
             for (var i = 0, len = this._lights.length; i < len; i++) {
-                lightIds.push(this._lights[i].id);
+                json.lights.push(this._lights[i].id);
             }
 
-            return {
-                lights: lightIds
-            };
+            if (components.lightMap) {
+                json.lightMap = components.lightMap.id;
+            }
+
+            if (components.reflectionMap) {
+                json.reflectionMap = components.reflectionMap.id;
+            }
+
+            return json.lights;
         },
 
         _destroy: function () {

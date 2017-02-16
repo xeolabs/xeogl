@@ -14,6 +14,7 @@
 
             // Blinn-Phong base material
 
+            this._uAmbient = draw.getUniform("xeo_uAmbient");
             this._uDiffuse = draw.getUniform("xeo_uDiffuse");
             this._uSpecular = draw.getUniform("xeo_uSpecular");
             this._uEmissive = draw.getUniform("xeo_uEmissive");
@@ -57,6 +58,11 @@
             if (state.normalMap) {
                 this._uNormalMap = "xeo_uNormalMap";
                 this._uNormalMapMatrix = draw.getUniform("xeo_uNormalMapMatrix");
+            }
+
+            if (state.occlusionMap) {
+                this._uOcclusionMap = "xeo_uOcclusionMap";
+                this._uOcclusionMapMatrix = draw.getUniform("xeo_uOcclusionMapMatrix");
             }
 
             // Fresnel effects
@@ -107,7 +113,8 @@
             var draw = this.program.draw;
             var state = this.state;
             var gl = this.program.gl;
-
+            var maxTextureUnits = xeogl.WEBGL_INFO.MAX_TEXTURE_UNITS;
+            //  frameCtx.textureUnit = 0;
 
             if (this._uShininess) {
                 this._uShininess.setValue(state.shininess);
@@ -122,11 +129,31 @@
                 this._uPointSize.setValue(state.pointSize);
             }
 
+            if (this._uAmbient) {
+                this._uAmbient.setValue(state.ambient);
+            }
+
+            if (this._uDiffuse) {
+                this._uDiffuse.setValue(state.diffuse);
+            }
+
+            if (this._uSpecular) {
+                this._uSpecular.setValue(state.specular);
+            }
+
+            if (this._uEmissive) {
+                this._uEmissive.setValue(state.emissive);
+            }
+
+            if (this._uOpacity) {
+                this._uOpacity.setValue(state.opacity);
+            }
+
             // Ambient map
 
             if (state.ambientMap && state.ambientMap.texture) {
-
-                draw.bindTexture(this._uAmbientMap, state.ambientMap.texture, (frameCtx.textureUnit < 8 ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
+                draw.bindTexture(this._uAmbientMap, state.ambientMap.texture, frameCtx.textureUnit);
+                frameCtx.textureUnit = (frameCtx.textureUnit + 1) % xeogl.WEBGL_INFO.MAX_TEXTURE_IMAGE_UNITS;
                 frameCtx.bindTexture++;
 
                 if (this._uAmbientMapMatrix) {
@@ -137,68 +164,56 @@
             // Diffuse map
 
             if (state.diffuseMap && state.diffuseMap.texture) {
-
-                draw.bindTexture(this._uDiffuseMap, state.diffuseMap.texture, (frameCtx.textureUnit < 8 ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
+                draw.bindTexture(this._uDiffuseMap, state.diffuseMap.texture, frameCtx.textureUnit);
+                frameCtx.textureUnit = (frameCtx.textureUnit + 1) % xeogl.WEBGL_INFO.MAX_TEXTURE_IMAGE_UNITS;
                 frameCtx.bindTexture++;
 
                 if (this._uDiffuseMapMatrix) {
                     this._uDiffuseMapMatrix.setValue(state.diffuseMap.matrix);
                 }
-
-            } else if (this._uDiffuse) {
-                this._uDiffuse.setValue(state.diffuse);
             }
 
             // Specular map
 
             if (state.specularMap && state.specularMap.texture) {
-
-                draw.bindTexture(this._uSpecularMap, state.specularMap.texture, (frameCtx.textureUnit < 8 ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
+                draw.bindTexture(this._uSpecularMap, state.specularMap.texture, frameCtx.textureUnit);
+                frameCtx.textureUnit = (frameCtx.textureUnit + 1) % xeogl.WEBGL_INFO.MAX_TEXTURE_IMAGE_UNITS;
                 frameCtx.bindTexture++;
 
                 if (this._uSpecularMapMatrix) {
                     this._uSpecularMapMatrix.setValue(state.specularMap.matrix);
                 }
-
-            } else if (this._uSpecular) {
-                this._uSpecular.setValue(state.specular);
             }
 
             // Emissive map
 
             if (state.emissiveMap && state.emissiveMap.texture) {
-
-                draw.bindTexture(this._uEmissiveMap, state.emissiveMap.texture, (frameCtx.textureUnit < 8 ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
+                draw.bindTexture(this._uEmissiveMap, state.emissiveMap.texture, frameCtx.textureUnit);
+                frameCtx.textureUnit = (frameCtx.textureUnit + 1) % xeogl.WEBGL_INFO.MAX_TEXTURE_IMAGE_UNITS;
                 frameCtx.bindTexture++;
 
                 if (this._uEmissiveMapMatrix) {
                     this._uEmissiveMapMatrix.setValue(state.emissiveMap.matrix);
                 }
-
-            } else if (this._uEmissive) {
-                this._uEmissive.setValue(state.emissive);
             }
 
             // Opacity map
 
             if (state.opacityMap && state.opacityMap.texture) {
-
-                draw.bindTexture(this._uOpacityMap, state.opacityMap.texture, (frameCtx.textureUnit < 8 ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
+                draw.bindTexture(this._uOpacityMap, state.opacityMap.texture, frameCtx.textureUnit);
+                frameCtx.textureUnit = (frameCtx.textureUnit + 1) % xeogl.WEBGL_INFO.MAX_TEXTURE_IMAGE_UNITS;
                 frameCtx.bindTexture++;
 
                 if (this._uOpacityMapMatrix) {
                     this._uOpacityMapMatrix.setValue(state.opacityMap.matrix);
                 }
-
-            } else if (this._uOpacity) {
-                this._uOpacity.setValue(state.opacity);
             }
 
             // Reflectivity map
 
             if (state.reflectivityMap && state.reflectivityMap.texture) {
-
-                draw.bindTexture(this._uReflectivityMap, state.reflectivityMap.texture, (frameCtx.textureUnit < 8 ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
+                draw.bindTexture(this._uReflectivityMap, state.reflectivityMap.texture, frameCtx.textureUnit);
+                frameCtx.textureUnit = (frameCtx.textureUnit + 1) % xeogl.WEBGL_INFO.MAX_TEXTURE_IMAGE_UNITS;
 
                 if (this._uReflectivityMapMatrix) {
                     this._uReflectivityMapMatrix.setValue(state.reflectivityMap.matrix);
@@ -208,12 +223,24 @@
             // Normal map
 
             if (state.normalMap && state.normalMap.texture) {
-
-                draw.bindTexture(this._uNormalMap, state.normalMap.texture, (frameCtx.textureUnit < 8 ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
+                draw.bindTexture(this._uNormalMap, state.normalMap.texture, frameCtx.textureUnit);
+                frameCtx.textureUnit = (frameCtx.textureUnit + 1) % xeogl.WEBGL_INFO.MAX_TEXTURE_IMAGE_UNITS;
                 frameCtx.bindTexture++;
 
                 if (this._uNormalMapMatrix) {
                     this._uNormalMapMatrix.setValue(state.normalMap.matrix);
+                }
+            }
+
+            // Occlusion map
+
+            if (state.occlusionMap && state.occlusionMap.texture) {
+                draw.bindTexture(this._uOcclusionMap, state.occlusionMap.texture, frameCtx.textureUnit);
+                frameCtx.textureUnit = (frameCtx.textureUnit + 1) % xeogl.WEBGL_INFO.MAX_TEXTURE_IMAGE_UNITS;
+                frameCtx.bindTexture++;
+
+                if (this._uOcclusionMapMatrix) {
+                    this._uOcclusionMapMatrix.setValue(state.occlusionMap.matrix);
                 }
             }
 
@@ -262,7 +289,7 @@
 
                 if (this._uSpecularFresnelPower) {
                     this._uSpecularFresnelPower.setValue(state.specularFresnel.power);
-            }
+                }
             }
 
             if (state.opacityFresnel) {

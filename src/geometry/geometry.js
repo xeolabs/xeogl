@@ -134,6 +134,9 @@
  quadGeometry.primitive = "lines";
  ````
 
+ ````javascript
+ ````
+
  ### Toggling back-faces on and off
 
  Now we'll attach a {{#crossLink "Modes"}}{{/crossLink}} to that last {{#crossLink "Entity"}}{{/crossLink}}, so that
@@ -194,13 +197,14 @@
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Geometry.
  @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
+ @param [cfg.usage="statis"] {String} The Geometry's usage type. Accepted values are 'static', 'dynamic' and 'stream'.
  @param [cfg.positions] {Array of Number} Positions array.
  @param [cfg.normals] {Array of Number} Vertex normal vectors array.
  @param [cfg.uv] {Array of Number} UVs array.
  @param [cfg.colors] {Array of Number} Vertex colors.
  @param [cfg.tangents] {Array of Number} Vertex tangents.
  @param [cfg.indices] {Array of Number} Indices array.
- @param [cfg.autoNormals] {Boolean} Set true to automatically generate normal vectors from the positions and indices, if those are supplied.
+ @param [cfg.autoNormals=false] {Boolean} Set true to automatically generate normal vectors from the positions and indices, if those are supplied.
  @extends Component
  */
 (function () {
@@ -217,6 +221,8 @@
 
             this._state = new xeogl.renderer.Geometry({
 
+                usage: null,
+
                 primitive: null, // WebGL enum
                 primitiveName: null, // String
 
@@ -228,6 +234,7 @@
                 uv: null,
                 tangents: null,
                 indices: null,
+                autoNormals: false,
 
                 hash: "",
 
@@ -261,12 +268,27 @@
 
             // Typed arrays
 
-            this._positionsData = null;
-            this._colorsData = null;
-            this._normalsData = null;
-            this._uvData = null;
+            this._positions = null;
+            this._positionsUpdate = null;
+            this._positionsUpdateOffset = 0;
+
+            this._normals = null;
+            this._normalsUpdate = null;
+            this._normalsUpdateOffset = 0;
+
+            this._colors = null;
+            this._colorsUpdate = null;
+            this._colorsUpdateOffset = 0;
+
+            this._uvs = null;
+            this._uvsUpdate = null;
+            this._uvsUpdateOffset = 0;
+
             this._tangentsData = null;
-            this._indicesData = null;
+            this._tangentsUpdate = null;
+            this._tangentsUpdateOffset = 0;
+
+            this._indices = null;
 
             // Lazy-generated VBOs
 
@@ -292,42 +314,23 @@
             this._localBoundary = null;
             this._boundaryDirty = true;
 
-
             var defaultGeometry = (!cfg.positions && !cfg.normals && !cfg.uv && !cfg.indices);
 
-            if (defaultGeometry) {
+            if (defaultGeometry) { // Default geometry is a box-shaped triangle mesh
 
                 this.primitive = cfg.primitive;
 
             } else {
 
-                var defaultLineStripGeometry = ((!cfg.primitive || cfg.primitive === "line-strip") && cfg.positions && !cfg.indices);
+                // Custom geometry
 
-                if (defaultLineStripGeometry) {
-
-                    // Line strip when only positions are given and no primitive
-
-                    var indices = [];
-                    for (var i = 0, len = cfg.positions.length / 3; i < len; i++) {
-                        indices.push(i);
-                    }
-
-                    this.primitive = "line-strip";
-                    this.positions = cfg.positions;
-                    this.indices = indices;
-
-                } else {
-
-                    // Custom geometry
-
-                    this.primitive = cfg.primitive;
-                    this.positions = cfg.positions;
-                    this.colors = cfg.colors;
-                    this.normals = cfg.normals;
-                    this.uv = cfg.uv;
-                    this.tangents = cfg.tangents;
-                    this.indices = cfg.indices;
-                }
+                this.primitive = cfg.primitive;
+                this.positions = cfg.positions;
+                this.colors = cfg.colors;
+                this.normals = cfg.normals;
+                this.uv = cfg.uv;
+                this.tangents = cfg.tangents;
+                this.indices = cfg.indices;
             }
 
             this.autoNormals = cfg.autoNormals;
@@ -378,6 +381,8 @@
 
         _updateGeometry: function () {
 
+            var state = this._state;
+
             if (this._updateScheduled) {
 
                 if (this._update) {
@@ -393,135 +398,183 @@
             }
 
             var gl = this.scene.canvas.gl;
-
-            switch (this._state.primitiveName) {
-
-                case "points":
-                    this._state.primitive = gl.POINTS;
-                    break;
-
-                case "lines":
-                    this._state.primitive = gl.LINES;
-                    break;
-
-                case "line-loop":
-                    this._state.primitive = gl.LINE_LOOP;
-                    break;
-
-                case "line-strip":
-                    this._state.primitive = gl.LINE_STRIP;
-                    break;
-
-                case "triangles":
-                    this._state.primitive = gl.TRIANGLES;
-                    break;
-
-                case "triangle-strip":
-                    this._state.primitive = gl.TRIANGLE_STRIP;
-                    break;
-
-                case "triangle-fan":
-                    this._state.primitive = gl.TRIANGLE_FAN;
-                    break;
-
-                default:
-                    this._state.primitive = gl.TRIANGLES;
-            }
-
-            var usage = gl.STATIC_DRAW;
-
             var memoryStats = xeogl.stats.memory;
+            var boundaryDirty = false;
 
             if (this._positionsDirty) {
-                if (this._state.positions) {
-                    memoryStats.positions -= this._state.positions.numItems;
-                    this._state.positions.destroy();
-                }
-                this._state.positions = this._positionsData ? new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._positionsData, this._positionsData.length, 3, usage) : null;
-                if (this._state.positions) {
-                    memoryStats.positions += this._state.positions.numItems;
+                if (!this._positionsUpdate) {
+                    if (state.positions) {
+                        memoryStats.positions -= state.positions.numItems;
+                        state.positions.destroy();
+                    }
+                } else if (!state.positions) {
+                    state.positions = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._positions, this._positions.length, 3, state.usage);
+                    memoryStats.positions += state.positions.numItems;
+                } else if (this._positionsUpdateOffset === null && this._positionsUpdate.length === state.positions.length) {
+                    state.positions.setData(this._positionsUpdate);
+                } else if (this._positionsUpdateOffset === null) {
+                    if (state.positions) {
+                        memoryStats.positions -= state.positions.numItems;
+                        state.positions.destroy();
+                    }
+                    state.positions = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._positions, this._positions.length, 3, state.usage);
+                    memoryStats.positions += state.positions.numItems;
+                } else if ((this._positionsUpdateOffset + this._positionsUpdate.length) <= state.positions.length) {
+                    state.positions.setData(this._positionsUpdate, this._positionsUpdateOffset);
+                } else {
+                    memoryStats.positions -= state.positions.numItems;
+                    state.positions.destroy();
+                    state.positions = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._positions, this._positions.length, 3, state.usage);
+                    memoryStats.positions += state.positions.numItems;
                 }
                 this._positionsDirty = false;
-
-                // Need to rebuild pick mesh now
+                this._tangentsDirty = true;
                 this._pickVBOsDirty = true;
+                if (state.autoNormals) {
+                    this._normalsDirty = true;
+                }
+                boundaryDirty = true;
             }
 
             if (this._colorsDirty) {
-
-                if (this._state.colors) {
-                    memoryStats.colors -= this._state.colors.numItems;
-                    this._state.colors.destroy();
-                }
-                this._state.colors = this._colorsData ? new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._colorsData, this._colorsData.length, 4, usage) : null;
-                if (this._state.colors) {
-                    memoryStats.colors += this._state.colors.numItems;
+                if (!this._colorsUpdate) {
+                    if (state.colors) {
+                        memoryStats.colors -= state.colors.numItems;
+                        state.colors.destroy();
+                    }
+                } else if (!state.colors) {
+                    state.colors = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._colors, this._colors.length, 4, state.usage);
+                    memoryStats.colors += state.colors.numItems;
+                } else if (this._colorsUpdateOffset === null && this._colorsUpdate.length === state.colors.length) {
+                    state.colors.setData(this._colorsUpdate);
+                } else if (this._colorsUpdateOffset === null) {
+                    if (state.colors) {
+                        memoryStats.colors -= state.colors.numItems;
+                        state.colors.destroy();
+                    }
+                    state.colors = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._colors, this._colors.length, 4, state.usage);
+                    memoryStats.colors += state.colors.numItems;
+                } else if ((this._colorsUpdateOffset + this._colorsUpdate.length) <= state.colors.length) {
+                    state.colors.setData(this._colorsUpdate, this._colorsUpdateOffset);
+                } else {
+                    memoryStats.colors -= state.colors.numItems;
+                    state.colors.destroy();
+                    state.colors = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._colors, this._colors.length, 4, state.usage);
+                    memoryStats.colors += state.colors.numItems;
                 }
                 this._colorsDirty = false;
             }
 
-            if (this._normalsDirty) {
-                if (this._state.normals) {
-                    memoryStats.normals -= this._state.normals.numItems;
-                    this._state.normals.destroy();
+            if (this._uvsDirty) {
+                if (!this._uvsUpdate) {
+                    if (state.uv) {
+                        memoryStats.uvs -= state.uv.numItems;
+                        state.uv.destroy();
+                    }
+                } else if (!state.uv) {
+                    state.uv = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._uvs, this._uvs.length, 2, state.usage);
+                    memoryStats.uvs += state.uv.numItems;
+                } else if (this._uvsUpdateOffset === null && this._uvsUpdate.length === state.uv.length) {
+                    state.uv.setData(this._uvsUpdate);
+                } else if (this._uvsUpdateOffset === null) {
+                    if (state.uv) {
+                        memoryStats.uvs -= state.uv.numItems;
+                        state.uv.destroy();
+                    }
+                    state.uv = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._uvs, this._uvs.length, 2, state.usage);
+                    memoryStats.uvs += state.uv.numItems;
+                } else if ((this._uvsUpdateOffset + this._uvsUpdate.length) <= state.uv.length) {
+                    state.uv.setData(this._uvsUpdate, this._uvsUpdateOffset);
+                } else {
+                    memoryStats.uvs -= state.uv.numItems;
+                    state.uv.destroy();
+                    state.uv = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._uvs, this._uvs.length, 2, state.usage);
+                    memoryStats.uvs += state.uv.numItems;
                 }
-
-                // Automatic normal generation
-
-                if (this._autoNormals && this._positionsData && this._indicesData) {
-                    this._normalsData = xeogl.math.buildNormals(this._positionsData, this._indicesData);
-                }
-
-                this._state.normals = this._normalsData ? new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._normalsData, this._normalsData.length, 3, usage) : null;
-                if (this._state.normals) {
-                    memoryStats.normals += this._state.normals.numItems;
-                }
-                this._normalsDirty = false;
-
-                // Need to rebuild tangents
-                // next time the renderer gets them from the state
-
-                this._tangentsDirty = true;
-            }
-
-            if (this._uvDirty) {
-                if (this._state.uv) {
-                    memoryStats.uvs -= this._state.uv.numItems;
-                    this._state.uv.destroy();
-                }
-                this._state.uv = this._uvData ? new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._uvData, this._uvData.length, 2, usage) : null;
-                if (this._state.uv) {
-                    memoryStats.uvs += this._state.uv.numItems;
-                }
-                this._uvDirty = false;
-
-                // Need to rebuild tangents
-                // next time the renderer gets them from the state
-
+                this._uvsDirty = false;
                 this._tangentsDirty = true;
             }
 
             if (this._indicesDirty) {
-                if (this._state.indices) {
-                    memoryStats.indices -= this._state.indices.numItems;
-                    this._state.indices.destroy();
-                }
-
-                this._state.indices = this._indicesData ? new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, this._indicesData, this._indicesData.length, 1, usage) : null;
-                if (this._state.indices) {
-                    memoryStats.indices += this._state.indices.numItems;
+                if (!this._indicesUpdate) {
+                    if (state.indices) {
+                        memoryStats.indices -= state.indices.numItems;
+                        state.indices.destroy();
+                    }
+                } else if (!state.indices) {
+                    state.indices = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, this._indices, this._indices.length, 1, state.usage);
+                    memoryStats.indices += state.indices.numItems;
+                } else if (this._indicesUpdateOffset === null && this._indicesUpdate.length === state.indices.length) {
+                    state.indices.setData(this._indicesUpdate);
+                } else if (this._indicesUpdateOffset === null) {
+                    if (state.indices) {
+                        memoryStats.indices -= state.indices.numItems;
+                        state.indices.destroy();
+                    }
+                    state.indices = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, this._indices, this._indices.length, 1, state.usage);
+                    memoryStats.indices += state.indices.numItems;
+                } else if ((this._indicesUpdateOffset + this._indicesUpdate.length) <= state.indices.length) {
+                    state.indices.setData(this._indicesUpdate, this._indicesUpdateOffset);
+                } else {
+                    memoryStats.indices -= state.indices.numItems;
+                    state.indices.destroy();
+                    state.indices = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, this._indices, this._indices.length, 1, state.usage);
+                    memoryStats.indices += state.indices.numItems;
                 }
                 this._indicesDirty = false;
-
-                // Need to rebuild pick mesh next time the
-                // renderer gets it from the state
-
+                this._tangentsDirty = true;
                 this._pickVBOsDirty = true;
+                if (state.autoNormals) {
+                    this._normalsDirty = true;
+                }
+                boundaryDirty = true;
+            }
+
+            if (this._normalsDirty) {
+                if (state.autoNormals) {
+                    if (this._positions && this._indices) {
+                        this._normals = xeogl.math.buildNormals(this._positions, this._indices, this._normals);
+                        this._normalsDirty = false;
+                        this._tangentsDirty = true;
+                        this._normalsUpdate = this._normals;
+                        this._normalsUpdateOffset = null;
+                    }
+                }
+                if (!this._normalsUpdate) {
+                    if (state.normals) {
+                        memoryStats.normals -= state.normals.numItems;
+                        state.normals.destroy();
+                    }
+                } else if (!state.normals) {
+                    state.normals = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._normals, this._normals.length, 3, state.usage);
+                    memoryStats.normals += state.normals.numItems;
+                } else if (this._normalsUpdateOffset === null && this._normalsUpdate.length === state.normals.length) {
+                    state.normals.setData(this._normalsUpdate);
+                } else if (this._normalsUpdateOffset === null) {
+                    if (state.normals) {
+                        memoryStats.normals -= state.normals.numItems;
+                        state.normals.destroy();
+                    }
+                    state.normals = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._normals, this._normals.length, 3, state.usage);
+                    memoryStats.normals += state.normals.numItems;
+                } else if ((this._normalsUpdateOffset + this._normalsUpdate.length) <= state.normals.length) {
+                    state.normals.setData(this._normalsUpdate, this._normalsUpdateOffset);
+                } else {
+                    memoryStats.normals -= state.normals.numItems;
+                    state.normals.destroy();
+                    state.normals = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._normals, this._normals.length, 3, state.usage);
+                    memoryStats.normals += state.normals.numItems;
+                }
+                this._normalsDirty = false;
+                this._tangentsDirty = true;
+                boundaryDirty = true;
             }
 
             this._geometryUpdateScheduled = false;
 
-            this._setBoundaryDirty();
+            if (boundaryDirty) {
+                this._setBoundaryDirty();
+            }
         },
 
         _buildTangents: function () {
@@ -541,18 +594,16 @@
                 this._tangents.destroy();
             }
 
-            if (!this._positionsData || !this._indicesData || !this._uvData) {
+            if (!this._positions || !this._indices || !this._uvs) {
                 return null;
             }
 
-            this._tangentsData = xeogl.math.buildTangents(this._positionsData, this._indicesData, this._uvData);
+            this._tangentsData = xeogl.math.buildTangents(this._positions, this._indices, this._uvs);
 
             var gl = this.scene.canvas.gl;
 
-            var usage = gl.STATIC_DRAW;
-
             this._tangents = this._tangentsData ?
-                new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._tangentsData, this._tangentsData.length, 3, usage) : null;
+                new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._tangentsData, this._tangentsData.length, 3, this._state.usage) : null;
 
             if (this._tangents) {
                 memoryStats.tangents += this._tangents.numItems;
@@ -573,19 +624,17 @@
 
             this._destroyPickVBOs();
 
-            if (this._positionsData && this._indicesData) {
+            if (this._positions && this._indices) {
 
                 var gl = this.scene.canvas.gl;
 
-                var usage = gl.STATIC_DRAW;
-
-                var arrays = xeogl.math.buildPickTriangles(this._positionsData, this._indicesData);
+                var arrays = xeogl.math.buildPickTriangles(this._positions, this._indices);
 
                 var pickPositions = arrays.positions;
                 var pickColors = arrays.colors;
 
-                this._pickPositions = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, pickPositions, pickPositions.length, 3, usage);
-                this._pickColors = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, pickColors, pickColors.length, 4, usage);
+                this._pickPositions = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, pickPositions, pickPositions.length, 3, this._state.usage);
+                this._pickColors = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, pickColors, pickColors.length, 4, this._state.usage);
 
                 var memoryStats = xeogl.stats.memory;
 
@@ -621,7 +670,7 @@
             /**
              * The Geometry's usage type.
              *
-             * Valid types are: 'static', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
+             * Accepted values are 'static', 'dynamic' and 'stream'.
              *
              * Fires a {{#crossLink "Geometry/usage:event"}}{{/crossLink}} event on change.
              *
@@ -635,15 +684,41 @@
 
                     value = value || "static";
 
-                    if (value !== "static" && value !== "dynamic" && value !== "stream") {
+                    if (value === this._state.usageName) {
+                        return;
+                    }
 
-                        this.error("Unsupported value for 'usage': '" + value +
-                            "' - supported values are 'static', 'dynamic' and 'stream'.");
+                    var gl = this.scene.canvas.gl;
 
-                        value = "static";
+                    switch (value) {
+
+                        case "static":
+                            this._state.usage = gl.STATIC_DRAW;
+                            break;
+
+                        case "dynamic":
+                            this._state.usage = gl.DYNAMIC_DRAW;
+                            break;
+
+                        case "stream":
+                            this._state.usage = gl.STREAM_DRAW;
+                            break;
+
+                        default:
+                            this.error("Unsupported value for 'usage': '" + value +
+                                "' - supported values are 'static', 'dynamic' and 'stream'.");
+                            this._state.usage = gl.STREAM_DRAW;
+                            value = "static";
                     }
 
                     this._state.usageName = value;
+
+                    this._positionsDirty = true;
+                    this._colorsDirty = true;
+                    this._normalsDirty = true;
+                    this._uvDirty = true;
+                    this._tangentsDirty = true;
+                    this._indicesDirty = true;
 
                     this._scheduleGeometryUpdate();
 
@@ -680,30 +755,57 @@
 
                     value = value || "triangles";
 
-                    if (value !== "points" &&
-                        value !== "lines" &&
-                        value !== "line-loop" &&
-                        value !== "line-strip" &&
-                        value !== "triangles" &&
-                        value !== "triangle-strip" &&
-                        value !== "triangle-fan") {
+                    var state = this._state;
+                    var gl = this.scene.canvas.gl;
 
-                        this.error("Unsupported value for 'primitive': '" + value +
-                            "' - supported values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', " +
-                            "'triangle-strip' and 'triangle-fan'. Defaulting to 'triangles'.");
-
-                        value = "triangles";
+                    if (value === state.primitiveName) {
+                        return;
                     }
 
-                    if (this._state.primitiveName === value) {
-                        return;
+                    switch (value) {
+
+                        case "points":
+                            state.primitive = gl.POINTS;
+                            break;
+
+                        case "lines":
+                            state.primitive = gl.LINES;
+                            break;
+
+                        case "line-loop":
+                            state.primitive = gl.LINE_LOOP;
+                            break;
+
+                        case "line-strip":
+                            state.primitive = gl.LINE_STRIP;
+                            break;
+
+                        case "triangles":
+                            state.primitive = gl.TRIANGLES;
+                            break;
+
+                        case "triangle-strip":
+                            state.primitive = gl.TRIANGLE_STRIP;
+                            break;
+
+                        case "triangle-fan":
+                            state.primitive = gl.TRIANGLE_FAN;
+                            break;
+
+                        default:
+                            this.error("Unsupported value for 'primitive': '" + value +
+                                "' - supported values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', " +
+                                "'triangle-strip' and 'triangle-fan'. Defaulting to 'triangles'.");
+
+                            state.primitive = gl.TRIANGLES;
+
+                            value = "triangles";
                     }
 
                     this._state.primitiveName = value;
 
-                    this._scheduleGeometryUpdate();
-
                     this._hashDirty = true;
+                    this._renderer.imageDirty = true;
 
                     this.fire("dirty", true);
 
@@ -724,7 +826,7 @@
             /**
              * The Geometry's positions array.
              *
-             * This property is a one-dimensional array - use  {{#crossLink "xeogl.math/flatten:method"}}{{/crossLink}} to
+             * This property is a one-dimensional, flattened array - use  {{#crossLink "xeogl.math/flatten:method"}}{{/crossLink}} to
              * convert two-dimensional arrays for assignment to this property.
              *
              * Fires a {{#crossLink "Geometry/positions:event"}}{{/crossLink}} event on change.
@@ -736,53 +838,14 @@
             positions: {
 
                 set: function (value) {
-
-                    // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._positionsData !== !value);
-
-                    if (value && value.constructor != Float32Array) {
-                        value = new Float32Array(value);
-                    }
-
-                    this._positionsData = value;
-                    this._positionsDirty = true;
-
-                    this._scheduleGeometryUpdate();
-
-                    if (dirty) {
-                        this._hashDirty = true;
-                        this.fire("dirty", true);
-                    }
-
-                    /**
-                     * Fired whenever this Geometry's {{#crossLink "Geometry/positions:property"}}{{/crossLink}} property changes.
-                     * @event positions
-                     * @param value The property's new value
-                     */
-                    this.fire("positions", this._positionsData);
-
-                    /**
-                     * Fired whenever this Geometry's {{#crossLink "Geometry/localBoundary:property"}}{{/crossLink}} property changes.
-                     *
-                     * Note that this event does not carry the value of the property. In order to avoid needlessly
-                     * calculating unused values for this property, it will be lazy-calculated next time it's referenced
-                     * on this Geometry.
-                     *
-                     * @event positions
-                     * @param value The property's new value
-                     */
-                    this.fire("localBoundary", true);
-
-                    this._renderer.imageDirty = true;
+                    this.setPositions(value, 0);
                 },
 
                 get: function () {
-
                     if (this._updateScheduled) {
                         this._doUpdate();
                     }
-
-                    return this._positionsData;
+                    return this._positions;
                 }
             },
 
@@ -798,41 +861,14 @@
             normals: {
 
                 set: function (value) {
-
-                    // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._normalsData !== !value);
-
-                    if (value && value.constructor != Float32Array) {
-                        value = new Float32Array(value);
-                    }
-
-                    this._normalsData = value;
-                    this._normalsDirty = true;
-
-                    this._scheduleGeometryUpdate();
-
-                    if (dirty) {
-                        this._hashDirty = true;
-                        this.fire("dirty", true);
-                    }
-
-                    /**
-                     * Fired whenever this Geometry's {{#crossLink "Geometry/ normals:property"}}{{/crossLink}} property changes.
-                     * @event  normals
-                     * @param value The property's new value
-                     */
-                    this.fire(" normals", this._normalsData);
-
-                    this._renderer.imageDirty = true;
+                    this.setNormals(value, 0);
                 },
 
                 get: function () {
-
                     if (this._updateScheduled) {
                         this._doUpdate();
                     }
-
-                    return this._normalsData;
+                    return this._normals;
                 }
             },
 
@@ -848,41 +884,14 @@
             uv: {
 
                 set: function (value) {
-
-                    // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._uvData !== !value);
-
-                    if (value && value.constructor != Float32Array) {
-                        value = new Float32Array(value);
-                    }
-
-                    this._uvData = value;
-                    this._uvDirty = true;
-
-                    this._scheduleGeometryUpdate();
-
-                    if (dirty) {
-                        this._hashDirty = true;
-                        this.fire("dirty", true);
-                    }
-
-                    /**
-                     * Fired whenever this Geometry's {{#crossLink "Geometry/uv:property"}}{{/crossLink}} property changes.
-                     * @event uv
-                     * @param value The property's new value
-                     */
-                    this.fire("uv", this._uvData);
-
-                    this._renderer.imageDirty = true;
+                    this.setUVs(value, 0);
                 },
 
                 get: function () {
-
                     if (this._updateScheduled) {
                         this._doUpdate();
                     }
-
-                    return this._uvData;
+                    return this._uvs;
                 }
             },
 
@@ -898,41 +907,14 @@
             colors: {
 
                 set: function (value) {
-
-                    // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._colorsData !== !value);
-
-                    if (value && value.constructor != Float32Array) {
-                        value = new Float32Array(value);
-                    }
-
-                    this._colorsData = value;
-                    this._colorsDirty = true;
-
-                    this._scheduleGeometryUpdate();
-
-                    if (dirty) {
-                        this._hashDirty = true;
-                        this.fire("dirty", true);
-                    }
-
-                    /**
-                     * Fired whenever this Geometry's {{#crossLink "Geometry/colors:property"}}{{/crossLink}} property changes.
-                     * @event colors
-                     * @param value The property's new value
-                     */
-                    this.fire("colors", this._colorsData);
-
-                    this._renderer.imageDirty = true;
+                    this.setColors(value, 0);
                 },
 
                 get: function () {
-
                     if (this._updateScheduled) {
                         this._doUpdate();
                     }
-
-                    return this._colorsData;
+                    return this._colors;
                 }
             },
 
@@ -951,53 +933,14 @@
             indices: {
 
                 set: function (value) {
-
-                    // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._indicesData && !value);
-
-                    if (value) {
-
-                        var bigIndicesSupported = xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"];
-
-                        if (!bigIndicesSupported && value.constructor === Uint32Array) {
-                            this.error("This WebGL implementation does not support Uint32Array");
-                            return;
-                        }
-
-                        var IndexArrayType = bigIndicesSupported ? Uint32Array : Uint16Array;
-
-                        if (value.constructor != Uint16Array && value.constructor != Uint32Array) {
-                            value = new IndexArrayType(value);
-                        }
-                    }
-
-                    this._indicesData = value;
-                    this._indicesDirty = true;
-
-                    this._scheduleGeometryUpdate();
-
-                    if (dirty) {
-                        this._hashDirty = true;
-                        this.fire("dirty", true);
-                    }
-
-                    /**
-                     * Fired whenever this Geometry's {{#crossLink "Geometry/indices:property"}}{{/crossLink}} property changes.
-                     * @event indices
-                     * @param value The property's new value
-                     */
-                    this.fire("indices", this._indicesData);
-
-                    this._renderer.imageDirty = true;
+                    this.setIndices(value, 0);
                 },
 
                 get: function () {
-
                     if (this._updateScheduled) {
                         this._doUpdate();
                     }
-
-                    return this._indicesData;
+                    return this._indices;
                 }
             },
 
@@ -1045,7 +988,7 @@
                                     self._doUpdate();
                                 }
 
-                                return self._positionsData;
+                                return self._positions;
                             }
                         });
 
@@ -1078,15 +1021,18 @@
 
                     value = !!value;
 
-                    if (this._autoNormals === value) {
+                    if (this._state.autoNormals === value) {
                         return;
                     }
 
-                    this._autoNormals = value;
+                    this._state.autoNormals = value;
 
                     this._normalsDirty = true;
 
                     this._scheduleGeometryUpdate();
+
+                    this._hashDirty = true;
+                    this.fire("dirty", true);
 
                     /**
                      * Fired whenever this Geometry's {{#crossLink "Geometry/autoNormals:property"}}{{/crossLink}} property changes.
@@ -1094,13 +1040,382 @@
                      * @type Boolean
                      * @param value The property's new value
                      */
-                    this.fire("autoNormals", this._autoNormals);
+                    this.fire("autoNormals", this._state.autoNormals);
                 },
 
                 get: function () {
-                    return this._autoNormals;
+                    return this._state.autoNormals;
                 }
             }
+        },
+
+        /**
+         Sets this Geometry's {{#crossLink "Geometry/positions:property"}}{{/crossLink}}.
+
+         @param positions {Float32Array} Flattened array of updated positions.
+         @param [offset=0] {Number}
+         */
+        setPositions: function (positions, offset) {
+
+            var dirty = (!this._positions !== !positions);
+
+            if (positions && positions.length === 0) {
+                positions = null;
+            }
+
+            if (!positions) {
+                this._positions = null;
+
+            } else {
+
+                positions = positions.constructor === Float32Array ? positions : new Float32Array(positions);
+
+                if (offset !== null && offset !== undefined) {
+
+                    if (offset < 0) {
+                        this.error("setPositions - negative offset not allowed");
+                        return;
+                    }
+
+                    if (this._positions && (offset + positions.length) <= this._positions.length) {
+                        this._positions.set(positions, offset);
+
+                    } else {
+                        if (!this._positions) {
+                            this._positions = positions;
+
+                        } else {
+                            this._positions = (offset === 0) ? positions : xeogl._concat(this._positions.slice(0, offset), positions);
+                        }
+                    }
+
+                } else {
+                    this._positions = positions;
+                }
+            }
+
+            this._positionsUpdate = positions;
+            this._positionsUpdateOffset = offset;
+            this._positionsDirty = true;
+
+            this._scheduleGeometryUpdate();
+
+            //    this._setBoundaryDirty();
+
+            if (dirty) {
+                this._hashDirty = true;
+                this.fire("dirty", true);
+            }
+
+            /**
+             * Fired whenever this Geometry's {{#crossLink "Geometry/positions:property"}}{{/crossLink}} property changes.
+             * @event positions
+             * @param value The property's new value
+             */
+            this.fire("positions", this._positions);
+
+            /**
+             * Fired whenever this Geometry's {{#crossLink "Geometry/localBoundary:property"}}{{/crossLink}} property changes.
+             *
+             * Note that this event does not carry the value of the property. In order to avoid needlessly
+             * calculating unused values for this property, it will be lazy-calculated next time it's referenced
+             * on this Geometry.
+             *
+             * @event positions
+             * @param value The property's new value
+             */
+            this.fire("localBoundary", true);
+
+            this._renderer.imageDirty = true;
+        },
+
+        /**
+         * Fast method to insert elements into this Geometry's {{#crossLink "Geometry/normals:property"}}{{/crossLink}}.
+         *
+         * @param normals
+         * @param offset
+         */
+        setNormals: function (normals, offset) {
+
+            var dirty = (!this._normals !== !normals);
+
+            if (normals && normals.length === 0) {
+                normals = null;
+            }
+
+            if (!normals) {
+                this._normals = null;
+
+            } else {
+
+                normals = normals.constructor === Float32Array ? normals : new Float32Array(normals);
+
+                if (offset !== null && offset !== undefined) {
+
+                    if (offset < 0) {
+                        this.error("setNormals - negative offset not allowed");
+                        return;
+                    }
+
+                    if (this._normals && (offset + normals.length) <= this._normals.length) {
+                        this._normals.set(normals, offset);
+
+                    } else {
+                        if (!this._normals) {
+                            this._normals = normals;
+
+                        } else {
+                            this._normals = (offset === 0) ? normals : xeogl._concat(this._normals.slice(0, offset), normals);
+                        }
+                    }
+
+                } else {
+                    this._normals = normals;
+                }
+            }
+
+            this._normalsUpdate = normals;
+            this._normalsUpdateOffset = offset;
+            this._normalsDirty = true;
+
+            this._scheduleGeometryUpdate();
+
+            if (dirty) {
+                this._hashDirty = true;
+                this.fire("dirty", true);
+            }
+
+            /**
+             * Fired whenever this Geometry's {{#crossLink "Geometry/normals:property"}}{{/crossLink}} property changes.
+             * @event normals
+             * @param value The property's new value
+             */
+            this.fire("normals", this._normals);
+
+            this._renderer.imageDirty = true;
+        },
+
+        /**
+         * Fast method to insert elements into this Geometry's {{#crossLink "Geometry/uvs:property"}}{{/crossLink}}.
+         *
+         * @param uvs
+         * @param offset
+         */
+        setUVs: function (uvs, offset) {
+
+            var dirty = (!this._uvs !== !uvs);
+
+            if (uvs && uvs.length === 0) {
+                uvs = null;
+            }
+
+            if (!uvs) {
+                this._uvs = null;
+
+            } else {
+
+                uvs = uvs.constructor === Float32Array ? uvs : new Float32Array(uvs);
+
+                if (offset !== null && offset !== undefined) {
+
+                    if (offset < 0) {
+                        this.error("setUvs - negative offset not allowed");
+                        return;
+                    }
+
+                    if (this._uvs && (offset + uvs.length) <= this._uvs.length) {
+                        this._uvs.set(uvs, offset);
+
+                    } else {
+                        if (!this._uvs) {
+                            this._uvs = uvs;
+
+                        } else {
+                            this._uvs = (offset === 0) ? uvs : xeogl._concat(this._uvs.slice(0, offset), uvs);
+                        }
+                    }
+
+                } else {
+                    this._uvs = uvs;
+                }
+            }
+
+            this._uvsUpdate = uvs;
+            this._uvsUpdateOffset = offset;
+            this._uvsDirty = true;
+
+            this._scheduleGeometryUpdate();
+
+            if (dirty) {
+                this._hashDirty = true;
+                this.fire("dirty", true);
+            }
+
+            /**
+             * Fired whenever this Geometry's {{#crossLink "Geometry/uvs:property"}}{{/crossLink}} property changes.
+             * @event uvs
+             * @param value The property's new value
+             */
+            this.fire("uvs", this._uvs);
+
+            this._renderer.imageDirty = true;
+        },
+
+        /**
+         * Fast method to insert elements into this Geometry's {{#crossLink "Geometry/colors:property"}}{{/crossLink}}.
+         *
+         * @param colors
+         * @param offset
+         */
+        setColors: function (colors, offset) {
+
+            var dirty = (!this._colors !== !colors);
+
+            if (colors && colors.length === 0) {
+                colors = null;
+            }
+
+            if (!colors) {
+                this._colors = null;
+
+            } else {
+
+                colors = colors.constructor === Float32Array ? colors : new Float32Array(colors);
+
+                if (offset !== null && offset !== undefined) {
+
+                    if (offset < 0) {
+                        this.error("setColors - negative offset not allowed");
+                        return;
+                    }
+
+                    if (this._colors && (offset + colors.length) <= this._colors.length) {
+                        this._colors.set(colors, offset);
+
+                    } else {
+                        if (!this._colors) {
+                            this._colors = colors;
+
+                        } else {
+                            this._colors = (offset === 0) ? colors : xeogl._concat(this._colors.slice(0, offset), colors);
+                        }
+                    }
+
+                } else {
+                    this._colors = colors;
+                }
+            }
+
+            this._colorsUpdate = colors;
+            this._colorsUpdateOffset = offset;
+            this._colorsDirty = true;
+
+            this._scheduleGeometryUpdate();
+
+            if (dirty) {
+                this._hashDirty = true;
+                this.fire("dirty", true);
+            }
+
+            /**
+             * Fired whenever this Geometry's {{#crossLink "Geometry/colors:property"}}{{/crossLink}} property changes.
+             * @event colors
+             * @param value The property's new value
+             */
+            this.fire("colors", this._colors);
+
+            this._renderer.imageDirty = true;
+        },
+
+        /**
+         Sets this Geometry's {{#crossLink "Geometry/indices:property"}}{{/crossLink}}.
+
+         @param indices {Int16Array} Flattened array of updated indices.
+         @param [offset=0] {Number}
+         */
+        setIndices: function (indices, offset) {
+
+            if (indices && indices.length === 0) {
+                indices = undefined;
+            }
+
+            var bigIndicesSupported = xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"];
+
+            if (indices) {
+                if (!bigIndicesSupported && indices.constructor === Uint32Array) {
+                    this.error("This WebGL implementation does not support Uint32Array");
+                    return;
+                }
+            }
+
+            var IndexArrayType = bigIndicesSupported ? Uint32Array : Uint16Array;
+
+            var dirty = (!this._indices !== !indices);
+
+            if (!indices) {
+                this._indices = null;
+
+            } else {
+
+                indices = (indices.constructor === Uint32Array || indices.constructor === Uint16Array) ? indices : new IndexArrayType(indices);
+
+                if (offset !== null && offset !== undefined) {
+
+                    if (offset < 0) {
+                        this.error("setIndices - negative offset not allowed");
+                        return;
+                    }
+
+                    if (this._indices && (offset + indices.length) <= this._indices.length) {
+                        this._indices.set(indices, offset);
+
+                    } else {
+                        if (!this._indices) {
+                            this._indices = indices;
+
+                        } else {
+                            this._indices = (offset === 0) ? indices : xeogl._concat(this._indices.slice(0, offset), indices);
+                        }
+                    }
+
+                } else {
+                    this._indices = indices;
+                }
+            }
+
+            this._indicesUpdate = indices;
+            this._indicesUpdateOffset = offset;
+            this._indicesDirty = true;
+
+            this._scheduleGeometryUpdate();
+
+            // this._setBoundaryDirty();
+
+            if (dirty) {
+                this._hashDirty = true;
+                this.fire("dirty", true);
+            }
+
+            /**
+             * Fired whenever this Geometry's {{#crossLink "Geometry/indices:property"}}{{/crossLink}} property changes.
+             * @event indices
+             * @param value The property's new value
+             */
+            this.fire("indices", this._indices);
+
+            /**
+             * Fired whenever this Geometry's {{#crossLink "Geometry/localBoundary:property"}}{{/crossLink}} property changes.
+             *
+             * Note that this event does not carry the value of the property. In order to avoid needlessly
+             * calculating unused values for this property, it will be lazy-calculated next time it's referenced
+             * on this Geometry.
+             *
+             * @event indices
+             * @param value The property's new value
+             */
+            this.fire("localBoundary", true);
+
+            this._renderer.imageDirty = true;
         },
 
         _setBoundaryDirty: function () {
@@ -1139,19 +1454,19 @@
             hash.push("/" + state.primitive + ";");
 
             if (state.positions) {
-                hash.push("0");
+                hash.push("p");
             }
 
             if (state.colors) {
-                hash.push("1");
+                hash.push("c");
             }
 
-            if (state.normals) {
-                hash.push("2");
+            if (state.normals || state.autoNormals) {
+                hash.push("n");
             }
 
             if (state.uv) {
-                hash.push("3");
+                hash.push("u");
             }
 
             // TODO: Tangents
@@ -1167,14 +1482,21 @@
                 this._doUpdate();
             }
 
-            return {
+            var json = {
                 primitive: this._state.primitiveName,
-                positions: this._positionsData,
-                normals: this._normalsData,
-                uv: this._uvData,
-                colors: this._colorsData,
-                indices: this._indicesData
+                positions: this._positions,
+                uv: this._uvs,
+                colors: this._colors,
+                indices: this._indices
             };
+
+            if (this._state.autoNormals) {
+                json.autoNormals = true;
+            } else {
+                json.normals = this._normals;
+            }
+
+            return json;
         },
 
         _destroy: function () {
@@ -1205,8 +1527,8 @@
 
             // Destroy lazy-generated VBOs
 
-            if (this._tangentsData) {
-                this._tangentsData.destroy();
+            if (this._tangents) {
+                this._tangents.destroy();
             }
 
             if (this._pickPositions) {

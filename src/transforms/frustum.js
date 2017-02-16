@@ -17,7 +17,7 @@
 
  ## Examples
 
- * [Camera with frustum projection](../../examples/#transforms_project_frustum)
+ * [Camera with frustum projection](../../examples/#transforms_camera_project_frustum)
  * [Stereo viewing with frustum projection](../../examples/#effects_stereo)
 
  ## Usage

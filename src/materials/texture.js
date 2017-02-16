@@ -1,33 +1,28 @@
 /**
  A **Texture** specifies a texture map.
 
- <a href="../../examples/#materials_texture_diffuse"><img src="../../assets/images/screenshots/TorusGeometry.png"></img></a>
-
  ## Overview
 
- * Textures are grouped within {{#crossLink "PhongMaterial"}}PhongMaterials{{/crossLink}}s, which are attached to
+ * Textures are grouped within {{#crossLink "Material"}}Materials{{/crossLink}}, which are attached to
  {{#crossLink "Entity"}}Entities{{/crossLink}}.
- To create a Texture from an image file, set the Texture's {{#crossLink "Texture/src:property"}}{{/crossLink}}
+ * To create a Texture from an image file, set the Texture's {{#crossLink "Texture/src:property"}}{{/crossLink}}
  property to the image file path.
- To create a Texture from an HTMLImageElement, set the Texture's {{#crossLink "Texture/image:property"}}{{/crossLink}}
+ * To create a Texture from an HTMLImageElement, set the Texture's {{#crossLink "Texture/image:property"}}{{/crossLink}}
  property to the HTMLImageElement.
- To render color images of {{#crossLink "Entity"}}Entities{{/crossLink}} to a Texture, set the Texture's {{#crossLink "Texture/target:property"}}{{/crossLink}}
+ * To render color images of {{#crossLink "Entity"}}Entities{{/crossLink}} to a Texture, set the Texture's {{#crossLink "Texture/target:property"}}{{/crossLink}}
  property to a {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} that is attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.
- Similarly, to render depth images of {{#crossLink "Entity"}}Entities{{/crossLink}} to a Texture, set the Texture's {{#crossLink "Texture/target:property"}}{{/crossLink}}
+ * Similarly, to render depth images of {{#crossLink "Entity"}}Entities{{/crossLink}} to a Texture, set the Texture's {{#crossLink "Texture/target:property"}}{{/crossLink}}
  property to a {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.
- For special effects, we often use rendered Textures in combination with {{#crossLink "Shader"}}Shaders{{/crossLink}} and {{#crossLink "Stage"}}Stages{{/crossLink}}.
+ * For special effects, we often use rendered Textures in combination with {{#crossLink "Shader"}}Shaders{{/crossLink}} and {{#crossLink "Stage"}}Stages{{/crossLink}}.
 
- <img src="../../../assets/images/Texture.png"></img>
+ <img src="../../assets/images/Texture.png"></img>
 
  ## Examples
 
- * [Diffuse Texture](../../examples/#materials_texture_diffuse)
- * [Specular Texture](../../examples/#materials_texture_specular)
- * [Opacity Texture](../../examples/#materials_texture_opacity)
- * [Emissive Texture](../../examples/#materials_texture_emissive)
- * [Normal map](../../examples/#materials_texture_normalMap)
- * [Diffuse Video Texture](../../examples/#materials_texture_video)
- * [Texture Animation](../../examples/#materials_texture_animation)
+ * [Textures on MetallicMaterials](../../examples/#materials_metallic_textures)
+ * [Textures on SpecularMaterials](../../examples/#materials_specGloss_textures)
+ * [Textures on PhongMaterials](../../examples/#materials_phong_textures)
+ * [Video texture](../../examples/#materials_phong_textures_video)
 
  ## Usage
 
@@ -114,7 +109,7 @@
 
             this._state = new xeogl.renderer.Texture({
 
-                texture: null,  // xeogl.renderer.webgl.Texture2D
+                texture : new xeogl.renderer.webgl.Texture2D( this.scene.canvas.gl),
                 matrix: null,   // Float32Array
 
                 // Texture properties
@@ -123,9 +118,7 @@
                 magFilter: null,
                 wrapS: null,
                 wrapT: null,
-                flipY: null,
-
-                pageTableTexture: null
+                flipY: false
             });
 
             // Data source
@@ -133,8 +126,6 @@
             this._src = null;   // URL string
             this._image = null; // HTMLImageElement
             this._target = null;// xeogl.RenderTarget
-
-            this._pageTable = null; // Float32Array
 
             // Transformation
 
@@ -244,6 +235,8 @@
 
                     state.texture.setImage(this._image, state);
 
+                    state.renderable = true;
+
                     this._imageDirty = false;
                     this._propsDirty = true; // May now need to regenerate mipmaps etc
                 }
@@ -319,35 +312,8 @@
                 this._propsDirty = false;
             }
 
-            if (this._pageTableDirty) {
-
-                if (this._image) {
-
-                    if (this._onTargetActive) {
-                        this._target.off(this._onTargetActive);
-                        this._onTargetActive = null;
-                    }
-
-                    if (state.texture && state.texture.renderBuffer) {
-
-                        // Detach from "virtual texture" provided by render target
-                        state.texture = null;
-                    }
-
-                    if (!state.texture) {
-                        state.texture = new xeogl.renderer.webgl.Texture2D(gl);
-                    }
-
-                    state.texture.setImage(this._image, state);
-
-                    this._imageDirty = false;
-                    this._propsDirty = true; // May now need to regenerate mipmaps etc
-                }
-            }
-
             this._renderer.imageDirty = true;
         },
-
 
         _loadSrc: function (src) {
 
@@ -560,36 +526,6 @@
 
                 get: function () {
                     return this._attached.target;
-                }
-            },
-
-            /**
-             * Page table for sparse virtual texturing.
-             *
-             * Fires an {{#crossLink "Texture/pageTable:event"}}{{/crossLink}} event on change.
-             *
-             * @property pageTable
-             * @default null
-             * @type {Float32Array}
-             */
-            pageTable: {
-
-                set: function (value) {
-
-                    this._pageTable = value;
-
-                    this._imageDirty = true;
-
-                    /**
-                     * Fired whenever this Texture's  {{#crossLink "Texture/pageTable:property"}}{{/crossLink}} property changes.
-                     * @event pageTable
-                     * @param value {Float32Array} The property's new value
-                     */
-                    this.fire("pageTable", this._pageTable);
-                },
-
-                get: function () {
-                    return this._state._pageTable;
                 }
             },
 
@@ -1006,10 +942,6 @@
             } else if (this._image) {
                 // TODO: Image data
                 // json.src = image.src;
-            }
-
-            if (false && this._state.pageTable !== false) {
-                json.pageTable = this._state.pageTable;
             }
 
             return json;

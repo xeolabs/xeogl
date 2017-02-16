@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title>src/models/gltfModel.js - xeogl</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link href='https://fonts.googleapis.com/css?family=Exo+2:400,800,900,700,600,500|Roboto:100,300,400,500,700,900'  rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
     <link rel="icon" href="../assets/favicon.ico">
@@ -15,7 +16,7 @@
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
 
-                <h1 style="color:white;"><a href="../../">xeogl</a> / <a href="../../docs">API Docs</a></h1>
+                <h1 class="projectTitle"><a href="../../">xeogl</a> / <a href="../../docs">API Docs</a></h1>
 
         </div>
         <div class="yui3-u-1-4 version">
@@ -56,11 +57,13 @@
                                 <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
+                                <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
                                 <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
+                                <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
                                 <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
@@ -75,20 +78,13 @@
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
-                                <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
-                                <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
-                                <li><a href="../classes/KeyboardRotateCamera.html">KeyboardRotateCamera</a></li>
-                                <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
+                                <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
-                                <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
-                                <li><a href="../classes/MousePickEntity.html">MousePickEntity</a></li>
-                                <li><a href="../classes/MouseRotateCamera.html">MouseRotateCamera</a></li>
-                                <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
                                 <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
@@ -99,15 +95,20 @@
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/PointMarkings.html">PointMarkings</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
+                                <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
+                                <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
+                                <li><a href="../classes/SpecularMaterial.html">SpecularMaterial</a></li>
                                 <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/Spinner.html">Spinner</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
+                                <li><a href="../classes/SpotLight.html">SpotLight</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
@@ -142,6 +143,7 @@
                                 <li><a href="..//modules/input.html">input</a></li>
                                 <li><a href="..//modules/interaction.html">interaction</a></li>
                                 <li><a href="..//modules/lighting.html">lighting</a></li>
+                                <li><a href="..//modules/marking.html">marking</a></li>
                                 <li><a href="..//modules/materials.html">materials</a></li>
                                 <li><a href="..//modules/math.html">math</a></li>
                                 <li><a href="..//modules/models.html">models</a></li>
@@ -149,6 +151,7 @@
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
                                 <li><a href="..//modules/xeogl.html">xeogl</a></li>
+                                <li><a href="..//modules/zspace.html">zspace</a></li>
                             </ul>
                         </div>
                     </div>
@@ -193,7 +196,7 @@
     /**
      A **GLTFModel** is a {{#crossLink &quot;Model&quot;}}{{/crossLink}} that loads itself from a &lt;a href=&quot;https://github.com/KhronosGroup/glTF&quot; target = &quot;_other&quot;&gt;glTF&lt;/a&gt; file.
 
-     &lt;a href=&quot;../../examples/#models_GLTFModel_gearbox&quot;&gt;&lt;img src=&quot;../../../assets/images/gltf/glTF_gearbox_squashed.png&quot;&gt;&lt;/img&gt;&lt;/a&gt;
+     &lt;a href=&quot;../../examples/#importing_gltf_gearbox&quot;&gt;&lt;img src=&quot;../../../assets/images/gltf/glTF_gearbox_squashed.png&quot;&gt;&lt;/img&gt;&lt;/a&gt;
 
      ## Overview
 
@@ -202,27 +205,24 @@
      property to the location of a valid glTF file.
      * You can set {{#crossLink &quot;GLTFModel/src:property&quot;}}{{/crossLink}} to a new file path at any time, which causes
      the GLTFModel to clear itself and load components from the new file.
-     * Can be transformed within World-space by attached it to a {{#crossLink &quot;Transform&quot;}}{{/crossLink}}.
+     * Can be transformed within World-space by attaching it to a {{#crossLink &quot;Transform&quot;}}{{/crossLink}}.
      * Provides its World-space boundary as a {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}}.
 
      &lt;img src=&quot;../../../assets/images/GLTFModel.png&quot;&gt;&lt;/img&gt;
 
      ## Tutorials
 
-     * [Importing glTF](https://github.com/xeolabs/xeogl/wiki/Models-glTF)
+     * [Importing glTF](https://github.com/xeolabs/xeogl/wiki/Importing-glTF)
 
      ## Examples
 
-     * [Gearbox](../../examples/#models_GLTFModel_gearbox)
-     * [Buggy](../../examples/#models_GLTFModel_buggy)
-     * [Reciprocating Saw](../../examples/#models_GLTFModel_ReciprocatingSaw)
-     * [Textured Duck](../../examples/#models_GLTFModel_duck)
-     * [GLTFModel with entity explorer UI](../../examples/#demos_ui_explorer)
-     * [Fly camera to GLTFModel entities](../../examples/#boundaries_flyToBoundary)
-     * [Ensuring individual materials on GLTFModel entities](../../examples/#models__uniqueMaterials)
-     * [Baking transform hierarchies](../../examples/#models_bakeTransforms)
-     * [Attaching transforms to GLTFModel, via constructor](../../examples/#models_configureTransform)
-     * [Attaching transforms to GLTFModel, via property](../../examples/#models_attachTransform)
+     * [glTF gearbox](../../examples/#importing_gltf_gearbox)
+     * [glTF models with PBR materials](../../examples/#importing_gltf_pbr)
+     * [glTF gearbox with entity explorer](../../examples/#importing_gltf_explorer)
+     * [Ensuring individual materials on GLTFModel entities](../../examples/#models_filter_uniqueMaterials)
+     * [Baking transform hierarchies in a GLTFModel](../../examples/#models_filter_bakeTransforms)
+     * [Attaching transforms to a GLTFModel, via constructor](../../examples/#transforms_model_configureTransform)
+     * [Attaching transforms to a GLTFModel, via property](../../examples/#transforms_model_attachTransform)
 
      @class GLTFModel
      @module xeogl
@@ -251,16 +251,6 @@
             this._super(cfg);
 
             this._src = null;
-
-            if (!cfg.src) {
-                this.error(&quot;Config missing: &#x27;src&#x27;&quot;);
-                return;
-            }
-
-            if (!xeogl._isString(cfg.src)) {
-                this.error(&quot;Value for config &#x27;src&#x27; should be a string&quot;);
-                return;
-            }
 
             this.src = cfg.src;
         },
@@ -319,7 +309,7 @@
                     // Increment processes represented by loading spinner
                     // Spinner appears as soon as count is non-zero
 
-                    var spinner = self.scene.canvas.spinner;
+                    var spinner = this.scene.canvas.spinner;
                     spinner.processes++;
 
                     glTFLoader.load(userInfo, options, function () {
@@ -328,12 +318,9 @@
                         // Spinner disappears if the count is now zero
                         spinner.processes--;
 
-                        /**
-                         Fired whenever this GLTFModel has finished loading components from the glTF file
-                         specified by {{#crossLink &quot;GLTFModel/src:property&quot;}}{{/crossLink}}.
-                         @event loaded
-                         */
-                        self.fire(&quot;loaded&quot;);
+                        xeogl.scheduleTask(function () {
+                            self.fire(&quot;loaded&quot;, true);
+                        });
                     });
 
                     /**
@@ -352,7 +339,7 @@
 
         _getJSON: function () {
 
-            var json =  {};
+            var json = {};
 
             if (this.src) {
                 json.src = this._src;

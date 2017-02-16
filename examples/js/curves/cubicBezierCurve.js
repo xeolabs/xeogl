@@ -21,8 +21,7 @@
  ## Examples
 
  <ul>
- <li>[CubicBezierCurve example](../../examples/#curves_CubicBezierCurve)</li>
- <li>[Path example](../../examples/#curves_Path)</li>
+ <li>[CubicBezierCurve example](../../examples/#animation_curves_cubicBezier)</li>
  </ul>
 
  ## Usage

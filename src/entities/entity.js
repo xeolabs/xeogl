@@ -9,7 +9,7 @@
 
  ## Examples
 
- * [Minimal Entity example](../../examples/#entities_minimal)
+ * [Entity with TorusGeometry and MetallicMaterial](../../examples/#entities_examples_metallicTorus)
 
  ## Boundaries
 
@@ -157,8 +157,6 @@
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/material:property"}}material{{/crossLink}}.
  @param [cfg.morphTargets] {String|MorphTargets} ID or instance of a {{#crossLink "MorphTargets"}}MorphTargets{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s
  default instance, {{#crossLink "Scene/morphTargets:property"}}morphTargets{{/crossLink}}.
- @param [cfg.reflect] {String|Reflect} ID or instance of a {{#crossLink "CubeMap"}}CubeMap{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
- {{#crossLink "Scene/reflect:property"}}reflection{{/crossLink}}.
  @param [cfg.stage] {String|Stage} ID or instance of of a {{#crossLink "Stage"}}Stage{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
  {{#crossLink "Scene/stage:property"}}stage{{/crossLink}}.
  @param [cfg.transform] {String|Transform} ID or instance of a modelling transform to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
@@ -209,7 +207,6 @@
             this.lights = cfg.lights;
             this.material = cfg.material;
             this.morphTargets = cfg.morphTargets;
-            this.reflect = cfg.reflect;
             this.shader = cfg.shader;
             this.shaderParams = cfg.shaderParams;
             this.stage = cfg.stage;
@@ -752,41 +749,6 @@
 
                 get: function () {
                     return this._attached.morphTargets;
-                }
-            },
-
-            /**
-             * The {{#crossLink "Reflect"}}Reflect{{/crossLink}} attached to this Entity.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/reflect:property"}}reflect{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * Fires an {{#crossLink "Entity/reflect:event"}}{{/crossLink}} event on change.
-             *
-             * @property reflect
-             * @type Reflect
-             */
-            reflect: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this Entity's  {{#crossLink "Entity/reflect:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event reflect
-                     * @param value The property's new value
-                     */
-                    this._attach({
-                        name: "reflect",
-                        type: "xeogl.Reflect",
-                        component: value,
-                        sceneDefault: true
-                    });
-                },
-
-                get: function () {
-                    return this._attached.reflect;
                 }
             },
 
@@ -1407,6 +1369,10 @@
                 this._worldBoundary.fire("updated", true);
             }
             this._setViewBoundaryDirty();
+            var lights = this._attached.lights;
+            if (lights) {
+                lights._shadowsDirty(); // Need to re-render shadow maps
+            }
         },
 
         _setViewBoundaryDirty: function () {
@@ -1431,7 +1397,7 @@
 
         },
 
-        _compile: function () {
+        _compileAsynch: function () {
 
             var self = this;
 
@@ -1452,7 +1418,7 @@
                         return;
                     }
 
-                    self.__compile();
+                    self._compile();
 
                     self._compiling = false;
                 };
@@ -1461,7 +1427,7 @@
             }
         },
 
-        __compile: function () {
+        _compile: function () {
 
             var attached = this._attached;
 
@@ -1478,7 +1444,6 @@
             attached.layer._compile();
             attached.lights._compile();
             attached.material._compile();
-            attached.reflect._compile();
             attached.shader._compile();
             attached.shaderParams._compile();
             attached.stage._compile();
@@ -1532,7 +1497,6 @@
                 layer: attached.layer.id,
                 lights: attached.lights.id,
                 material: attached.material.id,
-                reflect: attached.reflect.id,
                 shader: attached.shader.id,
                 shaderParams: attached.shaderParams.id,
                 stage: attached.stage.id,
