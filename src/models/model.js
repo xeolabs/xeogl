@@ -525,9 +525,9 @@
          */
         removeAll: function () {
 
-            // this.iterate(function (component) {
-            //     component.destroy();
-            // });
+             this.iterate(function (component) {
+                 component.destroy();
+             });
         },
 
         _remove: function (component) {
