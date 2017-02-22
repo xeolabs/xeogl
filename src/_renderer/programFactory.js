@@ -60,6 +60,7 @@
             var program = programState.program;
 
             program.draw.destroy();
+            program.shadow.destroy();
             program.pickObject.destroy();
             program.pickPrimitive.destroy();
 
