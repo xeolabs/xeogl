@@ -219,6 +219,16 @@
                     if (arg1.type === "xeogl.Scene") {
 
                         this.scene = arg1;
+                        this.owner = this.scene;
+
+                        if (arg2) {
+                            cfg = arg2;
+                        }
+
+                    } else if (arg1.isType && arg1.isType("xeogl.Node")) {
+
+                        this.scene = arg1.scene;
+                        this.owner = arg1;
 
                         if (arg2) {
                             cfg = arg2;
@@ -229,6 +239,7 @@
                         // Create this component within the default xeogl Scene
 
                         this.scene = xeogl.scene;
+                        this.owner = this.scene;
 
                         cfg = arg1;
                     }
@@ -237,6 +248,7 @@
                     // Create this component within the default xeogl Scene
 
                     this.scene = xeogl.scene;
+                    this.owner = this.scene;
                 }
 
                 this._renderer = this.scene._renderer;
@@ -307,6 +319,10 @@
             // Initialize this component
             if (this._init) {
                 this._init(cfg);
+            }
+
+            if (this.owner) {
+                this.owner._adopt(this);
             }
         },
 
@@ -940,29 +956,28 @@
             var component = this.scene._getSharedComponent(cfg, instanceId);
 
             if (component) {
-
-                // Register component on this component so that we can
-                // automatically destroy it when we destroy this component
-
-                if (!this._sharedComponents) {
-                    this._sharedComponents = {};
-                }
-
-                if (!this._sharedComponents[component.id]) {
-                    this._sharedComponents[component.id] = component;
-                }
-
-                component.on("destroyed", function () {
-
-                    // If the component is explicitly destroyed, ie. by calling
-                    // its #destroy method, then deregister it so we don't try
-                    // to destroy it a second time when we destroy this component
-
-                    delete this._sharedComponents[component.id];
-                }, this);
+                this._adopt(component);
             }
 
             return component;
+        },
+
+        _adopt: function(component) {
+
+            // Register component on this component so that we can
+            // automatically destroy it when we destroy this component
+
+            if (!this._sharedComponents) {
+                this._sharedComponents = {};
+            }
+
+            if (!this._sharedComponents[component.id]) {
+                this._sharedComponents[component.id] = component;
+            }
+
+            component.on("destroyed", function () {
+                delete this._sharedComponents[component.id];
+            }, this);
         },
 
         /**
@@ -1086,6 +1101,10 @@
          * @method destroy
          */
         destroy: function () {
+
+            if (this.destroyed) {
+                return;
+            }
 
             // Unsubscribe from child components
 

@@ -92,6 +92,7 @@ body {
 
 }
 
+
 #menu a:hover {
     color: yellow;
     text-decoration: underline;
@@ -114,13 +115,13 @@ body {
 
 #info a {
     z-index: 200000;
-    text-decoration: none;
+    /*text-decoration: none;*/
     color: #ffffff !important;
 }
 
 #info a:hover {
     color: #ffffff !important;
-    text-decoration: underline;
+    /*text-decoration: underline;*/
 }
 
 #info p {
@@ -145,6 +146,7 @@ body {
 
 #log {
     color: #9aee93;
+    font-size: 16px;
 }
 
 #log p {

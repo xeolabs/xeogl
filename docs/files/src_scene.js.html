@@ -102,6 +102,8 @@
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
+                                <li><a href="../classes/Shader.html">Shader</a></li>
+                                <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
                                 <li><a href="../classes/SpecularMaterial.html">SpecularMaterial</a></li>
@@ -148,6 +150,7 @@
                                 <li><a href="..//modules/math.html">math</a></li>
                                 <li><a href="..//modules/models.html">models</a></li>
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
+                                <li><a href="..//modules/shaders.html">shaders</a></li>
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
                                 <li><a href="..//modules/xeogl.html">xeogl</a></li>
@@ -1369,8 +1372,8 @@
 
                                 new xeogl.DirLight(this, {
                                     id: &quot;default.light4&quot;,
-                                    dir: [0.2, -0.8, 0.8],
-                                    color: [0.7, 0.7, 0.7],
+                                    dir: [0.4, -0.4, 0.8],
+                                    color: [0.8, 1.0, 1.0],
                                     intensity: 1.0,
                                     space: &quot;view&quot;
                                 })
@@ -2096,6 +2099,7 @@
                     entity = this._dirtyEntities[id];
                     if (entity._valid()) {
                         entity._compileAsynch();
+                        //entity._compile();
                         delete this._dirtyEntities[id];
                         countCompiledEntities++;
                     }

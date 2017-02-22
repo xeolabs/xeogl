@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <h1><a href="../docs/classes/Entity.html" target="_parent">Entity</a> with a custom <a
+            href="../docs/classes/Shader.html" target="_parent">Shader</a></h1>
+    <br>
+
+    <div id="log" style="max-width: 800px;">this custom shader is physically-based, rendering <a
+            href="../docs/classes/MetallicMaterial.html" target="_parent">MetallicMaterial</a> with Cook-Torrance and
+        Lambertian specular and diffuse BRDFs, GGX microfacet distribution, and Schlick's Approximation for Fresnel
+        term.
+    </div>
+</div>
+
+<script>
+
+    var shader = new xeogl.Shader({
+
+        "vertex": [
+
+            "attribute  vec3 position;",
+            "uniform    mat4 modelMatrix;",
+            "uniform    mat4 viewMatrix;",
+            "uniform    mat4 projMatrix;",
+            "varying    vec3 vViewPosition;",
+            "attribute  vec3 normal;",
+            "uniform    mat4 modelNormalMatrix;",
+            "uniform    mat4 viewNormalMatrix;",
+            "varying    vec3 vViewNormal;",
+            "uniform vec3 lightDir0;",
+            "varying vec4 vViewLightReverseDirAndDist0;",
+            "uniform vec3 lightDir1;",
+            "varying vec4 vViewLightReverseDirAndDist1;",
+            "uniform vec3 lightDir2;",
+            "varying vec4 vViewLightReverseDirAndDist2;",
+            "attribute vec2 uv;",
+            "varying vec2 vUV;",
+
+            "void main(void) {",
+            "   vec4 localPosition = vec4(position, 1.0); ",
+            "   vec4 worldPosition;",
+            "   vec4 localNormal = vec4(normal, 0.0); ",
+            "   worldPosition = modelMatrix * localPosition;",
+            "   vec4 viewPosition  = viewMatrix * worldPosition; ",
+            "   vec3 worldNormal = (modelNormalMatrix * localNormal).xyz; ",
+            "   vViewNormal = normalize((viewNormalMatrix * vec4(worldNormal, 1.0)).xyz);",
+            "   vec3 tmpVec3;",
+            "   float lightDist;",
+            "   tmpVec3 = lightDir0;",
+            "   vViewLightReverseDirAndDist0 = vec4(-tmpVec3, 0.0);",
+            "   tmpVec3 = lightDir1;",
+            "   vViewLightReverseDirAndDist1 = vec4(-tmpVec3, 0.0);",
+            "   tmpVec3 = lightDir2;",
+            "   vViewLightReverseDirAndDist2 = vec4(-tmpVec3, 0.0);",
+            "   vUV = uv;",
+            "   vViewPosition = viewPosition.xyz;",
+            "   gl_Position = projMatrix * viewPosition;",
+            "}"
+        ],
+        "fragment": [
+
+            "precision highp float;",
+
+            "#define PI 3.14159265359",
+            "#define RECIPROCAL_PI 0.31830988618",
+            "#define RECIPROCAL_PI2 0.15915494",
+            "#define EPSILON 1e-6",
+            "#define saturate(a) clamp( a, 0.0, 1.0 )",
+
+            "float pow2(const in float x) {",
+            "   return x*x;",
+            "}",
+
+            "vec3 inverseTransformDirection(in vec3 dir, in mat4 matrix) {",
+            "   return normalize( ( vec4( dir, 0.0 ) * matrix ).xyz );",
+            "}",
+
+            "struct IncidentLight {",
+            "   vec3 color;",
+            "   vec3 direction;",
+            "};",
+
+            "struct ReflectedLight {",
+            "   vec3 diffuse;",
+            "   vec3 specular;",
+            "};",
+
+            "struct Geometry {",
+            "   vec3 position;",
+            "   vec3 viewNormal;",
+            "   vec3 worldNormal;",
+            "   vec3 viewEyeDir;",
+            "};",
+
+            "struct Material {",
+            "   vec3    diffuseColor;",
+            "   float   specularRoughness;",
+            "   vec3    specularColor;",
+            "   float   shine;",
+            "};",
+
+            "vec3 BRDF_Diffuse_Lambert(const in vec3 diffuseColor) {",
+            "   return RECIPROCAL_PI * diffuseColor;",
+            "}",
+
+            "vec4 LinearTosRGB( in vec4 value ) {",
+            "   return vec4(mix(pow(value.rgb,vec3(0.41666))*1.055-vec3(0.055), value.rgb*12.92, vec3(lessThanEqual(value.rgb,vec3(0.0031308)))),value.w);",
+            "}",
+
+            "float GGXRoughnessToBlinnExponent(const in float ggxRoughness) {",
+            "   return (2.0 / pow2(ggxRoughness + 0.0001) - 2.0);",
+            "}",
+
+            "float getSpecularMIPLevel(const in float blinnShininessExponent, const in int maxMIPLevel) {",
+            "   float maxMIPLevelScalar = float( maxMIPLevel );",
+            "   float desiredMIPLevel = maxMIPLevelScalar - 0.79248 - 0.5 * log2( pow2( blinnShininessExponent ) + 1.0 );",
+            "   return clamp( desiredMIPLevel, 0.0, maxMIPLevelScalar );",
+            "}",
+
+            "vec3 F_Schlick(const in vec3 specularColor, const in float dotLH) {",
+            "   float fresnel = exp2( ( -5.55473 * dotLH - 6.98316 ) * dotLH );",
+            "   return ( 1.0 - specularColor ) * fresnel + specularColor;",
+            "}",
+
+            "float G_GGX_Smith(const in float alpha, const in float dotNL, const in float dotNV) {",
+            "   float a2 = pow2( alpha );",
+            "   float gl = dotNL + sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNL ) );",
+            "   float gv = dotNV + sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNV ) );",
+            "   return 1.0 / ( gl * gv );",
+            "}",
+
+            "float G_GGX_SmithCorrelated(const in float alpha, const in float dotNL, const in float dotNV) {",
+            "   float a2 = pow2( alpha );",
+            "   float gv = dotNL * sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNV ) );",
+            "   float gl = dotNV * sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNL ) );",
+            "   return 0.5 / max( gv + gl, EPSILON );",
+            "}",
+
+            "float D_GGX(const in float alpha, const in float dotNH) {",
+            "   float a2 = pow2( alpha );",
+            "   float denom = pow2( dotNH ) * ( a2 - 1.0 ) + 1.0;",
+            "   return RECIPROCAL_PI * a2 / pow2( denom );",
+            "}",
+
+            "vec3 BRDF_Specular_GGX(const in IncidentLight incidentLight, const in Geometry geometry, const in vec3 specularColor, const in float roughness) {",
+            "   float alpha = pow2( roughness );",
+            "   vec3 halfDir = normalize( incidentLight.direction + geometry.viewEyeDir );",
+            "   float dotNL = saturate( dot( geometry.viewNormal, incidentLight.direction ) );",
+            "   float dotNV = saturate( dot( geometry.viewNormal, geometry.viewEyeDir ) );",
+            "   float dotNH = saturate( dot( geometry.viewNormal, halfDir ) );",
+            "   float dotLH = saturate( dot( incidentLight.direction, halfDir ) );",
+            "   vec3  F = F_Schlick( specularColor, dotLH );",
+            "   float G = G_GGX_SmithCorrelated( alpha, dotNL, dotNV );",
+            "   float D = D_GGX( alpha, dotNH );",
+            "   return F * (G * D);",
+            "}",
+
+            "vec3 BRDF_Specular_GGX_Environment(const in Geometry geometry, const in vec3 specularColor, const in float roughness) {",
+            "   float dotNV = saturate(dot(geometry.viewNormal, geometry.viewEyeDir));",
+            "   const vec4 c0 = vec4( -1, -0.0275, -0.572,  0.022);",
+            "   const vec4 c1 = vec4(  1,  0.0425,   1.04, -0.04);",
+            "   vec4 r = roughness * c0 + c1;",
+            "   float a004 = min(r.x * r.x, exp2(-9.28 * dotNV)) * r.x + r.y;",
+            "   vec2 AB    = vec2(-1.04, 1.04) * a004 + r.zw;",
+            "   return specularColor * AB.x + AB.y;",
+            "}",
+
+            "void computePBRLighting(const in IncidentLight incidentLight, const in Geometry geometry, const in Material material, inout ReflectedLight reflectedLight) {",
+            "   float dotNL     = saturate(dot(geometry.viewNormal, incidentLight.direction));",
+            "   vec3 irradiance = dotNL * incidentLight.color * PI;",
+            "   reflectedLight.diffuse  += irradiance * BRDF_Diffuse_Lambert(material.diffuseColor);",
+            "   reflectedLight.specular += irradiance * BRDF_Specular_GGX(incidentLight, geometry, material.specularColor, material.specularRoughness);",
+            "}",
+
+            "varying vec3 vViewPosition;",
+            "varying vec2 vUV;",
+            "varying vec3 vViewNormal;",
+            "uniform vec3 materialBaseColor;",
+            "uniform float materialOpacity;",
+            "uniform vec3 materialEmissive;",
+            "uniform float materialMetallic;",
+            "uniform float materialRoughness;",
+            "uniform float materialSpecularF0;",
+            "uniform sampler2D baseColorMap;",
+            "uniform vec3   lightAmbient;",
+            "uniform float  lightAmbientIntensity;",
+            "uniform vec3 lightColor0;",
+            "uniform float lightIntensity0;",
+            "varying vec4 vViewLightReverseDirAndDist0;",
+            "uniform vec3 lightColor1;",
+            "uniform float lightIntensity1;",
+            "varying vec4 vViewLightReverseDirAndDist1;",
+            "uniform vec3 lightColor2;",
+            "uniform float lightIntensity2;",
+            "varying vec4 vViewLightReverseDirAndDist2;",
+
+            "void main(void) {",
+
+            "   float occlusion = 1.0;",
+            "   vec3 ambientColor = vec3(1.0, 1.0, 1.0);",
+            "   vec3 diffuseColor = materialBaseColor;",
+            "   vec3 emissiveColor = materialEmissive;",
+            "   vec3 specular = vec3(1.0, 1.0, 1.0);",
+            "   float opacity = materialOpacity;",
+            "   float glossiness = 1.0;",
+            "   float metallic = materialMetallic;",
+            "   float roughness = materialRoughness;",
+            "   float specularF0 = materialSpecularF0;",
+            "   vec4 texturePos = vec4(vUV.s, vUV.t, 1.0, 1.0);",
+            "   vec2 textureCoord;",
+            "   textureCoord = texturePos.xy;",
+            "   diffuseColor *= texture2D(baseColorMap, textureCoord).rgb;",
+
+            "   vec3 viewNormal = normalize(vViewNormal);",
+            "   vec3 viewEyeDir = normalize(-vViewPosition);",
+
+            "   IncidentLight  light;",
+            "   Material       material;",
+            "   Geometry       geometry;",
+            "   ReflectedLight reflectedLight = ReflectedLight(vec3(0.0,0.0,0.0), vec3(0.0,0.0,0.0));",
+            "   vec3           viewLightDir;",
+
+            "   float dielectricSpecular = 0.16 * specularF0 * specularF0;",
+            "   material.diffuseColor      = diffuseColor * (1.0 - dielectricSpecular) * (1.0 - metallic);",
+            "   material.specularRoughness = clamp(roughness, 0.04, 1.0);",
+            "   material.specularColor     = mix(vec3(dielectricSpecular), diffuseColor, metallic);",
+
+            "   geometry.position      = vViewPosition;",
+            "   geometry.viewNormal    = viewNormal;",
+            "   geometry.viewEyeDir    = viewEyeDir;",
+
+            "   viewLightDir           = normalize(vViewLightReverseDirAndDist0.xyz);",
+            "   light.direction        = viewLightDir;",
+            "   light.color            = lightIntensity0 * lightColor0;",
+            "   computePBRLighting(light, geometry, material, reflectedLight);",
+
+            "   viewLightDir           = normalize(vViewLightReverseDirAndDist1.xyz);",
+            "   light.direction        = viewLightDir;",
+            "   light.color            = lightIntensity1 * lightColor1;",
+            "   computePBRLighting(light, geometry, material, reflectedLight);",
+
+            "   viewLightDir           = normalize(vViewLightReverseDirAndDist2.xyz);",
+            "   light.direction        = viewLightDir;",
+            "   light.color            = lightIntensity2 * lightColor2;",
+            "   computePBRLighting(light, geometry, material, reflectedLight);",
+
+            "   vec3 outgoingLight     = (occlusion * reflectedLight.diffuse) + (occlusion * reflectedLight.specular) + emissiveColor;",
+
+            "   gl_FragColor = vec4(outgoingLight, opacity);",
+            "}"
+        ]
+    });
+
+    var lights = new xeogl.Lights({
+        lights: [
+            new xeogl.DirLight({
+                dir: [0.8, -0.6, -0.8],
+                color: [1.0, 0.7, 0.7],
+                intensity: 1.0,
+                space: "view"
+            }),
+            new xeogl.DirLight({
+                dir: [-0.8, -0.4, -0.4],
+                color: [0.7, 1.0, 0.7],
+                intensity: 1.0,
+                space: "view"
+            }),
+            new xeogl.DirLight({
+                dir: [0.2, -0.8, 0.8],
+                color: [0.6, 0.6, 0.6],
+                intensity: 1.0,
+                space: "view"
+            })
+        ]
+    });
+
+    var material = new xeogl.MetallicMaterial({
+        type: "xeogl.MetallicMaterial",
+        baseColor: [0.8, 0.8, 1.0],
+        metallic: 1.0,
+        roughness: 0.6,
+        baseColorMap: {
+            src: "textures/diffuse/uvGrid2.jpg"
+        }
+    });
+
+    new xeogl.Entity({
+        shader: shader,
+        lights: lights,
+        material: material,
+        geometry: new xeogl.BoxGeometry(),
+        transform: new xeogl.Translate({
+            xyz: [-4,0,0]
+        })
+    });
+
+    var entity = new xeogl.Entity({
+        shader: shader,
+        lights: lights,
+        material: material,
+        geometry: new xeogl.TorusGeometry(),
+        transform: new xeogl.Translate({
+            xyz: [0,0,0]
+        })
+    });
+
+    new xeogl.Entity({
+        shader: shader,
+        lights: lights,
+        material: material,
+        geometry: new xeogl.SphereGeometry(),
+        transform: new xeogl.Translate({
+            xyz: [4,0,0]
+        })
+    });
+
+    entity.camera.view.zoom(-5);
+
+    entity.scene.on("tick", function () {
+        var view = entity.scene.camera.view;
+        view.rotateEyeY(0.2);
+        view.rotateEyeX(0.1);
+    });
+
+    new xeogl.CameraControl();
+
+    //console.log(JSON.stringify(entity.glsl, null, "\t"))
+
+</script>
+</body>
+</html>

@@ -7,11 +7,11 @@
         type: "modelTransform",
 
         build: function () {
-            this._uModelMatrixDraw = this.program.draw.getUniform("xeo_uModelMatrix");
-            this._uModelNormalMatrixDraw = this.program.draw.getUniform("xeo_uModelNormalMatrix");
-            this._uModelMatrixShadow = this.program.shadow.getUniform("xeo_uModelMatrix");
-            this._uModelMatrixPickObject = this.program.pickObject.getUniform("xeo_uModelMatrix");
-            this._uModelMatrixPickPrimitive = this.program.pickPrimitive.getUniform("xeo_uModelMatrix");
+            this._uModelMatrixDraw = this.program.draw.getUniform("modelMatrix");
+            this._uModelNormalMatrixDraw = this.program.draw.getUniform("modelNormalMatrix");
+            this._uModelMatrixShadow = this.program.shadow.getUniform("modelMatrix");
+            this._uModelMatrixPickObject = this.program.pickObject.getUniform("modelMatrix");
+            this._uModelMatrixPickPrimitive = this.program.pickPrimitive.getUniform("modelMatrix");
         },
 
         draw: function () {

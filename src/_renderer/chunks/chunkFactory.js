@@ -32,7 +32,6 @@
         var supa = xeogl.renderer.Chunk;
 
         var chunkClass = function () { // Create the class
-            this.useCount = 0;
             this.init.apply(this, arguments);
         };
 
@@ -109,7 +108,9 @@
 
         // Free the chunk if use count now zero
 
-        if (--chunk.useCount <= 0) {
+        chunk.useCount--;
+
+        if (chunk.useCount === 0) {
 
             var chunkType = this.types[chunk.type];
 

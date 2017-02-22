@@ -102,6 +102,8 @@
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
+                                <li><a href="../classes/Shader.html">Shader</a></li>
+                                <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
                                 <li><a href="../classes/SpecularMaterial.html">SpecularMaterial</a></li>
@@ -148,6 +150,7 @@
                                 <li><a href="..//modules/math.html">math</a></li>
                                 <li><a href="..//modules/models.html">models</a></li>
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
+                                <li><a href="..//modules/shaders.html">shaders</a></li>
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
                                 <li><a href="..//modules/xeogl.html">xeogl</a></li>
@@ -410,6 +413,16 @@
                     if (arg1.type === &quot;xeogl.Scene&quot;) {
 
                         this.scene = arg1;
+                        this.owner = this.scene;
+
+                        if (arg2) {
+                            cfg = arg2;
+                        }
+
+                    } else if (arg1.isType &amp;&amp; arg1.isType(&quot;xeogl.Node&quot;)) {
+
+                        this.scene = arg1.scene;
+                        this.owner = arg1;
 
                         if (arg2) {
                             cfg = arg2;
@@ -420,6 +433,7 @@
                         // Create this component within the default xeogl Scene
 
                         this.scene = xeogl.scene;
+                        this.owner = this.scene;
 
                         cfg = arg1;
                     }
@@ -428,6 +442,7 @@
                     // Create this component within the default xeogl Scene
 
                     this.scene = xeogl.scene;
+                    this.owner = this.scene;
                 }
 
                 this._renderer = this.scene._renderer;
@@ -498,6 +513,10 @@
             // Initialize this component
             if (this._init) {
                 this._init(cfg);
+            }
+
+            if (this.owner) {
+                this.owner._adopt(this);
             }
         },
 
@@ -1131,29 +1150,28 @@
             var component = this.scene._getSharedComponent(cfg, instanceId);
 
             if (component) {
-
-                // Register component on this component so that we can
-                // automatically destroy it when we destroy this component
-
-                if (!this._sharedComponents) {
-                    this._sharedComponents = {};
-                }
-
-                if (!this._sharedComponents[component.id]) {
-                    this._sharedComponents[component.id] = component;
-                }
-
-                component.on(&quot;destroyed&quot;, function () {
-
-                    // If the component is explicitly destroyed, ie. by calling
-                    // its #destroy method, then deregister it so we don&#x27;t try
-                    // to destroy it a second time when we destroy this component
-
-                    delete this._sharedComponents[component.id];
-                }, this);
+                this._adopt(component);
             }
 
             return component;
+        },
+
+        _adopt: function(component) {
+
+            // Register component on this component so that we can
+            // automatically destroy it when we destroy this component
+
+            if (!this._sharedComponents) {
+                this._sharedComponents = {};
+            }
+
+            if (!this._sharedComponents[component.id]) {
+                this._sharedComponents[component.id] = component;
+            }
+
+            component.on(&quot;destroyed&quot;, function () {
+                delete this._sharedComponents[component.id];
+            }, this);
         },
 
         /**
@@ -1277,6 +1295,10 @@
          * @method destroy
          */
         destroy: function () {
+
+            if (this.destroyed) {
+                return;
+            }
 
             // Unsubscribe from child components
 

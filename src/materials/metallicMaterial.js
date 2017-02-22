@@ -11,7 +11,7 @@
  ## Overview
 
  * MetallicMaterial is usually used for conductive materials, such as metal.
- * {{#crossLink "SpecularMaterial"}}{{/crossLink}} is usually used for conductors, such as wood, ceramics and plastic.
+ * {{#crossLink "SpecularMaterial"}}{{/crossLink}} is usually used for insulators, such as wood, ceramics and plastic.
  * {{#crossLink "PhongMaterial"}}{{/crossLink}} is usually used for non-realistic objects.
 
  <img src="../../../assets/images/MetallicMaterial.png"></img>
@@ -256,16 +256,14 @@
 
         _init: function (cfg) {
 
-            this._state = new xeogl.renderer.MetallicMaterial({
+            this._state = new xeogl.renderer.State({
                 type: "MetallicMaterial",
-
                 baseColor: xeogl.math.vec4([1.0, 1.0, 1.0]),
                 emissive: xeogl.math.vec4([0.0, 0.0, 0.0]),
                 metallic: 1.0,
                 roughness: 1.0,
                 specularF0: 0.0,
                 opacity: 1.0,
-
                 baseColorMap: null,
                 opacityMap: null,
                 metallicMap: null,
@@ -274,7 +272,6 @@
                 emissiveMap: null,
                 occlusionMap: null,
                 normalMap: null,
-
                 hash: null
             });
 

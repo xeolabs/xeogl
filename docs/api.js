@@ -62,6 +62,8 @@ YUI.add("yuidoc-meta", function(Y) {
         "Scale",
         "Scene",
         "SceneJSModel",
+        "Shader",
+        "ShaderParams",
         "Shadow",
         "Skybox",
         "SpecularMaterial",
@@ -107,6 +109,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "math",
         "models",
         "rendering",
+        "shaders",
         "skyboxes",
         "transforms",
         "xeogl",
@@ -217,6 +220,11 @@ YUI.add("yuidoc-meta", function(Y) {
             "displayName": "rendering",
             "name": "rendering",
             "description": "Components that influence the way entities are rendered with WebGL."
+        },
+        {
+            "displayName": "shaders",
+            "name": "shaders",
+            "description": "Components to define custom shaders."
         },
         {
             "displayName": "skyboxes",

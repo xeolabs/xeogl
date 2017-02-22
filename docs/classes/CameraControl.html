@@ -102,6 +102,8 @@
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
+                                <li><a href="../classes/Shader.html">Shader</a></li>
+                                <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
                                 <li><a href="../classes/SpecularMaterial.html">SpecularMaterial</a></li>
@@ -148,6 +150,7 @@
                                 <li><a href="..//modules/math.html">math</a></li>
                                 <li><a href="..//modules/models.html">models</a></li>
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
+                                <li><a href="..//modules/shaders.html">shaders</a></li>
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
                                 <li><a href="..//modules/xeogl.html">xeogl</a></li>
@@ -601,7 +604,7 @@ var cameraControl = new xeogl.CameraControl({
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_create">Component</a>:
-        <a href="../files/src_component.js.html#l895"><code>src&#x2F;component.js:895</code></a>
+        <a href="../files/src_component.js.html#l911"><code>src&#x2F;component.js:911</code></a>
         </p>
 
 
@@ -692,7 +695,7 @@ component - you can specify the component ID in the <code>cfg</code> parameter.<
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_component.js.html#l1076"><code>src&#x2F;component.js:1076</code></a>
+        <a href="../files/src_component.js.html#l1091"><code>src&#x2F;component.js:1091</code></a>
         </p>
 
 
@@ -734,7 +737,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_error">Component</a>:
-        <a href="../files/src_component.js.html#l578"><code>src&#x2F;component.js:578</code></a>
+        <a href="../files/src_component.js.html#l594"><code>src&#x2F;component.js:594</code></a>
         </p>
 
 
@@ -798,7 +801,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_fire">Component</a>:
-        <a href="../files/src_component.js.html#l395"><code>src&#x2F;component.js:395</code></a>
+        <a href="../files/src_component.js.html#l411"><code>src&#x2F;component.js:411</code></a>
         </p>
 
 
@@ -881,7 +884,7 @@ any subsequent notifications on the event as they are made.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_isType">Component</a>:
-        <a href="../files/src_component.js.html#l346"><code>src&#x2F;component.js:346</code></a>
+        <a href="../files/src_component.js.html#l362"><code>src&#x2F;component.js:362</code></a>
         </p>
 
 
@@ -959,7 +962,7 @@ myRotate.isType(xeogl.Entity); // Returns false, because xeogl.Rotate does not (
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_log">Component</a>:
-        <a href="../files/src_component.js.html#l533"><code>src&#x2F;component.js:533</code></a>
+        <a href="../files/src_component.js.html#l549"><code>src&#x2F;component.js:549</code></a>
         </p>
 
 
@@ -1017,7 +1020,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_off">Component</a>:
-        <a href="../files/src_component.js.html#l487"><code>src&#x2F;component.js:487</code></a>
+        <a href="../files/src_component.js.html#l503"><code>src&#x2F;component.js:503</code></a>
         </p>
 
 
@@ -1082,7 +1085,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_on">Component</a>:
-        <a href="../files/src_component.js.html#l444"><code>src&#x2F;component.js:444</code></a>
+        <a href="../files/src_component.js.html#l460"><code>src&#x2F;component.js:460</code></a>
         </p>
 
 
@@ -1176,7 +1179,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_once">Component</a>:
-        <a href="../files/src_component.js.html#l512"><code>src&#x2F;component.js:512</code></a>
+        <a href="../files/src_component.js.html#l528"><code>src&#x2F;component.js:528</code></a>
         </p>
 
 
@@ -1256,7 +1259,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_warn">Component</a>:
-        <a href="../files/src_component.js.html#l558"><code>src&#x2F;component.js:558</code></a>
+        <a href="../files/src_component.js.html#l574"><code>src&#x2F;component.js:574</code></a>
         </p>
 
 
@@ -1308,7 +1311,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l333"><code>src&#x2F;controls&#x2F;cameraControl.js:333</code></a>
+                            <a href="../files/src_controls_cameraControl.js.html#l335"><code>src&#x2F;controls&#x2F;cameraControl.js:335</code></a>
                             </p>
                     
                     
@@ -1334,7 +1337,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l283"><code>src&#x2F;controls&#x2F;cameraControl.js:283</code></a>
+                            <a href="../files/src_controls_cameraControl.js.html#l285"><code>src&#x2F;controls&#x2F;cameraControl.js:285</code></a>
                             </p>
                     
                     
@@ -1363,7 +1366,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l180"><code>src&#x2F;controls&#x2F;cameraControl.js:180</code></a>
+                            <a href="../files/src_controls_cameraControl.js.html#l181"><code>src&#x2F;controls&#x2F;cameraControl.js:181</code></a>
                             </p>
                     
                     
@@ -1388,7 +1391,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l270"><code>src&#x2F;component.js:270</code></a>
+                            <a href="../files/src_component.js.html#l282"><code>src&#x2F;component.js:282</code></a>
                             </p>
                     
                     
@@ -1441,7 +1444,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l247"><code>src&#x2F;controls&#x2F;cameraControl.js:247</code></a>
+                            <a href="../files/src_controls_cameraControl.js.html#l249"><code>src&#x2F;controls&#x2F;cameraControl.js:249</code></a>
                             </p>
                     
                     
@@ -1471,7 +1474,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_id">Component</a>:
-                            <a href="../files/src_component.js.html#l261"><code>src&#x2F;component.js:261</code></a>
+                            <a href="../files/src_component.js.html#l273"><code>src&#x2F;component.js:273</code></a>
                             </p>
                     
                     
@@ -1496,7 +1499,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_isDefault">Component</a>:
-                            <a href="../files/src_component.js.html#l253"><code>src&#x2F;component.js:253</code></a>
+                            <a href="../files/src_component.js.html#l265"><code>src&#x2F;component.js:265</code></a>
                             </p>
                     
                     
@@ -1522,7 +1525,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_json">Component</a>:
-                            <a href="../files/src_component.js.html#l1015"><code>src&#x2F;component.js:1015</code></a>
+                            <a href="../files/src_component.js.html#l1030"><code>src&#x2F;component.js:1030</code></a>
                             </p>
                     
                     
@@ -1547,7 +1550,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_metadata">Component</a>:
-                            <a href="../files/src_component.js.html#l245"><code>src&#x2F;component.js:245</code></a>
+                            <a href="../files/src_component.js.html#l257"><code>src&#x2F;component.js:257</code></a>
                             </p>
                     
                     
@@ -1602,7 +1605,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_component.js.html#l1043"><code>src&#x2F;component.js:1043</code></a>
+                            <a href="../files/src_component.js.html#l1058"><code>src&#x2F;component.js:1058</code></a>
                             </p>
                     
                     
@@ -1628,7 +1631,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_superTypes">Component</a>:
-                            <a href="../files/src_component.js.html#l327"><code>src&#x2F;component.js:327</code></a>
+                            <a href="../files/src_component.js.html#l343"><code>src&#x2F;component.js:343</code></a>
                             </p>
                     
                     
@@ -1694,7 +1697,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l363"><code>src&#x2F;controls&#x2F;cameraControl.js:363</code></a>
+                            <a href="../files/src_controls_cameraControl.js.html#l365"><code>src&#x2F;controls&#x2F;cameraControl.js:365</code></a>
                             </p>
                     
                     
@@ -1736,7 +1739,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l297"><code>src&#x2F;controls&#x2F;cameraControl.js:297</code></a>
+                            <a href="../files/src_controls_cameraControl.js.html#l299"><code>src&#x2F;controls&#x2F;cameraControl.js:299</code></a>
                             </p>
                     
                     
@@ -1779,7 +1782,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l1146"><code>src&#x2F;component.js:1146</code></a>
+                            <a href="../files/src_component.js.html#l1165"><code>src&#x2F;component.js:1165</code></a>
                             </p>
                     
                     
@@ -1804,7 +1807,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l270"><code>src&#x2F;controls&#x2F;cameraControl.js:270</code></a>
+                            <a href="../files/src_controls_cameraControl.js.html#l272"><code>src&#x2F;controls&#x2F;cameraControl.js:272</code></a>
                             </p>
                     
                     

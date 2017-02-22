@@ -57,7 +57,7 @@
  // Handle missing zSpace support
  zspaceEffect.on("supported", function (supported) {
      if (!supported) {
-         document.getElementById("log").innerText = "Not a zSpace display ";
+         document.getElementById("log").innerText = "(zSpace not detected) ";
      }
  });
  ````

@@ -169,6 +169,9 @@
                     throw "model not set";
                 }
 
+                indicesDelegate = new IndicesDelegate();
+                vertexAttributeDelegate = new VertexAttributeDelegate();
+
                 xeogl.GLTFLoaderUtils.init();
 
                 if (!this.resources) {

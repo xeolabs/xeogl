@@ -102,6 +102,8 @@
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
+                                <li><a href="../classes/Shader.html">Shader</a></li>
+                                <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
                                 <li><a href="../classes/SpecularMaterial.html">SpecularMaterial</a></li>
@@ -148,6 +150,7 @@
                                 <li><a href="..//modules/math.html">math</a></li>
                                 <li><a href="..//modules/models.html">models</a></li>
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
+                                <li><a href="..//modules/shaders.html">shaders</a></li>
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
                                 <li><a href="..//modules/xeogl.html">xeogl</a></li>
@@ -203,20 +206,20 @@
         build: function () {
 
             var draw = this.program.draw;
-            this._aPositionDraw = draw.getAttribute(&quot;xeo_aPosition&quot;);
-            this._aNormalDraw = draw.getAttribute(&quot;xeo_aNormal&quot;);
-            this._aUVDraw = draw.getAttribute(&quot;xeo_aUV&quot;);
-            this._aTangentDraw = draw.getAttribute(&quot;xeo_aTangent&quot;);
-            this._aColorDraw = draw.getAttribute(&quot;xeo_aColor&quot;);
+            this._aPositionDraw = draw.getAttribute(&quot;position&quot;);
+            this._aNormalDraw = draw.getAttribute(&quot;normal&quot;);
+            this._aUVDraw = draw.getAttribute(&quot;uv&quot;);
+            this._aTangentDraw = draw.getAttribute(&quot;tangent&quot;);
+            this._aColorDraw = draw.getAttribute(&quot;color&quot;);
 
-            this._aPositionShadow = this.program.shadow.getAttribute(&quot;xeo_aPosition&quot;);
+            this._aPositionShadow = this.program.shadow.getAttribute(&quot;position&quot;);
 
             var pickObject = this.program.pickObject;
-            this._aPositionPickObject = pickObject.getAttribute(&quot;xeo_aPosition&quot;);
+            this._aPositionPickObject = pickObject.getAttribute(&quot;position&quot;);
 
             var pickPrimitive = this.program.pickPrimitive;
-            this._aPositionPickPrimitive = pickPrimitive.getAttribute(&quot;xeo_aPosition&quot;);
-            this._aColorPickPrimitive = pickPrimitive.getAttribute(&quot;xeo_aColor&quot;);
+            this._aPositionPickPrimitive = pickPrimitive.getAttribute(&quot;position&quot;);
+            this._aColorPickPrimitive = pickPrimitive.getAttribute(&quot;color&quot;);
         },
 
         draw: function (frameCtx) {

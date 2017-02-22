@@ -12,51 +12,51 @@
 
             var draw = this.program.draw;
 
-            this._uBaseColor = draw.getUniform("xeo_uBaseColor");
-            this._uMetallic = draw.getUniform("xeo_uMetallic");
-            this._uRoughness = draw.getUniform("xeo_uRoughness");
-            this._uSpecularF0 = draw.getUniform("xeo_uSpecularF0");
-            this._uEmissive = draw.getUniform("xeo_uEmissive");
-            this._uOpacity = draw.getUniform("xeo_uOpacity");
+            this._uBaseColor = draw.getUniform("materialBaseColor");
+            this._uMetallic = draw.getUniform("materialMetallic");
+            this._uRoughness = draw.getUniform("materialRoughness");
+            this._uSpecularF0 = draw.getUniform("materialSpecularF0");
+            this._uEmissive = draw.getUniform("materialEmissive");
+            this._uOpacity = draw.getUniform("materialOpacity");
 
             if (state.baseColorMap) {
-                this._uBaseColorMap = "xeo_uBaseColorMap";
-                this._uBaseColorMapMatrix = draw.getUniform("xeo_uBaseColorMapMatrix");
+                this._uBaseColorMap = "baseColorMap";
+                this._uBaseColorMapMatrix = draw.getUniform("baseColorMapMatrix");
             }
 
             if (state.metallicMap) {
-                this._uMetallicMap = "xeo_uMetallicMap";
-                this._uMetallicMapMatrix = draw.getUniform("xeo_uMetallicMapMatrix");
+                this._uMetallicMap = "metallicMap";
+                this._uMetallicMapMatrix = draw.getUniform("metallicMapMatrix");
             }
 
             if (state.roughnessMap) {
-                this._uRoughnessMap = "xeo_uRoughnessMap";
-                this._uRoughnessMapMatrix = draw.getUniform("xeo_uRoughnessMapMatrix");
+                this._uRoughnessMap = "roughnessMap";
+                this._uRoughnessMapMatrix = draw.getUniform("roughnessMapMatrix");
             }
 
             if (state.metallicRoughnessMap) {
-                this._uMetallicRoughnessMap = "xeo_uMetallicRoughnessMap";
-                this._uMetallicRoughnessMapMatrix = draw.getUniform("xeo_uMetallicRoughnessMapMatrix");
+                this._uMetallicRoughnessMap = "metallicRoughnessMap";
+                this._uMetallicRoughnessMapMatrix = draw.getUniform("metallicRoughnessMapMatrix");
             }
 
             if (state.emissiveMap) {
-                this._uEmissiveMap = "xeo_uEmissiveMap";
-                this._uEmissiveMapMatrix = draw.getUniform("xeo_uEmissiveMapMatrix");
+                this._uEmissiveMap = "emissiveMap";
+                this._uEmissiveMapMatrix = draw.getUniform("emissiveMapMatrix");
             }
 
             if (state.occlusionMap) {
-                this._uOcclusionMap = "xeo_uOcclusionMap";
-                this._uOcclusionMapMatrix = draw.getUniform("xeo_uOcclusionMapMatrix");
+                this._uOcclusionMap = "occlusionMap";
+                this._uOcclusionMapMatrix = draw.getUniform("occlusionMapMatrix");
             }
 
             if (state.opacityMap) {
-                this._uOpacityMap = "xeo_uOpacityMap";
-                this._uOpacityMapMatrix = draw.getUniform("xeo_uOpacityMapMatrix");
+                this._uOpacityMap = "opacityMap";
+                this._uOpacityMapMatrix = draw.getUniform("opacityMapMatrix");
             }
 
             if (state.normalMap) {
-                this._uNormalMap = "xeo_uNormalMap";
-                this._uNormalMapMatrix = draw.getUniform("xeo_uNormalMapMatrix");
+                this._uNormalMap = "normalMap";
+                this._uNormalMapMatrix = draw.getUniform("normalMapMatrix");
             }
         },
 
@@ -92,7 +92,7 @@
                 this._uOpacity.setValue(state.opacity);
             }
 
-            if (state.baseColorMap && state.baseColorMap.texture) {
+            if (state.baseColorMap && state.baseColorMap.texture && this._uBaseColorMap) {
                 draw.bindTexture(this._uBaseColorMap, state.baseColorMap.texture, frameCtx.textureUnit);
                   frameCtx.textureUnit = (frameCtx.textureUnit + 1) % xeogl.WEBGL_INFO.MAX_TEXTURE_IMAGE_UNITS;
                 frameCtx.bindTexture++;
@@ -101,7 +101,7 @@
                 }
             }
 
-            if (state.metallicMap && state.metallicMap.texture) {
+            if (state.metallicMap && state.metallicMap.texture && this._uMetallicMap) {
                 draw.bindTexture(this._uMetallicMap, state.metallicMap.texture, frameCtx.textureUnit);
                   frameCtx.textureUnit = (frameCtx.textureUnit + 1) % xeogl.WEBGL_INFO.MAX_TEXTURE_IMAGE_UNITS;
                 frameCtx.bindTexture++;
@@ -110,7 +110,7 @@
                 }
             }
             
-            if (state.roughnessMap && state.roughnessMap.texture) {
+            if (state.roughnessMap && state.roughnessMap.texture && this._uRoughnessMap) {
                 draw.bindTexture(this._uRoughnessMap, state.roughnessMap.texture, frameCtx.textureUnit);
                   frameCtx.textureUnit = (frameCtx.textureUnit + 1) % xeogl.WEBGL_INFO.MAX_TEXTURE_IMAGE_UNITS;
                 frameCtx.bindTexture++;
@@ -119,7 +119,7 @@
                 }
             }
             
-            if (state.metallicRoughnessMap && state.metallicRoughnessMap.texture) {
+            if (state.metallicRoughnessMap && state.metallicRoughnessMap.texture && this._uMetallicRoughnessMap) {
                 draw.bindTexture(this._uMetallicRoughnessMap, state.metallicRoughnessMap.texture, frameCtx.textureUnit);
                   frameCtx.textureUnit = (frameCtx.textureUnit + 1) % xeogl.WEBGL_INFO.MAX_TEXTURE_IMAGE_UNITS;
                 frameCtx.bindTexture++;
@@ -128,7 +128,7 @@
                 }
             }
 
-            if (state.emissiveMap && state.emissiveMap.texture) {
+            if (state.emissiveMap && state.emissiveMap.texture && this._uEmissiveMap) {
                 draw.bindTexture(this._uEmissiveMap, state.emissiveMap.texture, frameCtx.textureUnit);
                   frameCtx.textureUnit = (frameCtx.textureUnit + 1) % xeogl.WEBGL_INFO.MAX_TEXTURE_IMAGE_UNITS;
                 frameCtx.bindTexture++;
@@ -137,7 +137,7 @@
                 }
             }
 
-            if (state.occlusionMap && state.occlusionMap.texture) {
+            if (state.occlusionMap && state.occlusionMap.texture && this._uOcclusionMap) {
                 draw.bindTexture(this._uOcclusionMap, state.occlusionMap.texture, frameCtx.textureUnit);
                   frameCtx.textureUnit = (frameCtx.textureUnit + 1) % xeogl.WEBGL_INFO.MAX_TEXTURE_IMAGE_UNITS;
                 frameCtx.bindTexture++;
@@ -146,7 +146,7 @@
                 }
             }
 
-            if (state.opacityMap && state.opacityMap.texture) {
+            if (state.opacityMap && state.opacityMap.texture && this._uOpacityMap) {
                 draw.bindTexture(this._uOpacityMap, state.opacityMap.texture, frameCtx.textureUnit);
                   frameCtx.textureUnit = (frameCtx.textureUnit + 1) % xeogl.WEBGL_INFO.MAX_TEXTURE_IMAGE_UNITS;
                 frameCtx.bindTexture++;
@@ -155,7 +155,7 @@
                 }
             }
 
-            if (state.normalMap && state.normalMap.texture) {
+            if (state.normalMap && state.normalMap.texture && this._uNormalMap) {
                 draw.bindTexture(this._uNormalMap, state.normalMap.texture, frameCtx.textureUnit);
                   frameCtx.textureUnit = (frameCtx.textureUnit + 1) % xeogl.WEBGL_INFO.MAX_TEXTURE_IMAGE_UNITS;
                 frameCtx.bindTexture++;

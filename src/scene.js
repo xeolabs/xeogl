@@ -1178,8 +1178,8 @@
 
                                 new xeogl.DirLight(this, {
                                     id: "default.light4",
-                                    dir: [0.2, -0.8, 0.8],
-                                    color: [0.7, 0.7, 0.7],
+                                    dir: [0.4, -0.4, 0.8],
+                                    color: [0.8, 1.0, 1.0],
                                     intensity: 1.0,
                                     space: "view"
                                 })
@@ -1905,6 +1905,7 @@
                     entity = this._dirtyEntities[id];
                     if (entity._valid()) {
                         entity._compileAsynch();
+                        //entity._compile();
                         delete this._dirtyEntities[id];
                         countCompiledEntities++;
                     }

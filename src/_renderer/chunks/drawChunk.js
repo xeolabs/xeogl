@@ -14,7 +14,7 @@
         unique: true,
 
         build: function () {
-            this._uPickColorObject = this.program.pickObject.getUniform("xeo_uPickColor");
+            this._uPickColorObject = this.program.pickObject.getUniform("pickColor");
         },
 
         draw: function (frameCtx) {

@@ -22,6 +22,8 @@
     <h1>
         Physically-based rendering using <a href="../docs/classes/MetallicMaterial.html"
                                             target="_parent">MetallicMaterial</a></h1>
+    <pre id="log">model: OBJ fire hydrant with PBR textures - [<a href='models/obj/fireHydrant/README.md'
+                                                                    target="_parent">model info</a>]</pre>
 </div>
 <div id="dat-gui-container">
 </div>
@@ -50,8 +52,8 @@
         }),
 
         new xeogl.DirLight({
-            dir: [0.2, -0.8, 0.8],
-            color: [1.0, 0.9, 0.9],
+            dir: [0.4, -0.4, 0.8],
+            color: [0.7, 0.9, 0.9],
             intensity: 1.0,
             space: "view"
         })
@@ -85,19 +87,19 @@
     lights.reflectionMap = reflectionMap;
 
     var baseColorMap = new xeogl.Texture({
-        src: "textures/diffuse/fire_hydrant_Base_Color.png"
+        src: "models/obj/fireHydrant/fire_hydrant_Base_Color.png"
     });
 
     var normalMap = new xeogl.Texture({
-        src: "textures/normal/fire_hydrant_Normal_OpenGL.png"
+        src: "models/obj/fireHydrant/fire_hydrant_Normal_OpenGL.png"
     });
 
     var roughnessMap = new xeogl.Texture({
-        src: "textures/roughness/fire_hydrant_Roughness.png"
+        src: "models/obj/fireHydrant/fire_hydrant_Roughness.png"
     });
 
     var metallicMap = new xeogl.Texture({
-        src: "textures/metallic/fire_hydrant_Metallic.png"
+        src: "models/obj/fireHydrant/fire_hydrant_Metallic.png"
     });
 
     //    var metallicRoughnessMap = new xeogl.Texture({
@@ -105,13 +107,13 @@
     //    });
 
     var occlusionMap = new xeogl.Texture({
-        src: "textures/occlusion/fire_hydrant_Mixed_AO.png"
+        src: "models/obj/fireHydrant/fire_hydrant_Mixed_AO.png"
     });
 
     var hydrant = new xeogl.Entity({
 
         geometry: new xeogl.OBJGeometry({
-            src: "models/obj/FireHydrantMesh.obj"
+            src: "models/obj/fireHydrant/FireHydrantMesh.obj"
         }),
 
         material: new xeogl.MetallicMaterial({
@@ -131,12 +133,12 @@
         }),
 
         transform: new xeogl.Scale({
-            xyz: [50, 50, 50]
+            xyz: [40, 40, 40]
         })
     });
 
-    hydrant.camera.view.rotateEyeX(25); // Orbit camera a bit
-    hydrant.camera.view.rotateEyeY(180); // Orbit camera a bit
+    hydrant.camera.view.rotateEyeX(20); // Orbit camera a bit
+    hydrant.camera.view.rotateEyeY(300); // Orbit camera a bit
 
     var spinning = true;
 
@@ -152,13 +154,14 @@
 
         hydrant.scene.on("tick", function () { // Start orbiting the camera
             if (spinning) {
-                hydrant.scene.camera.view.rotateEyeY(0.2);
+                hydrant.scene.camera.view.rotateEyeY(-0.1);
                 //    hydrant.scene.camera.view.zoom(-.05);
             }
         });
     });
 
-    new xeogl.CameraControl(); // Allow user camera control
+    var cameraControl = new xeogl.CameraControl(); // Allow user camera control
+    cameraControl.cameraFlight.fitFOV = 70;
 
     //------------------ GUI ---------------------------------
 

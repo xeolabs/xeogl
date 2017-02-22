@@ -102,6 +102,8 @@
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
+                                <li><a href="../classes/Shader.html">Shader</a></li>
+                                <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
                                 <li><a href="../classes/SpecularMaterial.html">SpecularMaterial</a></li>
@@ -148,6 +150,7 @@
                                 <li><a href="..//modules/math.html">math</a></li>
                                 <li><a href="..//modules/models.html">models</a></li>
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
+                                <li><a href="..//modules/shaders.html">shaders</a></li>
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
                                 <li><a href="..//modules/xeogl.html">xeogl</a></li>
@@ -347,18 +350,16 @@
             }
             begin();
             add(&quot;// Object picking vertex shader&quot;);
-            add(&quot;attribute vec3 xeo_aPosition;&quot;);
-            add(&quot;uniform mat4 xeo_uModelMatrix;&quot;);
-            add(&quot;uniform mat4 xeo_uViewMatrix;&quot;);
-            add(&quot;uniform mat4 xeo_uViewNormalMatrix;&quot;);
-            add(&quot;uniform mat4 xeo_uProjMatrix;&quot;);
-            add(&quot;varying vec4 xeo_vWorldPosition;&quot;);
-            add(&quot;varying vec4 xeo_vViewPosition;&quot;);
+            add(&quot;attribute vec3 position;&quot;);
+            add(&quot;uniform mat4 modelMatrix;&quot;);
+            add(&quot;uniform mat4 viewMatrix;&quot;);
+            add(&quot;uniform mat4 viewNormalMatrix;&quot;);
+            add(&quot;uniform mat4 projMatrix;&quot;);
+            add(&quot;varying vec4 vViewPosition;&quot;);
             add(&quot;void main(void) {&quot;);
-            add(&quot;   vec4 tmpVertex = vec4(xeo_aPosition, 1.0); &quot;);
-            add(&quot;   xeo_vWorldPosition = xeo_uModelMatrix * tmpVertex; &quot;);
-            add(&quot;   xeo_vViewPosition = xeo_uViewMatrix * xeo_vWorldPosition;&quot;);
-            add(&quot;   gl_Position = xeo_uProjMatrix * xeo_vViewPosition;&quot;);
+            add(&quot;   vec4 tmpVertex = vec4(position, 1.0); &quot;);
+            add(&quot;   vViewPosition = viewMatrix * modelMatrix * tmpVertex;&quot;);
+            add(&quot;   gl_Position = projMatrix * vViewPosition;&quot;);
             add(&quot;}&quot;);
             return vertexPickObjectSrc = end();
         }
@@ -370,9 +371,9 @@
             begin();
             add(&quot;// Object picking fragment shader&quot;);
             add(&quot;precision &quot; + getFSFloatPrecision(states.gl) + &quot; float;&quot;);
-            add(&quot;uniform vec4 xeo_uPickColor;&quot;);
+            add(&quot;uniform vec4 pickColor;&quot;);
             add(&quot;void main(void) {&quot;);
-            add(&quot;   gl_FragColor = xeo_uPickColor; &quot;);
+            add(&quot;   gl_FragColor = pickColor; &quot;);
             add(&quot;}&quot;);
             return fragmentPickObjectSrc = end();
         }
@@ -386,24 +387,24 @@
             begin();
 
             add(&quot;// Triangle picking vertex shader&quot;);
-            add(&quot;attribute vec3 xeo_aPosition;&quot;);
-            add(&quot;attribute vec4 xeo_aColor;&quot;);
 
-            add(&quot;uniform vec3 xeo_uPickColor;&quot;);
-            add(&quot;uniform mat4 xeo_uModelMatrix;&quot;);
-            add(&quot;uniform mat4 xeo_uViewMatrix;&quot;);
-            add(&quot;uniform mat4 xeo_uProjMatrix;&quot;);
+            add(&quot;attribute vec3 position;&quot;);
+            add(&quot;attribute vec4 color;&quot;);
 
-            add(&quot;varying vec4 xeo_vWorldPosition;&quot;);
-            add(&quot;varying vec4 xeo_vViewPosition;&quot;);
-            add(&quot;varying vec4 xeo_vColor;&quot;);
+            add(&quot;uniform vec3 pickColor;&quot;);
+            add(&quot;uniform mat4 modelMatrix;&quot;);
+            add(&quot;uniform mat4 viewMatrix;&quot;);
+            add(&quot;uniform mat4 projMatrix;&quot;);
+
+            add(&quot;varying vec4 vViewPosition;&quot;);
+            add(&quot;varying vec4 vColor;&quot;);
 
             add(&quot;void main(void) {&quot;);
-            add(&quot;   vec4 tmpVertex = vec4(xeo_aPosition, 1.0); &quot;);
-            add(&quot;   vec4 worldPosition = xeo_uModelMatrix * tmpVertex; &quot;);
-            add(&quot;   vec4 viewPosition = xeo_uViewMatrix * worldPosition;&quot;);
-            add(&quot;   xeo_vColor = xeo_aColor;&quot;);
-            add(&quot;   gl_Position = xeo_uProjMatrix * viewPosition;&quot;);
+            add(&quot;   vec4 tmpVertex = vec4(position, 1.0); &quot;);
+            add(&quot;   vec4 worldPosition = modelMatrix * tmpVertex; &quot;);
+            add(&quot;   vec4 viewPosition = viewMatrix * worldPosition;&quot;);
+            add(&quot;   vColor = color;&quot;);
+            add(&quot;   gl_Position = projMatrix * viewPosition;&quot;);
             add(&quot;}&quot;);
 
             return vertexPickPrimSrc = end();
@@ -416,9 +417,9 @@
             begin();
             add(&quot;// Triangle picking fragment shader&quot;);
             add(&quot;precision &quot; + getFSFloatPrecision(states.gl) + &quot; float;&quot;);
-            add(&quot;varying vec4 xeo_vColor;&quot;);
+            add(&quot;varying vec4 vColor;&quot;);
             add(&quot;void main(void) {&quot;);
-            add(&quot;   gl_FragColor = xeo_vColor;&quot;);
+            add(&quot;   gl_FragColor = vColor;&quot;);
             add(&quot;}&quot;);
             return fragmentPickPrimSrc = end();
         }
@@ -429,12 +430,12 @@
         function vertexShadow() {
             begin();
             add(&quot;// Shadow map vertex shader&quot;);
-            add(&quot;attribute vec3 xeo_aPosition;&quot;);
-            add(&quot;uniform mat4 xeo_uModelMatrix;&quot;);
-            add(&quot;uniform mat4 xeo_uShadowViewMatrix;&quot;);
-            add(&quot;uniform mat4 xeo_uShadowProjMatrix;&quot;);
+            add(&quot;attribute vec3 position;&quot;);
+            add(&quot;uniform mat4 modelMatrix;&quot;);
+            add(&quot;uniform mat4 shadowViewMatrix;&quot;);
+            add(&quot;uniform mat4 shadowProjMatrix;&quot;);
             add(&quot;void main(void) {&quot;);
-            add(&quot;   gl_Position = xeo_uShadowProjMatrix * (xeo_uShadowViewMatrix * (xeo_uModelMatrix * (vec4(xeo_aPosition, 1.0))));&quot;);
+            add(&quot;   gl_Position = shadowProjMatrix * (shadowViewMatrix * (modelMatrix * (vec4(position, 1.0))));&quot;);
             add(&quot;}&quot;);
             return vertexShadowSrc = end();
         }
@@ -466,26 +467,30 @@
             begin();
 
             add(&quot;// Drawing vertex shader&quot;);
-            add(&quot;attribute  vec3 xeo_aPosition;&quot;);
+            add(&quot;attribute  vec3 position;&quot;);
 
-            add(&quot;uniform    mat4 xeo_uModelMatrix;&quot;);
-            add(&quot;uniform    mat4 xeo_uViewMatrix;&quot;);
-            add(&quot;uniform    mat4 xeo_uProjMatrix;&quot;);
+            add(&quot;uniform    mat4 modelMatrix;&quot;);
+            add(&quot;uniform    mat4 viewMatrix;&quot;);
+            add(&quot;uniform    mat4 projMatrix;&quot;);
 
-            add(&quot;varying    vec3 xeo_vViewPosition;&quot;);
-            add(&quot;varying    vec3 xeo_vWorldPosition;&quot;);
-            add(&quot;varying    vec3 xeo_vWorldNormal;&quot;);
+            add(&quot;varying    vec3 vViewPosition;&quot;);
+
+            if (states.lights.lightMap) {
+                add(&quot;varying    vec3 vWorldNormal;&quot;);
+            }
 
             if (normals) {
 
-                add(&quot;attribute  vec3 xeo_aNormal;&quot;);
+                add(&quot;attribute  vec3 normal;&quot;);
 
-                add(&quot;uniform    mat4 xeo_uModelNormalMatrix;&quot;);
-                add(&quot;uniform    mat4 xeo_uViewNormalMatrix;&quot;);
+                add(&quot;uniform    mat4 modelNormalMatrix;&quot;);
+                add(&quot;uniform    mat4 viewNormalMatrix;&quot;);
 
-                add(&quot;varying    vec3 xeo_vViewEyeVec;&quot;);
-                add(&quot;varying    vec3 xeo_vViewNormal;&quot;);
-                add(&quot;varying    mat3 xeo_TBN;&quot;);
+                add(&quot;varying    vec3 vViewNormal;&quot;);
+
+                if (states.material.normalMap) {
+                    add(&quot;varying    mat3 vTBN;&quot;);
+                }
 
                 for (i = 0, len = states.lights.lights.length; i &lt; len; i++) {
 
@@ -496,37 +501,37 @@
                     }
 
                     if (light.type === &quot;dir&quot;) {
-                        add(&quot;uniform vec3 xeo_uLightDir&quot; + i + &quot;;&quot;);
+                        add(&quot;uniform vec3 lightDir&quot; + i + &quot;;&quot;);
                     }
 
                     if (light.type === &quot;point&quot;) {
-                        add(&quot;uniform vec3 xeo_uLightPos&quot; + i + &quot;;&quot;);
+                        add(&quot;uniform vec3 lightPos&quot; + i + &quot;;&quot;);
                     }
 
                     if (light.type === &quot;spot&quot;) {
-                        add(&quot;uniform vec3 xeo_uLightPos&quot; + i + &quot;;&quot;);
+                        add(&quot;uniform vec3 lightPos&quot; + i + &quot;;&quot;);
                     }
 
-                    add(&quot;varying vec4 xeo_vViewLightReverseDirAndDist&quot; + i + &quot;;&quot;);
+                    add(&quot;varying vec4 vViewLightReverseDirAndDist&quot; + i + &quot;;&quot;);
                 }
             }
 
             if (normalMapping) {
-                add(&quot;attribute vec3 xeo_aTangent;&quot;);
+                add(&quot;attribute vec3 tangent;&quot;);
             }
 
             if (texturing) {
-                add(&quot;attribute vec2 xeo_aUV;&quot;);
-                add(&quot;varying vec2 xeo_vUV;&quot;);
+                add(&quot;attribute vec2 uv;&quot;);
+                add(&quot;varying vec2 vUV;&quot;);
             }
 
             if (states.geometry.colors) {
-                add(&quot;attribute vec4 xeo_aColor;&quot;);
-                add(&quot;varying vec4 xeo_vColor;&quot;);
+                add(&quot;attribute vec4 color;&quot;);
+                add(&quot;varying vec4 vColor;&quot;);
             }
 
             if (states.geometry.primitiveName === &quot;points&quot;) {
-                add(&quot;uniform float xeo_uPointSize;&quot;);
+                add(&quot;uniform float pointSize;&quot;);
             }
 
             if (states.billboard.active) {
@@ -551,41 +556,38 @@
             if (receiveShadow) {
                 for (i = 0, len = lights.length; i &lt; len; i++) { // Light sources
                     if (lights[i].shadow) {
-                        add(&quot;uniform mat4 xeo_uShadowViewMatrix&quot; + i + &quot;;&quot;);
-                        add(&quot;uniform mat4 xeo_uShadowProjMatrix&quot; + i + &quot;;&quot;);
-                        add(&quot;varying vec4 xeo_vShadowPositionFromLight&quot; + i + &quot;;&quot;);
+                        add(&quot;uniform mat4 shadowViewMatrix&quot; + i + &quot;;&quot;);
+                        add(&quot;uniform mat4 shadowProjMatrix&quot; + i + &quot;;&quot;);
+                        add(&quot;varying vec4 vShadowPosFromLight&quot; + i + &quot;;&quot;);
                     }
                 }
             }
 
             add(&quot;void main(void) {&quot;);
 
-            add(&quot;vec4 localPosition = vec4(xeo_aPosition, 1.0); &quot;);
+            add(&quot;vec4 localPosition = vec4(position, 1.0); &quot;);
             add(&quot;vec4 worldPosition;&quot;);
 
             if (normals) {
-                add(&quot;vec4 localNormal = vec4(xeo_aNormal, 0.0); &quot;);
-                add(&quot;mat4 modelNormalMatrix = xeo_uModelNormalMatrix;&quot;);
-                add(&quot;mat4 viewNormalMatrix = xeo_uViewNormalMatrix;&quot;);
+                add(&quot;vec4 localNormal = vec4(normal, 0.0); &quot;);
             }
 
-            add(&quot;mat4 modelMatrix = xeo_uModelMatrix;&quot;);
-            add(&quot;mat4 viewMatrix = xeo_uViewMatrix;&quot;);
+            add(&quot;mat4 viewMatrix2 = viewMatrix;&quot;);
 
             if (states.stationary.active) {
-                add(&quot;viewMatrix[3][0] = viewMatrix[3][1] = viewMatrix[3][2] = 0.0;&quot;)
+                add(&quot;viewMatrix2[3][0] = viewMatrix2[3][1] = viewMatrix2[3][2] = 0.0;&quot;)
             }
 
             if (states.billboard.active) {
 
-                add(&quot;mat4 modelViewMatrix = xeo_uViewMatrix * xeo_uModelMatrix;&quot;);
+                add(&quot;mat4 modelViewMatrix = viewMatrix2 * modelMatrix;&quot;);
 
                 add(&quot;billboard(modelMatrix);&quot;);
-                add(&quot;billboard(viewMatrix);&quot;);
+                add(&quot;billboard(viewMatrix2);&quot;);
                 add(&quot;billboard(modelViewMatrix);&quot;);
 
                 if (normals) {
-                    add(&quot;mat4 modelViewNormalMatrix =  xeo_uViewNormalMatrix * xeo_uModelNormalMatrix;&quot;);
+                    add(&quot;mat4 modelViewNormalMatrix =  viewNormalMatrix * modelNormalMatrix;&quot;);
                     add(&quot;billboard(modelNormalMatrix);&quot;);
                     add(&quot;billboard(viewNormalMatrix);&quot;);
                     add(&quot;billboard(modelViewNormalMatrix);&quot;);
@@ -597,24 +599,26 @@
             } else {
 
                 add(&quot;worldPosition = modelMatrix * localPosition;&quot;);
-                add(&quot;vec4 viewPosition  = viewMatrix * worldPosition; &quot;);
+                add(&quot;vec4 viewPosition  = viewMatrix2 * worldPosition; &quot;);
             }
 
             if (normals) {
 
                 add(&quot;vec3 worldNormal = (modelNormalMatrix * localNormal).xyz; &quot;);
-                add(&quot;xeo_vWorldNormal = worldNormal;&quot;);
-                add(&quot;xeo_vViewNormal = normalize((viewNormalMatrix * vec4(worldNormal, 1.0)).xyz);&quot;);
+                if (states.lights.lightMap) {
+                    add(&quot;vWorldNormal = worldNormal;&quot;);
+                }
+                add(&quot;vViewNormal = normalize((viewNormalMatrix * vec4(worldNormal, 1.0)).xyz);&quot;);
 
                 if (normalMapping) {
 
-                    add(&quot;mat4 mat =  viewMatrix * modelMatrix;&quot;);
+                    add(&quot;mat4 mat =  viewMatrix2 * modelMatrix;&quot;);
 
-                    add(&quot;vec3 n = normalize( ( mat * vec4( xeo_aNormal, 0.0 ) ).xyz );&quot;);
-                    add(&quot;vec3 t = normalize( ( mat * vec4( xeo_aTangent, 0.0 ) ).xyz );&quot;);
-                    add(&quot;vec3 b = normalize( ( mat * vec4( ( cross(xeo_aNormal, xeo_aTangent.xyz ) * 1.0 ), 0.0 ) ).xyz );&quot;);
+                    add(&quot;vec3 n = normalize( ( mat * vec4( normal, 0.0 ) ).xyz );&quot;);
+                    add(&quot;vec3 t = normalize( ( mat * vec4( tangent, 0.0 ) ).xyz );&quot;);
+                    add(&quot;vec3 b = normalize( ( mat * vec4( ( cross(normal, tangent.xyz ) * 1.0 ), 0.0 ) ).xyz );&quot;);
 
-                    add(&quot;xeo_TBN = mat3(t, b, n);&quot;);
+                    add(&quot;vTBN = mat3(t, b, n);&quot;);
                 }
 
                 add(&quot;vec3 tmpVec3;&quot;);
@@ -631,53 +635,51 @@
                     if (light.type === &quot;dir&quot;) {
 
                         if (light.space === &quot;world&quot;) {
-                            add(&quot;tmpVec3 = vec3(viewMatrix * vec4(xeo_uLightDir&quot; + i + &quot;, 0.0) ).xyz;&quot;);
+                            add(&quot;tmpVec3 = vec3(viewMatrix2 * vec4(lightDir&quot; + i + &quot;, 0.0) ).xyz;&quot;);
                         } else {
-                            add(&quot;tmpVec3 = xeo_uLightDir&quot; + i + &quot;;&quot;);
+                            add(&quot;tmpVec3 = lightDir&quot; + i + &quot;;&quot;);
                         }
 
-                        add(&quot;xeo_vViewLightReverseDirAndDist&quot; + i + &quot; = vec4(-tmpVec3, 0.0);&quot;);
+                        add(&quot;vViewLightReverseDirAndDist&quot; + i + &quot; = vec4(-tmpVec3, 0.0);&quot;);
                     }
 
                     if (light.type === &quot;point&quot;) {
 
                         if (light.space === &quot;world&quot;) {
-                            add(&quot;tmpVec3 = (viewMatrix * vec4(xeo_uLightPos&quot; + i + &quot;, 1.0)).xyz - viewPosition.xyz;&quot;);
+                            add(&quot;tmpVec3 = (viewMatrix2 * vec4(lightPos&quot; + i + &quot;, 1.0)).xyz - viewPosition.xyz;&quot;);
                             add(&quot;lightDist = abs(length(tmpVec3));&quot;);
 
                         } else {
-                            add(&quot;tmpVec3 = xeo_uLightPos&quot; + i + &quot;.xyz - viewPosition.xyz;&quot;);
+                            add(&quot;tmpVec3 = lightPos&quot; + i + &quot;.xyz - viewPosition.xyz;&quot;);
                             add(&quot;lightDist = abs(length(tmpVec3));&quot;);
                         }
 
-                        add(&quot;xeo_vViewLightReverseDirAndDist&quot; + i + &quot; = vec4(tmpVec3, lightDist);&quot;);
+                        add(&quot;vViewLightReverseDirAndDist&quot; + i + &quot; = vec4(tmpVec3, lightDist);&quot;);
                     }
                 }
-
-                add(&quot;xeo_vViewEyeVec = -viewPosition.xyz;&quot;);
             }
 
             if (texturing) {
-                add(&quot;xeo_vUV = xeo_aUV;&quot;);
+                add(&quot;vUV = uv;&quot;);
             }
 
             if (states.geometry.colors) {
-                add(&quot;xeo_vColor = xeo_aColor;&quot;);
+                add(&quot;vColor = color;&quot;);
             }
 
             if (states.geometry.primitiveName === &quot;points&quot;) {
-                add(&quot;gl_PointSize = xeo_uPointSize;&quot;);
+                add(&quot;gl_PointSize = pointSize;&quot;);
             }
-            add(&quot;   xeo_vViewPosition = viewPosition.xyz;&quot;);
-            add(&quot;   gl_Position = xeo_uProjMatrix * viewPosition;&quot;);
+            add(&quot;   vViewPosition = viewPosition.xyz;&quot;);
+            add(&quot;   gl_Position = projMatrix * viewPosition;&quot;);
 
             if (receiveShadow) {
                 add(&quot;vec4 tempx; &quot;);
                 for (i = 0, len = lights.length; i &lt; len; i++) { // Light sources
                     if (lights[i].shadow) {
-                        add(&quot;xeo_vShadowPositionFromLight&quot; + i + &quot; = xeo_uShadowProjMatrix&quot; + i + &quot; * (xeo_uShadowViewMatrix&quot; + i + &quot; * worldPosition); &quot;);
-                        //add(&quot;tempx = xeo_uShadowViewMatrix&quot; + i + &quot; * worldPosition; &quot;);
-                        //add(&quot;tempx = xeo_uShadowProjMatrix&quot; + i + &quot; * tempx; &quot;);
+                        add(&quot;vShadowPosFromLight&quot; + i + &quot; = shadowProjMatrix&quot; + i + &quot; * (shadowViewMatrix&quot; + i + &quot; * worldPosition); &quot;);
+                        //add(&quot;tempx = shadowViewMatrix&quot; + i + &quot; * worldPosition; &quot;);
+                        //add(&quot;tempx = shadowProjMatrix&quot; + i + &quot; * tempx; &quot;);
                         //add(&quot;   gl_Position = tempx;&quot;);
                     }
                 }
@@ -714,16 +716,16 @@
             //--------------------------------------------------------------------------------
 
             if (states.lights.lightMap) {
-                add(&quot;uniform samplerCube xeo_uLightMap;&quot;);
-                add(&quot;uniform    mat4 xeo_uViewNormalMatrix;&quot;);
+                add(&quot;uniform samplerCube lightMap;&quot;);
+                add(&quot;uniform mat4 viewNormalMatrix;&quot;);
             }
 
             if (states.lights.reflectionMap) {
-                add(&quot;uniform samplerCube xeo_uReflectionMap;&quot;);
+                add(&quot;uniform samplerCube reflectionMap;&quot;);
             }
 
             if (states.lights.lightMap || states.lights.reflectionMap) {
-                add(&quot;uniform mat4 xeo_uViewMatrix;&quot;);
+                add(&quot;uniform mat4 viewMatrix;&quot;);
             }
 
 
@@ -795,7 +797,7 @@
                     add(&quot;void computePhongLightMapping(const in Geometry geometry, const in Material material, inout ReflectedLight reflectedLight) {&quot;);
 
                     if (states.lights.lightMap) {
-                        add(&quot;   vec3 irradiance = textureCube(xeo_uLightMap, geometry.worldNormal).rgb;&quot;);
+                        add(&quot;   vec3 irradiance = textureCube(lightMap, geometry.worldNormal).rgb;&quot;);
                         add(&quot;   irradiance *= PI;&quot;);
                         add(&quot;   vec3 diffuseBRDFContrib = BRDF_Diffuse_Lambert(material.diffuseColor);&quot;);
                         add(&quot;   reflectedLight.diffuse += irradiance * diffuseBRDFContrib;&quot;);
@@ -803,8 +805,8 @@
 
                     if (states.lights.reflectionMap) {
                         //     add(&quot;   vec3 reflectVec             = reflect(-geometry.viewEyeDir, geometry.worldNormal);&quot;);
-                        //   //  add(&quot;   reflectVec                  = inverseTransformDirection(reflectVec, xeo_uViewMatrix);&quot;);
-                        //     add(&quot;   vec3 radiance               = textureCube(xeo_uReflectionMap, geometry.worldNormal).rgb;&quot;);
+                        //   //  add(&quot;   reflectVec                  = inverseTransformDirection(reflectVec, viewMatrix);&quot;);
+                        //     add(&quot;   vec3 radiance               = textureCube(reflectionMap, geometry.worldNormal).rgb;&quot;);
                         ////     add(&quot;   radiance *= PI;&quot;);
                         //     add(&quot;   reflectedLight.specular     += radiance;&quot;);
                     }
@@ -828,7 +830,7 @@
                 //add(&quot;   vec2 sampleUV;&quot;);
                 //add(&quot;   sampleUV.y = saturate(reflect.y * 0.5 + 0.5);&quot;);
                 //add(&quot;   sampleUV.x = atan(reflect.z, reflect.x) * RECIPROCAL_PI2 + 0.5;&quot;);
-                //add(&quot;   vec4 texColor = texture2D(xeo_uReflectionMap, sampleUV, mipLevel);&quot;);
+                //add(&quot;   vec4 texColor = texture2D(reflectionMap, sampleUV, mipLevel);&quot;);
                 //add(&quot;   return texColor.rgb;&quot;); // assumed to be linear
                 //add(&quot;}&quot;);
 
@@ -854,7 +856,7 @@
                 if (states.lights.reflectionMap) {
                     add(&quot;vec3 getLightProbeIndirectRadiance(const in vec3 reflectVec, const in float blinnShininessExponent, const in int maxMIPLevel) {&quot;);
                     add(&quot;   float mipLevel = 0.5 * getSpecularMIPLevel(blinnShininessExponent, maxMIPLevel);&quot;); //TODO: a random factor - fix this
-                    add(&quot;   vec3 envMapColor = textureCube(xeo_uReflectionMap, reflectVec, mipLevel).rgb;&quot;);
+                    add(&quot;   vec3 envMapColor = textureCube(reflectionMap, reflectVec, mipLevel).rgb;&quot;);
                     add(&quot;   return envMapColor;&quot;);
                     add(&quot;}&quot;);
                 }
@@ -915,7 +917,7 @@
                     add(&quot;void computePBRLightMapping(const in Geometry geometry, const in Material material, inout ReflectedLight reflectedLight) {&quot;);
 
                     if (states.lights.lightMap) {
-                        add(&quot;   vec3 irradiance = textureCube(xeo_uLightMap, geometry.worldNormal).rgb;&quot;);
+                        add(&quot;   vec3 irradiance = textureCube(lightMap, geometry.worldNormal).rgb;&quot;);
                         add(&quot;   irradiance *= PI;&quot;);
                         add(&quot;   vec3 diffuseBRDFContrib = BRDF_Diffuse_Lambert(material.diffuseColor);&quot;);
                         add(&quot;   reflectedLight.diffuse += irradiance * diffuseBRDFContrib;&quot;);
@@ -924,7 +926,7 @@
 
                     if (states.lights.reflectionMap) {
                         add(&quot;   vec3 reflectVec             = reflect(-geometry.viewEyeDir, geometry.viewNormal);&quot;);
-                        add(&quot;   reflectVec                  = inverseTransformDirection(reflectVec, xeo_uViewMatrix);&quot;);
+                        add(&quot;   reflectVec                  = inverseTransformDirection(reflectVec, viewMatrix);&quot;);
                         add(&quot;   float blinnExpFromRoughness = GGXRoughnessToBlinnExponent(material.specularRoughness);&quot;);
                         add(&quot;   vec3 radiance               = getLightProbeIndirectRadiance(reflectVec, blinnExpFromRoughness, 8);&quot;);
                         add(&quot;   vec3 specularBRDFContrib    = BRDF_Specular_GGX_Environment(geometry, material.specularColor, material.specularRoughness);&quot;);
@@ -948,11 +950,10 @@
             // GEOMETRY INPUTS
             //--------------------------------------------------------------------------------
 
-            add(&quot;varying vec3 xeo_vViewPosition;&quot;);
-            add(&quot;varying vec3 xeo_vWorldPosition;&quot;);
+            add(&quot;varying vec3 vViewPosition;&quot;);
 
             if (geometry.colors) {
-                add(&quot;varying vec4 xeo_vColor;&quot;);
+                add(&quot;varying vec4 vColor;&quot;);
             }
 
             if (geometry.uv &amp;&amp; ((geometry.normals &amp;&amp; material.normalMap)
@@ -968,12 +969,14 @@
                 || material.specularGlossinessMap
                 || material.occlusionMap
                 || material.opacityMap)) {
-                add(&quot;varying vec2 xeo_vUV;&quot;);
+                add(&quot;varying vec2 vUV;&quot;);
             }
 
             if (geometry.normals) {
-                add(&quot;varying vec3 xeo_vWorldNormal;&quot;);
-                add(&quot;varying vec3 xeo_vViewNormal;&quot;);
+                if (states.lights.lightMap) {
+                    add(&quot;varying vec3 vWorldNormal;&quot;);
+                }
+                add(&quot;varying vec3 vViewNormal;&quot;);
             }
 
             //--------------------------------------------------------------------------------
@@ -981,47 +984,47 @@
             //--------------------------------------------------------------------------------
 
             if (material.ambient) {
-                add(&quot;uniform vec3 xeo_uAmbient;&quot;);
+                add(&quot;uniform vec3 materialAmbient;&quot;);
             }
 
             if (material.baseColor) {
-                add(&quot;uniform vec3 xeo_uBaseColor;&quot;);
+                add(&quot;uniform vec3 materialBaseColor;&quot;);
             }
 
             if (material.opacity !== undefined &amp;&amp; material.opacity !== null) {
-                add(&quot;uniform float xeo_uOpacity;&quot;);
+                add(&quot;uniform float materialOpacity;&quot;);
             }
 
             if (material.emissive) {
-                add(&quot;uniform vec3 xeo_uEmissive;&quot;);
+                add(&quot;uniform vec3 materialEmissive;&quot;);
             }
 
             if (material.diffuse) {
-                add(&quot;uniform vec3 xeo_uDiffuse;&quot;);
+                add(&quot;uniform vec3 materialDiffuse;&quot;);
             }
 
             if (material.glossiness !== undefined &amp;&amp; material.glossiness !== null) {
-                add(&quot;uniform float xeo_uGlossiness;&quot;);
+                add(&quot;uniform float materialGlossiness;&quot;);
             }
 
             if (material.shininess !== undefined &amp;&amp; material.shininess !== null) {
-                add(&quot;uniform float xeo_uShininess;&quot;);  // Phong channel
+                add(&quot;uniform float materialShininess;&quot;);  // Phong channel
             }
 
             if (material.specular) {
-                add(&quot;uniform vec3 xeo_uSpecular;&quot;);
+                add(&quot;uniform vec3 materialSpecular;&quot;);
             }
 
             if (material.metallic !== undefined &amp;&amp; material.metallic !== null) {
-                add(&quot;uniform float xeo_uMetallic;&quot;);
+                add(&quot;uniform float materialMetallic;&quot;);
             }
 
             if (material.roughness !== undefined &amp;&amp; material.roughness !== null) {
-                add(&quot;uniform float xeo_uRoughness;&quot;);
+                add(&quot;uniform float materialRoughness;&quot;);
             }
 
             if (material.specularF0 !== undefined &amp;&amp; material.specularF0 !== null) {
-                add(&quot;uniform float xeo_uSpecularF0;&quot;);
+                add(&quot;uniform float materialSpecularF0;&quot;);
             }
 
             //--------------------------------------------------------------------------------
@@ -1029,94 +1032,94 @@
             //--------------------------------------------------------------------------------
 
             if (geometry.uv &amp;&amp; material.ambientMap) {
-                add(&quot;uniform sampler2D xeo_uAmbientMap;&quot;);
+                add(&quot;uniform sampler2D ambientMap;&quot;);
                 if (material.ambientMap.matrix) {
-                    add(&quot;uniform mat4 xeo_uAmbientMapMatrix;&quot;);
+                    add(&quot;uniform mat4 ambientMapMatrix;&quot;);
                 }
             }
 
             if (geometry.uv &amp;&amp; material.baseColorMap) {
-                add(&quot;uniform sampler2D xeo_uBaseColorMap;&quot;);
+                add(&quot;uniform sampler2D baseColorMap;&quot;);
                 if (material.baseColorMap.matrix) {
-                    add(&quot;uniform mat4 xeo_uBaseColorMapMatrix;&quot;);
+                    add(&quot;uniform mat4 baseColorMapMatrix;&quot;);
                 }
             }
 
             if (geometry.uv &amp;&amp; material.diffuseMap) {
-                add(&quot;uniform sampler2D xeo_uDiffuseMap;&quot;);
+                add(&quot;uniform sampler2D diffuseMap;&quot;);
                 if (material.diffuseMap.matrix) {
-                    add(&quot;uniform mat4 xeo_uDiffuseMapMatrix;&quot;);
+                    add(&quot;uniform mat4 diffuseMapMatrix;&quot;);
                 }
             }
 
             if (geometry.uv &amp;&amp; material.emissiveMap) {
-                add(&quot;uniform sampler2D xeo_uEmissiveMap;&quot;);
+                add(&quot;uniform sampler2D emissiveMap;&quot;);
                 if (material.emissiveMap.matrix) {
-                    add(&quot;uniform mat4 xeo_uEmissiveMapMatrix;&quot;);
+                    add(&quot;uniform mat4 emissiveMapMatrix;&quot;);
                 }
             }
 
             if (geometry.normals &amp;&amp; geometry.uv &amp;&amp; material.metallicMap) {
-                add(&quot;uniform sampler2D xeo_uMetallicMap;&quot;);
+                add(&quot;uniform sampler2D metallicMap;&quot;);
                 if (material.metallicMap.matrix) {
-                    add(&quot;uniform mat4 xeo_uMetallicMapMatrix;&quot;);
+                    add(&quot;uniform mat4 metallicMapMatrix;&quot;);
                 }
             }
 
             if (geometry.normals &amp;&amp; geometry.uv &amp;&amp; material.roughnessMap) {
-                add(&quot;uniform sampler2D xeo_uRoughnessMap;&quot;);
+                add(&quot;uniform sampler2D roughnessMap;&quot;);
                 if (material.roughnessMap.matrix) {
-                    add(&quot;uniform mat4 xeo_uRoughnessMapMatrix;&quot;);
+                    add(&quot;uniform mat4 roughnessMapMatrix;&quot;);
                 }
             }
 
             if (geometry.normals &amp;&amp; geometry.uv &amp;&amp; material.metallicRoughnessMap) {
-                add(&quot;uniform sampler2D xeo_uMetallicRoughnessMap;&quot;);
+                add(&quot;uniform sampler2D metallicRoughnessMap;&quot;);
                 if (material.metallicRoughnessMap.matrix) {
-                    add(&quot;uniform mat4 xeo_uMetallicRoughnessMapMatrix;&quot;);
+                    add(&quot;uniform mat4 metallicRoughnessMapMatrix;&quot;);
                 }
             }
 
             if (geometry.normals &amp;&amp; material.normalMap) {
-                add(&quot;varying mat3 xeo_TBN;&quot;);
-                add(&quot;uniform sampler2D xeo_uNormalMap;&quot;);
+                add(&quot;varying mat3 vTBN;&quot;);
+                add(&quot;uniform sampler2D normalMap;&quot;);
                 if (material.normalMap.matrix) {
-                    add(&quot;uniform mat4 xeo_uNormalMapMatrix;&quot;);
+                    add(&quot;uniform mat4 normalMapMatrix;&quot;);
                 }
             }
 
             if (geometry.uv &amp;&amp; material.occlusionMap) {
-                add(&quot;uniform sampler2D xeo_uOcclusionMap;&quot;);
+                add(&quot;uniform sampler2D occlusionMap;&quot;);
                 if (material.occlusionMap.matrix) {
-                    add(&quot;uniform mat4 xeo_uOcclusionMapMatrix;&quot;);
+                    add(&quot;uniform mat4 occlusionMapMatrix;&quot;);
                 }
             }
 
             if (geometry.uv &amp;&amp; material.opacityMap) {
-                add(&quot;uniform sampler2D xeo_uOpacityMap;&quot;);
+                add(&quot;uniform sampler2D opacityMap;&quot;);
                 if (material.opacityMap.matrix) {
-                    add(&quot;uniform mat4 xeo_uOpacityMapMatrix;&quot;);
+                    add(&quot;uniform mat4 opacityMapMatrix;&quot;);
                 }
             }
 
             if (geometry.normals &amp;&amp; geometry.uv &amp;&amp; material.specularMap) {
-                add(&quot;uniform sampler2D xeo_uSpecularMap;&quot;);
+                add(&quot;uniform sampler2D specularMap;&quot;);
                 if (material.specularMap.matrix) {
-                    add(&quot;uniform mat4 xeo_uSpecularMapMatrix;&quot;);
+                    add(&quot;uniform mat4 specularMapMatrix;&quot;);
                 }
             }
 
             if (geometry.normals &amp;&amp; geometry.uv &amp;&amp; material.glossinessMap) {
-                add(&quot;uniform sampler2D xeo_uGlossinessMap;&quot;);
+                add(&quot;uniform sampler2D glossinessMap;&quot;);
                 if (material.glossinessMap.matrix) {
-                    add(&quot;uniform mat4 xeo_uGlossinessMapMatrix;&quot;);
+                    add(&quot;uniform mat4 glossinessMapMatrix;&quot;);
                 }
             }
 
             if (geometry.normals &amp;&amp; geometry.uv &amp;&amp; material.specularGlossinessMap) {
-                add(&quot;uniform sampler2D xeo_uSpecularGlossinessMap;&quot;);
+                add(&quot;uniform sampler2D materialSpecularGlossinessMap;&quot;);
                 if (material.specularGlossinessMap.matrix) {
-                    add(&quot;uniform mat4 xeo_uSpecularGlossinessMapMatrix;&quot;);
+                    add(&quot;uniform mat4 materialSpecularGlossinessMapMatrix;&quot;);
                 }
             }
 
@@ -1137,43 +1140,43 @@
                 add(&quot;}&quot;);
 
                 if (material.diffuseFresnel) {
-                    add(&quot;uniform float  xeo_uDiffuseFresnelCenterBias;&quot;);
-                    add(&quot;uniform float  xeo_uDiffuseFresnelEdgeBias;&quot;);
-                    add(&quot;uniform float  xeo_uDiffuseFresnelPower;&quot;);
-                    add(&quot;uniform vec3   xeo_uDiffuseFresnelCenterColor;&quot;);
-                    add(&quot;uniform vec3   xeo_uDiffuseFresnelEdgeColor;&quot;);
+                    add(&quot;uniform float  diffuseFresnelCenterBias;&quot;);
+                    add(&quot;uniform float  diffuseFresnelEdgeBias;&quot;);
+                    add(&quot;uniform float  diffuseFresnelPower;&quot;);
+                    add(&quot;uniform vec3   diffuseFresnelCenterColor;&quot;);
+                    add(&quot;uniform vec3   diffuseFresnelEdgeColor;&quot;);
                 }
 
                 if (material.specularFresnel) {
-                    add(&quot;uniform float  xeo_uSpecularFresnelCenterBias;&quot;);
-                    add(&quot;uniform float  xeo_uSpecularFresnelEdgeBias;&quot;);
-                    add(&quot;uniform float  xeo_uSpecularFresnelPower;&quot;);
-                    add(&quot;uniform vec3   xeo_uSpecularFresnelCenterColor;&quot;);
-                    add(&quot;uniform vec3   xeo_uSpecularFresnelEdgeColor;&quot;);
+                    add(&quot;uniform float  specularFresnelCenterBias;&quot;);
+                    add(&quot;uniform float  specularFresnelEdgeBias;&quot;);
+                    add(&quot;uniform float  specularFresnelPower;&quot;);
+                    add(&quot;uniform vec3   specularFresnelCenterColor;&quot;);
+                    add(&quot;uniform vec3   specularFresnelEdgeColor;&quot;);
                 }
 
                 if (material.opacityFresnel) {
-                    add(&quot;uniform float  xeo_uOpacityFresnelCenterBias;&quot;);
-                    add(&quot;uniform float  xeo_uOpacityFresnelEdgeBias;&quot;);
-                    add(&quot;uniform float  xeo_uOpacityFresnelPower;&quot;);
-                    add(&quot;uniform vec3   xeo_uOpacityFresnelCenterColor;&quot;);
-                    add(&quot;uniform vec3   xeo_uOpacityFresnelEdgeColor;&quot;);
+                    add(&quot;uniform float  opacityFresnelCenterBias;&quot;);
+                    add(&quot;uniform float  opacityFresnelEdgeBias;&quot;);
+                    add(&quot;uniform float  opacityFresnelPower;&quot;);
+                    add(&quot;uniform vec3   opacityFresnelCenterColor;&quot;);
+                    add(&quot;uniform vec3   opacityFresnelEdgeColor;&quot;);
                 }
 
                 if (material.reflectivityFresnel) {
-                    add(&quot;uniform float  xeo_uSpecularF0FresnelCenterBias;&quot;);
-                    add(&quot;uniform float  xeo_uSpecularF0FresnelEdgeBias;&quot;);
-                    add(&quot;uniform float  xeo_uSpecularF0FresnelPower;&quot;);
-                    add(&quot;uniform vec3   xeo_uSpecularF0FresnelCenterColor;&quot;);
-                    add(&quot;uniform vec3   xeo_uSpecularF0FresnelEdgeColor;&quot;);
+                    add(&quot;uniform float  materialSpecularF0FresnelCenterBias;&quot;);
+                    add(&quot;uniform float  materialSpecularF0FresnelEdgeBias;&quot;);
+                    add(&quot;uniform float  materialSpecularF0FresnelPower;&quot;);
+                    add(&quot;uniform vec3   materialSpecularF0FresnelCenterColor;&quot;);
+                    add(&quot;uniform vec3   materialSpecularF0FresnelEdgeColor;&quot;);
                 }
 
                 if (material.emissiveFresnel) {
-                    add(&quot;uniform float  xeo_uEmissiveFresnelCenterBias;&quot;);
-                    add(&quot;uniform float  xeo_uEmissiveFresnelEdgeBias;&quot;);
-                    add(&quot;uniform float  xeo_uEmissiveFresnelPower;&quot;);
-                    add(&quot;uniform vec3   xeo_uEmissiveFresnelCenterColor;&quot;);
-                    add(&quot;uniform vec3   xeo_uEmissiveFresnelEdgeColor;&quot;);
+                    add(&quot;uniform float  emissiveFresnelCenterBias;&quot;);
+                    add(&quot;uniform float  emissiveFresnelEdgeBias;&quot;);
+                    add(&quot;uniform float  emissiveFresnelPower;&quot;);
+                    add(&quot;uniform vec3   emissiveFresnelCenterColor;&quot;);
+                    add(&quot;uniform vec3   emissiveFresnelEdgeColor;&quot;);
                 }
             }
 
@@ -1181,12 +1184,10 @@
             // LIGHT SOURCES
             //--------------------------------------------------------------------------------
 
-            add(&quot;uniform vec3   xeo_uLightAmbientColor;&quot;);
-            add(&quot;uniform float  xeo_uLightAmbientIntensity;&quot;);
+            add(&quot;uniform vec3   lightAmbient;&quot;);
+            add(&quot;uniform float  lightAmbientIntensity;&quot;);
 
             if (geometry.normals) {
-
-                add(&quot;varying vec3 xeo_vViewEyeVec;&quot;);
 
                 for (i = 0, len = lights.length; i &lt; len; i++) { // Light sources
 
@@ -1196,14 +1197,14 @@
                         continue;
                     }
 
-                    add(&quot;uniform vec3 xeo_uLightColor&quot; + i + &quot;;&quot;);
-                    add(&quot;uniform float xeo_uLightIntensity&quot; + i + &quot;;&quot;);
+                    add(&quot;uniform vec3 lightColor&quot; + i + &quot;;&quot;);
+                    add(&quot;uniform float lightIntensity&quot; + i + &quot;;&quot;);
 
                     if (light.type === &quot;point&quot;) {
-                        add(&quot;uniform vec3 xeo_uLightAttenuation&quot; + i + &quot;;&quot;);
+                        add(&quot;uniform vec3 lightAttenuation&quot; + i + &quot;;&quot;);
                     }
 
-                    add(&quot;varying vec4 xeo_vViewLightReverseDirAndDist&quot; + i + &quot;;&quot;); // Vector from light to vertex
+                    add(&quot;varying vec4 vViewLightReverseDirAndDist&quot; + i + &quot;;&quot;); // Vector from light to vertex
                 }
             }
 
@@ -1214,8 +1215,8 @@
             if (receiveShadow) {
                 for (i = 0, len = lights.length; i &lt; len; i++) { // Light sources
                     if (lights[i].shadow) {
-                        add(&quot;varying vec4 xeo_vShadowPositionFromLight&quot; + i + &quot;;&quot;);
-                        add(&quot;uniform sampler2D xeo_uShadowMap&quot; + i + &quot;;&quot;);
+                        add(&quot;varying vec4 vShadowPosFromLight&quot; + i + &quot;;&quot;);
+                        add(&quot;uniform sampler2D shadowMap&quot; + i + &quot;;&quot;);
                     }
                 }
             }
@@ -1237,65 +1238,65 @@
             add(&quot;float occlusion = 1.0;&quot;);
 
             if (material.ambient) {
-                add(&quot;vec3 ambient = xeo_uAmbient;&quot;);
+                add(&quot;vec3 ambientColor = materialAmbient;&quot;);
             } else {
-                add(&quot;vec3 ambient = vec3(1.0, 1.0, 1.0);&quot;);
+                add(&quot;vec3 ambientColor = vec3(1.0, 1.0, 1.0);&quot;);
             }
 
             if (material.diffuse) {
-                add(&quot;vec3 diffuse = xeo_uDiffuse;&quot;);
+                add(&quot;vec3 diffuseColor = materialDiffuse;&quot;);
             } else if (material.baseColor) {
-                add(&quot;vec3 diffuse = xeo_uBaseColor;&quot;);
+                add(&quot;vec3 diffuseColor = materialBaseColor;&quot;);
             } else {
-                add(&quot;vec3 diffuse = vec3(1.0, 1.0, 1.0);&quot;);
+                add(&quot;vec3 diffuseColor = vec3(1.0, 1.0, 1.0);&quot;);
             }
 
             if (geometry.colors) {
-                add(&quot;diffuse *= xeo_vColor.rgb;&quot;);
+                add(&quot;diffuseColor *= vColor.rgb;&quot;);
             }
 
             if (material.emissive) {
-                add(&quot;vec3 emissive = xeo_uEmissive;&quot;); // Emissive default is (0,0,0), so initializing here
+                add(&quot;vec3 emissiveColor = materialEmissive;&quot;); // Emissive default is (0,0,0), so initializing here
             } else {
-                add(&quot;vec3  emissive = vec3(0.0, 0.0, 0.0);&quot;);
+                add(&quot;vec3  emissiveColor = vec3(0.0, 0.0, 0.0);&quot;);
             }
 
             if (material.specular) {
-                add(&quot;vec3 specular = xeo_uSpecular;&quot;);
+                add(&quot;vec3 specular = materialSpecular;&quot;);
             } else {
                 add(&quot;vec3 specular = vec3(1.0, 1.0, 1.0);&quot;);
             }
 
             if (material.opacity !== undefined) {
-                add(&quot;float opacity = xeo_uOpacity;&quot;);
+                add(&quot;float opacity = materialOpacity;&quot;);
             } else {
                 add(&quot;float opacity = 1.0;&quot;);
             }
 
             if (geometry.colors) {
-                add(&quot;opacity *= xeo_vColor.a;&quot;);
+                add(&quot;opacity *= vColor.a;&quot;);
             }
 
             if (material.glossiness !== undefined) {
-                add(&quot;float glossiness = xeo_uGlossiness;&quot;);
+                add(&quot;float glossiness = materialGlossiness;&quot;);
             } else {
                 add(&quot;float glossiness = 1.0;&quot;);
             }
 
             if (material.metallic !== undefined) {
-                add(&quot;float metallic = xeo_uMetallic;&quot;);
+                add(&quot;float metallic = materialMetallic;&quot;);
             } else {
                 add(&quot;float metallic = 1.0;&quot;);
             }
 
             if (material.roughness !== undefined) {
-                add(&quot;float roughness = xeo_uRoughness;&quot;);
+                add(&quot;float roughness = materialRoughness;&quot;);
             } else {
                 add(&quot;float roughness = 1.0;&quot;);
             }
 
             if (material.specularF0 !== undefined) {
-                add(&quot;float specularF0 = xeo_uSpecularF0;&quot;);
+                add(&quot;float specularF0 = materialSpecularF0;&quot;);
             } else {
                 add(&quot;float specularF0 = 1.0;&quot;);
             }
@@ -1318,62 +1319,62 @@
                 || material.glossinessMap
                 || material.specularGlossinessMap
                 || material.opacityMap)) {
-                add(&quot;vec4 texturePos = vec4(xeo_vUV.s, xeo_vUV.t, 1.0, 1.0);&quot;);
+                add(&quot;vec4 texturePos = vec4(vUV.s, vUV.t, 1.0, 1.0);&quot;);
                 add(&quot;vec2 textureCoord;&quot;);
             }
 
             if (geometry.uv &amp;&amp; material.ambientMap) {
                 if (material.ambientMap.matrix) {
-                    add(&quot;textureCoord = (xeo_uAmbientMapMatrix * texturePos).xy;&quot;);
+                    add(&quot;textureCoord = (ambientMapMatrix * texturePos).xy;&quot;);
                 } else {
                     add(&quot;textureCoord = texturePos.xy;&quot;);
                 }
-                add(&quot;ambient *= texture2D(xeo_uAmbientMap, textureCoord).rgb;&quot;);
+                add(&quot;ambientColor *= texture2D(ambientMap, textureCoord).rgb;&quot;);
             }
 
             if (geometry.uv &amp;&amp; material.diffuseMap) {
                 if (material.diffuseMap.matrix) {
-                    add(&quot;textureCoord = (xeo_uDiffuseMapMatrix * texturePos).xy;&quot;);
+                    add(&quot;textureCoord = (diffuseMapMatrix * texturePos).xy;&quot;);
                 } else {
                     add(&quot;textureCoord = texturePos.xy;&quot;);
                 }
-                add(&quot;diffuse *= texture2D(xeo_uDiffuseMap, textureCoord).rgb;&quot;);
+                add(&quot;diffuseColor *= texture2D(diffuseMap, textureCoord).rgb;&quot;);
             }
 
             if (geometry.uv &amp;&amp; material.baseColorMap) {
                 if (material.baseColorMap.matrix) {
-                    add(&quot;textureCoord = (xeo_uBaseColorMapMatrix * texturePos).xy;&quot;);
+                    add(&quot;textureCoord = (baseColorMapMatrix * texturePos).xy;&quot;);
                 } else {
                     add(&quot;textureCoord = texturePos.xy;&quot;);
                 }
-                add(&quot;diffuse *= texture2D(xeo_uBaseColorMap, textureCoord).rgb;&quot;);
+                add(&quot;diffuseColor *= texture2D(baseColorMap, textureCoord).rgb;&quot;);
             }
 
             if (geometry.uv &amp;&amp; material.emissiveMap) {
                 if (material.emissiveMap.matrix) {
-                    add(&quot;textureCoord = (xeo_uEmissiveMapMatrix * texturePos).xy;&quot;);
+                    add(&quot;textureCoord = (emissiveMapMatrix * texturePos).xy;&quot;);
                 } else {
                     add(&quot;textureCoord = texturePos.xy;&quot;);
                 }
-                add(&quot;emissive *= texture2D(xeo_uEmissiveMap, textureCoord).rgb;&quot;);
+                add(&quot;emissiveColor *= texture2D(emissiveMap, textureCoord).rgb;&quot;);
             }
 
             if (geometry.uv &amp;&amp; material.opacityMap) {
                 if (material.opacityMap.matrix) {
-                    add(&quot;textureCoord = (xeo_uOpacityMapMatrix * texturePos).xy;&quot;);
+                    add(&quot;textureCoord = (opacityMapMatrix * texturePos).xy;&quot;);
                 } else {
                     add(&quot;textureCoord = texturePos.xy;&quot;);
                 }
-                add(&quot;opacity *= texture2D(xeo_uOpacityMap, textureCoord).r;&quot;);
+                add(&quot;opacity *= texture2D(opacityMap, textureCoord).r;&quot;);
             }
 
             if (geometry.uv &amp;&amp; material.occlusionMap) {
                 if (material.occlusionMap.matrix) {
-                    add(&quot;textureCoord = (xeo_uOcclusionMapMatrix * texturePos).xy;&quot;);
+                    add(&quot;textureCoord = (occlusionMapMatrix * texturePos).xy;&quot;);
                 } else {
                     add(&quot;textureCoord = texturePos.xy;&quot;);
                 }
-                add(&quot;occlusion *= texture2D(xeo_uOcclusionMap, textureCoord).r;&quot;);
+                add(&quot;occlusion *= texture2D(occlusionMap, textureCoord).r;&quot;);
             }
 
             if (geometry.normals &amp;&amp; ((lights.length &gt; 0) || states.lights.lightMap || states.lights.reflectionMap)) {
@@ -1384,91 +1385,91 @@
 
                 if (material.normalMap) {
                     if (material.normalMap.matrix) {
-                        add(&quot;textureCoord = (xeo_uNormalMapMatrix * texturePos).xy;&quot;);
+                        add(&quot;textureCoord = (normalMapMatrix * texturePos).xy;&quot;);
                     } else {
                         add(&quot;textureCoord = texturePos.xy;&quot;);
                     }
-                    add(&quot;vec3 viewNormal = xeo_TBN * normalize( texture2D(xeo_uNormalMap, vec2(textureCoord.x, textureCoord.y) ).rgb * 2.0 - 1.0);&quot;);
+                    add(&quot;vec3 viewNormal = vTBN * normalize( texture2D(normalMap, vec2(textureCoord.x, textureCoord.y) ).rgb * 2.0 - 1.0);&quot;);
                 } else {
-                    add(&quot;vec3 viewNormal = normalize(xeo_vViewNormal);&quot;);
+                    add(&quot;vec3 viewNormal = normalize(vViewNormal);&quot;);
                 }
 
                 if (geometry.uv &amp;&amp; material.specularMap) {
                     if (material.specularMap.matrix) {
-                        add(&quot;textureCoord = (xeo_uSpecularMapMatrix * texturePos).xy;&quot;);
+                        add(&quot;textureCoord = (specularMapMatrix * texturePos).xy;&quot;);
                     } else {
                         add(&quot;textureCoord = texturePos.xy;&quot;);
                     }
-                    add(&quot;specular *= texture2D(xeo_uSpecularMap, textureCoord).rgb;&quot;);
+                    add(&quot;specular *= texture2D(specularMap, textureCoord).rgb;&quot;);
                 }
 
                 if (geometry.uv &amp;&amp; material.glossinessMap) {
                     if (material.glossinessMap.matrix) {
-                        add(&quot;textureCoord = (xeo_uGlossinessMapMatrix * texturePos).xy;&quot;);
+                        add(&quot;textureCoord = (glossinessMapMatrix * texturePos).xy;&quot;);
                     } else {
                         add(&quot;textureCoord = texturePos.xy;&quot;);
                     }
-                    add(&quot;glossiness *= texture2D(xeo_uGlossinessMap, textureCoord).r;&quot;);
+                    add(&quot;glossiness *= texture2D(glossinessMap, textureCoord).r;&quot;);
                 }
 
                 if (geometry.uv &amp;&amp; material.specularGlossinessMap) {
                     if (material.specularGlossinessMap.matrix) {
-                        add(&quot;textureCoord = (xeo_uSpecularGlossinessMapMatrix * texturePos).xy;&quot;);
+                        add(&quot;textureCoord = (materialSpecularGlossinessMapMatrix * texturePos).xy;&quot;);
                     } else {
                         add(&quot;textureCoord = texturePos.xy;&quot;);
                     }
-                    add(&quot;vec4 specGlossRGB = texture2D(xeo_uSpecularGlossinessMap, textureCoord).rgba;&quot;); // TODO: what if only RGB texture?
+                    add(&quot;vec4 specGlossRGB = texture2D(materialSpecularGlossinessMap, textureCoord).rgba;&quot;); // TODO: what if only RGB texture?
                     add(&quot;specular *= specGlossRGB.rgb;&quot;);
                     add(&quot;glossiness *= specGlossRGB.a;&quot;);
                 }
 
                 if (geometry.uv &amp;&amp; material.metallicMap) {
                     if (material.metallicMap.matrix) {
-                        add(&quot;textureCoord = (xeo_uMetallicMapMatrix * texturePos).xy;&quot;);
+                        add(&quot;textureCoord = (metallicMapMatrix * texturePos).xy;&quot;);
                     } else {
                         add(&quot;textureCoord = texturePos.xy;&quot;);
                     }
-                    add(&quot;metallic *= texture2D(xeo_uMetallicMap, textureCoord).r;&quot;);
+                    add(&quot;metallic *= texture2D(metallicMap, textureCoord).r;&quot;);
                 }
 
                 if (geometry.uv &amp;&amp; material.roughnessMap) {
                     if (material.roughnessMap.matrix) {
-                        add(&quot;textureCoord = (xeo_uRoughnessMapMatrix * texturePos).xy;&quot;);
+                        add(&quot;textureCoord = (roughnessMapMatrix * texturePos).xy;&quot;);
                     } else {
                         add(&quot;textureCoord = texturePos.xy;&quot;);
                     }
-                    add(&quot;roughness *= texture2D(xeo_uRoughnessMap, textureCoord).r;&quot;);
+                    add(&quot;roughness *= texture2D(roughnessMap, textureCoord).r;&quot;);
                 }
 
                 if (geometry.uv &amp;&amp; material.metallicRoughnessMap) {
                     if (material.metallicRoughnessMap.matrix) {
-                        add(&quot;textureCoord = (xeo_uMetallicRoughnessMapMatrix * texturePos).xy;&quot;);
+                        add(&quot;textureCoord = (metallicRoughnessMapMatrix * texturePos).xy;&quot;);
                     } else {
                         add(&quot;textureCoord = texturePos.xy;&quot;);
                     }
-                    add(&quot;vec3 metalRoughRGB = texture2D(xeo_uMetallicRoughnessMap, textureCoord).rgb;&quot;);
+                    add(&quot;vec3 metalRoughRGB = texture2D(metallicRoughnessMap, textureCoord).rgb;&quot;);
                     add(&quot;metallic *= metalRoughRGB.r;&quot;);
                     add(&quot;roughness *= metalRoughRGB.g;&quot;);
                 }
 
-                add(&quot;vec3 viewEyeDir = normalize(-xeo_vViewPosition);&quot;);
+                add(&quot;vec3 viewEyeDir = normalize(-vViewPosition);&quot;);
 
                 if (material.diffuseFresnel || material.specularFresnel || material.opacityFresnel || material.emissiveFresnel || material.reflectivityFresnel) {
                     if (material.diffuseFresnel) {
-                        add(&quot;float diffuseFresnel = fresnel(viewEyeDir, viewNormal, xeo_uDiffuseFresnelEdgeBias, xeo_uDiffuseFresnelCenterBias, xeo_uDiffuseFresnelPower);&quot;);
-                        add(&quot;diffuse *= mix(xeo_uDiffuseFresnelEdgeColor, xeo_uDiffuseFresnelCenterColor, diffuseFresnel);&quot;);
+                        add(&quot;float diffuseFresnel = fresnel(viewEyeDir, viewNormal, diffuseFresnelEdgeBias, diffuseFresnelCenterBias, diffuseFresnelPower);&quot;);
+                        add(&quot;diffuseColor *= mix(diffuseFresnelEdgeColor, diffuseFresnelCenterColor, diffuseFresnel);&quot;);
                     }
                     if (material.specularFresnel) {
-                        add(&quot;float specularFresnel = fresnel(viewEyeDir, viewNormal, xeo_uSpecularFresnelEdgeBias, xeo_uSpecularFresnelCenterBias, xeo_uSpecularFresnelPower);&quot;);
-                        add(&quot;specular *= mix(xeo_uSpecularFresnelEdgeColor, xeo_uSpecularFresnelCenterColor, specularFresnel);&quot;);
+                        add(&quot;float specularFresnel = fresnel(viewEyeDir, viewNormal, specularFresnelEdgeBias, specularFresnelCenterBias, specularFresnelPower);&quot;);
+                        add(&quot;specular *= mix(specularFresnelEdgeColor, specularFresnelCenterColor, specularFresnel);&quot;);
                     }
                     if (material.opacityFresnel) {
-                        add(&quot;float opacityFresnel = fresnel(viewEyeDir, viewNormal, xeo_uOpacityFresnelEdgeBias, xeo_uOpacityFresnelCenterBias, xeo_uOpacityFresnelPower);&quot;);
-                        add(&quot;opacity *= mix(xeo_uOpacityFresnelEdgeColor.r, xeo_uOpacityFresnelCenterColor.r, opacityFresnel);&quot;);
+                        add(&quot;float opacityFresnel = fresnel(viewEyeDir, viewNormal, opacityFresnelEdgeBias, opacityFresnelCenterBias, opacityFresnelPower);&quot;);
+                        add(&quot;opacity *= mix(opacityFresnelEdgeColor.r, opacityFresnelCenterColor.r, opacityFresnel);&quot;);
                     }
                     if (material.emissiveFresnel) {
-                        add(&quot;float emissiveFresnel = fresnel(viewEyeDir, viewNormal, xeo_uEmissiveFresnelEdgeBias, xeo_uEmissiveFresnelCenterBias, xeo_uEmissiveFresnelPower);&quot;);
-                        add(&quot;emissive *= mix(xeo_uEmissiveFresnelEdgeColor, xeo_uEmissiveFresnelCenterColor, emissiveFresnel);&quot;);
+                        add(&quot;float emissiveFresnel = fresnel(viewEyeDir, viewNormal, emissiveFresnelEdgeBias, emissiveFresnelCenterBias, emissiveFresnelPower);&quot;);
+                        add(&quot;emissiveColor *= mix(emissiveFresnelEdgeColor, emissiveFresnelCenterColor, emissiveFresnel);&quot;);
                     }
                 }
 
@@ -1481,28 +1482,28 @@
                 add(&quot;vec3           viewLightDir;&quot;);
 
                 if (phongMaterial) {
-                    add(&quot;material.diffuseColor      = diffuse;&quot;);
+                    add(&quot;material.diffuseColor      = diffuseColor;&quot;);
                     add(&quot;material.specularColor     = specular;&quot;);
-                    add(&quot;material.shine             = xeo_uShininess;&quot;);
+                    add(&quot;material.shine             = materialShininess;&quot;);
                 }
 
                 if (pbrSpecGloss) {
                     add(&quot;float oneMinusSpecularStrength = 1.0 - max(max(specular.r, specular.g ),specular.b);&quot;); // Energy conservation
-                    add(&quot;material.diffuseColor      = diffuse * oneMinusSpecularStrength;&quot;);
+                    add(&quot;material.diffuseColor      = diffuseColor * oneMinusSpecularStrength;&quot;);
                     add(&quot;material.specularRoughness = clamp( 1.0 - glossiness, 0.04, 1.0 );&quot;);
                     add(&quot;material.specularColor     = specular;&quot;);
                 }
 
                 if (pbrMetalRough) {
                     add(&quot;float dielectricSpecular = 0.16 * specularF0 * specularF0;&quot;);
-                    add(&quot;material.diffuseColor      = diffuse * (1.0 - dielectricSpecular) * (1.0 - metallic);&quot;);
+                    add(&quot;material.diffuseColor      = diffuseColor * (1.0 - dielectricSpecular) * (1.0 - metallic);&quot;);
                     add(&quot;material.specularRoughness = clamp(roughness, 0.04, 1.0);&quot;);
-                    add(&quot;material.specularColor     = mix(vec3(dielectricSpecular), diffuse, metallic);&quot;);
+                    add(&quot;material.specularColor     = mix(vec3(dielectricSpecular), diffuseColor, metallic);&quot;);
                 }
 
-                add(&quot;geometry.position      = xeo_vViewPosition;&quot;);
+                add(&quot;geometry.position      = vViewPosition;&quot;);
                 if (states.lights.lightMap) {
-                    add(&quot;geometry.worldNormal   = normalize(xeo_vWorldNormal);&quot;);
+                    add(&quot;geometry.worldNormal   = normalize(vWorldNormal);&quot;);
                 }
                 add(&quot;geometry.viewNormal    = viewNormal;&quot;);
                 add(&quot;geometry.viewEyeDir    = viewEyeDir;&quot;);
@@ -1529,10 +1530,10 @@
                         continue;
                     }
 
-                    add(&quot;viewLightDir = normalize(xeo_vViewLightReverseDirAndDist&quot; + i + &quot;.xyz);&quot;); // If normal mapping, the fragment-&gt;light vector will be in tangent space
+                    add(&quot;viewLightDir = normalize(vViewLightReverseDirAndDist&quot; + i + &quot;.xyz);&quot;); // If normal mapping, the fragment-&gt;light vector will be in tangent space
 
                     add(&quot;light.direction = viewLightDir;&quot;);
-                    add(&quot;light.color = xeo_uLightIntensity&quot; + i + &quot; * xeo_uLightColor&quot; + i + &quot;;&quot;);
+                    add(&quot;light.color = lightIntensity&quot; + i + &quot; * lightColor&quot; + i + &quot;;&quot;);
 
                     if (phongMaterial) {
                         add(&quot;computePhongLighting(light, geometry, material, reflectedLight);&quot;);
@@ -1560,8 +1561,8 @@
                         light = lights[i];
 
                         if (light.shadow) {
-                            add(&quot;shadowCoord = (xeo_vShadowPositionFromLight&quot; + i + &quot;.xyz / xeo_vShadowPositionFromLight&quot; + i + &quot;.w) / 2.0 - 1.0;&quot;);
-                            add(&quot;rgbaDepth = texture2D(xeo_uShadowMap&quot; + i + &quot;, shadowCoord.xy);&quot;);
+                            add(&quot;shadowCoord = (vShadowPosFromLight&quot; + i + &quot;.xyz / vShadowPosFromLight&quot; + i + &quot;.w) / 2.0 - 1.0;&quot;);
+                            add(&quot;rgbaDepth = texture2D(shadowMap&quot; + i + &quot;, shadowCoord.xy);&quot;);
                             add(&quot;depth = rgbaDepth.r;&quot;);
                             add(&quot;shadow *= (shadowCoord.z &gt; depth + 0.005) ? 0.7 : 1.0;&quot;);
                             //add(&quot;shadow *= (shadowCoord.z == 0.0) ? 0.2 : 1.0;&quot;);
@@ -1573,12 +1574,12 @@
 
                 if (phongMaterial) {
 
-                    add(&quot;ambient *= xeo_uLightAmbientColor;&quot;);
+                    add(&quot;ambientColor *= lightAmbient;&quot;);
 
-                    add(&quot;vec3 outgoingLight =  (shadow * occlusion * (ambient + reflectedLight.diffuse + reflectedLight.specular)) + emissive;&quot;);
+                    add(&quot;vec3 outgoingLight =  (shadow * occlusion * (ambientColor + reflectedLight.diffuse + reflectedLight.specular)) + emissiveColor;&quot;);
 
                 } else {
-                    add(&quot;vec3 outgoingLight = (shadow * occlusion * reflectedLight.diffuse) + (shadow * occlusion * reflectedLight.specular) + emissive;&quot;);
+                    add(&quot;vec3 outgoingLight = (shadow * occlusion * reflectedLight.diffuse) + (shadow * occlusion * reflectedLight.specular) + emissiveColor;&quot;);
                 }
 
             } else {
@@ -1587,7 +1588,7 @@
                 // NO SHADING - EMISSIVE ONLY
                 //--------------------------------------------------------------------------------
 
-                add(&quot;vec3 outgoingLight = emissive;&quot;);
+                add(&quot;vec3 outgoingLight = emissiveColor;&quot;);
             }
 
 

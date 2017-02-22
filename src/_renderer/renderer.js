@@ -472,6 +472,7 @@
 
         if (oldChunk) {
             this._chunkFactory.putChunk(oldChunk);
+            object.chunks[order] = null;
         }
 
         // Attach new chunk
@@ -511,8 +512,7 @@
         var object = this.objects[objectId];
 
         if (!object) {
-
-            // Object not found
+            console.error("xeogl.renderer.Chunkfactory.removeObject: object not found: " + objectId);
             return;
         }
 
@@ -520,6 +520,7 @@
         var chunks = object.chunks;
         for (var i = 0, len = chunks.length; i < len; i++) {
             this._chunkFactory.putChunk(chunks[i]);
+            chunks[i] = null;
         }
 
         // Release object's shader
