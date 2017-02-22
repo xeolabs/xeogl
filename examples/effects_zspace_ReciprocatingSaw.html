@@ -25,7 +25,9 @@
             target="_parent">GLTFModel</a> viewed with a <a
             href="../docs/classes/ZSpaceEffect.html"
             target="_parent">ZSpaceEffect</a></h1>
-    <div id="log" style="color:red"></div>
+
+    <pre id="log">model:  Reciprocating Saw - [<a href='models/gltf/2.0/Reciprocating_Saw/PBR-SpecGloss/README.md' target="_parent">model info</a>]</pre>
+
 </div>
 
 
@@ -36,7 +38,11 @@
     //----------------------------------------------------------------------------
 
     var model = new xeogl.GLTFModel({
-        src: "models/gltf/Reciprocating_Saw/pbr/Reciprocating_Saw.gltf"
+        src: "models/gltf/2.0/Reciprocating_Saw/PBR-SpecGloss/Reciprocating_Saw.gltf",
+        transform: new xeogl.Rotate({
+            xyz: [1, 0, 0],
+            angle: 90
+        })
     });
 
     model.on("loaded", function () {
@@ -88,13 +94,15 @@
     // Set initial camera position
     //----------------------------------------------------------------------------
 
-    var view = model.scene.camera.view;
+    var cameraFlight = new xeogl.CameraFlightAnimation();
 
-    view.eye = [-36.58, 400.01, 2.26];
-    view.look = [-102.97, 21.85, 19.36];
-    view.up = [0.00, -0.11, -0.99];
-
-    view.gimbalLockY = false; // Free rotation for this model
+    model.worldBoundary.on("updated", function () { // Auto-fit model to view
+        cameraFlight.jumpTo({
+            worldBoundary: model.worldBoundary,
+            fit: true,
+            fitFOV: 50
+        });
+    });
 
     //----------------------------------------------------------------------------
     // Allow camera control with keyboard and mouse
@@ -115,7 +123,7 @@
 
     zspaceEffect.on("supported", function (supported) {
         if (!supported) {
-            document.getElementById("log").innerText = "Not a zSpace display ";
+            document.getElementById("log").innerText = "(zSpace not detected) ";
         }
     });
 

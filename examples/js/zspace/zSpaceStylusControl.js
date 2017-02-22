@@ -57,7 +57,7 @@
  // Handle missing zSpace support
  zspaceEffect.on("supported", function (supported) {
      if (!supported) {
-         document.getElementById("log").innerText = "Not a zSpace display ";
+         document.getElementById("log").innerText = "(zSpace not detected) ";
      }
  });
  ````
@@ -304,13 +304,13 @@
 
                         if (lastEntityHighlighted) {
                             if (!hit || (hit.entity.id !== lastEntityHighlighted.id)) {
-                                lastEntityHighlighted.material.emissive = [0, 0, 0];  // De-highlight the previous hit entity
+                           //     lastEntityHighlighted.material.emissive = [0, 0, 0];  // De-highlight the previous hit entity
                             }
                         }
 
                         if (hit) {
                             stylusHelper.setHighlighted(true);
-                            hit.entity.material.emissive = [0.25, 0.25, 0]; // highlight the new entity
+                         //   hit.entity.material.emissive = [0.25, 0.25, 0]; // highlight the new entity
                             lastEntityHighlighted = hit.entity;
 
                         } else {
@@ -379,14 +379,14 @@
 
                             quat.multiply(startRotation, rotation, entityRotation);
 
-                            draggingEntity.material.emissive = [0.25, 0.25, 0.0];
+                            //draggingEntity.material.emissive = [0.25, 0.25, 0.0];
 
                         } else {
 
                             // Button 0 released - release entity
 
                             if (draggingEntity) {
-                                draggingEntity.material.emissive = [0.0, 0.0, 0.0];
+                            //    draggingEntity.material.emissive = [0.0, 0.0, 0.0];
                                 draggingEntity = null;
                             }
                         }

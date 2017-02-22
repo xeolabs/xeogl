@@ -120,14 +120,16 @@ function materialGallery(menuId, cfg) {
         materialCfg = entityCfg.material || material;
         geometryCfg = entityCfg.geometry || geometry;
 
+        var transform = new xeogl.Translate({
+            xyz: [x, 0, 0]
+        });
+
         new xeogl.Entity({
             id: id,
             lights: lights,
             geometry: geometryCfg,
             material: materialCfg,
-            transform: new xeogl.Translate({
-                xyz: [x, y, 0]
-            }),
+            transform: transform,
             modes: new xeogl.Modes({
                 transparent: (materialCfg.opacity && materialCfg.opacity < 1.0) || (materialCfg.opacityMap) || (materialCfg.opacityFresnel)
             })
@@ -141,18 +143,14 @@ function materialGallery(menuId, cfg) {
                 ySize: .1
             }),
             material: textMaterial,
-            transform: new xeogl.Translate({
-                xyz: [x, 0, 0]
-            }),
+            transform: transform,
             billboard: billboard
         });
 
         new xeogl.Entity({
             geometry: wireGeometry,
             material: textMaterial,
-            transform: new xeogl.Translate({
-                xyz: [x, y, 0]
-            }),
+            transform: transform,
             billboard: billboard
         });
     }
@@ -180,5 +178,13 @@ function materialGallery(menuId, cfg) {
                 fitFOV: 35
             });
         }
-    }
+    };
+
+    //---------------------------------------------------
+    // Create a zSpace effect and stylus control
+    //---------------------------------------------------
+    //
+    //new xeogl.ZSpaceEffect({canvasOffset: [310, 0]});
+    //new xeogl.ZSpaceStylusControl();
+
 }

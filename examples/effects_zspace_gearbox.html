@@ -35,9 +35,7 @@
     //----------------------------------------------------------------------------
 
     var model = new xeogl.GLTFModel({
-        //src: "models/gltf/gearbox/gearbox_assy.gltf"
-        //src: "models/gltf/gearbox/gearbox_assy.gltf"
-        src: "models/gltf/gearbox/PBR-MetalRoughness/gearbox_assy.gltf"
+        src: "models/gltf/2.0/GearboxAssy/PBR-MetalRoughness/gearbox_assy.gltf"
     });
 
     //----------------------------------------------------------------------------
@@ -72,7 +70,7 @@
 
     zspaceEffect.on("supported", function (supported) {
         if (!supported) {
-            document.getElementById("log").innerText = "Not a zSpace display ";
+            document.getElementById("log").innerText = "(zSpace not detected) ";
         } else {
             new xeogl.ZSpaceStylusControl();
         }

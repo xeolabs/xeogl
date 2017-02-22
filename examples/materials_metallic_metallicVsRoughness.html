@@ -227,12 +227,6 @@
 
             var self = this;
 
-            // This is actually quite inefficient because it continually updates
-            // the scene graph, forcing frames to continually re-render.
-            // Your GPU's not going to like it, but it's just for a quick and dirty demo.
-
-            var textured = true;
-
             var update = function () {
 
                 for (var i = 0; i < entities.length; i++) {

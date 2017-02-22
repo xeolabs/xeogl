@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.js"></script>
+    <script src="js/skyboxes/skybox.js"></script>
+
+    <link href="libs/perfect-scrollbar.css" rel="stylesheet"/>
+    <script src="libs/perfect-scrollbar.min.js"></script>
+
+    <script src="js/libs/dat.gui.min.js"></script>
+
+    <script src="js/utils/glTFGallery.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <style>
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        #screenshotMenu {
+            z-index: 200000;
+            position: fixed !important;
+            top: 0;
+            left: 0;
+            background: white;
+            height: 100vh;
+            width: 120px;
+            overflow-x: hidden;
+            overflow-y: scroll;
+            border-left: 1px solid white;
+            border-right: 1px solid white;
+            padding: 0;
+        }
+
+        #screenshots {
+            margin: 0;
+            padding: 0;
+        }
+
+        #screenshots div {
+            width: 120px;
+            height: 120px;
+            padding: 0;
+            margin: 0;
+            border-bottom: 1px solid white;
+        }
+
+        #screenshots img {
+            width: 120px;
+            height: 120px;
+            padding: 0;
+            margin: 0;
+            border: 0;
+        }
+
+    </style>
+
+
+<body>
+
+<div id="screenshotMenu" class="container">
+    <div id="screenshots" class="content">
+    </div>
+</div>
+
+<div id="info" style="left: 140px; width:500px;">
+    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - loading glTF 2.0 models</h1>
+    <br>
+
+    <div id="modelInfo">
+        <ul>
+            <li>( Select a thumbnail )</li>
+        </ul>
+    </div>
+</div>
+
+
+<div id="dat-gui-container" class="lower">
+</div>
+
+<script>
+
+    // xeogl bundles all the official glTF 1.0 examples. They are all listed below, but
+    // commented out when not supported. We'll uncomment more of these as we support
+    // more glTF features.
+
+    glTFGallery([
+        {
+            "src": "models/gltf/2.0/TriangleWithoutIndices/glTF/TriangleWithoutIndices.gltf",
+            "readme": "models/gltf/2.0/TriangleWithoutIndices/README.md",
+            "screenshot": "models/gltf/2.0/TriangleWithoutIndices/screenshot/screenshot.png",
+            "desc": "The simplest possible glTF asset: A single `scene` with a single `node` and a single `mesh` with a single `mesh.primitive` with a single triangle with a single attribute, without indices and without a `material`"
+        },
+        {
+            "src": "models/gltf/2.0/Triangle/glTF/Triangle.gltf",
+            "readme": "models/gltf/2.0/Triangle/README.md",
+            "screenshot": "models/gltf/2.0/Triangle/screenshot/screenshot.png",
+            "desc": "A very simple glTF asset: The basic structure is the same as in Triangle Without Indices, but here, the `mesh.primitive` describes an *indexed* geometry"
+        },
+        {
+            "src": "models/gltf/2.0/AnimatedTriangle/glTF/AnimatedTriangle.gltf",
+            "readme": "models/gltf/2.0/AnimatedTriangle/README.md",
+            "screenshot": "models/gltf/2.0/AnimatedTriangle/screenshot/screenshot.gif",
+            "desc": "This sample is similar to the Triangle, but the `node` has a `rotation` property that is modified with a simple `animation`"
+        },
+        {
+            "src": "models/gltf/2.0/SimpleMaterial/glTF/SimpleMaterial.gltf",
+            "readme": "models/gltf/2.0/SimpleMaterial/README.md",
+            "screenshot": "models/gltf/2.0/SimpleMaterial/screenshot/screenshot.png",
+            "desc": "This sample is similar to the [Triangle](Triangle), but additonally defines a `material` that consists of an emissive color"
+        },
+        {
+            "src": "models/gltf/2.0/SimpleMeshes/glTF/SimpleMeshes.gltf",
+            "readme": "models/gltf/2.0/SimpleMeshes/README.md",
+            "screenshot": "models/gltf/2.0/SimpleMeshes/screenshot/screenshot.png",
+            "desc": "A simple `scene` with two `nodes`, both containing the same `mesh`, namely a `mesh` with a single `mesh.primitive` with a single indexed triangle with *multiple* attributes (positions, normals and texture coordinates), but without a `material`"
+        },
+        {
+            "src": "models/gltf/2.0/AdvancedMaterial/glTF/AdvancedMaterial.gltf",
+            "readme": "models/gltf/2.0/AdvancedMaterial/README.md",
+            "screenshot": "models/gltf/2.0/AdvancedMaterial/screenshot/screenshot.png",
+            "desc": "This sample is similar to the [Simple Meshes](SimpleMeshes), but defines a `material` that includes a light, and thus shows the effect of the normals attribute"
+        },
+        {
+            "src": "models/gltf/2.0/SimpleOpacity/glTF/SimpleOpacity.gltf",
+            "readme": "models/gltf/2.0/SimpleOpacity/README.md",
+            "screenshot": "models/gltf/2.0/SimpleOpacity/screenshot/screenshot.png",
+            "desc": "A simple `scene` with multiple `nodes`, `meshes` and `materials`, where each `material` has different opacity values, ranging from fully transparent to fully opaque "
+        },
+        {
+            "src": "models/gltf/2.0/SimpleTexture/glTF/SimpleTexture.gltf",
+            "readme": "models/gltf/2.0/SimpleTexture/README.md",
+            "screenshot": "models/gltf/2.0/SimpleTexture/screenshot/screenshot.png",
+            "desc": "A sample with a `material` that uses a single `texture`"
+        },
+        {
+            "src": "models/gltf/2.0/SimpleSkin/glTF/SimpleSkin.gltf",
+            "readme": "models/gltf/2.0/SimpleSkin/README.md",
+            "screenshot": "models/gltf/2.0/SimpleSkin/screenshot/screenshot.gif",
+            "desc": "A sample with a `skin`, showing very basic vertex skinning."
+        }
+    ]);
+</script>
+</body>
+</html>

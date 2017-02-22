@@ -216,13 +216,12 @@
             this["emissive"] = typedToJS(material.emissive);
             this["opacity"] = material.opacity;
 
+            this["lightMap"] = !!lights.lightMap;
+            this["reflectionMap"] = !!lights.reflectionMap;
+            this["dirLights"] = !!(lights.lights && lights.lights.length > 0);
+            this["skybox"] = !!skybox.active;
+
             var self = this;
-
-            // This is actually quite inefficient because it continually updates
-            // the scene graph, forcing frames to continually re-render.
-            // Your GPU's not going to like it, but it's just for a quick and dirty demo.
-
-            var textured = true;
 
             var update = function () {
 
@@ -235,6 +234,22 @@
                     material.emissive = JSToTyped(self["emissive"]);
                     material.opacity = self["opacity"];
                     entity.modes.transparent = (material.opacity < 1);
+
+                    if (self["lightMap"] !== !!lights.lightMap) {
+                        lights.lightMap = self["lightMap"] ? lightMap : null;
+                    }
+
+                    if (self["reflectionMap"] !== !!lights.reflectionMap) {
+                        lights.reflectionMap = self["reflectionMap"] ? reflectionMap : null;
+                    }
+
+                    if (self["dirLights"] !== !!(lights.lights && lights.lights.length > 0)) {
+                        lights.lights = self["dirLights"] ? dirLights : [];
+                    }
+
+                    if (self["skybox"] !== skybox.active) {
+                        skybox.active = self["skybox"];
+                    }
                 }
 
                 requestAnimationFrame(update);
@@ -249,11 +264,18 @@
 
         var menu = new Menu();
 
-        var folder = gui.addFolder('MetallicMaterial');
-        folder.addColor(menu, 'diffuse', [255, 255, 255]);
-        folder.addColor(menu, 'emissive', [0, 0, 0]);
-        folder.add(menu, 'opacity', 0.0, 1.0);
-        folder.open();
+        var materialFolder = gui.addFolder('MetallicMaterial');
+        materialFolder.addColor(menu, 'diffuse', [255, 255, 255]);
+        materialFolder.addColor(menu, 'emissive', [0, 0, 0]);
+        materialFolder.add(menu, 'opacity', 0.0, 1.0);
+        materialFolder.open();
+
+        var lightsFolder = gui.addFolder('Environment');
+        lightsFolder.add(menu, 'lightMap', true);
+        lightsFolder.add(menu, 'reflectionMap', true);
+        lightsFolder.add(menu, 'dirLights', true);
+        lightsFolder.add(menu, 'skybox', true);
+        lightsFolder.open();
 
         function typedToJS(arry) {
             return [arry[0] * 255, arry[1] * 255, arry[2] * 255];
