@@ -7,10 +7,10 @@
         type: "projTransform",
 
         build: function () {
-            this._uProjMatrixDraw = this.program.draw.getUniform("xeo_uProjMatrix");
-            this._uProjMatrixShadow = this.program.shadow.getUniform("xeo_uShadowProjMatrix");
-            this._uProjMatrixPickObject = this.program.pickObject.getUniform("xeo_uProjMatrix");
-            this._uProjMatrixPickPrimitive = this.program.pickPrimitive.getUniform("xeo_uProjMatrix");
+            this._uProjMatrixDraw = this.program.draw.getUniform("projMatrix");
+            this._uProjMatrixShadow = this.program.shadow.getUniform("shadowProjMatrix");
+            this._uProjMatrixPickObject = this.program.pickObject.getUniform("projMatrix");
+            this._uProjMatrixPickPrimitive = this.program.pickPrimitive.getUniform("projMatrix");
         },
 
         draw: function () {

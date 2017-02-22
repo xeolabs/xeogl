@@ -7,11 +7,11 @@
         type: "viewTransform",
 
         build: function () {
-            this._uViewMatrixDraw = this.program.draw.getUniform("xeo_uViewMatrix");
-            this._uViewNormalMatrixDraw = this.program.draw.getUniform("xeo_uViewNormalMatrix");
-            this._uViewMatrixShadow = this.program.pickObject.getUniform("xeo_uShadowViewMatrix");
-            this._uViewMatrixPickObject = this.program.pickObject.getUniform("xeo_uViewMatrix");
-            this._uViewMatrixPickPrimitive = this.program.pickPrimitive.getUniform("xeo_uViewMatrix");
+            this._uViewMatrixDraw = this.program.draw.getUniform("viewMatrix");
+            this._uViewNormalMatrixDraw = this.program.draw.getUniform("viewNormalMatrix");
+            this._uViewMatrixShadow = this.program.pickObject.getUniform("shadowViewMatrix");
+            this._uViewMatrixPickObject = this.program.pickObject.getUniform("viewMatrix");
+            this._uViewMatrixPickPrimitive = this.program.pickPrimitive.getUniform("viewMatrix");
         },
 
         draw: function () {

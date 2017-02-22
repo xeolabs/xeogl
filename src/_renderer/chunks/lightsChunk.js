@@ -33,38 +33,38 @@
                 switch (light.type) {
 
                     case "ambient":
-                        this._uLightAmbientColor[i] = program.draw.getUniform("xeo_uLightAmbientColor");
-                        this._uLightAmbientIntensity[i] = program.draw.getUniform("xeo_uLightAmbientIntensity");
+                        this._uLightAmbientColor[i] = program.draw.getUniform("lightAmbient");
+                        this._uLightAmbientIntensity[i] = program.draw.getUniform("lightAmbientIntensity");
                         break;
 
                     case "dir":
-                        this._uLightColor[i] = program.draw.getUniform("xeo_uLightColor" + i);
-                        this._uLightIntensity[i] = program.draw.getUniform("xeo_uLightIntensity" + i);
+                        this._uLightColor[i] = program.draw.getUniform("lightColor" + i);
+                        this._uLightIntensity[i] = program.draw.getUniform("lightIntensity" + i);
                         this._uLightPos[i] = null;
-                        this._uLightDir[i] = program.draw.getUniform("xeo_uLightDir" + i);
+                        this._uLightDir[i] = program.draw.getUniform("lightDir" + i);
                         break;
 
                     case "point":
-                        this._uLightColor[i] = program.draw.getUniform("xeo_uLightColor" + i);
-                        this._uLightIntensity[i] = program.draw.getUniform("xeo_uLightIntensity" + i);
-                        this._uLightPos[i] = program.draw.getUniform("xeo_uLightPos" + i);
+                        this._uLightColor[i] = program.draw.getUniform("lightColor" + i);
+                        this._uLightIntensity[i] = program.draw.getUniform("lightIntensity" + i);
+                        this._uLightPos[i] = program.draw.getUniform("lightPos" + i);
                         this._uLightDir[i] = null;
-                        this._uLightAttenuation[i] = program.draw.getUniform("xeo_uLightAttenuation" + i);
+                        this._uLightAttenuation[i] = program.draw.getUniform("lightAttenuation" + i);
                         break;
                 }
 
                 if (light.shadow) {
-                    this._uShadowViewMatrix[i] = program.draw.getUniform("xeo_uShadowViewMatrix" + i);
-                    this._uShadowProjMatrix[i] = program.draw.getUniform("xeo_uShadowProjMatrix" + i);
+                    this._uShadowViewMatrix[i] = program.draw.getUniform("shadowViewMatrix" + i);
+                    this._uShadowProjMatrix[i] = program.draw.getUniform("shadowProjMatrix" + i);
                 }
             }
 
             if (this.state.lightMap) {
-                this._uLightMap = "xeo_uLightMap";
+                this._uLightMap = "lightMap";
             }
 
             if (this.state.reflectionMap) {
-                this._uReflectionMap = "xeo_uReflectionMap";
+                this._uReflectionMap = "reflectionMap";
             }
         },
 
@@ -138,7 +138,7 @@
                         if (shadowRenderBuf) {
 
                             var texture = shadowRenderBuf.getTexture();
-                            draw.bindTexture("xeo_uShadowMap" + i, shadowRenderBuf.getTexture(), frameCtx.textureUnit);
+                            draw.bindTexture("shadowMap" + i, shadowRenderBuf.getTexture(), frameCtx.textureUnit);
                             frameCtx.textureUnit = (frameCtx.textureUnit + 1) % maxTextureUnits;
                             frameCtx.bindTexture++;
                         }

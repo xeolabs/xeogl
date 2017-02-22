@@ -14,97 +14,97 @@
 
             // Blinn-Phong base material
 
-            this._uAmbient = draw.getUniform("xeo_uAmbient");
-            this._uDiffuse = draw.getUniform("xeo_uDiffuse");
-            this._uSpecular = draw.getUniform("xeo_uSpecular");
-            this._uEmissive = draw.getUniform("xeo_uEmissive");
-            this._uOpacity = draw.getUniform("xeo_uOpacity");
-            this._uShininess = draw.getUniform("xeo_uShininess");
+            this._uAmbient = draw.getUniform("materialAmbient");
+            this._uDiffuse = draw.getUniform("materialDiffuse");
+            this._uSpecular = draw.getUniform("materialSpecular");
+            this._uEmissive = draw.getUniform("materialEmissive");
+            this._uOpacity = draw.getUniform("materialOpacity");
+            this._uShininess = draw.getUniform("materialShininess");
 
-            this._uPointSize = draw.getUniform("xeo_uPointSize");
+            this._uPointSize = draw.getUniform("pointSize");
 
             // Textures
 
             if (state.ambientMap) {
-                this._uAmbientMap = "xeo_uAmbientMap";
-                this._uAmbientMapMatrix = draw.getUniform("xeo_uAmbientMapMatrix");
+                this._uAmbientMap = "ambientMap";
+                this._uAmbientMapMatrix = draw.getUniform("ambientMapMatrix");
             }
 
             if (state.diffuseMap) {
-                this._uDiffuseMap = "xeo_uDiffuseMap";
-                this._uDiffuseMapMatrix = draw.getUniform("xeo_uDiffuseMapMatrix");
+                this._uDiffuseMap = "diffuseMap";
+                this._uDiffuseMapMatrix = draw.getUniform("diffuseMapMatrix");
             }
 
             if (state.specularMap) {
-                this._uSpecularMap = "xeo_uSpecularMap";
-                this._uSpecularMapMatrix = draw.getUniform("xeo_uSpecularMapMatrix");
+                this._uSpecularMap = "specularMap";
+                this._uSpecularMapMatrix = draw.getUniform("specularMapMatrix");
             }
 
             if (state.emissiveMap) {
-                this._uEmissiveMap = "xeo_uEmissiveMap";
-                this._uEmissiveMapMatrix = draw.getUniform("xeo_uEmissiveMapMatrix");
+                this._uEmissiveMap = "emissiveMap";
+                this._uEmissiveMapMatrix = draw.getUniform("emissiveMapMatrix");
             }
 
             if (state.opacityMap) {
-                this._uOpacityMap = "xeo_uOpacityMap";
-                this._uOpacityMapMatrix = draw.getUniform("xeo_uOpacityMapMatrix");
+                this._uOpacityMap = "opacityMap";
+                this._uOpacityMapMatrix = draw.getUniform("opacityMapMatrix");
             }
 
             if (state.reflectivityMap) {
-                this._uReflectivityMap = "xeo_uReflectivityMap";
-                this._uReflectivityMapMatrix = draw.getUniform("xeo_uReflectivityMapMatrix");
+                this._uReflectivityMap = "reflectivityMap";
+                this._uReflectivityMapMatrix = draw.getUniform("reflectivityMapMatrix");
             }
 
             if (state.normalMap) {
-                this._uNormalMap = "xeo_uNormalMap";
-                this._uNormalMapMatrix = draw.getUniform("xeo_uNormalMapMatrix");
+                this._uNormalMap = "normalMap";
+                this._uNormalMapMatrix = draw.getUniform("normalMapMatrix");
             }
 
             if (state.occlusionMap) {
-                this._uOcclusionMap = "xeo_uOcclusionMap";
-                this._uOcclusionMapMatrix = draw.getUniform("xeo_uOcclusionMapMatrix");
+                this._uOcclusionMap = "occlusionMap";
+                this._uOcclusionMapMatrix = draw.getUniform("occlusionMapMatrix");
             }
 
             // Fresnel effects
 
             if (state.diffuseFresnel) {
-                this._uDiffuseFresnelEdgeBias = draw.getUniform("xeo_uDiffuseFresnelEdgeBias");
-                this._uDiffuseFresnelCenterBias = draw.getUniform("xeo_uDiffuseFresnelCenterBias");
-                this._uDiffuseFresnelEdgeColor = draw.getUniform("xeo_uDiffuseFresnelEdgeColor");
-                this._uDiffuseFresnelCenterColor = draw.getUniform("xeo_uDiffuseFresnelCenterColor");
-                this._uDiffuseFresnelPower = draw.getUniform("xeo_uDiffuseFresnelPower");
+                this._uDiffuseFresnelEdgeBias = draw.getUniform("diffuseFresnelEdgeBias");
+                this._uDiffuseFresnelCenterBias = draw.getUniform("diffuseFresnelCenterBias");
+                this._uDiffuseFresnelEdgeColor = draw.getUniform("diffuseFresnelEdgeColor");
+                this._uDiffuseFresnelCenterColor = draw.getUniform("diffuseFresnelCenterColor");
+                this._uDiffuseFresnelPower = draw.getUniform("diffuseFresnelPower");
             }
 
             if (state.specularFresnel) {
-                this._uSpecularFresnelEdgeBias = draw.getUniform("xeo_uSpecularFresnelEdgeBias");
-                this._uSpecularFresnelCenterBias = draw.getUniform("xeo_uSpecularFresnelCenterBias");
-                this._uSpecularFresnelEdgeColor = draw.getUniform("xeo_uSpecularFresnelEdgeColor");
-                this._uSpecularFresnelCenterColor = draw.getUniform("xeo_uSpecularFresnelCenterColor");
-                this._uSpecularFresnelPower = draw.getUniform("xeo_uSpecularFresnelPower");
+                this._uSpecularFresnelEdgeBias = draw.getUniform("specularFresnelEdgeBias");
+                this._uSpecularFresnelCenterBias = draw.getUniform("specularFresnelCenterBias");
+                this._uSpecularFresnelEdgeColor = draw.getUniform("specularFresnelEdgeColor");
+                this._uSpecularFresnelCenterColor = draw.getUniform("specularFresnelCenterColor");
+                this._uSpecularFresnelPower = draw.getUniform("specularFresnelPower");
             }
 
             if (state.opacityFresnel) {
-                this._uOpacityFresnelEdgeBias = draw.getUniform("xeo_uOpacityFresnelEdgeBias");
-                this._uOpacityFresnelCenterBias = draw.getUniform("xeo_uOpacityFresnelCenterBias");
-                this._uOpacityFresnelEdgeColor = draw.getUniform("xeo_uOpacityFresnelEdgeColor");
-                this._uOpacityFresnelCenterColor = draw.getUniform("xeo_uOpacityFresnelCenterColor");
-                this._uOpacityFresnelPower = draw.getUniform("xeo_uOpacityFresnelPower");
+                this._uOpacityFresnelEdgeBias = draw.getUniform("opacityFresnelEdgeBias");
+                this._uOpacityFresnelCenterBias = draw.getUniform("opacityFresnelCenterBias");
+                this._uOpacityFresnelEdgeColor = draw.getUniform("opacityFresnelEdgeColor");
+                this._uOpacityFresnelCenterColor = draw.getUniform("opacityFresnelCenterColor");
+                this._uOpacityFresnelPower = draw.getUniform("opacityFresnelPower");
             }
 
             if (state.reflectivityFresnel) {
-                this._uReflectivityFresnelEdgeBias = draw.getUniform("xeo_uReflectivityFresnelEdgeBias");
-                this._uReflectivityFresnelCenterBias = draw.getUniform("xeo_uReflectivityFresnelCenterBias");
-                this._uReflectivityFresnelEdgeColor = draw.getUniform("xeo_uReflectivityFresnelEdgeColor");
-                this._uReflectivityFresnelCenterColor = draw.getUniform("xeo_uReflectivityFresnelCenterColor");
-                this._uReflectivityFresnelPower = draw.getUniform("xeo_uReflectivityFresnelPower");
+                this._uReflectivityFresnelEdgeBias = draw.getUniform("reflectivityFresnelEdgeBias");
+                this._uReflectivityFresnelCenterBias = draw.getUniform("reflectivityFresnelCenterBias");
+                this._uReflectivityFresnelEdgeColor = draw.getUniform("reflectivityFresnelEdgeColor");
+                this._uReflectivityFresnelCenterColor = draw.getUniform("reflectivityFresnelCenterColor");
+                this._uReflectivityFresnelPower = draw.getUniform("reflectivityFresnelPower");
             }
 
             if (state.emissiveFresnel) {
-                this._uEmissiveFresnelEdgeBias = draw.getUniform("xeo_uEmissiveFresnelEdgeBias");
-                this._uEmissiveFresnelCenterBias = draw.getUniform("xeo_uEmissiveFresnelCenterBias");
-                this._uEmissiveFresnelEdgeColor = draw.getUniform("xeo_uEmissiveFresnelEdgeColor");
-                this._uEmissiveFresnelCenterColor = draw.getUniform("xeo_uEmissiveFresnelCenterColor");
-                this._uEmissiveFresnelPower = draw.getUniform("xeo_uEmissiveFresnelPower");
+                this._uEmissiveFresnelEdgeBias = draw.getUniform("emissiveFresnelEdgeBias");
+                this._uEmissiveFresnelCenterBias = draw.getUniform("emissiveFresnelCenterBias");
+                this._uEmissiveFresnelEdgeColor = draw.getUniform("emissiveFresnelEdgeColor");
+                this._uEmissiveFresnelCenterColor = draw.getUniform("emissiveFresnelCenterColor");
+                this._uEmissiveFresnelPower = draw.getUniform("emissiveFresnelPower");
             }
         },
 
@@ -151,7 +151,7 @@
 
             // Ambient map
 
-            if (state.ambientMap && state.ambientMap.texture) {
+            if (state.ambientMap && state.ambientMap.texture && this._uAmbientMap) {
                 draw.bindTexture(this._uAmbientMap, state.ambientMap.texture, frameCtx.textureUnit);
                 frameCtx.textureUnit = (frameCtx.textureUnit + 1) % xeogl.WEBGL_INFO.MAX_TEXTURE_IMAGE_UNITS;
                 frameCtx.bindTexture++;
@@ -163,7 +163,7 @@
 
             // Diffuse map
 
-            if (state.diffuseMap && state.diffuseMap.texture) {
+            if (state.diffuseMap && state.diffuseMap.texture && this._uDiffuseMap) {
                 draw.bindTexture(this._uDiffuseMap, state.diffuseMap.texture, frameCtx.textureUnit);
                 frameCtx.textureUnit = (frameCtx.textureUnit + 1) % xeogl.WEBGL_INFO.MAX_TEXTURE_IMAGE_UNITS;
                 frameCtx.bindTexture++;
@@ -175,7 +175,7 @@
 
             // Specular map
 
-            if (state.specularMap && state.specularMap.texture) {
+            if (state.specularMap && state.specularMap.texture && this._uSpecularMap) {
                 draw.bindTexture(this._uSpecularMap, state.specularMap.texture, frameCtx.textureUnit);
                 frameCtx.textureUnit = (frameCtx.textureUnit + 1) % xeogl.WEBGL_INFO.MAX_TEXTURE_IMAGE_UNITS;
                 frameCtx.bindTexture++;
@@ -187,7 +187,7 @@
 
             // Emissive map
 
-            if (state.emissiveMap && state.emissiveMap.texture) {
+            if (state.emissiveMap && state.emissiveMap.texture && this._uEmissiveMap) {
                 draw.bindTexture(this._uEmissiveMap, state.emissiveMap.texture, frameCtx.textureUnit);
                 frameCtx.textureUnit = (frameCtx.textureUnit + 1) % xeogl.WEBGL_INFO.MAX_TEXTURE_IMAGE_UNITS;
                 frameCtx.bindTexture++;
@@ -199,7 +199,7 @@
 
             // Opacity map
 
-            if (state.opacityMap && state.opacityMap.texture) {
+            if (state.opacityMap && state.opacityMap.texture && this._uOpacityMap) {
                 draw.bindTexture(this._uOpacityMap, state.opacityMap.texture, frameCtx.textureUnit);
                 frameCtx.textureUnit = (frameCtx.textureUnit + 1) % xeogl.WEBGL_INFO.MAX_TEXTURE_IMAGE_UNITS;
                 frameCtx.bindTexture++;
@@ -211,7 +211,7 @@
 
             // Reflectivity map
 
-            if (state.reflectivityMap && state.reflectivityMap.texture) {
+            if (state.reflectivityMap && state.reflectivityMap.texture && this._uReflectivityMap) {
                 draw.bindTexture(this._uReflectivityMap, state.reflectivityMap.texture, frameCtx.textureUnit);
                 frameCtx.textureUnit = (frameCtx.textureUnit + 1) % xeogl.WEBGL_INFO.MAX_TEXTURE_IMAGE_UNITS;
 
@@ -222,7 +222,7 @@
 
             // Normal map
 
-            if (state.normalMap && state.normalMap.texture) {
+            if (state.normalMap && state.normalMap.texture && this._uNormalMap) {
                 draw.bindTexture(this._uNormalMap, state.normalMap.texture, frameCtx.textureUnit);
                 frameCtx.textureUnit = (frameCtx.textureUnit + 1) % xeogl.WEBGL_INFO.MAX_TEXTURE_IMAGE_UNITS;
                 frameCtx.bindTexture++;
@@ -234,7 +234,7 @@
 
             // Occlusion map
 
-            if (state.occlusionMap && state.occlusionMap.texture) {
+            if (state.occlusionMap && state.occlusionMap.texture && this._uOcclusionMap) {
                 draw.bindTexture(this._uOcclusionMap, state.occlusionMap.texture, frameCtx.textureUnit);
                 frameCtx.textureUnit = (frameCtx.textureUnit + 1) % xeogl.WEBGL_INFO.MAX_TEXTURE_IMAGE_UNITS;
                 frameCtx.bindTexture++;

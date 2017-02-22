@@ -12,20 +12,20 @@
         build: function () {
 
             var draw = this.program.draw;
-            this._aPositionDraw = draw.getAttribute("xeo_aPosition");
-            this._aNormalDraw = draw.getAttribute("xeo_aNormal");
-            this._aUVDraw = draw.getAttribute("xeo_aUV");
-            this._aTangentDraw = draw.getAttribute("xeo_aTangent");
-            this._aColorDraw = draw.getAttribute("xeo_aColor");
+            this._aPositionDraw = draw.getAttribute("position");
+            this._aNormalDraw = draw.getAttribute("normal");
+            this._aUVDraw = draw.getAttribute("uv");
+            this._aTangentDraw = draw.getAttribute("tangent");
+            this._aColorDraw = draw.getAttribute("color");
 
-            this._aPositionShadow = this.program.shadow.getAttribute("xeo_aPosition");
+            this._aPositionShadow = this.program.shadow.getAttribute("position");
 
             var pickObject = this.program.pickObject;
-            this._aPositionPickObject = pickObject.getAttribute("xeo_aPosition");
+            this._aPositionPickObject = pickObject.getAttribute("position");
 
             var pickPrimitive = this.program.pickPrimitive;
-            this._aPositionPickPrimitive = pickPrimitive.getAttribute("xeo_aPosition");
-            this._aColorPickPrimitive = pickPrimitive.getAttribute("xeo_aColor");
+            this._aPositionPickPrimitive = pickPrimitive.getAttribute("position");
+            this._aColorPickPrimitive = pickPrimitive.getAttribute("color");
         },
 
         draw: function (frameCtx) {
