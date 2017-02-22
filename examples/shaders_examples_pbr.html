@@ -11,7 +11,7 @@
 <body>
 
 <div id="info">
-    <h1><a href="../docs/classes/Entity.html" target="_parent">Entity</a> with a custom <a
+    <h1><a href="../docs/classes/Entity.html" target="_parent">Entities</a> sharing a custom <a
             href="../docs/classes/Shader.html" target="_parent">Shader</a></h1>
     <br>
 
@@ -25,7 +25,7 @@
 <script>
 
     //--------------------------------------------------------------------------------------
-    //  Custom shader
+    // Custom shader
     //--------------------------------------------------------------------------------------
 
     var shader = new xeogl.Shader({
@@ -297,12 +297,6 @@
     // Each Entity has the Shader and Lights, plus a SphereGeometry and a Transform
     //--------------------------------------------------------------------------------------
 
-    var geometry = new xeogl.SphereGeometry({
-        radius: 1.7,
-        heightSegments: 60,
-        widthSegments: 60
-    });
-
     var steps = 4;
     var inc = 4;
     var width = steps * inc;
@@ -313,6 +307,12 @@
     var metallicInc = 1.0 / steps;
     var roughness = 0;
     var roughnessInc = 1.0 / steps;
+
+    var geometry = new xeogl.SphereGeometry({
+        radius: 1.7,
+        heightSegments: 60,
+        widthSegments: 60
+    });
 
     for (var x = min; x <= max; x += inc) {
 
