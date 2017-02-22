@@ -4419,7 +4419,7 @@
             "namespace": "",
             "file": "src/materials/metallicMaterial.js",
             "line": 1,
-            "description": "A **MetallicMaterial** is a physically-based {{#crossLink \"Material\"}}{{/crossLink}} that defines the surface appearance of\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} using the *metallic-roughness* workflow.\n\n## Examples\n\n| <a href=\"../../examples/#importing_gltf_pbr\"><img src=\"../../assets/images/screenshots/MetallicMaterial/helmet.png\"></img></a> | <a href=\"../../examples/#materials_metallic_fireHydrant\"><img src=\"../../assets/images/screenshots/MetallicMaterial/hydrant3.png\"></img></a> | <a href=\"../../examples/#materials_metallic_samples_metals\"><img src=\"../../assets/images/screenshots/MetallicMaterial/metals.png\"></img></a> | <a href=\"../../examples/#materials_metallic_metallicVsRoughness\"><img alt=\"Metallic Vs Roughness\" src=\"../../assets/images/screenshots/MetallicMaterial/metalVsRough.png\"></img></a> |\n|:------:|:----:|:-----:|:-----:|\n|[glTF models with PBR materials](../../examples/#importing_gltf_pbr)|[Fire hydrant model](../../examples/#materials_metallic_fireHydrant)| [Sample metal materials ](../../examples/#materials_metallic_samples_metals)|[Metallic Vs. roughness](../../examples/#materials_metallic_metallicVsRoughness)|\n\n## Overview\n\n* MetallicMaterial is usually used for conductive materials, such as metal.\n* {{#crossLink \"SpecularMaterial\"}}{{/crossLink}} is usually used for insulators, such as wood, ceramics and plastic.\n* {{#crossLink \"PhongMaterial\"}}{{/crossLink}} is usually used for non-realistic objects.\n\n<img src=\"../../../assets/images/MetallicMaterial.png\"></img>\n\nFor an introduction to PBR concepts, try these articles:\n\n* Joe Wilson's [Basic Theory of Physically-Based Rendering](https://www.marmoset.co/posts/basic-theory-of-physically-based-rendering/)\n* Jeff Russel's [Physically-based Rendering, and you can too!](https://www.marmoset.co/posts/physically-based-rendering-and-you-can-too/)\n* Sebastien Legarde's [Adapting a physically-based shading model](http://seblagarde.wordpress.com/tag/physically-based-rendering/)\n\nThe following table summarizes MetallicMaterial properties:\n\n| Property | Type | Range | Default Value | Space | Description |\n|:--------:|:----:|:-----:|:-------------:|:-----:|:-----------:|\n|  {{#crossLink \"MetallicMaterial/baseColor:property\"}}{{/crossLink}} | Array | [0, 1] for all components | [1,1,1,1] | linear | The RGB components of the base color of the material. |\n| {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The metallic-ness the material (1 for metals, 0 for non-metals). |\n| {{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The roughness of the material surface. |\n| {{#crossLink \"MetallicMaterial/specularF0:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The specular Fresnel of the material surface. |\n|  {{#crossLink \"MetallicMaterial/emissive:property\"}}{{/crossLink}} | Array | [0, 1] for all components | [0,0,0] | linear | The RGB components of the emissive color of the material. |\n| {{#crossLink \"MetallicMaterial/opacity:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The transparency of the material surface (0 fully transparent, 1 fully opaque). |\n| {{#crossLink \"MetallicMaterial/baseColorMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink \"MetallicMaterial/baseColor:property\"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink \"MetallicMaterial/opacity:property\"}}{{/crossLink}}. |\n| {{#crossLink \"MetallicMaterial/metallicMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}}. |\n| {{#crossLink \"MetallicMaterial/roughnessMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}}. |\n| {{#crossLink \"MetallicMaterial/metallicRoughnessMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}} and second component multiplying by {{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}}. |\n| {{#crossLink \"MetallicMaterial/emissiveMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with RGB components multiplying by {{#crossLink \"MetallicMaterial/emissive:property\"}}{{/crossLink}}. |\n| {{#crossLink \"MetallicMaterial/opacityMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink \"MetallicMaterial/opacity:property\"}}{{/crossLink}}. |\n| {{#crossLink \"MetallicMaterial/occlusionMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Ambient occlusion texture multiplying by surface's reflected diffuse and specular light. |\n| {{#crossLink \"SpecularMaterial/normalMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Tangent-space normal map. |\n\n\n## Usage\n\nIn the example below we'll create the [yellow fire hydrant](../../examples/#materials_metallic_fireHydrant) shown in the example screen shots above. Our hydrant {{#crossLink \"Entity\"}}{{/crossLink}} has:\n\n* a {{#crossLink \"OBJGeometry\"}}{{/crossLink}} which loads the fire hydrant mesh from an .OBJ file,\n* a {{#crossLink \"Lights\"}}{{/crossLink}} containing {{#crossLink \"DirLight\"}}DirLights{{/crossLink}}, plus {{#crossLink \"CubeTexture\"}}CubeTextures{{/crossLink}} for light and reflection maps, and\n* a MetallicMaterial with {{#crossLink \"Texture\"}}Textures{{/crossLink}} providing diffuse, metallic, roughness, occlusion and normal maps.\n\nNote that in this example we're providing separate {{#crossLink \"Texture\"}}Textures{{/crossLink}} for the {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}} and {{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}}\nchannels, which allows us a little creative flexibility. Then, in the next example further down, we'll combine those channels\nwithin the same {{#crossLink \"Texture\"}}{{/crossLink}}, which results in shorter download times, reduced memory\nfootprint and faster rendering.\n\n````javascript\nnew xeogl.Entity({\n\n   geometry: new xeogl.OBJGeometry({\n       src: \"models/obj/FireHydrantMesh.obj\"\n   }),\n\n   lights: new xeogl.Lights({\n       lights: [\n           new xeogl.DirLight({\n               dir: [0.8, -0.6, -0.8],\n               color: [0.8, 0.8, 0.8],\n               space: \"view\"\n           }),\n           new xeogl.DirLight({\n               dir: [-0.8, -0.4, -0.4],\n               color: [0.4, 0.4, 0.5],\n               space: \"view\"\n           }),\n           new xeogl.DirLight({\n               dir: [0.2, -0.8, 0.8],\n               color: [0.8, 0.8, 0.8],\n               space: \"view\"\n           })\n       ],\n       lightMap: new xeogl.CubeTexture({\n           src: [\n               \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png\",\n               \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png\",\n               \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png\",\n               \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png\",\n               \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png\",\n               \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png\"\n           ]\n       }),\n       reflectionMap: new xeogl.CubeTexture({\n           src: [\n               \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png\",\n               \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png\",\n               \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png\",\n               \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png\",\n               \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png\",\n               \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png\"\n           ]\n       })\n   }),\n\n   material: new xeogl.MetallicMaterial({\n\n       // Channels with default values, just to show them\n\n       baseColor: [1.0, 1.0, 1.0],\n       metallic: 1.0,\n       roughness: 1.0,\n       emissive: [0.0, 0.0, 0.0],\n       opacity: 1.0,\n\n       // Textures to multiply by some of the channels\n\n       baseColorMap : new xeogl.Texture({  // Multiplies by baseColor\n           src: \"textures/diffuse/fire_hydrant_Base_Color.png\"\n       }),\n\n       metallicMap : new xeogl.Texture({   // R component multiplies by metallic\n           src: \"textures/metallic/fire_hydrant_Metallic.png\"\n       }),\n\n       roughnessMap : new xeogl.Texture({  // R component multiplies by roughness\n           src: \"textures/roughness/fire_hydrant_Roughness.png\"\n       }),\n\n       occlusionMap : new xeogl.Texture({  // Multiplies by fragment alpha\n           src: \"textures/occlusion/fire_hydrant_Mixed_AO.png\"\n       }),\n\n       normalMap : new xeogl.Texture({\n           src: \"textures/normal/fire_hydrant_Normal_OpenGL.png\"\n       })\n   })\n});\n````\n\n### Combining channels within the same textures\n\nIn the previous example we provided separate {{#crossLink \"Texture\"}}Textures{{/crossLink}} for the {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}} and\n{{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}} channels, but we can combine those channels into the same {{#crossLink \"Texture\"}}{{/crossLink}} to reduce download time, memory footprint and rendering time (and also for glTF compatibility).\n\nHere's our MetallicMaterial again with those channels combined in the\n{{#crossLink \"MetallicMaterial/metallicRoughnessMap:property\"}}{{/crossLink}} {{#crossLink \"Texture\"}}Texture{{/crossLink}}, where the\n*R* component multiplies by {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}} and *G* multiplies by {{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}}.\n\n````javascript\nnew xeogl.MetallicMaterial({\n\n   baseColor: [1,1,1], // Default value\n   metallic: 1.0,      // Default value\n   roughness: 1.0,     // Default value\n\n   baseColorMap : new xeogl.Texture({\n       src: \"textures/diffuse/fire_hydrant_Base_Color.png\"\n   }),\n   metallicRoughnessMap : new xeogl.Texture({\n       src: \"textures/metallicRoughness/fire_hydrant_MetallicRoughness.png\"\n   }),\n   occlusionMap : new xeogl.Texture({\n       src: \"textures/occlusion/fire_hydrant_Mixed_AO.png\"\n   }),\n   normalMap : new xeogl.Texture({\n       src: \"textures/normal/fire_hydrant_Normal_OpenGL.png\"\n   })\n});\n````\n\nAlthough not shown in this example, we can also texture {{#crossLink \"MetallicMaterial/opacity:property\"}}{{/crossLink}} with\nthe *A* component of {{#crossLink \"MetallicMaterial/baseColorMap:property\"}}{{/crossLink}}'s {{#crossLink \"Texture\"}}{{/crossLink}},\nif required.",
+            "description": "A **MetallicMaterial** is a physically-based {{#crossLink \"Material\"}}{{/crossLink}} that defines the surface appearance of\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} using the *metallic-roughness* workflow.\n\n## Examples\n\n| <a href=\"../../examples/#importing_gltf_pbr\"><img src=\"../../assets/images/screenshots/MetallicMaterial/helmet.png\"></img></a> | <a href=\"../../examples/#materials_metallic_fireHydrant\"><img src=\"../../assets/images/screenshots/MetallicMaterial/hydrant3.png\"></img></a> | <a href=\"../../examples/#materials_metallic_samples_metals\"><img src=\"../../assets/images/screenshots/MetallicMaterial/metals.png\"></img></a> | <a href=\"../../examples/#materials_metallic_metallicVsRoughness\"><img alt=\"Metallic Vs Roughness\" src=\"../../assets/images/screenshots/MetallicMaterial/metalVsRough.png\"></img></a> |\n|:------:|:----:|:-----:|:-----:|\n|[glTF models with PBR materials](../../examples/#importing_gltf_pbr)|[Fire hydrant model](../../examples/#materials_metallic_fireHydrant)| [Sample metal materials ](../../examples/#materials_metallic_samples_metals)|[Metallic Vs. roughness](../../examples/#materials_metallic_metallicVsRoughness)|\n\n## Overview\n\n* MetallicMaterial is usually used for conductive materials, such as metal.\n* {{#crossLink \"SpecularMaterial\"}}{{/crossLink}} is usually used for insulators, such as wood, ceramics and plastic.\n* {{#crossLink \"PhongMaterial\"}}{{/crossLink}} is usually used for non-realistic objects.\n\n<img src=\"../../../assets/images/MetallicMaterial.png\"></img>\n\nFor an introduction to PBR concepts, try these articles:\n\n* Joe Wilson's [Basic Theory of Physically-Based Rendering](https://www.marmoset.co/posts/basic-theory-of-physically-based-rendering/)\n* Jeff Russel's [Physically-based Rendering, and you can too!](https://www.marmoset.co/posts/physically-based-rendering-and-you-can-too/)\n* Sebastien Legarde's [Adapting a physically-based shading model](http://seblagarde.wordpress.com/tag/physically-based-rendering/)\n\nThe following table summarizes MetallicMaterial properties:\n\n| Property | Type | Range | Default Value | Space | Description |\n|:--------:|:----:|:-----:|:-------------:|:-----:|:-----------:|\n|  {{#crossLink \"MetallicMaterial/baseColor:property\"}}{{/crossLink}} | Array | [0, 1] for all components | [1,1,1,1] | linear | The RGB components of the base color of the material. |\n| {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The metallic-ness the material (1 for metals, 0 for non-metals). |\n| {{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The roughness of the material surface. |\n| {{#crossLink \"MetallicMaterial/specularF0:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The specular Fresnel of the material surface. |\n|  {{#crossLink \"MetallicMaterial/emissive:property\"}}{{/crossLink}} | Array | [0, 1] for all components | [0,0,0] | linear | The RGB components of the emissive color of the material. |\n| {{#crossLink \"MetallicMaterial/opacity:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The transparency of the material surface (0 fully transparent, 1 fully opaque). |\n| {{#crossLink \"MetallicMaterial/baseColorMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink \"MetallicMaterial/baseColor:property\"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink \"MetallicMaterial/opacity:property\"}}{{/crossLink}}. |\n| {{#crossLink \"MetallicMaterial/metallicMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}}. |\n| {{#crossLink \"MetallicMaterial/roughnessMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}}. |\n| {{#crossLink \"MetallicMaterial/metallicRoughnessMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}} and second component multiplying by {{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}}. |\n| {{#crossLink \"MetallicMaterial/emissiveMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with RGB components multiplying by {{#crossLink \"MetallicMaterial/emissive:property\"}}{{/crossLink}}. |\n| {{#crossLink \"MetallicMaterial/opacityMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink \"MetallicMaterial/opacity:property\"}}{{/crossLink}}. |\n| {{#crossLink \"MetallicMaterial/occlusionMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Ambient occlusion texture multiplying by surface's reflected diffuse and specular light. |\n| {{#crossLink \"SpecularMaterial/normalMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Tangent-space normal map. |\n\n\n## Usage\n\nIn the example below we'll create the [yellow fire hydrant](../../examples/#materials_metallic_fireHydrant) shown in the example screen shots above. Our hydrant {{#crossLink \"Entity\"}}{{/crossLink}} has:\n\n* a {{#crossLink \"OBJGeometry\"}}{{/crossLink}} which loads the fire hydrant mesh from an .OBJ file,\n* a {{#crossLink \"Lights\"}}{{/crossLink}} containing {{#crossLink \"DirLight\"}}DirLights{{/crossLink}}, plus {{#crossLink \"CubeTexture\"}}CubeTextures{{/crossLink}} for light and reflection maps, and\n* a MetallicMaterial with {{#crossLink \"Texture\"}}Textures{{/crossLink}} providing diffuse, metallic, roughness, occlusion and normal maps.\n\nNote that in this example we're providing separate {{#crossLink \"Texture\"}}Textures{{/crossLink}} for the {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}} and {{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}}\nchannels, which allows us a little creative flexibility. Then, in the next example further down, we'll combine those channels\nwithin the same {{#crossLink \"Texture\"}}{{/crossLink}} for efficiency.\n\n````javascript\nnew xeogl.Entity({\n\n   geometry: new xeogl.OBJGeometry({\n       src: \"models/obj/FireHydrantMesh.obj\"\n   }),\n\n   lights: new xeogl.Lights({\n       lights: [\n           new xeogl.DirLight({\n               dir: [0.8, -0.6, -0.8],\n               color: [0.8, 0.8, 0.8],\n               space: \"view\"\n           }),\n           new xeogl.DirLight({\n               dir: [-0.8, -0.4, -0.4],\n               color: [0.4, 0.4, 0.5],\n               space: \"view\"\n           }),\n           new xeogl.DirLight({\n               dir: [0.2, -0.8, 0.8],\n               color: [0.8, 0.8, 0.8],\n               space: \"view\"\n           })\n       ],\n       lightMap: new xeogl.CubeTexture({\n           src: [\n               \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png\",\n               \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png\",\n               \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png\",\n               \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png\",\n               \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png\",\n               \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png\"\n           ]\n       }),\n       reflectionMap: new xeogl.CubeTexture({\n           src: [\n               \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png\",\n               \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png\",\n               \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png\",\n               \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png\",\n               \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png\",\n               \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png\"\n           ]\n       })\n   }),\n\n   material: new xeogl.MetallicMaterial({\n\n       // Channels with default values, just to show them\n\n       baseColor: [1.0, 1.0, 1.0],\n       metallic: 1.0,\n       roughness: 1.0,\n       emissive: [0.0, 0.0, 0.0],\n       opacity: 1.0,\n\n       // Textures to multiply by some of the channels\n\n       baseColorMap : new xeogl.Texture({  // Multiplies by baseColor\n           src: \"textures/diffuse/fire_hydrant_Base_Color.png\"\n       }),\n\n       metallicMap : new xeogl.Texture({   // R component multiplies by metallic\n           src: \"textures/metallic/fire_hydrant_Metallic.png\"\n       }),\n\n       roughnessMap : new xeogl.Texture({  // R component multiplies by roughness\n           src: \"textures/roughness/fire_hydrant_Roughness.png\"\n       }),\n\n       occlusionMap : new xeogl.Texture({  // Multiplies by fragment alpha\n           src: \"textures/occlusion/fire_hydrant_Mixed_AO.png\"\n       }),\n\n       normalMap : new xeogl.Texture({\n           src: \"textures/normal/fire_hydrant_Normal_OpenGL.png\"\n       })\n   })\n});\n````\n\n### Combining channels within the same textures\n\nIn the previous example we provided separate {{#crossLink \"Texture\"}}Textures{{/crossLink}} for the {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}} and\n{{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}} channels, but we can combine those channels into the same {{#crossLink \"Texture\"}}{{/crossLink}} to reduce download time, memory footprint and rendering time (and also for glTF compatibility).\n\nHere's our MetallicMaterial again with those channels combined in the\n{{#crossLink \"MetallicMaterial/metallicRoughnessMap:property\"}}{{/crossLink}} {{#crossLink \"Texture\"}}Texture{{/crossLink}}, where the\n*R* component multiplies by {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}} and *G* multiplies by {{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}}.\n\n````javascript\nnew xeogl.MetallicMaterial({\n\n   baseColor: [1,1,1], // Default value\n   metallic: 1.0,      // Default value\n   roughness: 1.0,     // Default value\n\n   baseColorMap : new xeogl.Texture({\n       src: \"textures/diffuse/fire_hydrant_Base_Color.png\"\n   }),\n   metallicRoughnessMap : new xeogl.Texture({\n       src: \"textures/metallicRoughness/fire_hydrant_MetallicRoughness.png\"\n   }),\n   occlusionMap : new xeogl.Texture({\n       src: \"textures/occlusion/fire_hydrant_Mixed_AO.png\"\n   }),\n   normalMap : new xeogl.Texture({\n       src: \"textures/normal/fire_hydrant_Normal_OpenGL.png\"\n   })\n});\n````\n\nAlthough not shown in this example, we can also texture {{#crossLink \"MetallicMaterial/opacity:property\"}}{{/crossLink}} with\nthe *A* component of {{#crossLink \"MetallicMaterial/baseColorMap:property\"}}{{/crossLink}}'s {{#crossLink \"Texture\"}}{{/crossLink}},\nif required.",
             "submodule": "materials",
             "is_constructor": 1,
             "extends": "Material",
@@ -4763,7 +4763,7 @@
             "namespace": "",
             "file": "src/materials/specularMaterial.js",
             "line": 1,
-            "description": "A **SpecularMaterial** is a physically-based {{#crossLink \"Material\"}}{{/crossLink}} that defines the surface appearance of\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} using the *specular-glossiness* workflow.\n\n## Examples\n\n| <a href=\"../../examples/#importing_gltf_pbr\"><img src=\"../../assets/images/screenshots/SpecularMaterial/telephone.png\"></img></a> | <a href=\"../../examples/#materials_specular_samples\"><img src=\"../../assets/images/screenshots/SpecularMaterial/materials.png\"></img></a> | <a href=\"../../examples/#materials_specular_textures\"><img src=\"../../assets/images/screenshots/SpecularMaterial/textures.png\"></img></a> | <a href=\"../../examples/#materials_specular_specularVsGlossiness\"><img src=\"../../assets/images/screenshots/SpecularMaterial/specVsGloss.png\"></img></a> |\n|:------:|:----:|:-----:|:-----:|\n|[glTF models with PBR materials](../../examples/#importing_gltf_pbr)|[Sample materials ](../../examples/#materials_specular_samples) | [Texturing spec/gloss channels](../../examples/#materials_specular_textures) | [Specular Vs. glossiness](../../examples/#materials_specular_specularVsGlossiness) |\n\n## Overview\n\n* SpecularMaterial is usually used for insulators, such as ceramic, wood and plastic.\n* {{#crossLink \"MetallicMaterial\"}}{{/crossLink}} is usually used for conductive materials, such as metal.\n* {{#crossLink \"PhongMaterial\"}}{{/crossLink}} is usually used for non-realistic objects.\n\n<img src=\"../../../assets/images/SpecularMaterial.png\"></img>\n\nFor an introduction to PBR concepts, try these articles:\n\n* Joe Wilson's [Basic Theory of Physically-Based Rendering](https://www.marmoset.co/posts/basic-theory-of-physically-based-rendering/)\n* Jeff Russel's [Physically-based Rendering, and you can too!](https://www.marmoset.co/posts/physically-based-rendering-and-you-can-too/)\n* Sebastien Legarde's [Adapting a physically-based shading model](http://seblagarde.wordpress.com/tag/physically-based-rendering/)\n\nThe following table summarizes SpecularMaterial properties:\n\n| Property | Type | Range | Default Value | Space | Description |\n|:--------:|:----:|:-----:|:-------------:|:-----:|:-----------:|\n|  {{#crossLink \"SpecularMaterial/diffuse:property\"}}{{/crossLink}} | Array | [0, 1] for all components | [1,1,1,1] | linear | The RGB components of the diffuse color of the material. |\n|  {{#crossLink \"SpecularMaterial/specular:property\"}}{{/crossLink}} | Array | [0, 1] for all components | [1,1,1,1] | linear | The RGB components of the specular color of the material. |\n| {{#crossLink \"SpecularMaterial/glossiness:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The glossiness the material. |\n| {{#crossLink \"SpecularMaterial/specularF0:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The specularF0 of the material surface. |\n|  {{#crossLink \"SpecularMaterial/emissive:property\"}}{{/crossLink}} | Array | [0, 1] for all components | [0,0,0] | linear | The RGB components of the emissive color of the material. |\n| {{#crossLink \"SpecularMaterial/opacity:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The transparency of the material surface (0 fully transparent, 1 fully opaque). |\n| {{#crossLink \"SpecularMaterial/diffuseMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink \"SpecularMaterial/diffuse:property\"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink \"SpecularMaterial/opacity:property\"}}{{/crossLink}}. |\n| {{#crossLink \"SpecularMaterial/specularMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink \"SpecularMaterial/specular:property\"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink \"SpecularMaterial/opacity:property\"}}{{/crossLink}}. |\n| {{#crossLink \"SpecularMaterial/glossinessMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink \"SpecularMaterial/glossiness:property\"}}{{/crossLink}}. |\n| {{#crossLink \"SpecularMaterial/specularGlossinessMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with first three components multiplying by {{#crossLink \"SpecularMaterial/specular:property\"}}{{/crossLink}} and fourth component multiplying by {{#crossLink \"SpecularMaterial/glossiness:property\"}}{{/crossLink}}. |\n| {{#crossLink \"SpecularMaterial/emissiveMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with RGB components multiplying by {{#crossLink \"SpecularMaterial/emissive:property\"}}{{/crossLink}}. |\n| {{#crossLink \"SpecularMaterial/opacityMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink \"SpecularMaterial/opacity:property\"}}{{/crossLink}}. |\n| {{#crossLink \"SpecularMaterial/occlusionMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Ambient occlusion texture multiplying by surface's reflected diffuse and specular light. |\n| {{#crossLink \"SpecularMaterial/normalMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Tangent-space normal map. |\n\n\n## Usage\n\nIn the example below we'll create the plastered sphere shown in the [Sample Materials](../../examples/#materials_specular_textures) example (see screenshots above).\n\nHere's a closeup of the sphere we'll create:\n\n<a href=\"../../examples/#materials_specular_samples\"><img src=\"../../assets/images/screenshots/SpecularMaterial/plaster.png\"></img></a>\n\nOur plastered sphere {{#crossLink \"Entity\"}}{{/crossLink}} has:\n\n* a {{#crossLink \"SphereGeometry\"}}{{/crossLink}},\n* a {{#crossLink \"Lights\"}}{{/crossLink}} containing {{#crossLink \"DirLight\"}}DirLights{{/crossLink}}, plus {{#crossLink \"CubeTexture\"}}CubeTextures{{/crossLink}} for light and reflection maps, and\n* a SpecularMaterial with {{#crossLink \"Texture\"}}Textures{{/crossLink}} providing diffuse, glossiness, specular and normal maps.\n\nNote that in this example we're providing separate {{#crossLink \"Texture\"}}Textures{{/crossLink}} for the {{#crossLink \"SpecularMaterial/specular:property\"}}{{/crossLink}} and {{#crossLink \"SpecularMaterial/glossiness:property\"}}{{/crossLink}}\nchannels, which allows us a little creative flexibility. Then, in the next example further down, we'll combine those channels\nwithin the same {{#crossLink \"Texture\"}}{{/crossLink}}, which results in shorter download times, reduced memory\nfootprint and faster rendering.\n\n````javascript\nnew xeogl.Entity({\n\n   geometry: new xeogl.OBJGeometry({\n       src: \"models/obj/FireHydrantMesh.obj\"\n   }),\n\n   lights: new xeogl.Lights({\n       lights: [\n           new xeogl.DirLight({\n               dir: [0.8, -0.6, -0.8],\n               color: [0.8, 0.8, 0.8],\n               space: \"view\"\n           }),\n           new xeogl.DirLight({\n               dir: [-0.8, -0.4, -0.4],\n               color: [0.4, 0.4, 0.5],\n               space: \"view\"\n           }),\n           new xeogl.DirLight({\n               dir: [0.2, -0.8, 0.8],\n               color: [0.8, 0.8, 0.8],\n               space: \"view\"\n           })\n       ],\n       lightMap: new xeogl.CubeTexture({\n           src: [\n               \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png\",\n               \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png\",\n               \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png\",\n               \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png\",\n               \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png\",\n               \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png\"\n           ]\n       }),\n       reflectionMap: new xeogl.CubeTexture({\n           src: [\n               \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png\",\n               \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png\",\n               \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png\",\n               \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png\",\n               \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png\",\n               \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png\"\n           ]\n       })\n   }),\n\n   material: new xeogl.SpecularMaterial({\n\n       // Channels with default values, just to show them\n\n       diffuse: [1.0, 1.0, 1.0],\n       specular: [1.0, 1.0, 1.0],\n       glossiness: 1.0,\n       emissive: [0.0, 0.0, 0.0]\n       opacity: 1.0,\n\n       // Textures to multiply some of the channels\n\n       diffuseMap: {       // RGB components multiply by diffuse\n           src: \"textures/materials/poligon/Plaster07_1k/Plaster07_COL_VAR1_1K.jpg\"\n       },\n       specularMap: {      // RGB component multiplies by specular\n           src: \"textures/materials/poligon/Plaster07_1k/Plaster07_REFL_1K.jpg\"\n       },\n       glossinessMap: {    // R component multiplies by glossiness\n           src: \"textures/materials/poligon/Plaster07_1k/Plaster07_GLOSS_1K.jpg\"\n       },\n       normalMap: {\n           src: \"textures/materials/poligon/Plaster07_1k/Plaster07_NRM_1K.jpg\"\n       }\n   })\n});\n````",
+            "description": "A **SpecularMaterial** is a physically-based {{#crossLink \"Material\"}}{{/crossLink}} that defines the surface appearance of\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} using the *specular-glossiness* workflow.\n\n## Examples\n\n| <a href=\"../../examples/#importing_gltf_pbr\"><img src=\"../../assets/images/screenshots/SpecularMaterial/telephone.png\"></img></a> | <a href=\"../../examples/#materials_specular_samples\"><img src=\"../../assets/images/screenshots/SpecularMaterial/materials.png\"></img></a> | <a href=\"../../examples/#materials_specular_textures\"><img src=\"../../assets/images/screenshots/SpecularMaterial/textures.png\"></img></a> | <a href=\"../../examples/#materials_specular_specularVsGlossiness\"><img src=\"../../assets/images/screenshots/SpecularMaterial/specVsGloss.png\"></img></a> |\n|:------:|:----:|:-----:|:-----:|\n|[glTF models with PBR materials](../../examples/#importing_gltf_pbr)|[Sample materials ](../../examples/#materials_specular_samples) | [Texturing spec/gloss channels](../../examples/#materials_specular_textures) | [Specular Vs. glossiness](../../examples/#materials_specular_specularVsGlossiness) |\n\n## Overview\n\n* SpecularMaterial is usually used for insulators, such as ceramic, wood and plastic.\n* {{#crossLink \"MetallicMaterial\"}}{{/crossLink}} is usually used for conductive materials, such as metal.\n* {{#crossLink \"PhongMaterial\"}}{{/crossLink}} is usually used for non-realistic objects.\n\n<img src=\"../../../assets/images/SpecularMaterial.png\"></img>\n\nFor an introduction to PBR concepts, try these articles:\n\n* Joe Wilson's [Basic Theory of Physically-Based Rendering](https://www.marmoset.co/posts/basic-theory-of-physically-based-rendering/)\n* Jeff Russel's [Physically-based Rendering, and you can too!](https://www.marmoset.co/posts/physically-based-rendering-and-you-can-too/)\n* Sebastien Legarde's [Adapting a physically-based shading model](http://seblagarde.wordpress.com/tag/physically-based-rendering/)\n\nThe following table summarizes SpecularMaterial properties:\n\n| Property | Type | Range | Default Value | Space | Description |\n|:--------:|:----:|:-----:|:-------------:|:-----:|:-----------:|\n|  {{#crossLink \"SpecularMaterial/diffuse:property\"}}{{/crossLink}} | Array | [0, 1] for all components | [1,1,1,1] | linear | The RGB components of the diffuse color of the material. |\n|  {{#crossLink \"SpecularMaterial/specular:property\"}}{{/crossLink}} | Array | [0, 1] for all components | [1,1,1,1] | linear | The RGB components of the specular color of the material. |\n| {{#crossLink \"SpecularMaterial/glossiness:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The glossiness the material. |\n| {{#crossLink \"SpecularMaterial/specularF0:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The specularF0 of the material surface. |\n|  {{#crossLink \"SpecularMaterial/emissive:property\"}}{{/crossLink}} | Array | [0, 1] for all components | [0,0,0] | linear | The RGB components of the emissive color of the material. |\n| {{#crossLink \"SpecularMaterial/opacity:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The transparency of the material surface (0 fully transparent, 1 fully opaque). |\n| {{#crossLink \"SpecularMaterial/diffuseMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink \"SpecularMaterial/diffuse:property\"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink \"SpecularMaterial/opacity:property\"}}{{/crossLink}}. |\n| {{#crossLink \"SpecularMaterial/specularMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink \"SpecularMaterial/specular:property\"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink \"SpecularMaterial/opacity:property\"}}{{/crossLink}}. |\n| {{#crossLink \"SpecularMaterial/glossinessMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink \"SpecularMaterial/glossiness:property\"}}{{/crossLink}}. |\n| {{#crossLink \"SpecularMaterial/specularGlossinessMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with first three components multiplying by {{#crossLink \"SpecularMaterial/specular:property\"}}{{/crossLink}} and fourth component multiplying by {{#crossLink \"SpecularMaterial/glossiness:property\"}}{{/crossLink}}. |\n| {{#crossLink \"SpecularMaterial/emissiveMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with RGB components multiplying by {{#crossLink \"SpecularMaterial/emissive:property\"}}{{/crossLink}}. |\n| {{#crossLink \"SpecularMaterial/opacityMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink \"SpecularMaterial/opacity:property\"}}{{/crossLink}}. |\n| {{#crossLink \"SpecularMaterial/occlusionMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Ambient occlusion texture multiplying by surface's reflected diffuse and specular light. |\n| {{#crossLink \"SpecularMaterial/normalMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Tangent-space normal map. |\n\n\n## Usage\n\nIn the example below we'll create the plastered sphere shown in the [Sample Materials](../../examples/#materials_specular_textures) example (see screenshots above).\n\nHere's a closeup of the sphere we'll create:\n\n<a href=\"../../examples/#materials_specular_samples\"><img src=\"../../assets/images/screenshots/SpecularMaterial/plaster.png\"></img></a>\n\nOur plastered sphere {{#crossLink \"Entity\"}}{{/crossLink}} has:\n\n* a {{#crossLink \"SphereGeometry\"}}{{/crossLink}},\n* a {{#crossLink \"Lights\"}}{{/crossLink}} containing {{#crossLink \"DirLight\"}}DirLights{{/crossLink}}, plus {{#crossLink \"CubeTexture\"}}CubeTextures{{/crossLink}} for light and reflection maps, and\n* a SpecularMaterial with {{#crossLink \"Texture\"}}Textures{{/crossLink}} providing diffuse, glossiness, specular and normal maps.\n\nNote that in this example we're providing separate {{#crossLink \"Texture\"}}Textures{{/crossLink}} for the {{#crossLink \"SpecularMaterial/specular:property\"}}{{/crossLink}} and {{#crossLink \"SpecularMaterial/glossiness:property\"}}{{/crossLink}}\nchannels, which allows us a little creative flexibility. Then, in the next example further down, we'll combine those channels\nwithin the same {{#crossLink \"Texture\"}}{{/crossLink}} for efficiency.\n\n````javascript\nnew xeogl.Entity({\n\n   geometry: new xeogl.OBJGeometry({\n       src: \"models/obj/FireHydrantMesh.obj\"\n   }),\n\n   lights: new xeogl.Lights({\n       lights: [\n           new xeogl.DirLight({\n               dir: [0.8, -0.6, -0.8],\n               color: [0.8, 0.8, 0.8],\n               space: \"view\"\n           }),\n           new xeogl.DirLight({\n               dir: [-0.8, -0.4, -0.4],\n               color: [0.4, 0.4, 0.5],\n               space: \"view\"\n           }),\n           new xeogl.DirLight({\n               dir: [0.2, -0.8, 0.8],\n               color: [0.8, 0.8, 0.8],\n               space: \"view\"\n           })\n       ],\n       lightMap: new xeogl.CubeTexture({\n           src: [\n               \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png\",\n               \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png\",\n               \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png\",\n               \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png\",\n               \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png\",\n               \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png\"\n           ]\n       }),\n       reflectionMap: new xeogl.CubeTexture({\n           src: [\n               \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png\",\n               \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png\",\n               \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png\",\n               \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png\",\n               \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png\",\n               \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png\"\n           ]\n       })\n   }),\n\n   material: new xeogl.SpecularMaterial({\n\n       // Channels with default values, just to show them\n\n       diffuse: [1.0, 1.0, 1.0],\n       specular: [1.0, 1.0, 1.0],\n       glossiness: 1.0,\n       emissive: [0.0, 0.0, 0.0]\n       opacity: 1.0,\n\n       // Textures to multiply some of the channels\n\n       diffuseMap: {       // RGB components multiply by diffuse\n           src: \"textures/materials/poligon/Plaster07_1k/Plaster07_COL_VAR1_1K.jpg\"\n       },\n       specularMap: {      // RGB component multiplies by specular\n           src: \"textures/materials/poligon/Plaster07_1k/Plaster07_REFL_1K.jpg\"\n       },\n       glossinessMap: {    // R component multiplies by glossiness\n           src: \"textures/materials/poligon/Plaster07_1k/Plaster07_GLOSS_1K.jpg\"\n       },\n       normalMap: {\n           src: \"textures/materials/poligon/Plaster07_1k/Plaster07_NRM_1K.jpg\"\n       }\n   })\n});\n````\n\n### Combining channels within the same textures\n\nIn the previous example we provided separate {{#crossLink \"Texture\"}}Textures{{/crossLink}} for the {{#crossLink \"SpecularMaterial/specular:property\"}}{{/crossLink}} and\n{{#crossLink \"SpecularMaterial/glossiness:property\"}}{{/crossLink}} channels, but we can combine those channels into the same {{#crossLink \"Texture\"}}{{/crossLink}} to reduce download time, memory footprint and rendering time (and also for glTF compatibility).\n\nHere's our SpecularMaterial again with those channels combined in the\n{{#crossLink \"SpecularMaterial/specularGlossinessMap:property\"}}{{/crossLink}} {{#crossLink \"Texture\"}}Texture{{/crossLink}}, where the\n*RGB* component multiplies by {{#crossLink \"SpecularMaterial/specular:property\"}}{{/crossLink}} and *A* multiplies by {{#crossLink \"SpecularMaterial/glossiness:property\"}}{{/crossLink}}.\n\n````javascript\nnew xeogl.SpecularMaterial({\n\n   // Default values\n   diffuse: [1.0, 1.0, 1.0],\n   specular: [1.0, 1.0, 1.0],\n   glossiness: 1.0,\n   emissive: [0.0, 0.0, 0.0]\n   opacity: 1.0,\n\n   diffuseMap: {\n       src: \"textures/materials/poligon/Plaster07_1k/Plaster07_COL_VAR1_1K.jpg\"\n   },\n   specularGlossinessMap: { // RGB multiplies by specular, A by glossiness\n       src: \"textures/materials/poligon/Plaster07_1k/Plaster07_REFL_GLOSS_1K.jpg\"\n   },\n   normalMap: {\n       src: \"textures/materials/poligon/Plaster07_1k/Plaster07_NRM_1K.jpg\"\n   }\n});\n````\n\nAlthough not shown in this example, we can also texture {{#crossLink \"MetallicMaterial/opacity:property\"}}{{/crossLink}} with\nthe *A* component of {{#crossLink \"MetallicMaterial/baseColorMap:property\"}}{{/crossLink}}'s {{#crossLink \"Texture\"}}{{/crossLink}},\nif required.",
             "submodule": "materials",
             "is_constructor": 1,
             "extends": "Material",
@@ -5037,7 +5037,7 @@
             "namespace": "",
             "file": "src/models/gltfModel.js",
             "line": 5,
-            "description": "A **GLTFModel** is a {{#crossLink \"Model\"}}{{/crossLink}} that loads itself from a <a href=\"https://github.com/KhronosGroup/glTF\" target = \"_other\">glTF</a> file.\n\n<a href=\"../../examples/#importing_gltf_gearbox\"><img src=\"../../../assets/images/gltf/glTF_gearbox_squashed.png\"></img></a>\n\n## Overview\n\n* A GLTFModel is a container of {{#crossLink \"Component\"}}Components{{/crossLink}} that loads itself from glTF.\n* It begins loading as soon as you set its {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}\nproperty to the location of a valid glTF file.\n* You can set {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}} to a new file path at any time, which causes\nthe GLTFModel to clear itself and load components from the new file.\n* Can be transformed within World-space by attaching it to a {{#crossLink \"Transform\"}}{{/crossLink}}.\n* Provides its World-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}}.\n\n<img src=\"../../../assets/images/GLTFModel.png\"></img>\n\n## Tutorials\n\n* [Importing glTF](https://github.com/xeolabs/xeogl/wiki/Importing-glTF)\n\n## Examples\n\n* [glTF gearbox](../../examples/#importing_gltf_gearbox)\n* [glTF models with PBR materials](../../examples/#importing_gltf_pbr)\n* [glTF gearbox with entity explorer](../../examples/#importing_gltf_explorer)\n* [Ensuring individual materials on GLTFModel entities](../../examples/#models_filter_uniqueMaterials)\n* [Baking transform hierarchies in a GLTFModel](../../examples/#models_filter_bakeTransforms)\n* [Attaching transforms to a GLTFModel, via constructor](../../examples/#transforms_model_configureTransform)\n* [Attaching transforms to a GLTFModel, via property](../../examples/#transforms_model_attachTransform)",
+            "description": "A **GLTFModel** is a {{#crossLink \"Model\"}}{{/crossLink}} that loads itself from a <a href=\"https://github.com/KhronosGroup/glTF\" target = \"_other\">glTF</a> file.\n\n<a href=\"../../examples/#importing_gltf_gearbox\"><img src=\"../../../assets/images/gltf/glTF_gearbox_squashed.png\"></img></a>\n\n## Overview\n\n* A GLTFModel is a container of {{#crossLink \"Component\"}}Components{{/crossLink}} that loads itself from glTF.\n* It begins loading as soon as you set its {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}\nproperty to the location of a valid glTF file.\n* You can set {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}} to a new file path at any time, which causes\nthe GLTFModel to clear itself and load components from the new file.\n* Can be transformed within World-space by attaching it to a {{#crossLink \"Transform\"}}{{/crossLink}}.\n* Provides its World-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}}.\n\n<img src=\"../../../assets/images/GLTFModel.png\"></img>\n\n## Tutorials\n\n* [Importing glTF](https://github.com/xeolabs/xeogl/wiki/Importing-glTF)\n\n## Examples\n\n* [Damaged Helmet with metal/rough PBR materials](../../examples/#importing_gltf_pbr_metallic_helmet)\n* [Gearbox with entity explorer](../../examples/#importing_gltf_explorer)\n* [Ensuring individual materials on GLTFModel entities](../../examples/#models_filter_uniqueMaterials)\n* [Baking transform hierarchies in a GLTFModel](../../examples/#models_filter_bakeTransforms)\n* [Attaching transforms to a GLTFModel, via constructor](../../examples/#transforms_model_configureTransform)\n* [Attaching transforms to a GLTFModel, via property](../../examples/#transforms_model_attachTransform)",
             "submodule": "models",
             "is_constructor": 1,
             "params": [
@@ -16016,7 +16016,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 331,
+            "line": 330,
             "description": "RGB diffuse color of this MetallicMaterial.\n\nMultiplies by the RGB components of {{#crossLink \"MetallicMaterial/baseColorMap:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"MetallicMaterial/baseColor:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "baseColor",
@@ -16028,7 +16028,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 368,
+            "line": 367,
             "description": "Fired whenever this MetallicMaterial's {{#crossLink \"MetallicMaterial/baseColor:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "baseColor",
@@ -16045,7 +16045,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 382,
+            "line": 381,
             "description": "RGB {{#crossLink \"Texture\"}}{{/crossLink}} containing the diffuse color of this MetallicMaterial, with optional *A* component for opacity.\n\nThe RGB components multiply by the {{#crossLink \"MetallicMaterial/baseColor:property\"}}{{/crossLink}} property,\nwhile the *A* component, if present, multiplies by the {{#crossLink \"MetallicMaterial/opacity:property\"}}{{/crossLink}} property.\n\nAttached {{#crossLink \"Entity\"}}Entities{{/crossLink}} will appear transparent only if they are also attached\nto {{#crossLink \"Modes\"}}Modes{{/crossLink}} that have {{#crossLink \"Modes/transparent:property\"}}transparent{{/crossLink}}\nset to **true**.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this MetallicMaterial.\n\nFires a {{#crossLink \"MetallicMaterial/baseColorMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "baseColorMap",
@@ -16057,7 +16057,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 404,
+            "line": 403,
             "description": "Fired whenever this MetallicMaterial's {{#crossLink \"MetallicMaterial/baseColorMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "baseColorMap",
@@ -16073,7 +16073,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 418,
+            "line": 417,
             "description": "Factor in the range [0..1] indicating how metallic this MetallicMaterial is.\n\n1 is metal, 0 is non-metal.\n\nMultiplies by the *R* component of {{#crossLink \"MetallicMaterial/metallicMap:property\"}}{{/crossLink}}\nand the *A* component of {{#crossLink \"MetallicMaterial/metalRoughnessMap:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"MetallicMaterial/metallic:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "metallic",
@@ -16085,7 +16085,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 446,
+            "line": 445,
             "description": "Fired whenever this MetallicMaterial's {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "metallic",
@@ -16102,7 +16102,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 460,
+            "line": 459,
             "description": "RGB {{#crossLink \"Texture\"}}{{/crossLink}} containing this MetallicMaterial's metallic factor in its *R* component.\n\nThe *R* component multiplies by the {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}} property.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this MetallicMaterial.\n\nFires a {{#crossLink \"MetallicMaterial/metallicMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "metallicMap",
@@ -16114,7 +16114,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 477,
+            "line": 476,
             "description": "Fired whenever this MetallicMaterial's {{#crossLink \"MetallicMaterial/metallicMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "metallicMap",
@@ -16130,7 +16130,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 491,
+            "line": 490,
             "description": "Factor in the range [0..1] indicating the roughness of this MetallicMaterial.\n\n0 is fully smooth, 1 is fully rough.\n\nMultiplies by the *R* component of {{#crossLink \"MetallicMaterial/roughnessMap:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"MetallicMaterial/roughness:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "roughness",
@@ -16142,7 +16142,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 518,
+            "line": 517,
             "description": "Fired whenever this MetallicMaterial's {{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "roughness",
@@ -16159,7 +16159,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 532,
+            "line": 531,
             "description": "RGB {{#crossLink \"Texture\"}}{{/crossLink}} containing this MetallicMaterial's roughness factor in its *R* component.\n\nThe *R* component multiplies by the {{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}} property.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this MetallicMaterial.\n\nFires a {{#crossLink \"MetallicMaterial/roughnessMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "roughnessMap",
@@ -16171,7 +16171,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 549,
+            "line": 548,
             "description": "Fired whenever this MetallicMaterial's {{#crossLink \"MetallicMaterial/roughnessMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "roughnessMap",
@@ -16187,7 +16187,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 563,
+            "line": 562,
             "description": "RGB {{#crossLink \"Texture\"}}{{/crossLink}} containing this MetallicMaterial's metalness in its *R* component and roughness in its *G* component.\n\nIts *R* component multiplies by the {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}} property, while\nits *G* component multiplies by the {{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}} property.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this MetallicMaterial.\n\nFires a {{#crossLink \"MetallicMaterial/metallicRoughnessMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "metallicRoughnessMap",
@@ -16199,7 +16199,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 581,
+            "line": 580,
             "description": "Fired whenever this MetallicMaterial's {{#crossLink \"MetallicMaterial/metallicRoughnessMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "metallicRoughnessMap",
@@ -16215,7 +16215,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 595,
+            "line": 594,
             "description": "Factor in the range [0..1] indicating specular Fresnel value.\n\nFires a {{#crossLink \"MetallicMaterial/specularF0:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "specularF0",
@@ -16227,7 +16227,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 618,
+            "line": 617,
             "description": "Fired whenever this MetallicMaterial's {{#crossLink \"MetallicMaterial/specularF0:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "specularF0",
@@ -16244,7 +16244,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 632,
+            "line": 631,
             "description": "RGB emissive color of this MetallicMaterial.\n\nMultiplies by {{#crossLink \"MetallicMaterial/emissiveMap:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"MetallicMaterial/emissive:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "emissive",
@@ -16256,7 +16256,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 669,
+            "line": 668,
             "description": "Fired whenever this MetallicMaterial's {{#crossLink \"MetallicMaterial/emissive:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "emissive",
@@ -16273,7 +16273,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 683,
+            "line": 682,
             "description": "RGB {{#crossLink \"Texture\"}}{{/crossLink}} containing the emissive color of this MetallicMaterial.\n\nMultiplies by the {{#crossLink \"MetallicMaterial/emissive:property\"}}{{/crossLink}} property.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this MetallicMaterial.\n\nFires a {{#crossLink \"MetallicMaterial/emissiveMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "emissiveMap",
@@ -16285,7 +16285,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 700,
+            "line": 699,
             "description": "Fired whenever this MetallicMaterial's {{#crossLink \"MetallicMaterial/emissiveMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "emissiveMap",
@@ -16301,7 +16301,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 714,
+            "line": 713,
             "description": "RGB ambient occlusion {{#crossLink \"Texture\"}}{{/crossLink}} attached to this MetallicMaterial.\n\nWithin shaders, multiplies by the specular and diffuse light reflected by surfaces.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this MetallicMaterial.\n\nFires a {{#crossLink \"MetallicMaterial/occlusionMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "occlusionMap",
@@ -16313,7 +16313,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 731,
+            "line": 730,
             "description": "Fired whenever this MetallicMaterial's {{#crossLink \"MetallicMaterial/occlusionMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "occlusionMap",
@@ -16329,7 +16329,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 745,
+            "line": 744,
             "description": "Factor in the range [0..1] indicating how transparent this MetallicMaterial is.\n\nA value of 0.0 indicates fully transparent, 1.0 is fully opaque.\n\nMultiplies by the *R* component of {{#crossLink \"MetallicMaterial/opacityMap:property\"}}{{/crossLink}} and\nthe *A* component, if present, of {{#crossLink \"MetallicMaterial/baseColorMap:property\"}}{{/crossLink}}.\n\nAttached {{#crossLink \"Entity\"}}Entities{{/crossLink}} will appear transparent only if they are also attached\nto {{#crossLink \"Modes\"}}Modes{{/crossLink}} that have {{#crossLink \"Modes/transparent:property\"}}transparent{{/crossLink}}\nset to **true**.\n\nFires an {{#crossLink \"MetallicMaterial/opacity:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "opacity",
@@ -16341,7 +16341,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 777,
+            "line": 776,
             "description": "Fired whenever this MetallicMaterial's {{#crossLink \"MetallicMaterial/opacity:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "opacity",
@@ -16358,7 +16358,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 791,
+            "line": 790,
             "description": "RGB {{#crossLink \"Texture\"}}{{/crossLink}} containing this MetallicMaterial's opacity in its *R* component.\n\nThe *R* component multiplies by the {{#crossLink \"MetallicMaterial/opacity:property\"}}{{/crossLink}} property.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this MetallicMaterial.\n\nFires an {{#crossLink \"MetallicMaterial/opacityMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "opacityMap",
@@ -16370,7 +16370,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 808,
+            "line": 807,
             "description": "Fired whenever this MetallicMaterial's {{#crossLink \"MetallicMaterial/opacityMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "opacityMap",
@@ -16386,7 +16386,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 822,
+            "line": 821,
             "description": "RGB tangent-space normal map {{#crossLink \"Texture\"}}{{/crossLink}}.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this MetallicMaterial.\n\nFires a {{#crossLink \"PhongMaterial/normalMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "normalMap",
@@ -16398,7 +16398,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 837,
+            "line": 836,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/normalMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "normalMap",
@@ -17066,7 +17066,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 292,
+            "line": 326,
             "description": "RGB diffuse color of this SpecularMaterial.\n\nMultiplies by the *RGB* components of {{#crossLink \"SpecularMaterial/diffuseMap:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"SpecularMaterial/diffuse:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "diffuse",
@@ -17078,7 +17078,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 329,
+            "line": 363,
             "description": "Fired whenever this SpecularMaterial's {{#crossLink \"SpecularMaterial/diffuse:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "diffuse",
@@ -17095,7 +17095,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 343,
+            "line": 377,
             "description": "RGB {{#crossLink \"Texture\"}}{{/crossLink}} containing the diffuse color of this SpecularMaterial, with optional *A* component for opacity.\n\nThe *RGB* components multiply by the {{#crossLink \"SpecularMaterial/diffuse:property\"}}{{/crossLink}} property,\nwhile the *A* component, if present, multiplies by the {{#crossLink \"SpecularMaterial/opacity:property\"}}{{/crossLink}} property.\n\nAttached {{#crossLink \"Entity\"}}Entities{{/crossLink}} will appear transparent only if they are also attached\nto {{#crossLink \"Modes\"}}Modes{{/crossLink}} that have {{#crossLink \"Modes/transparent:property\"}}transparent{{/crossLink}}\nset to **true**.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this SpecularMaterial.\n\nFires a {{#crossLink \"SpecularMaterial/diffuseMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "diffuseMap",
@@ -17107,7 +17107,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 365,
+            "line": 399,
             "description": "Fired whenever this SpecularMaterial's {{#crossLink \"SpecularMaterial/diffuseMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "diffuseMap",
@@ -17123,7 +17123,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 379,
+            "line": 413,
             "description": "RGB specular color of this SpecularMaterial.\n\nMultiplies by the {{#crossLink \"SpecularMaterial/specularMap:property\"}}{{/crossLink}}\nand the *A* component of {{#crossLink \"SpecularMaterial/specularGlossinessMap:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"SpecularMaterial/specular:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "specular",
@@ -17135,7 +17135,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 417,
+            "line": 451,
             "description": "Fired whenever this SpecularMaterial's {{#crossLink \"SpecularMaterial/specular:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "specular",
@@ -17152,7 +17152,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 431,
+            "line": 465,
             "description": "RGB texture containing the specular color of this SpecularMaterial.\n\nMultiplies by the {{#crossLink \"SpecularMaterial/specular:property\"}}{{/crossLink}} property.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this SpecularMaterial.\n\nFires a {{#crossLink \"SpecularMaterial/specularMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "specularMap",
@@ -17164,7 +17164,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 448,
+            "line": 482,
             "description": "Fired whenever this SpecularMaterial's {{#crossLink \"SpecularMaterial/specularGlossinessMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "specularMap",
@@ -17180,7 +17180,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 462,
+            "line": 496,
             "description": "RGBA texture containing this SpecularMaterial's specular color in its *RGB* components and glossiness in its *A* component.\n\nThe *RGB* components multiply by the {{#crossLink \"SpecularMaterial/specular:property\"}}{{/crossLink}} property, while\nthe *A* component multiplies by the {{#crossLink \"SpecularMaterial/glossiness:property\"}}{{/crossLink}} property.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this SpecularMaterial.\n\nFires a {{#crossLink \"SpecularMaterial/specularGlossinessMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "specularGlossinessMap",
@@ -17192,7 +17192,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 480,
+            "line": 514,
             "description": "Fired whenever this SpecularMaterial's {{#crossLink \"SpecularMaterial/specularGlossinessMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "specularGlossinessMap",
@@ -17208,7 +17208,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 494,
+            "line": 528,
             "description": "Factor in the range [0..1] indicating how glossy this SpecularMaterial is.\n\n0 is no glossiness, 1 is full glossiness.\n\nMultiplies by the *R* component of {{#crossLink \"SpecularMaterial/glossinessMap:property\"}}{{/crossLink}}\nand the *A* component of {{#crossLink \"SpecularMaterial/specularGlossinessMap:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"SpecularMaterial/glossiness:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "glossiness",
@@ -17220,7 +17220,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 522,
+            "line": 556,
             "description": "Fired whenever this SpecularMaterial's {{#crossLink \"SpecularMaterial/glossiness:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "glossiness",
@@ -17237,7 +17237,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 536,
+            "line": 570,
             "description": "RGB texture containing this SpecularMaterial's glossiness in its *R* component.\n\nThe *R* component multiplies by the {{#crossLink \"SpecularMaterial/glossiness:property\"}}{{/crossLink}} property.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this SpecularMaterial.\n\nFires a {{#crossLink \"SpecularMaterial/glossinessMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "glossinessMap",
@@ -17249,7 +17249,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 553,
+            "line": 587,
             "description": "Fired whenever this SpecularMaterial's {{#crossLink \"SpecularMaterial/glossinessMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "glossinessMap",
@@ -17265,7 +17265,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 567,
+            "line": 601,
             "description": "Factor in the range [0..1] indicating amount of specular Fresnel.\n\nFires a {{#crossLink \"SpecularMaterial/specularF0:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "specularF0",
@@ -17277,7 +17277,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 590,
+            "line": 624,
             "description": "Fired whenever this SpecularMaterial's {{#crossLink \"SpecularMaterial/specularF0:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "specularF0",
@@ -17294,7 +17294,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 604,
+            "line": 638,
             "description": "RGB emissive color of this SpecularMaterial.\n\nMultiplies by {{#crossLink \"SpecularMaterial/emissiveMap:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"SpecularMaterial/emissive:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "emissive",
@@ -17306,7 +17306,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 641,
+            "line": 675,
             "description": "Fired whenever this SpecularMaterial's {{#crossLink \"SpecularMaterial/emissive:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "emissive",
@@ -17323,7 +17323,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 655,
+            "line": 689,
             "description": "RGB texture containing the emissive color of this SpecularMaterial.\n\nMultiplies by the {{#crossLink \"SpecularMaterial/emissive:property\"}}{{/crossLink}} property.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this SpecularMaterial.\n\nFires a {{#crossLink \"SpecularMaterial/emissiveMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "emissiveMap",
@@ -17335,7 +17335,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 672,
+            "line": 706,
             "description": "Fired whenever this SpecularMaterial's {{#crossLink \"SpecularMaterial/emissiveMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "emissiveMap",
@@ -17351,7 +17351,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 686,
+            "line": 720,
             "description": "Factor in the range [0..1] indicating how transparent this SpecularMaterial is.\n\nA value of 0.0 is fully transparent, while 1.0 is fully opaque.\n\nMultiplies by the *R* component of {{#crossLink \"SpecularMaterial/opacityMap:property\"}}{{/crossLink}} and\nthe *A* component, if present, of {{#crossLink \"SpecularMaterial/diffuseMap:property\"}}{{/crossLink}}.\n\nAttached {{#crossLink \"Entity\"}}Entities{{/crossLink}} will appear transparent only if they are also attached\nto {{#crossLink \"Modes\"}}Modes{{/crossLink}} that have {{#crossLink \"Modes/transparent:property\"}}transparent{{/crossLink}}\nset to **true**.\n\nFires an {{#crossLink \"SpecularMaterial/opacity:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "opacity",
@@ -17363,7 +17363,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 718,
+            "line": 752,
             "description": "Fired whenever this SpecularMaterial's {{#crossLink \"SpecularMaterial/opacity:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "opacity",
@@ -17380,7 +17380,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 732,
+            "line": 766,
             "description": "RGB {{#crossLink \"Texture\"}}{{/crossLink}} with opacity in its *R* component.\n\nThe *R* component multiplies by the {{#crossLink \"SpecularMaterial/opacity:property\"}}{{/crossLink}} property.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this SpecularMaterial.\n\nFires an {{#crossLink \"SpecularMaterial/opacityMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "opacityMap",
@@ -17392,7 +17392,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 749,
+            "line": 783,
             "description": "Fired whenever this SpecularMaterial's {{#crossLink \"SpecularMaterial/opacityMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "opacityMap",
@@ -17408,7 +17408,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 763,
+            "line": 797,
             "description": "RGB tangent-space normal {{#crossLink \"Texture\"}}{{/crossLink}} attached to this SpecularMaterial.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this SpecularMaterial.\n\nFires a {{#crossLink \"PhongMaterial/normalMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "normalMap",
@@ -17420,7 +17420,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 778,
+            "line": 812,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/normalMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "normalMap",
@@ -17436,7 +17436,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 792,
+            "line": 826,
             "description": "RGB ambient occlusion {{#crossLink \"Texture\"}}{{/crossLink}} attached to this SpecularMaterial.\n\nWithin shaders, multiplies by the specular and diffuse light reflected by surfaces.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this SpecularMaterial.\n\nFires a {{#crossLink \"SpecularMaterial/occlusionMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "occlusionMap",
@@ -17448,7 +17448,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 809,
+            "line": 843,
             "description": "Fired whenever this SpecularMaterial's {{#crossLink \"SpecularMaterial/occlusionMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "occlusionMap",
@@ -20415,7 +20415,7 @@
         },
         {
             "file": "src/models/gltfModel.js",
-            "line": 69,
+            "line": 68,
             "description": "Path to a glTF file.\n\nYou can set this to a new file path at any time, which will cause the GLTFModel to load components from\nthe new file (after first destroying any components loaded from a previous file path).\n\nFires a {{#crossLink \"GLTFModel/src:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "src",
@@ -20426,7 +20426,7 @@
         },
         {
             "file": "src/models/gltfModel.js",
-            "line": 95,
+            "line": 94,
             "description": "Fired whenever this GLTFModel has finished loading components from the glTF file\nspecified by {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "loaded",
@@ -20436,7 +20436,7 @@
         },
         {
             "file": "src/models/gltfModel.js",
-            "line": 135,
+            "line": 134,
             "description": "Fired whenever this GLTFModel's {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "src",

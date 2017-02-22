@@ -252,8 +252,7 @@
 
  Note that in this example we&#x27;re providing separate {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}} for the {{#crossLink &quot;SpecularMaterial/specular:property&quot;}}{{/crossLink}} and {{#crossLink &quot;SpecularMaterial/glossiness:property&quot;}}{{/crossLink}}
  channels, which allows us a little creative flexibility. Then, in the next example further down, we&#x27;ll combine those channels
- within the same {{#crossLink &quot;Texture&quot;}}{{/crossLink}}, which results in shorter download times, reduced memory
- footprint and faster rendering.
+ within the same {{#crossLink &quot;Texture&quot;}}{{/crossLink}} for efficiency.
 
  &#x60;&#x60;&#x60;&#x60;javascript
  new xeogl.Entity({
@@ -329,6 +328,41 @@
     })
  });
  &#x60;&#x60;&#x60;&#x60;
+
+ ### Combining channels within the same textures
+
+ In the previous example we provided separate {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}} for the {{#crossLink &quot;SpecularMaterial/specular:property&quot;}}{{/crossLink}} and
+ {{#crossLink &quot;SpecularMaterial/glossiness:property&quot;}}{{/crossLink}} channels, but we can combine those channels into the same {{#crossLink &quot;Texture&quot;}}{{/crossLink}} to reduce download time, memory footprint and rendering time (and also for glTF compatibility).
+
+ Here&#x27;s our SpecularMaterial again with those channels combined in the
+ {{#crossLink &quot;SpecularMaterial/specularGlossinessMap:property&quot;}}{{/crossLink}} {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}}, where the
+ *RGB* component multiplies by {{#crossLink &quot;SpecularMaterial/specular:property&quot;}}{{/crossLink}} and *A* multiplies by {{#crossLink &quot;SpecularMaterial/glossiness:property&quot;}}{{/crossLink}}.
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ new xeogl.SpecularMaterial({
+
+    // Default values
+    diffuse: [1.0, 1.0, 1.0],
+    specular: [1.0, 1.0, 1.0],
+    glossiness: 1.0,
+    emissive: [0.0, 0.0, 0.0]
+    opacity: 1.0,
+
+    diffuseMap: {
+        src: &quot;textures/materials/poligon/Plaster07_1k/Plaster07_COL_VAR1_1K.jpg&quot;
+    },
+    specularGlossinessMap: { // RGB multiplies by specular, A by glossiness
+        src: &quot;textures/materials/poligon/Plaster07_1k/Plaster07_REFL_GLOSS_1K.jpg&quot;
+    },
+    normalMap: {
+        src: &quot;textures/materials/poligon/Plaster07_1k/Plaster07_NRM_1K.jpg&quot;
+    }
+ });
+ &#x60;&#x60;&#x60;&#x60;
+
+ Although not shown in this example, we can also texture {{#crossLink &quot;MetallicMaterial/opacity:property&quot;}}{{/crossLink}} with
+ the *A* component of {{#crossLink &quot;MetallicMaterial/baseColorMap:property&quot;}}{{/crossLink}}&#x27;s {{#crossLink &quot;Texture&quot;}}{{/crossLink}},
+ if required.
 
  @class SpecularMaterial
  @module xeogl

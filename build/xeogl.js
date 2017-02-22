@@ -32665,9 +32665,8 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
      ## Examples
 
-     * [glTF gearbox](../../examples/#importing_gltf_gearbox)
-     * [glTF models with PBR materials](../../examples/#importing_gltf_pbr)
-     * [glTF gearbox with entity explorer](../../examples/#importing_gltf_explorer)
+     * [Damaged Helmet with metal/rough PBR materials](../../examples/#importing_gltf_pbr_metallic_helmet)
+     * [Gearbox with entity explorer](../../examples/#importing_gltf_explorer)
      * [Ensuring individual materials on GLTFModel entities](../../examples/#models_filter_uniqueMaterials)
      * [Baking transform hierarchies in a GLTFModel](../../examples/#models_filter_bakeTransforms)
      * [Attaching transforms to a GLTFModel, via constructor](../../examples/#transforms_model_configureTransform)
@@ -34157,8 +34156,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  Note that in this example we're providing separate {{#crossLink "Texture"}}Textures{{/crossLink}} for the {{#crossLink "SpecularMaterial/specular:property"}}{{/crossLink}} and {{#crossLink "SpecularMaterial/glossiness:property"}}{{/crossLink}}
  channels, which allows us a little creative flexibility. Then, in the next example further down, we'll combine those channels
- within the same {{#crossLink "Texture"}}{{/crossLink}}, which results in shorter download times, reduced memory
- footprint and faster rendering.
+ within the same {{#crossLink "Texture"}}{{/crossLink}} for efficiency.
 
  ````javascript
  new xeogl.Entity({
@@ -34234,6 +34232,41 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
     })
  });
  ````
+
+ ### Combining channels within the same textures
+
+ In the previous example we provided separate {{#crossLink "Texture"}}Textures{{/crossLink}} for the {{#crossLink "SpecularMaterial/specular:property"}}{{/crossLink}} and
+ {{#crossLink "SpecularMaterial/glossiness:property"}}{{/crossLink}} channels, but we can combine those channels into the same {{#crossLink "Texture"}}{{/crossLink}} to reduce download time, memory footprint and rendering time (and also for glTF compatibility).
+
+ Here's our SpecularMaterial again with those channels combined in the
+ {{#crossLink "SpecularMaterial/specularGlossinessMap:property"}}{{/crossLink}} {{#crossLink "Texture"}}Texture{{/crossLink}}, where the
+ *RGB* component multiplies by {{#crossLink "SpecularMaterial/specular:property"}}{{/crossLink}} and *A* multiplies by {{#crossLink "SpecularMaterial/glossiness:property"}}{{/crossLink}}.
+
+ ````javascript
+ new xeogl.SpecularMaterial({
+
+    // Default values
+    diffuse: [1.0, 1.0, 1.0],
+    specular: [1.0, 1.0, 1.0],
+    glossiness: 1.0,
+    emissive: [0.0, 0.0, 0.0]
+    opacity: 1.0,
+
+    diffuseMap: {
+        src: "textures/materials/poligon/Plaster07_1k/Plaster07_COL_VAR1_1K.jpg"
+    },
+    specularGlossinessMap: { // RGB multiplies by specular, A by glossiness
+        src: "textures/materials/poligon/Plaster07_1k/Plaster07_REFL_GLOSS_1K.jpg"
+    },
+    normalMap: {
+        src: "textures/materials/poligon/Plaster07_1k/Plaster07_NRM_1K.jpg"
+    }
+ });
+ ````
+
+ Although not shown in this example, we can also texture {{#crossLink "MetallicMaterial/opacity:property"}}{{/crossLink}} with
+ the *A* component of {{#crossLink "MetallicMaterial/baseColorMap:property"}}{{/crossLink}}'s {{#crossLink "Texture"}}{{/crossLink}},
+ if required.
 
  @class SpecularMaterial
  @module xeogl
@@ -35124,8 +35157,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  Note that in this example we're providing separate {{#crossLink "Texture"}}Textures{{/crossLink}} for the {{#crossLink "MetallicMaterial/metallic:property"}}{{/crossLink}} and {{#crossLink "MetallicMaterial/roughness:property"}}{{/crossLink}}
  channels, which allows us a little creative flexibility. Then, in the next example further down, we'll combine those channels
- within the same {{#crossLink "Texture"}}{{/crossLink}}, which results in shorter download times, reduced memory
- footprint and faster rendering.
+ within the same {{#crossLink "Texture"}}{{/crossLink}} for efficiency.
 
  ````javascript
  new xeogl.Entity({
