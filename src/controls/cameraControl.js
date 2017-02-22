@@ -172,7 +172,8 @@
                 var aabb = this.scene.worldBoundary.aabb;
                 this._boundaryHelper.geometry.aabb = aabb;
                 this.cameraFlight.flyTo({
-                        aabb: aabb
+                        aabb: aabb,
+                        fitFOV: 45
                     },
                     this._hideEntityBoundary, this);
             }, this);
@@ -221,6 +222,7 @@
 
                 this.cameraFlight.flyTo({
                         look: pos,
+                        //eye: xeogl.math.addVec3(pos, diff, [])
                         aabb: aabb
                     },
                     this._hideEntityBoundary, this);
