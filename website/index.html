@@ -154,9 +154,13 @@
 <!-- ================ -->
 <div id="banner" class="banner">
 
+    <!--<iframe id="demoLink"-->
+            <!--style="background: black; border: 0; position:absolute; right: 0; width:100%; height:100%; pointer-events:all;"-->
+            <!--src="../examples/featured_gltf_pbr_damagedHelmet.html"></iframe>-->
+
     <iframe id="demoLink"
             style="background: black; border: 0; position:absolute; right: 0; width:100%; height:100%; pointer-events:all;"
-            src="../examples/featured_gltf_pbr_damagedHelmet.html"></iframe>
+            src="../examples/importing_scenejs_tronTank.html"></iframe>
 
     <!--<iframe id="demoLink" style="background: black; border: 0; position:absolute; right: 0; width:100%; height:100%; pointer-events:all;"-->
     <!--src="../examples/effects_zspace_ReciprocatingSaw.html"></iframe>-->
@@ -215,11 +219,9 @@
                 <div class="row">
                     <div class="col-md-6">
 
-                        <h2>Functional overview</h2>
+                        <h2>Overview</h2>
 
-                        <p>xeogl is a WebGL-based 3D engine that's geared towards visualization applications
-                            in science, technology, engineering and mathematics (STEM).
-                        </p>
+                        <p>xeogl is a data-driven 3D visualization engine on WebGL.</p>
 
                         <p>xeogl is:</p>
 
@@ -235,7 +237,7 @@
                         </ul>
                         <p></p>
 
-                        <h2>In production</h2>
+                        <h2>Featured app</h2>
 
                         <p>xeogl is running in production as the 3D engine within <a
                                 href="http://xeolabs.com/articles/xeogl-in-bimsurfer">BIMSurfer</a>, the open source
@@ -308,11 +310,11 @@ var entity = new xeogl.Entity({
 
                     </div>
                     <div class="col-md-6">
-                        <h2>Editing scenes</h2>
+                        <h2>Editing</h2>
 
-                        <p>You can modify everything in your scene dynamically. Create and destroy components, link
+                        <p>You can edit everything in your scene at runtime. Create and destroy components, link
                             or unlink
-                            them to each other, update their properties etc.<br><br>Let's add <a
+                            them, update their properties etc.<br><br>Let's add <a
                                     href="http://xeogl.org/docs/classes/Rotate.html" target="_parent">rotation</a> and
                             <a
                                     href="http://xeogl.org/docs/classes/Scale.html" target="_parent">scale</a> to our
@@ -331,11 +333,10 @@ entity.transform = new xeogl.Rotate({
 entity.geometry.radius *= 2.0;
 entity.geometry.tube *= 2.0; </pre>
 
-                        <h2>Animating scenes</h2>
+                        <h2>Animating</h2>
 
-                        <p>Animate scenes by updating component properties. Almost everything in xeogl
-                            fires change events that you can subscribe to, which is convenient for scripting and
-                            extension.</p>
+                        <p>Animate scenes by updating properties on components. Virtually everything in xeogl
+                            fires change events that you can subscribe to.</p>
 
                         <pre class="prettyprint lang-javascript">// Listen for updates to the rotation angle
 entity.transform.on("angle", function(value) {
@@ -351,7 +352,7 @@ entity.transform.angle = 90.0;</pre>
     entity.transform.angle += 0.5;
 });</pre>
 
-                        <h2>Importing models</h2>
+                        <h2>Importing</h2>
 
                         <p>Got a model you want to quickly view in the browser? Use some of xeogl's higher-level
                             components,
@@ -372,9 +373,9 @@ var cameraControl = new xeogl.BIMCameraControl();</pre>
                         <a href="http://xeogl.org/examples/#importing_gltf_gearbox"><img
                                 src="assets/images/glTF_gearbox_medium.png"></a>
 
-                        <h2>Viewing effects</h2>
+                        <h2>Effects</h2>
 
-                        <p>Want to view your model in stereo? Just drop in a component to activate the desired effect.
+                        <p>Need to view your model in stereo? Just drop in a component to activate the desired effect.
                             Let's
                             view our model with simple split-screen stereo:</p>
                         <pre class="prettyprint lang-javascript">var stereoEffect = new xeogl.StereoEffect({

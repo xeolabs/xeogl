@@ -39,7 +39,6 @@
     "src/_renderer/chunks/chunkFactory.js",
     "src/_renderer/chunks/clipsChunk.js",
     "src/_renderer/chunks/colorBufferChunk.js",
-    "src/_renderer/chunks/cubemapChunk.js",
     "src/_renderer/chunks/depthBufferChunk.js",
     "src/_renderer/chunks/drawChunk.js",
     "src/_renderer/chunks/geometryChunk.js",
