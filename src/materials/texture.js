@@ -271,7 +271,7 @@
 
                 var t;
 
-                if (this._translate[0] !== 0 || this._translate[2] !== 0) {
+                if (this._translate[0] !== 0 || this._translate[1] !== 0) {
                     matrix = xeogl.math.translationMat4v([this._translate[0], this._translate[1], 0]);
                 }
 
