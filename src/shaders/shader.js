@@ -161,9 +161,9 @@
  | Varying | Description | Depends on  |
  |---|---|---|
 
-
-
+ @class Shader
  @module xeogl
+ @submodule shaders
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Shader in the default
  {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
@@ -215,7 +215,6 @@
 
                     this._state.vertex = value;
 
-                    // Trigger recompile
                     this.fire("dirty", true);
 
                     /**
@@ -247,7 +246,6 @@
 
                     this._state.fragment = value;
 
-                    // Trigger recompile
                     this.fire("dirty", true);
 
                     /**

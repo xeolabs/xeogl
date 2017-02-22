@@ -122,9 +122,9 @@
     });
 });
  ````
-
+ @class ShaderParams
  @module xeogl
-
+ @submodule shaders
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this ShaderParams in the default
  {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
