@@ -102,6 +102,8 @@
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
+                                <li><a href="../classes/Shader.html">Shader</a></li>
+                                <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
                                 <li><a href="../classes/SpecularMaterial.html">SpecularMaterial</a></li>
@@ -148,6 +150,7 @@
                                 <li><a href="..//modules/math.html">math</a></li>
                                 <li><a href="..//modules/models.html">models</a></li>
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
+                                <li><a href="..//modules/shaders.html">shaders</a></li>
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
                                 <li><a href="..//modules/xeogl.html">xeogl</a></li>
@@ -663,6 +666,7 @@
 
         if (oldChunk) {
             this._chunkFactory.putChunk(oldChunk);
+            object.chunks[order] = null;
         }
 
         // Attach new chunk
@@ -702,8 +706,7 @@
         var object = this.objects[objectId];
 
         if (!object) {
-
-            // Object not found
+            console.error(&quot;xeogl.renderer.Chunkfactory.removeObject: object not found: &quot; + objectId);
             return;
         }
 
@@ -711,6 +714,7 @@
         var chunks = object.chunks;
         for (var i = 0, len = chunks.length; i &lt; len; i++) {
             this._chunkFactory.putChunk(chunks[i]);
+            chunks[i] = null;
         }
 
         // Release object&#x27;s shader

@@ -870,17 +870,30 @@
             "fors": {},
             "namespaces": {}
         },
+        "src/shaders/_module.js": {
+            "name": "src/shaders/_module.js",
+            "modules": {
+                "shaders": 1
+            },
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
         "src/shaders/shader.js": {
             "name": "src/shaders/shader.js",
             "modules": {},
-            "classes": {},
+            "classes": {
+                "Shader": 1
+            },
             "fors": {},
             "namespaces": {}
         },
         "src/shaders/shaderParams.js": {
             "name": "src/shaders/shaderParams.js",
             "modules": {},
-            "classes": {},
+            "classes": {
+                "ShaderParams": 1
+            },
             "fors": {},
             "namespaces": {}
         },
@@ -1360,6 +1373,7 @@
                 "math": 1,
                 "models": 1,
                 "rendering": 1,
+                "shaders": 1,
                 "transforms": 1,
                 "effects": 1,
                 "curves": 1,
@@ -1416,6 +1430,8 @@
                 "Modes": 1,
                 "Stage": 1,
                 "Viewport": 1,
+                "Shader": 1,
+                "ShaderParams": 1,
                 "Billboard": 1,
                 "Frustum": 1,
                 "Lookat": 1,
@@ -1972,6 +1988,22 @@
                 }
             ],
             "extends": "Component"
+        },
+        "shaders": {
+            "name": "shaders",
+            "submodules": {},
+            "classes": {
+                "Shader": 1,
+                "ShaderParams": 1
+            },
+            "fors": {},
+            "is_submodule": 1,
+            "namespaces": {},
+            "module": "xeogl",
+            "namespace": "",
+            "file": "src/shaders/shaderParams.js",
+            "line": 1,
+            "description": "Components to define custom shaders."
         },
         "transforms": {
             "name": "transforms",
@@ -4387,7 +4419,7 @@
             "namespace": "",
             "file": "src/materials/metallicMaterial.js",
             "line": 1,
-            "description": "A **MetallicMaterial** is a physically-based {{#crossLink \"Material\"}}{{/crossLink}} that defines the surface appearance of\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} using the *metallic-roughness* workflow.\n\n## Examples\n\n| <a href=\"../../examples/#importing_gltf_pbr\"><img src=\"../../assets/images/screenshots/MetallicMaterial/helmet.png\"></img></a> | <a href=\"../../examples/#materials_metallic_fireHydrant\"><img src=\"../../assets/images/screenshots/MetallicMaterial/hydrant3.png\"></img></a> | <a href=\"../../examples/#materials_metallic_samples_metals\"><img src=\"../../assets/images/screenshots/MetallicMaterial/metals.png\"></img></a> | <a href=\"../../examples/#materials_metallic_metallicVsRoughness\"><img alt=\"Metallic Vs Roughness\" src=\"../../assets/images/screenshots/MetallicMaterial/metalVsRough.png\"></img></a> |\n|:------:|:----:|:-----:|:-----:|\n|[glTF models with PBR materials](../../examples/#importing_gltf_pbr)|[Fire hydrant model](../../examples/#materials_metallic_fireHydrant)| [Sample metal materials ](../../examples/#materials_metallic_samples_metals)|[Metallic Vs. roughness](../../examples/#materials_metallic_metallicVsRoughness)|\n\n## Overview\n\n* MetallicMaterial is usually used for conductive materials, such as metal.\n* {{#crossLink \"SpecularMaterial\"}}{{/crossLink}} is usually used for conductors, such as wood, ceramics and plastic.\n* {{#crossLink \"PhongMaterial\"}}{{/crossLink}} is usually used for non-realistic objects.\n\n<img src=\"../../../assets/images/MetallicMaterial.png\"></img>\n\nFor an introduction to PBR concepts, try these articles:\n\n* Joe Wilson's [Basic Theory of Physically-Based Rendering](https://www.marmoset.co/posts/basic-theory-of-physically-based-rendering/)\n* Jeff Russel's [Physically-based Rendering, and you can too!](https://www.marmoset.co/posts/physically-based-rendering-and-you-can-too/)\n* Sebastien Legarde's [Adapting a physically-based shading model](http://seblagarde.wordpress.com/tag/physically-based-rendering/)\n\nThe following table summarizes MetallicMaterial properties:\n\n| Property | Type | Range | Default Value | Space | Description |\n|:--------:|:----:|:-----:|:-------------:|:-----:|:-----------:|\n|  {{#crossLink \"MetallicMaterial/baseColor:property\"}}{{/crossLink}} | Array | [0, 1] for all components | [1,1,1,1] | linear | The RGB components of the base color of the material. |\n| {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The metallic-ness the material (1 for metals, 0 for non-metals). |\n| {{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The roughness of the material surface. |\n| {{#crossLink \"MetallicMaterial/specularF0:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The specular Fresnel of the material surface. |\n|  {{#crossLink \"MetallicMaterial/emissive:property\"}}{{/crossLink}} | Array | [0, 1] for all components | [0,0,0] | linear | The RGB components of the emissive color of the material. |\n| {{#crossLink \"MetallicMaterial/opacity:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The transparency of the material surface (0 fully transparent, 1 fully opaque). |\n| {{#crossLink \"MetallicMaterial/baseColorMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink \"MetallicMaterial/baseColor:property\"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink \"MetallicMaterial/opacity:property\"}}{{/crossLink}}. |\n| {{#crossLink \"MetallicMaterial/metallicMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}}. |\n| {{#crossLink \"MetallicMaterial/roughnessMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}}. |\n| {{#crossLink \"MetallicMaterial/metallicRoughnessMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}} and second component multiplying by {{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}}. |\n| {{#crossLink \"MetallicMaterial/emissiveMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with RGB components multiplying by {{#crossLink \"MetallicMaterial/emissive:property\"}}{{/crossLink}}. |\n| {{#crossLink \"MetallicMaterial/opacityMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink \"MetallicMaterial/opacity:property\"}}{{/crossLink}}. |\n| {{#crossLink \"MetallicMaterial/occlusionMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Ambient occlusion texture multiplying by surface's reflected diffuse and specular light. |\n| {{#crossLink \"SpecularMaterial/normalMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Tangent-space normal map. |\n\n\n## Usage\n\nIn the example below we'll create the [yellow fire hydrant](../../examples/#materials_metallic_fireHydrant) shown in the example screen shots above. Our hydrant {{#crossLink \"Entity\"}}{{/crossLink}} has:\n\n* a {{#crossLink \"OBJGeometry\"}}{{/crossLink}} which loads the fire hydrant mesh from an .OBJ file,\n* a {{#crossLink \"Lights\"}}{{/crossLink}} containing {{#crossLink \"DirLight\"}}DirLights{{/crossLink}}, plus {{#crossLink \"CubeTexture\"}}CubeTextures{{/crossLink}} for light and reflection maps, and\n* a MetallicMaterial with {{#crossLink \"Texture\"}}Textures{{/crossLink}} providing diffuse, metallic, roughness, occlusion and normal maps.\n\nNote that in this example we're providing separate {{#crossLink \"Texture\"}}Textures{{/crossLink}} for the {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}} and {{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}}\nchannels, which allows us a little creative flexibility. Then, in the next example further down, we'll combine those channels\nwithin the same {{#crossLink \"Texture\"}}{{/crossLink}}, which results in shorter download times, reduced memory\nfootprint and faster rendering.\n\n````javascript\nnew xeogl.Entity({\n\n   geometry: new xeogl.OBJGeometry({\n       src: \"models/obj/FireHydrantMesh.obj\"\n   }),\n\n   lights: new xeogl.Lights({\n       lights: [\n           new xeogl.DirLight({\n               dir: [0.8, -0.6, -0.8],\n               color: [0.8, 0.8, 0.8],\n               space: \"view\"\n           }),\n           new xeogl.DirLight({\n               dir: [-0.8, -0.4, -0.4],\n               color: [0.4, 0.4, 0.5],\n               space: \"view\"\n           }),\n           new xeogl.DirLight({\n               dir: [0.2, -0.8, 0.8],\n               color: [0.8, 0.8, 0.8],\n               space: \"view\"\n           })\n       ],\n       lightMap: new xeogl.CubeTexture({\n           src: [\n               \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png\",\n               \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png\",\n               \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png\",\n               \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png\",\n               \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png\",\n               \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png\"\n           ]\n       }),\n       reflectionMap: new xeogl.CubeTexture({\n           src: [\n               \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png\",\n               \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png\",\n               \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png\",\n               \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png\",\n               \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png\",\n               \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png\"\n           ]\n       })\n   }),\n\n   material: new xeogl.MetallicMaterial({\n\n       // Channels with default values, just to show them\n\n       baseColor: [1.0, 1.0, 1.0],\n       metallic: 1.0,\n       roughness: 1.0,\n       emissive: [0.0, 0.0, 0.0],\n       opacity: 1.0,\n\n       // Textures to multiply by some of the channels\n\n       baseColorMap : new xeogl.Texture({  // Multiplies by baseColor\n           src: \"textures/diffuse/fire_hydrant_Base_Color.png\"\n       }),\n\n       metallicMap : new xeogl.Texture({   // R component multiplies by metallic\n           src: \"textures/metallic/fire_hydrant_Metallic.png\"\n       }),\n\n       roughnessMap : new xeogl.Texture({  // R component multiplies by roughness\n           src: \"textures/roughness/fire_hydrant_Roughness.png\"\n       }),\n\n       occlusionMap : new xeogl.Texture({  // Multiplies by fragment alpha\n           src: \"textures/occlusion/fire_hydrant_Mixed_AO.png\"\n       }),\n\n       normalMap : new xeogl.Texture({\n           src: \"textures/normal/fire_hydrant_Normal_OpenGL.png\"\n       })\n   })\n});\n````\n\n### Combining channels within the same textures\n\nIn the previous example we provided separate {{#crossLink \"Texture\"}}Textures{{/crossLink}} for the {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}} and\n{{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}} channels, but we can combine those channels into the same {{#crossLink \"Texture\"}}{{/crossLink}} to reduce download time, memory footprint and rendering time (and also for glTF compatibility).\n\nHere's our MetallicMaterial again with those channels combined in the\n{{#crossLink \"MetallicMaterial/metallicRoughnessMap:property\"}}{{/crossLink}} {{#crossLink \"Texture\"}}Texture{{/crossLink}}, where the\n*R* component multiplies by {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}} and *G* multiplies by {{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}}.\n\n````javascript\nnew xeogl.MetallicMaterial({\n\n   baseColor: [1,1,1], // Default value\n   metallic: 1.0,      // Default value\n   roughness: 1.0,     // Default value\n\n   baseColorMap : new xeogl.Texture({\n       src: \"textures/diffuse/fire_hydrant_Base_Color.png\"\n   }),\n   metallicRoughnessMap : new xeogl.Texture({\n       src: \"textures/metallicRoughness/fire_hydrant_MetallicRoughness.png\"\n   }),\n   occlusionMap : new xeogl.Texture({\n       src: \"textures/occlusion/fire_hydrant_Mixed_AO.png\"\n   }),\n   normalMap : new xeogl.Texture({\n       src: \"textures/normal/fire_hydrant_Normal_OpenGL.png\"\n   })\n});\n````\n\nAlthough not shown in this example, we can also texture {{#crossLink \"MetallicMaterial/opacity:property\"}}{{/crossLink}} with\nthe *A* component of {{#crossLink \"MetallicMaterial/baseColorMap:property\"}}{{/crossLink}}'s {{#crossLink \"Texture\"}}{{/crossLink}},\nif required.",
+            "description": "A **MetallicMaterial** is a physically-based {{#crossLink \"Material\"}}{{/crossLink}} that defines the surface appearance of\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} using the *metallic-roughness* workflow.\n\n## Examples\n\n| <a href=\"../../examples/#importing_gltf_pbr\"><img src=\"../../assets/images/screenshots/MetallicMaterial/helmet.png\"></img></a> | <a href=\"../../examples/#materials_metallic_fireHydrant\"><img src=\"../../assets/images/screenshots/MetallicMaterial/hydrant3.png\"></img></a> | <a href=\"../../examples/#materials_metallic_samples_metals\"><img src=\"../../assets/images/screenshots/MetallicMaterial/metals.png\"></img></a> | <a href=\"../../examples/#materials_metallic_metallicVsRoughness\"><img alt=\"Metallic Vs Roughness\" src=\"../../assets/images/screenshots/MetallicMaterial/metalVsRough.png\"></img></a> |\n|:------:|:----:|:-----:|:-----:|\n|[glTF models with PBR materials](../../examples/#importing_gltf_pbr)|[Fire hydrant model](../../examples/#materials_metallic_fireHydrant)| [Sample metal materials ](../../examples/#materials_metallic_samples_metals)|[Metallic Vs. roughness](../../examples/#materials_metallic_metallicVsRoughness)|\n\n## Overview\n\n* MetallicMaterial is usually used for conductive materials, such as metal.\n* {{#crossLink \"SpecularMaterial\"}}{{/crossLink}} is usually used for insulators, such as wood, ceramics and plastic.\n* {{#crossLink \"PhongMaterial\"}}{{/crossLink}} is usually used for non-realistic objects.\n\n<img src=\"../../../assets/images/MetallicMaterial.png\"></img>\n\nFor an introduction to PBR concepts, try these articles:\n\n* Joe Wilson's [Basic Theory of Physically-Based Rendering](https://www.marmoset.co/posts/basic-theory-of-physically-based-rendering/)\n* Jeff Russel's [Physically-based Rendering, and you can too!](https://www.marmoset.co/posts/physically-based-rendering-and-you-can-too/)\n* Sebastien Legarde's [Adapting a physically-based shading model](http://seblagarde.wordpress.com/tag/physically-based-rendering/)\n\nThe following table summarizes MetallicMaterial properties:\n\n| Property | Type | Range | Default Value | Space | Description |\n|:--------:|:----:|:-----:|:-------------:|:-----:|:-----------:|\n|  {{#crossLink \"MetallicMaterial/baseColor:property\"}}{{/crossLink}} | Array | [0, 1] for all components | [1,1,1,1] | linear | The RGB components of the base color of the material. |\n| {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The metallic-ness the material (1 for metals, 0 for non-metals). |\n| {{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The roughness of the material surface. |\n| {{#crossLink \"MetallicMaterial/specularF0:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The specular Fresnel of the material surface. |\n|  {{#crossLink \"MetallicMaterial/emissive:property\"}}{{/crossLink}} | Array | [0, 1] for all components | [0,0,0] | linear | The RGB components of the emissive color of the material. |\n| {{#crossLink \"MetallicMaterial/opacity:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The transparency of the material surface (0 fully transparent, 1 fully opaque). |\n| {{#crossLink \"MetallicMaterial/baseColorMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink \"MetallicMaterial/baseColor:property\"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink \"MetallicMaterial/opacity:property\"}}{{/crossLink}}. |\n| {{#crossLink \"MetallicMaterial/metallicMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}}. |\n| {{#crossLink \"MetallicMaterial/roughnessMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}}. |\n| {{#crossLink \"MetallicMaterial/metallicRoughnessMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}} and second component multiplying by {{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}}. |\n| {{#crossLink \"MetallicMaterial/emissiveMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with RGB components multiplying by {{#crossLink \"MetallicMaterial/emissive:property\"}}{{/crossLink}}. |\n| {{#crossLink \"MetallicMaterial/opacityMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink \"MetallicMaterial/opacity:property\"}}{{/crossLink}}. |\n| {{#crossLink \"MetallicMaterial/occlusionMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Ambient occlusion texture multiplying by surface's reflected diffuse and specular light. |\n| {{#crossLink \"SpecularMaterial/normalMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Tangent-space normal map. |\n\n\n## Usage\n\nIn the example below we'll create the [yellow fire hydrant](../../examples/#materials_metallic_fireHydrant) shown in the example screen shots above. Our hydrant {{#crossLink \"Entity\"}}{{/crossLink}} has:\n\n* a {{#crossLink \"OBJGeometry\"}}{{/crossLink}} which loads the fire hydrant mesh from an .OBJ file,\n* a {{#crossLink \"Lights\"}}{{/crossLink}} containing {{#crossLink \"DirLight\"}}DirLights{{/crossLink}}, plus {{#crossLink \"CubeTexture\"}}CubeTextures{{/crossLink}} for light and reflection maps, and\n* a MetallicMaterial with {{#crossLink \"Texture\"}}Textures{{/crossLink}} providing diffuse, metallic, roughness, occlusion and normal maps.\n\nNote that in this example we're providing separate {{#crossLink \"Texture\"}}Textures{{/crossLink}} for the {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}} and {{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}}\nchannels, which allows us a little creative flexibility. Then, in the next example further down, we'll combine those channels\nwithin the same {{#crossLink \"Texture\"}}{{/crossLink}}, which results in shorter download times, reduced memory\nfootprint and faster rendering.\n\n````javascript\nnew xeogl.Entity({\n\n   geometry: new xeogl.OBJGeometry({\n       src: \"models/obj/FireHydrantMesh.obj\"\n   }),\n\n   lights: new xeogl.Lights({\n       lights: [\n           new xeogl.DirLight({\n               dir: [0.8, -0.6, -0.8],\n               color: [0.8, 0.8, 0.8],\n               space: \"view\"\n           }),\n           new xeogl.DirLight({\n               dir: [-0.8, -0.4, -0.4],\n               color: [0.4, 0.4, 0.5],\n               space: \"view\"\n           }),\n           new xeogl.DirLight({\n               dir: [0.2, -0.8, 0.8],\n               color: [0.8, 0.8, 0.8],\n               space: \"view\"\n           })\n       ],\n       lightMap: new xeogl.CubeTexture({\n           src: [\n               \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png\",\n               \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png\",\n               \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png\",\n               \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png\",\n               \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png\",\n               \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png\"\n           ]\n       }),\n       reflectionMap: new xeogl.CubeTexture({\n           src: [\n               \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png\",\n               \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png\",\n               \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png\",\n               \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png\",\n               \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png\",\n               \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png\"\n           ]\n       })\n   }),\n\n   material: new xeogl.MetallicMaterial({\n\n       // Channels with default values, just to show them\n\n       baseColor: [1.0, 1.0, 1.0],\n       metallic: 1.0,\n       roughness: 1.0,\n       emissive: [0.0, 0.0, 0.0],\n       opacity: 1.0,\n\n       // Textures to multiply by some of the channels\n\n       baseColorMap : new xeogl.Texture({  // Multiplies by baseColor\n           src: \"textures/diffuse/fire_hydrant_Base_Color.png\"\n       }),\n\n       metallicMap : new xeogl.Texture({   // R component multiplies by metallic\n           src: \"textures/metallic/fire_hydrant_Metallic.png\"\n       }),\n\n       roughnessMap : new xeogl.Texture({  // R component multiplies by roughness\n           src: \"textures/roughness/fire_hydrant_Roughness.png\"\n       }),\n\n       occlusionMap : new xeogl.Texture({  // Multiplies by fragment alpha\n           src: \"textures/occlusion/fire_hydrant_Mixed_AO.png\"\n       }),\n\n       normalMap : new xeogl.Texture({\n           src: \"textures/normal/fire_hydrant_Normal_OpenGL.png\"\n       })\n   })\n});\n````\n\n### Combining channels within the same textures\n\nIn the previous example we provided separate {{#crossLink \"Texture\"}}Textures{{/crossLink}} for the {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}} and\n{{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}} channels, but we can combine those channels into the same {{#crossLink \"Texture\"}}{{/crossLink}} to reduce download time, memory footprint and rendering time (and also for glTF compatibility).\n\nHere's our MetallicMaterial again with those channels combined in the\n{{#crossLink \"MetallicMaterial/metallicRoughnessMap:property\"}}{{/crossLink}} {{#crossLink \"Texture\"}}Texture{{/crossLink}}, where the\n*R* component multiplies by {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}} and *G* multiplies by {{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}}.\n\n````javascript\nnew xeogl.MetallicMaterial({\n\n   baseColor: [1,1,1], // Default value\n   metallic: 1.0,      // Default value\n   roughness: 1.0,     // Default value\n\n   baseColorMap : new xeogl.Texture({\n       src: \"textures/diffuse/fire_hydrant_Base_Color.png\"\n   }),\n   metallicRoughnessMap : new xeogl.Texture({\n       src: \"textures/metallicRoughness/fire_hydrant_MetallicRoughness.png\"\n   }),\n   occlusionMap : new xeogl.Texture({\n       src: \"textures/occlusion/fire_hydrant_Mixed_AO.png\"\n   }),\n   normalMap : new xeogl.Texture({\n       src: \"textures/normal/fire_hydrant_Normal_OpenGL.png\"\n   })\n});\n````\n\nAlthough not shown in this example, we can also texture {{#crossLink \"MetallicMaterial/opacity:property\"}}{{/crossLink}} with\nthe *A* component of {{#crossLink \"MetallicMaterial/baseColorMap:property\"}}{{/crossLink}}'s {{#crossLink \"Texture\"}}{{/crossLink}},\nif required.",
             "submodule": "materials",
             "is_constructor": 1,
             "extends": "Material",
@@ -5502,6 +5534,120 @@
             ],
             "extends": "Component"
         },
+        "Shader": {
+            "name": "Shader",
+            "shortname": "Shader",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "xeogl",
+            "namespace": "",
+            "file": "src/shaders/shader.js",
+            "line": 1,
+            "description": "A **Shader** specifies a custom GLSL shader to apply when rendering attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n\n* Normally you would rely on xeogl to automatically generate shaders for you, however the Shader component allows you to author them manually.\n* You can use xeogl's reserved uniform and variable names in your Shaders to read all the WebGL state that's set by other\ncomponents on the attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n* Use Shaders in combination with {{#crossLink \"ShaderParams\"}}ShaderParams{{/crossLink}} components when you need to share\nthe same Shaders among multiple {{#crossLink \"Entity\"}}Entities{{/crossLink}} while setting the Shaders' uniforms\ndifferently for each {{#crossLink \"Entity\"}}Entity{{/crossLink}}.\n* Use {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}}, {{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}}\nand {{#crossLink \"Texture\"}}Texture{{/crossLink}} components to connect the output of one Shader as input into another Shader.\n\n\n<img src=\"../../../assets/images/Shader.png\"></img>\n\n## Usage\n\nThis example shows the simplest way to use a Shader, where we're just going to render a ripply water\npattern to a screen-aligned quad.\n\n<img src=\"../../assets/images/shaderExample1.png\"></img>\n\nIn our scene definition, we have an  {{#crossLink \"Entity\"}}Entity{{/crossLink}} that has a {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} that is our\nscreen-aligned quad, plus a Shader that will render the fragments of that quad with our rippling water pattern.\nFinally, we animate the rippling by periodically updating the Shader's \"time\" uniform.\n\n````javascript\n// Shader that's used by our Entity. Note the 'xeo_aPosition' and 'xeo_aUV attributes',\n// which will receive the positions and UVs from the Geometry. Also note the 'time'\n// uniform, which we'll be animating via Shader#setParams.\n\nvar shader = new xeogl.Shader({\n\n   // Vertex shading stage\n   vertex: [\n       \"attribute vec3 xeo_aPosition;\",\n       \"attribute vec2 xeo_aUV;\",\n       \"varying vec2 vUv;\",\n       \"void main () {\",\n       \"    gl_Position = vec4(xeo_aPosition, 1.0);\",\n       \"    vUv = xeo_aUV;\",\n       \"}\"\n   ],\n\n   // Fragment shading stage\n   fragment: [\n       \"precision mediump float;\",\n\n       \"uniform float time;\",\n       \"varying vec2 vUv;\",\n\n       \"void main( void ) {\",\n       \"    vec2 sp = vUv;\",\n       \"    vec2 p = sp*5.0 - vec2(10.0);\",\n       \"    vec2 i = p;\",\n       \"    float c = 1.0;\",\n       \"    float inten = 0.10;\",\n       \"    for (int n = 0; n < 10; n++) {\",\n       \"        float t = time * (1.0 - (3.0 / float(n+1)));\",\n       \"        i = p + vec2(cos(t - i.x) + sin(t + i.y), sin(t - i.y) + cos(t + i.x));\",\n       \"        c += 1.0/length(vec2(p.x / (sin(i.x+t)/inten),p.y / (cos(i.y+t)/inten)));\",\n       \"    }\",\n       \"    c /= float(10);\",\n       \"    c = 1.5-sqrt(c);\",\n       \"    gl_FragColor = vec4(vec3(c*c*c*c), 999.0) + vec4(0.0, 0.3, 0.5, 1.0);\",\n       \"}\"\n   ],\n\n   // Initial value for the 'time' uniform in the fragment stage.\n   params: {\n       time: 0.0\n   }\n});\n\n// A screen-aligned quad\nvar quad = new xeogl.Geometry({\n   primitive:\"triangles\",\n   positions:[ 1, 1, 0, -1, 1, 0, -1, -1, 0, 1, -1, 0 ],\n   normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],\n   uv:[ 1, 1, 0, 1, 0, 0, 1, 0 ],\n   indices:[ 0, 1, 2, 0, 2, 3 ]\n});\n\nvar entity = new xeogl.Entity(scene, {\n   shader: shader,\n   geometry: quad\n});\n\n````\nNow let's animate the \"time\" parameter on the Shader, to make the water ripple:\n\n```` javascript\nentity.scene.on(\"tick\", function(params) {\n    shader.setParams({\n        time: params.timeElapsed\n    });\n});\n````\n\n## <a name=\"inputs\">Shader Inputs</a>\n\nxeogl provides the following inputs for your shaders (work in progress).\n\n#### Attributes\n\n*Attributes are used only in vertex shaders*\n\n| Attribute  | Description | Depends on  |\n|---|---|\n| attribute vec3 xeo_aPosition   | Geometry vertex positions | {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} {{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} |\n| attribute vec2 xeo_aUV         | Geometry vertex UV coordinates | {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} {{#crossLink \"Geometry/uv:property\"}}{{/crossLink}}  |\n| attribute vec3 xeo_aNormal     | Geometry vertex normals | {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} {{#crossLink \"Geometry/normals:property\"}}{{/crossLink}}  |\n| attribute vec4 xeo_aColor      | Geometry vertex colors  | {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} {{#crossLink \"Geometry/colors:property\"}}{{/crossLink}}  |\n| attribute vec4 xeo_aTangent    | Geometry vertex tangents, for normal mapping | {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} {{#crossLink \"Geometry/normals:property\"}}{{/crossLink}} and {{#crossLink \"Geometry/uv:property\"}}{{/crossLink}}  |\n\n#### Uniforms\n\n*Uniforms are used in vertex and fragment shaders*\n\n| Uniform  | Description | Depends on  |\n|---|---|\n| uniform mat4  xeo_uModelMatrix                                   | Modelling transform matrix | {{#crossLink \"Transform\"}}{{/crossLink}} |\n| uniform mat4  xeo_uModelNormalMatrix                             | Modelling transform normal matrix | {{#crossLink \"Geometry/normals:property\"}}Geometry normals{{/crossLink}} and {{#crossLink \"Transform\"}}{{/crossLink}} |\n| uniform mat4  xeo_uViewMatrix                                    | View transform matrix | {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} |\n| uniform mat4  xeo_uViewNormalMatrix                              | View transform normal matrix | {{#crossLink \"Geometry/normals:property\"}}Geometry normals{{/crossLink}} and {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} |\n| uniform mat4  xeo_uProjMatrix                                    | Projection transform matrix | {{#crossLink \"Ortho\"}}Ortho{{/crossLink}}, {{#crossLink \"Frustum\"}}Frustum{{/crossLink}} or {{#crossLink \"Perspective\"}}Perspective{{/crossLink}} |\n| uniform float xeo_uZNear                                         | Near clipping plane |{{#crossLink \"Ortho\"}}Ortho{{/crossLink}}, {{#crossLink \"Frustum\"}}Frustum{{/crossLink}} or {{#crossLink \"Perspective\"}}Perspective{{/crossLink}} |\n| uniform float xeo_uZFar                                          | Far clipping plane |{{#crossLink \"Ortho\"}}Ortho{{/crossLink}}, {{#crossLink \"Frustum\"}}Frustum{{/crossLink}} or {{#crossLink \"Perspective\"}}Perspective{{/crossLink}} |\n|---|---|\n| uniform vec3  xeo_uLightAmbientColor                             | Color of the first {{#crossLink \"AmbientLight\"}}{{/crossLink}} in {{#crossLink \"Lights\"}}{{/crossLink}}| {{#crossLink \"AmbientLight\"}}{{/crossLink}} |\n| uniform vec3 xeo_uLightColor&lt;***N***&gt;                    | Diffuse color of {{#crossLink \"DirLight\"}}{{/crossLink}} or {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"DirLight\"}}{{/crossLink}} or {{#crossLink \"PointLight\"}}{{/crossLink}} |\n| uniform vec3 xeo_uLightIntensity&lt;***N***&gt;                   | Specular color of {{#crossLink \"DirLight\"}}{{/crossLink}} or {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"DirLight\"}}{{/crossLink}} or {{#crossLink \"PointLight\"}}{{/crossLink}} |\n| uniform vec3 xeo_uLightDir&lt;***N***&gt;                        | Direction of {{#crossLink \"DirLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"DirLight\"}}{{/crossLink}} |\n| uniform vec3 xeo_uLightPos&lt;***N***&gt;                        | Position of {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"PointLight\"}}{{/crossLink}} |\n| uniform vec3 xeo_uLightConstantAttenuation&lt;***N***&gt;        | Constant attenuation factor for {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"PointLight\"}}{{/crossLink}} |\n| uniform vec3 xeo_uLightLinearAttenuation&lt;***N***&gt;          | Linear attenuation factor for {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"PointLight\"}}{{/crossLink}} |\n| uniform vec3 xeo_uLightQuadraticAttenuation&lt;***N***&gt;       | Quadratic attenuation factor for {{#crossLink \"PointLight\"}}{{/crossLink}} at index ***N*** in {{#crossLink \"Lights\"}}{{/crossLink}} | {{#crossLink \"PointLight\"}}{{/crossLink}} |\n|---|---|\n| uniform vec3 xeo_uDiffuse;       |  | {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}} |\n| uniform vec3 xeo_uSpecular;       |  | {{#crossLink \"PhongMaterial/specular:property\"}}{{/crossLink}} |\n| uniform vec3 xeo_uEmissive;       |  | {{#crossLink \"PhongMaterial/emissive:property\"}}{{/crossLink}} |\n| uniform float xeo_uOpacity;       |  | {{#crossLink \"PhongMaterial/opacity:property\"}}{{/crossLink}} |\n| uniform float xeo_uShininess;       |  | {{#crossLink \"PhongMaterial/shininess:property\"}}{{/crossLink}} |\n| uniform float xeo_uDiffuseFresnelEdgeBias;       |  | {{#crossLink \"Fresnel/edgeBias:property\"}}{{/crossLink}} |\n\n#### Varying\n\n*Varying types are used in fragment shaders*\n\n| Varying | Description | Depends on  |\n|---|---|---|\n| varying vec4 xeo_vWorldPosition | |\n| varying vec4 xeo_vViewPosition | |\n| varying vec4 xeo_vColor | |\n\n#### Samplers\n\n*Samplers are used in fragment shaders*\n\n| Varying | Description | Depends on  |\n|---|---|---|",
+            "submodule": "shaders",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this Shader in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent scene, generated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this Shader.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "vertex",
+                            "description": "GLSL Depends on code for the vertex shading staging.",
+                            "type": "String",
+                            "optional": true,
+                            "optdefault": "null"
+                        },
+                        {
+                            "name": "fragment",
+                            "description": "GLSL source code for the fragment shading staging.",
+                            "type": "String",
+                            "optional": true,
+                            "optdefault": "null"
+                        },
+                        {
+                            "name": "params",
+                            "description": "{Object} Values for uniforms defined in the vertex and/or fragment stages.",
+                            "optional": true
+                        }
+                    ]
+                }
+            ],
+            "extends": "Component"
+        },
+        "ShaderParams": {
+            "name": "ShaderParams",
+            "shortname": "ShaderParams",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "xeogl",
+            "namespace": "",
+            "file": "src/shaders/shaderParams.js",
+            "line": 1,
+            "description": "A **ShaderParams** sets uniform values for {{#crossLink \"Shader\"}}Shaders{{/crossLink}} on attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n\n* Use ShaderParams components when you need to share the same {{#crossLink \"Shader\"}}Shaders{{/crossLink}} among multiple {{#crossLink \"Entity\"}}Entities{{/crossLink}},\nwhile setting the {{#crossLink \"Shader\"}}Shaders{{/crossLink}}' uniforms differently for each {{#crossLink \"Entity\"}}Entity{{/crossLink}}.\n\n\n<img src=\"../../../assets/images/ShaderParams.png\"></img>\n\n## Usage\n\nIn this example we'll create the effect shown below, in which we render a rippling water pattern to the left and right halves\nof the canvas, independently. We'll have a {{#crossLink \"Shader\"}}{{/crossLink}} that creates the water pattern, which\nwe'll share between two {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\nEach {{#crossLink \"Entity\"}}{{/crossLink}} will have its own screen-aligned quad {{#crossLink \"Geometry\"}}{{/crossLink}},\nas well its own {{#crossLink \"ShaderParams\"}}{{/crossLink}} to update the update the {{#crossLink \"Shader\"}}{{/crossLink}}'s\nrippling rate independently.\n\n<img src=\"../../assets/images/shaderParamsExample1.png\"></img>\n\n````javascript\n// Shader that's shared by both our Entities. Note the 'xeo_aPosition' and 'xeo_aUV attributes',\n// which will receive the positions and UVs from the Geometry components. Also note the 'time'\n// uniform, which we'll be animating via the ShaderParams components.\n\nvar shader = new xeogl.Shader({\n\n   // Vertex shading stage\n   vertex: [\n       \"attribute vec3 xeo_aPosition;\",\n       \"attribute vec2 xeo_aUV;\",\n       \"varying vec2 vUv;\",\n       \"void main () {\",\n       \"    gl_Position = vec4(xeo_aPosition, 1.0);\",\n       \"    vUv = xeo_aUV;\",\n       \"}\"\n   ],\n\n   // Fragment shading stage\n   fragment: [\n       \"precision mediump float;\",\n\n       \"uniform float time;\",\n       \"varying vec2 vUv;\",\n\n       \"void main( void ) {\",\n       \"    vec2 sp = vUv;\",\n       \"    vec2 p = sp*5.0 - vec2(10.0);\",\n       \"    vec2 i = p;\",\n       \"    float c = 1.0;\",\n       \"    float inten = 0.10;\",\n       \"    for (int n = 0; n < 10; n++) {\",\n       \"        float t = time * (1.0 - (3.0 / float(n+1)));\",\n       \"        i = p + vec2(cos(t - i.x) + sin(t + i.y), sin(t - i.y) + cos(t + i.x));\",\n       \"        c += 1.0/length(vec2(p.x / (sin(i.x+t)/inten),p.y / (cos(i.y+t)/inten)));\",\n       \"    }\",\n       \"    c /= float(10);\",\n       \"    c = 1.5-sqrt(c);\",\n       \"    gl_FragColor = vec4(vec3(c*c*c*c), 999.0) + vec4(0.0, 0.3, 0.5, 1.0);\",\n       \"}\"\n   ],\n\n   // Initial values for the 'time' uniform in the fragment stage.\n   params: {\n       time: 0.0\n   }\n});\n\n// First Entity using our Shader, with a quad covering the left half of the canvas,\n// along with its own ShaderParams to independently set its own values for the Shader's uniforms.\n\nvar entity1 = new xeogl.Entity({\n   shader: shader,\n   geometry: new xeogl.Geometry({\n       primitive:\"triangles\",\n       positions:[ 1, 1, 0, 0, 1, 0, 0, -1, 0, 1, -1, 0 ],\n       normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],\n       uv:[ 1, 1, 0, 1, 0, 0, 1, 0 ],\n       indices:[ 0, 1, 2, 0, 2, 3 ]\n   }),\n   shaderParams1: new xeogl.ShaderParams({\n       params: {\n           time: 0.0\n       }\n   })\n});\n\n// Second Entity using the Shader, with a quad covering the right half of the canvas,\n// along with its own ShaderParams to independently set its own values for the Shader's uniforms.\n\nvar entity2 = new xeogl.Entity({\n   shader: shader,\n   geometry: new xeogl.Geometry({\n       primitive:\"triangles\",\n       positions:[ 1, 1, 0, 0, 1, 0, 0, -1, 0, 1, -1, 0 ],\n       normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],\n       uv:[ 1, 1, 0, 1, 0, 0, 1, 0 ],\n       indices:[ 0, 1, 2, 0, 2, 3 ]\n   }),\n   shaderParams: new xeogl.ShaderParams({\n       params: {\n           time: 0.0\n       }\n   })\n});\n````\nNow let's animate the \"time\" parameter on the Shader, for each Entity independently:\n\n```` javascript\n// Get the default Scene off the first Entity\nvar scene = entity1.scene;\n\nscene.on(\"tick\", function(params) {\n\n   entity1.shaderParams.setParams({\n       time: params.timeElapsed\n   });\n\n   entity2.shaderParams.setParams({\n       time: params.timeElapsed  * 0.5\n   });\n});\n````",
+            "submodule": "shaders",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this ShaderParams in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent scene, generated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this ShaderParams.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "params",
+                            "description": "{Object} The {{#crossLink \"Shader\"}}Shader{{/crossLink}} parameter values.",
+                            "optional": true
+                        }
+                    ]
+                }
+            ],
+            "extends": "Component"
+        },
         "Billboard": {
             "name": "Billboard",
             "shortname": "Billboard",
@@ -6549,7 +6695,7 @@
             "namespace": "",
             "file": "examples/js/animation/cameraPathAnimation.js",
             "line": 1,
-            "description": "A **CameraPathAnimation** animates a {{#crossLink \"Camera\"}}{{/crossLink}} along a {{#crossLink \"CameraPath\"}}{{/crossLink}}.\n\n## Overview\n\n* Animates a {{#crossLink \"Camera\"}}{{/crossLink}} along a {{#crossLink \"CameraPath\"}}{{/crossLink}}\n* Attaches to a {{#crossLink \"Camera\"}}{{/crossLink}}, which by default is the {{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Camera\"}}{{/crossLink}} when none is specified.\n* Requires that the {{#crossLink \"Camera\"}}{{/crossLink}} have a {{#crossLink \"Lookat\"}}{{/crossLink}} for its {{#crossLink \"Camera/view:property\"}}view{{/crossLink}} transform.\n\n<img src=\"../../../assets/images/CameraPathAnimation.png\"></img>\n\n## Examples\n\n* [Interpolating a Camera along a path](../../examples/#animation_camera_path_interpolation)\n* [Flying directly to each frame on a path](../../examples/#animation_camera_path_flyToFrame)\n* [Jumping directly to each frame on a path](../../examples/#animation_camera_path_scrubToFrame)\n* [A menu of Camera waypoints to fly to](../../examples/#animation_camera_path_frameMenu)\n\n## Usage\n\n### 1. Interpolating a Camera along a path\n\nIn this example we'll use the CameraPathAnimation's\n{{#crossLink \"CameraPathAnimation/play\"}}{{/crossLink}} method to smoothly <b>interpolate</b>\nthe default {{#crossLink \"Camera\"}}{{/crossLink}} along a {{#crossLink \"CameraPath\"}}{{/crossLink}}:\n\n<a href=\"../../examples/#animation_camera_path_interpolation\"><img src=\"http://i.giphy.com/l0MYDGMYzdFf6TqRW.gif\"></img></a>\n\n````Javascript\n// Load a model from glTF\n\nvar gearbox = new xeogl.GLTFModel({\n    src: \"models/gltf/gearbox/gearbox_assy.gltf\"\n});\n\n// Define a CameraPath\n\nvar cameraPath = new xeogl.CameraPath({\n    frames: [\n        {t: 0, eye: [184.21, 10.54, -7.03], look: [159.2, 17.02, 3.21], up: [-0.15, 0.97, 0.13]},\n        {t: 1, eye: [184.91, 10.10, -11.26], look: [171.03, 13.69, -5.57], up: [-0.15, 0.97, 0.12]},\n        {t: 2, eye: [181.37, 12.35, -16.93], look: [171.03, 13.69, -5.57], up: [-0.17, 0.93, 0.28]},\n        {t: 2, eye: [174.01, 13.55, -20.70], look: [171.03, 13.69, -5.57], up: [-0.01, 0.90, 0.40]},\n        {t: 4, eye: [166.48, 14.36, -20.30], look: [171.03, 13.69, -5.57], up: [0.19, 0.88, 0.40]},\n        {t: 5, eye: [160.32, 14.69, -16.63], look: [171.03, 13.69, -5.57], up: [0.36, 0.87, 0.29]},\n        {t: 6, eye: [156.67, 17.97, -4.77], look: [162.53, 17.42, 1.28], up: [0.36, 0.87, 0.29]},\n        {t: 7, eye: [151.14, 16.68, -10.04], look: [158.94, 15.95, -1.99], up: [0.36, 0.87, 0.29]},\n        {t: 8, eye: [146.26, 17.56, -4.77], look: [152.13, 17.05, 1.28], up: [0.36, 0.87, 0.28]},\n        {t: 9, eye: [137.26, 18.36, -9.65], look: [149.76, 17.27, 3.24], up: [0.36, 0.87, 0.28]},\n        {t: 10, eye: [139.04, 18.29, -11.17], look: [149.76, 17.27, 3.24], up: [0.32, 0.87, 0.33]},\n        {t: 11, eye: [140.66, 18.13, -12.26], look: [149.76, 17.27, 3.24], up: [0.28, 0.87, 0.35]},\n        {t: 12, eye: [147.18, 17.66, -14.56], look: [149.76, 17.27, 3.24], up: [0.12, 0.89, 0.41]},\n        {t: 13, eye: [158.05, 16.33, -12.69], look: [149.76, 17.27, 3.24], up: [-0.11, 0.91, 0.34]},\n        {t: 14, eye: [150.11, 13.26, -6.69], look: [147.95, 13.50, -2.52], up: [-0.11, 0.91, 0.34]},\n        {t: 15, eye: [149.27, 13.00, -3.34], look: [148.72, 13.05, -2.29], up: [-0.11, 0.91, 0.35]},\n        {t: 16, eye: [152.62, 11.65, -4.87], look: [148.47, 12.08, 3.08], up: [-0.11, 0.91, 0.35]},\n        {t: 17, eye: [153.35, 12.24, -1.84], look: [148.69, 12.72, 7.01], up: [-0.11, 0.91, 0.35]},\n        {t: 18, eye: [156.49, 12.11, 0.74], look: [148.69, 12.72, 7.012], up: [-0.23, 0.92, 0.26]},\n        {t: 19, eye: [158.52, 11.98, 5.21], look: [148.69, 12.72, 7.01], up: [-0.32, 0.92, 0.12]},\n        {t: 20, eye: [158.60, 11.50, 7.91], look: [148.69, 12.72, 7.01], up: [-0.30, 0.94, 0.035]},\n        {t: 21, eye: [157.60, 11.76, 11.51], look: [148.69, 12.72, 7.01], up: [-0.31, 0.93, -0.089]},\n        {t: 22, eye: [152.67, 18.35, 14.29], look: [148.69, 12.72, 7.01], up: [-0.46, 0.51, -0.70]},\n        {t: 23, eye: [148.79, 21.67, 11.52], look: [148.69, 12.72, 7.01], up: [-0.15, 0.036, -0.97]},\n        {t: 24, eye: [147.11, 22.40, 9.07], look: [148.69, 12.72, 7.01], up: [0.38, -0.16, -0.89]},\n        {t: 25, eye: [144.80, 21.92, 6.23], look: [148.69, 12.72, 7.01], up: [0.98, -0.02, 0.03]},\n        {t: 26, eye: [144.11, 20.18, 2.13], look: [148.69, 12.72, 7.01], up: [0.71, 0.29, 0.62]},\n        {t: 27, eye: [145.87, 17.37, -1.40], look: [148.69, 12.72, 7.01], up: [0.31, 0.60, 0.71]},\n        {t: 28, eye: [144.37, 19.17, -7.33], look: [146.13, 16.27, -2.08], up: [0.31, 0.60, 0.71]},\n        {t: 29, eye: [142.54, 21.91, -17.26], look: [146.89, 14.81, -4.28], up: [0.31, 0.60, 0.71]}\n    ]\n});\n\n// Once the model has loaded, animate the\n// (default Scene's default Camera) along the CameraPath\n\nvar cameraPathAnimation = new xeogl.CameraPathAnimation({\n    cameraPath: cameraPath\n});\n\ngearbox.on(\"loaded\", function () {\n    cameraPathAnimation.play();\n});\n````\n\n<br>\n### 2. Flying directly to each frame on a path\n\nIn this example, we'll use the CameraPathAnimation's {{#crossLink \"CameraPathAnimation/flyToFrame\"}}{{/crossLink}} method\nto <b>fly</b> the {{#crossLink \"Camera\"}}{{/crossLink}} directly to each frame on the {{#crossLink \"CameraPath\"}}{{/crossLink}}:\n\n<a href=\"../../examples/#animation_camera_path_flyToFrame\"><img src=\"http://i.giphy.com/l3vQYNjsnAQwPBeYU.gif\"></img></a>\n\n````javascript\nvar i = 0;\nvar dir = 1;\n\ngearbox.on(\"loaded\", function () {\n    function nextFrame() {\n        cameraPathAnimation.flyToFrame(i += dir, function() { setTimeout(nextFrame, 1000); });\n\n        if (i <= 0 || i >= 29) {\n            dir = -dir;\n        }\n    }\n    nextFrame();\n});\n````\n<br>\n### 3. Jumping directly to each frame on a path\n\nIn this example, we'll use the CameraPathAnimation's {{#crossLink \"CameraPathAnimation/scrubToFrame\"}}{{/crossLink}} method\nto <b>jump</b> the {{#crossLink \"Camera\"}}{{/crossLink}} directly to each frame on the {{#crossLink \"CameraPath\"}}{{/crossLink}}:\n\n<a href=\"../../examples/#animation_camera_path_scrubToFrame\"><img src=\"http://i.giphy.com/l0Hlyqk7kewTjSBZ6.gif\"></img></a>\n\n````javascript\nvar i = 0;\nvar dir = 1;\n\ngearbox.on(\"loaded\", function () {\n    function nextFrame() {\n        cameraPathAnimation.scrubToFrame(i += dir);\n\n        if (i <= 0 || i >= 29) {\n            dir = -dir;\n        }\n        setTimeout(nextFrame, 1000);\n    }\n    nextFrame();\n});\n````",
+            "description": "A **CameraPathAnimation** animates a {{#crossLink \"Camera\"}}{{/crossLink}} along a {{#crossLink \"CameraPath\"}}{{/crossLink}}.\n\n## Overview\n\n* Animates a {{#crossLink \"Camera\"}}{{/crossLink}} along a {{#crossLink \"CameraPath\"}}{{/crossLink}}\n* Attaches to a {{#crossLink \"Camera\"}}{{/crossLink}}, which by default is the {{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Camera\"}}{{/crossLink}} when none is specified.\n* Requires that the {{#crossLink \"Camera\"}}{{/crossLink}} have a {{#crossLink \"Lookat\"}}{{/crossLink}} for its {{#crossLink \"Camera/view:property\"}}view{{/crossLink}} transform.\n\n<img src=\"../../../assets/images/CameraPathAnimation.png\"></img>\n\n## Examples\n\n* [Interpolating a Camera along a path](../../examples/#animation_camera_path_interpolation)\n* [Flying directly to each frame on a path](../../examples/#animation_camera_path_flyToFrame)\n* [Jumping directly to each frame on a path](../../examples/#animation_camera_path_scrubToFrame)\n* [A menu of Camera waypoints to fly to](../../examples/#animation_camera_path_frameMenu)\n\n## Usage\n\n### 1. Interpolating a Camera along a path\n\nIn this example we'll use the CameraPathAnimation's\n{{#crossLink \"CameraPathAnimation/play\"}}{{/crossLink}} method to smoothly <b>interpolate</b>\nthe default {{#crossLink \"Camera\"}}{{/crossLink}} along a {{#crossLink \"CameraPath\"}}{{/crossLink}}:\n\n<a href=\"../../examples/#animation_camera_path_interpolation\"><img src=\"http://i.giphy.com/l0MYDGMYzdFf6TqRW.gif\"></img></a>\n\n````Javascript\n// Load a model from glTF\n\nvar gearbox = new xeogl.GLTFModel({\n        src: \"models/gltf/1.0/GearboxAssy/glTF/GearboxAssy.gltf\"\n});\n\n// Define a CameraPath\n\nvar cameraPath = new xeogl.CameraPath({\n    frames: [\n        {t: 0, eye: [184.21, 10.54, -7.03], look: [159.2, 17.02, 3.21], up: [-0.15, 0.97, 0.13]},\n        {t: 1, eye: [184.91, 10.10, -11.26], look: [171.03, 13.69, -5.57], up: [-0.15, 0.97, 0.12]},\n        {t: 2, eye: [181.37, 12.35, -16.93], look: [171.03, 13.69, -5.57], up: [-0.17, 0.93, 0.28]},\n        {t: 2, eye: [174.01, 13.55, -20.70], look: [171.03, 13.69, -5.57], up: [-0.01, 0.90, 0.40]},\n        {t: 4, eye: [166.48, 14.36, -20.30], look: [171.03, 13.69, -5.57], up: [0.19, 0.88, 0.40]},\n        {t: 5, eye: [160.32, 14.69, -16.63], look: [171.03, 13.69, -5.57], up: [0.36, 0.87, 0.29]},\n        {t: 6, eye: [156.67, 17.97, -4.77], look: [162.53, 17.42, 1.28], up: [0.36, 0.87, 0.29]},\n        {t: 7, eye: [151.14, 16.68, -10.04], look: [158.94, 15.95, -1.99], up: [0.36, 0.87, 0.29]},\n        {t: 8, eye: [146.26, 17.56, -4.77], look: [152.13, 17.05, 1.28], up: [0.36, 0.87, 0.28]},\n        {t: 9, eye: [137.26, 18.36, -9.65], look: [149.76, 17.27, 3.24], up: [0.36, 0.87, 0.28]},\n        {t: 10, eye: [139.04, 18.29, -11.17], look: [149.76, 17.27, 3.24], up: [0.32, 0.87, 0.33]},\n        {t: 11, eye: [140.66, 18.13, -12.26], look: [149.76, 17.27, 3.24], up: [0.28, 0.87, 0.35]},\n        {t: 12, eye: [147.18, 17.66, -14.56], look: [149.76, 17.27, 3.24], up: [0.12, 0.89, 0.41]},\n        {t: 13, eye: [158.05, 16.33, -12.69], look: [149.76, 17.27, 3.24], up: [-0.11, 0.91, 0.34]},\n        {t: 14, eye: [150.11, 13.26, -6.69], look: [147.95, 13.50, -2.52], up: [-0.11, 0.91, 0.34]},\n        {t: 15, eye: [149.27, 13.00, -3.34], look: [148.72, 13.05, -2.29], up: [-0.11, 0.91, 0.35]},\n        {t: 16, eye: [152.62, 11.65, -4.87], look: [148.47, 12.08, 3.08], up: [-0.11, 0.91, 0.35]},\n        {t: 17, eye: [153.35, 12.24, -1.84], look: [148.69, 12.72, 7.01], up: [-0.11, 0.91, 0.35]},\n        {t: 18, eye: [156.49, 12.11, 0.74], look: [148.69, 12.72, 7.012], up: [-0.23, 0.92, 0.26]},\n        {t: 19, eye: [158.52, 11.98, 5.21], look: [148.69, 12.72, 7.01], up: [-0.32, 0.92, 0.12]},\n        {t: 20, eye: [158.60, 11.50, 7.91], look: [148.69, 12.72, 7.01], up: [-0.30, 0.94, 0.035]},\n        {t: 21, eye: [157.60, 11.76, 11.51], look: [148.69, 12.72, 7.01], up: [-0.31, 0.93, -0.089]},\n        {t: 22, eye: [152.67, 18.35, 14.29], look: [148.69, 12.72, 7.01], up: [-0.46, 0.51, -0.70]},\n        {t: 23, eye: [148.79, 21.67, 11.52], look: [148.69, 12.72, 7.01], up: [-0.15, 0.036, -0.97]},\n        {t: 24, eye: [147.11, 22.40, 9.07], look: [148.69, 12.72, 7.01], up: [0.38, -0.16, -0.89]},\n        {t: 25, eye: [144.80, 21.92, 6.23], look: [148.69, 12.72, 7.01], up: [0.98, -0.02, 0.03]},\n        {t: 26, eye: [144.11, 20.18, 2.13], look: [148.69, 12.72, 7.01], up: [0.71, 0.29, 0.62]},\n        {t: 27, eye: [145.87, 17.37, -1.40], look: [148.69, 12.72, 7.01], up: [0.31, 0.60, 0.71]},\n        {t: 28, eye: [144.37, 19.17, -7.33], look: [146.13, 16.27, -2.08], up: [0.31, 0.60, 0.71]},\n        {t: 29, eye: [142.54, 21.91, -17.26], look: [146.89, 14.81, -4.28], up: [0.31, 0.60, 0.71]}\n    ]\n});\n\n// Once the model has loaded, animate the\n// (default Scene's default Camera) along the CameraPath\n\nvar cameraPathAnimation = new xeogl.CameraPathAnimation({\n    cameraPath: cameraPath\n});\n\ngearbox.on(\"loaded\", function () {\n    cameraPathAnimation.play();\n});\n````\n\n<br>\n### 2. Flying directly to each frame on a path\n\nIn this example, we'll use the CameraPathAnimation's {{#crossLink \"CameraPathAnimation/flyToFrame\"}}{{/crossLink}} method\nto <b>fly</b> the {{#crossLink \"Camera\"}}{{/crossLink}} directly to each frame on the {{#crossLink \"CameraPath\"}}{{/crossLink}}:\n\n<a href=\"../../examples/#animation_camera_path_flyToFrame\"><img src=\"http://i.giphy.com/l3vQYNjsnAQwPBeYU.gif\"></img></a>\n\n````javascript\nvar i = 0;\nvar dir = 1;\n\ngearbox.on(\"loaded\", function () {\n    function nextFrame() {\n        cameraPathAnimation.flyToFrame(i += dir, function() { setTimeout(nextFrame, 1000); });\n\n        if (i <= 0 || i >= 29) {\n            dir = -dir;\n        }\n    }\n    nextFrame();\n});\n````\n<br>\n### 3. Jumping directly to each frame on a path\n\nIn this example, we'll use the CameraPathAnimation's {{#crossLink \"CameraPathAnimation/scrubToFrame\"}}{{/crossLink}} method\nto <b>jump</b> the {{#crossLink \"Camera\"}}{{/crossLink}} directly to each frame on the {{#crossLink \"CameraPath\"}}{{/crossLink}}:\n\n<a href=\"../../examples/#animation_camera_path_scrubToFrame\"><img src=\"http://i.giphy.com/l0Hlyqk7kewTjSBZ6.gif\"></img></a>\n\n````javascript\nvar i = 0;\nvar dir = 1;\n\ngearbox.on(\"loaded\", function () {\n    function nextFrame() {\n        cameraPathAnimation.scrubToFrame(i += dir);\n\n        if (i <= 0 || i >= 29) {\n            dir = -dir;\n        }\n        setTimeout(nextFrame, 1000);\n    }\n    nextFrame();\n});\n````",
             "submodule": "animation",
             "is_constructor": 1,
             "params": [
@@ -7482,7 +7628,7 @@
             "namespace": "",
             "file": "examples/js/marking/pointMarkings.js",
             "line": 1,
-            "description": "A **PointMarkings** is used to draw persistable markings on Entities.\n\n## Examples\n\nTODO\n\n## Usage\n\n````javascript\n// Load a gearbox model to draw marks on\nvar gearbox = new xeogl.GLTFModel({\n    src: \"models/gltf/gearbox/gearbox_assy.gltf\"\n});\n\n// Set initial camera position\nvar view = gearbox.scene.camera.view;\nview.eye = [184.21, 10.54, -7.03];\nview.look = [159.20, 17.02, 3.21];\nview.up = [-0.15, 0.97, 0.13];\n\n// Create marks wherever we draw on the surface of our gearbox\n\nvar scene = gearbox.scene; // Using default scene for this example\nvar input = scene.input;\nvar pointMarkings = new xeogl.PointMarkings();\n\ninput.on(\"mousemove\", function (coords) {\n\n    var hit = scene.pick({\n        canvasPos: coords,\n        pickSurface: true\n    });\n\n    if (hit) {\n        pointMarkings.draw(hit);\n    }\n});\n\n// Allow user camera control\nnew xeogl.CameraControl();\n````\n\n````javascript\nvar data = pointMarkings.save();\n\npointMarkings.clear();\n\npointMarkings.load(data);\n````",
+            "description": "A **PointMarkings** is used to draw persistable markings on Entities.\n\n## Examples\n\nTODO\n\n## Usage\n\n````javascript\n// Load a gearbox model to draw marks on\nvar gearbox = new xeogl.GLTFModel({\n        src: \"models/gltf/1.0/GearboxAssy/glTF/GearboxAssy.gltf\"\n});\n\n// Set initial camera position\nvar view = gearbox.scene.camera.view;\nview.eye = [184.21, 10.54, -7.03];\nview.look = [159.20, 17.02, 3.21];\nview.up = [-0.15, 0.97, 0.13];\n\n// Create marks wherever we draw on the surface of our gearbox\n\nvar scene = gearbox.scene; // Using default scene for this example\nvar input = scene.input;\nvar pointMarkings = new xeogl.PointMarkings();\n\ninput.on(\"mousemove\", function (coords) {\n\n    var hit = scene.pick({\n        canvasPos: coords,\n        pickSurface: true\n    });\n\n    if (hit) {\n        pointMarkings.draw(hit);\n    }\n});\n\n// Allow user camera control\nnew xeogl.CameraControl();\n````\n\n````javascript\nvar data = pointMarkings.save();\n\npointMarkings.clear();\n\npointMarkings.load(data);\n````",
             "submodule": "marking",
             "is_constructor": 1,
             "params": [
@@ -7747,7 +7893,7 @@
             "namespace": "",
             "file": "examples/js/zspace/zSpaceStylusControlV2.js",
             "line": 1,
-            "description": "A **ZSpaceStylusControl** component works in conjunction with a {{#crossLink \"ZSpaceEffect\"}}{{/crossLink}} to drag\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} around with a zSpace stylus input device.\n\n<img src=\"../../../assets/images/ZSpaceStylusControl.png\"></img>\n\n## Examples\n\n<ul>\n<li>[zSpace cube](../../examples/effects_zspace_cube.html)</li>\n<li>[zSpace with random geometries](../../examples/effects_zspace_geometries.html)</li>\n<li>[zSpace with glTF gearbox model](../../examples/effects_zspace_gearbox.html)</li>\n<li>[zSpace with glTF gearbox model and entity explorer](../../examples/effects_zspace_gearbox_explorer.html)</li>\n<li>[zSpace with glTF reciprocating saw model](../../examples/effects_zspace_ReciprocatingSaw.html)</li>\n</ul>\n\n## Usage\n\n````javascript\n// Create a textured cube entity\nvar entity = new xeogl.Entity({\n    geometry: new xeogl.BoxGeometry({\n        xSize: .6,\n        ySize: .6,\n        zSize: .6\n    }),\n    material: new xeogl.PhongMaterial({\n        diffuseMap: new xeogl.Texture({\n            src: \"textures/diffuse/UVCheckerMap11-1024.png\"\n        })\n    }),\n    modes: new xeogl.Modes({\n        backfaces: true\n    }),\n    transform: new xeogl.Rotate({\n        xyz: [0, 1, 0],\n        angle: 0\n    })\n});\n\n// Set initial camera position\nvar scene = entity.scene;\nscene.camera.view.eye = [0, 2, -10];\nscene.camera.view.look = [0, 0, 0];\n\n// Allow camera control with keyboard and mouse\nvar cameraControl = new xeogl.CameraControl();\n\n// Create a ZSpaceEffect\nvar zspaceEffect = new xeogl.ZSpaceEffect({\n    canvasOffset: [330, 0]\n});\n\n// Create a ZSpaceStylusControl\nvar zspaceStylusControl = new xeogl.ZSpaceStylusControl();\n\n// Handle missing zSpace support\nzspaceEffect.on(\"supported\", function (supported) {\n    if (!supported) {\n        document.getElementById(\"log\").innerText = \"Not a zSpace display \";\n    }\n});\n````",
+            "description": "A **ZSpaceStylusControl** component works in conjunction with a {{#crossLink \"ZSpaceEffect\"}}{{/crossLink}} to drag\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} around with a zSpace stylus input device.\n\n<img src=\"../../../assets/images/ZSpaceStylusControl.png\"></img>\n\n## Examples\n\n<ul>\n<li>[zSpace cube](../../examples/effects_zspace_cube.html)</li>\n<li>[zSpace with random geometries](../../examples/effects_zspace_geometries.html)</li>\n<li>[zSpace with glTF gearbox model](../../examples/effects_zspace_gearbox.html)</li>\n<li>[zSpace with glTF gearbox model and entity explorer](../../examples/effects_zspace_gearbox_explorer.html)</li>\n<li>[zSpace with glTF reciprocating saw model](../../examples/effects_zspace_ReciprocatingSaw.html)</li>\n</ul>\n\n## Usage\n\n````javascript\n// Create a textured cube entity\nvar entity = new xeogl.Entity({\n    geometry: new xeogl.BoxGeometry({\n        xSize: .6,\n        ySize: .6,\n        zSize: .6\n    }),\n    material: new xeogl.PhongMaterial({\n        diffuseMap: new xeogl.Texture({\n            src: \"textures/diffuse/UVCheckerMap11-1024.png\"\n        })\n    }),\n    modes: new xeogl.Modes({\n        backfaces: true\n    }),\n    transform: new xeogl.Rotate({\n        xyz: [0, 1, 0],\n        angle: 0\n    })\n});\n\n// Set initial camera position\nvar scene = entity.scene;\nscene.camera.view.eye = [0, 2, -10];\nscene.camera.view.look = [0, 0, 0];\n\n// Allow camera control with keyboard and mouse\nvar cameraControl = new xeogl.CameraControl();\n\n// Create a ZSpaceEffect\nvar zspaceEffect = new xeogl.ZSpaceEffect({\n    canvasOffset: [330, 0]\n});\n\n// Create a ZSpaceStylusControl\nvar zspaceStylusControl = new xeogl.ZSpaceStylusControl();\n\n// Handle missing zSpace support\nzspaceEffect.on(\"supported\", function (supported) {\n    if (!supported) {\n        document.getElementById(\"log\").innerText = \"(zSpace not detected) \";\n    }\n});\n````",
             "submodule": "zspace",
             "is_constructor": 1,
             "params": [
@@ -7870,13 +8016,13 @@
         },
         {
             "file": "src/_renderer/chunks/chunkFactory.js",
-            "line": 54,
+            "line": 53,
             "description": "Gets a chunk from this factory.",
             "class": "CameraFlightAnimation"
         },
         {
             "file": "src/_renderer/chunks/chunkFactory.js",
-            "line": 98,
+            "line": 97,
             "description": "Releases a chunk back to this factory.",
             "params": [
                 {
@@ -7889,7 +8035,7 @@
         },
         {
             "file": "src/_renderer/chunks/chunkFactory.js",
-            "line": 122,
+            "line": 123,
             "description": "Restores the chunks in this factory after a WebGL context recovery.",
             "class": "CameraFlightAnimation"
         },
@@ -8441,7 +8587,7 @@
         },
         {
             "file": "src/_renderer/programFactory.js",
-            "line": 74,
+            "line": 75,
             "description": "Rebuild all programs in the pool after WebGL context was lost and restored.",
             "class": "CameraFlightAnimation"
         },
@@ -8856,7 +9002,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 504,
+            "line": 505,
             "description": "Removes an object from this Renderer",
             "params": [
                 {
@@ -8869,13 +9015,13 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 540,
+            "line": 541,
             "description": "Renders a new frame, if neccessary.",
             "class": "CameraFlightAnimation"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 879,
+            "line": 880,
             "description": "Attempts to pick an object.",
             "params": [
                 {
@@ -8892,7 +9038,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 1098,
+            "line": 1099,
             "description": "Reads the colors of some pixels in the last rendered frame.",
             "params": [
                 {
@@ -8920,7 +9066,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 1142,
+            "line": 1143,
             "description": "Destroys this Renderer.",
             "class": "CameraFlightAnimation"
         },
@@ -10072,7 +10218,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 180,
+            "line": 181,
             "description": "The {{#crossLink \"cameraFlightAnimation\"}}{{/crossLink}} within this CameraControl.",
             "itemtype": "property",
             "name": "cameraFlight",
@@ -10084,7 +10230,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 247,
+            "line": 249,
             "description": "Flag which indicates whether this CameraControl is in \"first person\" mode.\n\nIn \"first person\" mode (disabled by default) the look position rotates about the eye position. Otherwise,\nthe eye rotates about the look.\n\nFires a {{#crossLink \"KeyboardRotateCamera/firstPerson:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "firstPerson",
@@ -10096,7 +10242,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 270,
+            "line": 272,
             "description": "Fired whenever this CameraControl's {{#crossLink \"CameraControl/firstPerson:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "firstPerson",
@@ -10112,7 +10258,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 283,
+            "line": 285,
             "description": "The {{#crossLink \"Camera\"}}{{/crossLink}} being controlled by this CameraControl.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this CameraControl. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}} when set to\na null or undefined value.",
             "itemtype": "property",
             "name": "camera",
@@ -10123,7 +10269,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 297,
+            "line": 299,
             "description": "Fired whenever this CameraControl's {{#crossLink \"CameraControl/camera:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "camera",
@@ -10139,7 +10285,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 333,
+            "line": 335,
             "description": "Flag which indicates whether this CameraControl is active or not.\n\nFires an {{#crossLink \"CameraControl/active:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "active",
@@ -10150,7 +10296,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 363,
+            "line": 365,
             "description": "Fired whenever this CameraControl's {{#crossLink \"CameraControl/active:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "active",
@@ -15870,7 +16016,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 334,
+            "line": 331,
             "description": "RGB diffuse color of this MetallicMaterial.\n\nMultiplies by the RGB components of {{#crossLink \"MetallicMaterial/baseColorMap:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"MetallicMaterial/baseColor:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "baseColor",
@@ -15882,7 +16028,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 371,
+            "line": 368,
             "description": "Fired whenever this MetallicMaterial's {{#crossLink \"MetallicMaterial/baseColor:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "baseColor",
@@ -15899,7 +16045,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 385,
+            "line": 382,
             "description": "RGB {{#crossLink \"Texture\"}}{{/crossLink}} containing the diffuse color of this MetallicMaterial, with optional *A* component for opacity.\n\nThe RGB components multiply by the {{#crossLink \"MetallicMaterial/baseColor:property\"}}{{/crossLink}} property,\nwhile the *A* component, if present, multiplies by the {{#crossLink \"MetallicMaterial/opacity:property\"}}{{/crossLink}} property.\n\nAttached {{#crossLink \"Entity\"}}Entities{{/crossLink}} will appear transparent only if they are also attached\nto {{#crossLink \"Modes\"}}Modes{{/crossLink}} that have {{#crossLink \"Modes/transparent:property\"}}transparent{{/crossLink}}\nset to **true**.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this MetallicMaterial.\n\nFires a {{#crossLink \"MetallicMaterial/baseColorMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "baseColorMap",
@@ -15911,7 +16057,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 407,
+            "line": 404,
             "description": "Fired whenever this MetallicMaterial's {{#crossLink \"MetallicMaterial/baseColorMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "baseColorMap",
@@ -15927,7 +16073,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 421,
+            "line": 418,
             "description": "Factor in the range [0..1] indicating how metallic this MetallicMaterial is.\n\n1 is metal, 0 is non-metal.\n\nMultiplies by the *R* component of {{#crossLink \"MetallicMaterial/metallicMap:property\"}}{{/crossLink}}\nand the *A* component of {{#crossLink \"MetallicMaterial/metalRoughnessMap:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"MetallicMaterial/metallic:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "metallic",
@@ -15939,7 +16085,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 449,
+            "line": 446,
             "description": "Fired whenever this MetallicMaterial's {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "metallic",
@@ -15956,7 +16102,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 463,
+            "line": 460,
             "description": "RGB {{#crossLink \"Texture\"}}{{/crossLink}} containing this MetallicMaterial's metallic factor in its *R* component.\n\nThe *R* component multiplies by the {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}} property.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this MetallicMaterial.\n\nFires a {{#crossLink \"MetallicMaterial/metallicMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "metallicMap",
@@ -15968,7 +16114,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 480,
+            "line": 477,
             "description": "Fired whenever this MetallicMaterial's {{#crossLink \"MetallicMaterial/metallicMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "metallicMap",
@@ -15984,7 +16130,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 494,
+            "line": 491,
             "description": "Factor in the range [0..1] indicating the roughness of this MetallicMaterial.\n\n0 is fully smooth, 1 is fully rough.\n\nMultiplies by the *R* component of {{#crossLink \"MetallicMaterial/roughnessMap:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"MetallicMaterial/roughness:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "roughness",
@@ -15996,7 +16142,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 521,
+            "line": 518,
             "description": "Fired whenever this MetallicMaterial's {{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "roughness",
@@ -16013,7 +16159,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 535,
+            "line": 532,
             "description": "RGB {{#crossLink \"Texture\"}}{{/crossLink}} containing this MetallicMaterial's roughness factor in its *R* component.\n\nThe *R* component multiplies by the {{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}} property.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this MetallicMaterial.\n\nFires a {{#crossLink \"MetallicMaterial/roughnessMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "roughnessMap",
@@ -16025,7 +16171,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 552,
+            "line": 549,
             "description": "Fired whenever this MetallicMaterial's {{#crossLink \"MetallicMaterial/roughnessMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "roughnessMap",
@@ -16041,7 +16187,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 566,
+            "line": 563,
             "description": "RGB {{#crossLink \"Texture\"}}{{/crossLink}} containing this MetallicMaterial's metalness in its *R* component and roughness in its *G* component.\n\nIts *R* component multiplies by the {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}} property, while\nits *G* component multiplies by the {{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}} property.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this MetallicMaterial.\n\nFires a {{#crossLink \"MetallicMaterial/metallicRoughnessMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "metallicRoughnessMap",
@@ -16053,7 +16199,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 584,
+            "line": 581,
             "description": "Fired whenever this MetallicMaterial's {{#crossLink \"MetallicMaterial/metallicRoughnessMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "metallicRoughnessMap",
@@ -16069,7 +16215,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 598,
+            "line": 595,
             "description": "Factor in the range [0..1] indicating specular Fresnel value.\n\nFires a {{#crossLink \"MetallicMaterial/specularF0:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "specularF0",
@@ -16081,7 +16227,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 621,
+            "line": 618,
             "description": "Fired whenever this MetallicMaterial's {{#crossLink \"MetallicMaterial/specularF0:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "specularF0",
@@ -16098,7 +16244,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 635,
+            "line": 632,
             "description": "RGB emissive color of this MetallicMaterial.\n\nMultiplies by {{#crossLink \"MetallicMaterial/emissiveMap:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"MetallicMaterial/emissive:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "emissive",
@@ -16110,7 +16256,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 672,
+            "line": 669,
             "description": "Fired whenever this MetallicMaterial's {{#crossLink \"MetallicMaterial/emissive:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "emissive",
@@ -16127,7 +16273,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 686,
+            "line": 683,
             "description": "RGB {{#crossLink \"Texture\"}}{{/crossLink}} containing the emissive color of this MetallicMaterial.\n\nMultiplies by the {{#crossLink \"MetallicMaterial/emissive:property\"}}{{/crossLink}} property.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this MetallicMaterial.\n\nFires a {{#crossLink \"MetallicMaterial/emissiveMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "emissiveMap",
@@ -16139,7 +16285,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 703,
+            "line": 700,
             "description": "Fired whenever this MetallicMaterial's {{#crossLink \"MetallicMaterial/emissiveMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "emissiveMap",
@@ -16155,7 +16301,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 717,
+            "line": 714,
             "description": "RGB ambient occlusion {{#crossLink \"Texture\"}}{{/crossLink}} attached to this MetallicMaterial.\n\nWithin shaders, multiplies by the specular and diffuse light reflected by surfaces.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this MetallicMaterial.\n\nFires a {{#crossLink \"MetallicMaterial/occlusionMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "occlusionMap",
@@ -16167,7 +16313,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 734,
+            "line": 731,
             "description": "Fired whenever this MetallicMaterial's {{#crossLink \"MetallicMaterial/occlusionMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "occlusionMap",
@@ -16183,7 +16329,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 748,
+            "line": 745,
             "description": "Factor in the range [0..1] indicating how transparent this MetallicMaterial is.\n\nA value of 0.0 indicates fully transparent, 1.0 is fully opaque.\n\nMultiplies by the *R* component of {{#crossLink \"MetallicMaterial/opacityMap:property\"}}{{/crossLink}} and\nthe *A* component, if present, of {{#crossLink \"MetallicMaterial/baseColorMap:property\"}}{{/crossLink}}.\n\nAttached {{#crossLink \"Entity\"}}Entities{{/crossLink}} will appear transparent only if they are also attached\nto {{#crossLink \"Modes\"}}Modes{{/crossLink}} that have {{#crossLink \"Modes/transparent:property\"}}transparent{{/crossLink}}\nset to **true**.\n\nFires an {{#crossLink \"MetallicMaterial/opacity:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "opacity",
@@ -16195,7 +16341,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 780,
+            "line": 777,
             "description": "Fired whenever this MetallicMaterial's {{#crossLink \"MetallicMaterial/opacity:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "opacity",
@@ -16212,7 +16358,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 794,
+            "line": 791,
             "description": "RGB {{#crossLink \"Texture\"}}{{/crossLink}} containing this MetallicMaterial's opacity in its *R* component.\n\nThe *R* component multiplies by the {{#crossLink \"MetallicMaterial/opacity:property\"}}{{/crossLink}} property.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this MetallicMaterial.\n\nFires an {{#crossLink \"MetallicMaterial/opacityMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "opacityMap",
@@ -16224,7 +16370,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 811,
+            "line": 808,
             "description": "Fired whenever this MetallicMaterial's {{#crossLink \"MetallicMaterial/opacityMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "opacityMap",
@@ -16240,7 +16386,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 825,
+            "line": 822,
             "description": "RGB tangent-space normal map {{#crossLink \"Texture\"}}{{/crossLink}}.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this MetallicMaterial.\n\nFires a {{#crossLink \"PhongMaterial/normalMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "normalMap",
@@ -16252,7 +16398,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 840,
+            "line": 837,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/normalMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "normalMap",
@@ -21125,12 +21271,13 @@
             "name": "vertex",
             "default": "null",
             "type": "String",
-            "class": "Billboard",
-            "module": "xeogl"
+            "class": "Shader",
+            "module": "xeogl",
+            "submodule": "shaders"
         },
         {
             "file": "src/shaders/shader.js",
-            "line": 221,
+            "line": 220,
             "description": "Fired whenever this Shader's {{#crossLink \"Shader/vertex:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "vertex",
@@ -21140,23 +21287,25 @@
                     "description": "The property's new value"
                 }
             ],
-            "class": "Billboard",
-            "module": "xeogl"
+            "class": "Shader",
+            "module": "xeogl",
+            "submodule": "shaders"
         },
         {
             "file": "src/shaders/shader.js",
-            "line": 235,
+            "line": 234,
             "description": "GLSL source code for this Shader's fragment stage.\n\nFires a {{#crossLink \"Shader/fragment:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "fragment",
             "default": "null",
             "type": "String",
-            "class": "Billboard",
-            "module": "xeogl"
+            "class": "Shader",
+            "module": "xeogl",
+            "submodule": "shaders"
         },
         {
             "file": "src/shaders/shader.js",
-            "line": 253,
+            "line": 251,
             "description": "Fired whenever this Shader's {{#crossLink \"Shader/fragment:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "fragment",
@@ -21166,23 +21315,25 @@
                     "description": "The property's new value"
                 }
             ],
-            "class": "Billboard",
-            "module": "xeogl"
+            "class": "Shader",
+            "module": "xeogl",
+            "submodule": "shaders"
         },
         {
             "file": "src/shaders/shader.js",
-            "line": 267,
+            "line": 265,
             "description": "Params for this Shader.\n\nFires a {{#crossLink \"Shader/params:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "params",
             "default": "{}",
             "type": "{}",
-            "class": "Billboard",
-            "module": "xeogl"
+            "class": "Shader",
+            "module": "xeogl",
+            "submodule": "shaders"
         },
         {
             "file": "src/shaders/shader.js",
-            "line": 284,
+            "line": 282,
             "description": "Sets one or more params for this Shader.\n\nThese will be individually overridden by any {{#crossLink \"ShaderParams/setParams:method\"}}params subsequently specified{{/crossLink}} on\n{{#crossLink \"ShaderParams\"}}ShaderParams{{/crossLink}} on attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nFires a {{#crossLink \"Shader/params:event\"}}{{/crossLink}} event on change.",
             "itemtype": "method",
             "name": "setParams",
@@ -21194,12 +21345,13 @@
                     "optdefault": "{}"
                 }
             ],
-            "class": "Billboard",
-            "module": "xeogl"
+            "class": "Shader",
+            "module": "xeogl",
+            "submodule": "shaders"
         },
         {
             "file": "src/shaders/shader.js",
-            "line": 305,
+            "line": 303,
             "description": "Fired whenever this Shader's  {{#crossLink \"Shader/params:property\"}}{{/crossLink}}\nproperty has been updated.",
             "itemtype": "event",
             "name": "params",
@@ -21209,8 +21361,9 @@
                     "description": "The property's new value"
                 }
             ],
-            "class": "Billboard",
-            "module": "xeogl"
+            "class": "Shader",
+            "module": "xeogl",
+            "submodule": "shaders"
         },
         {
             "file": "src/shaders/shaderParams.js",
@@ -21220,8 +21373,9 @@
             "name": "params",
             "default": "{}",
             "type": "{}",
-            "class": "Billboard",
-            "module": "xeogl"
+            "class": "ShaderParams",
+            "module": "xeogl",
+            "submodule": "shaders"
         },
         {
             "file": "src/shaders/shaderParams.js",
@@ -21237,8 +21391,9 @@
                     "optdefault": "{}"
                 }
             ],
-            "class": "Billboard",
-            "module": "xeogl"
+            "class": "ShaderParams",
+            "module": "xeogl",
+            "submodule": "shaders"
         },
         {
             "file": "src/shaders/shaderParams.js",
@@ -21252,8 +21407,9 @@
                     "description": "The property's new value"
                 }
             ],
-            "class": "Billboard",
-            "module": "xeogl"
+            "class": "ShaderParams",
+            "module": "xeogl",
+            "submodule": "shaders"
         },
         {
             "file": "src/transforms/billboard.js",
@@ -22152,7 +22308,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 245,
+            "line": 257,
             "description": "Arbitrary, user-defined metadata on this component.",
             "itemtype": "property",
             "name": "metadata",
@@ -22162,7 +22318,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 253,
+            "line": 265,
             "description": "Indicates whether this is one of the {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s built-in Components.",
             "itemtype": "property",
             "name": "isDefault",
@@ -22172,7 +22328,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 261,
+            "line": 273,
             "description": "Unique ID for this Component within its parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "property",
             "name": "id",
@@ -22183,7 +22339,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 270,
+            "line": 282,
             "description": "True as soon as this Component has been destroyed",
             "itemtype": "property",
             "name": "destroyed",
@@ -22193,7 +22349,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 313,
+            "line": 329,
             "description": "JavaScript class name for this Component.\n\nThis is used when <a href=\"Scene.html#savingAndLoading\">loading Scenes from JSON</a>, and is included in the JSON\nrepresentation of this Component, so that this class may be instantiated when loading it from the JSON representation.\n\nFor example: \"xeogl.AmbientLight\", \"xeogl.ColorTarget\", \"xeogl.Lights\" etc.",
             "itemtype": "property",
             "name": "type",
@@ -22204,7 +22360,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 327,
+            "line": 343,
             "description": "An array of strings that indicates the chain of super-types within this component's inheritance hierarchy.\n\nFor example, if this component is a {{#crossLink \"Rotate\"}}{{/crossLink}}, which\nextends {{#crossLink \"Transform\"}}{{/crossLink}}, which in turn extends {{#crossLink \"Component\"}}{{/crossLink}},\nthen this property will have the value:\n\n````json\n[\"xeogl.Component\", \"xeogl.Transform\"]\n````\n\nNote that the chain is ordered downwards in the hierarchy, ie. from super-class down towards sub-class.",
             "itemtype": "property",
             "name": "superTypes",
@@ -22215,7 +22371,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 346,
+            "line": 362,
             "description": "Tests if this component is of the given type, or is a subclass of the given type.\n\nThe type may be given as either a string or a component constructor.\n\nThis method works by walking up the inheritance type chain, which this component provides in\nproperty {{#crossLink \"Component/superTypes:property\"}}{{/crossLink}}, returning true as soon as one of the type strings in\nthe chain matches the given type, of false if none match.\n\n#### Examples:\n\n````javascript\nvar myRotate = new xeogl.Rotate({ ... });\n\nmyRotate.isType(xeogl.Component); // Returns true for all xeogl components\nmyRotate.isType(\"xeogl.Component\"); // Returns true for all xeogl components\nmyRotate.isType(xeogl.Rotate); // Returns true\nmyRotate.isType(xeogl.Transform); // Returns true\nmyRotate.isType(\"xeogl.Transform\"); // Returns true\nmyRotate.isType(xeogl.Entity); // Returns false, because xeogl.Rotate does not (even indirectly) extend xeogl.Entity\n````",
             "itemtype": "method",
             "name": "isType",
@@ -22235,7 +22391,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 387,
+            "line": 403,
             "description": "Initializes this component",
             "params": [
                 {
@@ -22250,7 +22406,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 395,
+            "line": 411,
             "description": "Fires an event on this component.\n\nNotifies existing subscribers to the event, optionally retains the event to give to\nany subsequent notifications on the event as they are made.",
             "itemtype": "method",
             "name": "fire",
@@ -22278,7 +22434,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 444,
+            "line": 460,
             "description": "Subscribes to an event on this component.\n\nThe callback is be called with this component as scope.",
             "itemtype": "method",
             "name": "on",
@@ -22310,7 +22466,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 487,
+            "line": 503,
             "description": "Cancels an event subscription that was previously made with {{#crossLink \"Component/on:method\"}}{{/crossLink}} or\n{{#crossLink \"Component/once:method\"}}{{/crossLink}}.",
             "itemtype": "method",
             "name": "off",
@@ -22326,7 +22482,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 512,
+            "line": 528,
             "description": "Subscribes to the next occurrence of the given event, then un-subscribes as soon as the event is handled.\n\nThis is equivalent to calling {{#crossLink \"Component/on:method\"}}{{/crossLink}}, and then calling\n{{#crossLink \"Component/off:method\"}}{{/crossLink}} inside the callback function.",
             "itemtype": "method",
             "name": "once",
@@ -22354,7 +22510,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 533,
+            "line": 549,
             "description": "Logs a console debugging message for this component.\n\nThe console message will have this format: *````[LOG] [<component type> <component id>: <message>````*\n\nAlso fires the message as a {{#crossLink \"Scene/log:event\"}}{{/crossLink}} event on the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "method",
             "name": "log",
@@ -22370,7 +22526,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 558,
+            "line": 574,
             "description": "Logs a warning for this component to the JavaScript console.\n\nThe console message will have this format: *````[WARN] [<component type> =<component id>: <message>````*\n\nAlso fires the message as a {{#crossLink \"Scene/warn:event\"}}{{/crossLink}} event on the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "method",
             "name": "warn",
@@ -22386,7 +22542,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 578,
+            "line": 594,
             "description": "Logs an error for this component to the JavaScript console.\n\nThe console message will have this format: *````[ERROR] [<component type> =<component id>: <message>````*\n\nAlso fires the message as an {{#crossLink \"Scene/error:event\"}}{{/crossLink}} event on the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "method",
             "name": "error",
@@ -22402,7 +22558,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 598,
+            "line": 614,
             "description": "Creates a clone of this component.\n\nThe clone will have the same properties as the original, except where\noverridden in the given optional configs.\n\nThe clone will share (by reference) the components of the original, unless overridden.\n\nFor example, if this component is an {{#crossLink \"Entity\"}}{{/crossLink}}, then the clone\nwill be attached to the **same** instances of {{#crossLink \"PhoneMaterial\"}}{{/crossLink}},\n{{#crossLink \"Camera\"}}{{/crossLink}} etc as this component, unless it supplies its own\ninstances for those via the configs.",
             "params": [
                 {
@@ -22421,7 +22577,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 630,
+            "line": 646,
             "description": "Adds a child component to this.\nWhen component not given, attaches the scene's default instance for the given name (if any).\nPublishes the new child component on this component, keyed to the given name.",
             "params": [
                 {
@@ -22522,7 +22678,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 895,
+            "line": 911,
             "description": "Convenience method for creating a Component within this Component's {{#crossLink \"Scene\"}}{{/crossLink}}.\n\nYou would typically use this method to conveniently instantiate components that you'd want to\nshare (ie. \"instance\") among your {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nThe method is given a component type, configuration and optional instance ID, like so:\n\n````javascript\nvar material = myComponent.create(xeogl.PhongMaterial, {\n     diffuse: [1,0,0],\n     specular: [1,1,0]\n}, \"myMaterial\");\n````\n\nThe first time you call this method for the given ````type```` and ````instanceId````, this method will create the\n{{#crossLink \"PhongMaterial\"}}{{/crossLink}}, passing the given  attributes to the component's constructor.\n\nIf you call this method again, specifying the same ````type```` and ````instanceId````, the method will return the same\ncomponent instance that it returned the first time, and will ignore the configuration:\n\n````javascript\nvar material2 = component.create(xeogl.PhongMaterial, { specular: [1,1,0] }, \"myMaterial\");\n````\n\nSo in this example, our {{#crossLink \"PhongMaterial\"}}{{/crossLink}} will continue to have the red specular\nand diffuse color that we specified the first time.\n\nEach time you call this method with the same ````type```` and ````instanceId````, the Scene will internally increment a\nreference count for the component instance. You can release the shared component instance with a call to\n{{#crossLink \"Scene/putSharedComponent:method\"}}{{/crossLink}}, and once you have released it as many\ntimes as you got it, the Scene will destroy the component.",
             "itemtype": "method",
             "name": "create",
@@ -22549,7 +22705,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 968,
+            "line": 983,
             "description": "Protected method, called by sub-classes to queue a call to _update().",
             "access": "protected",
             "tagname": "",
@@ -22567,7 +22723,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 984,
+            "line": 999,
             "access": "private",
             "tagname": "",
             "class": "Component",
@@ -22575,7 +22731,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 996,
+            "line": 1011,
             "description": "Protected virtual template method, optionally implemented\nby sub-classes to perform a scheduled task.",
             "access": "protected",
             "tagname": "",
@@ -22584,7 +22740,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1004,
+            "line": 1019,
             "description": "Protected template method, implemented by sub-classes to compile\ntheir state into their Scene's xeogl.renderer.Renderer.",
             "access": "protected",
             "tagname": "",
@@ -22593,7 +22749,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1015,
+            "line": 1030,
             "description": "JSON object containing the state of this Component.",
             "itemtype": "property",
             "name": "json",
@@ -22604,7 +22760,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1043,
+            "line": 1058,
             "description": "String containing the serialized JSON state of this Component.",
             "itemtype": "property",
             "name": "string",
@@ -22615,7 +22771,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1058,
+            "line": 1073,
             "description": "Experimental: string containing a JavaScript expression that would instantiate this Component.",
             "itemtype": "property",
             "name": "string",
@@ -22626,7 +22782,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1076,
+            "line": 1091,
             "description": "Destroys this component.\n\nFires a {{#crossLink \"Component/destroyed:event\"}}{{/crossLink}} event on this Component.\n\nAutomatically disassociates this component from other components, causing them to fall back on any\ndefaults that this component overrode on them.\n\nTODO: describe effect with respect to #create",
             "itemtype": "method",
             "name": "destroy",
@@ -22635,7 +22791,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1146,
+            "line": 1165,
             "description": "Fired when this Component is destroyed.",
             "itemtype": "event",
             "name": "destroyed",
@@ -22644,7 +22800,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1154,
+            "line": 1173,
             "description": "Protected template method, implemented by sub-classes\nto clean up just before the component is destroyed.",
             "access": "protected",
             "tagname": "",
@@ -27133,7 +27289,7 @@
     "warnings": [
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/_renderer/renderer.js:879"
+            "line": " src/_renderer/renderer.js:880"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -27209,15 +27365,15 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/component.js:346"
+            "line": " src/component.js:362"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/component.js:598"
+            "line": " src/component.js:614"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/component.js:895"
+            "line": " src/component.js:911"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -27353,15 +27509,15 @@
         },
         {
             "message": "Missing item type\nGets a chunk from this factory.",
-            "line": " src/_renderer/chunks/chunkFactory.js:54"
+            "line": " src/_renderer/chunks/chunkFactory.js:53"
         },
         {
             "message": "Missing item type\nReleases a chunk back to this factory.",
-            "line": " src/_renderer/chunks/chunkFactory.js:98"
+            "line": " src/_renderer/chunks/chunkFactory.js:97"
         },
         {
             "message": "Missing item type\nRestores the chunks in this factory after a WebGL context recovery.",
-            "line": " src/_renderer/chunks/chunkFactory.js:122"
+            "line": " src/_renderer/chunks/chunkFactory.js:123"
         },
         {
             "message": "Missing item type\nCreate display state chunk type for draw and pick render of user clipping planes",
@@ -27641,7 +27797,7 @@
         },
         {
             "message": "Missing item type\nRebuild all programs in the pool after WebGL context was lost and restored.",
-            "line": " src/_renderer/programFactory.js:74"
+            "line": " src/_renderer/programFactory.js:75"
         },
         {
             "message": "Missing item type\nSource code for pick and draw shader programs, to be compiled into one or more {@link xeogl.renderer.Program}s",
@@ -27749,23 +27905,23 @@
         },
         {
             "message": "Missing item type\nRemoves an object from this Renderer",
-            "line": " src/_renderer/renderer.js:504"
+            "line": " src/_renderer/renderer.js:505"
         },
         {
             "message": "Missing item type\nRenders a new frame, if neccessary.",
-            "line": " src/_renderer/renderer.js:540"
+            "line": " src/_renderer/renderer.js:541"
         },
         {
             "message": "Missing item type\nAttempts to pick an object.",
-            "line": " src/_renderer/renderer.js:879"
+            "line": " src/_renderer/renderer.js:880"
         },
         {
             "message": "Missing item type\nReads the colors of some pixels in the last rendered frame.",
-            "line": " src/_renderer/renderer.js:1098"
+            "line": " src/_renderer/renderer.js:1099"
         },
         {
             "message": "Missing item type\nDestroys this Renderer.",
-            "line": " src/_renderer/renderer.js:1142"
+            "line": " src/_renderer/renderer.js:1143"
         },
         {
             "message": "Missing item type\nRenderer states",
@@ -28117,35 +28273,35 @@
         },
         {
             "message": "Missing item type\nInitializes this component",
-            "line": " src/component.js:387"
+            "line": " src/component.js:403"
         },
         {
             "message": "Missing item type\nCreates a clone of this component.\n\nThe clone will have the same properties as the original, except where\noverridden in the given optional configs.\n\nThe clone will share (by reference) the components of the original, unless overridden.\n\nFor example, if this component is an {{#crossLink \"Entity\"}}{{/crossLink}}, then the clone\nwill be attached to the **same** instances of {{#crossLink \"PhoneMaterial\"}}{{/crossLink}},\n{{#crossLink \"Camera\"}}{{/crossLink}} etc as this component, unless it supplies its own\ninstances for those via the configs.",
-            "line": " src/component.js:598"
+            "line": " src/component.js:614"
         },
         {
             "message": "Missing item type\nAdds a child component to this.\nWhen component not given, attaches the scene's default instance for the given name (if any).\nPublishes the new child component on this component, keyed to the given name.",
-            "line": " src/component.js:630"
+            "line": " src/component.js:646"
         },
         {
             "message": "Missing item type\nProtected method, called by sub-classes to queue a call to _update().",
-            "line": " src/component.js:968"
+            "line": " src/component.js:983"
         },
         {
             "message": "Missing item type",
-            "line": " src/component.js:984"
+            "line": " src/component.js:999"
         },
         {
             "message": "Missing item type\nProtected virtual template method, optionally implemented\nby sub-classes to perform a scheduled task.",
-            "line": " src/component.js:996"
+            "line": " src/component.js:1011"
         },
         {
             "message": "Missing item type\nProtected template method, implemented by sub-classes to compile\ntheir state into their Scene's xeogl.renderer.Renderer.",
-            "line": " src/component.js:1004"
+            "line": " src/component.js:1019"
         },
         {
             "message": "Missing item type\nProtected template method, implemented by sub-classes\nto clean up just before the component is destroyed.",
-            "line": " src/component.js:1154"
+            "line": " src/component.js:1173"
         },
         {
             "message": "Missing item type\nReleases a shared component instance that was got earlier\nwith {{#crossLink \"Scene/getSharedComponent:method\"}}{{/crossLink}}.",

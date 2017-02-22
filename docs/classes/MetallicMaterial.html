@@ -102,6 +102,8 @@
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
+                                <li><a href="../classes/Shader.html">Shader</a></li>
+                                <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
                                 <li><a href="../classes/SpecularMaterial.html">SpecularMaterial</a></li>
@@ -148,6 +150,7 @@
                                 <li><a href="..//modules/math.html">math</a></li>
                                 <li><a href="..//modules/models.html">models</a></li>
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
+                                <li><a href="..//modules/shaders.html">shaders</a></li>
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
                                 <li><a href="..//modules/xeogl.html">xeogl</a></li>
@@ -227,7 +230,7 @@
 <h2 id="overview">Overview</h2>
 <ul>
 <li>MetallicMaterial is usually used for conductive materials, such as metal.</li>
-<li><a href="../classes/SpecularMaterial.html" class="crosslink">SpecularMaterial</a> is usually used for conductors, such as wood, ceramics and plastic.</li>
+<li><a href="../classes/SpecularMaterial.html" class="crosslink">SpecularMaterial</a> is usually used for insulators, such as wood, ceramics and plastic.</li>
 <li><a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a> is usually used for non-realistic objects.</li>
 </ul>
 <p><img src="../../../assets/images/MetallicMaterial.png"></img></p>
@@ -1029,7 +1032,7 @@ if required.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_create">Component</a>:
-        <a href="../files/src_component.js.html#l895"><code>src&#x2F;component.js:895</code></a>
+        <a href="../files/src_component.js.html#l911"><code>src&#x2F;component.js:911</code></a>
         </p>
 
 
@@ -1120,7 +1123,7 @@ component - you can specify the component ID in the <code>cfg</code> parameter.<
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_component.js.html#l1076"><code>src&#x2F;component.js:1076</code></a>
+        <a href="../files/src_component.js.html#l1091"><code>src&#x2F;component.js:1091</code></a>
         </p>
 
 
@@ -1162,7 +1165,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_error">Component</a>:
-        <a href="../files/src_component.js.html#l578"><code>src&#x2F;component.js:578</code></a>
+        <a href="../files/src_component.js.html#l594"><code>src&#x2F;component.js:594</code></a>
         </p>
 
 
@@ -1226,7 +1229,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_fire">Component</a>:
-        <a href="../files/src_component.js.html#l395"><code>src&#x2F;component.js:395</code></a>
+        <a href="../files/src_component.js.html#l411"><code>src&#x2F;component.js:411</code></a>
         </p>
 
 
@@ -1309,7 +1312,7 @@ any subsequent notifications on the event as they are made.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_isType">Component</a>:
-        <a href="../files/src_component.js.html#l346"><code>src&#x2F;component.js:346</code></a>
+        <a href="../files/src_component.js.html#l362"><code>src&#x2F;component.js:362</code></a>
         </p>
 
 
@@ -1387,7 +1390,7 @@ myRotate.isType(xeogl.Entity); // Returns false, because xeogl.Rotate does not (
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_log">Component</a>:
-        <a href="../files/src_component.js.html#l533"><code>src&#x2F;component.js:533</code></a>
+        <a href="../files/src_component.js.html#l549"><code>src&#x2F;component.js:549</code></a>
         </p>
 
 
@@ -1445,7 +1448,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_off">Component</a>:
-        <a href="../files/src_component.js.html#l487"><code>src&#x2F;component.js:487</code></a>
+        <a href="../files/src_component.js.html#l503"><code>src&#x2F;component.js:503</code></a>
         </p>
 
 
@@ -1510,7 +1513,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_on">Component</a>:
-        <a href="../files/src_component.js.html#l444"><code>src&#x2F;component.js:444</code></a>
+        <a href="../files/src_component.js.html#l460"><code>src&#x2F;component.js:460</code></a>
         </p>
 
 
@@ -1604,7 +1607,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_once">Component</a>:
-        <a href="../files/src_component.js.html#l512"><code>src&#x2F;component.js:512</code></a>
+        <a href="../files/src_component.js.html#l528"><code>src&#x2F;component.js:528</code></a>
         </p>
 
 
@@ -1684,7 +1687,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_warn">Component</a>:
-        <a href="../files/src_component.js.html#l558"><code>src&#x2F;component.js:558</code></a>
+        <a href="../files/src_component.js.html#l574"><code>src&#x2F;component.js:574</code></a>
         </p>
 
 
@@ -1736,7 +1739,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_metallicMaterial.js.html#l334"><code>src&#x2F;materials&#x2F;metallicMaterial.js:334</code></a>
+                            <a href="../files/src_materials_metallicMaterial.js.html#l331"><code>src&#x2F;materials&#x2F;metallicMaterial.js:331</code></a>
                             </p>
                     
                     
@@ -1764,7 +1767,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_metallicMaterial.js.html#l385"><code>src&#x2F;materials&#x2F;metallicMaterial.js:385</code></a>
+                            <a href="../files/src_materials_metallicMaterial.js.html#l382"><code>src&#x2F;materials&#x2F;metallicMaterial.js:382</code></a>
                             </p>
                     
                     
@@ -1797,7 +1800,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l270"><code>src&#x2F;component.js:270</code></a>
+                            <a href="../files/src_component.js.html#l282"><code>src&#x2F;component.js:282</code></a>
                             </p>
                     
                     
@@ -1822,7 +1825,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_metallicMaterial.js.html#l635"><code>src&#x2F;materials&#x2F;metallicMaterial.js:635</code></a>
+                            <a href="../files/src_materials_metallicMaterial.js.html#l632"><code>src&#x2F;materials&#x2F;metallicMaterial.js:632</code></a>
                             </p>
                     
                     
@@ -1850,7 +1853,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_metallicMaterial.js.html#l686"><code>src&#x2F;materials&#x2F;metallicMaterial.js:686</code></a>
+                            <a href="../files/src_materials_metallicMaterial.js.html#l683"><code>src&#x2F;materials&#x2F;metallicMaterial.js:683</code></a>
                             </p>
                     
                     
@@ -1880,7 +1883,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_id">Component</a>:
-                            <a href="../files/src_component.js.html#l261"><code>src&#x2F;component.js:261</code></a>
+                            <a href="../files/src_component.js.html#l273"><code>src&#x2F;component.js:273</code></a>
                             </p>
                     
                     
@@ -1905,7 +1908,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_isDefault">Component</a>:
-                            <a href="../files/src_component.js.html#l253"><code>src&#x2F;component.js:253</code></a>
+                            <a href="../files/src_component.js.html#l265"><code>src&#x2F;component.js:265</code></a>
                             </p>
                     
                     
@@ -1931,7 +1934,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_json">Component</a>:
-                            <a href="../files/src_component.js.html#l1015"><code>src&#x2F;component.js:1015</code></a>
+                            <a href="../files/src_component.js.html#l1030"><code>src&#x2F;component.js:1030</code></a>
                             </p>
                     
                     
@@ -1956,7 +1959,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_metadata">Component</a>:
-                            <a href="../files/src_component.js.html#l245"><code>src&#x2F;component.js:245</code></a>
+                            <a href="../files/src_component.js.html#l257"><code>src&#x2F;component.js:257</code></a>
                             </p>
                     
                     
@@ -1981,7 +1984,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_metallicMaterial.js.html#l421"><code>src&#x2F;materials&#x2F;metallicMaterial.js:421</code></a>
+                            <a href="../files/src_materials_metallicMaterial.js.html#l418"><code>src&#x2F;materials&#x2F;metallicMaterial.js:418</code></a>
                             </p>
                     
                     
@@ -2011,7 +2014,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_metallicMaterial.js.html#l463"><code>src&#x2F;materials&#x2F;metallicMaterial.js:463</code></a>
+                            <a href="../files/src_materials_metallicMaterial.js.html#l460"><code>src&#x2F;materials&#x2F;metallicMaterial.js:460</code></a>
                             </p>
                     
                     
@@ -2040,7 +2043,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_metallicMaterial.js.html#l566"><code>src&#x2F;materials&#x2F;metallicMaterial.js:566</code></a>
+                            <a href="../files/src_materials_metallicMaterial.js.html#l563"><code>src&#x2F;materials&#x2F;metallicMaterial.js:563</code></a>
                             </p>
                     
                     
@@ -2070,7 +2073,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_metallicMaterial.js.html#l825"><code>src&#x2F;materials&#x2F;metallicMaterial.js:825</code></a>
+                            <a href="../files/src_materials_metallicMaterial.js.html#l822"><code>src&#x2F;materials&#x2F;metallicMaterial.js:822</code></a>
                             </p>
                     
                     
@@ -2098,7 +2101,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_metallicMaterial.js.html#l717"><code>src&#x2F;materials&#x2F;metallicMaterial.js:717</code></a>
+                            <a href="../files/src_materials_metallicMaterial.js.html#l714"><code>src&#x2F;materials&#x2F;metallicMaterial.js:714</code></a>
                             </p>
                     
                     
@@ -2127,7 +2130,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_metallicMaterial.js.html#l748"><code>src&#x2F;materials&#x2F;metallicMaterial.js:748</code></a>
+                            <a href="../files/src_materials_metallicMaterial.js.html#l745"><code>src&#x2F;materials&#x2F;metallicMaterial.js:745</code></a>
                             </p>
                     
                     
@@ -2160,7 +2163,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_metallicMaterial.js.html#l794"><code>src&#x2F;materials&#x2F;metallicMaterial.js:794</code></a>
+                            <a href="../files/src_materials_metallicMaterial.js.html#l791"><code>src&#x2F;materials&#x2F;metallicMaterial.js:791</code></a>
                             </p>
                     
                     
@@ -2189,7 +2192,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_metallicMaterial.js.html#l494"><code>src&#x2F;materials&#x2F;metallicMaterial.js:494</code></a>
+                            <a href="../files/src_materials_metallicMaterial.js.html#l491"><code>src&#x2F;materials&#x2F;metallicMaterial.js:491</code></a>
                             </p>
                     
                     
@@ -2218,7 +2221,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_metallicMaterial.js.html#l535"><code>src&#x2F;materials&#x2F;metallicMaterial.js:535</code></a>
+                            <a href="../files/src_materials_metallicMaterial.js.html#l532"><code>src&#x2F;materials&#x2F;metallicMaterial.js:532</code></a>
                             </p>
                     
                     
@@ -2273,7 +2276,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_metallicMaterial.js.html#l598"><code>src&#x2F;materials&#x2F;metallicMaterial.js:598</code></a>
+                            <a href="../files/src_materials_metallicMaterial.js.html#l595"><code>src&#x2F;materials&#x2F;metallicMaterial.js:595</code></a>
                             </p>
                     
                     
@@ -2304,7 +2307,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_component.js.html#l1043"><code>src&#x2F;component.js:1043</code></a>
+                            <a href="../files/src_component.js.html#l1058"><code>src&#x2F;component.js:1058</code></a>
                             </p>
                     
                     
@@ -2330,7 +2333,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_superTypes">Component</a>:
-                            <a href="../files/src_component.js.html#l327"><code>src&#x2F;component.js:327</code></a>
+                            <a href="../files/src_component.js.html#l343"><code>src&#x2F;component.js:343</code></a>
                             </p>
                     
                     
@@ -2362,7 +2365,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_type">Component</a>:
-                            <a href="../files/src_component.js.html#l313"><code>src&#x2F;component.js:313</code></a>
+                            <a href="../files/src_component.js.html#l329"><code>src&#x2F;component.js:329</code></a>
                             </p>
                     
                     
@@ -2396,7 +2399,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_metallicMaterial.js.html#l371"><code>src&#x2F;materials&#x2F;metallicMaterial.js:371</code></a>
+                            <a href="../files/src_materials_metallicMaterial.js.html#l368"><code>src&#x2F;materials&#x2F;metallicMaterial.js:368</code></a>
                             </p>
                     
                     
@@ -2438,7 +2441,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_metallicMaterial.js.html#l407"><code>src&#x2F;materials&#x2F;metallicMaterial.js:407</code></a>
+                            <a href="../files/src_materials_metallicMaterial.js.html#l404"><code>src&#x2F;materials&#x2F;metallicMaterial.js:404</code></a>
                             </p>
                     
                     
@@ -2480,7 +2483,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l1146"><code>src&#x2F;component.js:1146</code></a>
+                            <a href="../files/src_component.js.html#l1165"><code>src&#x2F;component.js:1165</code></a>
                             </p>
                     
                     
@@ -2505,7 +2508,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_metallicMaterial.js.html#l672"><code>src&#x2F;materials&#x2F;metallicMaterial.js:672</code></a>
+                            <a href="../files/src_materials_metallicMaterial.js.html#l669"><code>src&#x2F;materials&#x2F;metallicMaterial.js:669</code></a>
                             </p>
                     
                     
@@ -2547,7 +2550,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_metallicMaterial.js.html#l703"><code>src&#x2F;materials&#x2F;metallicMaterial.js:703</code></a>
+                            <a href="../files/src_materials_metallicMaterial.js.html#l700"><code>src&#x2F;materials&#x2F;metallicMaterial.js:700</code></a>
                             </p>
                     
                     
@@ -2589,7 +2592,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_metallicMaterial.js.html#l449"><code>src&#x2F;materials&#x2F;metallicMaterial.js:449</code></a>
+                            <a href="../files/src_materials_metallicMaterial.js.html#l446"><code>src&#x2F;materials&#x2F;metallicMaterial.js:446</code></a>
                             </p>
                     
                     
@@ -2631,7 +2634,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_metallicMaterial.js.html#l480"><code>src&#x2F;materials&#x2F;metallicMaterial.js:480</code></a>
+                            <a href="../files/src_materials_metallicMaterial.js.html#l477"><code>src&#x2F;materials&#x2F;metallicMaterial.js:477</code></a>
                             </p>
                     
                     
@@ -2673,7 +2676,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_metallicMaterial.js.html#l584"><code>src&#x2F;materials&#x2F;metallicMaterial.js:584</code></a>
+                            <a href="../files/src_materials_metallicMaterial.js.html#l581"><code>src&#x2F;materials&#x2F;metallicMaterial.js:581</code></a>
                             </p>
                     
                     
@@ -2715,7 +2718,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_metallicMaterial.js.html#l840"><code>src&#x2F;materials&#x2F;metallicMaterial.js:840</code></a>
+                            <a href="../files/src_materials_metallicMaterial.js.html#l837"><code>src&#x2F;materials&#x2F;metallicMaterial.js:837</code></a>
                             </p>
                     
                     
@@ -2757,7 +2760,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_metallicMaterial.js.html#l734"><code>src&#x2F;materials&#x2F;metallicMaterial.js:734</code></a>
+                            <a href="../files/src_materials_metallicMaterial.js.html#l731"><code>src&#x2F;materials&#x2F;metallicMaterial.js:731</code></a>
                             </p>
                     
                     
@@ -2799,7 +2802,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_metallicMaterial.js.html#l780"><code>src&#x2F;materials&#x2F;metallicMaterial.js:780</code></a>
+                            <a href="../files/src_materials_metallicMaterial.js.html#l777"><code>src&#x2F;materials&#x2F;metallicMaterial.js:777</code></a>
                             </p>
                     
                     
@@ -2841,7 +2844,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_metallicMaterial.js.html#l811"><code>src&#x2F;materials&#x2F;metallicMaterial.js:811</code></a>
+                            <a href="../files/src_materials_metallicMaterial.js.html#l808"><code>src&#x2F;materials&#x2F;metallicMaterial.js:808</code></a>
                             </p>
                     
                     
@@ -2883,7 +2886,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_metallicMaterial.js.html#l521"><code>src&#x2F;materials&#x2F;metallicMaterial.js:521</code></a>
+                            <a href="../files/src_materials_metallicMaterial.js.html#l518"><code>src&#x2F;materials&#x2F;metallicMaterial.js:518</code></a>
                             </p>
                     
                     
@@ -2925,7 +2928,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_metallicMaterial.js.html#l552"><code>src&#x2F;materials&#x2F;metallicMaterial.js:552</code></a>
+                            <a href="../files/src_materials_metallicMaterial.js.html#l549"><code>src&#x2F;materials&#x2F;metallicMaterial.js:549</code></a>
                             </p>
                     
                     
@@ -2967,7 +2970,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_metallicMaterial.js.html#l621"><code>src&#x2F;materials&#x2F;metallicMaterial.js:621</code></a>
+                            <a href="../files/src_materials_metallicMaterial.js.html#l618"><code>src&#x2F;materials&#x2F;metallicMaterial.js:618</code></a>
                             </p>
                     
                     
