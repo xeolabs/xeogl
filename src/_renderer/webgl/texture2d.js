@@ -10,7 +10,7 @@
 
         this.texture = gl.createTexture();
 
-        this.setPreloadColor([0,0,0,0]); // Prevents "there is no texture bound to the unit 0" error
+        //this.setPreloadColor([0,0,0,0]); // Prevents "there is no texture bound to the unit 0" error
 
         this.allocated = true;
     };
