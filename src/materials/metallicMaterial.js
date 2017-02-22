@@ -256,7 +256,7 @@
 
         _init: function (cfg) {
 
-            this._state = new xeogl.renderer.State({
+            this._state = new xeogl.renderer.MetallicMaterial({
                 type: "MetallicMaterial",
                 baseColor: xeogl.math.vec4([1.0, 1.0, 1.0]),
                 emissive: xeogl.math.vec4([0.0, 0.0, 0.0]),
