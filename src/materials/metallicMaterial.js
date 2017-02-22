@@ -52,8 +52,7 @@
 
  Note that in this example we're providing separate {{#crossLink "Texture"}}Textures{{/crossLink}} for the {{#crossLink "MetallicMaterial/metallic:property"}}{{/crossLink}} and {{#crossLink "MetallicMaterial/roughness:property"}}{{/crossLink}}
  channels, which allows us a little creative flexibility. Then, in the next example further down, we'll combine those channels
- within the same {{#crossLink "Texture"}}{{/crossLink}}, which results in shorter download times, reduced memory
- footprint and faster rendering.
+ within the same {{#crossLink "Texture"}}{{/crossLink}} for efficiency.
 
  ````javascript
  new xeogl.Entity({
@@ -168,8 +167,8 @@
  });
  ````
 
- Although not shown in this example, we can also texture {{#crossLink "MetallicMaterial/opacity:property"}}{{/crossLink}} with
- the *A* component of {{#crossLink "MetallicMaterial/baseColorMap:property"}}{{/crossLink}}'s {{#crossLink "Texture"}}{{/crossLink}},
+ Although not shown in this example, we can also texture {{#crossLink "SpecularMaterial/opacity:property"}}{{/crossLink}} with
+ the *A* component of {{#crossLink "SpecularMaterial/diffuseMap:property"}}{{/crossLink}}'s {{#crossLink "Texture"}}{{/crossLink}},
  if required.
 
  @class MetallicMaterial
