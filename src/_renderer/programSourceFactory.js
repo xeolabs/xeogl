@@ -252,7 +252,7 @@
             add("precision " + getFSFloatPrecision(states.gl) + " float;");
             add("void main(void) {");
             add("   gl_FragColor = vec4(gl_FragCoord.z, 0.0, 0.0, 0.0);");
-       //     add("   gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);");
+            //     add("   gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);");
             add("}");
             return fragmentShadowSrc = end();
         }
@@ -497,6 +497,12 @@
         }
 
         function fragmentDraw() {
+
+            var fragment = states.shader.fragment;
+
+            if (fragment) { // Custom fragment shader
+                return fragment;
+            }
 
             var material = states.material;
             var geometry = states.geometry;
@@ -1399,7 +1405,7 @@
 
 
             add("gl_FragColor = vec4(outgoingLight, opacity);");
-           //     add("gl_FragColor = LinearTosRGB(gl_FragColor);");  // Gamma correction
+            //     add("gl_FragColor = LinearTosRGB(gl_FragColor);");  // Gamma correction
 
             add("}");
 
