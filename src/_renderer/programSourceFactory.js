@@ -376,9 +376,13 @@
 
             if (normals) {
                 add("vec4 localNormal = vec4(normal, 0.0); ");
+                add("mat4 modelNormalMatrix2    = modelNormalMatrix;");
+                add("mat4 viewNormalMatrix2     = viewNormalMatrix;");
+
             }
 
-            add("mat4 viewMatrix2 = viewMatrix;");
+            add("mat4 viewMatrix2           = viewMatrix;");
+            add("mat4 modelMatrix2          = modelMatrix;");
 
             if (states.stationary.active) {
                 add("viewMatrix2[3][0] = viewMatrix2[3][1] = viewMatrix2[3][2] = 0.0;")
@@ -386,39 +390,41 @@
 
             if (states.billboard.active) {
 
-                add("mat4 modelViewMatrix = viewMatrix2 * modelMatrix;");
+                add("mat4 modelViewMatrix = viewMatrix2 * modelMatrix2;");
 
-                add("billboard(modelMatrix);");
+                add("billboard(modelMatrix2);");
                 add("billboard(viewMatrix2);");
                 add("billboard(modelViewMatrix);");
 
                 if (normals) {
-                    add("mat4 modelViewNormalMatrix =  viewNormalMatrix * modelNormalMatrix;");
-                    add("billboard(modelNormalMatrix);");
-                    add("billboard(viewNormalMatrix);");
+
+                    add("mat4 modelViewNormalMatrix =  viewNormalMatrix2 * modelNormalMatrix2;");
+
+                    add("billboard(modelNormalMatrix2);");
+                    add("billboard(viewNormalMatrix2);");
                     add("billboard(modelViewNormalMatrix);");
                 }
 
-                add("worldPosition = modelMatrix * localPosition;");
+                add("worldPosition = modelMatrix2 * localPosition;");
                 add("vec4 viewPosition = modelViewMatrix * localPosition;");
 
             } else {
 
-                add("worldPosition = modelMatrix * localPosition;");
+                add("worldPosition = modelMatrix2 * localPosition;");
                 add("vec4 viewPosition  = viewMatrix2 * worldPosition; ");
             }
 
             if (normals) {
 
-                add("vec3 worldNormal = (modelNormalMatrix * localNormal).xyz; ");
+                add("vec3 worldNormal = (modelNormalMatrix2 * localNormal).xyz; ");
                 if (states.lights.lightMap) {
                     add("vWorldNormal = worldNormal;");
                 }
-                add("vViewNormal = normalize((viewNormalMatrix * vec4(worldNormal, 1.0)).xyz);");
+                add("vViewNormal = normalize((viewNormalMatrix2 * vec4(worldNormal, 1.0)).xyz);");
 
                 if (normalMapping) {
 
-                    add("mat4 mat =  viewMatrix2 * modelMatrix;");
+                    add("mat4 mat =  viewMatrix2 * modelMatrix2;");
 
                     add("vec3 n = normalize( ( mat * vec4( normal, 0.0 ) ).xyz );");
                     add("vec3 t = normalize( ( mat * vec4( tangent, 0.0 ) ).xyz );");

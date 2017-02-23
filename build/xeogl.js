@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2017-02-22
+ * Built on 2017-02-23
  *
  * MIT License
  * Copyright 2017, Lindsay Kay
@@ -8848,7 +8848,7 @@ var Canvas2Image = (function () {
             add("precision " + getFSFloatPrecision(states.gl) + " float;");
             add("void main(void) {");
             add("   gl_FragColor = vec4(gl_FragCoord.z, 0.0, 0.0, 0.0);");
-       //     add("   gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);");
+            //     add("   gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);");
             add("}");
             return fragmentShadowSrc = end();
         }
@@ -8972,9 +8972,13 @@ var Canvas2Image = (function () {
 
             if (normals) {
                 add("vec4 localNormal = vec4(normal, 0.0); ");
+                add("mat4 modelNormalMatrix2    = modelNormalMatrix;");
+                add("mat4 viewNormalMatrix2     = viewNormalMatrix;");
+
             }
 
-            add("mat4 viewMatrix2 = viewMatrix;");
+            add("mat4 viewMatrix2           = viewMatrix;");
+            add("mat4 modelMatrix2          = modelMatrix;");
 
             if (states.stationary.active) {
                 add("viewMatrix2[3][0] = viewMatrix2[3][1] = viewMatrix2[3][2] = 0.0;")
@@ -8982,39 +8986,41 @@ var Canvas2Image = (function () {
 
             if (states.billboard.active) {
 
-                add("mat4 modelViewMatrix = viewMatrix2 * modelMatrix;");
+                add("mat4 modelViewMatrix = viewMatrix2 * modelMatrix2;");
 
-                add("billboard(modelMatrix);");
+                add("billboard(modelMatrix2);");
                 add("billboard(viewMatrix2);");
                 add("billboard(modelViewMatrix);");
 
                 if (normals) {
-                    add("mat4 modelViewNormalMatrix =  viewNormalMatrix * modelNormalMatrix;");
-                    add("billboard(modelNormalMatrix);");
-                    add("billboard(viewNormalMatrix);");
+
+                    add("mat4 modelViewNormalMatrix =  viewNormalMatrix2 * modelNormalMatrix2;");
+
+                    add("billboard(modelNormalMatrix2);");
+                    add("billboard(viewNormalMatrix2);");
                     add("billboard(modelViewNormalMatrix);");
                 }
 
-                add("worldPosition = modelMatrix * localPosition;");
+                add("worldPosition = modelMatrix2 * localPosition;");
                 add("vec4 viewPosition = modelViewMatrix * localPosition;");
 
             } else {
 
-                add("worldPosition = modelMatrix * localPosition;");
+                add("worldPosition = modelMatrix2 * localPosition;");
                 add("vec4 viewPosition  = viewMatrix2 * worldPosition; ");
             }
 
             if (normals) {
 
-                add("vec3 worldNormal = (modelNormalMatrix * localNormal).xyz; ");
+                add("vec3 worldNormal = (modelNormalMatrix2 * localNormal).xyz; ");
                 if (states.lights.lightMap) {
                     add("vWorldNormal = worldNormal;");
                 }
-                add("vViewNormal = normalize((viewNormalMatrix * vec4(worldNormal, 1.0)).xyz);");
+                add("vViewNormal = normalize((viewNormalMatrix2 * vec4(worldNormal, 1.0)).xyz);");
 
                 if (normalMapping) {
 
-                    add("mat4 mat =  viewMatrix2 * modelMatrix;");
+                    add("mat4 mat =  viewMatrix2 * modelMatrix2;");
 
                     add("vec3 n = normalize( ( mat * vec4( normal, 0.0 ) ).xyz );");
                     add("vec3 t = normalize( ( mat * vec4( tangent, 0.0 ) ).xyz );");
@@ -9093,6 +9099,12 @@ var Canvas2Image = (function () {
         }
 
         function fragmentDraw() {
+
+            var fragment = states.shader.fragment;
+
+            if (fragment) { // Custom fragment shader
+                return fragment;
+            }
 
             var material = states.material;
             var geometry = states.geometry;
@@ -9995,7 +10007,7 @@ var Canvas2Image = (function () {
 
 
             add("gl_FragColor = vec4(outgoingLight, opacity);");
-           //     add("gl_FragColor = LinearTosRGB(gl_FragColor);");  // Gamma correction
+            //     add("gl_FragColor = LinearTosRGB(gl_FragColor);");  // Gamma correction
 
             add("}");
 
@@ -35272,8 +35284,8 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  });
  ````
 
- Although not shown in this example, we can also texture {{#crossLink "MetallicMaterial/opacity:property"}}{{/crossLink}} with
- the *A* component of {{#crossLink "MetallicMaterial/baseColorMap:property"}}{{/crossLink}}'s {{#crossLink "Texture"}}{{/crossLink}},
+ Although not shown in this example, we can also texture {{#crossLink "SpecularMaterial/opacity:property"}}{{/crossLink}} with
+ the *A* component of {{#crossLink "SpecularMaterial/diffuseMap:property"}}{{/crossLink}}'s {{#crossLink "Texture"}}{{/crossLink}},
  if required.
 
  @class MetallicMaterial

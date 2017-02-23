@@ -446,7 +446,7 @@
             add(&quot;precision &quot; + getFSFloatPrecision(states.gl) + &quot; float;&quot;);
             add(&quot;void main(void) {&quot;);
             add(&quot;   gl_FragColor = vec4(gl_FragCoord.z, 0.0, 0.0, 0.0);&quot;);
-       //     add(&quot;   gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);&quot;);
+            //     add(&quot;   gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);&quot;);
             add(&quot;}&quot;);
             return fragmentShadowSrc = end();
         }
@@ -570,9 +570,13 @@
 
             if (normals) {
                 add(&quot;vec4 localNormal = vec4(normal, 0.0); &quot;);
+                add(&quot;mat4 modelNormalMatrix2    = modelNormalMatrix;&quot;);
+                add(&quot;mat4 viewNormalMatrix2     = viewNormalMatrix;&quot;);
+
             }
 
-            add(&quot;mat4 viewMatrix2 = viewMatrix;&quot;);
+            add(&quot;mat4 viewMatrix2           = viewMatrix;&quot;);
+            add(&quot;mat4 modelMatrix2          = modelMatrix;&quot;);
 
             if (states.stationary.active) {
                 add(&quot;viewMatrix2[3][0] = viewMatrix2[3][1] = viewMatrix2[3][2] = 0.0;&quot;)
@@ -580,39 +584,41 @@
 
             if (states.billboard.active) {
 
-                add(&quot;mat4 modelViewMatrix = viewMatrix2 * modelMatrix;&quot;);
+                add(&quot;mat4 modelViewMatrix = viewMatrix2 * modelMatrix2;&quot;);
 
-                add(&quot;billboard(modelMatrix);&quot;);
+                add(&quot;billboard(modelMatrix2);&quot;);
                 add(&quot;billboard(viewMatrix2);&quot;);
                 add(&quot;billboard(modelViewMatrix);&quot;);
 
                 if (normals) {
-                    add(&quot;mat4 modelViewNormalMatrix =  viewNormalMatrix * modelNormalMatrix;&quot;);
-                    add(&quot;billboard(modelNormalMatrix);&quot;);
-                    add(&quot;billboard(viewNormalMatrix);&quot;);
+
+                    add(&quot;mat4 modelViewNormalMatrix =  viewNormalMatrix2 * modelNormalMatrix2;&quot;);
+
+                    add(&quot;billboard(modelNormalMatrix2);&quot;);
+                    add(&quot;billboard(viewNormalMatrix2);&quot;);
                     add(&quot;billboard(modelViewNormalMatrix);&quot;);
                 }
 
-                add(&quot;worldPosition = modelMatrix * localPosition;&quot;);
+                add(&quot;worldPosition = modelMatrix2 * localPosition;&quot;);
                 add(&quot;vec4 viewPosition = modelViewMatrix * localPosition;&quot;);
 
             } else {
 
-                add(&quot;worldPosition = modelMatrix * localPosition;&quot;);
+                add(&quot;worldPosition = modelMatrix2 * localPosition;&quot;);
                 add(&quot;vec4 viewPosition  = viewMatrix2 * worldPosition; &quot;);
             }
 
             if (normals) {
 
-                add(&quot;vec3 worldNormal = (modelNormalMatrix * localNormal).xyz; &quot;);
+                add(&quot;vec3 worldNormal = (modelNormalMatrix2 * localNormal).xyz; &quot;);
                 if (states.lights.lightMap) {
                     add(&quot;vWorldNormal = worldNormal;&quot;);
                 }
-                add(&quot;vViewNormal = normalize((viewNormalMatrix * vec4(worldNormal, 1.0)).xyz);&quot;);
+                add(&quot;vViewNormal = normalize((viewNormalMatrix2 * vec4(worldNormal, 1.0)).xyz);&quot;);
 
                 if (normalMapping) {
 
-                    add(&quot;mat4 mat =  viewMatrix2 * modelMatrix;&quot;);
+                    add(&quot;mat4 mat =  viewMatrix2 * modelMatrix2;&quot;);
 
                     add(&quot;vec3 n = normalize( ( mat * vec4( normal, 0.0 ) ).xyz );&quot;);
                     add(&quot;vec3 t = normalize( ( mat * vec4( tangent, 0.0 ) ).xyz );&quot;);
@@ -691,6 +697,12 @@
         }
 
         function fragmentDraw() {
+
+            var fragment = states.shader.fragment;
+
+            if (fragment) { // Custom fragment shader
+                return fragment;
+            }
 
             var material = states.material;
             var geometry = states.geometry;
@@ -1593,7 +1605,7 @@
 
 
             add(&quot;gl_FragColor = vec4(outgoingLight, opacity);&quot;);
-           //     add(&quot;gl_FragColor = LinearTosRGB(gl_FragColor);&quot;);  // Gamma correction
+            //     add(&quot;gl_FragColor = LinearTosRGB(gl_FragColor);&quot;);  // Gamma correction
 
             add(&quot;}&quot;);
 
