@@ -16665,9 +16665,6 @@ var Canvas2Image = (function () {
             this._createBackground();
             this._createOverlay();
 
-            this._resizeBackground();
-            this._resizeOverlay();
-
             // Get WebGL context
 
             this._initWebGL(cfg);
@@ -16725,9 +16722,6 @@ var Canvas2Image = (function () {
                     if (newWindowSize || newCanvasSize || newCanvasPos) {
 
                         self._spinner._adjustPosition();
-
-                        self._resizeBackground();
-                        self._resizeOverlay();
 
                         if (newCanvasSize) {
 
@@ -16828,7 +16822,6 @@ var Canvas2Image = (function () {
          */
         _createBackground: function () {
 
-            var body = document.getElementsByTagName("body")[0];
             var div = document.createElement('div');
 
             var style = div.style;
@@ -16839,13 +16832,13 @@ var Canvas2Image = (function () {
             style.float = "left";
             style.left = "0";
             style.top = "0";
-            style.width = "0px";
-            style.height = "0px";
+            style.width = "100%";
+            style.height = "100%";
             style.position = "absolute";
             style.opacity = 1;
             style["z-index"] = "-20000";
 
-            body.appendChild(div);
+            this.canvas.parentElement.appendChild(div);
 
             this._backgroundElement = div;
         },
@@ -16857,7 +16850,6 @@ var Canvas2Image = (function () {
          */
         _createOverlay: function () {
 
-            var body = document.getElementsByTagName("body")[0];
             var div = document.createElement('div');
 
             var style = div.style;
@@ -16867,55 +16859,15 @@ var Canvas2Image = (function () {
             style.float = "left";
             style.left = "0";
             style.top = "0";
-            style.width = "0px";
-            style.height = "0px";
+            style.width = "100%";
+            style.height = "100%";
             style.position = "absolute";
             style.opacity = 0;
             style["z-index"] = "100000";
 
-            body.appendChild(div);
+            this.canvas.parentElement.appendChild(div);
 
             this.overlay = div;
-        },
-
-        /** (Re)sizes the overlay DIV to the canvas size
-         * @private
-         */
-        _resizeOverlay: function () {
-
-            if (!this.canvas || !this.overlay) {
-                return;
-            }
-
-            var canvas = this.canvas;
-            var overlay = this.overlay;
-            var overlayStyle = overlay.style;
-
-            var xy = this._getElementXY(canvas);
-            overlayStyle["left"] = xy.x + "px";
-            overlayStyle["top"] = xy.y + "px";
-            overlayStyle["width"] = canvas.clientWidth + "px";
-            overlayStyle["height"] = canvas.clientHeight + "px";
-        },
-
-        /** (Re)sizes the background DIV to the canvas size
-         * @private
-         */
-        _resizeBackground: function () {
-
-            if (!this.canvas || !this._backgroundElement) {
-                return;
-            }
-
-            var canvas = this.canvas;
-            var background = this._backgroundElement;
-            var backgroundStyle = background.style;
-
-            var xy = this._getElementXY(canvas);
-            backgroundStyle["left"] = xy.x + "px";
-            backgroundStyle["top"] = xy.y + "px";
-            backgroundStyle["width"] = canvas.clientWidth + "px";
-            backgroundStyle["height"] = canvas.clientHeight + "px";
         },
 
         _getElementXY: function (e) {
@@ -17280,7 +17232,6 @@ var Canvas2Image = (function () {
 
             // Create spinner elements
 
-            var body = document.getElementsByTagName("body")[0];
             var div = document.createElement('div');
             var style = div.style;
 
@@ -17302,7 +17253,7 @@ var Canvas2Image = (function () {
                 <div class="sk-circle12 sk-circle"></div>\
                 </div>';
 
-            body.appendChild(div);
+            this._canvas.parentElement.appendChild(div);
             this._element = div;
 
             this._adjustPosition();
