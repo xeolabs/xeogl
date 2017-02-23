@@ -61,21 +61,58 @@
     // Allow camera control with keyboard and mouse
     //----------------------------------------------------------------------------
 
-    var cameraControl = new xeogl.CameraControl();
-    cameraControl.mouseZoom.sensitivity = 3;
+    var view = model.scene.camera.view;
+
+    view.eye = [-124.1713638305664, -21.052330017089844, 288.2825927734375];
+    view.look = [-119.22577667236328, -19.815818786621094, 4.945693016052246];
+    view.up = [-0.00007615023059770465, 0.9999904632568359, 0.004362643696367741];
 
     //---------------------------------------------------
     // Create a zSpace effect and stylus control
     //---------------------------------------------------
 
     var zspaceEffect = new xeogl.ZSpaceEffect({
-        canvasOffset: [330, 0]
+        canvasOffset: [0, 0]
     });
 
     zspaceEffect.on("supported", function (supported) {
+
         if (supported) {
+
             new xeogl.ZSpaceStylusControl();
+
+            // Reflection and IBL just look cooler on zSpace for some reason
+
+            xeogl.scene.lights.reflectionMap = new xeogl.CubeTexture({
+                src: [
+                    "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
+                    "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
+                    "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
+                    "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
+                    "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
+                    "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
+                ]
+            });
+
+            xeogl.scene.lights.lightMap = new xeogl.CubeTexture({
+                src: [
+                    "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
+                    "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png",
+                    "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png",
+                    "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png",
+                    "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png",
+                    "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png"
+                ]
+            });
+
+            view.rotateEyeX(30);
+            view.zoom(150);
+
         } else {
+
+            var cameraControl = new xeogl.CameraControl();
+            cameraControl.mouseZoom.sensitivity = 3;
+
             document.getElementById("log").innerText = "(zSpace not detected) ";
         }
     });

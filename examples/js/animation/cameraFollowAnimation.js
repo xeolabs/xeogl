@@ -96,7 +96,7 @@
  @param [cfg.fly] {Boolean}  Indicates whether this CameraFollowAnimation will either fly or jump to each updated position of the
  target {{#crossLink "CameraFollowAnimation/worldBoundary:property"}}{{/crossLink}}.
  @param [cfg.fit] {Boolean} When true, will ensure that this CameraFollowAnimation automatically adjusts the distance between the {{#crossLink "Camera"}}{{/crossLink}}'s {{#crossLink "Lookat"}}{{/crossLink}}'s {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and {{#crossLink "Lookat/look:property"}}{{/crossLink}} to keep the target {{#crossLink "Boundary3D"}}{{/crossLink}} fitted to the view volume.
- @param [cfg.fitFOV] {Number} How much of field-of-view, in degrees, that a target {{#crossLink "CameraFollowAnimation/worldBoundary:property"}}{{/crossLink}} should
+ @param [cfg.fitFOV=45] {Number} How much of field-of-view, in degrees, that a target {{#crossLink "CameraFollowAnimation/worldBoundary:property"}}{{/crossLink}} should
  fill the canvas when fitting to view.
  @param [cfg.trail] {Boolean} When true, will cause this CameraFollowAnimation to point the {{#crossLink "CameraFollowAnimation/camera:property"}}{{/crossLink}} in the direction that it is travelling.
  @extends Component
