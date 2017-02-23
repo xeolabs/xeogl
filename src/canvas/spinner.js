@@ -75,7 +75,6 @@
 
             // Create spinner elements
 
-            var body = document.getElementsByTagName("body")[0];
             var div = document.createElement('div');
             var style = div.style;
 
@@ -97,7 +96,7 @@
                 <div class="sk-circle12 sk-circle"></div>\
                 </div>';
 
-            body.appendChild(div);
+            this._canvas.parentElement.appendChild(div);
             this._element = div;
 
             this._adjustPosition();
