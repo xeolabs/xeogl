@@ -461,9 +461,6 @@
             this._createBackground();
             this._createOverlay();
 
-            this._resizeBackground();
-            this._resizeOverlay();
-
             // Get WebGL context
 
             this._initWebGL(cfg);
@@ -521,9 +518,6 @@
                     if (newWindowSize || newCanvasSize || newCanvasPos) {
 
                         self._spinner._adjustPosition();
-
-                        self._resizeBackground();
-                        self._resizeOverlay();
 
                         if (newCanvasSize) {
 
@@ -624,7 +618,6 @@
          */
         _createBackground: function () {
 
-            var body = document.getElementsByTagName(&quot;body&quot;)[0];
             var div = document.createElement(&#x27;div&#x27;);
 
             var style = div.style;
@@ -635,13 +628,13 @@
             style.float = &quot;left&quot;;
             style.left = &quot;0&quot;;
             style.top = &quot;0&quot;;
-            style.width = &quot;0px&quot;;
-            style.height = &quot;0px&quot;;
+            style.width = &quot;100%&quot;;
+            style.height = &quot;100%&quot;;
             style.position = &quot;absolute&quot;;
             style.opacity = 1;
             style[&quot;z-index&quot;] = &quot;-20000&quot;;
 
-            body.appendChild(div);
+            this.canvas.parentElement.appendChild(div);
 
             this._backgroundElement = div;
         },
@@ -653,7 +646,6 @@
          */
         _createOverlay: function () {
 
-            var body = document.getElementsByTagName(&quot;body&quot;)[0];
             var div = document.createElement(&#x27;div&#x27;);
 
             var style = div.style;
@@ -663,55 +655,15 @@
             style.float = &quot;left&quot;;
             style.left = &quot;0&quot;;
             style.top = &quot;0&quot;;
-            style.width = &quot;0px&quot;;
-            style.height = &quot;0px&quot;;
+            style.width = &quot;100%&quot;;
+            style.height = &quot;100%&quot;;
             style.position = &quot;absolute&quot;;
             style.opacity = 0;
             style[&quot;z-index&quot;] = &quot;100000&quot;;
 
-            body.appendChild(div);
+            this.canvas.parentElement.appendChild(div);
 
             this.overlay = div;
-        },
-
-        /** (Re)sizes the overlay DIV to the canvas size
-         * @private
-         */
-        _resizeOverlay: function () {
-
-            if (!this.canvas || !this.overlay) {
-                return;
-            }
-
-            var canvas = this.canvas;
-            var overlay = this.overlay;
-            var overlayStyle = overlay.style;
-
-            var xy = this._getElementXY(canvas);
-            overlayStyle[&quot;left&quot;] = xy.x + &quot;px&quot;;
-            overlayStyle[&quot;top&quot;] = xy.y + &quot;px&quot;;
-            overlayStyle[&quot;width&quot;] = canvas.clientWidth + &quot;px&quot;;
-            overlayStyle[&quot;height&quot;] = canvas.clientHeight + &quot;px&quot;;
-        },
-
-        /** (Re)sizes the background DIV to the canvas size
-         * @private
-         */
-        _resizeBackground: function () {
-
-            if (!this.canvas || !this._backgroundElement) {
-                return;
-            }
-
-            var canvas = this.canvas;
-            var background = this._backgroundElement;
-            var backgroundStyle = background.style;
-
-            var xy = this._getElementXY(canvas);
-            backgroundStyle[&quot;left&quot;] = xy.x + &quot;px&quot;;
-            backgroundStyle[&quot;top&quot;] = xy.y + &quot;px&quot;;
-            backgroundStyle[&quot;width&quot;] = canvas.clientWidth + &quot;px&quot;;
-            backgroundStyle[&quot;height&quot;] = canvas.clientHeight + &quot;px&quot;;
         },
 
         _getElementXY: function (e) {
