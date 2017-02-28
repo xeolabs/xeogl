@@ -458,7 +458,7 @@
 
                     (this._center = this._center || new xeogl.math.vec3()).set(value || [0, 0, 0]);
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      Fired whenever this BoxGeometry&#x27;s {{#crossLink &quot;BoxGeometry/center:property&quot;}}{{/crossLink}} property changes.
@@ -499,7 +499,7 @@
 
                     this._xSize = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this BoxGeometry&#x27;s {{#crossLink &quot;BoxGeometry/xSize:property&quot;}}{{/crossLink}} property changes.
@@ -541,7 +541,7 @@
 
                     this._ySize = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this BoxGeometry&#x27;s {{#crossLink &quot;BoxGeometry/ySize:property&quot;}}{{/crossLink}} property changes.
@@ -583,7 +583,7 @@
 
                     this._zSize = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this BoxGeometry&#x27;s {{#crossLink &quot;BoxGeometry/zSize:property&quot;}}{{/crossLink}} property changes.

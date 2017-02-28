@@ -329,7 +329,7 @@
                         spinner.processes--;
                     }
 
-                    self._scheduleUpdate();
+                    self._needUpdate();
 
                     /**
                      * Fired whenever this Heightmap's  {{#crossLink "Heightmap/image:property"}}{{/crossLink}} property changes.
@@ -400,7 +400,7 @@
 
                     this._geometryDirty = true;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Heightmap's {{#crossLink "Heightmap/lod:property"}}{{/crossLink}} property changes.
@@ -441,7 +441,7 @@
                     this._imageDirty = true;
                     this._geometryDirty = true;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Heightmap's  {{#crossLink "Heightmap/image:property"}}{{/crossLink}} property changes.
@@ -485,7 +485,7 @@
                     this._imageDirty = true;
                     this._geometryDirty = true;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Heightmap's {{#crossLink "Heightmap/src:property"}}{{/crossLink}} property changes.
@@ -524,7 +524,7 @@
 
                     (this._center = this._center || new xeogl.math.vec3()).set(value);
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      Fired whenever this HeightmapGeometry's {{#crossLink "HeightmapGeometry/center:property"}}{{/crossLink}} property changes.
@@ -567,7 +567,7 @@
 
                     this._geometryDirty = true;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Heightmap's {{#crossLink "Heightmap/xSize:property"}}{{/crossLink}} property changes.
@@ -611,7 +611,7 @@
 
                     this._geometryDirty = true;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Heightmap's {{#crossLink "Heightmap/ySize:property"}}{{/crossLink}} property changes.
@@ -655,7 +655,7 @@
 
                     this._geometryDirty = true;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Heightmap's {{#crossLink "Heightmap/zSize:property"}}{{/crossLink}} property changes.
@@ -699,7 +699,7 @@
 
                     this._geometryDirty = true;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Heightmap's {{#crossLink "Heightmap/xSegments:property"}}{{/crossLink}} property changes.
@@ -743,7 +743,7 @@
 
                     this._geometryDirty = true;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Heightmap's {{#crossLink "Heightmap/zSegments:property"}}{{/crossLink}} property changes.

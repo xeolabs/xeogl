@@ -370,7 +370,7 @@
 
                     this._points = value || [];
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this LatheGeometry&#x27;s
@@ -412,7 +412,7 @@
 
                     this._lod = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this LatheGeometry&#x27;s {{#crossLink &quot;LatheGeometry/lod:property&quot;}}{{/crossLink}} property changes.
@@ -454,7 +454,7 @@
 
                     this._phiStart = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this LatheGeometry&#x27;s {{#crossLink &quot;LatheGeometry/phiStart:property&quot;}}{{/crossLink}} property changes.
@@ -496,7 +496,7 @@
 
                     this._phiLength = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this LatheGeometry&#x27;s {{#crossLink &quot;LatheGeometry/phiLength:property&quot;}}{{/crossLink}} property changes.
@@ -538,7 +538,7 @@
 
                     this._segments = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this LatheGeometry&#x27;s {{#crossLink &quot;LatheGeometry/segments:property&quot;}}{{/crossLink}} property changes.

@@ -1,71 +1,71 @@
-(function () {
+/**
+ A **SceneJSModel** is a {{#crossLink "Model"}}{{/crossLink}} that
+ imports content from the JSON-based <a href="http://scenejs.org">SceneJS</a> scene definition format.
 
-    "use strict";
+ <a href="../../examples/#importing_scenejs_tronTank"><img src="http://i.giphy.com/l3vR50pFTpEbJTztS.gif"></img></a>
 
-    /**
-     A **SceneJSModel** is a {{#crossLink "Model"}}{{/crossLink}} that
-     imports content from the JSON-based <a href="http://scenejs.org">SceneJS</a> scene definition format.
+ ## Overview
 
-     <a href="../../examples/#importing_scenejs_tronTank"><img src="http://i.giphy.com/l3vR50pFTpEbJTztS.gif"></img></a>
+ * A SceneJSModel is a container of {{#crossLink "Component"}}Components{{/crossLink}} that loads itself from a
+ SceneJS scene definition, given as either a JSON file or a JavaScript object (POJO).
+ * It begins loading as soon as you either set its {{#crossLink "SceneJSModel/src:property"}}{{/crossLink}}
+ property to the location of a valid SceneJS JSON file, or set its {{#crossLink "SceneJSModel/data:property"}}{{/crossLink}} property to a
+ valid POJO.
+ * You can set these properties to new values at any time, which causes
+ the SceneJSModel to clear itself and load fresh components.
+ * Can be configured to do a best-effort conversion of SceneJS Phong materials into xeogl's PBR {{#crossLink "PBRMetalness"}}{{/crossLink}} or {{#crossLink "SpecularMaterials"}}{{/crossLink}}.
 
-     ## Overview
+ It inherits these capabilities from its {{#crossLink "Model"}}{{/crossLink}} base class:
 
-     * A SceneJSModel is a container of {{#crossLink "Component"}}Components{{/crossLink}} that loads itself from a
-     SceneJS scene definition, given as either a JSON file or a JavaScript object (POJO).
-     * It begins loading as soon as you either set its {{#crossLink "SceneJSModel/src:property"}}{{/crossLink}}
-     property to the location of a valid SceneJS JSON file, or set its {{#crossLink "SceneJSModel/data:property"}}{{/crossLink}} property to a
-     valid POJO.
-     * You can set these properties to new values at any time, which causes
-     the SceneJSModel to clear itself and load fresh components.
-     * Can be transformed within World-space by attaching it to a {{#crossLink "Transform"}}{{/crossLink}}.
-     * Provides its World-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}}.
-     * Can be configured to do a best-effort conversion of SceneJS Phong materials into xeogl's PBR {{#crossLink "PBRMetalness"}}{{/crossLink}} or {{#crossLink "SpecularMaterials"}}{{/crossLink}}.
+ * Allows you to access and manipulate the components within it.
+ * Can be transformed within World-space by attaching it to a {{#crossLink "Transform"}}{{/crossLink}}.
+ * Provides its World-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}}.
 
-     <img src="../../../assets/images/SceneJSModel.png"></img>
+ <img src="../../../assets/images/SceneJSModel.png"></img>
 
-     ## SceneJS Support
+ ## SceneJS Support
 
-     SceneJSModel was developed to import the [Tron Tank model](../../examples/#importing_scenejs_tronTank). As such,
-     it only imports a limited subset of the SceneJS scene definition API. <b>Use with caution</b> and be prepared to
-     fix and contribute missing functionality!
+ SceneJSModel was developed to import the [Tron Tank model](../../examples/#importing_scenejs_tronTank). As such,
+ it only imports a limited subset of the SceneJS scene definition API. <b>Use with caution</b> and be prepared to
+ fix and contribute missing functionality!
 
-     SceneJS nodes supported so far:
+ SceneJS nodes supported so far:
 
-     * ````"node"````
-     * ````"rotate"````
-     * ````"translate"````
-     * ````"scale"````
-     * ````"material"````
-     * ````"texture"````
-     * ````"fresnel"````
-     * ````"flags"````
-     * ````"geometry"````
-     * ````"layer"````
-     * ````"stage"````
+ * ````"node"````
+ * ````"rotate"````
+ * ````"translate"````
+ * ````"scale"````
+ * ````"material"````
+ * ````"texture"````
+ * ````"fresnel"````
+ * ````"flags"````
+ * ````"geometry"````
+ * ````"layer"````
+ * ````"stage"````
 
-     Unsupported API features include:
+ Unsupported API features include:
 
-     * Lights
-     * Cameras
-     * Shared node cores
-     * SceneJS plugins
+ * Lights
+ * Cameras
+ * Shared node cores
+ * SceneJS plugins
 
-     ## Examples
+ ## Examples
 
-     * [Importing POJO defining geometry with diffuse, specular and normal maps](../../examples/#importing_scenejs_pojo_textures)
-     * [Importing POJO defining transparent geometry](../../examples/#importing_scenejs_pojo_transparency)
-     * [Importing JSON file defining geometry with diffuse, specular and normal maps](../../examples/#importing_scenejs_json_textures)
-     * [Importing JSON file defining the SceneJS Tron Tank](../../examples/#importing_scenejs_tronTank)
+ * [Importing POJO defining geometry with diffuse, specular and normal maps](../../examples/#importing_scenejs_pojo_textures)
+ * [Importing POJO defining transparent geometry](../../examples/#importing_scenejs_pojo_transparency)
+ * [Importing JSON file defining geometry with diffuse, specular and normal maps](../../examples/#importing_scenejs_json_textures)
+ * [Importing JSON file defining the SceneJS Tron Tank](../../examples/#importing_scenejs_tronTank)
 
-     ## Usage
+ ## Usage
 
-     #### Loading a POJO scene definition
+ #### Loading a POJO scene definition
 
-     The simplest way to import SceneJS content is by setting a POJO on the SceneJSModel's {{#crossLink "SceneJSModel/data:property"}}data{{/crossLink}}
-     property:
+ The simplest way to import SceneJS content is by setting a POJO on the SceneJSModel's {{#crossLink "SceneJSModel/data:property"}}data{{/crossLink}}
+ property:
 
-     ````javascript
-     var pojoModel = new xeogl.SceneJSModel({
+ ````javascript
+ var pojoModel = new xeogl.SceneJSModel({
         id: "myModel",
 
         // Our POJO scene definition
@@ -110,55 +110,56 @@
         }
      });
 
-     // Set camera position
-     var view = pojoModel.scene.camera.view;
-     view.eye = [0, 0, -25];
-     view.look = [0, 0, 0];
-     view.up = [0, 1, 0];
-     ````
+ // Set camera position
+ var view = pojoModel.scene.camera.view;
+ view.eye = [0, 0, -25];
+ view.look = [0, 0, 0];
+ view.up = [0, 1, 0];
+ ````
 
-     #### Finding components
+ #### Finding components
 
-     Our SceneJSModel has now created various xeogl components within itself, which we can find by their IDs. In this
-     particular example, our POJO has a SceneJS ````"rotate"```` node with ID ````"myRotate"````. Our SceneJSModel parsed that into a
-     {{#crossLink "Rotate"}}{{/crossLink}} component with ID ````"myModel.myRotate"````.
+ Our SceneJSModel has now created various xeogl components
+ within itself, which we can find by their IDs. In this particular example, our POJO has a SceneJS ````"rotate"```` node
+ with ID ````"myRotate"````. Our SceneJSModel parsed that into a {{#crossLink "Rotate"}}{{/crossLink}} component with
+ ID ````"myModel.myRotate"````.
 
-     To see what components our SceneJSModel created, we can drop this expression into the browser's JavaScript
-     debug console (we're using Chrome here):
+ To see what components our SceneJSModel created, we can drop this expression into the browser's JavaScript
+ debug console (we're using Chrome here):
 
-     ````
-     pojoModel.types;
-     ````
+ ````
+ pojoModel.types;
+ ````
 
-     The result is the value of the SceneJSModel's {{#crossLink "Model/types:property"}}types{{/crossLink}} map, which
-     contains its xeogl components, mapped to their types:
+ The result is the value of the SceneJSModel's {{#crossLink "Model/types:property"}}types{{/crossLink}} map, which
+ contains its xeogl components, mapped to their types:
 
-     <img src="../../../assets/images/screenshots/SceneJSModel_console_tankModel.types.png"></img>
+ <img src="../../../assets/images/screenshots/SceneJSModel_console_tankModel.types.png"></img>
 
-     Here we've expanded the {{#crossLink "Rotate"}}{{/crossLink}} components, and we can see
-     our {{#crossLink "Rotate"}}{{/crossLink}}.
+ Here we've expanded the {{#crossLink "Rotate"}}{{/crossLink}} components, and we can see
+ our {{#crossLink "Rotate"}}{{/crossLink}}. **Note that its ID is prefixed with the ID of the SceneJSModel.**
 
-     Let's get that {{#crossLink "Rotate"}}{{/crossLink}} from our SceneJSModel's
-     {{#crossLink "Model/components:property"}}{{/crossLink}} map and set it spinning:
+ Let's get that {{#crossLink "Rotate"}}{{/crossLink}} from our SceneJSModel's
+ {{#crossLink "Model/components:property"}}{{/crossLink}} map and set it spinning:
 
-     ```` JavaScript
-     var rotate = pojoModel.components["myModel.myRotate"];
+ ```` JavaScript
+ var rotate = pojoModel.components["myModel.myRotate"];
 
-     pojoModel.scene.on("tick", function() {
-            rotate.angle += 0.2;
-        });
-     ````
+ pojoModel.scene.on("tick", function() {
+    rotate.angle += 0.2;
+ });
+ ````
 
-     #### Loading a JSON scene definition
+ #### Loading a JSON scene definition
 
-     As shown in the example below, we can also import a SceneJS scene definition from a JSON file (eg. <a href="../../examples/models/scenejs/tronTank.json">tronTank.json</a>).
-     Note that we need to wait for the SceneJSModel's {{#crossLink "SceneJSModel/loaded:event"}}{{/crossLink}} event before we
-     can access its components. In this example we're also showing how a SceneJSModel can be attached to a modeling {{#crossLink "Transform"}}{{/crossLink}}
-     hierarchy to transform it within World space.
+ As shown in the example below, we can also import a SceneJS scene definition from a JSON file (eg. <a href="../../examples/models/scenejs/tronTank.json">tronTank.json</a>).
+ Note that we need to wait for the SceneJSModel's {{#crossLink "SceneJSModel/loaded:event"}}{{/crossLink}} event before we
+ can access its components. In this example we're also showing how a SceneJSModel can be attached to a modeling {{#crossLink "Transform"}}{{/crossLink}}
+ hierarchy to transform it within World space (see {{#crossLink "Model"}}{{/crossLink}}).
 
-     ````javascript
-     // Import SceneJS JSON model
-     var tankModel = new xeogl.SceneJSModel({
+ ````javascript
+ // Import SceneJS JSON model
+ var tankModel = new xeogl.SceneJSModel({
         id: "tankModel",
 
         // Path to our JSON scene definition file
@@ -175,50 +176,55 @@
         })
      });
 
-     // Once our SceneJSModel has loaded, we can access its components
-     tankModel.on("loaded", function() {
+ // Once our SceneJSModel has loaded, we can access its components
+ tankModel.on("loaded", function() {
 
-            tankModel.components["tankModel.gunDir"].angle = gunDir;
+        tankModel.components["tankModel.gunDir"].angle = gunDir;
 
-            // Set camera position
-            var view = tankModel.scene.camera.view;
-            view.eye = [0, 0, -70];
-            view.look = [0, 0, 0];
-            view.up = [0, 1, 0];
-        });
-     ````
+        // Set camera position
+        var view = tankModel.scene.camera.view;
+        view.eye = [0, 0, -70];
+        view.look = [0, 0, 0];
+        view.up = [0, 1, 0];
+    });
+ ````
 
-     #### Converting materials to PBR
+ #### Converting materials to PBR
 
-     ````javascript
-     var pbrSpecularTankModel = new xeogl.SceneJSModel({
-        src: "models/scenejs/tronTank.json",
-        materialWorkflow: "SpecularMaterial"
-     });
-     ````
 
-     ````javascript
-     var pbrMetalnessTankModel = new xeogl.SceneJSModel({
-        src: "models/scenejs/tronTank.json",
-        materialWorkflow: "MetallicMaterial"
-     });
-     ````
+ ````javascript
+ var pbrSpecularTankModel = new xeogl.SceneJSModel({
+    src: "models/scenejs/tronTank.json",
+    materialWorkflow: "SpecularMaterial"
+ });
+ ````
 
-     @class SceneJSModel
-     @module xeogl
-     @submodule models
-     @constructor
-     @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this SceneJSModel in the default
-     {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
-     @param [cfg] {*} Configs
-     @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
-     generated automatically when omitted.
-     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this SceneJSModel.
-     @param [cfg.materialWorkflow] {String} Selects material workflow - "classic" | "pbrMatalness" | "pbrSpecular"
-     @param [cfg.src] {String} Path to a SceneJS JSON scene description file.
-     @param [cfg.data] {String} Path to a SceneJS JSON scene description file.
-     @extends Geometry
-     */
+ ````javascript
+ var pbrMetalnessTankModel = new xeogl.SceneJSModel({
+    src: "models/scenejs/tronTank.json",
+    materialWorkflow: "MetallicMaterial"
+ });
+ ````
+
+ @class SceneJSModel
+ @module xeogl
+ @submodule models
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this SceneJSModel in the default
+ {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
+ generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this SceneJSModel.
+ @param [cfg.materialWorkflow] {String} Selects material workflow - "classic" | "pbrMatalness" | "pbrSpecular"
+ @param [cfg.src] {String} Path to a SceneJS JSON scene description file.
+ @param [cfg.data] {String} Path to a SceneJS JSON scene description file.
+ @extends Geometry
+ */
+(function () {
+
+    "use strict";
+
     xeogl.SceneJSModel = xeogl.Model.extend({
 
         type: "xeogl.SceneJSModel",
@@ -479,7 +485,7 @@
                             material = this.add({
                                 type: "xeogl.PhongMaterial",
                                 id: this._createID(node),
-                                ambient: [.2,.2,.2],
+                                ambient: [.2, .2, .2],
                                 diffuse: diffuse,
                                 specular: specular,
                                 // shininess: node.shine,

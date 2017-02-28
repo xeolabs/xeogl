@@ -139,8 +139,7 @@ function materialGallery(menuId, cfg) {
             geometry: new xeogl.VectorTextGeometry({
                 text: id + "\n" + materialCfg.type.substring(6),
                 origin: [0, y + -1.5, 0],
-                xSize: .1,
-                ySize: .1
+                size: .1
             }),
             material: textMaterial,
             transform: transform,

@@ -269,7 +269,7 @@
             this.near = cfg.near;
             this.far = cfg.far;
 
-            this._onCanvasBoundary = this.scene.canvas.on(&quot;boundary&quot;, this._scheduleUpdate, this);
+            this._onCanvasBoundary = this.scene.canvas.on(&quot;boundary&quot;, this._needUpdate, this);
         },
 
         _update: function () {
@@ -321,7 +321,7 @@
 
                     this._scale = (value !== undefined &amp;&amp; value !== null) ? value : 1.0;
 
-                    this._scheduleUpdate(0); // Ensure matrix built on next &quot;tick&quot;
+                    this._needUpdate(0); // Ensure matrix built on next &quot;tick&quot;
 
                     /**
                      * Fired whenever this Ortho&#x27;s {{#crossLink &quot;Ortho/scale:property&quot;}}{{/crossLink}} property changes.
@@ -352,7 +352,7 @@
 
                     this._near = (value !== undefined &amp;&amp; value !== null) ? value : 0.1;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Ortho&#x27;s  {{#crossLink &quot;Ortho/near:property&quot;}}{{/crossLink}} property changes.
@@ -383,7 +383,7 @@
 
                     this._far = (value !== undefined &amp;&amp; value !== null) ? value : 10000.0;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Ortho&#x27;s {{#crossLink &quot;Ortho/far:property&quot;}}{{/crossLink}} property changes.

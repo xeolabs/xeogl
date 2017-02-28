@@ -221,14 +221,14 @@
         _setLocalPosDirty: function () {
             if (!this._localPosDirty) {
                 this._localPosDirty = true;
-                this._scheduleUpdate();
+                this._needUpdate();
             }
         },
 
         _setWorldPosDirty: function () {
             if (!this._worldPosDirty) {
                 this._worldPosDirty = true;
-                this._scheduleUpdate();
+                this._needUpdate();
             }
         },
 
@@ -242,7 +242,7 @@
             entity.visibility.off(this._onEntityVisible);
         },
 
-        // Callback for _scheduleUpdate
+        // Callback for _needUpdate
         _update: (function () {
 
             var math = xeogl.math;

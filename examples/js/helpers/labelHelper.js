@@ -32,8 +32,7 @@
                     type: "xeogl.VectorTextGeometry",
                     text: "",
                     origin: [0, 0],
-                    xSize: .1,
-                    ySize: .1
+                    size: .1
                 },
                 transform: {
                     type: "xeogl.Translate"
@@ -84,7 +83,7 @@
             pos: {
                 set: function (value) {
                     (this._pos = this._pos || new xeogl.math.vec3()).set(value || [0, 0, 0]);
-                    this._scheduleUpdate();
+                    this._needUpdate();
                 },
                 get: function () {
                     return this._pos;
@@ -94,7 +93,7 @@
             offset: {
                 set: function (value) {
                     (this._offset = this._offset || new xeogl.math.vec3()).set(value || [0, 0, 0]);
-                    this._scheduleUpdate();
+                    this._needUpdate();
                 },
                 get: function () {
                     return this._offset;

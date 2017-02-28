@@ -319,7 +319,7 @@
 
                     (this._xyz = this._xyz || new xeogl.math.vec3()).set(value || [0, 0, 0]);
 
-                    this._scheduleUpdate();
+                    this._needUpdate(0);
 
                     /**
                      Fired whenever this Translate&#x27;s {{#crossLink &quot;Translate/xyz:property&quot;}}{{/crossLink}} property changes.

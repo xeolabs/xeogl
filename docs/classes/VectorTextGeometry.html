@@ -212,16 +212,15 @@
 <ul>
 <li>A VectorTextGeometry is a mesh of line segments in the X-Y plane  that is generated from the value of
 its <a href="../classes/VectorTextGeometry.html#property_text" class="crosslink">text</a> property.</li>
-<li>Set its <a href="../classes/VectorTextGeometry.html#property_origin" class="crosslink">origin</a>, <a href="../classes/VectorTextGeometry.html#property_xSize" class="crosslink">xSize</a>,
-<a href="../classes/VectorTextGeometry.html#property_ySize" class="crosslink">ySize</a> or <a href="../classes/VectorTextGeometry.html#property_text" class="crosslink">text</a> properties to new values at any time to dynamically regenerate it.</li>
+<li>Text is monospaced and each character occupies a square cell.</li>
+<li>Set its <a href="../classes/VectorTextGeometry.html#property_origin" class="crosslink">origin</a>, <a href="../classes/VectorTextGeometry.html#property_size" class="crosslink">size</a> or <a href="../classes/VectorTextGeometry.html#property_text" class="crosslink">text</a> properties to new values at any time to dynamically regenerate it.</li>
 </ul>
 <h2 id="example">Example</h2>
 <pre class="code prettyprint"><code class="lang-javascript">new xeogl.Entity({
     geometry: new xeogl.VectorTextGeometry({
         text: "Attack ships on fire off the Shoulder of Orion",
         origin: [0,0,0],
-        xSize: 2,
-        ySize: 2
+        size: 2 // Size of each square character cell
     }),
     material: new xeogl.PhongMaterial({
         emissive: [0.5, 1.0, 1.0],
@@ -340,23 +339,12 @@ its <a href="../classes/VectorTextGeometry.html#property_text" class="crosslink"
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[xSize]</code>
+                                            <code class="param-name optional">[size]</code>
                                             <span class="type">Float32Array</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>The VectorTextGeometry&#39;s width on the X-axis.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[ySize]</code>
-                                            <span class="type">Float32Array</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>The VectorTextGeometry&#39;s height on the Y-axis.</p>
+                                            <p>Size of each character.</p>
         
                                         </div>
         
@@ -502,6 +490,10 @@ its <a href="../classes/VectorTextGeometry.html#property_text" class="crosslink"
                                 <a href="#property_scene">scene</a>
 
                             </li>
+                            <li class="index-item property">
+                                <a href="#property_size">size</a>
+
+                            </li>
                             <li class="index-item property inherited inherited">
                                 <a href="#property_string">string</a>
 
@@ -524,14 +516,6 @@ its <a href="../classes/VectorTextGeometry.html#property_text" class="crosslink"
                             </li>
                             <li class="index-item property inherited">
                                 <a href="#property_uv">uv</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_xSize">xSize</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_ySize">ySize</a>
 
                             </li>
                     </ul>
@@ -575,6 +559,10 @@ its <a href="../classes/VectorTextGeometry.html#property_text" class="crosslink"
 
                             </li>
                             <li class="index-item event">
+                                <a href="#event_size">size</a>
+
+                            </li>
+                            <li class="index-item event">
                                 <a href="#event_text">text</a>
 
                             </li>
@@ -584,14 +572,6 @@ its <a href="../classes/VectorTextGeometry.html#property_text" class="crosslink"
                             </li>
                             <li class="index-item event inherited">
                                 <a href="#event_uvs">uvs</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_xSize">xSize</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_ySize">ySize</a>
 
                             </li>
                     </ul>
@@ -1608,7 +1588,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_geometry_vectorTextGeometry.js.html#l215"><code>examples&#x2F;js&#x2F;geometry&#x2F;vectorTextGeometry.js:215</code></a>
+                            <a href="../files/examples_js_geometry_vectorTextGeometry.js.html#l212"><code>examples&#x2F;js&#x2F;geometry&#x2F;vectorTextGeometry.js:212</code></a>
                             </p>
                     
                     
@@ -1707,6 +1687,33 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_size" class="property item">
+                        <h3 class="name"><code>size</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_geometry_vectorTextGeometry.js.html#l242"><code>examples&#x2F;js&#x2F;geometry&#x2F;vectorTextGeometry.js:242</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Size of each character cell.</p>
+                    <p>Fires a VectorText/size:event event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> 1</p>
+                    
+                    
+                    </div>
                     <div id="property_string" class="property item inherited">
                         <h3 class="name"><code>string</code></h3>
                         <span class="type">String</span>
@@ -1779,7 +1786,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_geometry_vectorTextGeometry.js.html#l178"><code>examples&#x2F;js&#x2F;geometry&#x2F;vectorTextGeometry.js:178</code></a>
+                            <a href="../files/examples_js_geometry_vectorTextGeometry.js.html#l175"><code>examples&#x2F;js&#x2F;geometry&#x2F;vectorTextGeometry.js:175</code></a>
                             </p>
                     
                     
@@ -1876,60 +1883,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         </div>
                     
                             <p><strong>Default:</strong> null</p>
-                    
-                    
-                    </div>
-                    <div id="property_xSize" class="property item">
-                        <h3 class="name"><code>xSize</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_geometry_vectorTextGeometry.js.html#l245"><code>examples&#x2F;js&#x2F;geometry&#x2F;vectorTextGeometry.js:245</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The VectorText&#39;s width on the X-axis.</p>
-                    <p>Fires a VectorText/xSize:event event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> 1</p>
-                    
-                    
-                    </div>
-                    <div id="property_ySize" class="property item">
-                        <h3 class="name"><code>ySize</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_geometry_vectorTextGeometry.js.html#l287"><code>examples&#x2F;js&#x2F;geometry&#x2F;vectorTextGeometry.js:287</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The VectorText&#39;s height on the Y-axis.</p>
-                    <p>Fires a VectorText/ySize:event event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> 1.0</p>
                     
                     
                     </div>
@@ -2146,7 +2099,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_geometry_vectorTextGeometry.js.html#l232"><code>examples&#x2F;js&#x2F;geometry&#x2F;vectorTextGeometry.js:232</code></a>
+                            <a href="../files/examples_js_geometry_vectorTextGeometry.js.html#l229"><code>examples&#x2F;js&#x2F;geometry&#x2F;vectorTextGeometry.js:229</code></a>
                             </p>
                     
                     
@@ -2264,6 +2217,48 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="event_size" class="events item">
+                        <h3 class="name"><code>size</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_geometry_vectorTextGeometry.js.html#l270"><code>examples&#x2F;js&#x2F;geometry&#x2F;vectorTextGeometry.js:270</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this VectorText&#39;s VectorText/size:property property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
                     <div id="event_text" class="events item">
                         <h3 class="name"><code>text</code></h3>
                         <span class="type">Boolean</span>
@@ -2275,7 +2270,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_geometry_vectorTextGeometry.js.html#l201"><code>examples&#x2F;js&#x2F;geometry&#x2F;vectorTextGeometry.js:201</code></a>
+                            <a href="../files/examples_js_geometry_vectorTextGeometry.js.html#l198"><code>examples&#x2F;js&#x2F;geometry&#x2F;vectorTextGeometry.js:198</code></a>
                             </p>
                     
                     
@@ -2367,90 +2362,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Fired whenever this Geometry&#39;s Geometry/uvs:property property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_xSize" class="events item">
-                        <h3 class="name"><code>xSize</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_geometry_vectorTextGeometry.js.html#l273"><code>examples&#x2F;js&#x2F;geometry&#x2F;vectorTextGeometry.js:273</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this VectorText&#39;s VectorText/xSize:property property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_ySize" class="events item">
-                        <h3 class="name"><code>ySize</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_geometry_vectorTextGeometry.js.html#l315"><code>examples&#x2F;js&#x2F;geometry&#x2F;vectorTextGeometry.js:315</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this VectorText&#39;s VectorText/ySize:property property changes.</p>
                     
                         </div>
                     

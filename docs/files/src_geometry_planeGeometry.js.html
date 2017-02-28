@@ -415,7 +415,7 @@
 
                     this._lod = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this PlaneGeometry&#x27;s {{#crossLink &quot;PlaneGeometry/lod:property&quot;}}{{/crossLink}} property changes.
@@ -446,7 +446,7 @@
 
                     (this._center = this._center || new xeogl.math.vec3()).set(value || [0, 0, 0]);
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      Fired whenever this PlaneGeometry&#x27;s {{#crossLink &quot;PlaneGeometry/center:property&quot;}}{{/crossLink}} property changes.
@@ -487,7 +487,7 @@
 
                     this._xSize = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this PlaneGeometry&#x27;s {{#crossLink &quot;PlaneGeometry/xSize:property&quot;}}{{/crossLink}} property changes.
@@ -529,7 +529,7 @@
 
                     this._zSize = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this PlaneGeometry&#x27;s {{#crossLink &quot;PlaneGeometry/zSize:property&quot;}}{{/crossLink}} property changes.
@@ -571,7 +571,7 @@
 
                     this._xSegments = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this PlaneGeometry&#x27;s {{#crossLink &quot;PlaneGeometry/xSegments:property&quot;}}{{/crossLink}} property changes.
@@ -613,7 +613,7 @@
 
                     this._zSegments = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this PlaneGeometry&#x27;s {{#crossLink &quot;PlaneGeometry/zSegments:property&quot;}}{{/crossLink}} property changes.

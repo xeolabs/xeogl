@@ -70,7 +70,7 @@
             this._far = 10000.0;
 
             // Recompute aspect from change in canvas size
-            this._canvasResized = this.scene.canvas.on("boundary", this._scheduleUpdate, this);
+            this._canvasResized = this.scene.canvas.on("boundary", this._needUpdate, this);
 
             this.fovy = cfg.fovy;
             this.near = cfg.near;
@@ -104,7 +104,7 @@
 
                     this._renderer.imageDirty = true;
 
-                    this._scheduleUpdate(0); // Ensure matrix built on next "tick"
+                    this._needUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
                      * Fired whenever this Perspective's {{#crossLink "Perspective/fovy:property"}}{{/crossLink}} property changes.
@@ -137,7 +137,7 @@
 
                     this._renderer.imageDirty = true;
 
-                    this._scheduleUpdate(0); // Ensure matrix built on next "tick"
+                    this._needUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
                      * Fired whenever this Perspective's   {{#crossLink "Perspective/near:property"}}{{/crossLink}} property changes.
@@ -169,7 +169,7 @@
 
                     this._renderer.imageDirty = true;
 
-                    this._scheduleUpdate(0); // Ensure matrix built on next "tick"
+                    this._needUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
                      * Fired whenever this Perspective's  {{#crossLink "Perspective/far:property"}}{{/crossLink}} property changes.

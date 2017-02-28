@@ -124,7 +124,7 @@
 
                     (this._xyz = this._xyz || new xeogl.math.vec3()).set(value || [1, 1, 1]);
 
-                    this._scheduleUpdate();
+                    this._needUpdate(0);
 
                     /**
                      Fired whenever this Scale's {{#crossLink "Scale/xyz:property"}}{{/crossLink}} property changes.

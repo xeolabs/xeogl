@@ -138,7 +138,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
                     sceneDefault: false,
                     on: {
                         curves: {
-                            callback: this._scheduleUpdate,
+                            callback: this._needUpdate,
                             scope: this
                         }
                     }
@@ -167,7 +167,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
                 this._divisions = value;
 
-                this._scheduleUpdate();
+                this._needUpdate();
 
                 this.fire("divisions", this._divisions);
             },

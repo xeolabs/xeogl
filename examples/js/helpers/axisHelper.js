@@ -245,7 +245,7 @@
         });
 
         new xeogl.Entity(scene, {  // Label
-            geometry: new xeogl.VectorTextGeometry(scene, {text: "X", xSize: 1.5, ySize: 1.5}),
+            geometry: new xeogl.VectorTextGeometry(scene, {text: "X", size: 1.5}),
             material: xAxisMaterial,
             visibility: visibility,
             modes: modes,
@@ -278,7 +278,7 @@
         });
 
         new xeogl.Entity(scene, {  // Label
-            geometry: new xeogl.VectorTextGeometry(scene, {text: "Y", xSize: 1.5, ySize: 1.5}),
+            geometry: new xeogl.VectorTextGeometry(scene, {text: "Y",size: 1.5}),
             material: yAxisMaterial,
             visibility: visibility,
             modes: modes,
@@ -320,7 +320,7 @@
 
 
         new xeogl.Entity(scene, {  // Label
-            geometry: new xeogl.VectorTextGeometry(scene, {text: "Z", xSize: 1.5, ySize: 1.5}),
+            geometry: new xeogl.VectorTextGeometry(scene, {text: "Z",size: 1.5}),
             material: zAxisMaterial,
             visibility: visibility,
             modes: modes,

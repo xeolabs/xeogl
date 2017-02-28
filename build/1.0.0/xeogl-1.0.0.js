@@ -12510,7 +12510,7 @@ var Canvas2Image = (function () {
          * @protected
          * @param {Number} [priority=1]
          */
-        _scheduleUpdate: function (priority) {
+        _needUpdate: function (priority) {
             if (!this._updateScheduled) {
                 this._updateScheduled = true;
                 if (priority === 0) {

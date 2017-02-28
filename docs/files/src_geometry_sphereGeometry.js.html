@@ -400,7 +400,7 @@
 
                     this._lod = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this SphereGeometry&#x27;s {{#crossLink &quot;SphereGeometry/lod:property&quot;}}{{/crossLink}} property changes.
@@ -431,7 +431,7 @@
 
                     (this._center = this._center || new xeogl.math.vec3()).set(value || [0, 0, 0]);
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      Fired whenever this SphereGeometry&#x27;s {{#crossLink &quot;SphereGeometry/center:property&quot;}}{{/crossLink}} property changes.
@@ -472,7 +472,7 @@
 
                     this._radius = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this SphereGeometry&#x27;s {{#crossLink &quot;SphereGeometry/radius:property&quot;}}{{/crossLink}} property changes.
@@ -515,7 +515,7 @@
 
                     this._heightSegments = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this SphereGeometry&#x27;s {{#crossLink &quot;SphereGeometry/heightSegments:property&quot;}}{{/crossLink}} property changes.
@@ -557,7 +557,7 @@
 
                     this._widthSegments = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this SphereGeometry&#x27;s {{#crossLink &quot;SphereGeometry/widthSegments:property&quot;}}{{/crossLink}} property changes.
