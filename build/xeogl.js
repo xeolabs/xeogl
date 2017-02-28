@@ -32642,7 +32642,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  ## Overview
 
- * A GLTFModel is a container of {{#crossLink "Component"}}Components{{/crossLink}} that loads itself from glTF.
+ * A GLTFModel is a container of {{#crossLink "Component"}}Components{{/crossLink}} that loads itself from a glTF file.
  * It begins loading as soon as you set its {{#crossLink "GLTFModel/src:property"}}{{/crossLink}}
  property to the location of a valid glTF file.
  * You can set {{#crossLink "GLTFModel/src:property"}}{{/crossLink}} to a new file path at any time, which causes
@@ -32650,6 +32650,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  It inherits these capabilities from its {{#crossLink "Model"}}{{/crossLink}} base class:
 
+ * Allows you to access and manipulate the components within it.
  * Can be transformed within World-space by attaching it to a {{#crossLink "Transform"}}{{/crossLink}}.
  * Provides its World-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}}.
 
@@ -32739,8 +32740,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  * [Gearbox with entity explorer](../../examples/#importing_gltf_explorer)
  * [Ensuring individual materials on GLTFModel entities](../../examples/#models_filter_uniqueMaterials)
  * [Baking transform hierarchies in a GLTFModel](../../examples/#models_filter_bakeTransforms)
- * [Attaching transforms to a GLTFModel, via constructor](../../examples/#transforms_model_configureTransform)
- * [Attaching transforms to a GLTFModel, via property](../../examples/#transforms_model_attachTransform)
 
  @class GLTFModel
  @module xeogl
@@ -37413,8 +37412,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  * [Entity with TorusGeometry and MetallicMaterial](../../examples/#entities_examples_metallicTorus)
 
  ## Boundaries
-
-
 
  #### Local-space
 

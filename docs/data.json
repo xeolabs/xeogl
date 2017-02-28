@@ -2893,7 +2893,7 @@
             "namespace": "",
             "file": "src/entities/entity.js",
             "line": 1,
-            "description": "An **Entity** is an object within a xeogl {{#crossLink \"Scene\"}}Scene{{/crossLink}}.\n\n## Overview\n\nSee the {{#crossLink \"Scene\"}}Scene{{/crossLink}} class documentation for more information on Entities.\n\n<img src=\"../../../assets/images/Entity.png\"></img>\n\n## Examples\n\n* [Entity with TorusGeometry and MetallicMaterial](../../examples/#entities_examples_metallicTorus)\n\n## Boundaries\n\n\n\n#### Local-space\n\nA Entity provides its Local-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}} that encloses\nthe {{#crossLink \"Geometry\"}}{{/crossLink}} {{#crossLink \"Geometry/positions:property\"}}{{/crossLink}}.\n\n```` javascript\nvar scene = new xeogl.Scene();\n\nvar geometry = new xeogl.Geometry(myScene, {\n     //...\n});\n\nvar entity = new xeogl.Entity(myScene, {\n      geometry: myGeometry,\n      transform: translate\n});\n\n// Get the Local-space Boundary3D\nvar localBoundary = entity.localBoundary;\n\n// Get Local-space entity-aligned bounding box (OBB),\n// which is an array of eight vertices that describes\n// the box that is aligned with the Entity's Geometry\nvar obb = localBoundary.obb;\n\n// Get the Local-space axis-aligned bounding box (ABB),\n// which contains the extents of the boundary on each axis\nvar aabb = localBoundary.aabb;\n\n// get the Local-space center of the Entity:\nvar center = localBoundary.center;\n````\n\n#### World-space\n\nA Entity provides its World-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}} that encloses\nthe {{#crossLink \"Geometry\"}}{{/crossLink}} {{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} after\ntransformation by the Entity's {{#crossLink \"Entity/transform:property\"}}Modelling transform{{/crossLink}}.\n\n```` javascript\nvar entity = new xeogl.Entity({\n   geometry: new xeogl.TorusGeometry(),\n   transform: new xeogl.Translate({\n       xyz: [-5, 0, 0]\n   })\n});\n\n// Get the World-space boundary\nvar worldBoundary = entity.worldBoundary;\n\n// Get the boundary as an entity-aligned bounding box (OBB), which is a flattened array\nof eight 3D vertices that describes the box that is aligned with the Entity\nvar obb = worldBoundary.obb;\n\n// Get the boundary as an axis-aligned bounding box (ABB),\n// which contains the extents of the boundary on each axis\nvar aabb = worldBoundary.aabb;\n\n// Get the World-space bounding sphere:\nvar sphere = worldBoundary.center;\n````\n\n#### View-space\n\nA Entity also provides its View-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}} that encloses\nthe {{#crossLink \"Geometry/positions:property\"}}Geometry positions{{/crossLink}} after\ntheir transformation by the {{#crossLink \"Camera/view:property\"}}View{{/crossLink}} and\n{{#crossLink \"Entity/transform:property\"}}Modelling{{/crossLink}} transforms.\n\n```` javascript\n// Get the View-space Boundary3D\nvar viewBoundary = entity.viewBoundary;\n\n// Get View-space entity-aligned bounding box (OBB),\n// which is an array of eight vertices that describes\n// the box that is aligned with the Entity\nvar obb = viewBoundary.obb;\n\n// Get the View-space axis-aligned bounding box (ABB),\n// which contains the extents of the boundary on each axis\nvar aabb = viewBoundary.aabb;\n\n// get the View-space center of the Entity:\nvar center = viewBoundary.center;\n````\n\n#### View-space\n\nA Entity also provides its Canvas-space boundary as a {{#crossLink \"Boundary2D\"}}{{/crossLink}} that encloses\nthe {{#crossLink \"Geometry/positions:property\"}}Geometry positions{{/crossLink}} after\ntheir transformation by the {{#crossLink \"Entity/transform:property\"}}Modelling{{/crossLink}},\n{{#crossLink \"Camera/view:property\"}}View{{/crossLink}} and {{#crossLink \"Camera/project:property\"}}Projection{{/crossLink}} transforms.\n\n```` javascript\n// Get the Canvas-space Boundary2D\nvar canvasBoundary = entity.canvasBoundary;\n\n// Get the Canvas-space axis-aligned bounding box (ABB),\n// which contains the extents of the boundary on each axis\nvar aabb = canvasBoundary.aabb;\n\n// get the Canvas-space center of the Entity:\nvar center = canvasBoundary.center;\n````",
+            "description": "An **Entity** is an object within a xeogl {{#crossLink \"Scene\"}}Scene{{/crossLink}}.\n\n## Overview\n\nSee the {{#crossLink \"Scene\"}}Scene{{/crossLink}} class documentation for more information on Entities.\n\n<img src=\"../../../assets/images/Entity.png\"></img>\n\n## Examples\n\n* [Entity with TorusGeometry and MetallicMaterial](../../examples/#entities_examples_metallicTorus)\n\n## Boundaries\n\n#### Local-space\n\nA Entity provides its Local-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}} that encloses\nthe {{#crossLink \"Geometry\"}}{{/crossLink}} {{#crossLink \"Geometry/positions:property\"}}{{/crossLink}}.\n\n```` javascript\nvar scene = new xeogl.Scene();\n\nvar geometry = new xeogl.Geometry(myScene, {\n     //...\n});\n\nvar entity = new xeogl.Entity(myScene, {\n      geometry: myGeometry,\n      transform: translate\n});\n\n// Get the Local-space Boundary3D\nvar localBoundary = entity.localBoundary;\n\n// Get Local-space entity-aligned bounding box (OBB),\n// which is an array of eight vertices that describes\n// the box that is aligned with the Entity's Geometry\nvar obb = localBoundary.obb;\n\n// Get the Local-space axis-aligned bounding box (ABB),\n// which contains the extents of the boundary on each axis\nvar aabb = localBoundary.aabb;\n\n// get the Local-space center of the Entity:\nvar center = localBoundary.center;\n````\n\n#### World-space\n\nA Entity provides its World-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}} that encloses\nthe {{#crossLink \"Geometry\"}}{{/crossLink}} {{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} after\ntransformation by the Entity's {{#crossLink \"Entity/transform:property\"}}Modelling transform{{/crossLink}}.\n\n```` javascript\nvar entity = new xeogl.Entity({\n   geometry: new xeogl.TorusGeometry(),\n   transform: new xeogl.Translate({\n       xyz: [-5, 0, 0]\n   })\n});\n\n// Get the World-space boundary\nvar worldBoundary = entity.worldBoundary;\n\n// Get the boundary as an entity-aligned bounding box (OBB), which is a flattened array\nof eight 3D vertices that describes the box that is aligned with the Entity\nvar obb = worldBoundary.obb;\n\n// Get the boundary as an axis-aligned bounding box (ABB),\n// which contains the extents of the boundary on each axis\nvar aabb = worldBoundary.aabb;\n\n// Get the World-space bounding sphere:\nvar sphere = worldBoundary.center;\n````\n\n#### View-space\n\nA Entity also provides its View-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}} that encloses\nthe {{#crossLink \"Geometry/positions:property\"}}Geometry positions{{/crossLink}} after\ntheir transformation by the {{#crossLink \"Camera/view:property\"}}View{{/crossLink}} and\n{{#crossLink \"Entity/transform:property\"}}Modelling{{/crossLink}} transforms.\n\n```` javascript\n// Get the View-space Boundary3D\nvar viewBoundary = entity.viewBoundary;\n\n// Get View-space entity-aligned bounding box (OBB),\n// which is an array of eight vertices that describes\n// the box that is aligned with the Entity\nvar obb = viewBoundary.obb;\n\n// Get the View-space axis-aligned bounding box (ABB),\n// which contains the extents of the boundary on each axis\nvar aabb = viewBoundary.aabb;\n\n// get the View-space center of the Entity:\nvar center = viewBoundary.center;\n````\n\n#### View-space\n\nA Entity also provides its Canvas-space boundary as a {{#crossLink \"Boundary2D\"}}{{/crossLink}} that encloses\nthe {{#crossLink \"Geometry/positions:property\"}}Geometry positions{{/crossLink}} after\ntheir transformation by the {{#crossLink \"Entity/transform:property\"}}Modelling{{/crossLink}},\n{{#crossLink \"Camera/view:property\"}}View{{/crossLink}} and {{#crossLink \"Camera/project:property\"}}Projection{{/crossLink}} transforms.\n\n```` javascript\n// Get the Canvas-space Boundary2D\nvar canvasBoundary = entity.canvasBoundary;\n\n// Get the Canvas-space axis-aligned bounding box (ABB),\n// which contains the extents of the boundary on each axis\nvar aabb = canvasBoundary.aabb;\n\n// get the Canvas-space center of the Entity:\nvar center = canvasBoundary.center;\n````",
             "submodule": "entities",
             "is_constructor": 1,
             "params": [
@@ -5037,7 +5037,7 @@
             "namespace": "",
             "file": "src/models/gltfModel.js",
             "line": 1,
-            "description": "A **GLTFModel** is a {{#crossLink \"Model\"}}{{/crossLink}} that loads itself from a <a href=\"https://github.com/KhronosGroup/glTF\" target = \"_other\">glTF</a> file.\n\n<a href=\"../../examples/#importing_gltf_gearbox\"><img src=\"../../../assets/images/gltf/glTF_gearbox_squashed.png\"></img></a>\n\n## Overview\n\n* A GLTFModel is a container of {{#crossLink \"Component\"}}Components{{/crossLink}} that loads itself from glTF.\n* It begins loading as soon as you set its {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}\nproperty to the location of a valid glTF file.\n* You can set {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}} to a new file path at any time, which causes\nthe GLTFModel to clear itself and load components from the new file.\n\nIt inherits these capabilities from its {{#crossLink \"Model\"}}{{/crossLink}} base class:\n\n* Can be transformed within World-space by attaching it to a {{#crossLink \"Transform\"}}{{/crossLink}}.\n* Provides its World-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}}.\n\n<img src=\"../../../assets/images/GLTFModel.png\"></img>\n\n## Usage\n\n### Loading glTF\n\nLoad a glTF file by creating a GLTFModel:\n\n````javascript\nvar gearbox = new xeogl.GLTFModel({\n  id: \"gearbox\",\n  src: \"models/gltf/gearbox/gearbox_assy.gltf\"\n});\n````\n\nA GLTFModel prefixes its own ID to those of its components. Its ID is optional and defaults to\nthe value of {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}. In this example we're providing our own short ID,\nhowever, in order to keep the component IDs short and easy to use.\n\nThe GLTFModel begins loading the glTF file immediately. Bind a callback to be notified when the file has loaded (which\nfires immediately if already loaded):\n\n````javascript\ngearbox.on(\"loaded\", function() {\n       // GLTFModel has loaded!\n   });\n````\n\nTo switch to a different glTF file, simply update {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}:\n\n````javascript\ngearbox.src = \"models/gltf/buggy/buggy.gltf\"\n````\n\n### Accessing components\n\nOnce the GLTFModel has loaded, its {{#crossLink \"Scene\"}}{{/crossLink}} will contain various components that represent the elements of the glTF file. \nWe'll now access some of those components by ID, to query and update them programmatically.\n\n**Transforms**\n\nLet's reposition one of the {{#crossLink \"Entity\"}}Entities{{/crossLink}} in our GLTFModel. We'll get the {{#crossLink \"Transform\"}}{{/crossLink}} that\npositions our target {{#crossLink \"Entity\"}}{{/crossLink}}, in this case a gear. Then we'll update its matrix to translate it ten units along the negative Z-axis.\n\n````javascript\nvar transform = gearbox.scene.components[\"gearbox#n274017_gear_53t-node.transform\"];\n\ntransform.matrix = xeogl.math.translationMat4v([0,0,-10]);\n````\n\nNote the format of the {{#crossLink \"Transform\"}}{{/crossLink}}'s ID:\n\n````<GLTFModel ID>#<glTF node ID>.transform````\n\nFrom left to right, the format contains the GLTFModel's ID, the ID of the glTF node that contains the transform, then\n\"transform\", to distinguish it from the IDs of any other components loaded from elements on the same glTF node.\n\n**Entities**\n\nLet's make our gear {{#crossLink \"Entity\"}}{{/crossLink}} invisible. This time we'll get the {{#crossLink \"Entity\"}}{{/crossLink}} itself, then update\nits {{#crossLink \"Visibility\"}}{{/crossLink}} component:\n\n````javascript\nvar gear53 = gearbox.scene.components[\"gearbox#n274017_gear_53.entity.0\"];\n\ngear53.visibility.visible = false;\n````\n\nNote the format of the {{#crossLink \"Entity\"}}{{/crossLink}}'s ID: ````<GLTFModel ID>#<glTF node ID>.entity.<glTF mesh index>````\n\nA glTF scene node may contain multiple meshes, and for each of those xeogl will create an individual {{#crossLink \"Entity\"}}{{/crossLink}}. As\nbefore, the part before the hash is the ID of the GLTFModel, which is then followed by the ID of the glTF node, then \"entity\"\nto signify that this is an Entity ID, then finally an index to differentiate the Entity from those loaded from other\nmeshes on the same glTF node.\n\nWhen we load multiple Entities from a glTF node, then they will share the same {{#crossLink \"Transform\"}}{{/crossLink}} and {{#crossLink \"Visibility\"}}{{/crossLink}} components. This\nlets us update their transformation and visibility as a group, as if they were a composite entity that represents\nthe glTF node.\n\n\n## Examples\n\n* [Damaged Helmet with metal/rough PBR materials](../../examples/#importing_gltf_pbr_metallic_helmet)\n* [Gearbox with entity explorer](../../examples/#importing_gltf_explorer)\n* [Ensuring individual materials on GLTFModel entities](../../examples/#models_filter_uniqueMaterials)\n* [Baking transform hierarchies in a GLTFModel](../../examples/#models_filter_bakeTransforms)\n* [Attaching transforms to a GLTFModel, via constructor](../../examples/#transforms_model_configureTransform)\n* [Attaching transforms to a GLTFModel, via property](../../examples/#transforms_model_attachTransform)",
+            "description": "A **GLTFModel** is a {{#crossLink \"Model\"}}{{/crossLink}} that loads itself from a <a href=\"https://github.com/KhronosGroup/glTF\" target = \"_other\">glTF</a> file.\n\n<a href=\"../../examples/#importing_gltf_gearbox\"><img src=\"../../../assets/images/gltf/glTF_gearbox_squashed.png\"></img></a>\n\n## Overview\n\n* A GLTFModel is a container of {{#crossLink \"Component\"}}Components{{/crossLink}} that loads itself from a glTF file.\n* It begins loading as soon as you set its {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}\nproperty to the location of a valid glTF file.\n* You can set {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}} to a new file path at any time, which causes\nthe GLTFModel to clear itself and load components from the new file.\n\nIt inherits these capabilities from its {{#crossLink \"Model\"}}{{/crossLink}} base class:\n\n* Allows you to access and manipulate the components within it.\n* Can be transformed within World-space by attaching it to a {{#crossLink \"Transform\"}}{{/crossLink}}.\n* Provides its World-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}}.\n\n<img src=\"../../../assets/images/GLTFModel.png\"></img>\n\n## Usage\n\n### Loading glTF\n\nLoad a glTF file by creating a GLTFModel:\n\n````javascript\nvar gearbox = new xeogl.GLTFModel({\n  id: \"gearbox\",\n  src: \"models/gltf/gearbox/gearbox_assy.gltf\"\n});\n````\n\nA GLTFModel prefixes its own ID to those of its components. Its ID is optional and defaults to\nthe value of {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}. In this example we're providing our own short ID,\nhowever, in order to keep the component IDs short and easy to use.\n\nThe GLTFModel begins loading the glTF file immediately. Bind a callback to be notified when the file has loaded (which\nfires immediately if already loaded):\n\n````javascript\ngearbox.on(\"loaded\", function() {\n       // GLTFModel has loaded!\n   });\n````\n\nTo switch to a different glTF file, simply update {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}:\n\n````javascript\ngearbox.src = \"models/gltf/buggy/buggy.gltf\"\n````\n\n### Accessing components\n\nOnce the GLTFModel has loaded, its {{#crossLink \"Scene\"}}{{/crossLink}} will contain various components that represent the elements of the glTF file. \nWe'll now access some of those components by ID, to query and update them programmatically.\n\n**Transforms**\n\nLet's reposition one of the {{#crossLink \"Entity\"}}Entities{{/crossLink}} in our GLTFModel. We'll get the {{#crossLink \"Transform\"}}{{/crossLink}} that\npositions our target {{#crossLink \"Entity\"}}{{/crossLink}}, in this case a gear. Then we'll update its matrix to translate it ten units along the negative Z-axis.\n\n````javascript\nvar transform = gearbox.scene.components[\"gearbox#n274017_gear_53t-node.transform\"];\n\ntransform.matrix = xeogl.math.translationMat4v([0,0,-10]);\n````\n\nNote the format of the {{#crossLink \"Transform\"}}{{/crossLink}}'s ID:\n\n````<GLTFModel ID>#<glTF node ID>.transform````\n\nFrom left to right, the format contains the GLTFModel's ID, the ID of the glTF node that contains the transform, then\n\"transform\", to distinguish it from the IDs of any other components loaded from elements on the same glTF node.\n\n**Entities**\n\nLet's make our gear {{#crossLink \"Entity\"}}{{/crossLink}} invisible. This time we'll get the {{#crossLink \"Entity\"}}{{/crossLink}} itself, then update\nits {{#crossLink \"Visibility\"}}{{/crossLink}} component:\n\n````javascript\nvar gear53 = gearbox.scene.components[\"gearbox#n274017_gear_53.entity.0\"];\n\ngear53.visibility.visible = false;\n````\n\nNote the format of the {{#crossLink \"Entity\"}}{{/crossLink}}'s ID: ````<GLTFModel ID>#<glTF node ID>.entity.<glTF mesh index>````\n\nA glTF scene node may contain multiple meshes, and for each of those xeogl will create an individual {{#crossLink \"Entity\"}}{{/crossLink}}. As\nbefore, the part before the hash is the ID of the GLTFModel, which is then followed by the ID of the glTF node, then \"entity\"\nto signify that this is an Entity ID, then finally an index to differentiate the Entity from those loaded from other\nmeshes on the same glTF node.\n\nWhen we load multiple Entities from a glTF node, then they will share the same {{#crossLink \"Transform\"}}{{/crossLink}} and {{#crossLink \"Visibility\"}}{{/crossLink}} components. This\nlets us update their transformation and visibility as a group, as if they were a composite entity that represents\nthe glTF node.\n\n\n## Examples\n\n* [Damaged Helmet with metal/rough PBR materials](../../examples/#importing_gltf_pbr_metallic_helmet)\n* [Gearbox with entity explorer](../../examples/#importing_gltf_explorer)\n* [Ensuring individual materials on GLTFModel entities](../../examples/#models_filter_uniqueMaterials)\n* [Baking transform hierarchies in a GLTFModel](../../examples/#models_filter_bakeTransforms)",
             "submodule": "models",
             "is_constructor": 1,
             "params": [
@@ -7732,7 +7732,7 @@
             "namespace": "",
             "file": "examples/js/models/sceneJSModel.js",
             "line": 1,
-            "description": "A **SceneJSModel** is a {{#crossLink \"Model\"}}{{/crossLink}} that\nimports content from the JSON-based <a href=\"http://scenejs.org\">SceneJS</a> scene definition format.\n\n<a href=\"../../examples/#importing_scenejs_tronTank\"><img src=\"http://i.giphy.com/l3vR50pFTpEbJTztS.gif\"></img></a>\n\n## Overview\n\n* A SceneJSModel is a container of {{#crossLink \"Component\"}}Components{{/crossLink}} that loads itself from a\nSceneJS scene definition, given as either a JSON file or a JavaScript object (POJO).\n* It begins loading as soon as you either set its {{#crossLink \"SceneJSModel/src:property\"}}{{/crossLink}}\nproperty to the location of a valid SceneJS JSON file, or set its {{#crossLink \"SceneJSModel/data:property\"}}{{/crossLink}} property to a\nvalid POJO.\n* You can set these properties to new values at any time, which causes\nthe SceneJSModel to clear itself and load fresh components.\n* Can be configured to do a best-effort conversion of SceneJS Phong materials into xeogl's PBR {{#crossLink \"PBRMetalness\"}}{{/crossLink}} or {{#crossLink \"SpecularMaterials\"}}{{/crossLink}}.\n\nIt inherits these capabilities from its {{#crossLink \"Model\"}}{{/crossLink}} base class:\n\n* Can be transformed within World-space by attaching it to a {{#crossLink \"Transform\"}}{{/crossLink}}.\n* Provides its World-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}}.\n\n<img src=\"../../../assets/images/SceneJSModel.png\"></img>\n\n## SceneJS Support\n\nSceneJSModel was developed to import the [Tron Tank model](../../examples/#importing_scenejs_tronTank). As such,\nit only imports a limited subset of the SceneJS scene definition API. <b>Use with caution</b> and be prepared to\nfix and contribute missing functionality!\n\nSceneJS nodes supported so far:\n\n* ````\"node\"````\n* ````\"rotate\"````\n* ````\"translate\"````\n* ````\"scale\"````\n* ````\"material\"````\n* ````\"texture\"````\n* ````\"fresnel\"````\n* ````\"flags\"````\n* ````\"geometry\"````\n* ````\"layer\"````\n* ````\"stage\"````\n\nUnsupported API features include:\n\n* Lights\n* Cameras\n* Shared node cores\n* SceneJS plugins\n\n## Examples\n\n* [Importing POJO defining geometry with diffuse, specular and normal maps](../../examples/#importing_scenejs_pojo_textures)\n* [Importing POJO defining transparent geometry](../../examples/#importing_scenejs_pojo_transparency)\n* [Importing JSON file defining geometry with diffuse, specular and normal maps](../../examples/#importing_scenejs_json_textures)\n* [Importing JSON file defining the SceneJS Tron Tank](../../examples/#importing_scenejs_tronTank)\n\n## Usage\n\n#### Loading a POJO scene definition\n\nThe simplest way to import SceneJS content is by setting a POJO on the SceneJSModel's {{#crossLink \"SceneJSModel/data:property\"}}data{{/crossLink}}\nproperty:\n\n````javascript\nvar pojoModel = new xeogl.SceneJSModel({\n       id: \"myModel\",\n\n       // Our POJO scene definition\n       data: {\n           type: \"node\",\n           nodes: [\n               {\n                   type: \"rotate\",\n                   id: \"myRotate\",\n                   nodes: [\n                       {\n                           type: \"geometry\",\n                           id: \"boxEntity\",\n                           primitive: \"triangles\",\n                           positions: [\n                               2, 2, 2, -2, 2, 2, -2, -2, 2, 2, -2, 2, 2, 2, 2, 2, -2,\n                               2, 2, -2, -2, 2, 2, -2, 2, 2, 2, 2, 2, -2, -2, 2, -2,\n                               -2, 2, 2, -2, 2, 2, -2, 2, -2, -2, -2, -2, -2, -2, 2,\n                               -2, -2, -2, 2, -2, -2, 2, -2, 2, -2, -2, 2, 2, -2, -2,\n                               -2, -2, -2, -2, 2, -2, 2, 2, -2\n                           ],\n                           normals: [\n                               0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1,\n                               0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, -1, 0,\n                               0, -1, 0, 0, -1, 0, 0, -1, 0, 0, 0, -1, 0, 0, -1, 0, 0,\n                              -1, 0, 0, -1, 0, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1\n                           ],\n                           uv: [\n                               5, 5, 0, 5, 0, 0, 5, 0, 0, 5, 0, 0, 5, 0, 5, 5,\n                               5, 0, 5, 5, 0, 5, 0, 0, 5, 5, 0, 5, 0, 0, 5, 0,\n                               0, 0, 5, 0, 5, 5, 0, 5, 0, 0, 5, 0, 5, 5, 0, 5\n                           ],\n                           indices: [\n                               0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7, 8, 9, 10, 8, 10, 11,\n                               12, 13, 14, 12, 14, 15, 16, 17, 18, 16, 18, 19, 20, 21,\n                               22, 20, 22, 23\n                           ]\n                       }\n                   ]\n               }\n           ]\n       }\n    });\n\n// Set camera position\nvar view = pojoModel.scene.camera.view;\nview.eye = [0, 0, -25];\nview.look = [0, 0, 0];\nview.up = [0, 1, 0];\n````\n\n#### Finding components\n\nOur SceneJSModel has now created various xeogl components\nwithin itself, which we can find by their IDs. In this particular example, our POJO has a SceneJS ````\"rotate\"```` node\nwith ID ````\"myRotate\"````. Our SceneJSModel parsed that into a {{#crossLink \"Rotate\"}}{{/crossLink}} component with\nID ````\"myModel.myRotate\"````.\n\nTo see what components our SceneJSModel created, we can drop this expression into the browser's JavaScript\ndebug console (we're using Chrome here):\n\n````\npojoModel.types;\n````\n\nThe result is the value of the SceneJSModel's {{#crossLink \"Model/types:property\"}}types{{/crossLink}} map, which\ncontains its xeogl components, mapped to their types:\n\n<img src=\"../../../assets/images/screenshots/SceneJSModel_console_tankModel.types.png\"></img>\n\nHere we've expanded the {{#crossLink \"Rotate\"}}{{/crossLink}} components, and we can see\nour {{#crossLink \"Rotate\"}}{{/crossLink}}. **Note that its ID is prefixed with the ID of the SceneJSModel.**\n\nLet's get that {{#crossLink \"Rotate\"}}{{/crossLink}} from our SceneJSModel's\n{{#crossLink \"Model/components:property\"}}{{/crossLink}} map and set it spinning:\n\n```` JavaScript\nvar rotate = pojoModel.components[\"myModel.myRotate\"];\n\npojoModel.scene.on(\"tick\", function() {\n   rotate.angle += 0.2;\n});\n````\n\n#### Loading a JSON scene definition\n\nAs shown in the example below, we can also import a SceneJS scene definition from a JSON file (eg. <a href=\"../../examples/models/scenejs/tronTank.json\">tronTank.json</a>).\nNote that we need to wait for the SceneJSModel's {{#crossLink \"SceneJSModel/loaded:event\"}}{{/crossLink}} event before we\ncan access its components. In this example we're also showing how a SceneJSModel can be attached to a modeling {{#crossLink \"Transform\"}}{{/crossLink}}\nhierarchy to transform it within World space (see {{#crossLink \"Model\"}}{{/crossLink}}).\n\n````javascript\n// Import SceneJS JSON model\nvar tankModel = new xeogl.SceneJSModel({\n       id: \"tankModel\",\n\n       // Path to our JSON scene definition file\n       src: \"models/scenejs/tronTank.json\",\n\n       // We can also bolt on a hierarchy of modeling transforms,\n       // to transform the entire SceneJSModel in World space\n       transform: new xeogl.Rotate({\n           xyz: [0, 1, 0],\n           angle: 0,\n           parent: new xeogl.Translate({\n               xyz: [0, 0, 0]\n           })\n       })\n    });\n\n// Once our SceneJSModel has loaded, we can access its components\ntankModel.on(\"loaded\", function() {\n\n       tankModel.components[\"tankModel.gunDir\"].angle = gunDir;\n\n       // Set camera position\n       var view = tankModel.scene.camera.view;\n       view.eye = [0, 0, -70];\n       view.look = [0, 0, 0];\n       view.up = [0, 1, 0];\n   });\n````\n\n#### Converting materials to PBR\n\n\n````javascript\nvar pbrSpecularTankModel = new xeogl.SceneJSModel({\n   src: \"models/scenejs/tronTank.json\",\n   materialWorkflow: \"SpecularMaterial\"\n});\n````\n\n````javascript\nvar pbrMetalnessTankModel = new xeogl.SceneJSModel({\n   src: \"models/scenejs/tronTank.json\",\n   materialWorkflow: \"MetallicMaterial\"\n});\n````",
+            "description": "A **SceneJSModel** is a {{#crossLink \"Model\"}}{{/crossLink}} that\nimports content from the JSON-based <a href=\"http://scenejs.org\">SceneJS</a> scene definition format.\n\n<a href=\"../../examples/#importing_scenejs_tronTank\"><img src=\"http://i.giphy.com/l3vR50pFTpEbJTztS.gif\"></img></a>\n\n## Overview\n\n* A SceneJSModel is a container of {{#crossLink \"Component\"}}Components{{/crossLink}} that loads itself from a\nSceneJS scene definition, given as either a JSON file or a JavaScript object (POJO).\n* It begins loading as soon as you either set its {{#crossLink \"SceneJSModel/src:property\"}}{{/crossLink}}\nproperty to the location of a valid SceneJS JSON file, or set its {{#crossLink \"SceneJSModel/data:property\"}}{{/crossLink}} property to a\nvalid POJO.\n* You can set these properties to new values at any time, which causes\nthe SceneJSModel to clear itself and load fresh components.\n* Can be configured to do a best-effort conversion of SceneJS Phong materials into xeogl's PBR {{#crossLink \"PBRMetalness\"}}{{/crossLink}} or {{#crossLink \"SpecularMaterials\"}}{{/crossLink}}.\n\nIt inherits these capabilities from its {{#crossLink \"Model\"}}{{/crossLink}} base class:\n\n* Allows you to access and manipulate the components within it.\n* Can be transformed within World-space by attaching it to a {{#crossLink \"Transform\"}}{{/crossLink}}.\n* Provides its World-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}}.\n\n<img src=\"../../../assets/images/SceneJSModel.png\"></img>\n\n## SceneJS Support\n\nSceneJSModel was developed to import the [Tron Tank model](../../examples/#importing_scenejs_tronTank). As such,\nit only imports a limited subset of the SceneJS scene definition API. <b>Use with caution</b> and be prepared to\nfix and contribute missing functionality!\n\nSceneJS nodes supported so far:\n\n* ````\"node\"````\n* ````\"rotate\"````\n* ````\"translate\"````\n* ````\"scale\"````\n* ````\"material\"````\n* ````\"texture\"````\n* ````\"fresnel\"````\n* ````\"flags\"````\n* ````\"geometry\"````\n* ````\"layer\"````\n* ````\"stage\"````\n\nUnsupported API features include:\n\n* Lights\n* Cameras\n* Shared node cores\n* SceneJS plugins\n\n## Examples\n\n* [Importing POJO defining geometry with diffuse, specular and normal maps](../../examples/#importing_scenejs_pojo_textures)\n* [Importing POJO defining transparent geometry](../../examples/#importing_scenejs_pojo_transparency)\n* [Importing JSON file defining geometry with diffuse, specular and normal maps](../../examples/#importing_scenejs_json_textures)\n* [Importing JSON file defining the SceneJS Tron Tank](../../examples/#importing_scenejs_tronTank)\n\n## Usage\n\n#### Loading a POJO scene definition\n\nThe simplest way to import SceneJS content is by setting a POJO on the SceneJSModel's {{#crossLink \"SceneJSModel/data:property\"}}data{{/crossLink}}\nproperty:\n\n````javascript\nvar pojoModel = new xeogl.SceneJSModel({\n       id: \"myModel\",\n\n       // Our POJO scene definition\n       data: {\n           type: \"node\",\n           nodes: [\n               {\n                   type: \"rotate\",\n                   id: \"myRotate\",\n                   nodes: [\n                       {\n                           type: \"geometry\",\n                           id: \"boxEntity\",\n                           primitive: \"triangles\",\n                           positions: [\n                               2, 2, 2, -2, 2, 2, -2, -2, 2, 2, -2, 2, 2, 2, 2, 2, -2,\n                               2, 2, -2, -2, 2, 2, -2, 2, 2, 2, 2, 2, -2, -2, 2, -2,\n                               -2, 2, 2, -2, 2, 2, -2, 2, -2, -2, -2, -2, -2, -2, 2,\n                               -2, -2, -2, 2, -2, -2, 2, -2, 2, -2, -2, 2, 2, -2, -2,\n                               -2, -2, -2, -2, 2, -2, 2, 2, -2\n                           ],\n                           normals: [\n                               0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1,\n                               0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, -1, 0,\n                               0, -1, 0, 0, -1, 0, 0, -1, 0, 0, 0, -1, 0, 0, -1, 0, 0,\n                              -1, 0, 0, -1, 0, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1\n                           ],\n                           uv: [\n                               5, 5, 0, 5, 0, 0, 5, 0, 0, 5, 0, 0, 5, 0, 5, 5,\n                               5, 0, 5, 5, 0, 5, 0, 0, 5, 5, 0, 5, 0, 0, 5, 0,\n                               0, 0, 5, 0, 5, 5, 0, 5, 0, 0, 5, 0, 5, 5, 0, 5\n                           ],\n                           indices: [\n                               0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7, 8, 9, 10, 8, 10, 11,\n                               12, 13, 14, 12, 14, 15, 16, 17, 18, 16, 18, 19, 20, 21,\n                               22, 20, 22, 23\n                           ]\n                       }\n                   ]\n               }\n           ]\n       }\n    });\n\n// Set camera position\nvar view = pojoModel.scene.camera.view;\nview.eye = [0, 0, -25];\nview.look = [0, 0, 0];\nview.up = [0, 1, 0];\n````\n\n#### Finding components\n\nOur SceneJSModel has now created various xeogl components\nwithin itself, which we can find by their IDs. In this particular example, our POJO has a SceneJS ````\"rotate\"```` node\nwith ID ````\"myRotate\"````. Our SceneJSModel parsed that into a {{#crossLink \"Rotate\"}}{{/crossLink}} component with\nID ````\"myModel.myRotate\"````.\n\nTo see what components our SceneJSModel created, we can drop this expression into the browser's JavaScript\ndebug console (we're using Chrome here):\n\n````\npojoModel.types;\n````\n\nThe result is the value of the SceneJSModel's {{#crossLink \"Model/types:property\"}}types{{/crossLink}} map, which\ncontains its xeogl components, mapped to their types:\n\n<img src=\"../../../assets/images/screenshots/SceneJSModel_console_tankModel.types.png\"></img>\n\nHere we've expanded the {{#crossLink \"Rotate\"}}{{/crossLink}} components, and we can see\nour {{#crossLink \"Rotate\"}}{{/crossLink}}. **Note that its ID is prefixed with the ID of the SceneJSModel.**\n\nLet's get that {{#crossLink \"Rotate\"}}{{/crossLink}} from our SceneJSModel's\n{{#crossLink \"Model/components:property\"}}{{/crossLink}} map and set it spinning:\n\n```` JavaScript\nvar rotate = pojoModel.components[\"myModel.myRotate\"];\n\npojoModel.scene.on(\"tick\", function() {\n   rotate.angle += 0.2;\n});\n````\n\n#### Loading a JSON scene definition\n\nAs shown in the example below, we can also import a SceneJS scene definition from a JSON file (eg. <a href=\"../../examples/models/scenejs/tronTank.json\">tronTank.json</a>).\nNote that we need to wait for the SceneJSModel's {{#crossLink \"SceneJSModel/loaded:event\"}}{{/crossLink}} event before we\ncan access its components. In this example we're also showing how a SceneJSModel can be attached to a modeling {{#crossLink \"Transform\"}}{{/crossLink}}\nhierarchy to transform it within World space (see {{#crossLink \"Model\"}}{{/crossLink}}).\n\n````javascript\n// Import SceneJS JSON model\nvar tankModel = new xeogl.SceneJSModel({\n       id: \"tankModel\",\n\n       // Path to our JSON scene definition file\n       src: \"models/scenejs/tronTank.json\",\n\n       // We can also bolt on a hierarchy of modeling transforms,\n       // to transform the entire SceneJSModel in World space\n       transform: new xeogl.Rotate({\n           xyz: [0, 1, 0],\n           angle: 0,\n           parent: new xeogl.Translate({\n               xyz: [0, 0, 0]\n           })\n       })\n    });\n\n// Once our SceneJSModel has loaded, we can access its components\ntankModel.on(\"loaded\", function() {\n\n       tankModel.components[\"tankModel.gunDir\"].angle = gunDir;\n\n       // Set camera position\n       var view = tankModel.scene.camera.view;\n       view.eye = [0, 0, -70];\n       view.look = [0, 0, 0];\n       view.up = [0, 1, 0];\n   });\n````\n\n#### Converting materials to PBR\n\n\n````javascript\nvar pbrSpecularTankModel = new xeogl.SceneJSModel({\n   src: \"models/scenejs/tronTank.json\",\n   materialWorkflow: \"SpecularMaterial\"\n});\n````\n\n````javascript\nvar pbrMetalnessTankModel = new xeogl.SceneJSModel({\n   src: \"models/scenejs/tronTank.json\",\n   materialWorkflow: \"MetallicMaterial\"\n});\n````",
             "submodule": "models",
             "is_constructor": 1,
             "params": [
@@ -11198,7 +11198,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 165,
+            "line": 163,
             "description": "Fired when this Entity is *picked* via a call to the {{#crossLink \"Canvas/pick:method\"}}{{/crossLink}} method\non the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s {{#crossLink \"Canvas\"}}Canvas {{/crossLink}}.",
             "itemtype": "event",
             "name": "picked",
@@ -11225,7 +11225,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 225,
+            "line": 223,
             "description": "The {{#crossLink \"Camera\"}}Camera{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/camera:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "camera",
@@ -11236,7 +11236,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 245,
+            "line": 243,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/camera:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "camera",
@@ -11252,7 +11252,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 274,
+            "line": 272,
             "description": "The {{#crossLink \"Clips\"}}Clips{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/clips:property\"}}clips{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/clips:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "clips",
@@ -11263,7 +11263,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 290,
+            "line": 288,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/clips:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "clips",
@@ -11279,7 +11279,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 308,
+            "line": 306,
             "description": "The {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/colorTarget:property\"}}colorTarget{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/colorTarget:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "colorTarget",
@@ -11292,7 +11292,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 325,
+            "line": 323,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/colorTarget:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "colorTarget",
@@ -11308,7 +11308,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 343,
+            "line": 341,
             "description": "The {{#crossLink \"ColorBuf\"}}ColorBuf{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/colorBuf:property\"}}colorBuf{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/colorBuf:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "colorBuf",
@@ -11319,7 +11319,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 359,
+            "line": 357,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/colorBuf:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "colorBuf",
@@ -11335,7 +11335,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 378,
+            "line": 376,
             "description": "The {{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/depthTarget:property\"}}depthTarget{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/depthTarget:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "depthTarget",
@@ -11348,7 +11348,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 395,
+            "line": 393,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/depthTarget:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "depthTarget",
@@ -11364,7 +11364,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 414,
+            "line": 412,
             "description": "The {{#crossLink \"DepthBuf\"}}DepthBuf{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/depthBuf:property\"}}depthBuf{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/depthBuf:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "depthBuf",
@@ -11375,7 +11375,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 430,
+            "line": 428,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/depthBuf:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "depthBuf",
@@ -11391,7 +11391,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 449,
+            "line": 447,
             "description": "The {{#crossLink \"Visibility\"}}Visibility{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/visibility:property\"}}visibility{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/visibility:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "visibility",
@@ -11402,7 +11402,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 465,
+            "line": 463,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/visibility:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "visibility",
@@ -11418,7 +11418,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 484,
+            "line": 482,
             "description": "The {{#crossLink \"Cull\"}}{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/cull:property\"}}cull{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/cull:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "cull",
@@ -11429,7 +11429,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 500,
+            "line": 498,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/cull:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "cull",
@@ -11445,7 +11445,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 520,
+            "line": 518,
             "description": "The {{#crossLink \"Modes\"}}Modes{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/modes:property\"}}modes{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/modes:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "modes",
@@ -11456,7 +11456,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 536,
+            "line": 534,
             "description": "Fired whenever this Entity's {{#crossLink \"Entity/modes:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "modes",
@@ -11472,7 +11472,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 555,
+            "line": 553,
             "description": "The {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/geometry:property\"}}camera{{/crossLink}}\n(a simple box) when set to a null or undefined value.\n\nFires an {{#crossLink \"Entity/geometry:event\"}}{{/crossLink}} event on change.\n\nUpdates {{#crossLink \"Entity/boundary\"}}{{/crossLink}},\n{{#crossLink \"Entity/worldObb\"}}{{/crossLink}} and\n{{#crossLink \"Entity/center\"}}{{/crossLink}}",
             "itemtype": "property",
             "name": "geometry",
@@ -11483,7 +11483,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 579,
+            "line": 577,
             "description": "Fired whenever this Entity's {{#crossLink \"Entity/geometry:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "modes",
@@ -11499,7 +11499,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 608,
+            "line": 606,
             "description": "The {{#crossLink \"Layer\"}}Layer{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/layer:property\"}}layer{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/layer:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "layer",
@@ -11510,7 +11510,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 624,
+            "line": 622,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/layer:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "layer",
@@ -11526,7 +11526,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 643,
+            "line": 641,
             "description": "The {{#crossLink \"Lights\"}}Lights{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/lights:property\"}}lights{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/lights:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "lights",
@@ -11537,7 +11537,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 659,
+            "line": 657,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/lights:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "lights",
@@ -11553,7 +11553,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 678,
+            "line": 676,
             "description": "The {{#crossLink \"Material\"}}Material{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/material:property\"}}material{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/material:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "material",
@@ -11564,7 +11564,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 694,
+            "line": 692,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/material:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "material",
@@ -11580,7 +11580,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 713,
+            "line": 711,
             "description": "The {{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/morphTargets:property\"}}morphTargets{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/morphTargets:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "morphTargets",
@@ -11593,7 +11593,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 730,
+            "line": 728,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/morphTargets:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "morphTargets",
@@ -11609,7 +11609,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 748,
+            "line": 746,
             "description": "The {{#crossLink \"Shader\"}}Shader{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/shader:property\"}}shader{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/shader:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "shader",
@@ -11622,7 +11622,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 765,
+            "line": 763,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/shader:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "shader",
@@ -11638,7 +11638,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 783,
+            "line": 781,
             "description": "The {{#crossLink \"ShaderParams\"}}ShaderParams{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/shaderParams:property\"}}shaderParams{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/shaderParams:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "shaderParams",
@@ -11651,7 +11651,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 800,
+            "line": 798,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/shaderParams:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "shaderParams",
@@ -11667,7 +11667,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 819,
+            "line": 817,
             "description": "The {{#crossLink \"Stage\"}}Stage{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/stage:property\"}}stage{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/stage:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "stage",
@@ -11678,7 +11678,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 835,
+            "line": 833,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/stage:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "stage",
@@ -11694,7 +11694,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 854,
+            "line": 852,
             "description": "The Local-to-World-space (modelling) {{#crossLink \"Transform\"}}{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/transform:property\"}}transform{{/crossLink}}\n(an identity matrix) when set to a null or undefined value.\n\nFires an {{#crossLink \"Entity/transform:event\"}}{{/crossLink}} event on change.\n\nUpdates {{#crossLink \"Entity/boundary\"}}{{/crossLink}},\n{{#crossLink \"Entity/worldObb\"}}{{/crossLink}} and\n{{#crossLink \"Entity/center\"}}{{/crossLink}}",
             "itemtype": "property",
             "name": "transform",
@@ -11705,7 +11705,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 878,
+            "line": 876,
             "description": "Fired whenever this Entity's {{#crossLink \"Entity/transform:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "transform",
@@ -11721,7 +11721,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 919,
+            "line": 917,
             "description": "The {{#crossLink \"Billboard\"}}{{/crossLink}} attached to this Entity.\n\nWhen {{#crossLink \"Billboard/property:active\"}}{{/crossLink}}, the {{#crossLink \"Billboard\"}}{{/crossLink}}\nwill keep this Entity oriented towards the viewpoint.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/billboard:property\"}}billboard{{/crossLink}}\n(an identity matrix) when set to a null or undefined value.\n\nFires an {{#crossLink \"Entity/billboard:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "billboard",
@@ -11732,7 +11732,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 938,
+            "line": 936,
             "description": "Fired whenever this Entity's {{#crossLink \"Entity/billboard:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "billboard",
@@ -11748,7 +11748,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 958,
+            "line": 956,
             "description": "The {{#crossLink \"Viewport\"}}{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. When set to a null or undefined value,\ndefaults to the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/viewport:property\"}}viewport{{/crossLink}},\nwhich automatically resizes to the canvas.\n\nFires an {{#crossLink \"Entity/viewport:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "viewport",
@@ -11759,7 +11759,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 974,
+            "line": 972,
             "description": "Fired whenever this Entity's {{#crossLink \"Entity/viewport:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "viewport",
@@ -11775,7 +11775,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 994,
+            "line": 992,
             "description": "The {{#crossLink \"Stationary\"}}{{/crossLink}} attached to this Entity.\n\nWhen {{#crossLink \"Stationary/property:active\"}}{{/crossLink}}, the {{#crossLink \"Stationary\"}}{{/crossLink}}\nwill prevent the translation component of the viewing transform from being applied to this Entity, yet\nstill allowing it to rotate.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/stationary:property\"}}stationary{{/crossLink}},\nwhich is disabled by default.\n\nFires an {{#crossLink \"Entity/stationary:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "stationary",
@@ -11786,7 +11786,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1014,
+            "line": 1012,
             "description": "Fired whenever this Entity's {{#crossLink \"Entity/stationary:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "stationary",
@@ -11802,7 +11802,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1034,
+            "line": 1032,
             "description": "Local-space 3D boundary of this Entity.\n\nThis is a {{#crossLink \"Boundary3D\"}}{{/crossLink}} that encloses\nthe {{#crossLink \"Geometry\"}}{{/crossLink}} that is attached to this Entity.\n\nThe {{#crossLink \"Boundary3D\"}}{{/crossLink}} will fire an {{#crossLink \"Boundary3D/updated:event\"}}{{/crossLink}}\nevent whenever this Entity's {{#crossLink \"Entity/geometry:property\"}}{{/crossLink}} is linked to\na new {{#crossLink \"Geometry\"}}{{/crossLink}}, or whenever the {{#crossLink \"Geometry\"}}{{/crossLink}}'s\n{{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} are updated.\n\nThe a {{#crossLink \"Boundary3D\"}}{{/crossLink}} is lazy-instantiated the first time that this\nproperty is referenced. If {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} is then called on it,\nthen this property will be assigned to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance next\ntime it's referenced.",
             "itemtype": "property",
             "name": "localBoundary",
@@ -11814,7 +11814,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1061,
+            "line": 1059,
             "description": "World-space 3D boundary of this Entity.\n\nThis is a {{#crossLink \"Boundary3D\"}}{{/crossLink}} that encloses the {{#crossLink \"Geometry\"}}{{/crossLink}}\nthat is attached to this Entity after transformation by this Entity's modelling\n{{#crossLink \"Entity/transform:property\"}}{{/crossLink}}.\n\nThe {{#crossLink \"Boundary3D\"}}{{/crossLink}} will fire an {{#crossLink \"Boundary3D/updated:event\"}}{{/crossLink}}\nevent whenever this Entity's {{#crossLink \"Entity/geometry:property\"}}{{/crossLink}} is linked to\na new {{#crossLink \"Geometry\"}}{{/crossLink}}, or whenever the {{#crossLink \"Geometry\"}}{{/crossLink}}'s\n{{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} are updated.\n\nThe a {{#crossLink \"Boundary3D\"}}{{/crossLink}} is lazy-instantiated the first time that this\nproperty is referenced. If {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} is then called on it,\nthen this property will be assigned to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance next\ntime it's referenced.\n\n<h4>Example</h4>\n\n[here](http://xeogl.org/examples/#boundaries_Entity_worldBoundary)\n\n<h4>Performance</h4>\n\nTo minimize performance overhead, only reference this property if you need it, and destroy\nthe {{#crossLink \"Boundary3D\"}}{{/crossLink}} as soon as you don't need it anymore.",
             "itemtype": "property",
             "name": "worldBoundary",
@@ -11826,7 +11826,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1150,
+            "line": 1148,
             "description": "View-space 3D boundary of this Entity.\n\nThis is a {{#crossLink \"Boundary3D\"}}{{/crossLink}} that encloses the {{#crossLink \"Geometry\"}}{{/crossLink}}\nthat is attached to this Entity after transformation by this Entity's modelling\n{{#crossLink \"Entity/transform:property\"}}{{/crossLink}} and {{#crossLink \"Camera\"}}{{/crossLink}}\n{{#crossLink \"Camera/view:property\"}}view transform{{/crossLink}}.\n\nThe {{#crossLink \"Boundary3D\"}}{{/crossLink}} will fire an {{#crossLink \"Boundary3D/updated:event\"}}{{/crossLink}}\nevent whenever there are any changes to the {{#crossLink \"Geometry\"}}{{/crossLink}},\n{{#crossLink \"Entity/transform:property\"}}{{/crossLink}} or {{#crossLink \"Camera\"}}{{/crossLink}} that\nwould affect its extents.\n\nThe a {{#crossLink \"Boundary3D\"}}{{/crossLink}} is lazy-instantiated the first time that this\nproperty is referenced. If {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} is then called on it,\nthen this property will be assigned to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance next\ntime it's referenced.\n\n<h4>Performance</h4>\n\nTo minimize performance overhead, only reference this property if you need it, and destroy\nthe {{#crossLink \"Boundary3D\"}}{{/crossLink}} as soon as you don't need it anymore.",
             "itemtype": "property",
             "name": "viewBoundary",
@@ -11838,7 +11838,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1218,
+            "line": 1216,
             "description": "Canvas-space 2D boundary.\n\nThis is a {{#crossLink \"Boundary2D\"}}{{/crossLink}} that encloses this Entity's\n{{#crossLink \"Entity/geometry:property\"}}{{/crossLink}} after transformation by this Entity's modelling\n{{#crossLink \"Entity/transform:property\"}}{{/crossLink}} and {{#crossLink \"Camera\"}}{{/crossLink}}\n{{#crossLink \"Camera/view:property\"}}view{{/crossLink}} and\n{{#crossLink \"Camera/project:property\"}}projection{{/crossLink}} transforms.\n\nThe {{#crossLink \"Boundary2D\"}}{{/crossLink}} will fire an {{#crossLink \"Boundary3D/updated:event\"}}{{/crossLink}}\nevent whenever there are any changes to the {{#crossLink \"Geometry\"}}{{/crossLink}},\n{{#crossLink \"Entity/transform:property\"}}{{/crossLink}} or {{#crossLink \"Camera\"}}{{/crossLink}} that\nwould affect its extents.\n\nThe a {{#crossLink \"Boundary2D\"}}{{/crossLink}} is lazy-instantiated the first time that this\nproperty is referenced. If {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} is then called on it,\nthen this property will be assigned to a fresh {{#crossLink \"Boundary2D\"}}{{/crossLink}} instance next\ntime it's referenced.\n\n<h4>Performance</h4>\n\nTo minimize performance overhead, only reference this property if you need it, and destroy\nthe {{#crossLink \"Boundary2D\"}}{{/crossLink}} as soon as you don't need it anymore.",
             "itemtype": "property",
             "name": "canvasBoundary",
@@ -11850,7 +11850,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1287,
+            "line": 1285,
             "description": "JSON object containing the (GLSL) source code of the shaders for this Entity.\n\nThis is sometimes useful to have as a reference\nwhen constructing your own custom {{#crossLink \"Shader\"}}{{/crossLink}} components.\n\nWill return null if xeogl has not yet rendered this Entity.",
             "itemtype": "property",
             "name": "glsl",
@@ -11862,7 +11862,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1324,
+            "line": 1322,
             "description": "The (GLSL) source code of the shaders for this Entity, as a string.\n\nThis is sometimes useful to have as a reference\nwhen constructing your own custom {{#crossLink \"Shader\"}}{{/crossLink}} components.\n\nWill return null if xeogl has not yet rendered this Entity.",
             "itemtype": "property",
             "name": "glslString",
@@ -20392,7 +20392,7 @@
         },
         {
             "file": "src/models/gltfModel.js",
-            "line": 145,
+            "line": 144,
             "description": "Path to a glTF file.\n\nYou can set this to a new file path at any time, which will cause the GLTFModel to load components from\nthe new file (after first destroying any components loaded from a previous file path).\n\nFires a {{#crossLink \"GLTFModel/src:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "src",
@@ -20403,7 +20403,7 @@
         },
         {
             "file": "src/models/gltfModel.js",
-            "line": 171,
+            "line": 170,
             "description": "Fired whenever this GLTFModel has finished loading components from the glTF file\nspecified by {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "loaded",
@@ -20413,7 +20413,7 @@
         },
         {
             "file": "src/models/gltfModel.js",
-            "line": 211,
+            "line": 210,
             "description": "Fired whenever this GLTFModel's {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "src",
@@ -26288,7 +26288,7 @@
         },
         {
             "file": "examples/js/models/sceneJSModel.js",
-            "line": 246,
+            "line": 247,
             "description": "Selects which xeogl material type to create from each SceneJS Phong material.\n\nCauses the SceneJSModel to attempt a best-effort conversion.\n\nUpdate this at any time to reconvert the materials.\n\nFires a {{#crossLink \"SceneJSModel/materialWorkFlow:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "materialWorkflow",
@@ -26299,7 +26299,7 @@
         },
         {
             "file": "examples/js/models/sceneJSModel.js",
-            "line": 281,
+            "line": 282,
             "description": "Fired whenever this SceneJSModel's  {{#crossLink \"SceneJSModel/materialWorkflow:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "materialWorkflow",
@@ -26315,7 +26315,7 @@
         },
         {
             "file": "examples/js/models/sceneJSModel.js",
-            "line": 294,
+            "line": 295,
             "description": "Path to the SceneJS JSON scene description file.\n\nUpdate this at any time to clear and re-import content.\n\nFires a {{#crossLink \"SceneJSModel/src:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "src",
@@ -26326,7 +26326,7 @@
         },
         {
             "file": "examples/js/models/sceneJSModel.js",
-            "line": 319,
+            "line": 320,
             "description": "Fired whenever this SceneJSModel has finished loading the SceneJS JSON file\nspecified by {{#crossLink \"SceneJSModel/src:property\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "loaded",
@@ -26336,7 +26336,7 @@
         },
         {
             "file": "examples/js/models/sceneJSModel.js",
-            "line": 365,
+            "line": 366,
             "description": "Fired whenever this SceneJSModel's  {{#crossLink \"SceneJSModel/src:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "src",
@@ -26352,7 +26352,7 @@
         },
         {
             "file": "examples/js/models/sceneJSModel.js",
-            "line": 378,
+            "line": 379,
             "description": "A SceneJS POJO scene definition.\n\nUpdate this at any time to clear and re-import content.\n\nFires a {{#crossLink \"SceneJSModel/data:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "data",
@@ -26363,7 +26363,7 @@
         },
         {
             "file": "examples/js/models/sceneJSModel.js",
-            "line": 410,
+            "line": 411,
             "description": "Fired whenever this SceneJSModel's  {{#crossLink \"SceneJSModel/data:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "data",
