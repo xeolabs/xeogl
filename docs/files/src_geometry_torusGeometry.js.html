@@ -406,7 +406,7 @@
 
                     this._lod = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this TorusGeometry&#x27;s {{#crossLink &quot;TorusGeometry/lod:property&quot;}}{{/crossLink}} property changes.
@@ -437,7 +437,7 @@
 
                     (this._center = this._center || new xeogl.math.vec3()).set(value || [0, 0, 0]);
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      Fired whenever this TorusGeometry&#x27;s {{#crossLink &quot;TorusGeometry/center:property&quot;}}{{/crossLink}} property changes.
@@ -478,7 +478,7 @@
 
                     this._radius = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this TorusGeometry&#x27;s {{#crossLink &quot;TorusGeometry/radius:property&quot;}}{{/crossLink}} property changes.
@@ -521,7 +521,7 @@
 
                     this._tube = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this TorusGeometry&#x27;s {{#crossLink &quot;TorusGeometry/tube:property&quot;}}{{/crossLink}} property changes.
@@ -563,7 +563,7 @@
 
                     this._radialSegments = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this TorusGeometry&#x27;s {{#crossLink &quot;TorusGeometry/radialSegments:property&quot;}}{{/crossLink}} property changes.
@@ -606,7 +606,7 @@
 
                     this._tubeSegments = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this TorusGeometry&#x27;s {{#crossLink &quot;TorusGeometry/tubeSegments:property&quot;}}{{/crossLink}} property changes.
@@ -648,7 +648,7 @@
 
                     this._arc = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this TorusGeometry&#x27;s {{#crossLink &quot;TorusGeometry/arc:property&quot;}}{{/crossLink}} property changes.

@@ -31,9 +31,13 @@
 
         _init: function (cfg) {
 
-            this._torus = new xeogl.Entity({
-                geometry: new xeogl.TorusGeometry({ radius: 2, tube:.6 }),
-                material: new xeogl.MetallicMaterial({
+            // Note how each component is instantiated with a reference
+            // to this ColoredTorus, This means they will be automatically
+            // destroyed when this ColoredTorus is destroyed.
+
+            this._torus = new xeogl.Entity(this, {
+                geometry: new xeogl.TorusGeometry(this, { radius: 2, tube:.6 }),
+                material: new xeogl.MetallicMaterial(this, {
                     baseColor: [1.0, 0.5, 0.5],
                     roughness: 0.4,
                     metallic: 0.1

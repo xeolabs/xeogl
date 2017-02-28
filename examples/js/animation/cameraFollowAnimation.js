@@ -164,7 +164,7 @@
 
                     this._cameraFlight.camera = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this CameraFollowAnimation's
@@ -210,13 +210,13 @@
                         sceneDefault: true,
                         on: {
                             updated: {
-                                callback: this._scheduleUpdate,
+                                callback: this._needUpdate,
                                 scope: this
                             }
                         }
                     });
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
                 },
 
                 get: function () {
@@ -279,7 +279,7 @@
 
                     this._cameraFlight.fit = value !== false;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this CameraFollowAnimation's
@@ -313,7 +313,7 @@
 
                     this._cameraFlight.fitFOV = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this CameraFollowAnimation's

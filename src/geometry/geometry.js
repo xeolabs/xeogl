@@ -347,7 +347,7 @@
          *
          * @protected
          */
-        _scheduleUpdate: function () {
+        _needUpdate: function () {
             if (!this._updateScheduled) {
                 this._updateScheduled = true;
                 xeogl.scheduleTask(this._doUpdate, this);

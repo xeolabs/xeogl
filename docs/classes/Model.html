@@ -196,7 +196,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_models_model.js.html#l5"><code>src&#x2F;models&#x2F;model.js:5</code></a>
+            Defined in: <a href="../files/src_models_model.js.html#l1"><code>src&#x2F;models&#x2F;model.js:1</code></a>
         </div>
 
             Module: <a href="../modules/models.html">models</a><br>
@@ -209,8 +209,8 @@
     <p>A <strong>Model</strong> is a group of <a href="../classes/Component.html" class="crosslink">Components</a> within a xeogl <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 <h2 id="overview">Overview</h2>
 <ul>
-<li>A Model manages the lifecycle of its components, automatically deleting them when the Model is deleted.</li>
-<li>Can be attached to a hierarchy of <a href="../classes/Transform.html" class="crosslink">Transforms</a>, to transform its components as a group, within World-space.</li>
+<li>A Model "owns" its components, automatically deleting them when the Model is deleted.</li>
+<li>Can be attached to a modelling <a href="../classes/Transform.html" class="crosslink">Transform</a>, to transform its components as a group, within World-space.</li>
 <li>Provides the collective World-space boundary of its components as a <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a>, which
 updates its extents automatically as components are added and removed, or Transforms are updated.</li>
 </ul>
@@ -222,94 +222,90 @@ updates its extents automatically as components are added and removed, or Transf
 </ul>
 <p><img src="../../../assets/images/Model.png"></img></p>
 <h2 id="usage">Usage</h2>
-<h3 id="adding-and-removing-components-to-a-model">Adding and removing components to a Model</h3>
+<h3 id="adding-and-removing-components">Adding and removing components</h3>
 <p>When adding components to a Model, it&#39;s usually easiest to just add their configuration objects and let the Model
 internally instantiate them, as shown below.</p>
-<p>Note that a Model manages the lifecycles of all the components contained within it, destroying them when we destroy
+<p>As mentioned, a Model "owns" all the components contained within it, destroying them when we destroy
 the Model or call its <a href="../classes/Model.html#method_destroyAll" class="crosslink">destroyAll</a> method.</p>
 <pre class="code prettyprint"><code class="lang-javascript">var model = new xeogl.Model();
 
 var geometry = model.add({
-       type: "xeogl.TorusGeometry"
-   });
+   type: "xeogl.TorusGeometry"
+});
 
 var material = model.add({
-       type: "xeogl.PhongMaterial"
-       diffuse: [0.4, 0.4, 9.0]
-   });
+   type: "xeogl.PhongMaterial"
+   diffuse: [0.4, 0.4, 9.0]
+});
 
 model.add({
-       type: "xeogl.Entity",
-       geometry: geometry,
-       material: material
-   });
+   type: "xeogl.Entity",
+   geometry: geometry,
+   material: material
+});
 </code></pre>
-<p>As shown below, we can also add our own component instances, supplying either the objects or their IDs.</p>
+<p>As shown below, we can also add our own component instances, supplying them either by reference or ID.</p>
 <p>Note that the components must be in the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as the model.</p>
-<pre class="code prettyprint"><code class="lang-javascript">// Add our component object
-model.add(new xeogl.Entity({
-       geometry: geometry,
-       material: material
-   }));
+<pre class="code prettyprint"><code class="lang-javascript">// Add by instance
+var myEntity = new xeogl.Entity({
+   geometry: geometry,
+   material: material
+});
+model.add(myEntity);
 
-// Instantiate our component and add it by ID:
-var material2 = new xeogl.PhongMaterial({
-       id: "myMaterial",
-       diffuse: [0.4, 1.0, 9.0]
-   });
-
-model.add("myMaterial");
+// Add by ID
+new xeogl.Entity({
+   id: "myEntity",
+   geometry: geometry,
+   material: material
+})
+model.add("myEntity");
 </code></pre>
-<p>Since xeogl aims to be as declarative as possible, we can also add components immediately,
+<p>Since xeogl aims to be as declarative as possible, we can also add components all in one shot,
 via the Model&#39;s constructor:</p>
-<pre class="code prettyprint"><code class="lang-javascript">var model2 = new xeogl.Model({
-       components: [
-           {
-               type: "xeogl.TorusGeometry"
-               id: "myTorusGeometry"
-           },
-           {
-               type: "xeogl.PhongMaterial"
-               id: "myPhongMaterial",
-               diffuse: [0.4, 0.4, 9.0]
-           },
-           {
-               type: "xeogl.Entity",
-               geometry: "myTorusGeometry",
-               material: "myPhongMaterial"
-           }
-       ]
-   });
+<pre class="code prettyprint"><code class="lang-javascript">model = new xeogl.Model({
+   components: [
+       {
+           type: "xeogl.TorusGeometry",
+           id: "myGeometry"
+       },
+       {
+           type: "xeogl.PhongMaterial",
+           id: "myMaterial",
+           diffuse: [0.4, 0.4, 0.9]
+       },
+       {
+           type: "xeogl.Entity",
+           id: "myEntity",
+           geometry: "myGeometry",
+           material: "myMaterial"
+       }
+   ]
+});
 </code></pre>
+<h3 id="finding-components">Finding components</h3>
+<p>Our Model now has various components within itself, which we can find by their IDs.</p>
+<p>To find the components grouped by their types, drop this expression into the browser&#39;s JavaScript
+debug console (we&#39;re using Chrome here):</p>
+<pre class="code prettyprint"><code>model.types;
+</code></pre><p>The result is the value of the Model&#39;s <a href="../classes/Model.html#property_types" class="crosslink">types</a> map, which
+contains its components, mapped to their types:</p>
+<p><img src="../../../assets/images/screenshots/Model_findingComponents.png"></img></p>
+<p>Here we&#39;ve expanded the <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a> components, and we can see
+our <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a>.</p>
+<p>Let&#39;s get that <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a> from our Model&#39;s
+<a href="../classes/Model.html#property_components" class="crosslink">components</a> map and change its diffuse color:</p>
+<pre class="code prettyprint"><code class="lang-JavaScript">var material = model.components["myMaterial"];
+material.diffuse = [0.9, 0.4, 0.4];
+</code></pre>
+<p>The Model also has an <a href="../classes/Model.html#property_entities" class="crosslink">entities</a> map, in which we can find our <a href="../classes/Entity.html" class="crosslink">Entity</a>:</p>
+<p><img src="../../../assets/images/screenshots/Model.entities.png"></img></p>
 <h3 id="transforming-a-model">Transforming a Model</h3>
 <p>As well as allowing us organize the lifecycle of groups of components, a Model also lets us transform them as a group.</p>
 <p>We can attach a modeling <a href="../classes/Transform.html" class="crosslink">Transform</a> to our Model, as a either a
 configuration object or a component instance:</p>
 <pre class="code prettyprint"><code class="lang-Javascript">// Attach transforms as a configuration object:
 model.transform = {
-   type: "xeogl.Translate",
-   xyz: [-35, 0, 0],
-   parent: {
-       type: "xeogl.Rotate",
-       xyz: [0, 1, 0],
-       angle: 45
-   }
-};
-
-// Attach our own transform instances:
-model.transform = new xeogl.Translate({
-   xyz: [-35, 0, 0],
-   parent: new xeogl.Rotate({
-       xyz: [0, 1, 0],
-       angle: 45
-   })
-});
-</code></pre>
-<p>We can also provide the transforms to the Model constructor, as either configuration objects or instances.</p>
-<p>Here we&#39;ll provide them as configuration objects:</p>
-<pre class="code prettyprint"><code class="lang-Javascript">// Model internally instantiates our transform components:
-var model3 = new xeogl.Model({
-   transform: {
        type: "xeogl.Translate",
        xyz: [-35, 0, 0],
        parent: {
@@ -317,17 +313,41 @@ var model3 = new xeogl.Model({
            xyz: [0, 1, 0],
            angle: 45
        }
-   }
-});
+    };
+
+// Attach our own transform instances:
+model.transform = new xeogl.Translate({
+       xyz: [-35, 0, 0],
+       parent: new xeogl.Rotate({
+           xyz: [0, 1, 0],
+           angle: 45
+       })
+    });
 </code></pre>
-<p>Note that, as with the components we added before, the Model will manage the lifecycles of our transform components,
-destroying them when we destroy the Model or call its <a href="../classes/Model.html#method_destroyAll" class="crosslink">destroyAll</a> method.</p>
+<p>We can also provide the <a href="../classes/Transform.html" class="crosslink">Transform</a> to the Model constructor, as either configuration
+objects or instances.</p>
+<p>Here we&#39;ll provide them as configuration objects:</p>
+<pre class="code prettyprint"><code class="lang-Javascript">// Model internally instantiates our transform components:
+var model3 = new xeogl.Model({
+       transform: {
+           type: "xeogl.Translate",
+           xyz: [-35, 0, 0],
+           parent: {
+               type: "xeogl.Rotate",
+               xyz: [0, 1, 0],
+               angle: 45
+           }
+       }
+    });
+</code></pre>
+<p>Note that, as with the components we added before, the Model will manage the lifecycles of our <a href="../classes/Transform.html" class="crosslink">Transform</a> components,
+destroying them when we destroy the Model or call its <a href="../classes/Model.html#method_destroyAll" class="crosslink">destroyAll</a> method. Also, when we call <a href="../classes/Component.html#method_destroy" class="crosslink">destroy</a> on a Model component, the component will remove itself from the Model first.</p>
 <h3 id="getting-the-world-space-boundary-of-a-model">Getting the World-space boundary of a Model</h3>
 <p>A Model&#39;s <a href="../classes/Model.html#property_worldBoundary" class="crosslink">worldBoundary</a> property is a <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a>
 that provides the collective World-space boundary of all its components. The <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> will
-automatically adjust its extents whenever we add or remove components to its Model, or whenever we update the Model&#39;s transforms.</p>
+automatically adjust its extents whenever we add or remove components to its Model, or whenever we update the Model&#39;s <a href="../classes/Transform.html" class="crosslink">Transforms</a>.</p>
 <p>Let&#39;s get the <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> from our first Model, subscribe to changes on its extents,
-then animate one of the Model&#39;s transforms, which will cause the <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> to fire an
+then animate one of the Model&#39;s <a href="../classes/Transform.html" class="crosslink">Transforms</a>, which will cause the <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> to fire an
 <a href="../classes/Boundary3D.html#event_updated" class="crosslink">updated</a> event each time its extents change:</p>
 <pre class="code prettyprint"><code class="lang-Javascript">var worldBoundary = model.worldBoundary;
 
@@ -341,7 +361,7 @@ worldBoundary.on("updated", function() {
        center = worldBoundary.center;
        sphere = worldBoundary.sphere();
        //...
-    });
+   });
 
 model.scene.on("tick", function() {
        model.transform.parent.angle += 0.2;
@@ -356,7 +376,7 @@ last <a href="../classes/Boundary3D.html#event_updated" class="crosslink">update
 <p>Also, the Model lazy-instantiates its <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> the first time we reference
 the Model&#39;s <a href="../classes/Model.html#property_worldBoundary" class="crosslink">worldBoundary</a> property. Since the <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a>
 is going to hang around in memory and fire <a href="../classes/Boundary3D.html#event_updated" class="crosslink">updated</a> events each time we add or
-remove components, or animate transforms, for efficiency we should destroy the <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a>
+remove components, or animate <a href="../classes/Transform.html" class="crosslink">Transforms</a>, for efficiency we should destroy the <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a>
 as soon as we no longer need it.</p>
 <p>Finally, when we destroy a Model, it will also destroy its <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a>, if it
 currently has one.</p>
@@ -390,7 +410,7 @@ currently has one.</p>
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_models_model.js.html#l5"><code>src&#x2F;models&#x2F;model.js:5</code></a>
+                <a href="../files/src_models_model.js.html#l1"><code>src&#x2F;models&#x2F;model.js:1</code></a>
                 </p>
         
         
@@ -681,7 +701,7 @@ currently has one.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_models_model.js.html#l296"><code>src&#x2F;models&#x2F;model.js:296</code></a>
+        <a href="../files/src_models_model.js.html#l330"><code>src&#x2F;models&#x2F;model.js:330</code></a>
         </p>
 
 
@@ -873,7 +893,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_models_model.js.html#l485"><code>src&#x2F;models&#x2F;model.js:485</code></a>
+        <a href="../files/src_models_model.js.html#l519"><code>src&#x2F;models&#x2F;model.js:519</code></a>
         </p>
 
 
@@ -1139,7 +1159,7 @@ myRotate.isType(xeogl.Entity); // Returns false, because xeogl.Rotate does not (
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_models_model.js.html#l584"><code>src&#x2F;models&#x2F;model.js:584</code></a>
+        <a href="../files/src_models_model.js.html#l618"><code>src&#x2F;models&#x2F;model.js:618</code></a>
         </p>
 
 
@@ -1497,7 +1517,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_models_model.js.html#l521"><code>src&#x2F;models&#x2F;model.js:521</code></a>
+        <a href="../files/src_models_model.js.html#l555"><code>src&#x2F;models&#x2F;model.js:555</code></a>
         </p>
 
 
@@ -1587,7 +1607,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_model.js.html#l224"><code>src&#x2F;models&#x2F;model.js:224</code></a>
+                            <a href="../files/src_models_model.js.html#l258"><code>src&#x2F;models&#x2F;model.js:258</code></a>
                             </p>
                     
                     
@@ -1638,7 +1658,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_model.js.html#l264"><code>src&#x2F;models&#x2F;model.js:264</code></a>
+                            <a href="../files/src_models_model.js.html#l298"><code>src&#x2F;models&#x2F;model.js:298</code></a>
                             </p>
                     
                     
@@ -1765,7 +1785,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_model.js.html#l234"><code>src&#x2F;models&#x2F;model.js:234</code></a>
+                            <a href="../files/src_models_model.js.html#l268"><code>src&#x2F;models&#x2F;model.js:268</code></a>
                             </p>
                     
                     
@@ -1877,7 +1897,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_model.js.html#l603"><code>src&#x2F;models&#x2F;model.js:603</code></a>
+                            <a href="../files/src_models_model.js.html#l637"><code>src&#x2F;models&#x2F;model.js:637</code></a>
                             </p>
                     
                     
@@ -1911,7 +1931,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_models_model.js.html#l213"><code>src&#x2F;models&#x2F;model.js:213</code></a>
+                            <a href="../files/src_models_model.js.html#l247"><code>src&#x2F;models&#x2F;model.js:247</code></a>
                             </p>
                     
                     
@@ -1936,7 +1956,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_model.js.html#l242"><code>src&#x2F;models&#x2F;model.js:242</code></a>
+                            <a href="../files/src_models_model.js.html#l276"><code>src&#x2F;models&#x2F;model.js:276</code></a>
                             </p>
                     
                     
@@ -1973,7 +1993,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_model.js.html#l644"><code>src&#x2F;models&#x2F;model.js:644</code></a>
+                            <a href="../files/src_models_model.js.html#l678"><code>src&#x2F;models&#x2F;model.js:678</code></a>
                             </p>
                     
                     
@@ -2007,7 +2027,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_model.js.html#l444"><code>src&#x2F;models&#x2F;model.js:444</code></a>
+                            <a href="../files/src_models_model.js.html#l478"><code>src&#x2F;models&#x2F;model.js:478</code></a>
                             </p>
                     
                     
@@ -2074,7 +2094,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_model.js.html#l572"><code>src&#x2F;models&#x2F;model.js:572</code></a>
+                            <a href="../files/src_models_model.js.html#l606"><code>src&#x2F;models&#x2F;model.js:606</code></a>
                             </p>
                     
                     
@@ -2116,7 +2136,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_model.js.html#l621"><code>src&#x2F;models&#x2F;model.js:621</code></a>
+                            <a href="../files/src_models_model.js.html#l655"><code>src&#x2F;models&#x2F;model.js:655</code></a>
                             </p>
                     
                     

@@ -96,7 +96,7 @@ xeogl.TextureCanvas = xeogl.Component.extend({
 
                 this._xSize = value;
 
-                this._scheduleUpdate();
+                this._needUpdate();
 
                 /**
                  * Fired whenever this TextureCanvas's {{#crossLink "TextureCanvas/xSize:property"}}{{/crossLink}} property changes.
@@ -138,7 +138,7 @@ xeogl.TextureCanvas = xeogl.Component.extend({
 
                 this._ySize = value;
 
-                this._scheduleUpdate();
+                this._needUpdate();
 
                 /**
                  * Fired whenever this TextureCanvas's {{#crossLink "TextureCanvas/ySize:property"}}{{/crossLink}} property changes.

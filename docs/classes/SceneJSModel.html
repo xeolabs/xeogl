@@ -196,7 +196,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/examples_js_models_sceneJSModel.js.html#l5"><code>examples&#x2F;js&#x2F;models&#x2F;sceneJSModel.js:5</code></a>
+            Defined in: <a href="../files/examples_js_models_sceneJSModel.js.html#l1"><code>examples&#x2F;js&#x2F;models&#x2F;sceneJSModel.js:1</code></a>
         </div>
 
             Module: <a href="../modules/models.html">models</a><br>
@@ -218,9 +218,12 @@ property to the location of a valid SceneJS JSON file, or set its <a href="../cl
 valid POJO.</li>
 <li>You can set these properties to new values at any time, which causes
 the SceneJSModel to clear itself and load fresh components.</li>
+<li>Can be configured to do a best-effort conversion of SceneJS Phong materials into xeogl&#39;s PBR PBRMetalness or SpecularMaterials.</li>
+</ul>
+<p>It inherits these capabilities from its <a href="../classes/Model.html" class="crosslink">Model</a> base class:</p>
+<ul>
 <li>Can be transformed within World-space by attaching it to a <a href="../classes/Transform.html" class="crosslink">Transform</a>.</li>
 <li>Provides its World-space boundary as a <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a>.</li>
-<li>Can be configured to do a best-effort conversion of SceneJS Phong materials into xeogl&#39;s PBR PBRMetalness or SpecularMaterials.</li>
 </ul>
 <p><img src="../../../assets/images/SceneJSModel.png"></img></p>
 <h2 id="scenejs-support">SceneJS Support</h2>
@@ -260,49 +263,49 @@ fix and contribute missing functionality!</p>
 <p>The simplest way to import SceneJS content is by setting a POJO on the SceneJSModel&#39;s <a href="../classes/SceneJSModel.html#property_data" class="crosslink">data</a>
 property:</p>
 <pre class="code prettyprint"><code class="lang-javascript">var pojoModel = new xeogl.SceneJSModel({
-   id: "myModel",
+       id: "myModel",
 
-   // Our POJO scene definition
-   data: {
-       type: "node",
-       nodes: [
-           {
-               type: "rotate",
-               id: "myRotate",
-               nodes: [
-                   {
-                       type: "geometry",
-                       id: "boxEntity",
-                       primitive: "triangles",
-                       positions: [
-                           2, 2, 2, -2, 2, 2, -2, -2, 2, 2, -2, 2, 2, 2, 2, 2, -2,
-                           2, 2, -2, -2, 2, 2, -2, 2, 2, 2, 2, 2, -2, -2, 2, -2,
-                           -2, 2, 2, -2, 2, 2, -2, 2, -2, -2, -2, -2, -2, -2, 2,
-                           -2, -2, -2, 2, -2, -2, 2, -2, 2, -2, -2, 2, 2, -2, -2,
-                           -2, -2, -2, -2, 2, -2, 2, 2, -2
-                       ],
-                       normals: [
-                           0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1,
-                           0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, -1, 0,
-                           0, -1, 0, 0, -1, 0, 0, -1, 0, 0, 0, -1, 0, 0, -1, 0, 0,
-                          -1, 0, 0, -1, 0, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1
-                       ],
-                       uv: [
-                           5, 5, 0, 5, 0, 0, 5, 0, 0, 5, 0, 0, 5, 0, 5, 5,
-                           5, 0, 5, 5, 0, 5, 0, 0, 5, 5, 0, 5, 0, 0, 5, 0,
-                           0, 0, 5, 0, 5, 5, 0, 5, 0, 0, 5, 0, 5, 5, 0, 5
-                       ],
-                       indices: [
-                           0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7, 8, 9, 10, 8, 10, 11,
-                           12, 13, 14, 12, 14, 15, 16, 17, 18, 16, 18, 19, 20, 21,
-                           22, 20, 22, 23
-                       ]
-                   }
-               ]
-           }
-       ]
-   }
-});
+       // Our POJO scene definition
+       data: {
+           type: "node",
+           nodes: [
+               {
+                   type: "rotate",
+                   id: "myRotate",
+                   nodes: [
+                       {
+                           type: "geometry",
+                           id: "boxEntity",
+                           primitive: "triangles",
+                           positions: [
+                               2, 2, 2, -2, 2, 2, -2, -2, 2, 2, -2, 2, 2, 2, 2, 2, -2,
+                               2, 2, -2, -2, 2, 2, -2, 2, 2, 2, 2, 2, -2, -2, 2, -2,
+                               -2, 2, 2, -2, 2, 2, -2, 2, -2, -2, -2, -2, -2, -2, 2,
+                               -2, -2, -2, 2, -2, -2, 2, -2, 2, -2, -2, 2, 2, -2, -2,
+                               -2, -2, -2, -2, 2, -2, 2, 2, -2
+                           ],
+                           normals: [
+                               0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1,
+                               0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, -1, 0,
+                               0, -1, 0, 0, -1, 0, 0, -1, 0, 0, 0, -1, 0, 0, -1, 0, 0,
+                              -1, 0, 0, -1, 0, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1
+                           ],
+                           uv: [
+                               5, 5, 0, 5, 0, 0, 5, 0, 0, 5, 0, 0, 5, 0, 5, 5,
+                               5, 0, 5, 5, 0, 5, 0, 0, 5, 5, 0, 5, 0, 0, 5, 0,
+                               0, 0, 5, 0, 5, 5, 0, 5, 0, 0, 5, 0, 5, 5, 0, 5
+                           ],
+                           indices: [
+                               0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7, 8, 9, 10, 8, 10, 11,
+                               12, 13, 14, 12, 14, 15, 16, 17, 18, 16, 18, 19, 20, 21,
+                               22, 20, 22, 23
+                           ]
+                       }
+                   ]
+               }
+           ]
+       }
+    });
 
 // Set camera position
 var view = pojoModel.scene.camera.view;
@@ -311,9 +314,10 @@ view.look = [0, 0, 0];
 view.up = [0, 1, 0];
 </code></pre>
 <h4 id="finding-components">Finding components</h4>
-<p>Our SceneJSModel has now created various xeogl components within itself, which we can find by their IDs. In this
-particular example, our POJO has a SceneJS <code>"rotate"</code> node with ID <code>"myRotate"</code>. Our SceneJSModel parsed that into a
-<a href="../classes/Rotate.html" class="crosslink">Rotate</a> component with ID <code>"myModel.myRotate"</code>.</p>
+<p>Our SceneJSModel has now created various xeogl components
+within itself, which we can find by their IDs. In this particular example, our POJO has a SceneJS <code>"rotate"</code> node
+with ID <code>"myRotate"</code>. Our SceneJSModel parsed that into a <a href="../classes/Rotate.html" class="crosslink">Rotate</a> component with
+ID <code>"myModel.myRotate"</code>.</p>
 <p>To see what components our SceneJSModel created, we can drop this expression into the browser&#39;s JavaScript
 debug console (we&#39;re using Chrome here):</p>
 <pre class="code prettyprint"><code>pojoModel.types;
@@ -321,37 +325,37 @@ debug console (we&#39;re using Chrome here):</p>
 contains its xeogl components, mapped to their types:</p>
 <p><img src="../../../assets/images/screenshots/SceneJSModel_console_tankModel.types.png"></img></p>
 <p>Here we&#39;ve expanded the <a href="../classes/Rotate.html" class="crosslink">Rotate</a> components, and we can see
-our <a href="../classes/Rotate.html" class="crosslink">Rotate</a>.</p>
+our <a href="../classes/Rotate.html" class="crosslink">Rotate</a>. <strong>Note that its ID is prefixed with the ID of the SceneJSModel.</strong></p>
 <p>Let&#39;s get that <a href="../classes/Rotate.html" class="crosslink">Rotate</a> from our SceneJSModel&#39;s
 <a href="../classes/Model.html#property_components" class="crosslink">components</a> map and set it spinning:</p>
 <pre class="code prettyprint"><code class="lang-JavaScript">var rotate = pojoModel.components["myModel.myRotate"];
 
 pojoModel.scene.on("tick", function() {
-       rotate.angle += 0.2;
-   });
+   rotate.angle += 0.2;
+});
 </code></pre>
 <h4 id="loading-a-json-scene-definition">Loading a JSON scene definition</h4>
 <p>As shown in the example below, we can also import a SceneJS scene definition from a JSON file (eg. <a href="../../examples/models/scenejs/tronTank.json">tronTank.json</a>).
 Note that we need to wait for the SceneJSModel&#39;s <a href="../classes/SceneJSModel.html#event_loaded" class="crosslink">loaded</a> event before we
 can access its components. In this example we&#39;re also showing how a SceneJSModel can be attached to a modeling <a href="../classes/Transform.html" class="crosslink">Transform</a>
-hierarchy to transform it within World space.</p>
+hierarchy to transform it within World space (see <a href="../classes/Model.html" class="crosslink">Model</a>).</p>
 <pre class="code prettyprint"><code class="lang-javascript">// Import SceneJS JSON model
 var tankModel = new xeogl.SceneJSModel({
-   id: "tankModel",
+       id: "tankModel",
 
-   // Path to our JSON scene definition file
-   src: "models/scenejs/tronTank.json",
+       // Path to our JSON scene definition file
+       src: "models/scenejs/tronTank.json",
 
-   // We can also bolt on a hierarchy of modeling transforms,
-   // to transform the entire SceneJSModel in World space
-   transform: new xeogl.Rotate({
-       xyz: [0, 1, 0],
-       angle: 0,
-       parent: new xeogl.Translate({
-           xyz: [0, 0, 0]
+       // We can also bolt on a hierarchy of modeling transforms,
+       // to transform the entire SceneJSModel in World space
+       transform: new xeogl.Rotate({
+           xyz: [0, 1, 0],
+           angle: 0,
+           parent: new xeogl.Translate({
+               xyz: [0, 0, 0]
+           })
        })
-   })
-});
+    });
 
 // Once our SceneJSModel has loaded, we can access its components
 tankModel.on("loaded", function() {
@@ -406,7 +410,7 @@ tankModel.on("loaded", function() {
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/examples_js_models_sceneJSModel.js.html#l5"><code>examples&#x2F;js&#x2F;models&#x2F;sceneJSModel.js:5</code></a>
+                <a href="../files/examples_js_models_sceneJSModel.js.html#l1"><code>examples&#x2F;js&#x2F;models&#x2F;sceneJSModel.js:1</code></a>
                 </p>
         
         
@@ -1519,7 +1523,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_models_sceneJSModel.js.html#l373"><code>examples&#x2F;js&#x2F;models&#x2F;sceneJSModel.js:373</code></a>
+                            <a href="../files/examples_js_models_sceneJSModel.js.html#l378"><code>examples&#x2F;js&#x2F;models&#x2F;sceneJSModel.js:378</code></a>
                             </p>
                     
                     
@@ -1709,7 +1713,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_models_sceneJSModel.js.html#l241"><code>examples&#x2F;js&#x2F;models&#x2F;sceneJSModel.js:241</code></a>
+                            <a href="../files/examples_js_models_sceneJSModel.js.html#l246"><code>examples&#x2F;js&#x2F;models&#x2F;sceneJSModel.js:246</code></a>
                             </p>
                     
                     
@@ -1872,7 +1876,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_models_sceneJSModel.js.html#l289"><code>examples&#x2F;js&#x2F;models&#x2F;sceneJSModel.js:289</code></a>
+                            <a href="../files/examples_js_models_sceneJSModel.js.html#l294"><code>examples&#x2F;js&#x2F;models&#x2F;sceneJSModel.js:294</code></a>
                             </p>
                     
                     
@@ -2134,7 +2138,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_models_sceneJSModel.js.html#l405"><code>examples&#x2F;js&#x2F;models&#x2F;sceneJSModel.js:405</code></a>
+                            <a href="../files/examples_js_models_sceneJSModel.js.html#l410"><code>examples&#x2F;js&#x2F;models&#x2F;sceneJSModel.js:410</code></a>
                             </p>
                     
                     
@@ -2246,7 +2250,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_models_sceneJSModel.js.html#l314"><code>examples&#x2F;js&#x2F;models&#x2F;sceneJSModel.js:314</code></a>
+                            <a href="../files/examples_js_models_sceneJSModel.js.html#l319"><code>examples&#x2F;js&#x2F;models&#x2F;sceneJSModel.js:319</code></a>
                             </p>
                     
                     
@@ -2272,7 +2276,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_models_sceneJSModel.js.html#l276"><code>examples&#x2F;js&#x2F;models&#x2F;sceneJSModel.js:276</code></a>
+                            <a href="../files/examples_js_models_sceneJSModel.js.html#l281"><code>examples&#x2F;js&#x2F;models&#x2F;sceneJSModel.js:281</code></a>
                             </p>
                     
                     
@@ -2443,7 +2447,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_models_sceneJSModel.js.html#l360"><code>examples&#x2F;js&#x2F;models&#x2F;sceneJSModel.js:360</code></a>
+                            <a href="../files/examples_js_models_sceneJSModel.js.html#l365"><code>examples&#x2F;js&#x2F;models&#x2F;sceneJSModel.js:365</code></a>
                             </p>
                     
                     

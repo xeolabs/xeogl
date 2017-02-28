@@ -504,7 +504,7 @@
 
                     this._lod = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this CylinderGeometry&#x27;s {{#crossLink &quot;CylinderGeometry/lod:property&quot;}}{{/crossLink}} property changes.
@@ -535,7 +535,7 @@
 
                     (this._center = this._center || new xeogl.math.vec3()).set(value || [0, 0, 0]);
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      Fired whenever this CylinderGeometry&#x27;s {{#crossLink &quot;CylinderGeometry/center:property&quot;}}{{/crossLink}} property changes.
@@ -576,7 +576,7 @@
 
                     this._radiusTop = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this CylinderGeometry&#x27;s {{#crossLink &quot;CylinderGeometry/radiusTop:property&quot;}}{{/crossLink}} property changes.
@@ -618,7 +618,7 @@
 
                     this._radiusBottom = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this CylinderGeometry&#x27;s {{#crossLink &quot;CylinderGeometry/radiusBottom:property&quot;}}{{/crossLink}} property changes.
@@ -660,7 +660,7 @@
 
                     this._height = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this CylinderGeometry&#x27;s {{#crossLink &quot;CylinderGeometry/height:property&quot;}}{{/crossLink}} property changes.
@@ -702,7 +702,7 @@
 
                     this._radialSegments = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this CylinderGeometry&#x27;s {{#crossLink &quot;CylinderGeometry/radialSegments:property&quot;}}{{/crossLink}} property changes.
@@ -744,7 +744,7 @@
 
                     this._heightSegments = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this CylinderGeometry&#x27;s {{#crossLink &quot;CylinderGeometry/heightSegments:property&quot;}}{{/crossLink}} property changes.
@@ -781,7 +781,7 @@
 
                     this._openEnded = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this CylinderGeometry&#x27;s {{#crossLink &quot;CylinderGeometry/openEnded:property&quot;}}{{/crossLink}} property changes.

@@ -54,7 +54,7 @@
                 this._srcDirty = true;
             }
 
-            this._scheduleUpdate();
+            this._needUpdate();
         },
 
         _update: function () {
@@ -111,7 +111,7 @@
                                 spinner.processes--;
                             }
 
-                            self._scheduleUpdate();
+                            self._needUpdate();
 
                             /**
                              * Fired whenever this CubeTexture has loaded the
@@ -179,7 +179,7 @@
 
                     this._srcDirty = true;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this CubeTexture's {{#crossLink "CubeTexture/src:property"}}{{/crossLink}} property changes.
@@ -217,7 +217,7 @@
                     this._state.flipY = value;
                     this._imageDirty = true; // flipY is used when loading image data, not when post-applying props
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this CubeTexture's  {{#crossLink "CubeTexture/flipY:property"}}{{/crossLink}} property changes.

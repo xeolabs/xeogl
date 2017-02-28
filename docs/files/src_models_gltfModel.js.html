@@ -192,58 +192,135 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
+/**
+ A **GLTFModel** is a {{#crossLink &quot;Model&quot;}}{{/crossLink}} that loads itself from a &lt;a href=&quot;https://github.com/KhronosGroup/glTF&quot; target = &quot;_other&quot;&gt;glTF&lt;/a&gt; file.
+
+ &lt;a href=&quot;../../examples/#importing_gltf_gearbox&quot;&gt;&lt;img src=&quot;../../../assets/images/gltf/glTF_gearbox_squashed.png&quot;&gt;&lt;/img&gt;&lt;/a&gt;
+
+ ## Overview
+
+ * A GLTFModel is a container of {{#crossLink &quot;Component&quot;}}Components{{/crossLink}} that loads itself from glTF.
+ * It begins loading as soon as you set its {{#crossLink &quot;GLTFModel/src:property&quot;}}{{/crossLink}}
+ property to the location of a valid glTF file.
+ * You can set {{#crossLink &quot;GLTFModel/src:property&quot;}}{{/crossLink}} to a new file path at any time, which causes
+ the GLTFModel to clear itself and load components from the new file.
+
+ It inherits these capabilities from its {{#crossLink &quot;Model&quot;}}{{/crossLink}} base class:
+
+ * Can be transformed within World-space by attaching it to a {{#crossLink &quot;Transform&quot;}}{{/crossLink}}.
+ * Provides its World-space boundary as a {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}}.
+
+ &lt;img src=&quot;../../../assets/images/GLTFModel.png&quot;&gt;&lt;/img&gt;
+
+ ## Usage
+
+ ### Loading glTF
+
+ Load a glTF file by creating a GLTFModel:
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ var gearbox = new xeogl.GLTFModel({
+   id: &quot;gearbox&quot;,
+   src: &quot;models/gltf/gearbox/gearbox_assy.gltf&quot;
+ });
+ &#x60;&#x60;&#x60;&#x60;
+
+ A GLTFModel prefixes its own ID to those of its components. Its ID is optional and defaults to
+ the value of {{#crossLink &quot;GLTFModel/src:property&quot;}}{{/crossLink}}. In this example we&#x27;re providing our own short ID,
+ however, in order to keep the component IDs short and easy to use.
+
+ The GLTFModel begins loading the glTF file immediately. Bind a callback to be notified when the file has loaded (which
+ fires immediately if already loaded):
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ gearbox.on(&quot;loaded&quot;, function() {
+        // GLTFModel has loaded!
+    });
+ &#x60;&#x60;&#x60;&#x60;
+
+ To switch to a different glTF file, simply update {{#crossLink &quot;GLTFModel/src:property&quot;}}{{/crossLink}}:
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ gearbox.src = &quot;models/gltf/buggy/buggy.gltf&quot;
+ &#x60;&#x60;&#x60;&#x60;
+ 
+ ### Accessing components
+
+ Once the GLTFModel has loaded, its {{#crossLink &quot;Scene&quot;}}{{/crossLink}} will contain various components that represent the elements of the glTF file. 
+ We&#x27;ll now access some of those components by ID, to query and update them programmatically.
+
+ **Transforms**
+
+ Let&#x27;s reposition one of the {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} in our GLTFModel. We&#x27;ll get the {{#crossLink &quot;Transform&quot;}}{{/crossLink}} that
+ positions our target {{#crossLink &quot;Entity&quot;}}{{/crossLink}}, in this case a gear. Then we&#x27;ll update its matrix to translate it ten units along the negative Z-axis.
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ var transform = gearbox.scene.components[&quot;gearbox#n274017_gear_53t-node.transform&quot;];
+
+ transform.matrix = xeogl.math.translationMat4v([0,0,-10]);
+ &#x60;&#x60;&#x60;&#x60;
+
+ Note the format of the {{#crossLink &quot;Transform&quot;}}{{/crossLink}}&#x27;s ID:
+
+ &#x60;&#x60;&#x60;&#x60;&lt;GLTFModel ID&gt;#&lt;glTF node ID&gt;.transform&#x60;&#x60;&#x60;&#x60;
+
+ From left to right, the format contains the GLTFModel&#x27;s ID, the ID of the glTF node that contains the transform, then
+ &quot;transform&quot;, to distinguish it from the IDs of any other components loaded from elements on the same glTF node.
+
+ **Entities**
+
+ Let&#x27;s make our gear {{#crossLink &quot;Entity&quot;}}{{/crossLink}} invisible. This time we&#x27;ll get the {{#crossLink &quot;Entity&quot;}}{{/crossLink}} itself, then update
+ its {{#crossLink &quot;Visibility&quot;}}{{/crossLink}} component:
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ var gear53 = gearbox.scene.components[&quot;gearbox#n274017_gear_53.entity.0&quot;];
+
+ gear53.visibility.visible = false;
+ &#x60;&#x60;&#x60;&#x60;
+
+ Note the format of the {{#crossLink &quot;Entity&quot;}}{{/crossLink}}&#x27;s ID: &#x60;&#x60;&#x60;&#x60;&lt;GLTFModel ID&gt;#&lt;glTF node ID&gt;.entity.&lt;glTF mesh index&gt;&#x60;&#x60;&#x60;&#x60;
+
+ A glTF scene node may contain multiple meshes, and for each of those xeogl will create an individual {{#crossLink &quot;Entity&quot;}}{{/crossLink}}. As
+ before, the part before the hash is the ID of the GLTFModel, which is then followed by the ID of the glTF node, then &quot;entity&quot;
+ to signify that this is an Entity ID, then finally an index to differentiate the Entity from those loaded from other
+ meshes on the same glTF node.
+
+ When we load multiple Entities from a glTF node, then they will share the same {{#crossLink &quot;Transform&quot;}}{{/crossLink}} and {{#crossLink &quot;Visibility&quot;}}{{/crossLink}} components. This
+ lets us update their transformation and visibility as a group, as if they were a composite entity that represents
+ the glTF node.
+
+
+ ## Examples
+
+ * [Damaged Helmet with metal/rough PBR materials](../../examples/#importing_gltf_pbr_metallic_helmet)
+ * [Gearbox with entity explorer](../../examples/#importing_gltf_explorer)
+ * [Ensuring individual materials on GLTFModel entities](../../examples/#models_filter_uniqueMaterials)
+ * [Baking transform hierarchies in a GLTFModel](../../examples/#models_filter_bakeTransforms)
+ * [Attaching transforms to a GLTFModel, via constructor](../../examples/#transforms_model_configureTransform)
+ * [Attaching transforms to a GLTFModel, via property](../../examples/#transforms_model_attachTransform)
+
+ @class GLTFModel
+ @module xeogl
+ @submodule models
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this GLTFModel in the default
+ {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}},
+ generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this GLTFModel.
+ @param [cfg.src] {String} Path to a glTF file. You can set this to a new file path at any time, which will cause the
+ GLTFModel to load components from the new file (after first destroying any components loaded from a previous file path).
+ @param [cfg.transform] {Number|String|Transform} A Local-to-World-space (modelling) {{#crossLink &quot;Transform&quot;}}{{/crossLink}} to attach to this GLTFModel.
+ Must be within the same {{#crossLink &quot;Scene&quot;}}{{/crossLink}} as this GLTFModel. Internally, the given
+ {{#crossLink &quot;Transform&quot;}}{{/crossLink}} will be inserted above each top-most {{#crossLink &quot;Transform&quot;}}Transform{{/crossLink}}
+ that the GLTFModel attaches to its {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
+ @extends Model
+ */
 (function () {
 
     &quot;use strict&quot;;
 
-    /**
-     A **GLTFModel** is a {{#crossLink &quot;Model&quot;}}{{/crossLink}} that loads itself from a &lt;a href=&quot;https://github.com/KhronosGroup/glTF&quot; target = &quot;_other&quot;&gt;glTF&lt;/a&gt; file.
-
-     &lt;a href=&quot;../../examples/#importing_gltf_gearbox&quot;&gt;&lt;img src=&quot;../../../assets/images/gltf/glTF_gearbox_squashed.png&quot;&gt;&lt;/img&gt;&lt;/a&gt;
-
-     ## Overview
-
-     * A GLTFModel is a container of {{#crossLink &quot;Component&quot;}}Components{{/crossLink}} that loads itself from glTF.
-     * It begins loading as soon as you set its {{#crossLink &quot;GLTFModel/src:property&quot;}}{{/crossLink}}
-     property to the location of a valid glTF file.
-     * You can set {{#crossLink &quot;GLTFModel/src:property&quot;}}{{/crossLink}} to a new file path at any time, which causes
-     the GLTFModel to clear itself and load components from the new file.
-     * Can be transformed within World-space by attaching it to a {{#crossLink &quot;Transform&quot;}}{{/crossLink}}.
-     * Provides its World-space boundary as a {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}}.
-
-     &lt;img src=&quot;../../../assets/images/GLTFModel.png&quot;&gt;&lt;/img&gt;
-
-     ## Tutorials
-
-     * [Importing glTF](https://github.com/xeolabs/xeogl/wiki/Importing-glTF)
-
-     ## Examples
-
-     * [Damaged Helmet with metal/rough PBR materials](../../examples/#importing_gltf_pbr_metallic_helmet)
-     * [Gearbox with entity explorer](../../examples/#importing_gltf_explorer)
-     * [Ensuring individual materials on GLTFModel entities](../../examples/#models_filter_uniqueMaterials)
-     * [Baking transform hierarchies in a GLTFModel](../../examples/#models_filter_bakeTransforms)
-     * [Attaching transforms to a GLTFModel, via constructor](../../examples/#transforms_model_configureTransform)
-     * [Attaching transforms to a GLTFModel, via property](../../examples/#transforms_model_attachTransform)
-
-     @class GLTFModel
-     @module xeogl
-     @submodule models
-     @constructor
-     @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this GLTFModel in the default
-     {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
-     @param [cfg] {*} Configs
-     @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}},
-     generated automatically when omitted.
-     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this GLTFModel.
-     @param [cfg.src] {String} Path to a glTF file. You can set this to a new file path at any time, which will cause the
-     GLTFModel to load components from the new file (after first destroying any components loaded from a previous file path).
-     @param [cfg.transform] {Number|String|Transform} A Local-to-World-space (modelling) {{#crossLink &quot;Transform&quot;}}{{/crossLink}} to attach to this GLTFModel.
-     Must be within the same {{#crossLink &quot;Scene&quot;}}{{/crossLink}} as this GLTFModel. Internally, the given
-     {{#crossLink &quot;Transform&quot;}}{{/crossLink}} will be inserted above each top-most {{#crossLink &quot;Transform&quot;}}Transform{{/crossLink}}
-     that the GLTFModel attaches to its {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
-     @extends Model
-     */
     xeogl.GLTFModel = xeogl.Model.extend({
 
         type: &quot;xeogl.GLTFModel&quot;,

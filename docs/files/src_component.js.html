@@ -419,7 +419,7 @@
                             cfg = arg2;
                         }
 
-                    } else if (arg1.isType &amp;&amp; arg1.isType(&quot;xeogl.Node&quot;)) {
+                    } else if (arg1.isType &amp;&amp; arg1.isType(&quot;xeogl.Component&quot;)) {
 
                         this.scene = arg1.scene;
                         this.owner = arg1;
@@ -1179,7 +1179,7 @@
          * @protected
          * @param {Number} [priority=1]
          */
-        _scheduleUpdate: function (priority) {
+        _needUpdate: function (priority) {
             if (!this._updateScheduled) {
                 this._updateScheduled = true;
                 if (priority === 0) {

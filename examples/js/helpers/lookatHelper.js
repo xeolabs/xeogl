@@ -138,7 +138,7 @@
 
             this.create({  // Label
                 type: "new xeogl.Entity",
-                geometry: this.create({type: "xeogl.VectorTextGeometry", text: "up", xSize: 1.5, ySize: 1.5}, "yLabel"),
+                geometry: this.create({type: "xeogl.VectorTextGeometry", text: "up",size: 1.5}, "yLabel"),
                 material: yAxisMaterial,
                 visibility: visibility,
                 modes: modes,
@@ -190,8 +190,7 @@
                 geometry: this.create({
                     type: "xeogl.VectorTextGeometry",
                     text: "Z",
-                    xSize: 1.5,
-                    ySize: 1.5
+                    size: 1.5
                 }, "zLabel"),
                 material: zAxisMaterial,
                 visibility: visibility,

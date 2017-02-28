@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2017-02-23
+ * Built on 2017-02-28
  *
  * MIT License
  * Copyright 2017, Lindsay Kay
@@ -12181,7 +12181,7 @@ var Canvas2Image = (function () {
                             cfg = arg2;
                         }
 
-                    } else if (arg1.isType && arg1.isType("xeogl.Node")) {
+                    } else if (arg1.isType && arg1.isType("xeogl.Component")) {
 
                         this.scene = arg1.scene;
                         this.owner = arg1;
@@ -12941,7 +12941,7 @@ var Canvas2Image = (function () {
          * @protected
          * @param {Number} [priority=1]
          */
-        _scheduleUpdate: function (priority) {
+        _needUpdate: function (priority) {
             if (!this._updateScheduled) {
                 this._updateScheduled = true;
                 if (priority === 0) {
@@ -21622,7 +21622,7 @@ var Canvas2Image = (function () {
          *
          * @protected
          */
-        _scheduleUpdate: function () {
+        _needUpdate: function () {
             if (!this._updateScheduled) {
                 this._updateScheduled = true;
                 xeogl.scheduleTask(this._doUpdate, this);
@@ -23095,7 +23095,7 @@ var Canvas2Image = (function () {
 
                     (this._center = this._center || new xeogl.math.vec3()).set(value || [0, 0, 0]);
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      Fired whenever this BoxGeometry's {{#crossLink "BoxGeometry/center:property"}}{{/crossLink}} property changes.
@@ -23136,7 +23136,7 @@ var Canvas2Image = (function () {
 
                     this._xSize = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this BoxGeometry's {{#crossLink "BoxGeometry/xSize:property"}}{{/crossLink}} property changes.
@@ -23178,7 +23178,7 @@ var Canvas2Image = (function () {
 
                     this._ySize = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this BoxGeometry's {{#crossLink "BoxGeometry/ySize:property"}}{{/crossLink}} property changes.
@@ -23220,7 +23220,7 @@ var Canvas2Image = (function () {
 
                     this._zSize = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this BoxGeometry's {{#crossLink "BoxGeometry/zSize:property"}}{{/crossLink}} property changes.
@@ -23462,7 +23462,7 @@ var Canvas2Image = (function () {
 
                     this._lod = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/lod:property"}}{{/crossLink}} property changes.
@@ -23493,7 +23493,7 @@ var Canvas2Image = (function () {
 
                     (this._center = this._center || new xeogl.math.vec3()).set(value || [0, 0, 0]);
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/center:property"}}{{/crossLink}} property changes.
@@ -23534,7 +23534,7 @@ var Canvas2Image = (function () {
 
                     this._radius = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/radius:property"}}{{/crossLink}} property changes.
@@ -23577,7 +23577,7 @@ var Canvas2Image = (function () {
 
                     this._tube = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/tube:property"}}{{/crossLink}} property changes.
@@ -23619,7 +23619,7 @@ var Canvas2Image = (function () {
 
                     this._radialSegments = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/radialSegments:property"}}{{/crossLink}} property changes.
@@ -23662,7 +23662,7 @@ var Canvas2Image = (function () {
 
                     this._tubeSegments = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/tubeSegments:property"}}{{/crossLink}} property changes.
@@ -23704,7 +23704,7 @@ var Canvas2Image = (function () {
 
                     this._arc = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/arc:property"}}{{/crossLink}} property changes.
@@ -23943,7 +23943,7 @@ var Canvas2Image = (function () {
 
                     this._lod = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this SphereGeometry's {{#crossLink "SphereGeometry/lod:property"}}{{/crossLink}} property changes.
@@ -23974,7 +23974,7 @@ var Canvas2Image = (function () {
 
                     (this._center = this._center || new xeogl.math.vec3()).set(value || [0, 0, 0]);
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      Fired whenever this SphereGeometry's {{#crossLink "SphereGeometry/center:property"}}{{/crossLink}} property changes.
@@ -24015,7 +24015,7 @@ var Canvas2Image = (function () {
 
                     this._radius = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this SphereGeometry's {{#crossLink "SphereGeometry/radius:property"}}{{/crossLink}} property changes.
@@ -24058,7 +24058,7 @@ var Canvas2Image = (function () {
 
                     this._heightSegments = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this SphereGeometry's {{#crossLink "SphereGeometry/heightSegments:property"}}{{/crossLink}} property changes.
@@ -24100,7 +24100,7 @@ var Canvas2Image = (function () {
 
                     this._widthSegments = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this SphereGeometry's {{#crossLink "SphereGeometry/widthSegments:property"}}{{/crossLink}} property changes.
@@ -24961,7 +24961,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
                     sceneDefault: false,
                     on: {
                         curves: {
-                            callback: this._scheduleUpdate,
+                            callback: this._needUpdate,
                             scope: this
                         }
                     }
@@ -24990,7 +24990,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
                 this._divisions = value;
 
-                this._scheduleUpdate();
+                this._needUpdate();
 
                 this.fire("divisions", this._divisions);
             },
@@ -25325,7 +25325,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
                     this._lod = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this CylinderGeometry's {{#crossLink "CylinderGeometry/lod:property"}}{{/crossLink}} property changes.
@@ -25356,7 +25356,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
                     (this._center = this._center || new xeogl.math.vec3()).set(value || [0, 0, 0]);
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      Fired whenever this CylinderGeometry's {{#crossLink "CylinderGeometry/center:property"}}{{/crossLink}} property changes.
@@ -25397,7 +25397,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
                     this._radiusTop = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this CylinderGeometry's {{#crossLink "CylinderGeometry/radiusTop:property"}}{{/crossLink}} property changes.
@@ -25439,7 +25439,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
                     this._radiusBottom = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this CylinderGeometry's {{#crossLink "CylinderGeometry/radiusBottom:property"}}{{/crossLink}} property changes.
@@ -25481,7 +25481,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
                     this._height = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this CylinderGeometry's {{#crossLink "CylinderGeometry/height:property"}}{{/crossLink}} property changes.
@@ -25523,7 +25523,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
                     this._radialSegments = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this CylinderGeometry's {{#crossLink "CylinderGeometry/radialSegments:property"}}{{/crossLink}} property changes.
@@ -25565,7 +25565,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
                     this._heightSegments = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this CylinderGeometry's {{#crossLink "CylinderGeometry/heightSegments:property"}}{{/crossLink}} property changes.
@@ -25602,7 +25602,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
                     this._openEnded = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this CylinderGeometry's {{#crossLink "CylinderGeometry/openEnded:property"}}{{/crossLink}} property changes.
@@ -25858,7 +25858,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
                     this._lod = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/lod:property"}}{{/crossLink}} property changes.
@@ -25889,7 +25889,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
                     (this._center = this._center || new xeogl.math.vec3()).set(value || [0, 0, 0]);
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/center:property"}}{{/crossLink}} property changes.
@@ -25930,7 +25930,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
                     this._xSize = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/xSize:property"}}{{/crossLink}} property changes.
@@ -25972,7 +25972,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
                     this._zSize = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/zSize:property"}}{{/crossLink}} property changes.
@@ -26014,7 +26014,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
                     this._xSegments = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/xSegments:property"}}{{/crossLink}} property changes.
@@ -26056,7 +26056,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
                     this._zSegments = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/zSegments:property"}}{{/crossLink}} property changes.
@@ -26263,7 +26263,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
                     this._points = value || [];
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this LatheGeometry's
@@ -26305,7 +26305,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
                     this._lod = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this LatheGeometry's {{#crossLink "LatheGeometry/lod:property"}}{{/crossLink}} property changes.
@@ -26347,7 +26347,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
                     this._phiStart = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this LatheGeometry's {{#crossLink "LatheGeometry/phiStart:property"}}{{/crossLink}} property changes.
@@ -26389,7 +26389,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
                     this._phiLength = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this LatheGeometry's {{#crossLink "LatheGeometry/phiLength:property"}}{{/crossLink}} property changes.
@@ -26431,7 +26431,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
                     this._segments = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this LatheGeometry's {{#crossLink "LatheGeometry/segments:property"}}{{/crossLink}} property changes.
@@ -30006,7 +30006,7 @@ TODO
                 this._srcDirty = true;
             }
 
-            this._scheduleUpdate();
+            this._needUpdate();
         },
 
         _update: function () {
@@ -30063,7 +30063,7 @@ TODO
                                 spinner.processes--;
                             }
 
-                            self._scheduleUpdate();
+                            self._needUpdate();
 
                             /**
                              * Fired whenever this CubeTexture has loaded the
@@ -30131,7 +30131,7 @@ TODO
 
                     this._srcDirty = true;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this CubeTexture's {{#crossLink "CubeTexture/src:property"}}{{/crossLink}} property changes.
@@ -30169,7 +30169,7 @@ TODO
                     this._state.flipY = value;
                     this._imageDirty = true; // flipY is used when loading image data, not when post-applying props
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this CubeTexture's  {{#crossLink "CubeTexture/flipY:property"}}{{/crossLink}} property changes.
@@ -30374,111 +30374,140 @@ TODO
  *
  * @module xeogl
  * @submodule models
- */;(function () {
+ */;/**
+ A **Model** is a group of {{#crossLink "Component"}}Components{{/crossLink}} within a xeogl {{#crossLink "Scene"}}{{/crossLink}}.
 
-    "use strict";
+ ## Overview
 
-    /**
-     A **Model** is a group of {{#crossLink "Component"}}Components{{/crossLink}} within a xeogl {{#crossLink "Scene"}}{{/crossLink}}.
+ * A Model "owns" its components, automatically deleting them when the Model is deleted.
+ * Can be attached to a modelling {{#crossLink "Transform"}}{{/crossLink}}, to transform its components as a group, within World-space.
+ * Provides the collective World-space boundary of its components as a {{#crossLink "Boundary3D"}}{{/crossLink}}, which
+ updates its extents automatically as components are added and removed, or Transforms are updated.
 
-     ## Overview
+ A Model is subclassed by (at least):
 
-     * A Model manages the lifecycle of its components, automatically deleting them when the Model is deleted.
-     * Can be attached to a hierarchy of {{#crossLink "Transform"}}Transforms{{/crossLink}}, to transform its components as a group, within World-space.
-     * Provides the collective World-space boundary of its components as a {{#crossLink "Boundary3D"}}{{/crossLink}}, which
-     updates its extents automatically as components are added and removed, or Transforms are updated.
+ * {{#crossLink "GLTFModel"}}{{/crossLink}}, which loads its components from glTF files.
+ * {{#crossLink "SceneJSModel"}}{{/crossLink}}, which loads its components from SceneJS scene definitions.
+ * {{#crossLink "BuildableModel"}}{{/crossLink}}, which provides a fluent API for building its components.
 
-     A Model is subclassed by (at least):
+ <img src="../../../assets/images/Model.png"></img>
 
-     * {{#crossLink "GLTFModel"}}{{/crossLink}}, which loads its components from glTF files.
-     * {{#crossLink "SceneJSModel"}}{{/crossLink}}, which loads its components from SceneJS scene definitions.
-     * {{#crossLink "BuildableModel"}}{{/crossLink}}, which provides a fluent API for building its components.
+ ## Usage
 
-     <img src="../../../assets/images/Model.png"></img>
+ ### Adding and removing components
 
-     ## Usage
+ When adding components to a Model, it's usually easiest to just add their configuration objects and let the Model
+ internally instantiate them, as shown below.
 
-     ### Adding and removing components to a Model
+ As mentioned, a Model "owns" all the components contained within it, destroying them when we destroy
+ the Model or call its {{#crossLink "Model/destroyAll:method"}}{{/crossLink}} method.
 
-     When adding components to a Model, it's usually easiest to just add their configuration objects and let the Model
-     internally instantiate them, as shown below.
+ ````javascript
+ var model = new xeogl.Model();
 
-     Note that a Model manages the lifecycles of all the components contained within it, destroying them when we destroy
-     the Model or call its {{#crossLink "Model/destroyAll:method"}}{{/crossLink}} method.
+ var geometry = model.add({
+    type: "xeogl.TorusGeometry"
+ });
 
-     ````javascript
-     var model = new xeogl.Model();
+ var material = model.add({
+    type: "xeogl.PhongMaterial"
+    diffuse: [0.4, 0.4, 9.0]
+ });
 
-     var geometry = model.add({
-            type: "xeogl.TorusGeometry"
-        });
+ model.add({
+    type: "xeogl.Entity",
+    geometry: geometry,
+    material: material
+ });
+ ````
 
-     var material = model.add({
-            type: "xeogl.PhongMaterial"
-            diffuse: [0.4, 0.4, 9.0]
-        });
+ As shown below, we can also add our own component instances, supplying them either by reference or ID.
 
-     model.add({
-            type: "xeogl.Entity",
-            geometry: geometry,
-            material: material
-        });
-     ````
+ Note that the components must be in the same {{#crossLink "Scene"}}{{/crossLink}} as the model.
 
-     As shown below, we can also add our own component instances, supplying either the objects or their IDs.
+ ````javascript
+ // Add by instance
+ var myEntity = new xeogl.Entity({
+    geometry: geometry,
+    material: material
+ });
+ model.add(myEntity);
 
-     Note that the components must be in the same {{#crossLink "Scene"}}{{/crossLink}} as the model.
+ // Add by ID
+ new xeogl.Entity({
+    id: "myEntity",
+    geometry: geometry,
+    material: material
+ })
+ model.add("myEntity");
+ ````
 
-     ````javascript
-     // Add our component object
-     model.add(new xeogl.Entity({
-            geometry: geometry,
-            material: material
-        }));
+ Since xeogl aims to be as declarative as possible, we can also add components all in one shot,
+ via the Model's constructor:
 
-     // Instantiate our component and add it by ID:
-     var material2 = new xeogl.PhongMaterial({
+ ````javascript
+ model = new xeogl.Model({
+    components: [
+        {
+            type: "xeogl.TorusGeometry",
+            id: "myGeometry"
+        },
+        {
+            type: "xeogl.PhongMaterial",
             id: "myMaterial",
-            diffuse: [0.4, 1.0, 9.0]
-        });
+            diffuse: [0.4, 0.4, 0.9]
+        },
+        {
+            type: "xeogl.Entity",
+            id: "myEntity",
+            geometry: "myGeometry",
+            material: "myMaterial"
+        }
+    ]
+});
+ ````
 
-     model.add("myMaterial");
-     ````
+ ### Finding components
 
-     Since xeogl aims to be as declarative as possible, we can also add components immediately,
-     via the Model's constructor:
+ Our Model now has various components within itself, which we can find by their IDs.
 
-     ````javascript
-     var model2 = new xeogl.Model({
-            components: [
-                {
-                    type: "xeogl.TorusGeometry"
-                    id: "myTorusGeometry"
-                },
-                {
-                    type: "xeogl.PhongMaterial"
-                    id: "myPhongMaterial",
-                    diffuse: [0.4, 0.4, 9.0]
-                },
-                {
-                    type: "xeogl.Entity",
-                    geometry: "myTorusGeometry",
-                    material: "myPhongMaterial"
-                }
-            ]
-        });
-     ````
+ To find the components grouped by their types, drop this expression into the browser's JavaScript
+ debug console (we're using Chrome here):
 
-     ### Transforming a Model
+ ````
+ model.types;
+ ````
 
-     As well as allowing us organize the lifecycle of groups of components, a Model also lets us transform them as a group.
+ The result is the value of the Model's {{#crossLink "Model/types:property"}}types{{/crossLink}} map, which
+ contains its components, mapped to their types:
 
-     We can attach a modeling {{#crossLink "Transform"}}{{/crossLink}} to our Model, as a either a
-     configuration object or a component instance:
+ <img src="../../../assets/images/screenshots/Model_findingComponents.png"></img>
 
-     ```` Javascript
-     // Attach transforms as a configuration object:
-     model.transform = {
+ Here we've expanded the {{#crossLink "PhongMaterial"}}{{/crossLink}} components, and we can see
+ our {{#crossLink "PhongMaterial"}}{{/crossLink}}.
+
+ Let's get that {{#crossLink "PhongMaterial"}}{{/crossLink}} from our Model's
+ {{#crossLink "Model/components:property"}}{{/crossLink}} map and change its diffuse color:
+
+ ```` JavaScript
+ var material = model.components["myMaterial"];
+ material.diffuse = [0.9, 0.4, 0.4];
+ ````
+
+ The Model also has an {{#crossLink "Model/entities:property"}}{{/crossLink}} map, in which we can find our {{#crossLink "Entity"}}{{/crossLink}}:
+
+ <img src="../../../assets/images/screenshots/Model.entities.png"></img>
+
+ ### Transforming a Model
+
+ As well as allowing us organize the lifecycle of groups of components, a Model also lets us transform them as a group.
+
+ We can attach a modeling {{#crossLink "Transform"}}{{/crossLink}} to our Model, as a either a
+ configuration object or a component instance:
+
+ ```` Javascript
+ // Attach transforms as a configuration object:
+ model.transform = {
         type: "xeogl.Translate",
         xyz: [-35, 0, 0],
         parent: {
@@ -30488,23 +30517,24 @@ TODO
         }
      };
 
-     // Attach our own transform instances:
-     model.transform = new xeogl.Translate({
+ // Attach our own transform instances:
+ model.transform = new xeogl.Translate({
         xyz: [-35, 0, 0],
         parent: new xeogl.Rotate({
             xyz: [0, 1, 0],
             angle: 45
         })
      });
-     ````
+ ````
 
-     We can also provide the transforms to the Model constructor, as either configuration objects or instances.
+ We can also provide the {{#crossLink "Transform"}}{{/crossLink}} to the Model constructor, as either configuration
+ objects or instances.
 
-     Here we'll provide them as configuration objects:
+ Here we'll provide them as configuration objects:
 
-     ```` Javascript
-     // Model internally instantiates our transform components:
-     var model3 = new xeogl.Model({
+ ```` Javascript
+ // Model internally instantiates our transform components:
+ var model3 = new xeogl.Model({
         transform: {
             type: "xeogl.Translate",
             xyz: [-35, 0, 0],
@@ -30516,74 +30546,78 @@ TODO
         }
      });
 
-     ````
+ ````
 
-     Note that, as with the components we added before, the Model will manage the lifecycles of our transform components,
-     destroying them when we destroy the Model or call its {{#crossLink "Model/destroyAll:method"}}{{/crossLink}} method.
+ Note that, as with the components we added before, the Model will manage the lifecycles of our {{#crossLink "Transform"}}{{/crossLink}} components,
+ destroying them when we destroy the Model or call its {{#crossLink "Model/destroyAll:method"}}{{/crossLink}} method. Also, when we call {{#crossLink "Component/destroy:method"}}{{/crossLink}} on a Model component, the component will remove itself from the Model first.
 
-     ### Getting the World-space boundary of a Model
+ ### Getting the World-space boundary of a Model
 
-     A Model's {{#crossLink "Model/worldBoundary:property"}}{{/crossLink}} property is a {{#crossLink "Boundary3D"}}{{/crossLink}}
-     that provides the collective World-space boundary of all its components. The {{#crossLink "Boundary3D"}}{{/crossLink}} will
-     automatically adjust its extents whenever we add or remove components to its Model, or whenever we update the Model's transforms.
+ A Model's {{#crossLink "Model/worldBoundary:property"}}{{/crossLink}} property is a {{#crossLink "Boundary3D"}}{{/crossLink}}
+ that provides the collective World-space boundary of all its components. The {{#crossLink "Boundary3D"}}{{/crossLink}} will
+ automatically adjust its extents whenever we add or remove components to its Model, or whenever we update the Model's {{#crossLink "Transform"}}Transforms{{/crossLink}}.
 
-     Let's get the {{#crossLink "Boundary3D"}}{{/crossLink}} from our first Model, subscribe to changes on its extents,
-     then animate one of the Model's transforms, which will cause the {{#crossLink "Boundary3D"}}{{/crossLink}} to fire an
-     {{#crossLink "Boundary3D/updated:event"}}{{/crossLink}} event each time its extents change:
+ Let's get the {{#crossLink "Boundary3D"}}{{/crossLink}} from our first Model, subscribe to changes on its extents,
+ then animate one of the Model's {{#crossLink "Transform"}}Transforms{{/crossLink}}, which will cause the {{#crossLink "Boundary3D"}}{{/crossLink}} to fire an
+ {{#crossLink "Boundary3D/updated:event"}}{{/crossLink}} event each time its extents change:
 
-     ```` Javascript
-     var worldBoundary = model.worldBoundary;
+ ```` Javascript
+ var worldBoundary = model.worldBoundary;
 
-     worldBoundary.on("updated", function() {
+ worldBoundary.on("updated", function() {
 
-            // See docs on xeogl.Boundary3D for
-            // the format of these properties
+        // See docs on xeogl.Boundary3D for
+        // the format of these properties
 
-            obb = worldBoundary.obb;
-            aabb = worldBoundary.aabb;
-            center = worldBoundary.center;
-            sphere = worldBoundary.sphere();
-            //...
+        obb = worldBoundary.obb;
+        aabb = worldBoundary.aabb;
+        center = worldBoundary.center;
+        sphere = worldBoundary.sphere();
+        //...
     });
 
-     model.scene.on("tick", function() {
-            model.transform.parent.angle += 0.2;
-        });
-     ````
+ model.scene.on("tick", function() {
+        model.transform.parent.angle += 0.2;
+    });
+ ````
 
-     Since xeogl is all about lazy-execution to avoid needless work, the {{#crossLink "Boundary3D"}}{{/crossLink}} will
-     only actually recompute its extents the first time we read its {{#crossLink "Boundary3D/obb:property"}}{{/crossLink}},
-     {{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}}, {{#crossLink "Boundary3D/center:property"}}{{/crossLink}},
-     {{#crossLink "Boundary3D/center:property"}}{{/crossLink}} or
-     {{#crossLink "Boundary3D/sphere:property"}}{{/crossLink}} properties after it fired its
-     last {{#crossLink "Boundary3D/updated:event"}}{{/crossLink}} event.
+ Since xeogl is all about lazy-execution to avoid needless work, the {{#crossLink "Boundary3D"}}{{/crossLink}} will
+ only actually recompute its extents the first time we read its {{#crossLink "Boundary3D/obb:property"}}{{/crossLink}},
+ {{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}}, {{#crossLink "Boundary3D/center:property"}}{{/crossLink}},
+ {{#crossLink "Boundary3D/center:property"}}{{/crossLink}} or
+ {{#crossLink "Boundary3D/sphere:property"}}{{/crossLink}} properties after it fired its
+ last {{#crossLink "Boundary3D/updated:event"}}{{/crossLink}} event.
 
-     Also, the Model lazy-instantiates its {{#crossLink "Boundary3D"}}{{/crossLink}} the first time we reference
-     the Model's {{#crossLink "Model/worldBoundary:property"}}{{/crossLink}} property. Since the {{#crossLink "Boundary3D"}}{{/crossLink}}
-     is going to hang around in memory and fire {{#crossLink "Boundary3D/updated:event"}}{{/crossLink}} events each time we add or
-     remove components, or animate transforms, for efficiency we should destroy the {{#crossLink "Boundary3D"}}{{/crossLink}}
-     as soon as we no longer need it.
+ Also, the Model lazy-instantiates its {{#crossLink "Boundary3D"}}{{/crossLink}} the first time we reference
+ the Model's {{#crossLink "Model/worldBoundary:property"}}{{/crossLink}} property. Since the {{#crossLink "Boundary3D"}}{{/crossLink}}
+ is going to hang around in memory and fire {{#crossLink "Boundary3D/updated:event"}}{{/crossLink}} events each time we add or
+ remove components, or animate {{#crossLink "Transform"}}Transforms{{/crossLink}}, for efficiency we should destroy the {{#crossLink "Boundary3D"}}{{/crossLink}}
+ as soon as we no longer need it.
 
-     Finally, when we destroy a Model, it will also destroy its {{#crossLink "Boundary3D"}}{{/crossLink}}, if it
-     currently has one.
+ Finally, when we destroy a Model, it will also destroy its {{#crossLink "Boundary3D"}}{{/crossLink}}, if it
+ currently has one.
 
-     @class Model
-     @module xeogl
-     @submodule models
-     @constructor
-     @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this ModelModel in the default
-     {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
-     @param [cfg] {*} Configs
-     @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
-     generated automatically when omitted.
-     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ModelModel.
-     @param [cfg.transform] {Number|String|Transform} A Local-to-World-space (modelling) {{#crossLink "Transform"}}{{/crossLink}} to attach to this Model.
-     Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this Model. Internally, the given
-     {{#crossLink "Transform"}}{{/crossLink}} will be inserted above each top-most {{#crossLink "Transform"}}Transform{{/crossLink}}
-     that the Model attaches to its {{#crossLink "Entity"}}Entities{{/crossLink}}.
-     @param [cfg.components] {Array} Array of {{#crossLink "Components"}}{{/crossLink}} to add initially, given as IDs, configuration objects or instances.
-     @extends Component
-     */
+ @class Model
+ @module xeogl
+ @submodule models
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this ModelModel in the default
+ {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
+ generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ModelModel.
+ @param [cfg.transform] {Number|String|Transform} A Local-to-World-space (modelling) {{#crossLink "Transform"}}{{/crossLink}} to attach to this Model.
+ Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this Model. Internally, the given
+ {{#crossLink "Transform"}}{{/crossLink}} will be inserted above each top-most {{#crossLink "Transform"}}Transform{{/crossLink}}
+ that the Model attaches to its {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ @param [cfg.components] {Array} Array of {{#crossLink "Components"}}{{/crossLink}} to add initially, given as IDs, configuration objects or instances.
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
     xeogl.Model = xeogl.Component.extend({
 
         /**
@@ -30663,7 +30697,7 @@ TODO
 
             if (cfg.components) {
                 var components = cfg.components;
-                for (var i = 0, len = components.length; i , len; i++) {
+                for (var i = 0, len = components.length; i < len; i++) {
                     this.add(components[i]);
                 }
             }
@@ -30824,16 +30858,16 @@ TODO
              */
             this.fire("added", component);
 
-         //   this.log("Mode.added:" + component.id);
+            //   this.log("Mode.added:" + component.id);
 
             if (!this._dirty) {
-                this._scheduleUpdate();
+                this._needUpdate();
             }
 
             return component;
         },
 
-        _scheduleUpdate: function () {
+        _needUpdate: function () {
             if (!this._dirty) {
                 this._dirty = true;
                 xeogl.scheduleTask(this._notifyUpdated, this);
@@ -30901,9 +30935,9 @@ TODO
          */
         removeAll: function () {
 
-             this.iterate(function (component) {
-                 component.destroy();
-             });
+            this.iterate(function (component) {
+                component.destroy();
+            });
         },
 
         _remove: function (component) {
@@ -30953,7 +30987,7 @@ TODO
             this.fire("removed", component);
 
             if (!this._dirty) {
-                this._scheduleUpdate();
+                this._needUpdate();
             }
         },
 
@@ -32601,58 +32635,135 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         }
     });
 
-})();;(function () {
+})();;/**
+ A **GLTFModel** is a {{#crossLink "Model"}}{{/crossLink}} that loads itself from a <a href="https://github.com/KhronosGroup/glTF" target = "_other">glTF</a> file.
+
+ <a href="../../examples/#importing_gltf_gearbox"><img src="../../../assets/images/gltf/glTF_gearbox_squashed.png"></img></a>
+
+ ## Overview
+
+ * A GLTFModel is a container of {{#crossLink "Component"}}Components{{/crossLink}} that loads itself from glTF.
+ * It begins loading as soon as you set its {{#crossLink "GLTFModel/src:property"}}{{/crossLink}}
+ property to the location of a valid glTF file.
+ * You can set {{#crossLink "GLTFModel/src:property"}}{{/crossLink}} to a new file path at any time, which causes
+ the GLTFModel to clear itself and load components from the new file.
+
+ It inherits these capabilities from its {{#crossLink "Model"}}{{/crossLink}} base class:
+
+ * Can be transformed within World-space by attaching it to a {{#crossLink "Transform"}}{{/crossLink}}.
+ * Provides its World-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}}.
+
+ <img src="../../../assets/images/GLTFModel.png"></img>
+
+ ## Usage
+
+ ### Loading glTF
+
+ Load a glTF file by creating a GLTFModel:
+
+ ````javascript
+ var gearbox = new xeogl.GLTFModel({
+   id: "gearbox",
+   src: "models/gltf/gearbox/gearbox_assy.gltf"
+ });
+ ````
+
+ A GLTFModel prefixes its own ID to those of its components. Its ID is optional and defaults to
+ the value of {{#crossLink "GLTFModel/src:property"}}{{/crossLink}}. In this example we're providing our own short ID,
+ however, in order to keep the component IDs short and easy to use.
+
+ The GLTFModel begins loading the glTF file immediately. Bind a callback to be notified when the file has loaded (which
+ fires immediately if already loaded):
+
+ ````javascript
+ gearbox.on("loaded", function() {
+        // GLTFModel has loaded!
+    });
+ ````
+
+ To switch to a different glTF file, simply update {{#crossLink "GLTFModel/src:property"}}{{/crossLink}}:
+
+ ````javascript
+ gearbox.src = "models/gltf/buggy/buggy.gltf"
+ ````
+ 
+ ### Accessing components
+
+ Once the GLTFModel has loaded, its {{#crossLink "Scene"}}{{/crossLink}} will contain various components that represent the elements of the glTF file. 
+ We'll now access some of those components by ID, to query and update them programmatically.
+
+ **Transforms**
+
+ Let's reposition one of the {{#crossLink "Entity"}}Entities{{/crossLink}} in our GLTFModel. We'll get the {{#crossLink "Transform"}}{{/crossLink}} that
+ positions our target {{#crossLink "Entity"}}{{/crossLink}}, in this case a gear. Then we'll update its matrix to translate it ten units along the negative Z-axis.
+
+ ````javascript
+ var transform = gearbox.scene.components["gearbox#n274017_gear_53t-node.transform"];
+
+ transform.matrix = xeogl.math.translationMat4v([0,0,-10]);
+ ````
+
+ Note the format of the {{#crossLink "Transform"}}{{/crossLink}}'s ID:
+
+ ````<GLTFModel ID>#<glTF node ID>.transform````
+
+ From left to right, the format contains the GLTFModel's ID, the ID of the glTF node that contains the transform, then
+ "transform", to distinguish it from the IDs of any other components loaded from elements on the same glTF node.
+
+ **Entities**
+
+ Let's make our gear {{#crossLink "Entity"}}{{/crossLink}} invisible. This time we'll get the {{#crossLink "Entity"}}{{/crossLink}} itself, then update
+ its {{#crossLink "Visibility"}}{{/crossLink}} component:
+
+ ````javascript
+ var gear53 = gearbox.scene.components["gearbox#n274017_gear_53.entity.0"];
+
+ gear53.visibility.visible = false;
+ ````
+
+ Note the format of the {{#crossLink "Entity"}}{{/crossLink}}'s ID: ````<GLTFModel ID>#<glTF node ID>.entity.<glTF mesh index>````
+
+ A glTF scene node may contain multiple meshes, and for each of those xeogl will create an individual {{#crossLink "Entity"}}{{/crossLink}}. As
+ before, the part before the hash is the ID of the GLTFModel, which is then followed by the ID of the glTF node, then "entity"
+ to signify that this is an Entity ID, then finally an index to differentiate the Entity from those loaded from other
+ meshes on the same glTF node.
+
+ When we load multiple Entities from a glTF node, then they will share the same {{#crossLink "Transform"}}{{/crossLink}} and {{#crossLink "Visibility"}}{{/crossLink}} components. This
+ lets us update their transformation and visibility as a group, as if they were a composite entity that represents
+ the glTF node.
+
+
+ ## Examples
+
+ * [Damaged Helmet with metal/rough PBR materials](../../examples/#importing_gltf_pbr_metallic_helmet)
+ * [Gearbox with entity explorer](../../examples/#importing_gltf_explorer)
+ * [Ensuring individual materials on GLTFModel entities](../../examples/#models_filter_uniqueMaterials)
+ * [Baking transform hierarchies in a GLTFModel](../../examples/#models_filter_bakeTransforms)
+ * [Attaching transforms to a GLTFModel, via constructor](../../examples/#transforms_model_configureTransform)
+ * [Attaching transforms to a GLTFModel, via property](../../examples/#transforms_model_attachTransform)
+
+ @class GLTFModel
+ @module xeogl
+ @submodule models
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this GLTFModel in the default
+ {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
+ generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this GLTFModel.
+ @param [cfg.src] {String} Path to a glTF file. You can set this to a new file path at any time, which will cause the
+ GLTFModel to load components from the new file (after first destroying any components loaded from a previous file path).
+ @param [cfg.transform] {Number|String|Transform} A Local-to-World-space (modelling) {{#crossLink "Transform"}}{{/crossLink}} to attach to this GLTFModel.
+ Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this GLTFModel. Internally, the given
+ {{#crossLink "Transform"}}{{/crossLink}} will be inserted above each top-most {{#crossLink "Transform"}}Transform{{/crossLink}}
+ that the GLTFModel attaches to its {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ @extends Model
+ */
+(function () {
 
     "use strict";
 
-    /**
-     A **GLTFModel** is a {{#crossLink "Model"}}{{/crossLink}} that loads itself from a <a href="https://github.com/KhronosGroup/glTF" target = "_other">glTF</a> file.
-
-     <a href="../../examples/#importing_gltf_gearbox"><img src="../../../assets/images/gltf/glTF_gearbox_squashed.png"></img></a>
-
-     ## Overview
-
-     * A GLTFModel is a container of {{#crossLink "Component"}}Components{{/crossLink}} that loads itself from glTF.
-     * It begins loading as soon as you set its {{#crossLink "GLTFModel/src:property"}}{{/crossLink}}
-     property to the location of a valid glTF file.
-     * You can set {{#crossLink "GLTFModel/src:property"}}{{/crossLink}} to a new file path at any time, which causes
-     the GLTFModel to clear itself and load components from the new file.
-     * Can be transformed within World-space by attaching it to a {{#crossLink "Transform"}}{{/crossLink}}.
-     * Provides its World-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}}.
-
-     <img src="../../../assets/images/GLTFModel.png"></img>
-
-     ## Tutorials
-
-     * [Importing glTF](https://github.com/xeolabs/xeogl/wiki/Importing-glTF)
-
-     ## Examples
-
-     * [Damaged Helmet with metal/rough PBR materials](../../examples/#importing_gltf_pbr_metallic_helmet)
-     * [Gearbox with entity explorer](../../examples/#importing_gltf_explorer)
-     * [Ensuring individual materials on GLTFModel entities](../../examples/#models_filter_uniqueMaterials)
-     * [Baking transform hierarchies in a GLTFModel](../../examples/#models_filter_bakeTransforms)
-     * [Attaching transforms to a GLTFModel, via constructor](../../examples/#transforms_model_configureTransform)
-     * [Attaching transforms to a GLTFModel, via property](../../examples/#transforms_model_attachTransform)
-
-     @class GLTFModel
-     @module xeogl
-     @submodule models
-     @constructor
-     @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this GLTFModel in the default
-     {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
-     @param [cfg] {*} Configs
-     @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
-     generated automatically when omitted.
-     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this GLTFModel.
-     @param [cfg.src] {String} Path to a glTF file. You can set this to a new file path at any time, which will cause the
-     GLTFModel to load components from the new file (after first destroying any components loaded from a previous file path).
-     @param [cfg.transform] {Number|String|Transform} A Local-to-World-space (modelling) {{#crossLink "Transform"}}{{/crossLink}} to attach to this GLTFModel.
-     Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this GLTFModel. Internally, the given
-     {{#crossLink "Transform"}}{{/crossLink}} will be inserted above each top-most {{#crossLink "Transform"}}Transform{{/crossLink}}
-     that the GLTFModel attaches to its {{#crossLink "Entity"}}Entities{{/crossLink}}.
-     @extends Model
-     */
     xeogl.GLTFModel = xeogl.Model.extend({
 
         type: "xeogl.GLTFModel",
@@ -36255,7 +36366,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                 this._targetDirty = true;
             }
 
-            this._scheduleUpdate();
+            this._needUpdate();
         },
 
         _update: function () {
@@ -36407,7 +36518,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                         spinner.processes--;
                     }
 
-                    self._scheduleUpdate();
+                    self._needUpdate();
 
                     /**
                      * Fired whenever this Texture's  {{#crossLink "Texture/image:property"}}{{/crossLink}} property changes.
@@ -36480,7 +36591,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                     this._srcDirty = false;
                     this._targetDirty = false;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Texture's  {{#crossLink "Texture/image:property"}}{{/crossLink}} property changes.
@@ -36521,7 +36632,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                     this._srcDirty = true;
                     this._targetDirty = false;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Texture's {{#crossLink "Texture/src:property"}}{{/crossLink}} property changes.
@@ -36577,7 +36688,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                     this._srcDirty = false;
                     this._targetDirty = true;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Texture's   {{#crossLink "Texture/target:property"}}{{/crossLink}} property changes.
@@ -36609,7 +36720,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                     this._translate.set(value || [0, 0]);
                     this._matrixDirty = true;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Texture's   {{#crossLink "Texture/translate:property"}}{{/crossLink}} property changes.
@@ -36640,7 +36751,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                     this._scale.set(value || [1, 1]);
                     this._matrixDirty = true;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Texture's   {{#crossLink "Texture/scale:property"}}{{/crossLink}} property changes.
@@ -36677,7 +36788,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                     this._rotate = value;
                     this._matrixDirty = true;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Texture's  {{#crossLink "Texture/rotate:property"}}{{/crossLink}} property changes.
@@ -36754,7 +36865,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                     this._state.minFilter = value;
                     this._propsDirty = true;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Texture's  {{#crossLink "Texture/minFilter:property"}}{{/crossLink}} property changes.
@@ -36804,7 +36915,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                     this._state.magFilter = value;
                     this._propsDirty = true;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Texture's  {{#crossLink "Texture/magFilter:property"}}{{/crossLink}} property changes.
@@ -36856,7 +36967,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                     this._state.wrapS = value;
                     this._propsDirty = true;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Texture's  {{#crossLink "Texture/wrapS:property"}}{{/crossLink}} property changes.
@@ -36908,7 +37019,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                     this._state.wrapT = value;
                     this._propsDirty = true;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Texture's  {{#crossLink "Texture/wrapT:property"}}{{/crossLink}} property changes.
@@ -36945,7 +37056,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                     this._state.flipY = value;
                     this._imageDirty = true; // flipY is used when loading image data, not when post-applying props
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Texture's  {{#crossLink "Texture/flipY:property"}}{{/crossLink}} property changes.
@@ -37303,6 +37414,8 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  ## Boundaries
 
+
+
  #### Local-space
 
  A Entity provides its Local-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}} that encloses
@@ -37343,35 +37456,26 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  transformation by the Entity's {{#crossLink "Entity/transform:property"}}Modelling transform{{/crossLink}}.
 
  ```` javascript
- var scene = new xeogl.Scene();
-
- var geometry = new xeogl.Geometry(myScene, {
-      //...
+ var entity = new xeogl.Entity({
+    geometry: new xeogl.TorusGeometry(),
+    transform: new xeogl.Translate({
+        xyz: [-5, 0, 0]
+    })
  });
 
- var translate = new xeogl.Translate(scene, {
-    xyz: [-5, 0, 0] // Translate along -X axis
- });
-
- var entity = new xeogl.Entity(myScene, {
-       geometry: myGeometry,
-       transform: translate
- });
-
- // Get the World-space Boundary3D
+ // Get the World-space boundary
  var worldBoundary = entity.worldBoundary;
 
- // Get World-space entity-aligned bounding box (OBB),
- // which is an array of eight vertices that describes
- // the box that is aligned with the Entity
+ // Get the boundary as an entity-aligned bounding box (OBB), which is a flattened array
+ of eight 3D vertices that describes the box that is aligned with the Entity
  var obb = worldBoundary.obb;
 
- // Get the World-space axis-aligned bounding box (ABB),
+ // Get the boundary as an axis-aligned bounding box (ABB),
  // which contains the extents of the boundary on each axis
  var aabb = worldBoundary.aabb;
 
- // get the World-space center of the Entity:
- var center = worldBoundary.center;
+ // Get the World-space bounding sphere:
+ var sphere = worldBoundary.center;
  ````
 
  #### View-space
@@ -42305,7 +42409,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                     (this._xyz = this._xyz || new xeogl.math.vec3()).set(value || [0, 1, 0]);
 
-                    this._scheduleUpdate();
+                    this._needUpdate(0);
 
                     /**
                      Fired whenever this Rotate's {{#crossLink "Rotate/xyz:property"}}{{/crossLink}} property changes.
@@ -42336,7 +42440,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                     this._angle = value || 0;
 
-                    this._scheduleUpdate();
+                    this._needUpdate(0);
 
                     /**
                      Fired whenever this Rotate's {{#crossLink "Rotate/angle:property"}}{{/crossLink}} property changes.
@@ -42670,7 +42774,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                     (this._xyz = this._xyz || new xeogl.math.vec3()).set(value || [1, 1, 1]);
 
-                    this._scheduleUpdate();
+                    this._needUpdate(0);
 
                     /**
                      Fired whenever this Scale's {{#crossLink "Scale/xyz:property"}}{{/crossLink}} property changes.
@@ -42826,7 +42930,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                     (this._xyz = this._xyz || new xeogl.math.vec3()).set(value || [0, 0, 0]);
 
-                    this._scheduleUpdate();
+                    this._needUpdate(0);
 
                     /**
                      Fired whenever this Translate's {{#crossLink "Translate/xyz:property"}}{{/crossLink}} property changes.
@@ -43295,7 +43399,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                     this._left = (value !== undefined && value !== null) ? value : -1.0;
 
-                    this._scheduleUpdate(0); // Ensure matrix built on next "tick"
+                    this._needUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
                      * Fired whenever this Frustum's {{#crossLink "Frustum/left:property"}}{{/crossLink}} property changes.
@@ -43326,7 +43430,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                     this._right = (value !== undefined && value !== null) ? value : 1.0;
 
-                    this._scheduleUpdate(0); // Ensure matrix built on next "tick"
+                    this._needUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
                      * Fired whenever this Frustum's {{#crossLink "Frustum/right:property"}}{{/crossLink}} property changes.
@@ -43357,7 +43461,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                     this._top = (value !== undefined && value !== null) ? value : 1.0;
 
-                    this._scheduleUpdate(0); // Ensure matrix built on next "tick"
+                    this._needUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
                      * Fired whenever this Frustum's   {{#crossLink "Frustum/top:property"}}{{/crossLink}} property changes.
@@ -43388,7 +43492,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                     this._bottom = (value !== undefined && value !== null) ? value : -1.0;
 
-                    this._scheduleUpdate(0); // Ensure matrix built on next "tick"
+                    this._needUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
                      * Fired whenever this Frustum's   {{#crossLink "Frustum/bottom:property"}}{{/crossLink}} property changes.
@@ -43419,7 +43523,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                     this._near = (value !== undefined && value !== null) ? value : 0.1;
 
-                    this._scheduleUpdate(0); // Ensure matrix built on next "tick"
+                    this._needUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
                      * Fired whenever this Frustum's {{#crossLink "Frustum/near:property"}}{{/crossLink}} property changes.
@@ -43450,7 +43554,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                     this._far = (value !== undefined && value !== null) ? value : 10000.0;
 
-                    this._scheduleUpdate(0); // Ensure matrix built on next "tick"
+                    this._needUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
                      * Fired whenever this Frustum's  {{#crossLink "Frustum/far:property"}}{{/crossLink}} property changes.
@@ -43790,7 +43894,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                     this._eye.set(value || [0, 0, 10]);
 
-                    this._scheduleUpdate(0); // Ensure matrix built on next "tick"
+                    this._needUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
                      * Fired whenever this Lookat's  {{#crossLink "Lookat/eye:property"}}{{/crossLink}} property changes.
@@ -43821,7 +43925,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                     this._look.set(value || [0, 0, 0]);
 
-                    this._scheduleUpdate(0); // Ensure matrix built on next "tick";
+                    this._needUpdate(0); // Ensure matrix built on next "tick";
 
                     /**
                      * Fired whenever this Lookat's  {{#crossLink "Lookat/look:property"}}{{/crossLink}} property changes.
@@ -43850,7 +43954,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                     this._up.set(value || [0, 1, 0]);
 
-                    this._scheduleUpdate(0); // Ensure matrix built on next "tick"
+                    this._needUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
                      * Fired whenever this Lookat's  {{#crossLink "Lookat/up:property"}}{{/crossLink}} property changes.
@@ -43959,7 +44063,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             this.near = cfg.near;
             this.far = cfg.far;
 
-            this._onCanvasBoundary = this.scene.canvas.on("boundary", this._scheduleUpdate, this);
+            this._onCanvasBoundary = this.scene.canvas.on("boundary", this._needUpdate, this);
         },
 
         _update: function () {
@@ -44011,7 +44115,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                     this._scale = (value !== undefined && value !== null) ? value : 1.0;
 
-                    this._scheduleUpdate(0); // Ensure matrix built on next "tick"
+                    this._needUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
                      * Fired whenever this Ortho's {{#crossLink "Ortho/scale:property"}}{{/crossLink}} property changes.
@@ -44042,7 +44146,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                     this._near = (value !== undefined && value !== null) ? value : 0.1;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Ortho's  {{#crossLink "Ortho/near:property"}}{{/crossLink}} property changes.
@@ -44073,7 +44177,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                     this._far = (value !== undefined && value !== null) ? value : 10000.0;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Ortho's {{#crossLink "Ortho/far:property"}}{{/crossLink}} property changes.
@@ -44181,7 +44285,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             this._far = 10000.0;
 
             // Recompute aspect from change in canvas size
-            this._canvasResized = this.scene.canvas.on("boundary", this._scheduleUpdate, this);
+            this._canvasResized = this.scene.canvas.on("boundary", this._needUpdate, this);
 
             this.fovy = cfg.fovy;
             this.near = cfg.near;
@@ -44215,7 +44319,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                     this._renderer.imageDirty = true;
 
-                    this._scheduleUpdate(0); // Ensure matrix built on next "tick"
+                    this._needUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
                      * Fired whenever this Perspective's {{#crossLink "Perspective/fovy:property"}}{{/crossLink}} property changes.
@@ -44248,7 +44352,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                     this._renderer.imageDirty = true;
 
-                    this._scheduleUpdate(0); // Ensure matrix built on next "tick"
+                    this._needUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
                      * Fired whenever this Perspective's   {{#crossLink "Perspective/near:property"}}{{/crossLink}} property changes.
@@ -44280,7 +44384,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                     this._renderer.imageDirty = true;
 
-                    this._scheduleUpdate(0); // Ensure matrix built on next "tick"
+                    this._needUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
                      * Fired whenever this Perspective's  {{#crossLink "Perspective/far:property"}}{{/crossLink}} property changes.

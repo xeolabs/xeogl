@@ -101,7 +101,7 @@ xeogl.SplineCurveHelper = xeogl.Component.extend({
 
                     this._onPathCurves = newPath.on("curves",
                         function () {
-                            self._scheduleUpdate();
+                            self._needUpdate();
                         });
                 }
             },

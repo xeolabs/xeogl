@@ -131,7 +131,7 @@
 
                     (this._xyz = this._xyz || new xeogl.math.vec3()).set(value || [0, 1, 0]);
 
-                    this._scheduleUpdate();
+                    this._needUpdate(0);
 
                     /**
                      Fired whenever this Rotate's {{#crossLink "Rotate/xyz:property"}}{{/crossLink}} property changes.
@@ -162,7 +162,7 @@
 
                     this._angle = value || 0;
 
-                    this._scheduleUpdate();
+                    this._needUpdate(0);
 
                     /**
                      Fired whenever this Rotate's {{#crossLink "Rotate/angle:property"}}{{/crossLink}} property changes.

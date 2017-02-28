@@ -454,12 +454,12 @@
 
         _setLocalPosDirty: function () {
             this._localPosDirty = true;
-            this._scheduleUpdate();
+            this._needUpdate();
         },
 
         _setWorldPosDirty: function () {
             this._worldPosDirty = true;
-            this._scheduleUpdate();
+            this._needUpdate();
         },
 
         _entityVisible: function (visible) {
@@ -472,7 +472,7 @@
             entity.visibility.off(this._onEntityVisible);
         },
 
-        // Callback for _scheduleUpdate
+        // Callback for _needUpdate
         _update: (function () {
 
             var math = xeogl.math;

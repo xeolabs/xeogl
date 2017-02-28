@@ -7,8 +7,8 @@
 
  * A VectorTextGeometry is a mesh of line segments in the X-Y plane  that is generated from the value of
  its {{#crossLink "VectorTextGeometry/text:property"}}{{/crossLink}} property.
- * Set its {{#crossLink "VectorTextGeometry/origin:property"}}{{/crossLink}}, {{#crossLink "VectorTextGeometry/xSize:property"}}{{/crossLink}},
-  {{#crossLink "VectorTextGeometry/ySize:property"}}{{/crossLink}} or {{#crossLink "VectorTextGeometry/text:property"}}{{/crossLink}} properties to new values at any time to dynamically regenerate it.
+ * Text is monospaced and each character occupies a square cell.
+ * Set its {{#crossLink "VectorTextGeometry/origin:property"}}{{/crossLink}}, {{#crossLink "VectorTextGeometry/size:property"}}{{/crossLink}} or {{#crossLink "VectorTextGeometry/text:property"}}{{/crossLink}} properties to new values at any time to dynamically regenerate it.
 
  ## Example
 
@@ -17,8 +17,7 @@
      geometry: new xeogl.VectorTextGeometry({
          text: "Attack ships on fire off the Shoulder of Orion",
          origin: [0,0,0],
-         xSize: 2,
-         ySize: 2
+         size: 2 // Size of each square character cell
      }),
      material: new xeogl.PhongMaterial({
          emissive: [0.5, 1.0, 1.0],
@@ -44,8 +43,7 @@
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this VectorTextGeometry.
  @param [cfg.origin] {Float32Array} 3D point indicating the top left corner of the VectorTextGeometry.
- @param [cfg.xSize] {Float32Array} The VectorTextGeometry's width on the X-axis.
- @param [cfg.ySize] {Float32Array} The VectorTextGeometry's height on the Y-axis.
+ @param [cfg.size] {Float32Array} Size of each character.
  @param [cfg.text=""] {String} The text.
  @extends Geometry
  */
@@ -65,8 +63,7 @@
 
             this.text = cfg.text;
             this.origin = cfg.origin;
-            this.xSize = cfg.xSize;
-            this.ySize = cfg.ySize;
+            this.size = cfg.size;
         },
 
         /**
@@ -136,8 +133,8 @@
                             continue;
                         }
 
-                        positions.push((x + (a[0] * this._xSize) * mag) + xOrigin);
-                        positions.push((y + (a[1] * this._ySize) * mag) + yOrigin);
+                        positions.push((x + (a[0] * this._size) * mag) + xOrigin);
+                        positions.push((y + (a[1] * this._size) * mag) + yOrigin);
                         positions.push(0 + zOrigin);
 
                         if (p1 == -1) {
@@ -160,10 +157,10 @@
 
                         needLine = true;
                     }
-                    x += c.width * mag * this._xSize;
+                    x += c.width * mag * this._size;
 
                 }
-                y -= 35 * mag * this._ySize;
+                y -= 35 * mag * this._size;
             }
 
             this.primitive = "lines";
@@ -196,7 +193,7 @@
 
                     this._text = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this VectorTextGeometry's {{#crossLink "VectorTextGeometry/text:property"}}{{/crossLink}} property changes.
@@ -227,7 +224,7 @@
 
                     (this._origin = this._origin || new xeogl.math.vec3()).set(value || [0, 0, 0]);
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      Fired whenever this VectorTextGeometry's {{#crossLink "VectorTextGeometry/origin:property"}}{{/crossLink}} property changes.
@@ -243,94 +240,51 @@
             },
 
             /**
-             * The VectorText's width on the X-axis.
+             * Size of each character cell.
              *
-             * Fires a {{#crossLink "VectorText/xSize:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "VectorText/size:event"}}{{/crossLink}} event on change.
              *
-             * @property xSize
+             * @property size
              * @default 1
              * @type Number
              */
-            xSize: {
+            size: {
 
                 set: function (value) {
 
                     value = value || 1;
 
-                    if (this._xSize === value) {
+                    if (this._size === value) {
                         return;
                     }
 
                     if (value < 0) {
-                        this.warn("negative xSize not allowed - will invert");
+                        this.warn("negative size not allowed - will invert");
                         value = value * -1;
                     }
 
-                    this._xSize = value;
+                    this._size = value;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
-                     * Fired whenever this VectorText's {{#crossLink "VectorText/xSize:property"}}{{/crossLink}} property changes.
-                     * @event xSize
+                     * Fired whenever this VectorText's {{#crossLink "VectorText/size:property"}}{{/crossLink}} property changes.
+                     * @event size
                      * @type Number
                      * @param value The property's new value
                      */
-                    this.fire("xSize", this._xSize);
+                    this.fire("size", this._size);
                 },
 
                 get: function () {
-                    return this._xSize;
-                }
-            },
-
-            /**
-             * The VectorText's height on the Y-axis.
-             *
-             * Fires a {{#crossLink "VectorText/ySize:event"}}{{/crossLink}} event on change.
-             *
-             * @property ySize
-             * @default 1.0
-             * @type Number
-             */
-            ySize: {
-
-                set: function (value) {
-
-                    value = value || 1.0;
-
-                    if (this._ySize === value) {
-                        return;
-                    }
-
-                    if (value < 0) {
-                        this.warn("negative ySize not allowed - will invert");
-                        value = value * -1;
-                    }
-
-                    this._ySize = value;
-
-                    this._scheduleUpdate();
-
-                    /**
-                     * Fired whenever this VectorText's {{#crossLink "VectorText/ySize:property"}}{{/crossLink}} property changes.
-                     * @event ySize
-                     * @type Number
-                     * @param value The property's new value
-                     */
-                    this.fire("ySize", this._ySize);
-                },
-
-                get: function () {
-                    return this._ySize;
+                    return this._size;
                 }
             },
 
             _getJSON: function () {
                 return {
                     center: this._center.slice(),
-                    xSize: this._xSize,
-                    ySize: this._ySize,
+                    size: this._size,
                     text: this._text
                 };
             }

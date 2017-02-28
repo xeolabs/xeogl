@@ -53,35 +53,26 @@
  transformation by the Entity's {{#crossLink "Entity/transform:property"}}Modelling transform{{/crossLink}}.
 
  ```` javascript
- var scene = new xeogl.Scene();
-
- var geometry = new xeogl.Geometry(myScene, {
-      //...
+ var entity = new xeogl.Entity({
+    geometry: new xeogl.TorusGeometry(),
+    transform: new xeogl.Translate({
+        xyz: [-5, 0, 0]
+    })
  });
 
- var translate = new xeogl.Translate(scene, {
-    xyz: [-5, 0, 0] // Translate along -X axis
- });
-
- var entity = new xeogl.Entity(myScene, {
-       geometry: myGeometry,
-       transform: translate
- });
-
- // Get the World-space Boundary3D
+ // Get the World-space boundary
  var worldBoundary = entity.worldBoundary;
 
- // Get World-space entity-aligned bounding box (OBB),
- // which is an array of eight vertices that describes
- // the box that is aligned with the Entity
+ // Get the boundary as an entity-aligned bounding box (OBB), which is a flattened array
+ of eight 3D vertices that describes the box that is aligned with the Entity
  var obb = worldBoundary.obb;
 
- // Get the World-space axis-aligned bounding box (ABB),
+ // Get the boundary as an axis-aligned bounding box (ABB),
  // which contains the extents of the boundary on each axis
  var aabb = worldBoundary.aabb;
 
- // get the World-space center of the Entity:
- var center = worldBoundary.center;
+ // Get the World-space bounding sphere:
+ var sphere = worldBoundary.center;
  ````
 
  #### View-space

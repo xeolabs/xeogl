@@ -191,7 +191,7 @@
                 this._targetDirty = true;
             }
 
-            this._scheduleUpdate();
+            this._needUpdate();
         },
 
         _update: function () {
@@ -343,7 +343,7 @@
                         spinner.processes--;
                     }
 
-                    self._scheduleUpdate();
+                    self._needUpdate();
 
                     /**
                      * Fired whenever this Texture's  {{#crossLink "Texture/image:property"}}{{/crossLink}} property changes.
@@ -416,7 +416,7 @@
                     this._srcDirty = false;
                     this._targetDirty = false;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Texture's  {{#crossLink "Texture/image:property"}}{{/crossLink}} property changes.
@@ -457,7 +457,7 @@
                     this._srcDirty = true;
                     this._targetDirty = false;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Texture's {{#crossLink "Texture/src:property"}}{{/crossLink}} property changes.
@@ -513,7 +513,7 @@
                     this._srcDirty = false;
                     this._targetDirty = true;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Texture's   {{#crossLink "Texture/target:property"}}{{/crossLink}} property changes.
@@ -545,7 +545,7 @@
                     this._translate.set(value || [0, 0]);
                     this._matrixDirty = true;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Texture's   {{#crossLink "Texture/translate:property"}}{{/crossLink}} property changes.
@@ -576,7 +576,7 @@
                     this._scale.set(value || [1, 1]);
                     this._matrixDirty = true;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Texture's   {{#crossLink "Texture/scale:property"}}{{/crossLink}} property changes.
@@ -613,7 +613,7 @@
                     this._rotate = value;
                     this._matrixDirty = true;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Texture's  {{#crossLink "Texture/rotate:property"}}{{/crossLink}} property changes.
@@ -690,7 +690,7 @@
                     this._state.minFilter = value;
                     this._propsDirty = true;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Texture's  {{#crossLink "Texture/minFilter:property"}}{{/crossLink}} property changes.
@@ -740,7 +740,7 @@
                     this._state.magFilter = value;
                     this._propsDirty = true;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Texture's  {{#crossLink "Texture/magFilter:property"}}{{/crossLink}} property changes.
@@ -792,7 +792,7 @@
                     this._state.wrapS = value;
                     this._propsDirty = true;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Texture's  {{#crossLink "Texture/wrapS:property"}}{{/crossLink}} property changes.
@@ -844,7 +844,7 @@
                     this._state.wrapT = value;
                     this._propsDirty = true;
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Texture's  {{#crossLink "Texture/wrapT:property"}}{{/crossLink}} property changes.
@@ -881,7 +881,7 @@
                     this._state.flipY = value;
                     this._imageDirty = true; // flipY is used when loading image data, not when post-applying props
 
-                    this._scheduleUpdate();
+                    this._needUpdate();
 
                     /**
                      * Fired whenever this Texture's  {{#crossLink "Texture/flipY:property"}}{{/crossLink}} property changes.

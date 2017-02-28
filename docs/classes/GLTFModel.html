@@ -196,7 +196,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_models_gltfModel.js.html#l5"><code>src&#x2F;models&#x2F;gltfModel.js:5</code></a>
+            Defined in: <a href="../files/src_models_gltfModel.js.html#l1"><code>src&#x2F;models&#x2F;gltfModel.js:1</code></a>
         </div>
 
             Module: <a href="../modules/models.html">models</a><br>
@@ -215,14 +215,62 @@
 property to the location of a valid glTF file.</li>
 <li>You can set <a href="../classes/GLTFModel.html#property_src" class="crosslink">src</a> to a new file path at any time, which causes
 the GLTFModel to clear itself and load components from the new file.</li>
+</ul>
+<p>It inherits these capabilities from its <a href="../classes/Model.html" class="crosslink">Model</a> base class:</p>
+<ul>
 <li>Can be transformed within World-space by attaching it to a <a href="../classes/Transform.html" class="crosslink">Transform</a>.</li>
 <li>Provides its World-space boundary as a <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a>.</li>
 </ul>
 <p><img src="../../../assets/images/GLTFModel.png"></img></p>
-<h2 id="tutorials">Tutorials</h2>
-<ul>
-<li><a href="https://github.com/xeolabs/xeogl/wiki/Importing-glTF">Importing glTF</a></li>
-</ul>
+<h2 id="usage">Usage</h2>
+<h3 id="loading-gltf">Loading glTF</h3>
+<p>Load a glTF file by creating a GLTFModel:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var gearbox = new xeogl.GLTFModel({
+  id: "gearbox",
+  src: "models/gltf/gearbox/gearbox_assy.gltf"
+});
+</code></pre>
+<p>A GLTFModel prefixes its own ID to those of its components. Its ID is optional and defaults to
+the value of <a href="../classes/GLTFModel.html#property_src" class="crosslink">src</a>. In this example we&#39;re providing our own short ID,
+however, in order to keep the component IDs short and easy to use.</p>
+<p>The GLTFModel begins loading the glTF file immediately. Bind a callback to be notified when the file has loaded (which
+fires immediately if already loaded):</p>
+<pre class="code prettyprint"><code class="lang-javascript">gearbox.on("loaded", function() {
+       // GLTFModel has loaded!
+   });
+</code></pre>
+<p>To switch to a different glTF file, simply update <a href="../classes/GLTFModel.html#property_src" class="crosslink">src</a>:</p>
+<pre class="code prettyprint"><code class="lang-javascript">gearbox.src = "models/gltf/buggy/buggy.gltf"
+</code></pre>
+<h3 id="accessing-components">Accessing components</h3>
+<p>Once the GLTFModel has loaded, its <a href="../classes/Scene.html" class="crosslink">Scene</a> will contain various components that represent the elements of the glTF file. 
+We&#39;ll now access some of those components by ID, to query and update them programmatically.</p>
+<p><strong>Transforms</strong></p>
+<p>Let&#39;s reposition one of the <a href="../classes/Entity.html" class="crosslink">Entities</a> in our GLTFModel. We&#39;ll get the <a href="../classes/Transform.html" class="crosslink">Transform</a> that
+positions our target <a href="../classes/Entity.html" class="crosslink">Entity</a>, in this case a gear. Then we&#39;ll update its matrix to translate it ten units along the negative Z-axis.</p>
+<pre class="code prettyprint"><code class="lang-javascript">var transform = gearbox.scene.components["gearbox#n274017_gear_53t-node.transform"];
+
+transform.matrix = xeogl.math.translationMat4v([0,0,-10]);
+</code></pre>
+<p>Note the format of the <a href="../classes/Transform.html" class="crosslink">Transform</a>&#39;s ID:</p>
+<p><code>&lt;GLTFModel ID&gt;#&lt;glTF node ID&gt;.transform</code></p>
+<p>From left to right, the format contains the GLTFModel&#39;s ID, the ID of the glTF node that contains the transform, then
+"transform", to distinguish it from the IDs of any other components loaded from elements on the same glTF node.</p>
+<p><strong>Entities</strong></p>
+<p>Let&#39;s make our gear <a href="../classes/Entity.html" class="crosslink">Entity</a> invisible. This time we&#39;ll get the <a href="../classes/Entity.html" class="crosslink">Entity</a> itself, then update
+its <a href="../classes/Visibility.html" class="crosslink">Visibility</a> component:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var gear53 = gearbox.scene.components["gearbox#n274017_gear_53.entity.0"];
+
+gear53.visibility.visible = false;
+</code></pre>
+<p>Note the format of the <a href="../classes/Entity.html" class="crosslink">Entity</a>&#39;s ID: <code>&lt;GLTFModel ID&gt;#&lt;glTF node ID&gt;.entity.&lt;glTF mesh index&gt;</code></p>
+<p>A glTF scene node may contain multiple meshes, and for each of those xeogl will create an individual <a href="../classes/Entity.html" class="crosslink">Entity</a>. As
+before, the part before the hash is the ID of the GLTFModel, which is then followed by the ID of the glTF node, then "entity"
+to signify that this is an Entity ID, then finally an index to differentiate the Entity from those loaded from other
+meshes on the same glTF node.</p>
+<p>When we load multiple Entities from a glTF node, then they will share the same <a href="../classes/Transform.html" class="crosslink">Transform</a> and <a href="../classes/Visibility.html" class="crosslink">Visibility</a> components. This
+lets us update their transformation and visibility as a group, as if they were a composite entity that represents
+the glTF node.</p>
 <h2 id="examples">Examples</h2>
 <ul>
 <li><a href="../../examples/#importing_gltf_pbr_metallic_helmet">Damaged Helmet with metal/rough PBR materials</a></li>
@@ -262,7 +310,7 @@ the GLTFModel to clear itself and load components from the new file.</li>
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_models_gltfModel.js.html#l5"><code>src&#x2F;models&#x2F;gltfModel.js:5</code></a>
+                <a href="../files/src_models_gltfModel.js.html#l1"><code>src&#x2F;models&#x2F;gltfModel.js:1</code></a>
                 </p>
         
         
@@ -581,7 +629,7 @@ the GLTFModel to clear itself and load components from the new file.</li>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Model.html#method_add">Model</a>:
-        <a href="../files/src_models_model.js.html#l296"><code>src&#x2F;models&#x2F;model.js:296</code></a>
+        <a href="../files/src_models_model.js.html#l330"><code>src&#x2F;models&#x2F;model.js:330</code></a>
         </p>
 
 
@@ -985,7 +1033,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Model.html#method_destroyAll">Model</a>:
-        <a href="../files/src_models_model.js.html#l485"><code>src&#x2F;models&#x2F;model.js:485</code></a>
+        <a href="../files/src_models_model.js.html#l519"><code>src&#x2F;models&#x2F;model.js:519</code></a>
         </p>
 
 
@@ -1251,7 +1299,7 @@ myRotate.isType(xeogl.Entity); // Returns false, because xeogl.Rotate does not (
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Model.html#method_iterate">Model</a>:
-        <a href="../files/src_models_model.js.html#l584"><code>src&#x2F;models&#x2F;model.js:584</code></a>
+        <a href="../files/src_models_model.js.html#l618"><code>src&#x2F;models&#x2F;model.js:618</code></a>
         </p>
 
 
@@ -1609,7 +1657,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Model.html#method_removeAll">Model</a>:
-        <a href="../files/src_models_model.js.html#l521"><code>src&#x2F;models&#x2F;model.js:521</code></a>
+        <a href="../files/src_models_model.js.html#l555"><code>src&#x2F;models&#x2F;model.js:555</code></a>
         </p>
 
 
@@ -1812,7 +1860,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Model.html#property_components">Model</a>:
-                            <a href="../files/src_models_model.js.html#l224"><code>src&#x2F;models&#x2F;model.js:224</code></a>
+                            <a href="../files/src_models_model.js.html#l258"><code>src&#x2F;models&#x2F;model.js:258</code></a>
                             </p>
                     
                     
@@ -1863,7 +1911,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Model.html#property_entities">Model</a>:
-                            <a href="../files/src_models_model.js.html#l264"><code>src&#x2F;models&#x2F;model.js:264</code></a>
+                            <a href="../files/src_models_model.js.html#l298"><code>src&#x2F;models&#x2F;model.js:298</code></a>
                             </p>
                     
                     
@@ -1990,7 +2038,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Model.html#property_numComponents">Model</a>:
-                            <a href="../files/src_models_model.js.html#l234"><code>src&#x2F;models&#x2F;model.js:234</code></a>
+                            <a href="../files/src_models_model.js.html#l268"><code>src&#x2F;models&#x2F;model.js:268</code></a>
                             </p>
                     
                     
@@ -2041,7 +2089,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_gltfModel.js.html#l68"><code>src&#x2F;models&#x2F;gltfModel.js:68</code></a>
+                            <a href="../files/src_models_gltfModel.js.html#l145"><code>src&#x2F;models&#x2F;gltfModel.js:145</code></a>
                             </p>
                     
                     
@@ -2130,7 +2178,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Model.html#property_transform">Model</a>:
-                            <a href="../files/src_models_model.js.html#l603"><code>src&#x2F;models&#x2F;model.js:603</code></a>
+                            <a href="../files/src_models_model.js.html#l637"><code>src&#x2F;models&#x2F;model.js:637</code></a>
                             </p>
                     
                     
@@ -2164,7 +2212,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_models_model.js.html#l213"><code>src&#x2F;models&#x2F;model.js:213</code></a>
+                            <a href="../files/src_models_model.js.html#l247"><code>src&#x2F;models&#x2F;model.js:247</code></a>
                             </p>
                     
                     
@@ -2189,7 +2237,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Model.html#property_types">Model</a>:
-                            <a href="../files/src_models_model.js.html#l242"><code>src&#x2F;models&#x2F;model.js:242</code></a>
+                            <a href="../files/src_models_model.js.html#l276"><code>src&#x2F;models&#x2F;model.js:276</code></a>
                             </p>
                     
                     
@@ -2226,7 +2274,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Model.html#property_worldBoundary">Model</a>:
-                            <a href="../files/src_models_model.js.html#l644"><code>src&#x2F;models&#x2F;model.js:644</code></a>
+                            <a href="../files/src_models_model.js.html#l678"><code>src&#x2F;models&#x2F;model.js:678</code></a>
                             </p>
                     
                     
@@ -2260,7 +2308,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Model.html#event_added">Model</a>:
-                            <a href="../files/src_models_model.js.html#l444"><code>src&#x2F;models&#x2F;model.js:444</code></a>
+                            <a href="../files/src_models_model.js.html#l478"><code>src&#x2F;models&#x2F;model.js:478</code></a>
                             </p>
                     
                     
@@ -2327,7 +2375,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_gltfModel.js.html#l94"><code>src&#x2F;models&#x2F;gltfModel.js:94</code></a>
+                            <a href="../files/src_models_gltfModel.js.html#l171"><code>src&#x2F;models&#x2F;gltfModel.js:171</code></a>
                             </p>
                     
                     
@@ -2353,7 +2401,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Model.html#event_removed">Model</a>:
-                            <a href="../files/src_models_model.js.html#l572"><code>src&#x2F;models&#x2F;model.js:572</code></a>
+                            <a href="../files/src_models_model.js.html#l606"><code>src&#x2F;models&#x2F;model.js:606</code></a>
                             </p>
                     
                     
@@ -2395,7 +2443,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_gltfModel.js.html#l134"><code>src&#x2F;models&#x2F;gltfModel.js:134</code></a>
+                            <a href="../files/src_models_gltfModel.js.html#l211"><code>src&#x2F;models&#x2F;gltfModel.js:211</code></a>
                             </p>
                     
                     
@@ -2437,7 +2485,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Model.html#event_transform">Model</a>:
-                            <a href="../files/src_models_model.js.html#l621"><code>src&#x2F;models&#x2F;model.js:621</code></a>
+                            <a href="../files/src_models_model.js.html#l655"><code>src&#x2F;models&#x2F;model.js:655</code></a>
                             </p>
                     
                     
