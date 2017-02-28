@@ -210,7 +210,7 @@
 <p><a href="../../examples/#importing_gltf_gearbox"><img src="../../../assets/images/gltf/glTF_gearbox_squashed.png"></img></a></p>
 <h2 id="overview">Overview</h2>
 <ul>
-<li>A GLTFModel is a container of <a href="../classes/Component.html" class="crosslink">Components</a> that loads itself from glTF.</li>
+<li>A GLTFModel is a container of <a href="../classes/Component.html" class="crosslink">Components</a> that loads itself from a glTF file.</li>
 <li>It begins loading as soon as you set its <a href="../classes/GLTFModel.html#property_src" class="crosslink">src</a>
 property to the location of a valid glTF file.</li>
 <li>You can set <a href="../classes/GLTFModel.html#property_src" class="crosslink">src</a> to a new file path at any time, which causes
@@ -218,6 +218,7 @@ the GLTFModel to clear itself and load components from the new file.</li>
 </ul>
 <p>It inherits these capabilities from its <a href="../classes/Model.html" class="crosslink">Model</a> base class:</p>
 <ul>
+<li>Allows you to access and manipulate the components within it.</li>
 <li>Can be transformed within World-space by attaching it to a <a href="../classes/Transform.html" class="crosslink">Transform</a>.</li>
 <li>Provides its World-space boundary as a <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a>.</li>
 </ul>
@@ -277,8 +278,6 @@ the glTF node.</p>
 <li><a href="../../examples/#importing_gltf_explorer">Gearbox with entity explorer</a></li>
 <li><a href="../../examples/#models_filter_uniqueMaterials">Ensuring individual materials on GLTFModel entities</a></li>
 <li><a href="../../examples/#models_filter_bakeTransforms">Baking transform hierarchies in a GLTFModel</a></li>
-<li><a href="../../examples/#transforms_model_configureTransform">Attaching transforms to a GLTFModel, via constructor</a></li>
-<li><a href="../../examples/#transforms_model_attachTransform">Attaching transforms to a GLTFModel, via property</a></li>
 </ul>
 
 </div>
@@ -2089,7 +2088,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_gltfModel.js.html#l145"><code>src&#x2F;models&#x2F;gltfModel.js:145</code></a>
+                            <a href="../files/src_models_gltfModel.js.html#l144"><code>src&#x2F;models&#x2F;gltfModel.js:144</code></a>
                             </p>
                     
                     
@@ -2375,7 +2374,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_gltfModel.js.html#l171"><code>src&#x2F;models&#x2F;gltfModel.js:171</code></a>
+                            <a href="../files/src_models_gltfModel.js.html#l170"><code>src&#x2F;models&#x2F;gltfModel.js:170</code></a>
                             </p>
                     
                     
@@ -2443,7 +2442,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_gltfModel.js.html#l211"><code>src&#x2F;models&#x2F;gltfModel.js:211</code></a>
+                            <a href="../files/src_models_gltfModel.js.html#l210"><code>src&#x2F;models&#x2F;gltfModel.js:210</code></a>
                             </p>
                     
                     

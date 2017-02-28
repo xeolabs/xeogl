@@ -199,7 +199,7 @@
 
  ## Overview
 
- * A GLTFModel is a container of {{#crossLink &quot;Component&quot;}}Components{{/crossLink}} that loads itself from glTF.
+ * A GLTFModel is a container of {{#crossLink &quot;Component&quot;}}Components{{/crossLink}} that loads itself from a glTF file.
  * It begins loading as soon as you set its {{#crossLink &quot;GLTFModel/src:property&quot;}}{{/crossLink}}
  property to the location of a valid glTF file.
  * You can set {{#crossLink &quot;GLTFModel/src:property&quot;}}{{/crossLink}} to a new file path at any time, which causes
@@ -207,6 +207,7 @@
 
  It inherits these capabilities from its {{#crossLink &quot;Model&quot;}}{{/crossLink}} base class:
 
+ * Allows you to access and manipulate the components within it.
  * Can be transformed within World-space by attaching it to a {{#crossLink &quot;Transform&quot;}}{{/crossLink}}.
  * Provides its World-space boundary as a {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}}.
 
@@ -296,8 +297,6 @@
  * [Gearbox with entity explorer](../../examples/#importing_gltf_explorer)
  * [Ensuring individual materials on GLTFModel entities](../../examples/#models_filter_uniqueMaterials)
  * [Baking transform hierarchies in a GLTFModel](../../examples/#models_filter_bakeTransforms)
- * [Attaching transforms to a GLTFModel, via constructor](../../examples/#transforms_model_configureTransform)
- * [Attaching transforms to a GLTFModel, via property](../../examples/#transforms_model_attachTransform)
 
  @class GLTFModel
  @module xeogl
