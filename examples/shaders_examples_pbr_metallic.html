@@ -30,7 +30,7 @@
 
         geometry: new xeogl.TorusGeometry(),
 
-        // Metal-roughness material with baseColor texture
+        // Metallic-roughness material with baseColor texture
 
         material: new xeogl.MetallicMaterial({
             type: "xeogl.MetallicMaterial",
@@ -67,94 +67,49 @@
             ]
         }),
 
-        // Ordinarily xeogl generates shaders for us, but to this Entity we'll
-        // attach our own custom Cook-Torrance/Lambertian/GGX/Schlick PBR shader.
+        // Ordinarily xeogl generates shaders for us, but to this Entity we'll attach our own
+        // custom Cook-Torrance/Lambertian/GGX/Schlick PBR shader.
 
-        // The Shader is coded to take input from the various components
-        // attached to this Entity, which include our TorusGeometry, MetallicMaterial and
-        // DirLights, as well as the Scene's default Camera and Transform components, which
-        // are implicitly attached to this Entity.
-
-        // Note the comments beside the attributes and uniforms, indicating the
-        // entity component/property they get their values from.
+        // The Shader is coded to take input from the various components attached to this Entity,
+        // which include our TorusGeometry, MetallicMaterial and Lights, as well as the Scene's
+        // default Camera and Transform components, which are implicitly attached to this Entity.
 
         shader: new xeogl.Shader({
 
-            vertex: [
+            "vertex": [
 
-                "attribute vec3 position;",         // entity.geometry.positions
-                "attribute vec3 normal;",           // entity.geometry.normals
-                "attribute vec2 uv;",               // entity.geometry.uv
+                "attribute  vec3 position;",
+                "attribute  vec3 normal;",
+                "attribute  vec2 uv;",
 
-                "uniform mat4 modelMatrix;",        // entity.transform.matrix
-                "uniform mat4 modelNormalMatrix;",  // entity.transform.normalMatrix
-                "uniform mat4 viewMatrix;",         // entity.camera.view.matrix
-                "uniform mat4 viewNormalMatrix;",   // entity.camera.view.normalMatrix
-                "uniform mat4 projMatrix;",         // entity.camera.proj.matrix
+                "uniform    mat4 modelMatrix;",
+                "uniform    mat4 viewMatrix;",
+                "uniform    mat4 projMatrix;",
+                "uniform    mat4 modelNormalMatrix;",
+                "uniform    mat4 viewNormalMatrix;",
 
-                "uniform vec3 lightDir0;",          // entity.lights.lights[0].dir
-                "uniform vec3 lightDir1;",          // entity.lights.lights[1].dir
-                "uniform vec3 lightDir2;",          // entity.lights.lights[2].dir
-
-                "varying vec3 vViewPosition;",
-                "varying vec4 vViewLightReverseDirAndDist0;",
-                "varying vec3 vViewNormal;",
-                "varying vec4 vViewLightReverseDirAndDist1;",
-                "varying vec4 vViewLightReverseDirAndDist2;",
-                "varying vec2 vUV;",
+                "varying    vec3 vViewPosition;",
+                "varying    vec3 vViewNormal;",
+                "varying    vec2 vUV;",
 
                 "void main(void) {",
-
-                "   vec4 localPosition = vec4(position, 1.0); ",
-                "   vec4 worldPosition;",
-                "   vec4 localNormal = vec4(normal, 0.0); ",
-                "   worldPosition = modelMatrix * localPosition;",
-                "   vec4 viewPosition  = viewMatrix * worldPosition; ",
-                "   vec3 worldNormal = (modelNormalMatrix * localNormal).xyz; ",
-
-                "   vViewLightReverseDirAndDist0 = vec4(-lightDir0, 0.0);",
-                "   vViewLightReverseDirAndDist1 = vec4(-lightDir1, 0.0);",
-                "   vViewLightReverseDirAndDist2 = vec4(-lightDir2, 0.0);",
-                "   vViewNormal = normalize((viewNormalMatrix * vec4(worldNormal, 1.0)).xyz);",
+                "   vec4 viewPosition  = viewMatrix * modelMatrix * vec4(position, 1.0); ",
+                "   vViewNormal = normalize((viewNormalMatrix * vec4((modelNormalMatrix * vec4(normal, 0.0)).xyz, 1.0)).xyz);",
                 "   vUV = uv;",
                 "   vViewPosition = viewPosition.xyz;",
-
                 "   gl_Position = projMatrix * viewPosition;",
                 "}"
             ],
 
-            fragment: [
+            "fragment": [
 
                 "precision highp float;",
 
-                "#define            PI 3.14159265359",
-                "#define            RECIPROCAL_PI 0.31830988618",
-                "#define            RECIPROCAL_PI2 0.15915494",
-                "#define            EPSILON 1e-6",
-                "#define            saturate(a) clamp( a, 0.0, 1.0 )",
-
-                "uniform vec3       materialBaseColor;",    // entity.material.baseColor
-                "uniform float      materialOpacity;",      // entity.material.opacity
-                "uniform vec3       materialEmissive;",     // entity.material.emissive
-                "uniform float      materialMetallic;",     // entity.material.metallic
-                "uniform float      materialRoughness;",    // entity.material.roughness
-                "uniform float      materialSpecularF0;",   // entity.material.specularF0
-                "uniform sampler2D  baseColorMap;",         // entity.material.baseColor
-                "uniform vec3       lightAmbient;",         // [0,0,0]
-                "uniform float      lightAmbientIntensity;",// 1
-                "uniform vec3       lightColor0;",          // entity.lights.lights[0].color
-                "uniform float      lightIntensity0;",      // entity.lights.lights[0].intensity
-                "uniform vec3       lightColor1;",          // entity.lights.lights[1].color
-                "uniform float      lightIntensity1;",      // entity.lights.lights[1].intensity
-                "uniform vec3       lightColor2;",          // entity.lights.lights[2].color
-                "uniform float      lightIntensity2;",      // entity.lights.lights[2].intensity
-
-                "varying vec3       vViewPosition;",
-                "varying vec2       vUV;",
-                "varying vec3       vViewNormal;",
-                "varying vec4       vViewLightReverseDirAndDist0;",
-                "varying vec4       vViewLightReverseDirAndDist1;",
-                "varying vec4       vViewLightReverseDirAndDist2;",
+                "#define PI 3.14159265359",
+                "#define RECIPROCAL_PI 0.31830988618",
+                "#define RECIPROCAL_PI2 0.15915494",
+                "#define EPSILON 1e-6",
+                "#define saturate(a) clamp( a, 0.0, 1.0 )",
 
                 "float pow2(const in float x) {",
                 "   return x*x;",
@@ -255,65 +210,85 @@
                 "}",
 
                 "void computePBRLighting(const in IncidentLight incidentLight, const in Geometry geometry, const in Material material, inout ReflectedLight reflectedLight) {",
-                "   float dotNL     = saturate(dot(geometry.viewNormal, incidentLight.direction));",
-                "   vec3 irradiance = dotNL * incidentLight.color * PI;",
+                "   float dotNL             = saturate(dot(geometry.viewNormal, incidentLight.direction));",
+                "   vec3 irradiance         = dotNL * incidentLight.color * PI;",
                 "   reflectedLight.diffuse  += irradiance * BRDF_Diffuse_Lambert(material.diffuseColor);",
                 "   reflectedLight.specular += irradiance * BRDF_Specular_GGX(incidentLight, geometry, material.specularColor, material.specularRoughness);",
                 "}",
 
+                "varying vec3       vViewPosition;",
+                "varying vec2       vUV;",
+                "varying vec3       vViewNormal;",
+
+                "uniform vec3       materialBaseColor;",
+                "uniform float      materialOpacity;",
+                "uniform vec3       materialEmissive;",
+                "uniform float      materialMetallic;",
+                "uniform float      materialRoughness;",
+                "uniform float      materialSpecularF0;",
+                "uniform sampler2D  baseColorMap;",
+
+                "uniform vec3       lightAmbient;",
+                "uniform float      lightAmbientIntensity;",
+
+                "uniform vec3       lightDir0;",
+                "uniform vec3       lightColor0;",
+                "uniform float      lightIntensity0;",
+
+                "uniform vec3       lightDir1;",
+                "uniform vec3       lightColor1;",
+                "uniform float      lightIntensity1;",
+
+                "uniform vec3       lightDir2;",
+                "uniform vec3       lightColor2;",
+                "uniform float      lightIntensity2;",
 
                 "void main(void) {",
 
-                "   float   occlusion = 1.0;",
-                "   vec3    ambientColor = vec3(1.0, 1.0, 1.0);",
-                "   vec3    baseColor = materialBaseColor;",
-                "   vec3    emissive = materialEmissive;",
-                "   vec3    specular = vec3(1.0, 1.0, 1.0);",
-                "   float   opacity = materialOpacity;",
-                "   float   glossiness = 1.0;",
-                "   float   metallic = materialMetallic;",
-                "   float   roughness = materialRoughness;",
-                "   float   specularF0 = materialSpecularF0;",
+                "   vec3 ambientColor   = vec3(1.0, 1.0, 1.0);",
+                "   vec3 diffuseColor   = materialBaseColor;",
+                "   vec3 emissiveColor  = materialEmissive;",
+                "   vec3 specular       = vec3(1.0, 1.0, 1.0);",
+                "   float opacity       = materialOpacity;",
+                "   float metallic      = materialMetallic;",
 
-                "   vec4    texturePos = vec4(vUV.s, vUV.t, 1.0, 1.0);",
-                "   vec2    textureCoord;",
+                "   diffuseColor        *= texture2D(baseColorMap, vUV).rgb;",
 
-                "   textureCoord = texturePos.xy;",
-                "   baseColor *= texture2D(baseColorMap, vUV).rgb;",
-
-                "   vec3 viewNormal = normalize(vViewNormal);",
-                "   vec3 viewEyeDir = normalize(-vViewPosition);",
+                "   vec3 viewNormal     = normalize(vViewNormal);",
+                "   vec3 viewEyeDir     = normalize(-vViewPosition);",
 
                 "   IncidentLight  light;",
                 "   Material       material;",
                 "   Geometry       geometry;",
+
                 "   ReflectedLight reflectedLight = ReflectedLight(vec3(0.0,0.0,0.0), vec3(0.0,0.0,0.0));",
 
-                "   float dielectricSpecular = 0.16 * specularF0 * specularF0;",
+                "   float dielectricSpecular = 0.16 * materialSpecularF0 * materialSpecularF0;",
 
-                "   material.diffuse      = baseColor * (1.0 - dielectricSpecular) * (1.0 - metallic);",
-                "   material.specularRoughness = clamp(roughness, 0.04, 1.0);",
-                "   material.specularColor     = mix(vec3(dielectricSpecular), baseColor, metallic);",
+                "   material.diffuseColor       = diffuseColor * (1.0 - dielectricSpecular) * (1.0 - materialMetallic);",
+                "   material.specularRoughness  = clamp(materialRoughness, 0.04, 1.0);",
+                "   material.specularColor      = mix(vec3(dielectricSpecular), diffuseColor, materialMetallic);",
 
-                "   geometry.position      = vViewPosition;",
-                "   geometry.viewNormal    = viewNormal;",
-                "   geometry.viewEyeDir    = viewEyeDir;",
+                "   geometry.position   = vViewPosition;",
+                "   geometry.viewNormal = viewNormal;",
+                "   geometry.viewEyeDir = viewEyeDir;",
 
-                "   light.direction        = normalize(vViewLightReverseDirAndDist0.xyz);",
-                "   light.color            = lightIntensity0 * lightColor0;",
+                "   light.direction     = normalize(-lightDir0.xyz);",
+                "   light.color         = lightIntensity0 * lightColor0;",
+
                 "   computePBRLighting(light, geometry, material, reflectedLight);",
 
-                "   light.direction        = normalize(vViewLightReverseDirAndDist1.xyz);",
-                "   light.color            = lightIntensity1 * lightColor1;",
+                "   light.direction     = normalize(-lightDir1.xyz);",
+                "   light.color         = lightIntensity1 * lightColor1;",
+
                 "   computePBRLighting(light, geometry, material, reflectedLight);",
 
-                "   light.direction        = normalize(vViewLightReverseDirAndDist2.xyz);",
-                "   light.color            = lightIntensity2 * lightColor2;",
+                "   light.direction     = normalize(-lightDir2.xyz);",
+                "   light.color         = lightIntensity2 * lightColor2;",
+
                 "   computePBRLighting(light, geometry, material, reflectedLight);",
 
-                "   vec3 outgoingLight     = (occlusion * reflectedLight.diffuse) + (occlusion * reflectedLight.specular) + emissive;",
-
-                "   gl_FragColor = vec4(outgoingLight, opacity);",
+                "   gl_FragColor = vec4(reflectedLight.diffuse + reflectedLight.specular + emissiveColor, opacity);",
                 "}"
             ]
         })
@@ -328,8 +303,6 @@
     });
 
     new xeogl.CameraControl();
-
-    //console.log(JSON.stringify(entity.glsl, null, "\t"))
 
 </script>
 </body>
