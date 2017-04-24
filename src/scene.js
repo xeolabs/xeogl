@@ -1544,6 +1544,11 @@
 
             return function (params) {
 
+                if (this.canvas.boundary[2] === 0 || this.canvas.boundary[3] === 0) {
+                    this.error("Picking not allowed while canvas has zero width or height");
+                    return null;
+                }
+
                 params = params || {};
 
                 params.pickSurface = params.pickSurface || params.rayPick; // Backwards compatibility
