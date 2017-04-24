@@ -62,7 +62,7 @@
     ],
 
     // Initial values for the 'time' uniform in the fragment stage.
-    params: {
+    uniforms: {
         time: 0.0
     }
  });
@@ -80,7 +80,7 @@
         indices:[ 0, 1, 2, 0, 2, 3 ]
     }),
     shaderParams1: new xeogl.ShaderParams({
-        params: {
+        uniforms: {
             time: 0.0
         }
     })
@@ -99,7 +99,7 @@
         indices:[ 0, 1, 2, 0, 2, 3 ]
     }),
     shaderParams: new xeogl.ShaderParams({
-        params: {
+        uniforms: {
             time: 0.0
         }
     })
@@ -111,14 +111,14 @@
  // Get the default Scene off the first Entity
  var scene = entity1.scene;
 
- scene.on("tick", function(params) {
+ scene.on("tick", function(e) {
 
-    entity1.shaderParams.setParams({
-        time: params.timeElapsed
+    entity1.shaderParams.setUniforms({
+        time: e.timeElapsed
     });
 
-    entity2.shaderParams.setParams({
-        time: params.timeElapsed  * 0.5
+    entity2.shaderParams.setUniforms({
+        time: e.timeElapsed  * 0.5
     });
 });
  ````
@@ -131,7 +131,7 @@
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ShaderParams.
- @param [cfg.params={}] {Object} The {{#crossLink "Shader"}}Shader{{/crossLink}} parameter values.
+ @param [cfg.uniforms={}] {Object} The {{#crossLink "Shader"}}Shader{{/crossLink}} parameter values.
  @extends Component
  */
 (function () {
@@ -145,60 +145,60 @@
         _init: function (cfg) {
 
             this._state = new xeogl.renderer.ShaderParams({
-                params: {}
+                uniforms: {}
             });
 
-            this.setParams(cfg.params);
+            this.setUniforms(cfg.uniforms);
         },
 
         _props: {
-
+            
             /**
-             * Params for {{#crossLink "Shader"}}Shaders{{/crossLink}} on attached
+             * Uniforms for {{#crossLink "Shader"}}Shaders{{/crossLink}} on attached
              * {{#crossLink "Entity"}}Entities{{/crossLink}}.
              *
-             * Fires a {{#crossLink "Shader/params:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "Shader/uniforms:event"}}{{/crossLink}} event on change.
              *
-             * @property params
+             * @property uniforms
              * @default {}
              * @type {}
              */
-            params: {
+            uniforms: {
 
                 get: function () {
-                    return this._state.params;
+                    return this._state.uniforms;
                 }
             }
         },
 
         /**
-         * Sets one or more params for {{#crossLink "Shader"}}Shaders{{/crossLink}} on attached
+         * Sets one or more uniforms for {{#crossLink "Shader"}}Shaders{{/crossLink}} on attached
          * {{#crossLink "Entity"}}Entities{{/crossLink}}.
          *
-         * These will individually override any params of the same names that are {{#crossLink "Shader/setParams:method"}}already specified{{/crossLink}} on
+         * These will individually override any uniforms of the same names that are {{#crossLink "Shader/setUniforms:method"}}already specified{{/crossLink}} on
          * those {{#crossLink "Shader"}}Shaders{{/crossLink}}.
          *
-         * Fires a {{#crossLink "ShaderParams/params:event"}}{{/crossLink}} event on change.
+         * Fires a {{#crossLink "ShaderParams/uniforms:event"}}{{/crossLink}} event on change.
          *
-         * @method setParams
-         * @param {} [params={}] Values for params to set on the {{#crossLink "Shader"}}Shaders{{/crossLink}}, keyed to their names.
+         * @method setUniforms
+         * @param {} [uniforms={}] Values for uniforms to set on the {{#crossLink "Shader"}}Shaders{{/crossLink}}, keyed to their names.
          */
-        setParams: function (params) {
+        setUniforms: function (uniforms) {
 
-            for (var name in params) {
-                if (params.hasOwnProperty(name)) {
-                    this._state.params[name] = params[name];
+            for (var name in uniforms) {
+                if (uniforms.hasOwnProperty(name)) {
+                    this._state.uniforms[name] = uniforms[name];
                 }
             }
 
             this._renderer.imageDirty = true;
 
             /**
-             * Fired whenever this ShaderParams' {{#crossLink "ShaderParams/params:property"}}{{/crossLink}} property has been updated.
-             * @event params
+             * Fired whenever this ShaderParams' {{#crossLink "ShaderParams/uniforms:property"}}{{/crossLink}} property has been updated.
+             * @event uniforms
              * @param value The property's new value
              */
-            this.fire("params", this._state.params);
+            this.fire("uniforms", this._state.uniforms);
         },
 
         _compile: function () {
@@ -207,7 +207,7 @@
 
         _getJSON: function () {
             return {
-                params: this._state.params
+                uniforms: this._state.uniforms
             };
         }
     });

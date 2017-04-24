@@ -26,20 +26,20 @@
  Finally, we animate the rippling by periodically updating the Shader's "time" uniform.
 
  ````javascript
- // Shader that's used by our Entity. Note the 'xeo_aPosition' and 'xeo_aUV attributes',
+ // Shader that's used by our Entity. Note the 'position' and 'uv attributes',
  // which will receive the positions and UVs from the Geometry. Also note the 'time'
- // uniform, which we'll be animating via Shader#setParams.
+ // uniform, which we'll be animating via Shader#setUniforms.
 
  var shader = new xeogl.Shader({
 
     // Vertex shading stage
     vertex: [
-        "attribute vec3 xeo_aPosition;",
-        "attribute vec2 xeo_aUV;",
+        "attribute vec3 position;",
+        "attribute vec2 uv;",
         "varying vec2 vUv;",
         "void main () {",
-        "    gl_Position = vec4(xeo_aPosition, 1.0);",
-        "    vUv = xeo_aUV;",
+        "    gl_Position = vec4(position, 1.0);",
+        "    vUv = uv;",
         "}"
     ],
 
@@ -68,7 +68,7 @@
     ],
 
     // Initial value for the 'time' uniform in the fragment stage.
-    params: {
+    uniforms: {
         time: 0.0
     }
  });
@@ -91,9 +91,9 @@
  Now let's animate the "time" parameter on the Shader, to make the water ripple:
 
  ```` javascript
- entity.scene.on("tick", function(params) {
-     shader.setParams({
-         time: params.timeElapsed
+ entity.scene.on("tick", function(e) {
+     shader.setUniforms({
+         time: e.timeElapsed
      });
  });
  ````
@@ -108,11 +108,11 @@
 
  | Attribute  | Description | Depends on  |
  |---|---|
- | attribute vec3 xeo_aPosition   | Geometry vertex positions | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}} |
- | attribute vec2 xeo_aUV         | Geometry vertex UV coordinates | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/uv:property"}}{{/crossLink}}  |
- | attribute vec3 xeo_aNormal     | Geometry vertex normals | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/normals:property"}}{{/crossLink}}  |
- | attribute vec4 xeo_aColor      | Geometry vertex colors  | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/colors:property"}}{{/crossLink}}  |
- | attribute vec4 xeo_aTangent    | Geometry vertex tangents, for normal mapping | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/normals:property"}}{{/crossLink}} and {{#crossLink "Geometry/uv:property"}}{{/crossLink}}  |
+ | attribute vec3 position   | Geometry vertex positions | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}} |
+ | attribute vec2 uv         | Geometry vertex UV coordinates | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/uv:property"}}{{/crossLink}}  |
+ | attribute vec3 normal     | Geometry vertex normals | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/normals:property"}}{{/crossLink}}  |
+ | attribute vec4 color      | Geometry vertex colors  | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/colors:property"}}{{/crossLink}}  |
+ | attribute vec4 tangent    | Geometry vertex tangents, for normal mapping | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/normals:property"}}{{/crossLink}} and {{#crossLink "Geometry/uv:property"}}{{/crossLink}}  |
 
  #### Uniforms
 
@@ -120,10 +120,10 @@
 
  | Uniform  | Description | Depends on  |
  |---|---|
- | uniform mat4  xeo_uModelMatrix                                   | Modelling transform matrix | {{#crossLink "Transform"}}{{/crossLink}} |
- | uniform mat4  xeo_uModelNormalMatrix                             | Modelling transform normal matrix | {{#crossLink "Geometry/normals:property"}}Geometry normals{{/crossLink}} and {{#crossLink "Transform"}}{{/crossLink}} |
- | uniform mat4  xeo_uViewMatrix                                    | View transform matrix | {{#crossLink "Lookat"}}Lookat{{/crossLink}} |
- | uniform mat4  xeo_uViewNormalMatrix                              | View transform normal matrix | {{#crossLink "Geometry/normals:property"}}Geometry normals{{/crossLink}} and {{#crossLink "Lookat"}}Lookat{{/crossLink}} |
+ | uniform mat4  modelMatrix                                   | Modelling transform matrix | {{#crossLink "Transform"}}{{/crossLink}} |
+ | uniform mat4  modelNormalMatrix                             | Modelling transform normal matrix | {{#crossLink "Geometry/normals:property"}}Geometry normals{{/crossLink}} and {{#crossLink "Transform"}}{{/crossLink}} |
+ | uniform mat4  viewMatrix                                    | View transform matrix | {{#crossLink "Lookat"}}Lookat{{/crossLink}} |
+ | uniform mat4  viewNormalMatrix                              | View transform normal matrix | {{#crossLink "Geometry/normals:property"}}Geometry normals{{/crossLink}} and {{#crossLink "Lookat"}}Lookat{{/crossLink}} |
  | uniform mat4  xeo_uProjMatrix                                    | Projection transform matrix | {{#crossLink "Ortho"}}Ortho{{/crossLink}}, {{#crossLink "Frustum"}}Frustum{{/crossLink}} or {{#crossLink "Perspective"}}Perspective{{/crossLink}} |
  | uniform float xeo_uZNear                                         | Near clipping plane |{{#crossLink "Ortho"}}Ortho{{/crossLink}}, {{#crossLink "Frustum"}}Frustum{{/crossLink}} or {{#crossLink "Perspective"}}Perspective{{/crossLink}} |
  | uniform float xeo_uZFar                                          | Far clipping plane |{{#crossLink "Ortho"}}Ortho{{/crossLink}}, {{#crossLink "Frustum"}}Frustum{{/crossLink}} or {{#crossLink "Perspective"}}Perspective{{/crossLink}} |
@@ -137,12 +137,11 @@
  | uniform vec3 xeo_uLightLinearAttenuation&lt;***N***&gt;          | Linear attenuation factor for {{#crossLink "PointLight"}}{{/crossLink}} at index ***N*** in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "PointLight"}}{{/crossLink}} |
  | uniform vec3 xeo_uLightQuadraticAttenuation&lt;***N***&gt;       | Quadratic attenuation factor for {{#crossLink "PointLight"}}{{/crossLink}} at index ***N*** in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "PointLight"}}{{/crossLink}} |
  |---|---|
- | uniform vec3 xeo_uDiffuse;       |  | {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} |
- | uniform vec3 xeo_uSpecular;       |  | {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}} |
- | uniform vec3 xeo_uEmissive;       |  | {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}} |
- | uniform float xeo_uOpacity;       |  | {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} |
- | uniform float xeo_uShininess;       |  | {{#crossLink "PhongMaterial/shininess:property"}}{{/crossLink}} |
- | uniform float xeo_uDiffuseFresnelEdgeBias;       |  | {{#crossLink "Fresnel/edgeBias:property"}}{{/crossLink}} |
+ | uniform vec3 materialDiffuse;       |  | {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} |
+ | uniform vec3 materialSpecular;       |  | {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}} |
+ | uniform vec3 materialEmissive;       |  | {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}} |
+ | uniform float materialOpacity;       |  | {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} |
+ | uniform float materialShininess;       |  | {{#crossLink "PhongMaterial/shininess:property"}}{{/crossLink}} |
 
  #### Varying
 
@@ -172,7 +171,7 @@
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Shader.
  @param [cfg.vertex=null] {String} GLSL Depends on code for the vertex shading staging.
  @param [cfg.fragment=null] {String} GLSL source code for the fragment shading staging.
- @param [cfg.params={}] {Object} Values for uniforms defined in the vertex and/or fragment stages.
+ @param [cfg.uniforms={}] {Object} Values for uniforms defined in the vertex and/or fragment stages.
  @extends Component
  */
 (function () {
@@ -188,14 +187,14 @@
             this._state = new xeogl.renderer.Shader({
                 vertex: null,
                 fragment: null,
-                params: {}
+                uniforms: {}
             });
 
             this.vertex = cfg.vertex;
 
             this.fragment = cfg.fragment;
 
-            this.setParams(cfg.params);
+            this.setUniforms(cfg.uniforms);
         },
 
         _props: {
@@ -263,51 +262,51 @@
             },
 
             /**
-             * Params for this Shader.
+             * Uniforms for this Shader.
              *
-             * Fires a {{#crossLink "Shader/params:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "Shader/uniforms:event"}}{{/crossLink}} event on change.
              *
-             * @property params
+             * @property uniforms
              * @default {}
              * @type {}
              */
-            params: {
+            uniforms: {
 
                 get: function () {
-                    return this._state.params;
+                    return this._state.uniforms;
                 }
             }
         },
 
         /**
-         * Sets one or more params for this Shader.
+         * Sets one or more uniforms for this Shader.
          *
-         * These will be individually overridden by any {{#crossLink "ShaderParams/setParams:method"}}params subsequently specified{{/crossLink}} on
+         * These will be individually overridden by any {{#crossLink "ShaderParams/setUniforms:method"}}uniforms subsequently specified{{/crossLink}} on
          * {{#crossLink "ShaderParams"}}ShaderParams{{/crossLink}} on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
          *
-         * Fires a {{#crossLink "Shader/params:event"}}{{/crossLink}} event on change.
+         * Fires a {{#crossLink "Shader/uniforms:event"}}{{/crossLink}} event on change.
          *
-         * @method setParams
-         * @param {} [params={}] Values for params to set on this Shader, keyed to their names.
+         * @method setUniforms
+         * @param {} [uniforms={}] Values for uniforms to set on this Shader, keyed to their names.
          */
-        setParams: function (params) {
+        setUniforms: function (uniforms) {
 
-            for (var name in params) {
-                if (params.hasOwnProperty(name)) {
-                    this._state.params[name] = params[name];
+            for (var name in uniforms) {
+                if (uniforms.hasOwnProperty(name)) {
+                    this._state.uniforms[name] = uniforms[name];
                 }
             }
 
             this._renderer.imageDirty = true;
 
             /**
-             * Fired whenever this Shader's  {{#crossLink "Shader/params:property"}}{{/crossLink}}
+             * Fired whenever this Shader's  {{#crossLink "Shader/uniforms:property"}}{{/crossLink}}
              * property has been updated.
              *
-             * @event params
+             * @event uniforms
              * @param value The property's new value
              */
-            this.fire("params", this._state.params);
+            this.fire("uniforms", this._state.uniforms);
         },
 
         _compile: function () {
@@ -317,7 +316,7 @@
         _getJSON: function () {
 
             var json = {
-                params: this._state.params
+                uniforms: this._state.uniforms
             };
 
             if (this._state.vertex) {
