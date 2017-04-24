@@ -756,6 +756,22 @@
             };
         })(),
 
+        /**
+         * Converts a three-element vector to a JSON-serializable
+         * array with values rounded to two decimal places.
+         */
+        vec3ToArray: (function () {
+            function trunc(v) {
+                return Math.round(v * 100) / 100
+            }
+            return function (v) {
+                v = Array.prototype.slice.call(v);
+                v[0] = trunc(v[0]);
+                v[1] = trunc(v[1]);
+                v[2] = trunc(v[2]);
+                return v;
+            };
+        })(),
 
         /**
          * Duplicates a 4x4 identity matrix.
@@ -1474,20 +1490,20 @@
          * @param z
          * @param m
          */
-        scaleMat4c:  function (x, y, z, m) {
-            
+        scaleMat4c: function (x, y, z, m) {
+
             m[0] *= x;
             m[4] *= y;
             m[8] *= z;
-            
+
             m[1] *= x;
             m[5] *= y;
             m[9] *= z;
-            
+
             m[2] *= x;
             m[6] *= y;
             m[10] *= z;
-            
+
             m[3] *= x;
             m[7] *= y;
             m[11] *= z;
