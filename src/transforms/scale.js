@@ -143,7 +143,7 @@
 
         _getJSON: function () {
             var json = {
-                xyz: this._xyz
+                xyz: this._xyz.slice()
             };
             if (this._parent) {
                 json.parent = this._parent.id;

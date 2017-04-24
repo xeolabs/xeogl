@@ -181,7 +181,7 @@
 
         _getJSON: function () {
             var json = {
-                xyz: this._xyz,
+                xyz: this._xyz.slice(),
                 angle: this._angle
             };
             if (this._parent) {
