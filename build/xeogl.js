@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2017-02-28
+ * Built on 2017-04-24
  *
  * MIT License
  * Copyright 2017, Lindsay Kay
@@ -1875,6 +1875,22 @@ var Canvas2Image = (function () {
             };
         })(),
 
+        /**
+         * Converts a three-element vector to a JSON-serializable
+         * array with values rounded to two decimal places.
+         */
+        vec3ToArray: (function () {
+            function trunc(v) {
+                return Math.round(v * 100) / 100
+            }
+            return function (v) {
+                v = Array.prototype.slice.call(v);
+                v[0] = trunc(v[0]);
+                v[1] = trunc(v[1]);
+                v[2] = trunc(v[2]);
+                return v;
+            };
+        })(),
 
         /**
          * Duplicates a 4x4 identity matrix.
@@ -2593,20 +2609,20 @@ var Canvas2Image = (function () {
          * @param z
          * @param m
          */
-        scaleMat4c:  function (x, y, z, m) {
-            
+        scaleMat4c: function (x, y, z, m) {
+
             m[0] *= x;
             m[4] *= y;
             m[8] *= z;
-            
+
             m[1] *= x;
             m[5] *= y;
             m[9] *= z;
-            
+
             m[2] *= x;
             m[6] *= y;
             m[10] *= z;
-            
+
             m[3] *= x;
             m[7] *= y;
             m[11] *= z;
@@ -4472,7 +4488,7 @@ var Canvas2Image = (function () {
     };
 
 })();;/**
- * Boundary math functions.
+ * Geometry math functions.
  */
 (function () {
 
@@ -4481,7 +4497,7 @@ var Canvas2Image = (function () {
     var math = xeogl.math;
 
     /**
-     * Calculates the normal vector of a trianglel.
+     * Calculates the normal vector of a triangle.
      *
      * @private
      */
@@ -5698,7 +5714,7 @@ var Canvas2Image = (function () {
 
         params = params || {};
 
-        this._prepareDisplay(params);
+        this._prepareDisplay();
 
         if (this.imageDirty || params.force) {
 
@@ -5720,9 +5736,7 @@ var Canvas2Image = (function () {
     };
 
 
-    xeogl.renderer.Renderer.prototype._prepareDisplay = function (params) {
-
-        params = params || {};
+    xeogl.renderer.Renderer.prototype._prepareDisplay = function () {
 
         if (this.objectListDirty) {
             this._buildObjectList(); // Build the scene object list
@@ -6291,6 +6305,8 @@ var Canvas2Image = (function () {
         }
 
         this._readPixelBuf.unbind();
+
+        this.imageDirty = true;
     };
 
     /**
@@ -8914,7 +8930,10 @@ var Canvas2Image = (function () {
                         add("uniform vec3 lightPos" + i + ";");
                     }
 
-                    add("varying vec4 vViewLightReverseDirAndDist" + i + ";");
+                    if (!(light.type === "dir" && light.space === "view")) {
+                        // World-space dir lights don't need these varyings
+                        add("varying vec4 vViewLightReverseDirAndDist" + i + ";");
+                    }
                 }
             }
 
@@ -9044,11 +9063,8 @@ var Canvas2Image = (function () {
 
                         if (light.space === "world") {
                             add("tmpVec3 = vec3(viewMatrix2 * vec4(lightDir" + i + ", 0.0) ).xyz;");
-                        } else {
-                            add("tmpVec3 = lightDir" + i + ";");
+                            add("vViewLightReverseDirAndDist" + i + " = vec4(-tmpVec3, 0.0);");
                         }
-
-                        add("vViewLightReverseDirAndDist" + i + " = vec4(-tmpVec3, 0.0);");
                     }
 
                     if (light.type === "point") {
@@ -9617,8 +9633,13 @@ var Canvas2Image = (function () {
                     if (light.type === "point") {
                         add("uniform vec3 lightAttenuation" + i + ";");
                     }
-
-                    add("varying vec4 vViewLightReverseDirAndDist" + i + ";"); // Vector from light to vertex
+                    if (light.type === "dir" && light.space === "view") {
+                        add("uniform vec3 lightDir" + i + ";");
+                    } if (light.type === "point" && light.space === "view") {
+                        add("uniform vec3 lightPos" + i + ";");
+                    } else {
+                        add("varying vec4 vViewLightReverseDirAndDist" + i + ";");
+                    }
                 }
             }
 
@@ -9797,7 +9818,7 @@ var Canvas2Image = (function () {
                 // SHADING
                 //--------------------------------------------------------------------------------
 
-                if (material.normalMap) {
+                if (geometry.uv && material.normalMap) {
                     if (material.normalMap.matrix) {
                         add("textureCoord = (normalMapMatrix * texturePos).xy;");
                     } else {
@@ -9943,8 +9964,15 @@ var Canvas2Image = (function () {
                     if (light.type === "ambient") {
                         continue;
                     }
-
-                    add("viewLightDir = normalize(vViewLightReverseDirAndDist" + i + ".xyz);"); // If normal mapping, the fragment->light vector will be in tangent space
+                    if (light.type === "dir" && light.space === "view") {
+                        add("viewLightDir = -normalize(lightDir" + i + ");");
+                    } else if (light.type === "point" && light.space === "view") {
+                        add("viewLightDir = normalize(lightPos" + i + " - vViewPosition);");
+                        //add("tmpVec3 = lightPos" + i + ".xyz - viewPosition.xyz;");
+                        //add("lightDist = abs(length(tmpVec3));");
+                    } else {
+                        add("viewLightDir = normalize(vViewLightReverseDirAndDist" + i + ".xyz);"); // If normal mapping, the fragment->light vector will be in tangent space
+                    }
 
                     add("light.direction = viewLightDir;");
                     add("light.color = lightIntensity" + i + " * lightColor" + i + ";");
@@ -9999,10 +10027,12 @@ var Canvas2Image = (function () {
             } else {
 
                 //--------------------------------------------------------------------------------
-                // NO SHADING - EMISSIVE ONLY
+                // NO SHADING - EMISSIVE and AMBIENT ONLY
                 //--------------------------------------------------------------------------------
 
-                add("vec3 outgoingLight = emissiveColor;");
+                add("ambientColor *= lightAmbient;");
+
+                add("vec3 outgoingLight = emissiveColor + ambientColor;");
             }
 
 
@@ -11829,16 +11859,16 @@ var Canvas2Image = (function () {
 
         draw: function () {
 
-            var params = this.state.params;
+            var uniforms = this.state.uniforms;
 
-            if (params) {
+            if (uniforms) {
 
                 var program = this.program.draw;
                 var name;
 
-                for (name in params) {
-                    if (params.hasOwnProperty(name)) {
-                        program.setUniform(name, params[name]);
+                for (name in uniforms) {
+                    if (uniforms.hasOwnProperty(name)) {
+                        program.setUniform(name, uniforms[name]);
                     }
                 }
             }
@@ -11854,16 +11884,16 @@ var Canvas2Image = (function () {
 
         draw: function () {
 
-            var params = this.state.params;
+            var uniforms = this.state.uniforms;
 
-            if (params) {
+            if (uniforms) {
 
                 var program = this.program.draw;
                 var name;
 
-                for (name in params) {
-                    if (params.hasOwnProperty(name)) {
-                        program.setUniform(name, params[name]);
+                for (name in uniforms) {
+                    if (uniforms.hasOwnProperty(name)) {
+                        program.setUniform(name, uniforms[name]);
                     }
                 }
             }
@@ -12679,7 +12709,7 @@ var Canvas2Image = (function () {
                         }
                     }
 
-                    component = new componentClass(componentCfg);
+                    component = new componentClass(this.scene, componentCfg);
 
                     managingLifecycle = true;
                 }
@@ -14681,6 +14711,11 @@ var Canvas2Image = (function () {
             var tempVec3k = math.vec3();
 
             return function (params) {
+
+                if (this.canvas.boundary[2] === 0 || this.canvas.boundary[3] === 0) {
+                    this.error("Picking not allowed while canvas has zero width or height");
+                    return null;
+                }
 
                 params = params || {};
 
@@ -16878,6 +16913,45 @@ var Canvas2Image = (function () {
                 e = e.offsetParent;
             }
             return {x: x, y: y};
+        },
+
+        /** (Re)sizes the overlay DIV to the canvas size
+         * @private
+         */
+        _resizeOverlay: function () {
+
+            if (!this.canvas || !this.overlay) {
+                return;
+            }
+            var canvas = this.canvas;
+            var overlay = this.overlay;
+            var overlayStyle = overlay.style;
+
+            var xy = this._getElementXY(canvas);
+            overlayStyle["left"] = xy.x + "px";
+            overlayStyle["top"] = xy.y + "px";
+            overlayStyle["width"] = canvas.clientWidth + "px";
+            overlayStyle["height"] = canvas.clientHeight + "px";
+        },
+
+        /** (Re)sizes the background DIV to the canvas size
+         * @private
+         */
+        _resizeBackground: function () {
+
+            if (!this.canvas || !this._backgroundElement) {
+                return;
+            }
+
+            var canvas = this.canvas;
+            var background = this._backgroundElement;
+            var backgroundStyle = background.style;
+
+            var xy = this._getElementXY(canvas);
+            backgroundStyle["left"] = xy.x + "px";
+            backgroundStyle["top"] = xy.y + "px";
+            backgroundStyle["width"] = canvas.clientWidth + "px";
+            backgroundStyle["height"] = canvas.clientHeight + "px";
         },
 
         /**
@@ -26618,275 +26692,268 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
             // Capture input events and publish them on this component
 
-            document.addEventListener("keydown",
-                this._keyDownListener = function (e) {
+            document.addEventListener("keydown", this._keyDownListener = function (e) {
 
-                    if (!self.enabled) {
-                        return;
+                if (!self.enabled) {
+                    return;
+                }
+
+                if (e.target.tagName !== "INPUT" && e.target.tagName !== "TEXTAREA") {
+
+                    if (e.ctrlKey) {
+                        self.ctrlDown = true;
+
+                    } else if (e.altKey) {
+                        self.altDown = true;
+
+                    } else {
+                        self.keyDown[e.keyCode] = true;
+
+                        /**
+                         * Fired whenever a key is pressed while the parent
+                         * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}} has input focus.
+                         * @event keydown
+                         * @param value {Number} The key code, for example {{#crossLink "Input/KEY_LEFT_ARROW:property"}}{{/crossLink}},
+                         */
+                        self.fire("keydown", e.keyCode, true);
                     }
+                }
 
-                    if (e.target.tagName !== "INPUT" && e.target.tagName !== "TEXTAREA") {
+                if (self.mouseover) {
+                    e.preventDefault();
+                }
 
-                        if (e.ctrlKey) {
-                            self.ctrlDown = true;
+            }, true);
 
-                        } else if (e.altKey) {
-                            self.altDown = true;
+            document.addEventListener("keyup", this._keyUpListener = function (e) {
 
-                        } else {
-                            self.keyDown[e.keyCode] = true;
+                if (!self.enabled) {
+                    return;
+                }
 
-                            /**
-                             * Fired whenever a key is pressed while the parent
-                             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}} has input focus.
-                             * @event keydown
-                             * @param value {Number} The key code, for example {{#crossLink "Input/KEY_LEFT_ARROW:property"}}{{/crossLink}},
-                             */
-                            self.fire("keydown", e.keyCode, true);
-                        }
+                if (e.target.tagName !== "INPUT" && e.target.tagName !== "TEXTAREA") {
+
+                    if (e.ctrlKey) {
+                        self.ctrlDown = false;
+
+                    } else if (e.altKey) {
+                        self.altDown = false;
+
+                    } else {
+                        self.keyDown[e.keyCode] = false;
+
+                        /**
+                         * Fired whenever a key is released while the parent
+                         * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}} has input focus.
+                         * @event keyup
+                         * @param value {Number} The key code, for example {{#crossLink "Input/KEY_LEFT_ARROW:property"}}{{/crossLink}},
+                         */
+                        self.fire("keyup", e.keyCode, true);
                     }
+                }
+            });
 
-                    if (self.mouseover) {
-                        e.preventDefault();
-                    }
+            cfg.element.addEventListener("mouseenter", this._mouseEnterListener = function (e) {
 
-                }, true);
+                if (!self.enabled) {
+                    return;
+                }
 
-            document.addEventListener("keyup",
-                this._keyUpListener = function (e) {
+                self.mouseover = true;
 
-                    if (!self.enabled) {
-                        return;
-                    }
+                var coords = self._getClickCoordsWithinElement(e);
 
-                    if (e.target.tagName !== "INPUT" && e.target.tagName !== "TEXTAREA") {
+                /**
+                 * Fired whenever the mouse is moved into of the parent
+                 * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
+                 * @event mouseenter
+                 * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink "Canvas"}}Canvas{{/crossLink}},
+                 */
+                self.fire("mouseenter", coords, true);
+            });
 
-                        if (e.ctrlKey) {
-                            self.ctrlDown = false;
+            cfg.element.addEventListener("mouseleave", this._mouseLeaveListener = function (e) {
 
-                        } else if (e.altKey) {
-                            self.altDown = false;
+                if (!self.enabled) {
+                    return;
+                }
 
-                        } else {
-                            self.keyDown[e.keyCode] = false;
+                self.mouseover = false;
 
-                            /**
-                             * Fired whenever a key is released while the parent
-                             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}} has input focus.
-                             * @event keyup
-                             * @param value {Number} The key code, for example {{#crossLink "Input/KEY_LEFT_ARROW:property"}}{{/crossLink}},
-                             */
-                            self.fire("keyup", e.keyCode, true);
-                        }
-                    }
-                });
+                var coords = self._getClickCoordsWithinElement(e);
 
-            cfg.element.addEventListener("mouseenter",
-                this._mouseDownListener = function (e) {
-
-                    if (!self.enabled) {
-                        return;
-                    }
-
-                    self.mouseover = true;
-
-                    var coords = self._getClickCoordsWithinElement(e);
-
-                    /**
-                     * Fired whenever the mouse is moved into of the parent
-                     * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
-                     * @event mouseenter
-                     * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink "Canvas"}}Canvas{{/crossLink}},
-                     */
-                    self.fire("mouseenter", coords, true);
-                });
-
-            cfg.element.addEventListener("mouseleave",
-                this._mouseDownListener = function (e) {
-
-                    if (!self.enabled) {
-                        return;
-                    }
-
-                    self.mouseover = false;
-
-                    var coords = self._getClickCoordsWithinElement(e);
-
-                    /**
-                     * Fired whenever the mouse is moved out of the parent
-                     * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
-                     * @event mouseleave
-                     * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink "Canvas"}}Canvas{{/crossLink}},
-                     */
-                    self.fire("mouseleave", coords, true);
-                });
+                /**
+                 * Fired whenever the mouse is moved out of the parent
+                 * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
+                 * @event mouseleave
+                 * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink "Canvas"}}Canvas{{/crossLink}},
+                 */
+                self.fire("mouseleave", coords, true);
+            });
 
 
-            cfg.element.addEventListener("mousedown",
-                this._mouseDownListener = function (e) {
+            cfg.element.addEventListener("mousedown", this._mouseDownListener = function (e) {
 
-                    if (!self.enabled) {
-                        return;
-                    }
+                if (!self.enabled) {
+                    return;
+                }
 
-                    switch (e.which) {
+                switch (e.which) {
 
-                        case 1:// Left button
-                            self.mouseDownLeft = true;
-                            break;
+                    case 1:// Left button
+                        self.mouseDownLeft = true;
+                        break;
 
-                        case 2:// Middle/both buttons
-                            self.mouseDownMiddle = true;
-                            break;
+                    case 2:// Middle/both buttons
+                        self.mouseDownMiddle = true;
+                        break;
 
-                        case 3:// Right button
-                            self.mouseDownRight = true;
-                            break;
+                    case 3:// Right button
+                        self.mouseDownRight = true;
+                        break;
 
-                        default:
-                            break;
-                    }
+                    default:
+                        break;
+                }
 
-                    var coords = self._getClickCoordsWithinElement(e);
+                var coords = self._getClickCoordsWithinElement(e);
 
-                    /**
-                     * Fired whenever the mouse is pressed over the parent
-                     * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
-                     * @event mousedown
-                     * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink "Canvas"}}Canvas{{/crossLink}},
-                     */
-                    self.fire("mousedown", coords, true);
+                cfg.element.focus();
 
-                    if (self.mouseover) {
-                        e.preventDefault();
-                    }
-                });
+                /**
+                 * Fired whenever the mouse is pressed over the parent
+                 * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
+                 * @event mousedown
+                 * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink "Canvas"}}Canvas{{/crossLink}},
+                 */
+                self.fire("mousedown", coords, true);
 
-            document.addEventListener("mouseup",
-                this._mouseUpListener = function (e) {
+                if (self.mouseover) {
+                    e.preventDefault();
+                }
+            });
 
-                    if (!self.enabled) {
-                        return;
-                    }
+            document.addEventListener("mouseup", this._mouseUpListener = function (e) {
 
-                    switch (e.which) {
+                if (!self.enabled) {
+                    return;
+                }
 
-                        case 1:// Left button
-                            self.mouseDownLeft = false;
-                            break;
+                switch (e.which) {
 
-                        case 2:// Middle/both buttons
-                            self.mouseDownMiddle = false;
-                            break;
+                    case 1:// Left button
+                        self.mouseDownLeft = false;
+                        break;
 
-                        case 3:// Right button
-                            self.mouseDownRight = false;
-                            break;
+                    case 2:// Middle/both buttons
+                        self.mouseDownMiddle = false;
+                        break;
 
-                        default:
-                            break;
-                    }
+                    case 3:// Right button
+                        self.mouseDownRight = false;
+                        break;
 
-                    var coords = self._getClickCoordsWithinElement(e);
+                    default:
+                        break;
+                }
 
-                    /**
-                     * Fired whenever the mouse is released over the parent
-                     * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
-                     * @event mouseup
-                     * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink "Canvas"}}Canvas{{/crossLink}},
-                     */
-                    self.fire("mouseup", coords, true);
+                var coords = self._getClickCoordsWithinElement(e);
 
-                    if (self.mouseover) {
-                        e.preventDefault();
-                    }
-                }, true);
+                /**
+                 * Fired whenever the mouse is released over the parent
+                 * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
+                 * @event mouseup
+                 * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink "Canvas"}}Canvas{{/crossLink}},
+                 */
+                self.fire("mouseup", coords, true);
 
-            document.addEventListener("dblclick",
-                this._dblClickListener = function (e) {
+                if (self.mouseover) {
+                    e.preventDefault();
+                }
+            }, true);
 
-                    if (!self.enabled) {
-                        return;
-                    }
+            document.addEventListener("dblclick", this._dblClickListener = function (e) {
 
-                    switch (e.which) {
+                if (!self.enabled) {
+                    return;
+                }
 
-                        case 1:// Left button
-                            self.mouseDownLeft = false;
-                            self.mouseDownRight = false;
-                            break;
+                switch (e.which) {
 
-                        case 2:// Middle/both buttons
-                            self.mouseDownMiddle = false;
-                            break;
+                    case 1:// Left button
+                        self.mouseDownLeft = false;
+                        self.mouseDownRight = false;
+                        break;
 
-                        case 3:// Right button
-                            self.mouseDownLeft = false;
-                            self.mouseDownRight = false;
-                            break;
+                    case 2:// Middle/both buttons
+                        self.mouseDownMiddle = false;
+                        break;
 
-                        default:
-                            break;
-                    }
+                    case 3:// Right button
+                        self.mouseDownLeft = false;
+                        self.mouseDownRight = false;
+                        break;
 
-                    var coords = self._getClickCoordsWithinElement(e);
+                    default:
+                        break;
+                }
 
-                    /**
-                     * Fired whenever the mouse is double-clicked over the parent
-                     * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
-                     * @event dblclick
-                     * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink "Canvas"}}Canvas{{/crossLink}},
-                     */
-                    self.fire("dblclick", coords, true);
+                var coords = self._getClickCoordsWithinElement(e);
 
-                    if (self.mouseover) {
-                        e.preventDefault();
-                    }
-                });
+                /**
+                 * Fired whenever the mouse is double-clicked over the parent
+                 * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
+                 * @event dblclick
+                 * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink "Canvas"}}Canvas{{/crossLink}},
+                 */
+                self.fire("dblclick", coords, true);
 
-            cfg.element.addEventListener("mousemove",
-                this._mouseMoveListener = function (e) {
+                if (self.mouseover) {
+                    e.preventDefault();
+                }
+            });
 
-                    if (!self.enabled) {
-                        return;
-                    }
+            cfg.element.addEventListener("mousemove", this._mouseMoveListener = function (e) {
 
-                    var coords = self._getClickCoordsWithinElement(e);
+                if (!self.enabled) {
+                    return;
+                }
 
-                    /**
-                     * Fired whenever the mouse is moved over the parent
-                     * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
-                     * @event mousedown
-                     * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink "Canvas"}}Canvas{{/crossLink}},
-                     */
-                    self.fire("mousemove", coords, true);
+                var coords = self._getClickCoordsWithinElement(e);
 
-                    if (self.mouseover) {
-                        e.preventDefault();
-                    }
-                });
+                /**
+                 * Fired whenever the mouse is moved over the parent
+                 * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
+                 * @event mousedown
+                 * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink "Canvas"}}Canvas{{/crossLink}},
+                 */
+                self.fire("mousemove", coords, true);
 
-            cfg.element.addEventListener("wheel",
-                this._mouseWheelListener = function (e, d) {
+                if (self.mouseover) {
+                    e.preventDefault();
+                }
+            });
 
-                    if (!self.enabled) {
-                        return;
-                    }
+            cfg.element.addEventListener("wheel", this._mouseWheelListener = function (e, d) {
 
-                    var delta = Math.max(-1, Math.min(1, -e.deltaY * 40));
+                if (!self.enabled) {
+                    return;
+                }
 
-                    /**
-                     * Fired whenever the mouse wheel is moved over the parent
-                     * {{#crossLink "Viewer"}}Viewer{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
-                     * @event mousewheel
-                     * @param delta {Number} The mouse wheel delta,
-                     */
-                    self.fire("mousewheel", delta, true);
+                var delta = Math.max(-1, Math.min(1, -e.deltaY * 40));
 
-                    if (self.mouseover) {
-                        e.preventDefault();
-                    }
-                });
+                /**
+                 * Fired whenever the mouse wheel is moved over the parent
+                 * {{#crossLink "Viewer"}}Viewer{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
+                 * @event mousewheel
+                 * @param delta {Number} The mouse wheel delta,
+                 */
+                self.fire("mousewheel", delta, true);
+
+                if (self.mouseover) {
+                    e.preventDefault();
+                }
+            });
 
             // mouseclicked
 
@@ -26898,29 +26965,27 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
                 // Tolerance between down and up positions for a mouse click
                 var tolerance = 2;
 
-                self.on("mousedown",
-                    function (params) {
-                        downX = params[0];
-                        downY = params[1];
-                    });
+                self.on("mousedown", function (params) {
+                    downX = params[0];
+                    downY = params[1];
+                });
 
-                self.on("mouseup",
-                    function (params) {
+                self.on("mouseup", function (params) {
 
-                        if (downX >= (params[0] - tolerance) &&
-                            downX <= (params[0] + tolerance) &&
-                            downY >= (params[1] - tolerance) &&
-                            downY <= (params[1] + tolerance)) {
+                    if (downX >= (params[0] - tolerance) &&
+                        downX <= (params[0] + tolerance) &&
+                        downY >= (params[1] - tolerance) &&
+                        downY <= (params[1] + tolerance)) {
 
-                            /**
-                             * Fired whenever the mouse is clicked over the parent
-                             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
-                             * @event mouseclicked
-                             * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink "Canvas"}}Canvas{{/crossLink}},
-                             */
-                            self.fire("mouseclicked", params, true);
-                        }
-                    });
+                        /**
+                         * Fired whenever the mouse is clicked over the parent
+                         * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
+                         * @event mouseclicked
+                         * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink "Canvas"}}Canvas{{/crossLink}},
+                         */
+                        self.fire("mouseclicked", params, true);
+                    }
+                });
             })();
 
 
@@ -27216,8 +27281,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
                 } else {
 
-                    window.addEventListener('orientationchange',
-                        self._orientationchangedListener = function () {
+                    window.addEventListener('orientationchange', self._orientationchangedListener = function () {
 
                             orientation = window.screen.orientation || window.screen.mozOrientation || window.msOrientation || null;
                             orientationAngle = orientation ? (orientationAngleLookup[orientation] || 0) : 0;
@@ -27242,8 +27306,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
                 } else {
 
-                    window.addEventListener('devicemotion',
-                        self._deviceMotionListener = function (e) {
+                    window.addEventListener('devicemotion', self._deviceMotionListener = function (e) {
 
                             deviceMotionEvent.interval = e.interval;
                             deviceMotionEvent.orientationAngle = orientationAngle;
@@ -27293,8 +27356,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
                 } else {
 
-                    window.addEventListener("deviceorientation",
-                        self._deviceOrientListener = function (e) {
+                    window.addEventListener("deviceorientation", self._deviceOrientListener = function (e) {
 
                             deviceOrientationEvent.gamma = e.gamma;
                             deviceOrientationEvent.beta = e.beta;
@@ -40725,20 +40787,20 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  Finally, we animate the rippling by periodically updating the Shader's "time" uniform.
 
  ````javascript
- // Shader that's used by our Entity. Note the 'xeo_aPosition' and 'xeo_aUV attributes',
+ // Shader that's used by our Entity. Note the 'position' and 'uv attributes',
  // which will receive the positions and UVs from the Geometry. Also note the 'time'
- // uniform, which we'll be animating via Shader#setParams.
+ // uniform, which we'll be animating via Shader#setUniforms.
 
  var shader = new xeogl.Shader({
 
     // Vertex shading stage
     vertex: [
-        "attribute vec3 xeo_aPosition;",
-        "attribute vec2 xeo_aUV;",
+        "attribute vec3 position;",
+        "attribute vec2 uv;",
         "varying vec2 vUv;",
         "void main () {",
-        "    gl_Position = vec4(xeo_aPosition, 1.0);",
-        "    vUv = xeo_aUV;",
+        "    gl_Position = vec4(position, 1.0);",
+        "    vUv = uv;",
         "}"
     ],
 
@@ -40767,7 +40829,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
     ],
 
     // Initial value for the 'time' uniform in the fragment stage.
-    params: {
+    uniforms: {
         time: 0.0
     }
  });
@@ -40790,9 +40852,9 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  Now let's animate the "time" parameter on the Shader, to make the water ripple:
 
  ```` javascript
- entity.scene.on("tick", function(params) {
-     shader.setParams({
-         time: params.timeElapsed
+ entity.scene.on("tick", function(e) {
+     shader.setUniforms({
+         time: e.timeElapsed
      });
  });
  ````
@@ -40807,11 +40869,11 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  | Attribute  | Description | Depends on  |
  |---|---|
- | attribute vec3 xeo_aPosition   | Geometry vertex positions | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}} |
- | attribute vec2 xeo_aUV         | Geometry vertex UV coordinates | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/uv:property"}}{{/crossLink}}  |
- | attribute vec3 xeo_aNormal     | Geometry vertex normals | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/normals:property"}}{{/crossLink}}  |
- | attribute vec4 xeo_aColor      | Geometry vertex colors  | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/colors:property"}}{{/crossLink}}  |
- | attribute vec4 xeo_aTangent    | Geometry vertex tangents, for normal mapping | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/normals:property"}}{{/crossLink}} and {{#crossLink "Geometry/uv:property"}}{{/crossLink}}  |
+ | attribute vec3 position   | Geometry vertex positions | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}} |
+ | attribute vec2 uv         | Geometry vertex UV coordinates | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/uv:property"}}{{/crossLink}}  |
+ | attribute vec3 normal     | Geometry vertex normals | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/normals:property"}}{{/crossLink}}  |
+ | attribute vec4 color      | Geometry vertex colors  | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/colors:property"}}{{/crossLink}}  |
+ | attribute vec4 tangent    | Geometry vertex tangents, for normal mapping | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/normals:property"}}{{/crossLink}} and {{#crossLink "Geometry/uv:property"}}{{/crossLink}}  |
 
  #### Uniforms
 
@@ -40819,10 +40881,10 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  | Uniform  | Description | Depends on  |
  |---|---|
- | uniform mat4  xeo_uModelMatrix                                   | Modelling transform matrix | {{#crossLink "Transform"}}{{/crossLink}} |
- | uniform mat4  xeo_uModelNormalMatrix                             | Modelling transform normal matrix | {{#crossLink "Geometry/normals:property"}}Geometry normals{{/crossLink}} and {{#crossLink "Transform"}}{{/crossLink}} |
- | uniform mat4  xeo_uViewMatrix                                    | View transform matrix | {{#crossLink "Lookat"}}Lookat{{/crossLink}} |
- | uniform mat4  xeo_uViewNormalMatrix                              | View transform normal matrix | {{#crossLink "Geometry/normals:property"}}Geometry normals{{/crossLink}} and {{#crossLink "Lookat"}}Lookat{{/crossLink}} |
+ | uniform mat4  modelMatrix                                   | Modelling transform matrix | {{#crossLink "Transform"}}{{/crossLink}} |
+ | uniform mat4  modelNormalMatrix                             | Modelling transform normal matrix | {{#crossLink "Geometry/normals:property"}}Geometry normals{{/crossLink}} and {{#crossLink "Transform"}}{{/crossLink}} |
+ | uniform mat4  viewMatrix                                    | View transform matrix | {{#crossLink "Lookat"}}Lookat{{/crossLink}} |
+ | uniform mat4  viewNormalMatrix                              | View transform normal matrix | {{#crossLink "Geometry/normals:property"}}Geometry normals{{/crossLink}} and {{#crossLink "Lookat"}}Lookat{{/crossLink}} |
  | uniform mat4  xeo_uProjMatrix                                    | Projection transform matrix | {{#crossLink "Ortho"}}Ortho{{/crossLink}}, {{#crossLink "Frustum"}}Frustum{{/crossLink}} or {{#crossLink "Perspective"}}Perspective{{/crossLink}} |
  | uniform float xeo_uZNear                                         | Near clipping plane |{{#crossLink "Ortho"}}Ortho{{/crossLink}}, {{#crossLink "Frustum"}}Frustum{{/crossLink}} or {{#crossLink "Perspective"}}Perspective{{/crossLink}} |
  | uniform float xeo_uZFar                                          | Far clipping plane |{{#crossLink "Ortho"}}Ortho{{/crossLink}}, {{#crossLink "Frustum"}}Frustum{{/crossLink}} or {{#crossLink "Perspective"}}Perspective{{/crossLink}} |
@@ -40836,12 +40898,11 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  | uniform vec3 xeo_uLightLinearAttenuation&lt;***N***&gt;          | Linear attenuation factor for {{#crossLink "PointLight"}}{{/crossLink}} at index ***N*** in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "PointLight"}}{{/crossLink}} |
  | uniform vec3 xeo_uLightQuadraticAttenuation&lt;***N***&gt;       | Quadratic attenuation factor for {{#crossLink "PointLight"}}{{/crossLink}} at index ***N*** in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "PointLight"}}{{/crossLink}} |
  |---|---|
- | uniform vec3 xeo_uDiffuse;       |  | {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} |
- | uniform vec3 xeo_uSpecular;       |  | {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}} |
- | uniform vec3 xeo_uEmissive;       |  | {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}} |
- | uniform float xeo_uOpacity;       |  | {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} |
- | uniform float xeo_uShininess;       |  | {{#crossLink "PhongMaterial/shininess:property"}}{{/crossLink}} |
- | uniform float xeo_uDiffuseFresnelEdgeBias;       |  | {{#crossLink "Fresnel/edgeBias:property"}}{{/crossLink}} |
+ | uniform vec3 materialDiffuse;       |  | {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} |
+ | uniform vec3 materialSpecular;       |  | {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}} |
+ | uniform vec3 materialEmissive;       |  | {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}} |
+ | uniform float materialOpacity;       |  | {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} |
+ | uniform float materialShininess;       |  | {{#crossLink "PhongMaterial/shininess:property"}}{{/crossLink}} |
 
  #### Varying
 
@@ -40871,7 +40932,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Shader.
  @param [cfg.vertex=null] {String} GLSL Depends on code for the vertex shading staging.
  @param [cfg.fragment=null] {String} GLSL source code for the fragment shading staging.
- @param [cfg.params={}] {Object} Values for uniforms defined in the vertex and/or fragment stages.
+ @param [cfg.uniforms={}] {Object} Values for uniforms defined in the vertex and/or fragment stages.
  @extends Component
  */
 (function () {
@@ -40887,14 +40948,14 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             this._state = new xeogl.renderer.Shader({
                 vertex: null,
                 fragment: null,
-                params: {}
+                uniforms: {}
             });
 
             this.vertex = cfg.vertex;
 
             this.fragment = cfg.fragment;
 
-            this.setParams(cfg.params);
+            this.setUniforms(cfg.uniforms);
         },
 
         _props: {
@@ -40962,51 +41023,51 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
-             * Params for this Shader.
+             * Uniforms for this Shader.
              *
-             * Fires a {{#crossLink "Shader/params:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "Shader/uniforms:event"}}{{/crossLink}} event on change.
              *
-             * @property params
+             * @property uniforms
              * @default {}
              * @type {}
              */
-            params: {
+            uniforms: {
 
                 get: function () {
-                    return this._state.params;
+                    return this._state.uniforms;
                 }
             }
         },
 
         /**
-         * Sets one or more params for this Shader.
+         * Sets one or more uniforms for this Shader.
          *
-         * These will be individually overridden by any {{#crossLink "ShaderParams/setParams:method"}}params subsequently specified{{/crossLink}} on
+         * These will be individually overridden by any {{#crossLink "ShaderParams/setUniforms:method"}}uniforms subsequently specified{{/crossLink}} on
          * {{#crossLink "ShaderParams"}}ShaderParams{{/crossLink}} on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
          *
-         * Fires a {{#crossLink "Shader/params:event"}}{{/crossLink}} event on change.
+         * Fires a {{#crossLink "Shader/uniforms:event"}}{{/crossLink}} event on change.
          *
-         * @method setParams
-         * @param {} [params={}] Values for params to set on this Shader, keyed to their names.
+         * @method setUniforms
+         * @param {} [uniforms={}] Values for uniforms to set on this Shader, keyed to their names.
          */
-        setParams: function (params) {
+        setUniforms: function (uniforms) {
 
-            for (var name in params) {
-                if (params.hasOwnProperty(name)) {
-                    this._state.params[name] = params[name];
+            for (var name in uniforms) {
+                if (uniforms.hasOwnProperty(name)) {
+                    this._state.uniforms[name] = uniforms[name];
                 }
             }
 
             this._renderer.imageDirty = true;
 
             /**
-             * Fired whenever this Shader's  {{#crossLink "Shader/params:property"}}{{/crossLink}}
+             * Fired whenever this Shader's  {{#crossLink "Shader/uniforms:property"}}{{/crossLink}}
              * property has been updated.
              *
-             * @event params
+             * @event uniforms
              * @param value The property's new value
              */
-            this.fire("params", this._state.params);
+            this.fire("uniforms", this._state.uniforms);
         },
 
         _compile: function () {
@@ -41016,7 +41077,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         _getJSON: function () {
 
             var json = {
-                params: this._state.params
+                uniforms: this._state.uniforms
             };
 
             if (this._state.vertex) {
@@ -41096,7 +41157,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
     ],
 
     // Initial values for the 'time' uniform in the fragment stage.
-    params: {
+    uniforms: {
         time: 0.0
     }
  });
@@ -41114,7 +41175,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         indices:[ 0, 1, 2, 0, 2, 3 ]
     }),
     shaderParams1: new xeogl.ShaderParams({
-        params: {
+        uniforms: {
             time: 0.0
         }
     })
@@ -41133,7 +41194,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         indices:[ 0, 1, 2, 0, 2, 3 ]
     }),
     shaderParams: new xeogl.ShaderParams({
-        params: {
+        uniforms: {
             time: 0.0
         }
     })
@@ -41145,14 +41206,14 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  // Get the default Scene off the first Entity
  var scene = entity1.scene;
 
- scene.on("tick", function(params) {
+ scene.on("tick", function(e) {
 
-    entity1.shaderParams.setParams({
-        time: params.timeElapsed
+    entity1.shaderParams.setUniforms({
+        time: e.timeElapsed
     });
 
-    entity2.shaderParams.setParams({
-        time: params.timeElapsed  * 0.5
+    entity2.shaderParams.setUniforms({
+        time: e.timeElapsed  * 0.5
     });
 });
  ````
@@ -41165,7 +41226,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ShaderParams.
- @param [cfg.params={}] {Object} The {{#crossLink "Shader"}}Shader{{/crossLink}} parameter values.
+ @param [cfg.uniforms={}] {Object} The {{#crossLink "Shader"}}Shader{{/crossLink}} parameter values.
  @extends Component
  */
 (function () {
@@ -41179,60 +41240,60 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         _init: function (cfg) {
 
             this._state = new xeogl.renderer.ShaderParams({
-                params: {}
+                uniforms: {}
             });
 
-            this.setParams(cfg.params);
+            this.setUniforms(cfg.uniforms);
         },
 
         _props: {
-
+            
             /**
-             * Params for {{#crossLink "Shader"}}Shaders{{/crossLink}} on attached
+             * Uniforms for {{#crossLink "Shader"}}Shaders{{/crossLink}} on attached
              * {{#crossLink "Entity"}}Entities{{/crossLink}}.
              *
-             * Fires a {{#crossLink "Shader/params:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "Shader/uniforms:event"}}{{/crossLink}} event on change.
              *
-             * @property params
+             * @property uniforms
              * @default {}
              * @type {}
              */
-            params: {
+            uniforms: {
 
                 get: function () {
-                    return this._state.params;
+                    return this._state.uniforms;
                 }
             }
         },
 
         /**
-         * Sets one or more params for {{#crossLink "Shader"}}Shaders{{/crossLink}} on attached
+         * Sets one or more uniforms for {{#crossLink "Shader"}}Shaders{{/crossLink}} on attached
          * {{#crossLink "Entity"}}Entities{{/crossLink}}.
          *
-         * These will individually override any params of the same names that are {{#crossLink "Shader/setParams:method"}}already specified{{/crossLink}} on
+         * These will individually override any uniforms of the same names that are {{#crossLink "Shader/setUniforms:method"}}already specified{{/crossLink}} on
          * those {{#crossLink "Shader"}}Shaders{{/crossLink}}.
          *
-         * Fires a {{#crossLink "ShaderParams/params:event"}}{{/crossLink}} event on change.
+         * Fires a {{#crossLink "ShaderParams/uniforms:event"}}{{/crossLink}} event on change.
          *
-         * @method setParams
-         * @param {} [params={}] Values for params to set on the {{#crossLink "Shader"}}Shaders{{/crossLink}}, keyed to their names.
+         * @method setUniforms
+         * @param {} [uniforms={}] Values for uniforms to set on the {{#crossLink "Shader"}}Shaders{{/crossLink}}, keyed to their names.
          */
-        setParams: function (params) {
+        setUniforms: function (uniforms) {
 
-            for (var name in params) {
-                if (params.hasOwnProperty(name)) {
-                    this._state.params[name] = params[name];
+            for (var name in uniforms) {
+                if (uniforms.hasOwnProperty(name)) {
+                    this._state.uniforms[name] = uniforms[name];
                 }
             }
 
             this._renderer.imageDirty = true;
 
             /**
-             * Fired whenever this ShaderParams' {{#crossLink "ShaderParams/params:property"}}{{/crossLink}} property has been updated.
-             * @event params
+             * Fired whenever this ShaderParams' {{#crossLink "ShaderParams/uniforms:property"}}{{/crossLink}} property has been updated.
+             * @event uniforms
              * @param value The property's new value
              */
-            this.fire("params", this._state.params);
+            this.fire("uniforms", this._state.uniforms);
         },
 
         _compile: function () {
@@ -41241,7 +41302,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
         _getJSON: function () {
             return {
-                params: this._state.params
+                uniforms: this._state.uniforms
             };
         }
     });
@@ -42456,7 +42517,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
         _getJSON: function () {
             var json = {
-                xyz: this._xyz,
+                xyz: this._xyz.slice(),
                 angle: this._angle
             };
             if (this._parent) {
@@ -42637,7 +42698,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
         _getJSON: function () {
             var json = {
-                xyzw: this._xyzw
+                xyzw: this._xyzw.slice()
             };
             if (this._parent) {
                 json.parent = this._parent.id;
@@ -42790,7 +42851,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
         _getJSON: function () {
             var json = {
-                xyz: this._xyz
+                xyz: this._xyz.slice()
             };
             if (this._parent) {
                 json.parent = this._parent.id;
@@ -42945,7 +43006,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
         _getJSON: function () {
             var json = {
-                xyz: this._xyz
+                xyz: this._xyz.slice()
             };
             if (this._parent) {
                 json.parent = this._parent.id;
