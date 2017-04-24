@@ -723,7 +723,7 @@
                         }
                     }
 
-                    component = new componentClass(componentCfg);
+                    component = new componentClass(this.scene, componentCfg);
 
                     managingLifecycle = true;
                 }

@@ -545,7 +545,7 @@
 
         params = params || {};
 
-        this._prepareDisplay(params);
+        this._prepareDisplay();
 
         if (this.imageDirty || params.force) {
 
@@ -567,9 +567,7 @@
     };
 
 
-    xeogl.renderer.Renderer.prototype._prepareDisplay = function (params) {
-
-        params = params || {};
+    xeogl.renderer.Renderer.prototype._prepareDisplay = function () {
 
         if (this.objectListDirty) {
             this._buildObjectList(); // Build the scene object list
@@ -1138,6 +1136,8 @@
         }
 
         this._readPixelBuf.unbind();
+
+        this.imageDirty = true;
     };
 
     /**
