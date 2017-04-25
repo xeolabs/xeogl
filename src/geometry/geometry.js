@@ -1483,17 +1483,31 @@
             }
 
             var json = {
-                primitive: this._state.primitiveName,
-                positions: this._positions,
-                uv: this._uvs,
-                colors: this._colors,
-                indices: this._indices
+                primitive: this._state.primitiveName
             };
+
+            var vecToArray = xeogl.math.vecToArray;
+
+            if (this._positions) {
+                json.positions =  vecToArray(this._positions);
+            }
+
+            if (this._uvs) {
+                json.uv =  vecToArray(this._uvs);
+            }
+
+            if (this._colors) {
+                json.colors =  vecToArray(this._colors);
+            }
+
+            if (this._indices) {
+                json.indices =  vecToArray(this._indices);
+            }
 
             if (this._state.autoNormals) {
                 json.autoNormals = true;
             } else {
-                json.normals = this._normals;
+                json.normals = vecToArray(this._normals);
             }
 
             return json;

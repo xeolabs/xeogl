@@ -383,7 +383,7 @@
         _getJSON: function () {
             return {
                 // Don't save lod
-                center: this._center.slice(),
+                center: xeogl.math.vecToArray(this._center),
                 radius: this._radius,
                 heightSegments: this._heightSegments,
                 widthSegments: this._widthSegments

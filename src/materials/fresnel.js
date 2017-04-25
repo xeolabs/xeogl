@@ -242,9 +242,10 @@
         },
 
         _getJSON: function () {
+            var vecToColor = xeogl.math.vecToColor;
             return {
-                edgeColor: this._state.edgeColor,
-                centerColor: this._state.centerColor,
+                edgeColor: vecToArray(this._state.edgeColor),
+                centerColor: vecToArray(this._state.centerColor),
                 edgeBias: this._state.edgeBias,
                 centerBias: this._state.centerBias,
                 power: this._state.power

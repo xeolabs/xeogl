@@ -190,9 +190,10 @@
         },
 
         _getJSON: function () {
+            var vecToArray = xeogl.math.vecToArray;
             return {
-                aabb: this.aabb,
-                center: this.center
+                aabb: vecToArray(this.aabb),
+                center: vecToArray(this.center)
             };
         }
     });

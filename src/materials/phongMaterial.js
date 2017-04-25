@@ -1156,14 +1156,16 @@
 
         _getJSON: function () {
 
+            var vecToArray = xeogl.math.vecToArray;
+
             var json = {
 
                 // Colors
 
-                ambient: this._state.ambient.slice(),
-                diffuse: this._state.diffuse.slice(),
-                specular: this._state.specular.slice(),
-                emissive: this._state.emissive.slice()
+                ambient: vecToArray(this._state.ambient),
+                diffuse: vecToArray(this._state.diffuse),
+                specular: vecToArray(this._state.specular),
+                emissive: vecToArray(this._state.emissive)
             };
 
             if (this._state.opacity !== 1.0) {

@@ -947,12 +947,14 @@
 
         _getJSON: function () {
 
+            var vecToArray = xeogl.math.vecToArray;
+
             var json = {
-                baseColor: this._state.baseColor.slice(),
+                baseColor: vecToArray(this._state.baseColor),
                 metallic: this._state.metallic,
                 roughness: this._state.roughness,
                 specularF0: this._state.specularF0,
-                emissive: this._state.emissive.slice(),
+                emissive: vecToArray(this._state.emissive),
                 opacity: this._state.opacity
             };
 

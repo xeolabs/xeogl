@@ -383,10 +383,11 @@
         },
 
         _getJSON: function () {
+            var vecToArray = xeogl.math.vecToArray;
             var json = {
-                eye: this._eye.slice(),
-                look: this._look.slice(),
-                up: this._up.slice(),
+                eye: vecToArray(this._eye),
+                look: vecToArray(this._look),
+                up: vecToArray(this._up),
                 gimbalLockY: this._gimbalLockY
             };
             if (this._parent) {

@@ -350,11 +350,12 @@
         },
 
         _getJSON: function () {
+            var vecToArray = xeogl.math.vecToArray;
             return {
-                obb: this.obb,
-                aabb: this.aabb,
-                center: this.center,
-                sphere: this.sphere
+                obb: vecToArray(this.obb),
+                aabb: vecToArray(this.aabb),
+                center: vecToArray(this.center),
+                sphere: vecToArray(this.sphere)
             };
         }
     });

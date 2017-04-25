@@ -328,10 +328,11 @@
         },
 
         _getJSON: function () {
+            var vecToArray = xeogl.math.vecToArray;
             return {
                 type: this._state.type,
-                pos: this._state.pos,
-                color: this._state.color,
+                pos: vecToArray(this._state.pos),
+                color: vecToArray(this._state.color),
                 intensity: this._state.intensity,
                 constantAttenuation: this._state.attenuation[0],
                 linearAttenuation: this._state.attenuation[1],

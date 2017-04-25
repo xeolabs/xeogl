@@ -224,7 +224,7 @@
         _getJSON: function () {
             return {
                 mode: this._state.mode,
-                dir: this._state.dir,
+                dir: xeogl.math.vecToArray(this._state.dir),
                 dist: this._state.dist
             };
         }

@@ -143,7 +143,7 @@
 
         _getJSON: function () {
             var json = {
-                xyz: this._xyz.slice()
+                xyz: xeogl.math.vecToArray(this._xyz)
             };
             if (this._parent) {
                 json.parent = this._parent.id;

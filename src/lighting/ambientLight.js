@@ -137,7 +137,7 @@
 
         _getJSON: function () {
             return {
-                color: this._state.color,
+                color: xeogl.math.vecToArray(this._state.color),
                 intensity: this._state.intensity
             };
         }

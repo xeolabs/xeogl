@@ -226,7 +226,7 @@
                 json.boundary = this._attached.boundary.id;
 
             } else if (this.positions) {
-                this.positions = this.positions;
+                json.positions = xeogl.math.vecToArray(this.positions);
             }
 
             return json;
