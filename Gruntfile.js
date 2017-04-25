@@ -55,15 +55,18 @@ module.exports = function (grunt) {
                     paths: [
                         'src',
                         'examples/js/animation',
+                        'examples/js/annotations',
                         'examples/js/controls',
                         'examples/js/effects',
                         'examples/js/curves',
                         'examples/js/generation',
                         'examples/js/skyboxes',
+                        'examples/js/stories',
                         'examples/js/geometry',
                         'examples/js/marking',
                         'examples/js/models',
-                        'examples/js/zspace'
+                        'examples/js/zspace',
+                        'examples/js/helpers'
                     ],
 
                     outdir: './docs/',
