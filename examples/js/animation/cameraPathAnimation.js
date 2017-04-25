@@ -220,8 +220,8 @@
                     //t = this._ease(t, this._playingFromT, this._playingToT, this._playingToT - this._playingFromT);
 
                     if ((this._playingDir < 0 && t <= this._playingToT) || (this._playingDir > 0 && t >= this._playingToT)) {
+                        t = this._playingToT;
                         this.state = this.SCRUBBING;
-                        break;
                     }
 
                     this._t = t;
