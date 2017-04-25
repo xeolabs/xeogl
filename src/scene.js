@@ -232,8 +232,6 @@
 
             var transparent = !!cfg.transparent;
 
-            this._componentIDMap = new xeogl.utils.Map();
-
             /**
              * The epoch time (in milliseconds since 1970) when this Scene was instantiated.
              *
@@ -418,14 +416,18 @@
 
                 if (this.components[c.id]) {
                     this.error("Component " + xeogl._inQuotes(c.id) + " already exists in Scene - ignoring ID, will randomly-generate instead");
-            //        c.id = this._componentIDMap.addItem(c);
+                    //        c.id = this._componentIDMap.addItem(c);
                     return;
                 }
             } else {
 
                 // Auto-generated ID
 
-                c.id = this._componentIDMap.addItem(c);
+                c.id = xeogl.math.createUUID();
+
+                while (this.components[c.id]) {
+                    c.id = xeogl.math.createUUID();
+                }
             }
 
             this.components[c.id] = c;
@@ -442,7 +444,6 @@
             }
 
             types[c.id] = c;
-
 
             c.on("destroyed", function () {
                 this._componentDestroyed(c);
@@ -482,8 +483,6 @@
         // Callbacks as members to reduce GC churn
 
         _componentDestroyed: function (c) {
-
-            this._componentIDMap.removeItem(c.id);
 
             delete this.components[c.id];
 
@@ -546,6 +545,37 @@
                 //    }
                 //});
             }
+        },
+
+        load: function (cfg) {
+            var type = cfg.type;
+            if (!type) {
+                this.error("xeogl.Scene.load: 'type' required");
+                return;
+            }
+            var id = cfg.id;
+            if (!id) {
+                this.error("xeogl.Scene.load: 'id' required");
+                return;
+            }
+            var component = this.components[id];
+            if (component) {
+                if (type !== component.type) {
+                    this.error("xeogl.Scene.load: Type unexpected");
+                    return;
+                }
+                return;
+            }
+            var claz = xeogl[type.substring(6)];
+            if (!claz) {
+                this.error("xeogl.Scene.load: Component type not found: " + type);
+                return;
+            }
+            if (!xeogl._isComponentType(type, "xeogl.Component")) {
+                this.error("xeogl.Scene.load: Expected a xeogl.Component type or subtype");
+                return;
+            }
+            return new claz(this, cfg);
         },
 
         /**
@@ -1689,8 +1719,8 @@
                                     nc[2] = normals[ic3 + 2];
 
                                     var normal = math.addVec3(math.addVec3(
-                                            math.mulVec3Scalar(na, bary[0], tempVec3),
-                                            math.mulVec3Scalar(nb, bary[1], tempVec3b), tempVec3c),
+                                        math.mulVec3Scalar(na, bary[0], tempVec3),
+                                        math.mulVec3Scalar(nb, bary[1], tempVec3b), tempVec3c),
                                         math.mulVec3Scalar(nc, bary[2], tempVec3d), tempVec3e);
 
                                     hit.normal = math.transformVec3(entity.transform.leafMatrix, normal, tempVec3f);
@@ -1965,36 +1995,20 @@
             // that exist between them are resolved correctly as the
             // components are instantiawhen when we load the JSON again.
 
-            var components = [];
             var component;
+            var componentJSONs = [];
 
             for (var id in this.components) {
                 if (this.components.hasOwnProperty(id)) {
 
                     component = this.components[id];
 
-                    // Don't serialize service components that
-                    // will always be created on this Scene
-
                     if (!component._getJSON) {
                         continue;
                     }
 
-                    // Serialize in same order as creation
-                    // in order to resolve inter-component dependencies
-
-                    components.unshift(component);
+                    componentJSONs.push(component.json);
                 }
-            }
-
-            components.sort(function (a, b) {
-                return a._componentOrder - b._componentOrder
-            });
-
-            var componentJSONs = [];
-
-            for (var i = 0, len = components.length; i < len; i++) {
-                componentJSONs.push(components[i].json);
             }
 
             return {
@@ -2002,8 +2016,7 @@
                 clearEachPass: this._clearEachPass,
                 components: componentJSONs
             };
-        }
-        ,
+        },
 
         _destroy: function () {
             this.clear();

@@ -116,7 +116,8 @@
             // http://www.broofa.com/Tools/Math.uuid.htm
             var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
             var uuid = new Array(36);
-            var rnd = 0, r;
+            var rnd = 0;
+            var r;
             return function () {
                 for (var i = 0; i < 36; i++) {
                     if (i === 8 || i === 13 || i === 18 || i === 23) {
@@ -760,15 +761,15 @@
          * Converts a three-element vector to a JSON-serializable
          * array with values rounded to two decimal places.
          */
-        vec3ToArray: (function () {
+        vecToArray: (function () {
             function trunc(v) {
                 return Math.round(v * 100) / 100
             }
             return function (v) {
                 v = Array.prototype.slice.call(v);
-                v[0] = trunc(v[0]);
-                v[1] = trunc(v[1]);
-                v[2] = trunc(v[2]);
+                for (var i =0,len = v.length; i < len; i++) {
+                    v[i] = trunc(v[i]);
+                }
                 return v;
             };
         })(),
