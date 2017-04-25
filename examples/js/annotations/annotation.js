@@ -1,604 +1,539 @@
-(function () {
+/**
+ An **Annotation** is a labeled {{#crossLink "Pin"}}{{/crossLink}} that's attached to the surface of an {{#crossLink "Entity"}}{{/crossLink}}.
 
-    "use strict";
+ <a href="../../examples/#annotations_stories_tronTank"><img src="../../assets/images/screenshots/tronTankStory.jpg"></img></a>
 
-    /**
-     An **Annotation** is a label that's attached to an {{#crossLink "Entity"}}{{/crossLink}}.
+ ## Overview
 
-     ## Example
+ #### Position
 
-     ````javascript
+ An Annotation is positioned within one of the triangles of its {{#crossLink "Entity"}}Entity's{{/crossLink}} {{#crossLink "Geometry"}}{{/crossLink}}. Wherever that triangles goes within the 3D view, the Annotation will automatically follow. An Annotation specifies its position with two properties:
+ 
+ * {{#crossLink "Pin/primIndex:property"}}{{/crossLink}}, which indicates the index of the triangle within the {{#crossLink "Geometry"}}{{/crossLink}} {{#crossLink "Geometry/indices:property"}}{{/crossLink}}, and
+ * {{#crossLink "Pin/bary:property"}}{{/crossLink}}, the barycentric coordinates of the position within the triangle.
 
-     // Create an annotation manager
+ From these, an Annotation dynamically calculates its Cartesian coordinates, which it provides in each xeogl coordinate space:
 
-     var manager = new xeogl.AnnotationManager({
-         occlusionCull: true // Hide annotations when their pins are occluded
-     });
+ * {{#crossLink "Pin/localPos:property"}}{{/crossLink}} - 3D position local to the coordinate space of the {{#crossLink "Geometry"}}{{/crossLink}},
+ * {{#crossLink "Pin/worldPos:property"}}{{/crossLink}} - 3D World-space position,
+ * {{#crossLink "Pin/viewPos:property"}}{{/crossLink}} - 3D View-space position, and
+ * {{#crossLink "Pin/canvasPos:property"}}{{/crossLink}} - 2D Canvas-space position.
 
-     // Create a couple of annotations
+ An Annotation automatically recalculates these coordinates whenever its {{#crossLink "Entity"}}{{/crossLink}} is replaced or transformed, the {{#crossLink "Geometry"}}{{/crossLink}} is replaced or modified, or the {{#crossLink "Camera"}}{{/crossLink}} is moved.
 
-     var a1 = new xeogl.Annotation({
-        manager: manager,
-        entity: "6#n274017_gear_53t-node_1.entity.0",
-        primIndex: 3081,
-        bary: [0.11, 0.79, 0.08],
-        title: "A big grey gear",
-        desc: "This is a big grey gear. There's a couple of big grey gears in this gearbox. They're both quite big and grey.",
-        visible: true,
-        open: true
-     });
+ #### Appearance
 
-     var a2 = new xeogl.Annotation({
-         manager: manager,
-         entity: "6#n273303_shaft-node.entity.0",
-         primIndex: 14289,
-         bary: [0.45, 0.74, -0.19],
-         visible: true,
-         title: "Gearbox shaft",
-         desc: "This is the end of one of the gearbox's shafts.",
-         visible: true,
-         open: false
-     });
+ As shown in the screen shot above, an Annotation is rendered as a dot with a label attached to it, using HTML elements.
 
-     ````
-     @class Annotation
-     @module xeogl
-     @submodule annotations
-     @constructor
-     @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Annotation in the default
-     {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
-     @param [cfg] {*} Configs
-     @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
-     generated automatically when omitted.
-     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Annotation.
-     @extends Component
-     */
-    xeogl.Annotation = xeogl.Component.extend({
+ * {{#crossLink "Annotation/glyph:property"}}{{/crossLink}} specifies a character to appear in the dot,
+ * {{#crossLink "Annotation/title:property"}}{{/crossLink}} and {{#crossLink "Annotation/desc:property"}}{{/crossLink}} specify a title and description to appear in the label, and
+ * {{#crossLink "Annotation/pinShown:property"}}{{/crossLink}} and {{#crossLink "Annotation/labelShown:property"}}{{/crossLink}} specify whether the pin and label are shown.
 
-        type: "xeogl.Annotation",
+ Use the stylesheet in <a href="/examples/js/annotations/annotation-style.css">annotation-style.css</a> to set the default appearance for Annotations. Use that stylesheet as a guide for your own custom styles.
 
-        _init: function (cfg) {
+ #### Visibility
 
-            this.manager = cfg.manager;
+ * {{#crossLink "Pin/occludable:property"}}{{/crossLink}} specifies whether the Annotation becomes invisible whenever its occluded by other objects in the 3D view, and
+ * {{#crossLink "Pin/visible:property"}}{{/crossLink}} indicates if the Annotations is currently visible.
 
-            this._initScene(cfg);
-            this._initHTML(cfg);
+ *To determine if each Annotation is occluded, xeogl renders the scene to a hidden framebuffer, along with a colored point for each Annotation's position. Then xeogl determines each Annotation to be occluded if the pixel at its position does not match the special pin color. The color is configured as some unusual color that is not used elsewhere in the scene. This is a fast technique that works well for complex meshes, scaling up *
 
-            // Lazy-evaluation flags
+ #### Vantage points
 
-            this._localPosDirty = true;
-            this._worldPosDirty = false;
+ Each Annotation may be configured with a vantage point from which to view it, given as {{#crossLink "Annotation/eye:property"}}{{/crossLink}}, {{#crossLink "Annotation/look:property"}}{{/crossLink}} and {{#crossLink "Annotation/up:property"}}{{/crossLink}} properties.  To focus attention on an Annotation, you could set the {{#crossLink "Camera"}}Camera's{{/crossLink}} {{#crossLink "Lookat"}}{{/crossLink}} to that
+ vantage point, or even fly to the vantage point using a {{#crossLink "CameraFlightAnimation"}}{{/crossLink}} (which we'll demonstrate in the usage example below).
 
-            // Set public properties
+ #### Interaction
 
-            this.entity = cfg.entity;
-            this.number = cfg.number;
-            this.primIndex = cfg.primIndex;
-            this.bary = cfg.bary;
-            this.visible = cfg.visible;
-            this.open = cfg.open;
-            this.title = cfg.title;
-            this.desc = cfg.desc;
+ An Annotation fires a {{#crossLink "Annotation/pinClicked:event"}}"pinClicked"{{/crossLink}} event whenever you click its dot. In the usage example, we make that event show the Annotation's label and set the {{#crossLink "Camera"}}{{/crossLink}} to the vantage point.
 
-            this.manager.addAnnotation(this);
+ ## Examples
 
-            // Pin position update causes annotation re-layout
+ * [Menu hotspots demo](../../examples/#annotations_examples_menu)
+ * [Story hotspots demo](../../examples/#annotations_examples_story)
 
-            this._pin.canvasBoundary.on("updated", this._updateLayout, this);
-        },
+ ## Usage
 
-        _initScene: function (cfg) {
+ In the example below, we use a {{#crossLink "GLTFModel"}}{{/crossLink}} to load a glTF model of a
+ reciprocating saw. Once the {{#crossLink "GLTFModel"}}{{/crossLink}} has loaded, we'll then create Annotations on three of its {{#crossLink "Entity"}}Entities{{/crossLink}}. Finally, we wire
+ a callback to the {{#crossLink "Annotation/pinClicked:event"}}"pinClicked"{{/crossLink}} event from
+ each Annotation, so that when you click its {{#crossLink "Pin"}}{{/crossLink}}, its label is shown and the {{#crossLink "Camera"}}{{/crossLink}} is positioned at its vantage point.
 
-            // Entity which renders a small dot which we use for occlusion culling
-            // We also use its boundary to track the position of the Annotation
+ ````javascript
+ <script src="../build/xeogl.min.js"></script>
+ <script src="js/annotations/pin.js"></script>
+ <script src="js/annotations/annotation.js"></script>
 
-            this._pin = this.create({
-                type: "xeogl.Entity",
+ <link href="js/annotations/annotation-style.css" rel="stylesheet"/>
 
-                lights: this.create({
-                        type: "xeogl.Lights"
-                    },
-                    "lights"),
+ <script>
 
-                geometry: this.create({
-                        type: "xeogl.Geometry",
-                        primitive: "points",
-                        positions: [0, 0, 0],
-                        indices: [0]
-                    },
-                    "pinGeometry"),
+ var model = new xeogl.GLTFModel({
+    src: "models/gltf/2.0/Reciprocating_Saw/PBR-SpecGloss/Reciprocating_Saw.gltf",
+    transform: new xeogl.Rotate({
+        xyz: [1, 0, 0],
+        angle: 90
+    })
+ });
 
-                visibility: this.create({
-                    type: "xeogl.Visibility",
-                    visible: true
-                }),
+ model.on("loaded", function () {
 
-                material: this.create({
-                        type: "xeogl.PhongMaterial,",
-                        emissive: [1.0, 1.0, 0.0],
-                        diffuse: [0, 0, 0],
-                        pointSize: 3
-                    },
-                    "pinMaterial"),
+    // Position the camera to look at the model
 
-                transform: this.create({
-                    type: "xeogl.Translate,",
-                    xyz: [0, 0, 0]
-                })
-            });
-        },
+    var view = model.scene.camera.view;
+    view.eye = [-110.89, -44.85, 276.65];
+    view.look = [-110.89, -44.85, -0.46];
+    view.up = [0, 1, 0];
+    view.zoom(20);
 
-        _initHTML: function (cfg) {
+    // Create three annotations on entities
+    // within the model
 
-            var body = document.getElementsByTagName("body")[0];
-            var text = cfg.desc;
-
-            this._labelElement = document.createElement('div');
-
-            this._labelElement.className = "label";
-
-            var style = this._labelElement.style;
-            style.position = "absolute";
-            style.font = "bold 14px arial,serif";
-            style["z-index"] = "2000001"; // In front of xeoEnine's overlay
-
-            body.appendChild(this._labelElement);
-
-            this._titleElement = document.createElement('div');
-            this._labelElement.appendChild(this._titleElement);
-            this._titleElement.innerText = text;
-            this._titleElement.style["margin-bottom"] = "8px";
-
-            this._descElement = document.createElement('div');
-            this._descElement.style.font = "normal 12px arial,serif";
-            this._labelElement.appendChild(this._descElement);
-            this._descElement.innerText = text;
-
-            this._pinElement = document.createElement('div');
-            this._pinElement.innerText = "";
-            style = this._pinElement.style;
-            style["font-family"] = "'Open Sans', sans serif 12px;";
-            style["line-height"] = "20px";
-            style["text-align"] = "center";
-            style.color = "#ffff00";
-            style.position = "absolute";
-            style.padding = "0px";
-            style.margin = "0";
-            style.background = "rgba(255,0,0,255)";
-            style.border = "2px solid #ffff00";
-            style.width = "20px";
-            style.height = "20px";
-            style["border-radius"] = "20px";
-            //    style["z-index"] = "200001"; // In front of xeoEnine's overlay
-            style["transition"] = "background .3s";
-            style["margin-top"] = "-10px";
-            style["margin-left"] = "-10px";
-            style["cursor"] = "pointer";
-
-            body.appendChild(this._pinElement);
-        },
-
-        _props: {
-
-            /**
-             * The {{#crossLink "Entity"}}{{/crossLink}} this Annotation is attached to.
-             *
-             * Fires an {{#crossLink "Annotation/entity:event"}}{{/crossLink}} event on change.
-             *
-             * @property entity
-             * @type xeogl.Entity
-             */
-            entity: {
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this Annotation's {{#crossLink "Annotation/entity:property"}}{{/crossLink}} property changes.
-                     * @event entity
-                     * @param value The property's new value
-                     */
-                    this._attach({
-                        name: "entity",
-                        type: "xeogl.Entity",
-                        component: value,
-                        sceneDefault: false,
-                        onAttached: {
-                            callback: this._entityAttached,
-                            scope: this
-                        },
-                        onDetached: {
-                            callback: this._entityDetached,
-                            scope: this
-                        }
-                    });
-                },
-
-                get: function () {
-                    return this._attached.entity;
-                }
-            },
-
-            /**
-             * Index of the triangle containing this pin.
-             *
-             * Fires an {{#crossLink "Annotation/triangle:event"}}{{/crossLink}} event on change.
-             *
-             * @property localPos
-             * @default 0
-             * @type Number
-             */
-            primIndex: {
-                set: function (value) {
-                    this._primIndex = value || 0;
-                    this._setLocalPosDirty();
-
-                    /**
-                     * Fired whenever this Annotation's {{#crossLink "Annotation/primIndex:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event primIndex
-                     * @param value Number The property's new value
-                     */
-                    this.fire("primIndex", this._primIndex);
-                },
-
-                get: function () {
-                    return this._primIndex;
-                }
-            },
-
-            /**
-             * Barycentric coordinates of this Annotation within its triangle.
-             *
-             * Fires an {{#crossLink "Annotation/bary:event"}}{{/crossLink}} event on change.
-             *
-             * @property bary
-             * @default [0.3,0.3,0.3]
-             * @type Float32Array
-             */
-            bary: {
-                set: function (value) {
-                    this._bary = value || xeogl.math.vec3([.3, .3, .3]);
-                    this._setLocalPosDirty();
-
-                    /**
-                     * Fired whenever this Annotation's {{#crossLink "Annotation/bary:property"}}{{/crossLink}} property changes.
-                     * @event bary
-                     * @param value Float32Array The property's new value
-                     */
-                    this.fire("bary", this._bary);
-                },
-
-                get: function () {
-                    return this._bary;
-                }
-            },
-
-            /**
-             * The Annotation's number.
-             *
-             * Fires an {{#crossLink "Annotation/number:event"}}{{/crossLink}} event on change.
-             *
-             * @property number
-             * @default ""
-             * @type Number
-             */
-            number: {
-                set: function (value) {
-                    this._number = (value === undefined || value === null) ? -1 : value;
-
-                    /**
-                     * Fired whenever this Annotation's {{#crossLink "Annotation/number:property"}}{{/crossLink}} property changes.
-                     * @event number
-                     * @param value Number The property's new value
-                     */
-                    this._pinElement.innerText = this._number >= 0 ? ("" + this._number) : "";
-                },
-
-                get: function () {
-                    return this._number;
-                }
-            },
-
-            /**
-             * The Annotation's title text.
-             *
-             * Fires an {{#crossLink "Annotation/title:event"}}{{/crossLink}} event on change.
-             *
-             * @property title
-             * @default ""
-             * @type String
-             */
-            title: {
-                set: function (value) {
-                    this._title = (value === undefined || value === null) ? "" : value;
-                    this._titleElement.innerText = this._title;
-                },
-
-                get: function () {
-                    return this._title;
-                }
-            },
-
-
-            /**
-             * The Annotation's description text
-             *
-             * Fires an {{#crossLink "Annotation/desc:event"}}{{/crossLink}} event on change.
-             *
-             * @property desc
-             * @default ""
-             * @type String
-             */
-            desc: {
-                set: function (value) {
-                    this._desc = (value === undefined || value === null) ? "" : value;
-                    this._descElement.innerText = this._desc;
-                },
-
-                get: function () {
-                    return this._desc;
-                }
-            },
-
-            /**
-             * World-space boundary of this Annotation.
-             *
-             * @property worldBoundary
-             * @type  {Boundary3D}
-             * @final
-             */
-            worldBoundary: {
-                get: function () {
-                    return this._pin.worldBoundary;
-                }
-            },
-
-            /**
-             * View-space boundary of this Annotation.
-             *
-             * @property viewBoundary
-             * @type {Boundary3D}
-             * @final
-             */
-            viewBoundary: {
-                get: function () {
-                    return this._pin.viewBoundary;
-                }
-            },
-
-            /**
-             * Canvas-space boundary of this Annotation.
-             *
-             * @property canvasBoundary
-             * @type {Boundary2D}
-             * @final
-             */
-            canvasBoundary: {
-                get: function () {
-                    return this._pin.canvasBoundary;
-                }
-            },
-
-            /**
-             Indicates whether this Annotation is open or not.
-
-             Fires a {{#crossLink "Annotation/open:event"}}{{/crossLink}} event on change.
-
-             @property open
-             @default true
-             @type Boolean
-             */
-            open: {
-
-                set: function (value) {
-                    value = !!value;
-                    if (this._open === value) {
-                        return;
-                    }
-                    this._open = value;
-                    this._labelElement.style.visibility = value && this._visible ? "visible" : "hidden";
-
-                    /**
-                     Fired whenever this Annotation's {{#crossLink "Annotation/open:property"}}{{/crossLink}} property changes.
-
-                     @event open
-                     @param value {Boolean} The property's new value
-                     */
-                    this.fire("open", value);
-                },
-
-                get: function () {
-                    return this._open;
-                }
-            },
-
-            /**
-             Indicates whether this Annotation is visible or not.
-
-             Fires a {{#crossLink "Annotation/visible:event"}}{{/crossLink}} event on change.
-
-             @property visible
-             @default true
-             @type Boolean
-             */
-            visible: {
-                set: function (value) {
-                    value = value !== false;
-                    if (this._visible === value) {
-                        return;
-                    }
-                    this._visible = value;
-                    this._pinElement.style.visibility = value ? "visible" : "hidden";
-                    this._labelElement.style.visibility = value && this._open ? "visible" : "hidden";
-
-                    /**
-                     Fired whenever this Annotation's {{#crossLink "Annotation/visible:property"}}{{/crossLink}} property changes.
-
-                     @event visible
-                     @param value {Boolean} The property's new value
-                     */
-                    this.fire("visible", value);
-                },
-
-                get: function () {
-                    return this._visible;
-                }
-            }
-        },
-
-        _entityAttached: function (entity) {
-            this._onEntityLocalBoundary = entity.localBoundary.on("updated", this._setLocalPosDirty, this);
-            this._onEntityWorldBoundary = entity.worldBoundary.on("updated", this._setWorldPosDirty, this);
-            this._onEntityVisible = entity.visibility.on("visible", this._entityVisible, this);
-            this._setLocalPosDirty();
-        },
-
-        _setLocalPosDirty: function () {
-            this._localPosDirty = true;
-            this._needUpdate();
-        },
-
-        _setWorldPosDirty: function () {
-            this._worldPosDirty = true;
-            this._needUpdate();
-        },
-
-        _entityVisible: function (visible) {
-            //this._pin.visibility.visible = visible;
-        },
-
-        _entityDetached: function (entity) {
-            entity.localBoundary.off(this._onEntityLocalBoundary);
-            entity.worldBoundary.off(this._onEntityWorldBoundary);
-            entity.visibility.off(this._onEntityVisible);
-        },
-
-        // Callback for _needUpdate
-        _update: (function () {
-
-            var math = xeogl.math;
-            var a = math.vec3();
-            var b = math.vec3();
-            var c = math.vec3();
-            var localPos = math.vec3();
-            var worldPos = math.vec3();
-            var normal = math.vec3();
-
-            return function () {
-
-                var entity = this._attached.entity;
-
-                if (!entity) {
-                    return;
-                }
-
-                if (this._localPosDirty) {
-
-                    // Derive the Local space position on the entity's Geometry
-                    // from the primitive index and barycentric coordinate
-
-                    var geometry = entity.geometry;
-                    var indices = geometry.indices;
-                    var positions = geometry.positions;
-
-                    if (!indices || !positions) {
-                        return;
-                    }
-
-                    var i = this._primIndex;
-
-                    var ia = indices[i];
-                    var ib = indices[i + 1];
-                    var ic = indices[i + 2];
-
-                    var ia3 = ia * 3;
-                    var ib3 = ib * 3;
-                    var ic3 = ic * 3;
-
-                    a[0] = positions[ia3];
-                    a[1] = positions[ia3 + 1];
-                    a[2] = positions[ia3 + 2];
-
-                    b[0] = positions[ib3];
-                    b[1] = positions[ib3 + 1];
-                    b[2] = positions[ib3 + 2];
-
-                    c[0] = positions[ic3];
-                    c[1] = positions[ic3 + 1];
-                    c[2] = positions[ic3 + 2];
-
-                    math.barycentricToCartesian(this._bary, a, b, c, localPos);
-
-                    math.triangleNormal(a, b, c, normal);
-                    math.mulVec3Scalar(normal, 0.05, normal);
-                    math.addVec3(localPos, normal, localPos);
-
-                    this._localPosDirty = false;
-                    this._worldPosDirty = true;
-                }
-
-                if (this._worldPosDirty) {
-
-                    // Transform the Local position into World space
-
-                    var transform = entity.transform;
-                    var pinWorldPos = transform ? math.transformPoint3(transform.leafMatrix, localPos, worldPos) : localPos;
-                    this._pin.transform.xyz = pinWorldPos;
-                    this._worldPosDirty = false;
-                }
-            };
-        })(),
-
-        _updateLayout: function () {
-
-            var labelElement = this._labelElement;
-            var pinElement = this._pinElement;
-
-            // Label position
-
-            var pinCanvasPos = this._pin.canvasBoundary.center;
-
-            pinElement.style.left = pinCanvasPos[0] - 2 + "px";
-            pinElement.style.top = pinCanvasPos[1] - 2 + "px";
-
-            var boundary = this.scene.canvas.boundary;
-            var halfCanvasWidth = boundary[2] / 2;
-            var halfCanvasHeight = boundary[3] / 2;
-
-            var offsetX = pinCanvasPos[0] < halfCanvasWidth ? -10 : 40;
-            var offsetY = pinCanvasPos[1] < halfCanvasHeight ? 13 : 40;
-
-            offsetX = -10;
-            offsetY = 8;
-
-            labelElement.style.left = 27 + (pinCanvasPos[0] - offsetX) + "px";
-            labelElement.style.top = (pinCanvasPos[1] - offsetY) - 19 + "px";
-
-            // Pin Z-index
-
-            var zIndex = 1000005 + Math.floor(this._pin.viewBoundary.center[2] * 10);
-
-            //labelElement.style["z-index"] = zIndex;
-            pinElement.style["z-index"] = zIndex + 1;
-        },
-
-        _getJSON: function () {
-            var json = {
-                number: this.number,
-                title: this.title,
-                desc: this.desc,
-                primIndex: this.primIndex,
-                bary: this.bary,
-                visible: this.visible,
-                open: this.open
-            };
-            if (this._attached.entity) {
-                json.entity = this._attached.entity.id;
-            }
-            return json;
-        },
-
-        _destroy: function () {
-            this.manager.removeAnnotation(this);
-        }
+    var a1 = new xeogl.Annotation({
+        entity: model.entities[156], // Red handle
+        primIndex: 125,
+        bary: [0.3, 0.3, 0.3],
+        occludable: true,
+        glyph: "1",
+        title: "Handle",
+        desc: "This is the handle. It allows us to grab onto the saw so we can hold it and make things with it.",
+        eye: [-355.481, -0.871, 116.711],
+        look: [-227.456, -57.628, 5.428],
+        up: [0.239, 0.948, -0.208],
+        pinShown: true,
+        labelShown: false
     });
-})();
+
+    var a2 = new xeogl.Annotation({
+        entity: model.entities[156], // Red handle and cover
+        primIndex: 10260,
+        bary: [0.333, 0.333, 0.333],
+        occludable: true,
+        glyph: "2",
+        title: "Handle and cover",
+        desc: "This is the handle and cover. It provides something grab the saw with, and covers the things inside.",
+        eye: [-123.206, -4.094, 169.849],
+        look: [-161.838, -37.875, 37.313],
+        up: [-0.066, 0.971, -0.228],
+        pinShown: true,
+        labelShown: false
+    });
+
+    var a3 = new xeogl.Annotation({
+        entity: modelentities[796], // Barrel
+        primIndex: 3783,
+        bary: [0.3, 0.3, 0.3],
+        occludable: true,
+        glyph: "3",
+        title: "Barrel",
+        desc: "This is the barrel",
+        eye: [80.0345, 38.255, 60.457],
+        look: [35.023, -0.166, 8.679],
+        up: [-0.320, 0.872, -0.368],
+        pinShown: true,
+        labelShown: false
+    });
+
+    // When each annotation's pin is clicked, we'll show the
+    // annotation's label and fly the camera to the
+    // annotation's vantage point
+
+    var cameraFlight = new xeogl.CameraFlightAnimation();
+    var lastAnnotation;
+
+    function pinClicked(annotation) {
+        if (lastAnnotation) {
+            annotation.labelShown = false;
+        }
+        annotation.labelShown = true;
+        cameraFlight.flyTo(annotation);
+        lastAnnotation = annotation;
+    }
+
+    a1.on("pinClicked", pinClicked);
+    a2.on("pinClicked", pinClicked);
+    a3.on("pinClicked", pinClicked);
+
+    // If desired, we can also dynamically track the Cartesian coordinates
+    // of each annotation in Local and World coordinate spaces
+
+    a1.on("localPos", function(localPos) {
+        console.log("Local pos changed: " + JSON.stringify(localPos, null, "\t"));
+    });
+
+    a1.on("worldPos", function(worldPos) {
+        console.log("World pos changed: " + JSON.stringify(worldPos, null, "\t"));
+    });
+ });
+ </script>
+ ````
+ @class Annotation
+ @module xeogl
+ @submodule annotations
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Pin in the default
+ {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
+ generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to the Annotation.
+ @param [cfg.entity] {Number|String|Entity} ID or instance of the {{#crossLink "Entity"}}{{/crossLink}} the Annotation is attached to.
+ @param [cfg.bary=[0.3,0.3,0.3]] {Float32Array} Barycentric coordinates of the Annotation within its triangle.
+ @param [cfg.primIndex=0] {Number} Index of the triangle containing the Annotation. Within the {{#crossLink "Entity"}}{{/crossLink}} {{#crossLink "Geometry"}}{{/crossLink}}
+ {{#crossLink "Geometry/indices:property"}}{{/crossLink}}, this is the index of the first
+ element for that triangle.
+ @param [cfg.offset=0.2] {Number} How far the Annotation is lifted out of its triangle, along the surface normal vector. This is used when occlusion culling, to ensure that the Annotation is not lost inside the surface it's attached to.
+ @param [cfg.occludable=true] {Boolean} Indicates whether occlusion testing is performed for the Annotation, where it will be flagged invisible whenever it's hidden by something else in the 3D view.
+ @param [cfg.glyph=""] {String} Short piece of text to show inside the pin for the Annotation. Automatically truncated to 2 characters.
+ @param [cfg.title=""] {String} Title text for the Annotation's label. Automatically truncated to 64 characters.
+ @param [cfg.desc=""] {String} Description text for the Annotation's label. Automatically truncated to 1025 characters.
+ @param [cfg.eye=[0,0,-10]] {Float32Array} Position of the eye when looking at the Annotation.
+ @param [cfg.look=[0,0,0]] {Float32Array} Position of the look when looking at the Annotation.
+ @param [cfg.up=[0,1,0]] {Float32Array} Direction of the "up" vector when looking at the Annotation.
+ @param [cfg.pinShown=true] {Boolean} Specifies whether a UI element is shown at the Annotation's pin position (typically a circle).
+ @param [cfg.labelShown=true] {Boolean} Specifies whether the Annotation's label is shown.
+ @extends Pin
+ */
+xeogl.Annotation = xeogl.Pin.extend({
+
+    type: "xeogl.Annotation",
+
+    _init: function (cfg) {
+
+        this._super(cfg);
+
+        this._link = document.createElement("a");
+        this._link.href = "javascript:xeogl.scenes[\"" + this.scene.id + "\"].components[\"" + this.id + "\"]._pinClicked()";
+        document.body.appendChild(this._link);
+
+        this._spotClickable = document.createElement("div");
+        this._spotClickable.className = "xeogl-annotation-pinClickable";
+        this._link.appendChild(this._spotClickable);
+
+        this._spot = document.createElement("div");
+        this._spot.innerText = "i";
+        this._spot.className = "xeogl-annotation-pin";
+        document.body.appendChild(this._spot);
+
+        this._label = document.createElement('div');
+        this._label.className = "xeogl-annotation-label";
+        document.body.appendChild(this._label);
+
+        this._title = document.createElement('div');
+        this._title.className = "xeogl-annotation-title";
+        this._title.innerHTML = cfg.title || "";
+        this._label.appendChild(this._title);
+
+        this._desc = document.createElement('div');
+        this._desc.className = "xeogl-annotation-desc";
+        this._desc.innerHTML = cfg.desc || "";
+        this._label.appendChild(this._desc);
+
+        this.glyph = cfg.glyph;
+        this.title = cfg.title;
+        this.desc = cfg.desc;
+        this.eye = cfg.eye;
+        this.look = cfg.look;
+        this.up = cfg.up;
+
+        this.pinShown = cfg.pinShown;
+        this.labelShown = cfg.labelShown;
+
+        this._tick = this.scene.on("tick", this._updateLayout, this);
+
+        this.on("visible", this._updateVisibility, this);
+
+      //  this._updateVisibility();
+    },
+
+    _pinClicked: function () {
+
+        /**
+         Fired whenever the mouse is clicked on this Annotation's {{#crossLink "Annotation/pin:property"}}{{/crossLink}}.
+
+         @event pinClicked
+         */
+        this.fire("pinClicked", this)
+    },
+
+    _props: {
+
+        /**
+         Short piece of text to show inside the pin for the Annotation.
+
+         Usually this would be a single number or letter.
+
+         Automatically truncated to 2 characters.
+
+         Fires a {{#crossLink "Annotation/glyph:event"}}{{/crossLink}} event on change.
+
+         @property glyph
+         @default ""
+         @type {String}
+         */
+        glyph: {
+            set: function (glyph) {
+                this._symbol = glyph || ""; // TODO: Limit to 2 chars
+                this._spot.innerText = this._symbol;
+
+                /**
+                 Fired whenever this Annotation's {{#crossLink "Annotation/glyph:property"}}{{/crossLink}} property changes.
+
+                 @event glyph
+                 @param value {Number} The property's new value
+                 */
+                this.fire("glyph", this._symbol);
+            },
+            get: function () {
+                return this._symbol;
+            }
+        },
+
+        /**
+         Title text for the Annotation's label.
+
+         Automatically truncated to 64 characters.
+
+         Fires a {{#crossLink "Annotation/title:event"}}{{/crossLink}} event on change.
+
+         @property title
+         @default ""
+         @type {String}
+         */
+        title: {
+            set: function (title) {
+                this._title = title || ""; // TODO: Limit to 64 chars
+                this._title.innerHTML = this._title;
+
+                /**
+                 Fired whenever this Annotation's {{#crossLink "Annotation/look:property"}}{{/crossLink}} property changes.
+
+                 @event title
+                 @param value {Number} The property's new value
+                 */
+                this.fire("title", this._title);
+            },
+            get: function () {
+                return this._title;
+            }
+        },
+
+        /**
+         Description text for the Annotation's label.
+
+         Automatically truncated to 1025 characters.
+
+         Fires a {{#crossLink "Annotation/desc:event"}}{{/crossLink}} event on change.
+
+         @property desc
+         @default ""
+         @type {String}
+         */
+        desc: {
+            set: function (desc) {
+                this._desc = desc || ""; // TODO: Limit to 1025 chars
+                this._desc.innerHTML = this._desc;
+
+                /**
+                 Fired whenever this Annotation's {{#crossLink "Annotation/desc:property"}}{{/crossLink}} property changes.
+
+                 @event desc
+                 @param value {Number} The property's new value
+                 */
+                this.fire("desc", this._desc);
+            },
+            get: function () {
+                return this._desc;
+            }
+        },
+
+        /**
+         Position of the eye when looking at the Annotation.
+
+         Fires a {{#crossLink "Annotation/eye:event"}}{{/crossLink}} event on change.
+
+         @property eye
+         @default [0,0,10]
+         @type {Float32Array}
+         */
+        eye: {
+            set: function (value) {
+                (this._eye = this._eye || new xeogl.math.vec3()).set(value || [0, 0, 10]);
+
+                /**
+                 Fired whenever this Annotation's {{#crossLink "Annotation/eye:property"}}{{/crossLink}} property changes.
+
+                 @event eye
+                 @param value {Number} The property's new value
+                 */
+                this.fire("eye", this._eye);
+            },
+            get: function () {
+                return this._eye;
+            }
+        },
+
+        /**
+         Point-of-interest when looking at the Annotation.
+
+         Fires a {{#crossLink "Annotation/look:event"}}{{/crossLink}} event on change.
+
+         @property look
+         @default [0,0,0]
+         @type {Float32Array}
+         */
+        look: {
+            set: function (value) {
+                (this._look = this._look || new xeogl.math.vec3()).set(value || [0, 0, 0]);
+
+                /**
+                 Fired whenever this Annotation's {{#crossLink "Annotation/look:property"}}{{/crossLink}} property changes.
+
+                 @event look
+                 @param value {Number} The property's new value
+                 */
+                this.fire("look", this._look);
+            },
+            get: function () {
+                return this._look;
+            }
+        },
+
+        /**
+         "Up" vector when looking at the Annotation.
+
+         Fires a {{#crossLink "Annotation/up:event"}}{{/crossLink}} event on change.
+
+         @property up
+         @default [0,1,0]
+         @type {Float32Array}
+         */
+        up: {
+            set: function (value) {
+                (this._up = this._up || new xeogl.math.vec3()).set(value || [0, 1, 0]);
+
+                /**
+                 Fired whenever this Annotation's {{#crossLink "Annotation/up:property"}}{{/crossLink}} property changes.
+
+                 @event up
+                 @param value {Number} The property's new value
+                 */
+                this.fire("up", this._up);
+            },
+            get: function () {
+                return this._up;
+            }
+        },
+
+        /**
+         Specifies whether a UI element is shown at the Annotation's pin position (typically a circle).
+
+         Fires a {{#crossLink "Annotation/pinShown:event"}}{{/crossLink}} event on change.
+
+         @property pinShown
+         @default true
+         @type {Boolean}
+         */
+        pinShown: {
+            set: function (shown) {
+                this._pinShown = shown !== false;
+                this._spot.style.visibility = this._pinShown ? "visible" : "hidden";
+                this._spotClickable.style.visibility = this._pinShown ? "visible" : "hidden";
+
+                /**
+                 Fired whenever this Annotation's {{#crossLink "Annotation/pinShown:property"}}{{/crossLink}} property changes.
+
+                 @event pinShown
+                 @param value {Number} The property's new value
+                 */
+                this.fire("pinShown", this._pinShown);
+            },
+            get: function () {
+                return this._pinShown;
+            }
+        },
+
+        /**
+         Specifies whether the label is shown for the Annotation.
+
+         Fires a {{#crossLink "Annotation/labelShown:event"}}{{/crossLink}} event on change.
+
+         @property labelShown
+         @default true
+         @type {Boolean}
+         */
+        labelShown: {
+            set: function (shown) {
+                this._labelShown = shown !== false;
+                this._label.style.visibility = this._labelShown && this.visible ? "visible" : "hidden";
+
+                /**
+                 Fired whenever this Annotation's {{#crossLink "Annotation/labelShown:property"}}{{/crossLink}} property changes.
+
+                 @event labelShown
+                 @param value {Number} The property's new value
+                 */
+                this.fire("labelShown", this._labelShown);
+            },
+            get: function () {
+                return this._labelShown;
+            }
+        }
+    },
+
+    _updateVisibility: function () {
+        var visible = this.visible;
+        this._spotClickable.style.visibility = visible && this._pinShown ? "visible" : "hidden";
+        this._spot.style.visibility = visible && this._pinShown ? "visible" : "hidden";
+        this._label.style.visibility = visible && this._labelShown ? "visible" : "hidden";
+    },
+
+    _updateLayout: function () {
+        var visible = this.visible;
+        if (visible) {
+            var canvas = this.scene.canvas.canvas;
+            var left = canvas.offsetLeft;
+            var top = canvas.offsetTop;
+            var canvasPos = this.canvasPos;
+            this._spot.style.left = (Math.floor(left + canvasPos[0]) - 12) + "px";
+            this._spot.style.top = (Math.floor(top + canvasPos[1]) - 12) + "px";
+            this._spotClickable.style.left = (Math.floor(left + canvasPos[0]) - 25 + 1) + "px";
+            this._spotClickable.style.top = (Math.floor(top + canvasPos[1]) - 25 + 1) + "px";
+            var offsetX = 20;
+            var offsetY = -17;
+            this._label.style.left = 20 + (canvasPos[0] + offsetX) + "px";
+            this._label.style.top = (canvasPos[1] + offsetY) + "px";
+            this._spot.style["z-index"] = 90005 + Math.floor(this.viewPos[2] * 10) + 1;
+        }
+    },
+
+    _getJSON: function () {
+        var math = xeogl.math;
+        var json = {
+            primIndex: this.primIndex,
+            bary: math.vecToArray(this.bary),
+            offset: this.offset,
+            occludable: this.occludable,
+            glyph: this._symbol,
+            title: this._title,
+            desc: this._desc,
+            eye: math.vecToArray(this._eye),
+            look: math.vecToArray(this._look),
+            up: math.vecToArray(this._up),
+            pinShown: this._pinShown,
+            labelShown: this._labelShown
+        };
+        if (this._attached.entity) {
+            json.entity = this._attached.entity.id;
+        }
+        return json;
+    },
+
+    _destroy: function () {
+        this._super();
+        this.scene.off(this._tick);
+        this._link.parentNode.removeChild(this._link);
+        this._spot.parentNode.removeChild(this._spot);
+        this._label.parentNode.removeChild(this._label);
+    }
+});

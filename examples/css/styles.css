@@ -116,11 +116,11 @@ body {
 #info a {
     z-index: 200000;
     /*text-decoration: none;*/
-    color: #ffffff !important;
+    color: #ffffff;
 }
 
 #info a:hover {
-    color: #ffffff !important;
+    color: #ffffff;
     /*text-decoration: underline;*/
 }
 
@@ -159,7 +159,8 @@ body {
     right: 0;
     z-index: 100001;
     float: right;
-    width: 320px margin-right : 60 px !important;
+    width: 320px;
+    margin-right : 60px !important;
 }
 
 #header {
@@ -300,13 +301,13 @@ p.containerTitle {
     border-right: 2px solid darkgrey;
 }
 
-hr {
-    margin-top: 10px;
-    margin-bottom: 10px;
-    color: lightgray;
-    background-color: lightgray;
-    height: 1px;
-}
+/*hr {*/
+    /*margin-top: 10px;*/
+    /*margin-bottom: 10px;*/
+    /*color: lightgray;*/
+    /*background-color: lightgray;*/
+    /*height: 1px;*/
+/*}*/
 
 article.fill h3 {
     background: rgba(255, 255, 255, .75);
