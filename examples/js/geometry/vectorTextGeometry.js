@@ -43,7 +43,7 @@
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this VectorTextGeometry.
  @param [cfg.origin] {Float32Array} 3D point indicating the top left corner of the VectorTextGeometry.
- @param [cfg.size] {Float32Array} Size of each character.
+ @param [cfg.size=1] {Number} Size of each character.
  @param [cfg.text=""] {String} The text.
  @extends Geometry
  */
