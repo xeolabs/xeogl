@@ -71,12 +71,10 @@
 
             textSize: {
                 set: function (value) {
-                    (this._textSize = this._textSize || new xeogl.math.vec3()).set(value || [1, 1]);
-
-                    //this._label.geometry.text = value;
+                    this._label.geometry.size = value;
                 },
                 get: function () {
-                    // return this._label.geometry.text;
+                     return this._label.geometry.size;
                 }
             },
 
@@ -114,6 +112,5 @@
                 this._label.transform.xyz = offset;
             };
         })()
-
     });
 })();
