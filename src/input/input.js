@@ -736,11 +736,7 @@
                     absolute: false
                 };
 
-                if (!window.OrientationChangeEvent) {
-                    self.warn("Browser event not supported: orientationchange");
-
-                } else {
-
+                if (window.OrientationChangeEvent) {
                     window.addEventListener('orientationchange', self._orientationchangedListener = function () {
 
                             orientation = window.screen.orientation || window.screen.mozOrientation || window.msOrientation || null;
@@ -761,11 +757,7 @@
                         false);
                 }
 
-                if (!window.DeviceMotionEvent) {
-                    self.warn("Browser event not supported: devicemotion");
-
-                } else {
-
+                if (window.DeviceMotionEvent) {
                     window.addEventListener('devicemotion', self._deviceMotionListener = function (e) {
 
                             deviceMotionEvent.interval = e.interval;
@@ -811,11 +803,7 @@
                         false);
                 }
 
-                if (!window.DeviceOrientationEvent) {
-                    self.warn("Browser event not supported: deviceorientation");
-
-                } else {
-
+                if (window.DeviceOrientationEvent) {
                     window.addEventListener("deviceorientation", self._deviceOrientListener = function (e) {
 
                             deviceOrientationEvent.gamma = e.gamma;
