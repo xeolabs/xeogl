@@ -8,7 +8,7 @@
  #### Position
 
  An Annotation is positioned within one of the triangles of its {{#crossLink "Entity"}}Entity's{{/crossLink}} {{#crossLink "Geometry"}}{{/crossLink}}. Wherever that triangles goes within the 3D view, the Annotation will automatically follow. An Annotation specifies its position with two properties:
- 
+
  * {{#crossLink "Pin/primIndex:property"}}{{/crossLink}}, which indicates the index of the triangle within the {{#crossLink "Geometry"}}{{/crossLink}} {{#crossLink "Geometry/indices:property"}}{{/crossLink}}, and
  * {{#crossLink "Pin/bary:property"}}{{/crossLink}}, the barycentric coordinates of the position within the triangle.
 
@@ -49,8 +49,8 @@
 
  ## Examples
 
- * [Menu hotspots demo](../../examples/#annotations_examples_menu)
- * [Story hotspots demo](../../examples/#annotations_examples_story)
+ * [Annotation demo](../../examples/#presentation_annotations_tronTank)
+ * [AnnotationStory demo](../../examples/#presentation_annotationStory_tronTank)
 
  ## Usage
 
@@ -219,15 +219,15 @@ xeogl.Annotation = xeogl.Pin.extend({
         this._label.className = "xeogl-annotation-label";
         document.body.appendChild(this._label);
 
-        this._title = document.createElement('div');
-        this._title.className = "xeogl-annotation-title";
-        this._title.innerHTML = cfg.title || "";
-        this._label.appendChild(this._title);
+        this._titleElement = document.createElement('div');
+        this._titleElement.className = "xeogl-annotation-title";
+        this._titleElement.innerHTML = cfg.title || "";
+        this._label.appendChild(this._titleElement);
 
-        this._desc = document.createElement('div');
-        this._desc.className = "xeogl-annotation-desc";
-        this._desc.innerHTML = cfg.desc || "";
-        this._label.appendChild(this._desc);
+        this._descElement = document.createElement('div');
+        this._descElement.className = "xeogl-annotation-desc";
+        this._descElement.innerHTML = cfg.desc || "";
+        this._label.appendChild(this._descElement);
 
         this.glyph = cfg.glyph;
         this.title = cfg.title;
@@ -243,7 +243,7 @@ xeogl.Annotation = xeogl.Pin.extend({
 
         this.on("visible", this._updateVisibility, this);
 
-      //  this._updateVisibility();
+        //  this._updateVisibility();
     },
 
     _pinClicked: function () {
@@ -273,8 +273,13 @@ xeogl.Annotation = xeogl.Pin.extend({
          */
         glyph: {
             set: function (glyph) {
-                this._symbol = glyph || ""; // TODO: Limit to 2 chars
-                this._spot.innerText = this._symbol;
+
+                if (this._glyph === glyph) {
+                    return;
+                }
+
+                this._glyph = glyph || ""; // TODO: Limit to 2 chars
+                this._spot.innerText = this._glyph;
 
                 /**
                  Fired whenever this Annotation's {{#crossLink "Annotation/glyph:property"}}{{/crossLink}} property changes.
@@ -282,10 +287,10 @@ xeogl.Annotation = xeogl.Pin.extend({
                  @event glyph
                  @param value {Number} The property's new value
                  */
-                this.fire("glyph", this._symbol);
+                this.fire("glyph", this._glyph);
             },
             get: function () {
-                return this._symbol;
+                return this._glyph;
             }
         },
 
@@ -302,8 +307,13 @@ xeogl.Annotation = xeogl.Pin.extend({
          */
         title: {
             set: function (title) {
+
+                if (this._title === title) {
+                    return;
+                }
+
                 this._title = title || ""; // TODO: Limit to 64 chars
-                this._title.innerHTML = this._title;
+                this._titleElement.innerHTML = this._title;
 
                 /**
                  Fired whenever this Annotation's {{#crossLink "Annotation/look:property"}}{{/crossLink}} property changes.
@@ -331,8 +341,13 @@ xeogl.Annotation = xeogl.Pin.extend({
          */
         desc: {
             set: function (desc) {
+
+                if (this._desc === desc) {
+                    return;
+                }
+
                 this._desc = desc || ""; // TODO: Limit to 1025 chars
-                this._desc.innerHTML = this._desc;
+                this._descElement.innerHTML = this._desc;
 
                 /**
                  Fired whenever this Annotation's {{#crossLink "Annotation/desc:property"}}{{/crossLink}} property changes.
@@ -358,7 +373,14 @@ xeogl.Annotation = xeogl.Pin.extend({
          */
         eye: {
             set: function (value) {
-                (this._eye = this._eye || new xeogl.math.vec3()).set(value || [0, 0, 10]);
+
+                value = value || [0, 0, 10];
+
+                if (this._eye && this._eye[0] === value[0] && this._eye[1] === value[1] && this._eye[2] === value[2]) {
+                    return;
+                }
+
+                (this._eye = this._eye || new xeogl.math.vec3()).set(value);
 
                 /**
                  Fired whenever this Annotation's {{#crossLink "Annotation/eye:property"}}{{/crossLink}} property changes.
@@ -384,7 +406,14 @@ xeogl.Annotation = xeogl.Pin.extend({
          */
         look: {
             set: function (value) {
-                (this._look = this._look || new xeogl.math.vec3()).set(value || [0, 0, 0]);
+
+                value = value || [0, 0, 0];
+
+                if (this._look && this._look[0] === value[0] && this._look[1] === value[1] && this._look[2] === value[2]) {
+                    return;
+                }
+
+                (this._look = this._look || new xeogl.math.vec3()).set(value);
 
                 /**
                  Fired whenever this Annotation's {{#crossLink "Annotation/look:property"}}{{/crossLink}} property changes.
@@ -410,7 +439,14 @@ xeogl.Annotation = xeogl.Pin.extend({
          */
         up: {
             set: function (value) {
-                (this._up = this._up || new xeogl.math.vec3()).set(value || [0, 1, 0]);
+
+                value = value || [0, 1, 0];
+
+                if (this._up && this._up[0] === value[0] && this._up[1] === value[1] && this._up[2] === value[2]) {
+                    return;
+                }
+
+                (this._up = this._up || new xeogl.math.vec3()).set(value);
 
                 /**
                  Fired whenever this Annotation's {{#crossLink "Annotation/up:property"}}{{/crossLink}} property changes.
@@ -436,6 +472,11 @@ xeogl.Annotation = xeogl.Pin.extend({
          */
         pinShown: {
             set: function (shown) {
+
+                if (this._pinShown === shown) {
+                    return;
+                }
+
                 this._pinShown = shown !== false;
                 this._spot.style.visibility = this._pinShown ? "visible" : "hidden";
                 this._spotClickable.style.visibility = this._pinShown ? "visible" : "hidden";
@@ -464,6 +505,11 @@ xeogl.Annotation = xeogl.Pin.extend({
          */
         labelShown: {
             set: function (shown) {
+
+                if (this._labelShown === shown) {
+                    return;
+                }
+
                 this._labelShown = shown !== false;
                 this._label.style.visibility = this._labelShown && this.visible ? "visible" : "hidden";
 
@@ -514,7 +560,7 @@ xeogl.Annotation = xeogl.Pin.extend({
             bary: math.vecToArray(this.bary),
             offset: this.offset,
             occludable: this.occludable,
-            glyph: this._symbol,
+            glyph: this._glyph,
             title: this._title,
             desc: this._desc,
             eye: math.vecToArray(this._eye),

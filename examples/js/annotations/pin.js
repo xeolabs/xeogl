@@ -75,7 +75,7 @@
  ````
  @class Pin
  @module xeogl
- @submodule Pins
+ @submodule annotations
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Pin in the default
  {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
@@ -95,7 +95,11 @@
     "use strict";
 
     const PIN_COLOR = xeogl.math.vec3([1.0, 1.0, 0.0]);
-    const TEST_TICKS = 10;
+
+    // Do occlusion test per this number of ticks. Having a high-ish number
+    // gives a nice hysteresis where, when occluded, the label remains visible
+    // for a moment before disappearing, which feels smooth.
+    const TEST_TICKS = 20;
 
     // Each Scene gets a VisibilityTester, which periodically tests if registered
     // pins are visible, which is when they are within the canvas boundary and
@@ -334,7 +338,15 @@
             primIndex: {
 
                 set: function (value) {
-                    this._primIndex = value || 0;
+
+                    value = value || 0;
+
+                    if (value === this._primIndex) {
+                        return;
+                    }
+
+                    this._primIndex = value;
+
                     this._setLocalPosDirty();
 
                     /**
