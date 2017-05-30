@@ -107,10 +107,10 @@
 
         .xeogl-story {
             position: absolute;
-            top: 0px;
+            top: 80px;
             z-index: 200000;
             float: left;
-            left: 0px;
+            left: 0;
             padding: 10px;
             padding-left: 15px;
             height: auto;
@@ -119,12 +119,6 @@
             color: #ffffff;
             border: 0;
             max-width: 400px;
-        }
-
-        .xeogl-story h1 {
-            font-size: 30px;
-            /*border-bottom: solid 1px grey;*/
-            /*margin-bottom: 32px;*/
         }
 
         .xeogl-story a {
@@ -143,8 +137,19 @@
 
 <body>
 
+<div id="info" style="padding-left: 15px;">
+    <h1><a href="../docs/classes/AnnotationStory.html"
+           target="_parent">AnnotationStory</a> demo
+    </h1>
+</div>
 
 <script>
+
+    xeogl.scene = new xeogl.Scene({
+        contextAttr: {
+            preserveDrawingBuffer: true
+        }
+    });
 
     //---------------------------------------------------------------------------------
     // Load a Tron tank program model from SceneJS format
@@ -202,8 +207,6 @@
             speaking: true,
             authoring: true,
             text: [
-                "# [Stories](../docs/classes/Story.html) : Tron Tank Program",
-                "",
                 "This is a Light Tank from the 1982 Disney movie *Tron*.",
                 "",
                 "The [orange tracks](focusAnnotation(0)) on this tank indicate that it's been stolen by the rebel hacker, CLU (pictured below), who is a goodie. Sark's evil tanks have blue treads.",
@@ -217,7 +220,7 @@
                 "",
                 "",
                 "![](./images/Clu_Program.png)",
-                    "",
+                "",
                 "*\"Forget it, mister high-and-mighty Master Control! You aren't making me talk!\" - CLU*"
             ],
             annotations: [
@@ -313,8 +316,8 @@
         },
         material: {
             type: "xeogl.SpecularMaterial",
-            diffuse: [0.5, 0.5, 0.5],
-            specular: [0.2, 0.2, 0.2],
+            diffuse: [0.9, 0.9, 0.9],
+            specular: [0.2, 0.5, 0.2],
             glossiness: 0.0,
             diffuseMap: {
                 src: "textures/diffuse/UVCheckerMap11-1024.png",
