@@ -163,25 +163,6 @@
  var gotWebGL2 = scene.canvas.webgl2; // True if we have WebGL 2
  ````
 
- ## <a name="savingAndLoading">Saving and Loading Scenes</a>
-
- The entire runtime state of a Scene can be serialized and deserialized to and from JSON. This means you can create a
- Scene, then save it and restore it again to exactly how it was when you saved it.
-
- ````javascript
- // Serialize the scene to JSON
- var json = myScene.json;
-
- // Create another scene from that JSON, in a fresh canvas:
- var myOtherScene = new xeogl.Scene({
-      json: json
- });
-
- ***Note:*** this will save your {{#crossLink "Geometry"}}Geometry{{/crossLink}}s' array properties
- ({{#crossLink "Geometry/positions:property"}}positions{{/crossLink}}, {{#crossLink "Geometry/normals:property"}}normals{{/crossLink}},
- {{#crossLink "Geometry/indices:property"}}indices{{/crossLink}} etc) as JSON arrays, which may stress your browser
- if those arrays are huge.
-
  @class Scene
  @module xeogl
  @constructor
