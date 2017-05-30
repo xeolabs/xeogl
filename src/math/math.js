@@ -2268,12 +2268,16 @@
             // 	20696-function-to-convert-between-dcm-euler-angles-quaternions-and-euler-vectors/
             //	content/SpinCalc.m
 
-            var c1 = Math.cos(euler[0] / 2);
-            var c2 = Math.cos(euler[1] / 2);
-            var c3 = Math.cos(euler[2] / 2);
-            var s1 = Math.sin(euler[0] / 2);
-            var s2 = Math.sin(euler[1] / 2);
-            var s3 = Math.sin(euler[2] / 2);
+            var a = (euler[0] * math.DEGTORAD) / 2;
+            var b = (euler[1] * math.DEGTORAD) / 2;
+            var c = (euler[2] * math.DEGTORAD) / 2;
+
+            var c1 = Math.cos(a);
+            var c2 = Math.cos(b);
+            var c3 = Math.cos(c);
+            var s1 = Math.sin(a);
+            var s2 = Math.sin(b);
+            var s3 = Math.sin(c);
 
             if (order === 'XYZ') {
 
