@@ -736,11 +736,11 @@
                                entityId = this._makeID(nodeId + ".entity." + i + "." + j);
                             }
 
+                            var meta = node.extra || {};
+                            meta.name = node.name;
                             entity = new xeogl.Entity(scene, {
                                 id: entityId,
-                                meta: {
-                                    name: node.name
-                                },
+                                meta: meta,
                                 material: material,
                                 geometry: geometry,
                                 transform: transform,
