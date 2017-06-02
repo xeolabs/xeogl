@@ -528,37 +528,6 @@
             }
         },
 
-        load: function (cfg) {
-            var type = cfg.type;
-            if (!type) {
-                this.error("xeogl.Scene.load: 'type' required");
-                return;
-            }
-            var id = cfg.id;
-            if (!id) {
-                this.error("xeogl.Scene.load: 'id' required");
-                return;
-            }
-            var component = this.components[id];
-            if (component) {
-                if (type !== component.type) {
-                    this.error("xeogl.Scene.load: Type unexpected");
-                    return;
-                }
-                return;
-            }
-            var claz = xeogl[type.substring(6)];
-            if (!claz) {
-                this.error("xeogl.Scene.load: Component type not found: " + type);
-                return;
-            }
-            if (!xeogl._isComponentType(type, "xeogl.Component")) {
-                this.error("xeogl.Scene.load: Expected a xeogl.Component type or subtype");
-                return;
-            }
-            return new claz(this, cfg);
-        },
-
         /**
          * Renders a single frame of this Scene.
          *
