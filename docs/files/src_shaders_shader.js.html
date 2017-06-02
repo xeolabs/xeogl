@@ -43,6 +43,9 @@
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AABBGeometry.html">AABBGeometry</a></li>
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Annotation.html">Annotation</a></li>
+                                <li><a href="../classes/AnnotationStory.html">AnnotationStory</a></li>
+                                <li><a href="../classes/AxisHelper.html">AxisHelper</a></li>
                                 <li><a href="../classes/Billboard.html">Billboard</a></li>
                                 <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
@@ -71,6 +74,7 @@
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
                                 <li><a href="../classes/Entity.html">Entity</a></li>
+                                <li><a href="../classes/Fog.html">Fog</a></li>
                                 <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
@@ -78,9 +82,11 @@
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
+                                <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
+                                <li><a href="../classes/LookatHelper.html">LookatHelper</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
@@ -93,8 +99,10 @@
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
+                                <li><a href="../classes/Pin.html">Pin</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/PointLightHelper.html">PointLightHelper</a></li>
                                 <li><a href="../classes/PointMarkings.html">PointMarkings</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
@@ -110,10 +118,12 @@
                                 <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/Spinner.html">Spinner</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
+                                <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/SpotLight.html">SpotLight</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
+                                <li><a href="../classes/Story.html">Story</a></li>
                                 <li><a href="../classes/TeapotGeometry.html">TeapotGeometry</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
                                 <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
@@ -130,6 +140,7 @@
                 
                             <ul id="api-modules" class="apis modules">
                                 <li><a href="..//modules/animation.html">animation</a></li>
+                                <li><a href="..//modules/annotations.html">annotations</a></li>
                                 <li><a href="..//modules/boundaries.html">boundaries</a></li>
                                 <li><a href="..//modules/camera.html">camera</a></li>
                                 <li><a href="..//modules/canvas.html">canvas</a></li>
@@ -142,6 +153,7 @@
                                 <li><a href="..//modules/entities.html">entities</a></li>
                                 <li><a href="..//modules/generation.html">generation</a></li>
                                 <li><a href="..//modules/geometry.html">geometry</a></li>
+                                <li><a href="..//modules/helpers.html">helpers</a></li>
                                 <li><a href="..//modules/input.html">input</a></li>
                                 <li><a href="..//modules/interaction.html">interaction</a></li>
                                 <li><a href="..//modules/lighting.html">lighting</a></li>
@@ -152,6 +164,7 @@
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
                                 <li><a href="..//modules/shaders.html">shaders</a></li>
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
+                                <li><a href="..//modules/stories.html">stories</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
                                 <li><a href="..//modules/xeogl.html">xeogl</a></li>
                                 <li><a href="..//modules/zspace.html">zspace</a></li>
@@ -220,20 +233,20 @@
  Finally, we animate the rippling by periodically updating the Shader&#x27;s &quot;time&quot; uniform.
 
  &#x60;&#x60;&#x60;&#x60;javascript
- // Shader that&#x27;s used by our Entity. Note the &#x27;xeo_aPosition&#x27; and &#x27;xeo_aUV attributes&#x27;,
+ // Shader that&#x27;s used by our Entity. Note the &#x27;position&#x27; and &#x27;uv attributes&#x27;,
  // which will receive the positions and UVs from the Geometry. Also note the &#x27;time&#x27;
- // uniform, which we&#x27;ll be animating via Shader#setParams.
+ // uniform, which we&#x27;ll be animating via Shader#setUniforms.
 
  var shader = new xeogl.Shader({
 
     // Vertex shading stage
     vertex: [
-        &quot;attribute vec3 xeo_aPosition;&quot;,
-        &quot;attribute vec2 xeo_aUV;&quot;,
+        &quot;attribute vec3 position;&quot;,
+        &quot;attribute vec2 uv;&quot;,
         &quot;varying vec2 vUv;&quot;,
         &quot;void main () {&quot;,
-        &quot;    gl_Position = vec4(xeo_aPosition, 1.0);&quot;,
-        &quot;    vUv = xeo_aUV;&quot;,
+        &quot;    gl_Position = vec4(position, 1.0);&quot;,
+        &quot;    vUv = uv;&quot;,
         &quot;}&quot;
     ],
 
@@ -262,7 +275,7 @@
     ],
 
     // Initial value for the &#x27;time&#x27; uniform in the fragment stage.
-    params: {
+    uniforms: {
         time: 0.0
     }
  });
@@ -285,9 +298,9 @@
  Now let&#x27;s animate the &quot;time&quot; parameter on the Shader, to make the water ripple:
 
  &#x60;&#x60;&#x60;&#x60; javascript
- entity.scene.on(&quot;tick&quot;, function(params) {
-     shader.setParams({
-         time: params.timeElapsed
+ entity.scene.on(&quot;tick&quot;, function(e) {
+     shader.setUniforms({
+         time: e.timeElapsed
      });
  });
  &#x60;&#x60;&#x60;&#x60;
@@ -302,11 +315,11 @@
 
  | Attribute  | Description | Depends on  |
  |---|---|
- | attribute vec3 xeo_aPosition   | Geometry vertex positions | {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} {{#crossLink &quot;Geometry/positions:property&quot;}}{{/crossLink}} |
- | attribute vec2 xeo_aUV         | Geometry vertex UV coordinates | {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} {{#crossLink &quot;Geometry/uv:property&quot;}}{{/crossLink}}  |
- | attribute vec3 xeo_aNormal     | Geometry vertex normals | {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} {{#crossLink &quot;Geometry/normals:property&quot;}}{{/crossLink}}  |
- | attribute vec4 xeo_aColor      | Geometry vertex colors  | {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} {{#crossLink &quot;Geometry/colors:property&quot;}}{{/crossLink}}  |
- | attribute vec4 xeo_aTangent    | Geometry vertex tangents, for normal mapping | {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} {{#crossLink &quot;Geometry/normals:property&quot;}}{{/crossLink}} and {{#crossLink &quot;Geometry/uv:property&quot;}}{{/crossLink}}  |
+ | attribute vec3 position   | Geometry vertex positions | {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} {{#crossLink &quot;Geometry/positions:property&quot;}}{{/crossLink}} |
+ | attribute vec2 uv         | Geometry vertex UV coordinates | {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} {{#crossLink &quot;Geometry/uv:property&quot;}}{{/crossLink}}  |
+ | attribute vec3 normal     | Geometry vertex normals | {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} {{#crossLink &quot;Geometry/normals:property&quot;}}{{/crossLink}}  |
+ | attribute vec4 color      | Geometry vertex colors  | {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} {{#crossLink &quot;Geometry/colors:property&quot;}}{{/crossLink}}  |
+ | attribute vec4 tangent    | Geometry vertex tangents, for normal mapping | {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} {{#crossLink &quot;Geometry/normals:property&quot;}}{{/crossLink}} and {{#crossLink &quot;Geometry/uv:property&quot;}}{{/crossLink}}  |
 
  #### Uniforms
 
@@ -314,10 +327,10 @@
 
  | Uniform  | Description | Depends on  |
  |---|---|
- | uniform mat4  xeo_uModelMatrix                                   | Modelling transform matrix | {{#crossLink &quot;Transform&quot;}}{{/crossLink}} |
- | uniform mat4  xeo_uModelNormalMatrix                             | Modelling transform normal matrix | {{#crossLink &quot;Geometry/normals:property&quot;}}Geometry normals{{/crossLink}} and {{#crossLink &quot;Transform&quot;}}{{/crossLink}} |
- | uniform mat4  xeo_uViewMatrix                                    | View transform matrix | {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}} |
- | uniform mat4  xeo_uViewNormalMatrix                              | View transform normal matrix | {{#crossLink &quot;Geometry/normals:property&quot;}}Geometry normals{{/crossLink}} and {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}} |
+ | uniform mat4  modelMatrix                                   | Modelling transform matrix | {{#crossLink &quot;Transform&quot;}}{{/crossLink}} |
+ | uniform mat4  modelNormalMatrix                             | Modelling transform normal matrix | {{#crossLink &quot;Geometry/normals:property&quot;}}Geometry normals{{/crossLink}} and {{#crossLink &quot;Transform&quot;}}{{/crossLink}} |
+ | uniform mat4  viewMatrix                                    | View transform matrix | {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}} |
+ | uniform mat4  viewNormalMatrix                              | View transform normal matrix | {{#crossLink &quot;Geometry/normals:property&quot;}}Geometry normals{{/crossLink}} and {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}} |
  | uniform mat4  xeo_uProjMatrix                                    | Projection transform matrix | {{#crossLink &quot;Ortho&quot;}}Ortho{{/crossLink}}, {{#crossLink &quot;Frustum&quot;}}Frustum{{/crossLink}} or {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}} |
  | uniform float xeo_uZNear                                         | Near clipping plane |{{#crossLink &quot;Ortho&quot;}}Ortho{{/crossLink}}, {{#crossLink &quot;Frustum&quot;}}Frustum{{/crossLink}} or {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}} |
  | uniform float xeo_uZFar                                          | Far clipping plane |{{#crossLink &quot;Ortho&quot;}}Ortho{{/crossLink}}, {{#crossLink &quot;Frustum&quot;}}Frustum{{/crossLink}} or {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}} |
@@ -331,12 +344,11 @@
  | uniform vec3 xeo_uLightLinearAttenuation&amp;lt;***N***&amp;gt;          | Linear attenuation factor for {{#crossLink &quot;PointLight&quot;}}{{/crossLink}} at index ***N*** in {{#crossLink &quot;Lights&quot;}}{{/crossLink}} | {{#crossLink &quot;PointLight&quot;}}{{/crossLink}} |
  | uniform vec3 xeo_uLightQuadraticAttenuation&amp;lt;***N***&amp;gt;       | Quadratic attenuation factor for {{#crossLink &quot;PointLight&quot;}}{{/crossLink}} at index ***N*** in {{#crossLink &quot;Lights&quot;}}{{/crossLink}} | {{#crossLink &quot;PointLight&quot;}}{{/crossLink}} |
  |---|---|
- | uniform vec3 xeo_uDiffuse;       |  | {{#crossLink &quot;PhongMaterial/diffuse:property&quot;}}{{/crossLink}} |
- | uniform vec3 xeo_uSpecular;       |  | {{#crossLink &quot;PhongMaterial/specular:property&quot;}}{{/crossLink}} |
- | uniform vec3 xeo_uEmissive;       |  | {{#crossLink &quot;PhongMaterial/emissive:property&quot;}}{{/crossLink}} |
- | uniform float xeo_uOpacity;       |  | {{#crossLink &quot;PhongMaterial/opacity:property&quot;}}{{/crossLink}} |
- | uniform float xeo_uShininess;       |  | {{#crossLink &quot;PhongMaterial/shininess:property&quot;}}{{/crossLink}} |
- | uniform float xeo_uDiffuseFresnelEdgeBias;       |  | {{#crossLink &quot;Fresnel/edgeBias:property&quot;}}{{/crossLink}} |
+ | uniform vec3 materialDiffuse;       |  | {{#crossLink &quot;PhongMaterial/diffuse:property&quot;}}{{/crossLink}} |
+ | uniform vec3 materialSpecular;       |  | {{#crossLink &quot;PhongMaterial/specular:property&quot;}}{{/crossLink}} |
+ | uniform vec3 materialEmissive;       |  | {{#crossLink &quot;PhongMaterial/emissive:property&quot;}}{{/crossLink}} |
+ | uniform float materialOpacity;       |  | {{#crossLink &quot;PhongMaterial/opacity:property&quot;}}{{/crossLink}} |
+ | uniform float materialShininess;       |  | {{#crossLink &quot;PhongMaterial/shininess:property&quot;}}{{/crossLink}} |
 
  #### Varying
 
@@ -366,7 +378,7 @@
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Shader.
  @param [cfg.vertex=null] {String} GLSL Depends on code for the vertex shading staging.
  @param [cfg.fragment=null] {String} GLSL source code for the fragment shading staging.
- @param [cfg.params={}] {Object} Values for uniforms defined in the vertex and/or fragment stages.
+ @param [cfg.uniforms={}] {Object} Values for uniforms defined in the vertex and/or fragment stages.
  @extends Component
  */
 (function () {
@@ -382,14 +394,14 @@
             this._state = new xeogl.renderer.Shader({
                 vertex: null,
                 fragment: null,
-                params: {}
+                uniforms: {}
             });
 
             this.vertex = cfg.vertex;
 
             this.fragment = cfg.fragment;
 
-            this.setParams(cfg.params);
+            this.setUniforms(cfg.uniforms);
         },
 
         _props: {
@@ -457,51 +469,51 @@
             },
 
             /**
-             * Params for this Shader.
+             * Uniforms for this Shader.
              *
-             * Fires a {{#crossLink &quot;Shader/params:event&quot;}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink &quot;Shader/uniforms:event&quot;}}{{/crossLink}} event on change.
              *
-             * @property params
+             * @property uniforms
              * @default {}
              * @type {}
              */
-            params: {
+            uniforms: {
 
                 get: function () {
-                    return this._state.params;
+                    return this._state.uniforms;
                 }
             }
         },
 
         /**
-         * Sets one or more params for this Shader.
+         * Sets one or more uniforms for this Shader.
          *
-         * These will be individually overridden by any {{#crossLink &quot;ShaderParams/setParams:method&quot;}}params subsequently specified{{/crossLink}} on
+         * These will be individually overridden by any {{#crossLink &quot;ShaderParams/setUniforms:method&quot;}}uniforms subsequently specified{{/crossLink}} on
          * {{#crossLink &quot;ShaderParams&quot;}}ShaderParams{{/crossLink}} on attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
          *
-         * Fires a {{#crossLink &quot;Shader/params:event&quot;}}{{/crossLink}} event on change.
+         * Fires a {{#crossLink &quot;Shader/uniforms:event&quot;}}{{/crossLink}} event on change.
          *
-         * @method setParams
-         * @param {} [params={}] Values for params to set on this Shader, keyed to their names.
+         * @method setUniforms
+         * @param {} [uniforms={}] Values for uniforms to set on this Shader, keyed to their names.
          */
-        setParams: function (params) {
+        setUniforms: function (uniforms) {
 
-            for (var name in params) {
-                if (params.hasOwnProperty(name)) {
-                    this._state.params[name] = params[name];
+            for (var name in uniforms) {
+                if (uniforms.hasOwnProperty(name)) {
+                    this._state.uniforms[name] = uniforms[name];
                 }
             }
 
             this._renderer.imageDirty = true;
 
             /**
-             * Fired whenever this Shader&#x27;s  {{#crossLink &quot;Shader/params:property&quot;}}{{/crossLink}}
+             * Fired whenever this Shader&#x27;s  {{#crossLink &quot;Shader/uniforms:property&quot;}}{{/crossLink}}
              * property has been updated.
              *
-             * @event params
+             * @event uniforms
              * @param value The property&#x27;s new value
              */
-            this.fire(&quot;params&quot;, this._state.params);
+            this.fire(&quot;uniforms&quot;, this._state.uniforms);
         },
 
         _compile: function () {
@@ -511,7 +523,7 @@
         _getJSON: function () {
 
             var json = {
-                params: this._state.params
+                uniforms: this._state.uniforms
             };
 
             if (this._state.vertex) {
