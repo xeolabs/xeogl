@@ -43,6 +43,9 @@
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AABBGeometry.html">AABBGeometry</a></li>
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Annotation.html">Annotation</a></li>
+                                <li><a href="../classes/AnnotationStory.html">AnnotationStory</a></li>
+                                <li><a href="../classes/AxisHelper.html">AxisHelper</a></li>
                                 <li><a href="../classes/Billboard.html">Billboard</a></li>
                                 <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
@@ -71,6 +74,7 @@
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
                                 <li><a href="../classes/Entity.html">Entity</a></li>
+                                <li><a href="../classes/Fog.html">Fog</a></li>
                                 <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
@@ -78,9 +82,11 @@
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
+                                <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
+                                <li><a href="../classes/LookatHelper.html">LookatHelper</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
@@ -93,8 +99,10 @@
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
+                                <li><a href="../classes/Pin.html">Pin</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/PointLightHelper.html">PointLightHelper</a></li>
                                 <li><a href="../classes/PointMarkings.html">PointMarkings</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
@@ -110,10 +118,12 @@
                                 <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/Spinner.html">Spinner</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
+                                <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/SpotLight.html">SpotLight</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
+                                <li><a href="../classes/Story.html">Story</a></li>
                                 <li><a href="../classes/TeapotGeometry.html">TeapotGeometry</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
                                 <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
@@ -130,6 +140,7 @@
                 
                             <ul id="api-modules" class="apis modules">
                                 <li><a href="..//modules/animation.html">animation</a></li>
+                                <li><a href="..//modules/annotations.html">annotations</a></li>
                                 <li><a href="..//modules/boundaries.html">boundaries</a></li>
                                 <li><a href="..//modules/camera.html">camera</a></li>
                                 <li><a href="..//modules/canvas.html">canvas</a></li>
@@ -142,6 +153,7 @@
                                 <li><a href="..//modules/entities.html">entities</a></li>
                                 <li><a href="..//modules/generation.html">generation</a></li>
                                 <li><a href="..//modules/geometry.html">geometry</a></li>
+                                <li><a href="..//modules/helpers.html">helpers</a></li>
                                 <li><a href="..//modules/input.html">input</a></li>
                                 <li><a href="..//modules/interaction.html">interaction</a></li>
                                 <li><a href="..//modules/lighting.html">lighting</a></li>
@@ -152,6 +164,7 @@
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
                                 <li><a href="..//modules/shaders.html">shaders</a></li>
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
+                                <li><a href="..//modules/stories.html">stories</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
                                 <li><a href="..//modules/xeogl.html">xeogl</a></li>
                                 <li><a href="..//modules/zspace.html">zspace</a></li>
@@ -537,7 +550,23 @@ cameraFlight.flyTo(aabb);
 
                             </li>
                             <li class="index-item property">
+                                <a href="#property_billboard">billboard</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_billboard">billboard</a>
+
+                            </li>
+                            <li class="index-item property">
                                 <a href="#property_camera">camera</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_clips">clips</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_clips">clips</a>
 
                             </li>
                             <li class="index-item property">
@@ -549,6 +578,22 @@ cameraFlight.flyTo(aabb);
 
                             </li>
                             <li class="index-item property">
+                                <a href="#property_colorBuf">colorBuf</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_colorBuf">colorBuf</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_colorTarget">colorTarget</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_colorTarget">colorTarget</a>
+
+                            </li>
+                            <li class="index-item property">
                                 <a href="#property_colorTarget">colorTarget</a>
 
                             </li>
@@ -557,7 +602,31 @@ cameraFlight.flyTo(aabb);
 
                             </li>
                             <li class="index-item property">
+                                <a href="#property_cull">cull</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_cull">cull</a>
+
+                            </li>
+                            <li class="index-item property">
                                 <a href="#property_depthBuf">depthBuf</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_depthBuf">depthBuf</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_depthBuf">depthBuf</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_depthTarget">depthTarget</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_depthTarget">depthTarget</a>
 
                             </li>
                             <li class="index-item property">
@@ -584,6 +653,14 @@ cameraFlight.flyTo(aabb);
                                 <a href="#property_geometry">geometry</a>
 
                             </li>
+                            <li class="index-item property">
+                                <a href="#property_geometry">geometry</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_geometry">geometry</a>
+
+                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_id">id</a>
 
@@ -601,7 +678,31 @@ cameraFlight.flyTo(aabb);
 
                             </li>
                             <li class="index-item property">
+                                <a href="#property_layer">layer</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_layer">layer</a>
+
+                            </li>
+                            <li class="index-item property">
                                 <a href="#property_lights">lights</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_lights">lights</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_lights">lights</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_material">material</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_material">material</a>
 
                             </li>
                             <li class="index-item property">
@@ -617,7 +718,31 @@ cameraFlight.flyTo(aabb);
 
                             </li>
                             <li class="index-item property">
+                                <a href="#property_modelTransform">modelTransform</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_modelTransform">modelTransform</a>
+
+                            </li>
+                            <li class="index-item property">
                                 <a href="#property_modes">modes</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_modes">modes</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_modes">modes</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_projTransform">projTransform</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_projTransform">projTransform</a>
 
                             </li>
                             <li class="index-item property">
@@ -633,11 +758,43 @@ cameraFlight.flyTo(aabb);
 
                             </li>
                             <li class="index-item property">
+                                <a href="#property_shader">shader</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_shader">shader</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_shaderParams">shaderParams</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_shaderParams">shaderParams</a>
+
+                            </li>
+                            <li class="index-item property">
                                 <a href="#property_shaderParams">shaderParams</a>
 
                             </li>
                             <li class="index-item property">
                                 <a href="#property_stage">stage</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_stage">stage</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_stage">stage</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_stationary">stationary</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_stationary">stationary</a>
 
                             </li>
                             <li class="index-item property">
@@ -665,7 +822,31 @@ cameraFlight.flyTo(aabb);
 
                             </li>
                             <li class="index-item property">
+                                <a href="#property_viewport">viewport</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_viewport">viewport</a>
+
+                            </li>
+                            <li class="index-item property">
                                 <a href="#property_viewTransform">viewTransform</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_viewTransform">viewTransform</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_viewTransform">viewTransform</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_visibility">visibility</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_visibility">visibility</a>
 
                             </li>
                             <li class="index-item property">
@@ -771,7 +952,7 @@ cameraFlight.flyTo(aabb);
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_create">Component</a>:
-        <a href="../files/src_component.js.html#l911"><code>src&#x2F;component.js:911</code></a>
+        <a href="../files/src_component.js.html#l910"><code>src&#x2F;component.js:910</code></a>
         </p>
 
 
@@ -907,7 +1088,7 @@ component - you can specify the component ID in the <code>cfg</code> parameter.<
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_component.js.html#l1091"><code>src&#x2F;component.js:1091</code></a>
+        <a href="../files/src_component.js.html#l1153"><code>src&#x2F;component.js:1153</code></a>
         </p>
 
 
@@ -949,7 +1130,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_error">Component</a>:
-        <a href="../files/src_component.js.html#l594"><code>src&#x2F;component.js:594</code></a>
+        <a href="../files/src_component.js.html#l593"><code>src&#x2F;component.js:593</code></a>
         </p>
 
 
@@ -1013,7 +1194,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_fire">Component</a>:
-        <a href="../files/src_component.js.html#l411"><code>src&#x2F;component.js:411</code></a>
+        <a href="../files/src_component.js.html#l410"><code>src&#x2F;component.js:410</code></a>
         </p>
 
 
@@ -1444,7 +1625,7 @@ fill the canvas on arrival. Overrides <a href="../classes/CameraFlightAnimation.
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_isType">Component</a>:
-        <a href="../files/src_component.js.html#l362"><code>src&#x2F;component.js:362</code></a>
+        <a href="../files/src_component.js.html#l361"><code>src&#x2F;component.js:361</code></a>
         </p>
 
 
@@ -1522,7 +1703,7 @@ myRotate.isType(xeogl.Entity); // Returns false, because xeogl.Rotate does not (
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_log">Component</a>:
-        <a href="../files/src_component.js.html#l549"><code>src&#x2F;component.js:549</code></a>
+        <a href="../files/src_component.js.html#l548"><code>src&#x2F;component.js:548</code></a>
         </p>
 
 
@@ -1580,7 +1761,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_off">Component</a>:
-        <a href="../files/src_component.js.html#l503"><code>src&#x2F;component.js:503</code></a>
+        <a href="../files/src_component.js.html#l502"><code>src&#x2F;component.js:502</code></a>
         </p>
 
 
@@ -1645,7 +1826,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_on">Component</a>:
-        <a href="../files/src_component.js.html#l460"><code>src&#x2F;component.js:460</code></a>
+        <a href="../files/src_component.js.html#l459"><code>src&#x2F;component.js:459</code></a>
         </p>
 
 
@@ -1739,7 +1920,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_once">Component</a>:
-        <a href="../files/src_component.js.html#l528"><code>src&#x2F;component.js:528</code></a>
+        <a href="../files/src_component.js.html#l527"><code>src&#x2F;component.js:527</code></a>
         </p>
 
 
@@ -1851,7 +2032,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_warn">Component</a>:
-        <a href="../files/src_component.js.html#l574"><code>src&#x2F;component.js:574</code></a>
+        <a href="../files/src_component.js.html#l573"><code>src&#x2F;component.js:573</code></a>
         </p>
 
 
@@ -1892,6 +2073,56 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
+                    <div id="property_billboard" class="property item">
+                        <h3 class="name"><code>billboard</code></h3>
+                        <span class="type">renderer.Billboard</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.old.js.html#l197"><code>src&#x2F;_renderer&#x2F;renderer.old.js:197</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Billboard render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_billboard" class="property item">
+                        <h3 class="name"><code>billboard</code></h3>
+                        <span class="type">renderer.Billboard</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.opt.js.html#l197"><code>src&#x2F;_renderer&#x2F;renderer.opt.js:197</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Billboard render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_billboard" class="property item">
                         <h3 class="name"><code>billboard</code></h3>
                         <span class="type">renderer.Billboard</span>
@@ -1957,6 +2188,31 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
+                            <a href="../files/src__renderer_renderer.old.js.html#l225"><code>src&#x2F;_renderer&#x2F;renderer.old.js:225</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Cross-section planes render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_clips" class="property item">
+                        <h3 class="name"><code>clips</code></h3>
+                        <span class="type">renderer.Clips</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
                             <a href="../files/src__renderer_renderer.js.html#l225"><code>src&#x2F;_renderer&#x2F;renderer.js:225</code></a>
                             </p>
                     
@@ -1965,6 +2221,81 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Cross-section planes render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_clips" class="property item">
+                        <h3 class="name"><code>clips</code></h3>
+                        <span class="type">renderer.Clips</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.opt.js.html#l225"><code>src&#x2F;_renderer&#x2F;renderer.opt.js:225</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Cross-section planes render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_colorBuf" class="property item">
+                        <h3 class="name"><code>colorBuf</code></h3>
+                        <span class="type">renderer.ColorBuf</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.opt.js.html#l155"><code>src&#x2F;_renderer&#x2F;renderer.opt.js:155</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Color buffer render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_colorBuf" class="property item">
+                        <h3 class="name"><code>colorBuf</code></h3>
+                        <span class="type">renderer.ColorBuf</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.old.js.html#l155"><code>src&#x2F;_renderer&#x2F;renderer.old.js:155</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Color buffer render state.</p>
                     
                         </div>
                     
@@ -2007,7 +2338,57 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
+                            <a href="../files/src__renderer_renderer.opt.js.html#l211"><code>src&#x2F;_renderer&#x2F;renderer.opt.js:211</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Color target render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_colorTarget" class="property item">
+                        <h3 class="name"><code>colorTarget</code></h3>
+                        <span class="type">renderer.RenderTarget</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
                             <a href="../files/src__renderer_renderer.js.html#l211"><code>src&#x2F;_renderer&#x2F;renderer.js:211</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Color target render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_colorTarget" class="property item">
+                        <h3 class="name"><code>colorTarget</code></h3>
+                        <span class="type">renderer.RenderTarget</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.old.js.html#l211"><code>src&#x2F;_renderer&#x2F;renderer.old.js:211</code></a>
                             </p>
                     
                     
@@ -2046,6 +2427,56 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_cull" class="property item">
+                        <h3 class="name"><code>cull</code></h3>
+                        <span class="type">renderer.Cull</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.opt.js.html#l120"><code>src&#x2F;_renderer&#x2F;renderer.opt.js:120</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Culling render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_cull" class="property item">
+                        <h3 class="name"><code>cull</code></h3>
+                        <span class="type">renderer.Cull</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.old.js.html#l120"><code>src&#x2F;_renderer&#x2F;renderer.old.js:120</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Culling render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_depthBuf" class="property item">
                         <h3 class="name"><code>depthBuf</code></h3>
                         <span class="type">renderer.DepthBuf</span>
@@ -2065,6 +2496,106 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Depth buffer render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_depthBuf" class="property item">
+                        <h3 class="name"><code>depthBuf</code></h3>
+                        <span class="type">renderer.DepthBuf</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.old.js.html#l148"><code>src&#x2F;_renderer&#x2F;renderer.old.js:148</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Depth buffer render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_depthBuf" class="property item">
+                        <h3 class="name"><code>depthBuf</code></h3>
+                        <span class="type">renderer.DepthBuf</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.opt.js.html#l148"><code>src&#x2F;_renderer&#x2F;renderer.opt.js:148</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Depth buffer render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_depthTarget" class="property item">
+                        <h3 class="name"><code>depthTarget</code></h3>
+                        <span class="type">renderer.RenderTarget</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.opt.js.html#l218"><code>src&#x2F;_renderer&#x2F;renderer.opt.js:218</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Depth target render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_depthTarget" class="property item">
+                        <h3 class="name"><code>depthTarget</code></h3>
+                        <span class="type">renderer.RenderTarget</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.old.js.html#l218"><code>src&#x2F;_renderer&#x2F;renderer.old.js:218</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Depth target render state.</p>
                     
                         </div>
                     
@@ -2107,7 +2638,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l282"><code>src&#x2F;component.js:282</code></a>
+                            <a href="../files/src_component.js.html#l281"><code>src&#x2F;component.js:281</code></a>
                             </p>
                     
                     
@@ -2219,6 +2750,56 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
+                            <a href="../files/src__renderer_renderer.old.js.html#l246"><code>src&#x2F;_renderer&#x2F;renderer.old.js:246</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Geometry render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_geometry" class="property item">
+                        <h3 class="name"><code>geometry</code></h3>
+                        <span class="type">renderer.Geometry</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.opt.js.html#l246"><code>src&#x2F;_renderer&#x2F;renderer.opt.js:246</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Geometry render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_geometry" class="property item">
+                        <h3 class="name"><code>geometry</code></h3>
+                        <span class="type">renderer.Geometry</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
                             <a href="../files/src__renderer_renderer.js.html#l246"><code>src&#x2F;_renderer&#x2F;renderer.js:246</code></a>
                             </p>
                     
@@ -2245,7 +2826,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_id">Component</a>:
-                            <a href="../files/src_component.js.html#l273"><code>src&#x2F;component.js:273</code></a>
+                            <a href="../files/src_component.js.html#l272"><code>src&#x2F;component.js:272</code></a>
                             </p>
                     
                     
@@ -2270,7 +2851,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_isDefault">Component</a>:
-                            <a href="../files/src_component.js.html#l265"><code>src&#x2F;component.js:265</code></a>
+                            <a href="../files/src_component.js.html#l264"><code>src&#x2F;component.js:264</code></a>
                             </p>
                     
                     
@@ -2296,7 +2877,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_json">Component</a>:
-                            <a href="../files/src_component.js.html#l1030"><code>src&#x2F;component.js:1030</code></a>
+                            <a href="../files/src_component.js.html#l1029"><code>src&#x2F;component.js:1029</code></a>
                             </p>
                     
                     
@@ -2304,6 +2885,56 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>JSON object containing the state of this Component.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_layer" class="property item">
+                        <h3 class="name"><code>layer</code></h3>
+                        <span class="type">renderer.Layer</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.opt.js.html#l134"><code>src&#x2F;_renderer&#x2F;renderer.opt.js:134</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Render state for an effects layer.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_layer" class="property item">
+                        <h3 class="name"><code>layer</code></h3>
+                        <span class="type">renderer.Layer</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.old.js.html#l134"><code>src&#x2F;_renderer&#x2F;renderer.old.js:134</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Render state for an effects layer.</p>
                     
                         </div>
                     
@@ -2346,6 +2977,31 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
+                            <a href="../files/src__renderer_renderer.old.js.html#l162"><code>src&#x2F;_renderer&#x2F;renderer.old.js:162</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Lights render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_lights" class="property item">
+                        <h3 class="name"><code>lights</code></h3>
+                        <span class="type">renderer.Lights</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
                             <a href="../files/src__renderer_renderer.js.html#l162"><code>src&#x2F;_renderer&#x2F;renderer.js:162</code></a>
                             </p>
                     
@@ -2354,6 +3010,56 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Lights render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_lights" class="property item">
+                        <h3 class="name"><code>lights</code></h3>
+                        <span class="type">renderer.Lights</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.opt.js.html#l162"><code>src&#x2F;_renderer&#x2F;renderer.opt.js:162</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Lights render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_material" class="property item">
+                        <h3 class="name"><code>material</code></h3>
+                        <span class="type">renderer.Material</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.old.js.html#l169"><code>src&#x2F;_renderer&#x2F;renderer.old.js:169</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Material render state.</p>
                     
                         </div>
                     
@@ -2385,6 +3091,31 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_material" class="property item">
+                        <h3 class="name"><code>material</code></h3>
+                        <span class="type">renderer.Material</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.opt.js.html#l169"><code>src&#x2F;_renderer&#x2F;renderer.opt.js:169</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Material render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_metadata" class="property item inherited">
                         <h3 class="name"><code>metadata</code></h3>
                         <span class="type">Object</span>
@@ -2396,7 +3127,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_metadata">Component</a>:
-                            <a href="../files/src_component.js.html#l257"><code>src&#x2F;component.js:257</code></a>
+                            <a href="../files/src_component.js.html#l256"><code>src&#x2F;component.js:256</code></a>
                             </p>
                     
                     
@@ -2404,6 +3135,56 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Arbitrary, user-defined metadata on this component.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_modelTransform" class="property item">
+                        <h3 class="name"><code>modelTransform</code></h3>
+                        <span class="type">renderer.Transform</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.opt.js.html#l176"><code>src&#x2F;_renderer&#x2F;renderer.opt.js:176</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Modelling transform render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_modelTransform" class="property item">
+                        <h3 class="name"><code>modelTransform</code></h3>
+                        <span class="type">renderer.Transform</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.old.js.html#l176"><code>src&#x2F;_renderer&#x2F;renderer.old.js:176</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Modelling transform render state.</p>
                     
                         </div>
                     
@@ -2446,6 +3227,31 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
+                            <a href="../files/src__renderer_renderer.opt.js.html#l127"><code>src&#x2F;_renderer&#x2F;renderer.opt.js:127</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Modes render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_modes" class="property item">
+                        <h3 class="name"><code>modes</code></h3>
+                        <span class="type">renderer.Modes</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
                             <a href="../files/src__renderer_renderer.js.html#l127"><code>src&#x2F;_renderer&#x2F;renderer.js:127</code></a>
                             </p>
                     
@@ -2454,6 +3260,56 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Modes render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_modes" class="property item">
+                        <h3 class="name"><code>modes</code></h3>
+                        <span class="type">renderer.Modes</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.old.js.html#l127"><code>src&#x2F;_renderer&#x2F;renderer.old.js:127</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Modes render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_projTransform" class="property item">
+                        <h3 class="name"><code>projTransform</code></h3>
+                        <span class="type">renderer.Transform</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.opt.js.html#l190"><code>src&#x2F;_renderer&#x2F;renderer.opt.js:190</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Projection transform render state.</p>
                     
                         </div>
                     
@@ -2485,6 +3341,31 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_projTransform" class="property item">
+                        <h3 class="name"><code>projTransform</code></h3>
+                        <span class="type">renderer.Transform</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.old.js.html#l190"><code>src&#x2F;_renderer&#x2F;renderer.old.js:190</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Projection transform render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_scene" class="property item inherited">
                         <h3 class="name"><code>scene</code></h3>
                         <span class="type"><a href="../classes/Scene.html" class="crosslink">Scene</a></span>
@@ -2497,7 +3378,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_scene">Component</a>:
-                            <a href="../files/src_component.js.html#l198"><code>src&#x2F;component.js:198</code></a>
+                            <a href="../files/src_component.js.html#l197"><code>src&#x2F;component.js:197</code></a>
                             </p>
                     
                     
@@ -2505,6 +3386,56 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>The parent <a href="../classes/Scene.html" class="crosslink">Scene</a> that contains this Component.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_shader" class="property item">
+                        <h3 class="name"><code>shader</code></h3>
+                        <span class="type">renderer.Shader</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.opt.js.html#l232"><code>src&#x2F;_renderer&#x2F;renderer.opt.js:232</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Custom shader render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_shader" class="property item">
+                        <h3 class="name"><code>shader</code></h3>
+                        <span class="type">renderer.Shader</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.old.js.html#l232"><code>src&#x2F;_renderer&#x2F;renderer.old.js:232</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Custom shader render state.</p>
                     
                         </div>
                     
@@ -2530,6 +3461,56 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Custom shader render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_shaderParams" class="property item">
+                        <h3 class="name"><code>shaderParams</code></h3>
+                        <span class="type">renderer.Shader</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.old.js.html#l239"><code>src&#x2F;_renderer&#x2F;renderer.old.js:239</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Render state providing custom shader params.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_shaderParams" class="property item">
+                        <h3 class="name"><code>shaderParams</code></h3>
+                        <span class="type">renderer.Shader</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.opt.js.html#l239"><code>src&#x2F;_renderer&#x2F;renderer.opt.js:239</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Render state providing custom shader params.</p>
                     
                         </div>
                     
@@ -2586,6 +3567,56 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_stage" class="property item">
+                        <h3 class="name"><code>stage</code></h3>
+                        <span class="type">renderer.Layer</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.old.js.html#l141"><code>src&#x2F;_renderer&#x2F;renderer.old.js:141</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Render state for an effects pipeline stage.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_stage" class="property item">
+                        <h3 class="name"><code>stage</code></h3>
+                        <span class="type">renderer.Layer</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.opt.js.html#l141"><code>src&#x2F;_renderer&#x2F;renderer.opt.js:141</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Render state for an effects pipeline stage.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_stationary" class="property item">
                         <h3 class="name"><code>stationary</code></h3>
                         <span class="type">renderer.Stationary</span>
@@ -2598,6 +3629,56 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     <p>
                                     Defined in
                             <a href="../files/src__renderer_renderer.js.html#l204"><code>src&#x2F;_renderer&#x2F;renderer.js:204</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Stationary render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_stationary" class="property item">
+                        <h3 class="name"><code>stationary</code></h3>
+                        <span class="type">renderer.Stationary</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.old.js.html#l204"><code>src&#x2F;_renderer&#x2F;renderer.old.js:204</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Stationary render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_stationary" class="property item">
+                        <h3 class="name"><code>stationary</code></h3>
+                        <span class="type">renderer.Stationary</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.opt.js.html#l204"><code>src&#x2F;_renderer&#x2F;renderer.opt.js:204</code></a>
                             </p>
                     
                     
@@ -2626,7 +3707,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_component.js.html#l1058"><code>src&#x2F;component.js:1058</code></a>
+                            <a href="../files/src_component.js.html#l1056"><code>src&#x2F;component.js:1056</code></a>
                             </p>
                     
                     
@@ -2652,7 +3733,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_superTypes">Component</a>:
-                            <a href="../files/src_component.js.html#l343"><code>src&#x2F;component.js:343</code></a>
+                            <a href="../files/src_component.js.html#l342"><code>src&#x2F;component.js:342</code></a>
                             </p>
                     
                     
@@ -2740,6 +3821,56 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
+                            <a href="../files/src__renderer_renderer.old.js.html#l253"><code>src&#x2F;_renderer&#x2F;renderer.old.js:253</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Viewport render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_viewport" class="property item">
+                        <h3 class="name"><code>viewport</code></h3>
+                        <span class="type">renderer.Viewport</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.opt.js.html#l253"><code>src&#x2F;_renderer&#x2F;renderer.opt.js:253</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Viewport render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_viewport" class="property item">
+                        <h3 class="name"><code>viewport</code></h3>
+                        <span class="type">renderer.Viewport</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
                             <a href="../files/src__renderer_renderer.js.html#l253"><code>src&#x2F;_renderer&#x2F;renderer.js:253</code></a>
                             </p>
                     
@@ -2765,6 +3896,31 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
+                            <a href="../files/src__renderer_renderer.old.js.html#l183"><code>src&#x2F;_renderer&#x2F;renderer.old.js:183</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>View transform render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_viewTransform" class="property item">
+                        <h3 class="name"><code>viewTransform</code></h3>
+                        <span class="type">renderer.Transform</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
                             <a href="../files/src__renderer_renderer.js.html#l183"><code>src&#x2F;_renderer&#x2F;renderer.js:183</code></a>
                             </p>
                     
@@ -2773,6 +3929,81 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>View transform render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_viewTransform" class="property item">
+                        <h3 class="name"><code>viewTransform</code></h3>
+                        <span class="type">renderer.Transform</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.opt.js.html#l183"><code>src&#x2F;_renderer&#x2F;renderer.opt.js:183</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>View transform render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_visibility" class="property item">
+                        <h3 class="name"><code>visibility</code></h3>
+                        <span class="type">renderer.Visibility</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.old.js.html#l113"><code>src&#x2F;_renderer&#x2F;renderer.old.js:113</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Visibility render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_visibility" class="property item">
+                        <h3 class="name"><code>visibility</code></h3>
+                        <span class="type">renderer.Visibility</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.opt.js.html#l113"><code>src&#x2F;_renderer&#x2F;renderer.opt.js:113</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Visibility render state.</p>
                     
                         </div>
                     
@@ -2864,7 +4095,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l1165"><code>src&#x2F;component.js:1165</code></a>
+                            <a href="../files/src_component.js.html#l1227"><code>src&#x2F;component.js:1227</code></a>
                             </p>
                     
                     

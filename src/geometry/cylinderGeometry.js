@@ -608,7 +608,7 @@
         _getJSON: function () {
             return {
                 // Don't save lod
-                center: this._center.slice(),
+                center: xeogl.math.vecToArray(this._center),
                 radiusTop: this._radiusTop,
                 radiusBottom: this._radiusBottom,
                 height: this._height,

@@ -198,7 +198,7 @@
             if (this._autoBoundary) {
                 json.autoBoundary = true;
             } else {
-                json.boundary = this._state.boundary.slice();
+                json.boundary = xeogl.math.vecToArray(this._state.boundary);
             }
             return json;
         }

@@ -181,7 +181,7 @@
 
         _getJSON: function () {
             var json = {
-                xyz: this._xyz,
+                xyz: xeogl.math.vecToArray(this._xyz),
                 angle: this._angle
             };
             if (this._parent) {

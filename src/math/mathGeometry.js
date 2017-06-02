@@ -1,5 +1,5 @@
 /**
- * Boundary math functions.
+ * Geometry math functions.
  */
 (function () {
 
@@ -8,7 +8,7 @@
     var math = xeogl.math;
 
     /**
-     * Calculates the normal vector of a trianglel.
+     * Calculates the normal vector of a triangle.
      *
      * @private
      */

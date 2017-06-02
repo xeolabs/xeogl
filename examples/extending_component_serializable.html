@@ -67,7 +67,7 @@
 
         _getJSON: function () {
             return {
-                color: this._torus.material.baseColor
+                color: xeogl.math.vecToArray(this._torus.material.baseColor)
             };
         }
     });

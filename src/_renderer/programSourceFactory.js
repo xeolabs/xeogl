@@ -318,7 +318,10 @@
                         add("uniform vec3 lightPos" + i + ";");
                     }
 
-                    add("varying vec4 vViewLightReverseDirAndDist" + i + ";");
+                    if (!(light.type === "dir" && light.space === "view")) {
+                        // World-space dir lights don't need these varyings
+                        add("varying vec4 vViewLightReverseDirAndDist" + i + ";");
+                    }
                 }
             }
 
@@ -448,11 +451,8 @@
 
                         if (light.space === "world") {
                             add("tmpVec3 = vec3(viewMatrix2 * vec4(lightDir" + i + ", 0.0) ).xyz;");
-                        } else {
-                            add("tmpVec3 = lightDir" + i + ";");
+                            add("vViewLightReverseDirAndDist" + i + " = vec4(-tmpVec3, 0.0);");
                         }
-
-                        add("vViewLightReverseDirAndDist" + i + " = vec4(-tmpVec3, 0.0);");
                     }
 
                     if (light.type === "point") {
@@ -1021,8 +1021,13 @@
                     if (light.type === "point") {
                         add("uniform vec3 lightAttenuation" + i + ";");
                     }
-
-                    add("varying vec4 vViewLightReverseDirAndDist" + i + ";"); // Vector from light to vertex
+                    if (light.type === "dir" && light.space === "view") {
+                        add("uniform vec3 lightDir" + i + ";");
+                    } if (light.type === "point" && light.space === "view") {
+                        add("uniform vec3 lightPos" + i + ";");
+                    } else {
+                        add("varying vec4 vViewLightReverseDirAndDist" + i + ";");
+                    }
                 }
             }
 
@@ -1201,7 +1206,7 @@
                 // SHADING
                 //--------------------------------------------------------------------------------
 
-                if (material.normalMap) {
+                if (geometry.uv && material.normalMap) {
                     if (material.normalMap.matrix) {
                         add("textureCoord = (normalMapMatrix * texturePos).xy;");
                     } else {
@@ -1347,8 +1352,15 @@
                     if (light.type === "ambient") {
                         continue;
                     }
-
-                    add("viewLightDir = normalize(vViewLightReverseDirAndDist" + i + ".xyz);"); // If normal mapping, the fragment->light vector will be in tangent space
+                    if (light.type === "dir" && light.space === "view") {
+                        add("viewLightDir = -normalize(lightDir" + i + ");");
+                    } else if (light.type === "point" && light.space === "view") {
+                        add("viewLightDir = normalize(lightPos" + i + " - vViewPosition);");
+                        //add("tmpVec3 = lightPos" + i + ".xyz - viewPosition.xyz;");
+                        //add("lightDist = abs(length(tmpVec3));");
+                    } else {
+                        add("viewLightDir = normalize(vViewLightReverseDirAndDist" + i + ".xyz);"); // If normal mapping, the fragment->light vector will be in tangent space
+                    }
 
                     add("light.direction = viewLightDir;");
                     add("light.color = lightIntensity" + i + " * lightColor" + i + ";");
@@ -1403,10 +1415,12 @@
             } else {
 
                 //--------------------------------------------------------------------------------
-                // NO SHADING - EMISSIVE ONLY
+                // NO SHADING - EMISSIVE and AMBIENT ONLY
                 //--------------------------------------------------------------------------------
 
-                add("vec3 outgoingLight = emissiveColor;");
+                add("ambientColor *= lightAmbient;");
+
+                add("vec3 outgoingLight = emissiveColor + ambientColor;");
             }
 
 

@@ -116,7 +116,8 @@
             // http://www.broofa.com/Tools/Math.uuid.htm
             var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
             var uuid = new Array(36);
-            var rnd = 0, r;
+            var rnd = 0;
+            var r;
             return function () {
                 for (var i = 0; i < 36; i++) {
                     if (i === 8 || i === 13 || i === 18 || i === 23) {
@@ -756,6 +757,22 @@
             };
         })(),
 
+        /**
+         * Converts a three-element vector to a JSON-serializable
+         * array with values rounded to two decimal places.
+         */
+        vecToArray: (function () {
+            function trunc(v) {
+                return Math.round(v * 100) / 100
+            }
+            return function (v) {
+                v = Array.prototype.slice.call(v);
+                for (var i =0,len = v.length; i < len; i++) {
+                    v[i] = trunc(v[i]);
+                }
+                return v;
+            };
+        })(),
 
         /**
          * Duplicates a 4x4 identity matrix.
@@ -1474,20 +1491,20 @@
          * @param z
          * @param m
          */
-        scaleMat4c:  function (x, y, z, m) {
-            
+        scaleMat4c: function (x, y, z, m) {
+
             m[0] *= x;
             m[4] *= y;
             m[8] *= z;
-            
+
             m[1] *= x;
             m[5] *= y;
             m[9] *= z;
-            
+
             m[2] *= x;
             m[6] *= y;
             m[10] *= z;
-            
+
             m[3] *= x;
             m[7] *= y;
             m[11] *= z;
@@ -2251,12 +2268,16 @@
             // 	20696-function-to-convert-between-dcm-euler-angles-quaternions-and-euler-vectors/
             //	content/SpinCalc.m
 
-            var c1 = Math.cos(euler[0] / 2);
-            var c2 = Math.cos(euler[1] / 2);
-            var c3 = Math.cos(euler[2] / 2);
-            var s1 = Math.sin(euler[0] / 2);
-            var s2 = Math.sin(euler[1] / 2);
-            var s3 = Math.sin(euler[2] / 2);
+            var a = (euler[0] * math.DEGTORAD) / 2;
+            var b = (euler[1] * math.DEGTORAD) / 2;
+            var c = (euler[2] * math.DEGTORAD) / 2;
+
+            var c1 = Math.cos(a);
+            var c2 = Math.cos(b);
+            var c3 = Math.cos(c);
+            var s1 = Math.sin(a);
+            var s2 = Math.sin(b);
+            var s3 = Math.sin(c);
 
             if (order === 'XYZ') {
 

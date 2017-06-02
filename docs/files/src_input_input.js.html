@@ -43,6 +43,9 @@
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AABBGeometry.html">AABBGeometry</a></li>
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Annotation.html">Annotation</a></li>
+                                <li><a href="../classes/AnnotationStory.html">AnnotationStory</a></li>
+                                <li><a href="../classes/AxisHelper.html">AxisHelper</a></li>
                                 <li><a href="../classes/Billboard.html">Billboard</a></li>
                                 <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
@@ -71,6 +74,7 @@
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
                                 <li><a href="../classes/Entity.html">Entity</a></li>
+                                <li><a href="../classes/Fog.html">Fog</a></li>
                                 <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
@@ -78,9 +82,11 @@
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
+                                <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
+                                <li><a href="../classes/LookatHelper.html">LookatHelper</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
@@ -93,8 +99,10 @@
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
+                                <li><a href="../classes/Pin.html">Pin</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/PointLightHelper.html">PointLightHelper</a></li>
                                 <li><a href="../classes/PointMarkings.html">PointMarkings</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
@@ -110,10 +118,12 @@
                                 <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/Spinner.html">Spinner</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
+                                <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/SpotLight.html">SpotLight</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
+                                <li><a href="../classes/Story.html">Story</a></li>
                                 <li><a href="../classes/TeapotGeometry.html">TeapotGeometry</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
                                 <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
@@ -130,6 +140,7 @@
                 
                             <ul id="api-modules" class="apis modules">
                                 <li><a href="..//modules/animation.html">animation</a></li>
+                                <li><a href="..//modules/annotations.html">annotations</a></li>
                                 <li><a href="..//modules/boundaries.html">boundaries</a></li>
                                 <li><a href="..//modules/camera.html">camera</a></li>
                                 <li><a href="..//modules/canvas.html">canvas</a></li>
@@ -142,6 +153,7 @@
                                 <li><a href="..//modules/entities.html">entities</a></li>
                                 <li><a href="..//modules/generation.html">generation</a></li>
                                 <li><a href="..//modules/geometry.html">geometry</a></li>
+                                <li><a href="..//modules/helpers.html">helpers</a></li>
                                 <li><a href="..//modules/input.html">input</a></li>
                                 <li><a href="..//modules/interaction.html">interaction</a></li>
                                 <li><a href="..//modules/lighting.html">lighting</a></li>
@@ -152,6 +164,7 @@
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
                                 <li><a href="..//modules/shaders.html">shaders</a></li>
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
+                                <li><a href="..//modules/stories.html">stories</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
                                 <li><a href="..//modules/xeogl.html">xeogl</a></li>
                                 <li><a href="..//modules/zspace.html">zspace</a></li>
@@ -346,275 +359,268 @@
 
             // Capture input events and publish them on this component
 
-            document.addEventListener(&quot;keydown&quot;,
-                this._keyDownListener = function (e) {
+            document.addEventListener(&quot;keydown&quot;, this._keyDownListener = function (e) {
 
-                    if (!self.enabled) {
-                        return;
+                if (!self.enabled) {
+                    return;
+                }
+
+                if (e.target.tagName !== &quot;INPUT&quot; &amp;&amp; e.target.tagName !== &quot;TEXTAREA&quot;) {
+
+                    if (e.ctrlKey) {
+                        self.ctrlDown = true;
+
+                    } else if (e.altKey) {
+                        self.altDown = true;
+
+                    } else {
+                        self.keyDown[e.keyCode] = true;
+
+                        /**
+                         * Fired whenever a key is pressed while the parent
+                         * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}} has input focus.
+                         * @event keydown
+                         * @param value {Number} The key code, for example {{#crossLink &quot;Input/KEY_LEFT_ARROW:property&quot;}}{{/crossLink}},
+                         */
+                        self.fire(&quot;keydown&quot;, e.keyCode, true);
                     }
+                }
 
-                    if (e.target.tagName !== &quot;INPUT&quot; &amp;&amp; e.target.tagName !== &quot;TEXTAREA&quot;) {
+                if (self.mouseover) {
+                    e.preventDefault();
+                }
 
-                        if (e.ctrlKey) {
-                            self.ctrlDown = true;
+            }, true);
 
-                        } else if (e.altKey) {
-                            self.altDown = true;
+            document.addEventListener(&quot;keyup&quot;, this._keyUpListener = function (e) {
 
-                        } else {
-                            self.keyDown[e.keyCode] = true;
+                if (!self.enabled) {
+                    return;
+                }
 
-                            /**
-                             * Fired whenever a key is pressed while the parent
-                             * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}} has input focus.
-                             * @event keydown
-                             * @param value {Number} The key code, for example {{#crossLink &quot;Input/KEY_LEFT_ARROW:property&quot;}}{{/crossLink}},
-                             */
-                            self.fire(&quot;keydown&quot;, e.keyCode, true);
-                        }
+                if (e.target.tagName !== &quot;INPUT&quot; &amp;&amp; e.target.tagName !== &quot;TEXTAREA&quot;) {
+
+                    if (e.ctrlKey) {
+                        self.ctrlDown = false;
+
+                    } else if (e.altKey) {
+                        self.altDown = false;
+
+                    } else {
+                        self.keyDown[e.keyCode] = false;
+
+                        /**
+                         * Fired whenever a key is released while the parent
+                         * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}} has input focus.
+                         * @event keyup
+                         * @param value {Number} The key code, for example {{#crossLink &quot;Input/KEY_LEFT_ARROW:property&quot;}}{{/crossLink}},
+                         */
+                        self.fire(&quot;keyup&quot;, e.keyCode, true);
                     }
+                }
+            });
 
-                    if (self.mouseover) {
-                        e.preventDefault();
-                    }
+            cfg.element.addEventListener(&quot;mouseenter&quot;, this._mouseEnterListener = function (e) {
 
-                }, true);
+                if (!self.enabled) {
+                    return;
+                }
 
-            document.addEventListener(&quot;keyup&quot;,
-                this._keyUpListener = function (e) {
+                self.mouseover = true;
 
-                    if (!self.enabled) {
-                        return;
-                    }
+                var coords = self._getClickCoordsWithinElement(e);
 
-                    if (e.target.tagName !== &quot;INPUT&quot; &amp;&amp; e.target.tagName !== &quot;TEXTAREA&quot;) {
+                /**
+                 * Fired whenever the mouse is moved into of the parent
+                 * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}}.
+                 * @event mouseenter
+                 * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}},
+                 */
+                self.fire(&quot;mouseenter&quot;, coords, true);
+            });
 
-                        if (e.ctrlKey) {
-                            self.ctrlDown = false;
+            cfg.element.addEventListener(&quot;mouseleave&quot;, this._mouseLeaveListener = function (e) {
 
-                        } else if (e.altKey) {
-                            self.altDown = false;
+                if (!self.enabled) {
+                    return;
+                }
 
-                        } else {
-                            self.keyDown[e.keyCode] = false;
+                self.mouseover = false;
 
-                            /**
-                             * Fired whenever a key is released while the parent
-                             * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}} has input focus.
-                             * @event keyup
-                             * @param value {Number} The key code, for example {{#crossLink &quot;Input/KEY_LEFT_ARROW:property&quot;}}{{/crossLink}},
-                             */
-                            self.fire(&quot;keyup&quot;, e.keyCode, true);
-                        }
-                    }
-                });
+                var coords = self._getClickCoordsWithinElement(e);
 
-            cfg.element.addEventListener(&quot;mouseenter&quot;,
-                this._mouseDownListener = function (e) {
-
-                    if (!self.enabled) {
-                        return;
-                    }
-
-                    self.mouseover = true;
-
-                    var coords = self._getClickCoordsWithinElement(e);
-
-                    /**
-                     * Fired whenever the mouse is moved into of the parent
-                     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}}.
-                     * @event mouseenter
-                     * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}},
-                     */
-                    self.fire(&quot;mouseenter&quot;, coords, true);
-                });
-
-            cfg.element.addEventListener(&quot;mouseleave&quot;,
-                this._mouseDownListener = function (e) {
-
-                    if (!self.enabled) {
-                        return;
-                    }
-
-                    self.mouseover = false;
-
-                    var coords = self._getClickCoordsWithinElement(e);
-
-                    /**
-                     * Fired whenever the mouse is moved out of the parent
-                     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}}.
-                     * @event mouseleave
-                     * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}},
-                     */
-                    self.fire(&quot;mouseleave&quot;, coords, true);
-                });
+                /**
+                 * Fired whenever the mouse is moved out of the parent
+                 * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}}.
+                 * @event mouseleave
+                 * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}},
+                 */
+                self.fire(&quot;mouseleave&quot;, coords, true);
+            });
 
 
-            cfg.element.addEventListener(&quot;mousedown&quot;,
-                this._mouseDownListener = function (e) {
+            cfg.element.addEventListener(&quot;mousedown&quot;, this._mouseDownListener = function (e) {
 
-                    if (!self.enabled) {
-                        return;
-                    }
+                if (!self.enabled) {
+                    return;
+                }
 
-                    switch (e.which) {
+                switch (e.which) {
 
-                        case 1:// Left button
-                            self.mouseDownLeft = true;
-                            break;
+                    case 1:// Left button
+                        self.mouseDownLeft = true;
+                        break;
 
-                        case 2:// Middle/both buttons
-                            self.mouseDownMiddle = true;
-                            break;
+                    case 2:// Middle/both buttons
+                        self.mouseDownMiddle = true;
+                        break;
 
-                        case 3:// Right button
-                            self.mouseDownRight = true;
-                            break;
+                    case 3:// Right button
+                        self.mouseDownRight = true;
+                        break;
 
-                        default:
-                            break;
-                    }
+                    default:
+                        break;
+                }
 
-                    var coords = self._getClickCoordsWithinElement(e);
+                var coords = self._getClickCoordsWithinElement(e);
 
-                    /**
-                     * Fired whenever the mouse is pressed over the parent
-                     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}}.
-                     * @event mousedown
-                     * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}},
-                     */
-                    self.fire(&quot;mousedown&quot;, coords, true);
+                cfg.element.focus();
 
-                    if (self.mouseover) {
-                        e.preventDefault();
-                    }
-                });
+                /**
+                 * Fired whenever the mouse is pressed over the parent
+                 * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}}.
+                 * @event mousedown
+                 * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}},
+                 */
+                self.fire(&quot;mousedown&quot;, coords, true);
 
-            document.addEventListener(&quot;mouseup&quot;,
-                this._mouseUpListener = function (e) {
+                if (self.mouseover) {
+                    e.preventDefault();
+                }
+            });
 
-                    if (!self.enabled) {
-                        return;
-                    }
+            document.addEventListener(&quot;mouseup&quot;, this._mouseUpListener = function (e) {
 
-                    switch (e.which) {
+                if (!self.enabled) {
+                    return;
+                }
 
-                        case 1:// Left button
-                            self.mouseDownLeft = false;
-                            break;
+                switch (e.which) {
 
-                        case 2:// Middle/both buttons
-                            self.mouseDownMiddle = false;
-                            break;
+                    case 1:// Left button
+                        self.mouseDownLeft = false;
+                        break;
 
-                        case 3:// Right button
-                            self.mouseDownRight = false;
-                            break;
+                    case 2:// Middle/both buttons
+                        self.mouseDownMiddle = false;
+                        break;
 
-                        default:
-                            break;
-                    }
+                    case 3:// Right button
+                        self.mouseDownRight = false;
+                        break;
 
-                    var coords = self._getClickCoordsWithinElement(e);
+                    default:
+                        break;
+                }
 
-                    /**
-                     * Fired whenever the mouse is released over the parent
-                     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}}.
-                     * @event mouseup
-                     * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}},
-                     */
-                    self.fire(&quot;mouseup&quot;, coords, true);
+                var coords = self._getClickCoordsWithinElement(e);
 
-                    if (self.mouseover) {
-                        e.preventDefault();
-                    }
-                }, true);
+                /**
+                 * Fired whenever the mouse is released over the parent
+                 * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}}.
+                 * @event mouseup
+                 * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}},
+                 */
+                self.fire(&quot;mouseup&quot;, coords, true);
 
-            document.addEventListener(&quot;dblclick&quot;,
-                this._dblClickListener = function (e) {
+                if (self.mouseover) {
+                    e.preventDefault();
+                }
+            }, true);
 
-                    if (!self.enabled) {
-                        return;
-                    }
+            document.addEventListener(&quot;dblclick&quot;, this._dblClickListener = function (e) {
 
-                    switch (e.which) {
+                if (!self.enabled) {
+                    return;
+                }
 
-                        case 1:// Left button
-                            self.mouseDownLeft = false;
-                            self.mouseDownRight = false;
-                            break;
+                switch (e.which) {
 
-                        case 2:// Middle/both buttons
-                            self.mouseDownMiddle = false;
-                            break;
+                    case 1:// Left button
+                        self.mouseDownLeft = false;
+                        self.mouseDownRight = false;
+                        break;
 
-                        case 3:// Right button
-                            self.mouseDownLeft = false;
-                            self.mouseDownRight = false;
-                            break;
+                    case 2:// Middle/both buttons
+                        self.mouseDownMiddle = false;
+                        break;
 
-                        default:
-                            break;
-                    }
+                    case 3:// Right button
+                        self.mouseDownLeft = false;
+                        self.mouseDownRight = false;
+                        break;
 
-                    var coords = self._getClickCoordsWithinElement(e);
+                    default:
+                        break;
+                }
 
-                    /**
-                     * Fired whenever the mouse is double-clicked over the parent
-                     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}}.
-                     * @event dblclick
-                     * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}},
-                     */
-                    self.fire(&quot;dblclick&quot;, coords, true);
+                var coords = self._getClickCoordsWithinElement(e);
 
-                    if (self.mouseover) {
-                        e.preventDefault();
-                    }
-                });
+                /**
+                 * Fired whenever the mouse is double-clicked over the parent
+                 * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}}.
+                 * @event dblclick
+                 * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}},
+                 */
+                self.fire(&quot;dblclick&quot;, coords, true);
 
-            cfg.element.addEventListener(&quot;mousemove&quot;,
-                this._mouseMoveListener = function (e) {
+                if (self.mouseover) {
+                    e.preventDefault();
+                }
+            });
 
-                    if (!self.enabled) {
-                        return;
-                    }
+            cfg.element.addEventListener(&quot;mousemove&quot;, this._mouseMoveListener = function (e) {
 
-                    var coords = self._getClickCoordsWithinElement(e);
+                if (!self.enabled) {
+                    return;
+                }
 
-                    /**
-                     * Fired whenever the mouse is moved over the parent
-                     * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}}.
-                     * @event mousedown
-                     * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}},
-                     */
-                    self.fire(&quot;mousemove&quot;, coords, true);
+                var coords = self._getClickCoordsWithinElement(e);
 
-                    if (self.mouseover) {
-                        e.preventDefault();
-                    }
-                });
+                /**
+                 * Fired whenever the mouse is moved over the parent
+                 * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}}.
+                 * @event mousedown
+                 * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}},
+                 */
+                self.fire(&quot;mousemove&quot;, coords, true);
 
-            cfg.element.addEventListener(&quot;wheel&quot;,
-                this._mouseWheelListener = function (e, d) {
+                if (self.mouseover) {
+                    e.preventDefault();
+                }
+            });
 
-                    if (!self.enabled) {
-                        return;
-                    }
+            cfg.element.addEventListener(&quot;wheel&quot;, this._mouseWheelListener = function (e, d) {
 
-                    var delta = Math.max(-1, Math.min(1, -e.deltaY * 40));
+                if (!self.enabled) {
+                    return;
+                }
 
-                    /**
-                     * Fired whenever the mouse wheel is moved over the parent
-                     * {{#crossLink &quot;Viewer&quot;}}Viewer{{/crossLink}}&#x27;s {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}}.
-                     * @event mousewheel
-                     * @param delta {Number} The mouse wheel delta,
-                     */
-                    self.fire(&quot;mousewheel&quot;, delta, true);
+                var delta = Math.max(-1, Math.min(1, -e.deltaY * 40));
 
-                    if (self.mouseover) {
-                        e.preventDefault();
-                    }
-                });
+                /**
+                 * Fired whenever the mouse wheel is moved over the parent
+                 * {{#crossLink &quot;Viewer&quot;}}Viewer{{/crossLink}}&#x27;s {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}}.
+                 * @event mousewheel
+                 * @param delta {Number} The mouse wheel delta,
+                 */
+                self.fire(&quot;mousewheel&quot;, delta, true);
+
+                if (self.mouseover) {
+                    e.preventDefault();
+                }
+            });
 
             // mouseclicked
 
@@ -626,29 +632,27 @@
                 // Tolerance between down and up positions for a mouse click
                 var tolerance = 2;
 
-                self.on(&quot;mousedown&quot;,
-                    function (params) {
-                        downX = params[0];
-                        downY = params[1];
-                    });
+                self.on(&quot;mousedown&quot;, function (params) {
+                    downX = params[0];
+                    downY = params[1];
+                });
 
-                self.on(&quot;mouseup&quot;,
-                    function (params) {
+                self.on(&quot;mouseup&quot;, function (params) {
 
-                        if (downX &gt;= (params[0] - tolerance) &amp;&amp;
-                            downX &lt;= (params[0] + tolerance) &amp;&amp;
-                            downY &gt;= (params[1] - tolerance) &amp;&amp;
-                            downY &lt;= (params[1] + tolerance)) {
+                    if (downX &gt;= (params[0] - tolerance) &amp;&amp;
+                        downX &lt;= (params[0] + tolerance) &amp;&amp;
+                        downY &gt;= (params[1] - tolerance) &amp;&amp;
+                        downY &lt;= (params[1] + tolerance)) {
 
-                            /**
-                             * Fired whenever the mouse is clicked over the parent
-                             * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}}.
-                             * @event mouseclicked
-                             * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}},
-                             */
-                            self.fire(&quot;mouseclicked&quot;, params, true);
-                        }
-                    });
+                        /**
+                         * Fired whenever the mouse is clicked over the parent
+                         * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}}.
+                         * @event mouseclicked
+                         * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}},
+                         */
+                        self.fire(&quot;mouseclicked&quot;, params, true);
+                    }
+                });
             })();
 
 
@@ -939,13 +943,8 @@
                     absolute: false
                 };
 
-                if (!window.OrientationChangeEvent) {
-                    self.warn(&quot;Browser event not supported: orientationchange&quot;);
-
-                } else {
-
-                    window.addEventListener(&#x27;orientationchange&#x27;,
-                        self._orientationchangedListener = function () {
+                if (window.OrientationChangeEvent) {
+                    window.addEventListener(&#x27;orientationchange&#x27;, self._orientationchangedListener = function () {
 
                             orientation = window.screen.orientation || window.screen.mozOrientation || window.msOrientation || null;
                             orientationAngle = orientation ? (orientationAngleLookup[orientation] || 0) : 0;
@@ -965,13 +964,8 @@
                         false);
                 }
 
-                if (!window.DeviceMotionEvent) {
-                    self.warn(&quot;Browser event not supported: devicemotion&quot;);
-
-                } else {
-
-                    window.addEventListener(&#x27;devicemotion&#x27;,
-                        self._deviceMotionListener = function (e) {
+                if (window.DeviceMotionEvent) {
+                    window.addEventListener(&#x27;devicemotion&#x27;, self._deviceMotionListener = function (e) {
 
                             deviceMotionEvent.interval = e.interval;
                             deviceMotionEvent.orientationAngle = orientationAngle;
@@ -1016,13 +1010,8 @@
                         false);
                 }
 
-                if (!window.DeviceOrientationEvent) {
-                    self.warn(&quot;Browser event not supported: deviceorientation&quot;);
-
-                } else {
-
-                    window.addEventListener(&quot;deviceorientation&quot;,
-                        self._deviceOrientListener = function (e) {
+                if (window.DeviceOrientationEvent) {
+                    window.addEventListener(&quot;deviceorientation&quot;, self._deviceOrientListener = function (e) {
 
                             deviceOrientationEvent.gamma = e.gamma;
                             deviceOrientationEvent.beta = e.beta;

@@ -8,16 +8,16 @@
 
         draw: function () {
 
-            var params = this.state.params;
+            var uniforms = this.state.uniforms;
 
-            if (params) {
+            if (uniforms) {
 
                 var program = this.program.draw;
                 var name;
 
-                for (name in params) {
-                    if (params.hasOwnProperty(name)) {
-                        program.setUniform(name, params[name]);
+                for (name in uniforms) {
+                    if (uniforms.hasOwnProperty(name)) {
+                        program.setUniform(name, uniforms[name]);
                     }
                 }
             }

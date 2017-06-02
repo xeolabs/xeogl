@@ -43,6 +43,9 @@
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AABBGeometry.html">AABBGeometry</a></li>
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Annotation.html">Annotation</a></li>
+                                <li><a href="../classes/AnnotationStory.html">AnnotationStory</a></li>
+                                <li><a href="../classes/AxisHelper.html">AxisHelper</a></li>
                                 <li><a href="../classes/Billboard.html">Billboard</a></li>
                                 <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
@@ -71,6 +74,7 @@
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
                                 <li><a href="../classes/Entity.html">Entity</a></li>
+                                <li><a href="../classes/Fog.html">Fog</a></li>
                                 <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
@@ -78,9 +82,11 @@
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
+                                <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
+                                <li><a href="../classes/LookatHelper.html">LookatHelper</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
@@ -93,8 +99,10 @@
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
+                                <li><a href="../classes/Pin.html">Pin</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/PointLightHelper.html">PointLightHelper</a></li>
                                 <li><a href="../classes/PointMarkings.html">PointMarkings</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
@@ -110,10 +118,12 @@
                                 <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/Spinner.html">Spinner</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
+                                <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/SpotLight.html">SpotLight</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
+                                <li><a href="../classes/Story.html">Story</a></li>
                                 <li><a href="../classes/TeapotGeometry.html">TeapotGeometry</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
                                 <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
@@ -130,6 +140,7 @@
                 
                             <ul id="api-modules" class="apis modules">
                                 <li><a href="..//modules/animation.html">animation</a></li>
+                                <li><a href="..//modules/annotations.html">annotations</a></li>
                                 <li><a href="..//modules/boundaries.html">boundaries</a></li>
                                 <li><a href="..//modules/camera.html">camera</a></li>
                                 <li><a href="..//modules/canvas.html">canvas</a></li>
@@ -142,6 +153,7 @@
                                 <li><a href="..//modules/entities.html">entities</a></li>
                                 <li><a href="..//modules/generation.html">generation</a></li>
                                 <li><a href="..//modules/geometry.html">geometry</a></li>
+                                <li><a href="..//modules/helpers.html">helpers</a></li>
                                 <li><a href="..//modules/input.html">input</a></li>
                                 <li><a href="..//modules/interaction.html">interaction</a></li>
                                 <li><a href="..//modules/lighting.html">lighting</a></li>
@@ -152,6 +164,7 @@
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
                                 <li><a href="..//modules/shaders.html">shaders</a></li>
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
+                                <li><a href="..//modules/stories.html">stories</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
                                 <li><a href="..//modules/xeogl.html">xeogl</a></li>
                                 <li><a href="..//modules/zspace.html">zspace</a></li>
@@ -357,25 +370,6 @@
  var gotWebGL2 = scene.canvas.webgl2; // True if we have WebGL 2
  &#x60;&#x60;&#x60;&#x60;
 
- ## &lt;a name=&quot;savingAndLoading&quot;&gt;Saving and Loading Scenes&lt;/a&gt;
-
- The entire runtime state of a Scene can be serialized and deserialized to and from JSON. This means you can create a
- Scene, then save it and restore it again to exactly how it was when you saved it.
-
- &#x60;&#x60;&#x60;&#x60;javascript
- // Serialize the scene to JSON
- var json = myScene.json;
-
- // Create another scene from that JSON, in a fresh canvas:
- var myOtherScene = new xeogl.Scene({
-      json: json
- });
-
- ***Note:*** this will save your {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}}s&#x27; array properties
- ({{#crossLink &quot;Geometry/positions:property&quot;}}positions{{/crossLink}}, {{#crossLink &quot;Geometry/normals:property&quot;}}normals{{/crossLink}},
- {{#crossLink &quot;Geometry/indices:property&quot;}}indices{{/crossLink}} etc) as JSON arrays, which may stress your browser
- if those arrays are huge.
-
  @class Scene
  @module xeogl
  @constructor
@@ -425,8 +419,6 @@
             var self = this;
 
             var transparent = !!cfg.transparent;
-
-            this._componentIDMap = new xeogl.utils.Map();
 
             /**
              * The epoch time (in milliseconds since 1970) when this Scene was instantiated.
@@ -612,14 +604,18 @@
 
                 if (this.components[c.id]) {
                     this.error(&quot;Component &quot; + xeogl._inQuotes(c.id) + &quot; already exists in Scene - ignoring ID, will randomly-generate instead&quot;);
-            //        c.id = this._componentIDMap.addItem(c);
+                    //        c.id = this._componentIDMap.addItem(c);
                     return;
                 }
             } else {
 
                 // Auto-generated ID
 
-                c.id = this._componentIDMap.addItem(c);
+                c.id = xeogl.math.createUUID();
+
+                while (this.components[c.id]) {
+                    c.id = xeogl.math.createUUID();
+                }
             }
 
             this.components[c.id] = c;
@@ -636,7 +632,6 @@
             }
 
             types[c.id] = c;
-
 
             c.on(&quot;destroyed&quot;, function () {
                 this._componentDestroyed(c);
@@ -676,8 +671,6 @@
         // Callbacks as members to reduce GC churn
 
         _componentDestroyed: function (c) {
-
-            this._componentIDMap.removeItem(c.id);
 
             delete this.components[c.id];
 
@@ -1738,6 +1731,11 @@
 
             return function (params) {
 
+                if (this.canvas.boundary[2] === 0 || this.canvas.boundary[3] === 0) {
+                    this.error(&quot;Picking not allowed while canvas has zero width or height&quot;);
+                    return null;
+                }
+
                 params = params || {};
 
                 params.pickSurface = params.pickSurface || params.rayPick; // Backwards compatibility
@@ -1878,8 +1876,8 @@
                                     nc[2] = normals[ic3 + 2];
 
                                     var normal = math.addVec3(math.addVec3(
-                                            math.mulVec3Scalar(na, bary[0], tempVec3),
-                                            math.mulVec3Scalar(nb, bary[1], tempVec3b), tempVec3c),
+                                        math.mulVec3Scalar(na, bary[0], tempVec3),
+                                        math.mulVec3Scalar(nb, bary[1], tempVec3b), tempVec3c),
                                         math.mulVec3Scalar(nc, bary[2], tempVec3d), tempVec3e);
 
                                     hit.normal = math.transformVec3(entity.transform.leafMatrix, normal, tempVec3f);
@@ -2154,36 +2152,20 @@
             // that exist between them are resolved correctly as the
             // components are instantiawhen when we load the JSON again.
 
-            var components = [];
             var component;
+            var componentJSONs = [];
 
             for (var id in this.components) {
                 if (this.components.hasOwnProperty(id)) {
 
                     component = this.components[id];
 
-                    // Don&#x27;t serialize service components that
-                    // will always be created on this Scene
-
                     if (!component._getJSON) {
                         continue;
                     }
 
-                    // Serialize in same order as creation
-                    // in order to resolve inter-component dependencies
-
-                    components.unshift(component);
+                    componentJSONs.push(component.json);
                 }
-            }
-
-            components.sort(function (a, b) {
-                return a._componentOrder - b._componentOrder
-            });
-
-            var componentJSONs = [];
-
-            for (var i = 0, len = components.length; i &lt; len; i++) {
-                componentJSONs.push(components[i].json);
             }
 
             return {
@@ -2191,8 +2173,7 @@
                 clearEachPass: this._clearEachPass,
                 components: componentJSONs
             };
-        }
-        ,
+        },
 
         _destroy: function () {
             this.clear();

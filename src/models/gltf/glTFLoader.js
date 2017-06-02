@@ -732,16 +732,15 @@
 
                             entityId = this._makeID(nodeId + ".entity." + i);
 
-                            //// Fake ID when clashing with existing entity ID
-                            //for  (j = 0; entities[entityId]; j++) {
-                            //    entityId = this._makeID(nodeId + ".entity." + i + "." + j);
-                            //}
+                            for  (j = 0; entities[entityId]; j++) {
+                               entityId = this._makeID(nodeId + ".entity." + i + "." + j);
+                            }
 
+                            var meta = node.extra || {};
+                            meta.name = node.name;
                             entity = new xeogl.Entity(scene, {
-                                // id: entityId,
-                                meta: {
-                                    name: node.name
-                                },
+                                id: entityId,
+                                meta: meta,
                                 material: material,
                                 geometry: geometry,
                                 transform: transform,

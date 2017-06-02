@@ -3,6 +3,9 @@ YUI.add("yuidoc-meta", function(Y) {
     "classes": [
         "AABBGeometry",
         "AmbientLight",
+        "Annotation",
+        "AnnotationStory",
+        "AxisHelper",
         "Billboard",
         "Boundary2D",
         "Boundary3D",
@@ -31,6 +34,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "DepthBuf",
         "DirLight",
         "Entity",
+        "Fog",
         "Fresnel",
         "Frustum",
         "GLTFModel",
@@ -38,9 +42,11 @@ YUI.add("yuidoc-meta", function(Y) {
         "GeometryBuilder",
         "HeightmapGeometry",
         "Input",
+        "LabelHelper",
         "Layer",
         "Lights",
         "Lookat",
+        "LookatHelper",
         "Material",
         "MetallicMaterial",
         "Model",
@@ -53,8 +59,10 @@ YUI.add("yuidoc-meta", function(Y) {
         "PathGeometry",
         "Perspective",
         "PhongMaterial",
+        "Pin",
         "PlaneGeometry",
         "PointLight",
+        "PointLightHelper",
         "PointMarkings",
         "QuadraticBezierCurve",
         "Quaternion",
@@ -70,10 +78,12 @@ YUI.add("yuidoc-meta", function(Y) {
         "SphereGeometry",
         "Spinner",
         "SplineCurve",
+        "SplineCurveHelper",
         "SpotLight",
         "Stage",
         "Stationary",
         "StereoEffect",
+        "Story",
         "TeapotGeometry",
         "Texture",
         "TorusGeometry",
@@ -89,6 +99,7 @@ YUI.add("yuidoc-meta", function(Y) {
     ],
     "modules": [
         "animation",
+        "annotations",
         "boundaries",
         "camera",
         "canvas",
@@ -101,6 +112,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "entities",
         "generation",
         "geometry",
+        "helpers",
         "input",
         "interaction",
         "lighting",
@@ -111,6 +123,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "rendering",
         "shaders",
         "skyboxes",
+        "stories",
         "transforms",
         "xeogl",
         "zspace"
@@ -120,6 +133,11 @@ YUI.add("yuidoc-meta", function(Y) {
             "displayName": "animation",
             "name": "animation",
             "description": "Components for animating state within Scenes."
+        },
+        {
+            "displayName": "annotations",
+            "name": "annotations",
+            "description": "Components for annotating entities."
         },
         {
             "displayName": "boundaries",
@@ -169,7 +187,7 @@ YUI.add("yuidoc-meta", function(Y) {
         {
             "displayName": "entities",
             "name": "entities",
-            "description": "Entities."
+            "description": "Shows the shape and control points of {{#crossLink \"SplineCurve\"}}{{/crossLink}}"
         },
         {
             "displayName": "generation",
@@ -180,6 +198,11 @@ YUI.add("yuidoc-meta", function(Y) {
             "displayName": "geometry",
             "name": "geometry",
             "description": "Components for defining geometry."
+        },
+        {
+            "displayName": "helpers",
+            "name": "helpers",
+            "description": "Components to help visualise other components."
         },
         {
             "displayName": "input",
@@ -230,6 +253,11 @@ YUI.add("yuidoc-meta", function(Y) {
             "displayName": "skyboxes",
             "name": "skyboxes",
             "description": "Skybox components."
+        },
+        {
+            "displayName": "stories",
+            "name": "stories",
+            "description": "UI presentation components."
         },
         {
             "displayName": "transforms",

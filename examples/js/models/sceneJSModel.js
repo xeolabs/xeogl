@@ -646,7 +646,6 @@
 
                     var geometry = this.add({
                         type: "xeogl.Geometry",
-                        id: this._createID(node),
                         primitive: node.primitive,
                         positions: node.positions,
                         normals: node.normals,
@@ -670,7 +669,7 @@
 
                     this.add({
                         type: "xeogl.Entity",
-                        id: this._createID(node, "entity"),
+                        id: this._createID(node),
                         geometry: geometry,
                         transform: transform,
                         material: material,
@@ -711,13 +710,13 @@
 
         _getJSON: function () {
             var json = {};
-            if (this._materialWorkflow) {
-                json.materialWorkflow = materialWorkflow;
-            }
             if (this._src) {
-                json.src = src;
+                json.src = this._src;
             } else if (this._data) {
-                json.data = data;
+                json.data = this._data;
+            }
+            if (this._materialWorkflow) {
+                json.materialWorkflow = this._materialWorkflow;
             }
             return json;
         }

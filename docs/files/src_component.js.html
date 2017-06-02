@@ -43,6 +43,9 @@
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AABBGeometry.html">AABBGeometry</a></li>
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Annotation.html">Annotation</a></li>
+                                <li><a href="../classes/AnnotationStory.html">AnnotationStory</a></li>
+                                <li><a href="../classes/AxisHelper.html">AxisHelper</a></li>
                                 <li><a href="../classes/Billboard.html">Billboard</a></li>
                                 <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
@@ -71,6 +74,7 @@
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
                                 <li><a href="../classes/Entity.html">Entity</a></li>
+                                <li><a href="../classes/Fog.html">Fog</a></li>
                                 <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
@@ -78,9 +82,11 @@
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
+                                <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
+                                <li><a href="../classes/LookatHelper.html">LookatHelper</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
@@ -93,8 +99,10 @@
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
+                                <li><a href="../classes/Pin.html">Pin</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/PointLightHelper.html">PointLightHelper</a></li>
                                 <li><a href="../classes/PointMarkings.html">PointMarkings</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
@@ -110,10 +118,12 @@
                                 <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/Spinner.html">Spinner</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
+                                <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/SpotLight.html">SpotLight</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
+                                <li><a href="../classes/Story.html">Story</a></li>
                                 <li><a href="../classes/TeapotGeometry.html">TeapotGeometry</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
                                 <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
@@ -130,6 +140,7 @@
                 
                             <ul id="api-modules" class="apis modules">
                                 <li><a href="..//modules/animation.html">animation</a></li>
+                                <li><a href="..//modules/annotations.html">annotations</a></li>
                                 <li><a href="..//modules/boundaries.html">boundaries</a></li>
                                 <li><a href="..//modules/camera.html">camera</a></li>
                                 <li><a href="..//modules/canvas.html">canvas</a></li>
@@ -142,6 +153,7 @@
                                 <li><a href="..//modules/entities.html">entities</a></li>
                                 <li><a href="..//modules/generation.html">generation</a></li>
                                 <li><a href="..//modules/geometry.html">geometry</a></li>
+                                <li><a href="..//modules/helpers.html">helpers</a></li>
                                 <li><a href="..//modules/input.html">input</a></li>
                                 <li><a href="..//modules/interaction.html">interaction</a></li>
                                 <li><a href="..//modules/lighting.html">lighting</a></li>
@@ -152,6 +164,7 @@
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
                                 <li><a href="..//modules/shaders.html">shaders</a></li>
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
+                                <li><a href="..//modules/stories.html">stories</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
                                 <li><a href="..//modules/xeogl.html">xeogl</a></li>
                                 <li><a href="..//modules/zspace.html">zspace</a></li>
@@ -388,7 +401,6 @@
             var arg1 = arguments[0];
             var arg2 = arguments[1];
 
-
             /**
              The parent {{#crossLink &quot;Scene&quot;}}{{/crossLink}} that contains this Component.
 
@@ -471,7 +483,7 @@
              @type String
              @final
              */
-            this.id = cfg.id;
+            this.id = cfg.id; // Auto-generated by xeogl.Scene by default
 
             /**
              True as soon as this Component has been destroyed
@@ -917,7 +929,7 @@
                         }
                     }
 
-                    component = new componentClass(componentCfg);
+                    component = new componentClass(this.scene, componentCfg);
 
                     managingLifecycle = true;
                 }
@@ -1156,7 +1168,7 @@
             return component;
         },
 
-        _adopt: function(component) {
+        _adopt: function (component) {
 
             // Register component on this component so that we can
             // automatically destroy it when we destroy this component
@@ -1246,8 +1258,7 @@
 
                     return this._getJSON ? xeogl._apply(this._getJSON(), json) : json;
                 }
-            }
-            ,
+            },
 
             /**
              * String containing the serialized JSON state of this Component.
@@ -1258,11 +1269,78 @@
              */
             string: {
 
-                get: function () {
-                    return JSON.stringify(this.json, &quot;\n&quot;, 4);
-                }
-            }
-            ,
+                get: (function () {
+
+                    // https://github.com/lydell/json-stringify-pretty-compact
+                    // Copyright 2014, 2016 Simon Lydell
+                    // X11 (“MIT”) Licensed. (See LICENSE.)
+
+                    function prettyStringify(obj, options) {
+                        options = options || {};
+                        var indent = JSON.stringify([1], null, get(options, &#x27;indent&#x27;, 2)).slice(2, -3);
+                        var maxLength = (indent === &#x27;&#x27; ? Infinity : get(options, &#x27;maxLength&#x27;, 80));
+                        return (function _stringify(obj, currentIndent, reserved) {
+                            if (obj &amp;&amp; typeof obj.toJSON === &#x27;function&#x27;) {
+                                obj = obj.toJSON();
+                            }
+                            var string = JSON.stringify(obj);
+                            if (string === undefined) {
+                                return string;
+                            }
+                            var length = maxLength - currentIndent.length - reserved;
+                            if (string.length &lt;= length) {
+                                var prettified = prettify(string);
+                                if (prettified.length &lt;= length) {
+                                    return prettified;
+                                }
+                            }
+                            if (typeof obj === &#x27;object&#x27; &amp;&amp; obj !== null) {
+                                var nextIndent = currentIndent + indent;
+                                var items = [];
+                                var delimiters;
+                                var comma = function (array, index) {
+                                    return (index === array.length - 1 ? 0 : 1);
+                                };
+                                if (Array.isArray(obj)) {
+                                    for (var index = 0; index &lt; obj.length; index++) {
+                                        items.push(_stringify(obj[index], nextIndent, comma(obj, index)) || &#x27;null&#x27;);
+                                    }
+                                    delimiters = &#x27;[]&#x27;;
+                                } else {
+                                    Object.keys(obj).forEach(function (key, index, array) {
+                                        var keyPart = JSON.stringify(key) + &#x27;: &#x27;;
+                                        var value = _stringify(obj[key], nextIndent, keyPart.length + comma(array, index));
+                                        if (value !== undefined) {
+                                            items.push(keyPart + value);
+                                        }
+                                    });
+                                    delimiters = &#x27;{}&#x27;;
+                                }
+                                if (items.length &gt; 0) {
+                                    return [delimiters[0], indent + items.join(&#x27;,\n&#x27; + nextIndent), delimiters[1]].join(&#x27;\n&#x27; + currentIndent);
+                                }
+                            }
+                            return string;
+                        }(obj, &#x27;&#x27;, 0));
+                    }
+
+                    var stringOrChar = /(&quot;(?:[^&quot;]|\\.)*&quot;)|[:,]/g;
+
+                    function prettify(string) {
+                        return string.replace(stringOrChar, function (match, string) {
+                            return string ? match : match + &#x27; &#x27;;
+                        })
+                    }
+
+                    function get(options, name, defaultValue) {
+                        return (name in options ? options[name] : defaultValue);
+                    }
+
+                    return function () {
+                        return prettyStringify(this.json, null, &quot;\t&quot;);
+                    };
+                })()
+            },
 
             /**
              * Experimental: string containing a JavaScript expression that would instantiate this Component.
@@ -1274,10 +1352,7 @@
             js: {
 
                 get: function () {
-                    var json = this.json;
-                    delete json.id;
-                    var str = JSON.stringify(json, &quot;\n&quot;, 4);
-                    return &quot;new &quot; + this.type + &quot;(&quot; + str + &quot;);&quot;;
+                    return &quot;new &quot; + this.type + &quot;(&quot; + this.string + &quot;);&quot;;
                 }
             }
         },

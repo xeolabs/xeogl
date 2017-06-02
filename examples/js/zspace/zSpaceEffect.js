@@ -6,16 +6,19 @@
  ## Overview
 
  <ul>
- <li>Plug-and-play: just create a ZSpaceEffect within your xeogl {{#crossLink "Scene"}}{{/crossLink}} to make it viewable with a ZSpace display.</li>
- <li>Activate or disable the ZSpaceEffect at any time to switch between zSpace mode and normal mono viewing mode.</li>
+ <li>Create a ZSpaceEffect within your xeogl {{#crossLink "Scene"}}{{/crossLink}} to make it viewable with a ZSpace display.</li>
+ <li>Activate or deactivate the ZSpaceEffect at any time to switch between zSpace stereo mode and normal viewing mode.</li>
  <li>Requires WebGL2 and WebVR support, which you'll have if you're running on a zSpace viewer.</li>
- <li>Attaches to a {{#crossLink "Camera"}}{{/crossLink}}, defaults to its {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
+ <li>Attaches to a {{#crossLink "Camera"}}{{/crossLink}}, defaulting to its {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
  {{#crossLink "Scene/camera:property"}}{{/crossLink}} if none is specified.</li>
- <li>Don't attach different view or projection transform components to the {{#crossLink "Camera"}}{{/crossLink}} while the ZSpaceEffect is active.</li>
- <li>You can however update the {{#crossLink "Camera"}}{{/crossLink}}'s view transformation at any time, to move the
- viewpoint around.</li>
  <li>Use a {{#crossLink "ZSpaceStylusControl"}}{{/crossLink}} to drag {{#crossLink "Entity"}}Entities{{/crossLink}}
  around with the stylus.</li>
+ </ul>
+
+ ### Limitations
+
+ <ul>
+ <li>Don't attach different viewing or projection transforms to a ZSpaceEffect's {{#crossLink "Camera"}}{{/crossLink}} while the ZSpaceEffect is active.</li>
  </ul>
 
  <img src="../../../assets/images/ZSpaceEffect.png"></img>

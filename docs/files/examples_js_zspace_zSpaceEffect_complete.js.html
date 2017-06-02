@@ -43,6 +43,9 @@
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AABBGeometry.html">AABBGeometry</a></li>
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Annotation.html">Annotation</a></li>
+                                <li><a href="../classes/AnnotationStory.html">AnnotationStory</a></li>
+                                <li><a href="../classes/AxisHelper.html">AxisHelper</a></li>
                                 <li><a href="../classes/Billboard.html">Billboard</a></li>
                                 <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
@@ -71,6 +74,7 @@
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
                                 <li><a href="../classes/Entity.html">Entity</a></li>
+                                <li><a href="../classes/Fog.html">Fog</a></li>
                                 <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
@@ -78,9 +82,11 @@
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
+                                <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
+                                <li><a href="../classes/LookatHelper.html">LookatHelper</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
@@ -93,8 +99,10 @@
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
+                                <li><a href="../classes/Pin.html">Pin</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/PointLightHelper.html">PointLightHelper</a></li>
                                 <li><a href="../classes/PointMarkings.html">PointMarkings</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
@@ -110,10 +118,12 @@
                                 <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/Spinner.html">Spinner</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
+                                <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/SpotLight.html">SpotLight</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
+                                <li><a href="../classes/Story.html">Story</a></li>
                                 <li><a href="../classes/TeapotGeometry.html">TeapotGeometry</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
                                 <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
@@ -130,6 +140,7 @@
                 
                             <ul id="api-modules" class="apis modules">
                                 <li><a href="..//modules/animation.html">animation</a></li>
+                                <li><a href="..//modules/annotations.html">annotations</a></li>
                                 <li><a href="..//modules/boundaries.html">boundaries</a></li>
                                 <li><a href="..//modules/camera.html">camera</a></li>
                                 <li><a href="..//modules/canvas.html">canvas</a></li>
@@ -142,6 +153,7 @@
                                 <li><a href="..//modules/entities.html">entities</a></li>
                                 <li><a href="..//modules/generation.html">generation</a></li>
                                 <li><a href="..//modules/geometry.html">geometry</a></li>
+                                <li><a href="..//modules/helpers.html">helpers</a></li>
                                 <li><a href="..//modules/input.html">input</a></li>
                                 <li><a href="..//modules/interaction.html">interaction</a></li>
                                 <li><a href="..//modules/lighting.html">lighting</a></li>
@@ -152,6 +164,7 @@
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
                                 <li><a href="..//modules/shaders.html">shaders</a></li>
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
+                                <li><a href="..//modules/stories.html">stories</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
                                 <li><a href="..//modules/xeogl.html">xeogl</a></li>
                                 <li><a href="..//modules/zspace.html">zspace</a></li>
@@ -200,16 +213,19 @@
  ## Overview
 
  &lt;ul&gt;
- &lt;li&gt;Plug-and-play: just create a ZSpaceEffect within your xeogl {{#crossLink &quot;Scene&quot;}}{{/crossLink}} to make it viewable with a ZSpace display.&lt;/li&gt;
- &lt;li&gt;Activate or disable the ZSpaceEffect at any time to switch between zSpace mode and normal mono viewing mode.&lt;/li&gt;
+ &lt;li&gt;Create a ZSpaceEffect within your xeogl {{#crossLink &quot;Scene&quot;}}{{/crossLink}} to make it viewable with a ZSpace display.&lt;/li&gt;
+ &lt;li&gt;Activate or deactivate the ZSpaceEffect at any time to switch between zSpace stereo mode and normal viewing mode.&lt;/li&gt;
  &lt;li&gt;Requires WebGL2 and WebVR support, which you&#x27;ll have if you&#x27;re running on a zSpace viewer.&lt;/li&gt;
- &lt;li&gt;Attaches to a {{#crossLink &quot;Camera&quot;}}{{/crossLink}}, defaults to its {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default
+ &lt;li&gt;Attaches to a {{#crossLink &quot;Camera&quot;}}{{/crossLink}}, defaulting to its {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default
  {{#crossLink &quot;Scene/camera:property&quot;}}{{/crossLink}} if none is specified.&lt;/li&gt;
- &lt;li&gt;Don&#x27;t attach different view or projection transform components to the {{#crossLink &quot;Camera&quot;}}{{/crossLink}} while the ZSpaceEffect is active.&lt;/li&gt;
- &lt;li&gt;You can however update the {{#crossLink &quot;Camera&quot;}}{{/crossLink}}&#x27;s view transformation at any time, to move the
- viewpoint around.&lt;/li&gt;
  &lt;li&gt;Use a {{#crossLink &quot;ZSpaceStylusControl&quot;}}{{/crossLink}} to drag {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}
  around with the stylus.&lt;/li&gt;
+ &lt;/ul&gt;
+
+ ### Limitations
+
+ &lt;ul&gt;
+ &lt;li&gt;Don&#x27;t attach different viewing or projection transforms to a ZSpaceEffect&#x27;s {{#crossLink &quot;Camera&quot;}}{{/crossLink}} while the ZSpaceEffect is active.&lt;/li&gt;
  &lt;/ul&gt;
 
  &lt;img src=&quot;../../../assets/images/ZSpaceEffect.png&quot;&gt;&lt;/img&gt;

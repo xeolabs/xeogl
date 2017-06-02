@@ -1,0 +1,34 @@
+.xeogl-story {
+    position: absolute;
+    top: 0px;
+    z-index: 200000;
+    float: left;
+    left: 0px;
+    padding: 10px;
+    padding-left: 15px;
+    height: auto;
+    text-align: left;
+    font-size: 16px;
+    color: white;
+    border: 0;
+    max-width: 400px;
+}
+
+.xeogl-story h1 {
+    font-size: 30px;
+    /*border-bottom: solid 1px grey;*/
+    /*margin-bottom: 32px;*/
+}
+
+.xeogl-story a {
+    text-decoration: underline;
+    color: #13d3d2 !important;
+}
+
+.xeogl-story a:hover {
+    text-decoration: underline;
+}
+
+.xeogl-story img {
+    border: 1px #9c9c9c solid;
+}

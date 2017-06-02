@@ -84,7 +84,7 @@
     // Log updates to the color of the ColoredTorus
 
     coloredTorus.on("color", function (color) {
-        log("coloredTorus.color = " + JSON.stringify(color, null, 4));
+        log("coloredTorus.color = [" + xeogl.math.vecToArray(color) + "]");
     });
 
     // Logs a message to the info element at the top of this page

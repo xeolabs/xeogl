@@ -43,6 +43,9 @@
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AABBGeometry.html">AABBGeometry</a></li>
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Annotation.html">Annotation</a></li>
+                                <li><a href="../classes/AnnotationStory.html">AnnotationStory</a></li>
+                                <li><a href="../classes/AxisHelper.html">AxisHelper</a></li>
                                 <li><a href="../classes/Billboard.html">Billboard</a></li>
                                 <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
@@ -71,6 +74,7 @@
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
                                 <li><a href="../classes/Entity.html">Entity</a></li>
+                                <li><a href="../classes/Fog.html">Fog</a></li>
                                 <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
@@ -78,9 +82,11 @@
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
+                                <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
+                                <li><a href="../classes/LookatHelper.html">LookatHelper</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
@@ -93,8 +99,10 @@
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
+                                <li><a href="../classes/Pin.html">Pin</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/PointLightHelper.html">PointLightHelper</a></li>
                                 <li><a href="../classes/PointMarkings.html">PointMarkings</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
@@ -110,10 +118,12 @@
                                 <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/Spinner.html">Spinner</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
+                                <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/SpotLight.html">SpotLight</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
+                                <li><a href="../classes/Story.html">Story</a></li>
                                 <li><a href="../classes/TeapotGeometry.html">TeapotGeometry</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
                                 <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
@@ -130,6 +140,7 @@
                 
                             <ul id="api-modules" class="apis modules">
                                 <li><a href="..//modules/animation.html">animation</a></li>
+                                <li><a href="..//modules/annotations.html">annotations</a></li>
                                 <li><a href="..//modules/boundaries.html">boundaries</a></li>
                                 <li><a href="..//modules/camera.html">camera</a></li>
                                 <li><a href="..//modules/canvas.html">canvas</a></li>
@@ -142,6 +153,7 @@
                                 <li><a href="..//modules/entities.html">entities</a></li>
                                 <li><a href="..//modules/generation.html">generation</a></li>
                                 <li><a href="..//modules/geometry.html">geometry</a></li>
+                                <li><a href="..//modules/helpers.html">helpers</a></li>
                                 <li><a href="..//modules/input.html">input</a></li>
                                 <li><a href="..//modules/interaction.html">interaction</a></li>
                                 <li><a href="..//modules/lighting.html">lighting</a></li>
@@ -152,6 +164,7 @@
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
                                 <li><a href="..//modules/shaders.html">shaders</a></li>
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
+                                <li><a href="..//modules/stories.html">stories</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
                                 <li><a href="..//modules/xeogl.html">xeogl</a></li>
                                 <li><a href="..//modules/zspace.html">zspace</a></li>
@@ -724,7 +737,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l921"><code>src&#x2F;math&#x2F;math.js:921</code></a>
+        <a href="../files/src_math_math.js.html#l938"><code>src&#x2F;math&#x2F;math.js:938</code></a>
         </p>
 
 
@@ -757,7 +770,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l949"><code>src&#x2F;math&#x2F;math.js:949</code></a>
+        <a href="../files/src_math_math.js.html#l966"><code>src&#x2F;math&#x2F;math.js:966</code></a>
         </p>
 
 
@@ -790,7 +803,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l977"><code>src&#x2F;math&#x2F;math.js:977</code></a>
+        <a href="../files/src_math_math.js.html#l994"><code>src&#x2F;math&#x2F;math.js:994</code></a>
         </p>
 
 
@@ -838,7 +851,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l228"><code>src&#x2F;math&#x2F;math.js:228</code></a>
+        <a href="../files/src_math_math.js.html#l229"><code>src&#x2F;math&#x2F;math.js:229</code></a>
         </p>
 
 
@@ -935,7 +948,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l188"><code>src&#x2F;math&#x2F;math.js:188</code></a>
+        <a href="../files/src_math_math.js.html#l189"><code>src&#x2F;math&#x2F;math.js:189</code></a>
         </p>
 
 
@@ -1032,7 +1045,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l208"><code>src&#x2F;math&#x2F;math.js:208</code></a>
+        <a href="../files/src_math_math.js.html#l209"><code>src&#x2F;math&#x2F;math.js:209</code></a>
         </p>
 
 
@@ -1129,7 +1142,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l247"><code>src&#x2F;math&#x2F;math.js:247</code></a>
+        <a href="../files/src_math_math.js.html#l248"><code>src&#x2F;math&#x2F;math.js:248</code></a>
         </p>
 
 
@@ -1267,7 +1280,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l588"><code>src&#x2F;math&#x2F;math.js:588</code></a>
+        <a href="../files/src_math_math.js.html#l589"><code>src&#x2F;math&#x2F;math.js:589</code></a>
         </p>
 
 
@@ -1348,7 +1361,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l570"><code>src&#x2F;math&#x2F;math.js:570</code></a>
+        <a href="../files/src_math_math.js.html#l571"><code>src&#x2F;math&#x2F;math.js:571</code></a>
         </p>
 
 
@@ -1417,7 +1430,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1200"><code>src&#x2F;math&#x2F;math.js:1200</code></a>
+        <a href="../files/src_math_math.js.html#l1217"><code>src&#x2F;math&#x2F;math.js:1217</code></a>
         </p>
 
 
@@ -1450,7 +1463,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l828"><code>src&#x2F;math&#x2F;math.js:828</code></a>
+        <a href="../files/src_math_math.js.html#l845"><code>src&#x2F;math&#x2F;math.js:845</code></a>
         </p>
 
 
@@ -1483,7 +1496,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l837"><code>src&#x2F;math&#x2F;math.js:837</code></a>
+        <a href="../files/src_math_math.js.html#l854"><code>src&#x2F;math&#x2F;math.js:854</code></a>
         </p>
 
 
@@ -1531,7 +1544,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l479"><code>src&#x2F;math&#x2F;math.js:479</code></a>
+        <a href="../files/src_math_math.js.html#l480"><code>src&#x2F;math&#x2F;math.js:480</code></a>
         </p>
 
 
@@ -1626,7 +1639,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l538"><code>src&#x2F;math&#x2F;math.js:538</code></a>
+        <a href="../files/src_math_math.js.html#l539"><code>src&#x2F;math&#x2F;math.js:539</code></a>
         </p>
 
 
@@ -1721,7 +1734,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l440"><code>src&#x2F;math&#x2F;math.js:440</code></a>
+        <a href="../files/src_math_math.js.html#l441"><code>src&#x2F;math&#x2F;math.js:441</code></a>
         </p>
 
 
@@ -1818,7 +1831,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l498"><code>src&#x2F;math&#x2F;math.js:498</code></a>
+        <a href="../files/src_math_math.js.html#l499"><code>src&#x2F;math&#x2F;math.js:499</code></a>
         </p>
 
 
@@ -1913,7 +1926,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l459"><code>src&#x2F;math&#x2F;math.js:459</code></a>
+        <a href="../files/src_math_math.js.html#l460"><code>src&#x2F;math&#x2F;math.js:460</code></a>
         </p>
 
 
@@ -2010,7 +2023,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l517"><code>src&#x2F;math&#x2F;math.js:517</code></a>
+        <a href="../files/src_math_math.js.html#l518"><code>src&#x2F;math&#x2F;math.js:518</code></a>
         </p>
 
 
@@ -2102,7 +2115,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l558"><code>src&#x2F;math&#x2F;math.js:558</code></a>
+        <a href="../files/src_math_math.js.html#l559"><code>src&#x2F;math&#x2F;math.js:559</code></a>
         </p>
 
 
@@ -2183,7 +2196,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l636"><code>src&#x2F;math&#x2F;math.js:636</code></a>
+        <a href="../files/src_math_math.js.html#l637"><code>src&#x2F;math&#x2F;math.js:637</code></a>
         </p>
 
 
@@ -2264,7 +2277,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l624"><code>src&#x2F;math&#x2F;math.js:624</code></a>
+        <a href="../files/src_math_math.js.html#l625"><code>src&#x2F;math&#x2F;math.js:625</code></a>
         </p>
 
 
@@ -2333,7 +2346,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l760"><code>src&#x2F;math&#x2F;math.js:760</code></a>
+        <a href="../files/src_math_math.js.html#l777"><code>src&#x2F;math&#x2F;math.js:777</code></a>
         </p>
 
 
@@ -2375,7 +2388,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2200"><code>src&#x2F;math&#x2F;math.js:2200</code></a>
+        <a href="../files/src_math_math.js.html#l2217"><code>src&#x2F;math&#x2F;math.js:2217</code></a>
         </p>
 
 
@@ -2445,7 +2458,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l150"><code>src&#x2F;math&#x2F;math.js:150</code></a>
+        <a href="../files/src_math_math.js.html#l151"><code>src&#x2F;math&#x2F;math.js:151</code></a>
         </p>
 
 
@@ -2511,7 +2524,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1865"><code>src&#x2F;math&#x2F;math.js:1865</code></a>
+        <a href="../files/src_math_math.js.html#l1882"><code>src&#x2F;math&#x2F;math.js:1882</code></a>
         </p>
 
 
@@ -2544,7 +2557,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1821"><code>src&#x2F;math&#x2F;math.js:1821</code></a>
+        <a href="../files/src_math_math.js.html#l1838"><code>src&#x2F;math&#x2F;math.js:1838</code></a>
         </p>
 
 
@@ -2577,7 +2590,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l846"><code>src&#x2F;math&#x2F;math.js:846</code></a>
+        <a href="../files/src_math_math.js.html#l863"><code>src&#x2F;math&#x2F;math.js:863</code></a>
         </p>
 
 
@@ -2610,7 +2623,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1219"><code>src&#x2F;math&#x2F;math.js:1219</code></a>
+        <a href="../files/src_math_math.js.html#l1236"><code>src&#x2F;math&#x2F;math.js:1236</code></a>
         </p>
 
 
@@ -2643,7 +2656,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l878"><code>src&#x2F;math&#x2F;math.js:878</code></a>
+        <a href="../files/src_math_math.js.html#l895"><code>src&#x2F;math&#x2F;math.js:895</code></a>
         </p>
 
 
@@ -2685,7 +2698,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l669"><code>src&#x2F;math&#x2F;math.js:669</code></a>
+        <a href="../files/src_math_math.js.html#l670"><code>src&#x2F;math&#x2F;math.js:670</code></a>
         </p>
 
 
@@ -2752,7 +2765,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l658"><code>src&#x2F;math&#x2F;math.js:658</code></a>
+        <a href="../files/src_math_math.js.html#l659"><code>src&#x2F;math&#x2F;math.js:659</code></a>
         </p>
 
 
@@ -2819,7 +2832,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l613"><code>src&#x2F;math&#x2F;math.js:613</code></a>
+        <a href="../files/src_math_math.js.html#l614"><code>src&#x2F;math&#x2F;math.js:614</code></a>
         </p>
 
 
@@ -2877,7 +2890,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2185"><code>src&#x2F;math&#x2F;math.js:2185</code></a>
+        <a href="../files/src_math_math.js.html#l2202"><code>src&#x2F;math&#x2F;math.js:2202</code></a>
         </p>
 
 
@@ -2910,7 +2923,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1776"><code>src&#x2F;math&#x2F;math.js:1776</code></a>
+        <a href="../files/src_math_math.js.html#l1793"><code>src&#x2F;math&#x2F;math.js:1793</code></a>
         </p>
 
 
@@ -2960,7 +2973,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1681"><code>src&#x2F;math&#x2F;math.js:1681</code></a>
+        <a href="../files/src_math_math.js.html#l1698"><code>src&#x2F;math&#x2F;math.js:1698</code></a>
         </p>
 
 
@@ -3052,7 +3065,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l782"><code>src&#x2F;math&#x2F;math.js:782</code></a>
+        <a href="../files/src_math_math.js.html#l799"><code>src&#x2F;math&#x2F;math.js:799</code></a>
         </p>
 
 
@@ -3299,7 +3312,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l769"><code>src&#x2F;math&#x2F;math.js:769</code></a>
+        <a href="../files/src_math_math.js.html#l786"><code>src&#x2F;math&#x2F;math.js:786</code></a>
         </p>
 
 
@@ -3412,7 +3425,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1070"><code>src&#x2F;math&#x2F;math.js:1070</code></a>
+        <a href="../files/src_math_math.js.html#l1087"><code>src&#x2F;math&#x2F;math.js:1087</code></a>
         </p>
 
 
@@ -3445,7 +3458,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1111"><code>src&#x2F;math&#x2F;math.js:1111</code></a>
+        <a href="../files/src_math_math.js.html#l1128"><code>src&#x2F;math&#x2F;math.js:1128</code></a>
         </p>
 
 
@@ -3478,7 +3491,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1139"><code>src&#x2F;math&#x2F;math.js:1139</code></a>
+        <a href="../files/src_math_math.js.html#l1156"><code>src&#x2F;math&#x2F;math.js:1156</code></a>
         </p>
 
 
@@ -3526,7 +3539,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l422"><code>src&#x2F;math&#x2F;math.js:422</code></a>
+        <a href="../files/src_math_math.js.html#l423"><code>src&#x2F;math&#x2F;math.js:423</code></a>
         </p>
 
 
@@ -3623,7 +3636,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l363"><code>src&#x2F;math&#x2F;math.js:363</code></a>
+        <a href="../files/src_math_math.js.html#l364"><code>src&#x2F;math&#x2F;math.js:364</code></a>
         </p>
 
 
@@ -3720,7 +3733,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l383"><code>src&#x2F;math&#x2F;math.js:383</code></a>
+        <a href="../files/src_math_math.js.html#l384"><code>src&#x2F;math&#x2F;math.js:384</code></a>
         </p>
 
 
@@ -3817,7 +3830,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l403"><code>src&#x2F;math&#x2F;math.js:403</code></a>
+        <a href="../files/src_math_math.js.html#l404"><code>src&#x2F;math&#x2F;math.js:404</code></a>
         </p>
 
 
@@ -3899,7 +3912,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l893"><code>src&#x2F;math&#x2F;math.js:893</code></a>
+        <a href="../files/src_math_math.js.html#l910"><code>src&#x2F;math&#x2F;math.js:910</code></a>
         </p>
 
 
@@ -3944,7 +3957,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l169"><code>src&#x2F;math&#x2F;math.js:169</code></a>
+        <a href="../files/src_math_math.js.html#l170"><code>src&#x2F;math&#x2F;math.js:170</code></a>
         </p>
 
 
@@ -4015,7 +4028,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l716"><code>src&#x2F;math&#x2F;math.js:716</code></a>
+        <a href="../files/src_math_math.js.html#l717"><code>src&#x2F;math&#x2F;math.js:717</code></a>
         </p>
 
 
@@ -4048,7 +4061,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l706"><code>src&#x2F;math&#x2F;math.js:706</code></a>
+        <a href="../files/src_math_math.js.html#l707"><code>src&#x2F;math&#x2F;math.js:707</code></a>
         </p>
 
 
@@ -4093,7 +4106,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l692"><code>src&#x2F;math&#x2F;math.js:692</code></a>
+        <a href="../files/src_math_math.js.html#l693"><code>src&#x2F;math&#x2F;math.js:693</code></a>
         </p>
 
 
@@ -4162,7 +4175,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1785"><code>src&#x2F;math&#x2F;math.js:1785</code></a>
+        <a href="../files/src_math_math.js.html#l1802"><code>src&#x2F;math&#x2F;math.js:1802</code></a>
         </p>
 
 
@@ -4195,7 +4208,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1896"><code>src&#x2F;math&#x2F;math.js:1896</code></a>
+        <a href="../files/src_math_math.js.html#l1913"><code>src&#x2F;math&#x2F;math.js:1913</code></a>
         </p>
 
 
@@ -4240,7 +4253,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2168"><code>src&#x2F;math&#x2F;math.js:2168</code></a>
+        <a href="../files/src_math_math.js.html#l2185"><code>src&#x2F;math&#x2F;math.js:2185</code></a>
         </p>
 
 
@@ -4322,7 +4335,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l680"><code>src&#x2F;math&#x2F;math.js:680</code></a>
+        <a href="../files/src_math_math.js.html#l681"><code>src&#x2F;math&#x2F;math.js:681</code></a>
         </p>
 
 
@@ -4408,7 +4421,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2069"><code>src&#x2F;math&#x2F;math.js:2069</code></a>
+        <a href="../files/src_math_math.js.html#l2086"><code>src&#x2F;math&#x2F;math.js:2086</code></a>
         </p>
 
 
@@ -4518,7 +4531,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2102"><code>src&#x2F;math&#x2F;math.js:2102</code></a>
+        <a href="../files/src_math_math.js.html#l2119"><code>src&#x2F;math&#x2F;math.js:2119</code></a>
         </p>
 
 
@@ -4628,7 +4641,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2135"><code>src&#x2F;math&#x2F;math.js:2135</code></a>
+        <a href="../files/src_math_math.js.html#l2152"><code>src&#x2F;math&#x2F;math.js:2152</code></a>
         </p>
 
 
@@ -4720,7 +4733,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1432"><code>src&#x2F;math&#x2F;math.js:1432</code></a>
+        <a href="../files/src_math_math.js.html#l1449"><code>src&#x2F;math&#x2F;math.js:1449</code></a>
         </p>
 
 
@@ -4753,7 +4766,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1380"><code>src&#x2F;math&#x2F;math.js:1380</code></a>
+        <a href="../files/src_math_math.js.html#l1397"><code>src&#x2F;math&#x2F;math.js:1397</code></a>
         </p>
 
 
@@ -4794,7 +4807,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1497"><code>src&#x2F;math&#x2F;math.js:1497</code></a>
+        <a href="../files/src_math_math.js.html#l1514"><code>src&#x2F;math&#x2F;math.js:1514</code></a>
         </p>
 
 
@@ -4867,7 +4880,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1469"><code>src&#x2F;math&#x2F;math.js:1469</code></a>
+        <a href="../files/src_math_math.js.html#l1486"><code>src&#x2F;math&#x2F;math.js:1486</code></a>
         </p>
 
 
@@ -4946,7 +4959,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1454"><code>src&#x2F;math&#x2F;math.js:1454</code></a>
+        <a href="../files/src_math_math.js.html#l1471"><code>src&#x2F;math&#x2F;math.js:1471</code></a>
         </p>
 
 
@@ -4979,7 +4992,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1525"><code>src&#x2F;math&#x2F;math.js:1525</code></a>
+        <a href="../files/src_math_math.js.html#l1542"><code>src&#x2F;math&#x2F;math.js:1542</code></a>
         </p>
 
 
@@ -5012,7 +5025,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1441"><code>src&#x2F;math&#x2F;math.js:1441</code></a>
+        <a href="../files/src_math_math.js.html#l1458"><code>src&#x2F;math&#x2F;math.js:1458</code></a>
         </p>
 
 
@@ -5045,7 +5058,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l814"><code>src&#x2F;math&#x2F;math.js:814</code></a>
+        <a href="../files/src_math_math.js.html#l831"><code>src&#x2F;math&#x2F;math.js:831</code></a>
         </p>
 
 
@@ -5078,7 +5091,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l805"><code>src&#x2F;math&#x2F;math.js:805</code></a>
+        <a href="../files/src_math_math.js.html#l822"><code>src&#x2F;math&#x2F;math.js:822</code></a>
         </p>
 
 
@@ -5111,7 +5124,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l796"><code>src&#x2F;math&#x2F;math.js:796</code></a>
+        <a href="../files/src_math_math.js.html#l813"><code>src&#x2F;math&#x2F;math.js:813</code></a>
         </p>
 
 
@@ -5144,7 +5157,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l986"><code>src&#x2F;math&#x2F;math.js:986</code></a>
+        <a href="../files/src_math_math.js.html#l1003"><code>src&#x2F;math&#x2F;math.js:1003</code></a>
         </p>
 
 
@@ -5177,7 +5190,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1014"><code>src&#x2F;math&#x2F;math.js:1014</code></a>
+        <a href="../files/src_math_math.js.html#l1031"><code>src&#x2F;math&#x2F;math.js:1031</code></a>
         </p>
 
 
@@ -5210,7 +5223,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1042"><code>src&#x2F;math&#x2F;math.js:1042</code></a>
+        <a href="../files/src_math_math.js.html#l1059"><code>src&#x2F;math&#x2F;math.js:1059</code></a>
         </p>
 
 
@@ -5258,7 +5271,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l343"><code>src&#x2F;math&#x2F;math.js:343</code></a>
+        <a href="../files/src_math_math.js.html#l344"><code>src&#x2F;math&#x2F;math.js:344</code></a>
         </p>
 
 
@@ -5355,7 +5368,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l305"><code>src&#x2F;math&#x2F;math.js:305</code></a>
+        <a href="../files/src_math_math.js.html#l306"><code>src&#x2F;math&#x2F;math.js:306</code></a>
         </p>
 
 
@@ -5452,7 +5465,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l286"><code>src&#x2F;math&#x2F;math.js:286</code></a>
+        <a href="../files/src_math_math.js.html#l287"><code>src&#x2F;math&#x2F;math.js:287</code></a>
         </p>
 
 
@@ -5549,7 +5562,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l266"><code>src&#x2F;math&#x2F;math.js:266</code></a>
+        <a href="../files/src_math_math.js.html#l267"><code>src&#x2F;math&#x2F;math.js:267</code></a>
         </p>
 
 
@@ -5646,7 +5659,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l323"><code>src&#x2F;math&#x2F;math.js:323</code></a>
+        <a href="../files/src_math_math.js.html#l324"><code>src&#x2F;math&#x2F;math.js:324</code></a>
         </p>
 
 
@@ -5728,7 +5741,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1269"><code>src&#x2F;math&#x2F;math.js:1269</code></a>
+        <a href="../files/src_math_math.js.html#l1286"><code>src&#x2F;math&#x2F;math.js:1286</code></a>
         </p>
 
 
@@ -5761,7 +5774,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1917"><code>src&#x2F;math&#x2F;math.js:1917</code></a>
+        <a href="../files/src_math_math.js.html#l1934"><code>src&#x2F;math&#x2F;math.js:1934</code></a>
         </p>
 
 
@@ -5794,7 +5807,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1933"><code>src&#x2F;math&#x2F;math.js:1933</code></a>
+        <a href="../files/src_math_math.js.html#l1950"><code>src&#x2F;math&#x2F;math.js:1950</code></a>
         </p>
 
 
@@ -5827,7 +5840,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1951"><code>src&#x2F;math&#x2F;math.js:1951</code></a>
+        <a href="../files/src_math_math.js.html#l1968"><code>src&#x2F;math&#x2F;math.js:1968</code></a>
         </p>
 
 
@@ -5860,7 +5873,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1992"><code>src&#x2F;math&#x2F;math.js:1992</code></a>
+        <a href="../files/src_math_math.js.html#l2009"><code>src&#x2F;math&#x2F;math.js:2009</code></a>
         </p>
 
 
@@ -5893,7 +5906,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2040"><code>src&#x2F;math&#x2F;math.js:2040</code></a>
+        <a href="../files/src_math_math.js.html#l2057"><code>src&#x2F;math&#x2F;math.js:2057</code></a>
         </p>
 
 
@@ -5926,7 +5939,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2054"><code>src&#x2F;math&#x2F;math.js:2054</code></a>
+        <a href="../files/src_math_math.js.html#l2071"><code>src&#x2F;math&#x2F;math.js:2071</code></a>
         </p>
 
 
@@ -5959,7 +5972,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1278"><code>src&#x2F;math&#x2F;math.js:1278</code></a>
+        <a href="../files/src_math_math.js.html#l1295"><code>src&#x2F;math&#x2F;math.js:1295</code></a>
         </p>
 
 
@@ -5992,7 +6005,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1291"><code>src&#x2F;math&#x2F;math.js:1291</code></a>
+        <a href="../files/src_math_math.js.html#l1308"><code>src&#x2F;math&#x2F;math.js:1308</code></a>
         </p>
 
 
@@ -6025,7 +6038,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1306"><code>src&#x2F;math&#x2F;math.js:1306</code></a>
+        <a href="../files/src_math_math.js.html#l1323"><code>src&#x2F;math&#x2F;math.js:1323</code></a>
         </p>
 
 
@@ -6058,7 +6071,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1154"><code>src&#x2F;math&#x2F;math.js:1154</code></a>
+        <a href="../files/src_math_math.js.html#l1171"><code>src&#x2F;math&#x2F;math.js:1171</code></a>
         </p>
 
 

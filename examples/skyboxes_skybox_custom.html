@@ -111,8 +111,10 @@
             ambient: [0, 0, 0],
             diffuse: [0, 0, 0],
             specular: [0, 0, 0],
+            emissive: [1,1,1],
             emissiveMap: new xeogl.Texture({
-                src: "textures/skybox/miramarClouds.jpg"
+                src: "textures/skybox/miramarClouds.jpg",
+                flipY: true
             })
         }),
         stationary: new xeogl.Stationary({ // Locks position with respect to viewpoint

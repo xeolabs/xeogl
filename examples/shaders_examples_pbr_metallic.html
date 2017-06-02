@@ -6,6 +6,11 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
     <script src="../build/xeogl.js"></script>
+
+    <script src="js/geometry/k3d.js"></script>
+    <script src="js/geometry/objGeometry.js"></script>
+    <script src="js/geometry/vectorTextGeometry.js"></script>
+
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
@@ -42,37 +47,12 @@
             }
         }),
 
-        // Three View-space directional lights
-
-        lights: new xeogl.Lights({
-            lights: [
-                new xeogl.DirLight({
-                    dir: [0.8, -0.6, -0.8],
-                    color: [1.0, 0.7, 0.7],
-                    intensity: 1.0,
-                    space: "view"
-                }),
-                new xeogl.DirLight({
-                    dir: [-0.8, -0.4, -0.4],
-                    color: [0.7, 1.0, 0.7],
-                    intensity: 1.0,
-                    space: "view"
-                }),
-                new xeogl.DirLight({
-                    dir: [0.2, -0.8, 0.8],
-                    color: [0.6, 0.6, 0.6],
-                    intensity: 1.0,
-                    space: "view"
-                })
-            ]
-        }),
-
         // Ordinarily xeogl generates shaders for us, but to this Entity we'll attach our own
         // custom Cook-Torrance/Lambertian/GGX/Schlick PBR shader.
 
         // The Shader is coded to take input from the various components attached to this Entity,
-        // which include our TorusGeometry, MetallicMaterial and Lights, as well as the Scene's
-        // default Camera and Transform components, which are implicitly attached to this Entity.
+        // which include our TorusGeometry and MetallicMaterial, as well as the Scene's
+        // default lights, Camera and Transform components, which are implicitly attached to this Entity.
 
         shader: new xeogl.Shader({
 
@@ -294,12 +274,46 @@
         })
     });
 
+    new xeogl.Entity({
+        geometry: new xeogl.VectorTextGeometry({
+            text: entity.shader.fragment.slice(0, entity.shader.fragment.length / 2).join("\n"),
+            size: 0.1
+        }),
+        material: new xeogl.PhongMaterial({
+            emissive: [0.4, 0.8, 0.4],
+            lineWidth: 2
+
+        }),
+        transform: new xeogl.Translate({
+            xyz: [-5, 5, -7]
+        })
+    });
+
+    new xeogl.Entity({
+        geometry: new xeogl.VectorTextGeometry({
+            text: entity.shader.fragment.slice(entity.shader.fragment.length / 2).join("\n"),
+            size: 0.1
+        }),
+        material: new xeogl.PhongMaterial({
+            emissive: [0.4, 0.8, 0.4],
+            lineWidth: 2
+
+        }),
+        transform: new xeogl.Translate({
+            xyz: [-5, 5, -7],
+            parent: new xeogl.Rotate({
+                axis: [0, 1, 0],
+                angle: -90
+            })
+        })
+    });
+
     entity.camera.view.zoom(-5);
 
     entity.scene.on("tick", function () {
-        var view = entity.scene.camera.view;
-        view.rotateEyeY(0.2);
-        view.rotateEyeX(0.1);
+//        var view = entity.scene.camera.view;
+//        view.rotateEyeY(0.2);
+//        view.rotateEyeX(0.1);
     });
 
     new xeogl.CameraControl();

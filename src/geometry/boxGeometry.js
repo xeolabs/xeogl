@@ -408,7 +408,7 @@
 
         _getJSON: function () {
             return {
-                center: this._center.slice(),
+                center: xeogl.math.vecToArray(this._center),
                 xSize: this._xSize,
                 ySize: this._ySize,
                 zSize: this._zSize

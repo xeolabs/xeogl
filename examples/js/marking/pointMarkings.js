@@ -92,7 +92,7 @@ TODO
                 type: "xeogl.Modes",
                 pickable: false,
                 collidable: false
-            })
+            });
         },
 
         /**

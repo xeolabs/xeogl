@@ -43,6 +43,9 @@
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AABBGeometry.html">AABBGeometry</a></li>
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Annotation.html">Annotation</a></li>
+                                <li><a href="../classes/AnnotationStory.html">AnnotationStory</a></li>
+                                <li><a href="../classes/AxisHelper.html">AxisHelper</a></li>
                                 <li><a href="../classes/Billboard.html">Billboard</a></li>
                                 <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
@@ -71,6 +74,7 @@
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
                                 <li><a href="../classes/Entity.html">Entity</a></li>
+                                <li><a href="../classes/Fog.html">Fog</a></li>
                                 <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
@@ -78,9 +82,11 @@
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
+                                <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
+                                <li><a href="../classes/LookatHelper.html">LookatHelper</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
@@ -93,8 +99,10 @@
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
+                                <li><a href="../classes/Pin.html">Pin</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/PointLightHelper.html">PointLightHelper</a></li>
                                 <li><a href="../classes/PointMarkings.html">PointMarkings</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
@@ -110,10 +118,12 @@
                                 <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/Spinner.html">Spinner</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
+                                <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/SpotLight.html">SpotLight</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
+                                <li><a href="../classes/Story.html">Story</a></li>
                                 <li><a href="../classes/TeapotGeometry.html">TeapotGeometry</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
                                 <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
@@ -130,6 +140,7 @@
                 
                             <ul id="api-modules" class="apis modules">
                                 <li><a href="..//modules/animation.html">animation</a></li>
+                                <li><a href="..//modules/annotations.html">annotations</a></li>
                                 <li><a href="..//modules/boundaries.html">boundaries</a></li>
                                 <li><a href="..//modules/camera.html">camera</a></li>
                                 <li><a href="..//modules/canvas.html">canvas</a></li>
@@ -142,6 +153,7 @@
                                 <li><a href="..//modules/entities.html">entities</a></li>
                                 <li><a href="..//modules/generation.html">generation</a></li>
                                 <li><a href="..//modules/geometry.html">geometry</a></li>
+                                <li><a href="..//modules/helpers.html">helpers</a></li>
                                 <li><a href="..//modules/input.html">input</a></li>
                                 <li><a href="..//modules/interaction.html">interaction</a></li>
                                 <li><a href="..//modules/lighting.html">lighting</a></li>
@@ -152,6 +164,7 @@
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
                                 <li><a href="..//modules/shaders.html">shaders</a></li>
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
+                                <li><a href="..//modules/stories.html">stories</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
                                 <li><a href="..//modules/xeogl.html">xeogl</a></li>
                                 <li><a href="..//modules/zspace.html">zspace</a></li>
@@ -512,7 +525,10 @@
                         add(&quot;uniform vec3 lightPos&quot; + i + &quot;;&quot;);
                     }
 
-                    add(&quot;varying vec4 vViewLightReverseDirAndDist&quot; + i + &quot;;&quot;);
+                    if (!(light.type === &quot;dir&quot; &amp;&amp; light.space === &quot;view&quot;)) {
+                        // World-space dir lights don&#x27;t need these varyings
+                        add(&quot;varying vec4 vViewLightReverseDirAndDist&quot; + i + &quot;;&quot;);
+                    }
                 }
             }
 
@@ -642,11 +658,8 @@
 
                         if (light.space === &quot;world&quot;) {
                             add(&quot;tmpVec3 = vec3(viewMatrix2 * vec4(lightDir&quot; + i + &quot;, 0.0) ).xyz;&quot;);
-                        } else {
-                            add(&quot;tmpVec3 = lightDir&quot; + i + &quot;;&quot;);
+                            add(&quot;vViewLightReverseDirAndDist&quot; + i + &quot; = vec4(-tmpVec3, 0.0);&quot;);
                         }
-
-                        add(&quot;vViewLightReverseDirAndDist&quot; + i + &quot; = vec4(-tmpVec3, 0.0);&quot;);
                     }
 
                     if (light.type === &quot;point&quot;) {
@@ -1215,8 +1228,13 @@
                     if (light.type === &quot;point&quot;) {
                         add(&quot;uniform vec3 lightAttenuation&quot; + i + &quot;;&quot;);
                     }
-
-                    add(&quot;varying vec4 vViewLightReverseDirAndDist&quot; + i + &quot;;&quot;); // Vector from light to vertex
+                    if (light.type === &quot;dir&quot; &amp;&amp; light.space === &quot;view&quot;) {
+                        add(&quot;uniform vec3 lightDir&quot; + i + &quot;;&quot;);
+                    } if (light.type === &quot;point&quot; &amp;&amp; light.space === &quot;view&quot;) {
+                        add(&quot;uniform vec3 lightPos&quot; + i + &quot;;&quot;);
+                    } else {
+                        add(&quot;varying vec4 vViewLightReverseDirAndDist&quot; + i + &quot;;&quot;);
+                    }
                 }
             }
 
@@ -1395,7 +1413,7 @@
                 // SHADING
                 //--------------------------------------------------------------------------------
 
-                if (material.normalMap) {
+                if (geometry.uv &amp;&amp; material.normalMap) {
                     if (material.normalMap.matrix) {
                         add(&quot;textureCoord = (normalMapMatrix * texturePos).xy;&quot;);
                     } else {
@@ -1541,8 +1559,15 @@
                     if (light.type === &quot;ambient&quot;) {
                         continue;
                     }
-
-                    add(&quot;viewLightDir = normalize(vViewLightReverseDirAndDist&quot; + i + &quot;.xyz);&quot;); // If normal mapping, the fragment-&gt;light vector will be in tangent space
+                    if (light.type === &quot;dir&quot; &amp;&amp; light.space === &quot;view&quot;) {
+                        add(&quot;viewLightDir = -normalize(lightDir&quot; + i + &quot;);&quot;);
+                    } else if (light.type === &quot;point&quot; &amp;&amp; light.space === &quot;view&quot;) {
+                        add(&quot;viewLightDir = normalize(lightPos&quot; + i + &quot; - vViewPosition);&quot;);
+                        //add(&quot;tmpVec3 = lightPos&quot; + i + &quot;.xyz - viewPosition.xyz;&quot;);
+                        //add(&quot;lightDist = abs(length(tmpVec3));&quot;);
+                    } else {
+                        add(&quot;viewLightDir = normalize(vViewLightReverseDirAndDist&quot; + i + &quot;.xyz);&quot;); // If normal mapping, the fragment-&gt;light vector will be in tangent space
+                    }
 
                     add(&quot;light.direction = viewLightDir;&quot;);
                     add(&quot;light.color = lightIntensity&quot; + i + &quot; * lightColor&quot; + i + &quot;;&quot;);
@@ -1597,10 +1622,12 @@
             } else {
 
                 //--------------------------------------------------------------------------------
-                // NO SHADING - EMISSIVE ONLY
+                // NO SHADING - EMISSIVE and AMBIENT ONLY
                 //--------------------------------------------------------------------------------
 
-                add(&quot;vec3 outgoingLight = emissiveColor;&quot;);
+                add(&quot;ambientColor *= lightAmbient;&quot;);
+
+                add(&quot;vec3 outgoingLight = emissiveColor + ambientColor;&quot;);
             }
 
 

@@ -902,11 +902,11 @@
             var json = {};
 
             if (this._translate && (this._translate[0] !== 0 || this._translate[1] !== 0)) {
-                json.translate = this._translate;
+                json.translate = xeogl.math.vecToArray(this._translate);
             }
 
             if (this._scale && (this._scale[0] !== 1 || this._scale[1] !== 1)) {
-                json.scale = this._scale;
+                json.scale = xeogl.math.vecToArray(this._scale);
             }
 
             if (this._rotate !== 0) {

@@ -12,7 +12,7 @@
 
  ## Examples
 
- * [Generating a 3D sine wave from boxes](../../examples/#geometry_generation_wavyBlocks)</li>
+ * [Generating a 3D sine wave from boxes](../../examples/#geometry_generation_wavyBlocks)
 
  ## Usage
 

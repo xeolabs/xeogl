@@ -163,25 +163,6 @@
  var gotWebGL2 = scene.canvas.webgl2; // True if we have WebGL 2
  ````
 
- ## <a name="savingAndLoading">Saving and Loading Scenes</a>
-
- The entire runtime state of a Scene can be serialized and deserialized to and from JSON. This means you can create a
- Scene, then save it and restore it again to exactly how it was when you saved it.
-
- ````javascript
- // Serialize the scene to JSON
- var json = myScene.json;
-
- // Create another scene from that JSON, in a fresh canvas:
- var myOtherScene = new xeogl.Scene({
-      json: json
- });
-
- ***Note:*** this will save your {{#crossLink "Geometry"}}Geometry{{/crossLink}}s' array properties
- ({{#crossLink "Geometry/positions:property"}}positions{{/crossLink}}, {{#crossLink "Geometry/normals:property"}}normals{{/crossLink}},
- {{#crossLink "Geometry/indices:property"}}indices{{/crossLink}} etc) as JSON arrays, which may stress your browser
- if those arrays are huge.
-
  @class Scene
  @module xeogl
  @constructor
@@ -231,8 +212,6 @@
             var self = this;
 
             var transparent = !!cfg.transparent;
-
-            this._componentIDMap = new xeogl.utils.Map();
 
             /**
              * The epoch time (in milliseconds since 1970) when this Scene was instantiated.
@@ -418,14 +397,18 @@
 
                 if (this.components[c.id]) {
                     this.error("Component " + xeogl._inQuotes(c.id) + " already exists in Scene - ignoring ID, will randomly-generate instead");
-            //        c.id = this._componentIDMap.addItem(c);
+                    //        c.id = this._componentIDMap.addItem(c);
                     return;
                 }
             } else {
 
                 // Auto-generated ID
 
-                c.id = this._componentIDMap.addItem(c);
+                c.id = xeogl.math.createUUID();
+
+                while (this.components[c.id]) {
+                    c.id = xeogl.math.createUUID();
+                }
             }
 
             this.components[c.id] = c;
@@ -442,7 +425,6 @@
             }
 
             types[c.id] = c;
-
 
             c.on("destroyed", function () {
                 this._componentDestroyed(c);
@@ -482,8 +464,6 @@
         // Callbacks as members to reduce GC churn
 
         _componentDestroyed: function (c) {
-
-            this._componentIDMap.removeItem(c.id);
 
             delete this.components[c.id];
 
@@ -1544,6 +1524,11 @@
 
             return function (params) {
 
+                if (this.canvas.boundary[2] === 0 || this.canvas.boundary[3] === 0) {
+                    this.error("Picking not allowed while canvas has zero width or height");
+                    return null;
+                }
+
                 params = params || {};
 
                 params.pickSurface = params.pickSurface || params.rayPick; // Backwards compatibility
@@ -1684,8 +1669,8 @@
                                     nc[2] = normals[ic3 + 2];
 
                                     var normal = math.addVec3(math.addVec3(
-                                            math.mulVec3Scalar(na, bary[0], tempVec3),
-                                            math.mulVec3Scalar(nb, bary[1], tempVec3b), tempVec3c),
+                                        math.mulVec3Scalar(na, bary[0], tempVec3),
+                                        math.mulVec3Scalar(nb, bary[1], tempVec3b), tempVec3c),
                                         math.mulVec3Scalar(nc, bary[2], tempVec3d), tempVec3e);
 
                                     hit.normal = math.transformVec3(entity.transform.leafMatrix, normal, tempVec3f);
@@ -1960,36 +1945,20 @@
             // that exist between them are resolved correctly as the
             // components are instantiawhen when we load the JSON again.
 
-            var components = [];
             var component;
+            var componentJSONs = [];
 
             for (var id in this.components) {
                 if (this.components.hasOwnProperty(id)) {
 
                     component = this.components[id];
 
-                    // Don't serialize service components that
-                    // will always be created on this Scene
-
                     if (!component._getJSON) {
                         continue;
                     }
 
-                    // Serialize in same order as creation
-                    // in order to resolve inter-component dependencies
-
-                    components.unshift(component);
+                    componentJSONs.push(component.json);
                 }
-            }
-
-            components.sort(function (a, b) {
-                return a._componentOrder - b._componentOrder
-            });
-
-            var componentJSONs = [];
-
-            for (var i = 0, len = components.length; i < len; i++) {
-                componentJSONs.push(components[i].json);
             }
 
             return {
@@ -1997,8 +1966,7 @@
                 clearEachPass: this._clearEachPass,
                 components: componentJSONs
             };
-        }
-        ,
+        },
 
         _destroy: function () {
             this.clear();

@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2017-02-28
+ * Built on 2017-06-02
  *
  * MIT License
  * Copyright 2017, Lindsay Kay
@@ -1235,7 +1235,8 @@ var Canvas2Image = (function () {
             // http://www.broofa.com/Tools/Math.uuid.htm
             var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
             var uuid = new Array(36);
-            var rnd = 0, r;
+            var rnd = 0;
+            var r;
             return function () {
                 for (var i = 0; i < 36; i++) {
                     if (i === 8 || i === 13 || i === 18 || i === 23) {
@@ -1875,6 +1876,22 @@ var Canvas2Image = (function () {
             };
         })(),
 
+        /**
+         * Converts a three-element vector to a JSON-serializable
+         * array with values rounded to two decimal places.
+         */
+        vecToArray: (function () {
+            function trunc(v) {
+                return Math.round(v * 100) / 100
+            }
+            return function (v) {
+                v = Array.prototype.slice.call(v);
+                for (var i =0,len = v.length; i < len; i++) {
+                    v[i] = trunc(v[i]);
+                }
+                return v;
+            };
+        })(),
 
         /**
          * Duplicates a 4x4 identity matrix.
@@ -2593,20 +2610,20 @@ var Canvas2Image = (function () {
          * @param z
          * @param m
          */
-        scaleMat4c:  function (x, y, z, m) {
-            
+        scaleMat4c: function (x, y, z, m) {
+
             m[0] *= x;
             m[4] *= y;
             m[8] *= z;
-            
+
             m[1] *= x;
             m[5] *= y;
             m[9] *= z;
-            
+
             m[2] *= x;
             m[6] *= y;
             m[10] *= z;
-            
+
             m[3] *= x;
             m[7] *= y;
             m[11] *= z;
@@ -3370,12 +3387,16 @@ var Canvas2Image = (function () {
             // 	20696-function-to-convert-between-dcm-euler-angles-quaternions-and-euler-vectors/
             //	content/SpinCalc.m
 
-            var c1 = Math.cos(euler[0] / 2);
-            var c2 = Math.cos(euler[1] / 2);
-            var c3 = Math.cos(euler[2] / 2);
-            var s1 = Math.sin(euler[0] / 2);
-            var s2 = Math.sin(euler[1] / 2);
-            var s3 = Math.sin(euler[2] / 2);
+            var a = (euler[0] * math.DEGTORAD) / 2;
+            var b = (euler[1] * math.DEGTORAD) / 2;
+            var c = (euler[2] * math.DEGTORAD) / 2;
+
+            var c1 = Math.cos(a);
+            var c2 = Math.cos(b);
+            var c3 = Math.cos(c);
+            var s1 = Math.sin(a);
+            var s2 = Math.sin(b);
+            var s3 = Math.sin(c);
 
             if (order === 'XYZ') {
 
@@ -4472,7 +4493,7 @@ var Canvas2Image = (function () {
     };
 
 })();;/**
- * Boundary math functions.
+ * Geometry math functions.
  */
 (function () {
 
@@ -4481,7 +4502,7 @@ var Canvas2Image = (function () {
     var math = xeogl.math;
 
     /**
-     * Calculates the normal vector of a trianglel.
+     * Calculates the normal vector of a triangle.
      *
      * @private
      */
@@ -5698,7 +5719,7 @@ var Canvas2Image = (function () {
 
         params = params || {};
 
-        this._prepareDisplay(params);
+        this._prepareDisplay();
 
         if (this.imageDirty || params.force) {
 
@@ -5720,9 +5741,7 @@ var Canvas2Image = (function () {
     };
 
 
-    xeogl.renderer.Renderer.prototype._prepareDisplay = function (params) {
-
-        params = params || {};
+    xeogl.renderer.Renderer.prototype._prepareDisplay = function () {
 
         if (this.objectListDirty) {
             this._buildObjectList(); // Build the scene object list
@@ -6291,6 +6310,8 @@ var Canvas2Image = (function () {
         }
 
         this._readPixelBuf.unbind();
+
+        this.imageDirty = true;
     };
 
     /**
@@ -8914,7 +8935,10 @@ var Canvas2Image = (function () {
                         add("uniform vec3 lightPos" + i + ";");
                     }
 
-                    add("varying vec4 vViewLightReverseDirAndDist" + i + ";");
+                    if (!(light.type === "dir" && light.space === "view")) {
+                        // World-space dir lights don't need these varyings
+                        add("varying vec4 vViewLightReverseDirAndDist" + i + ";");
+                    }
                 }
             }
 
@@ -9044,11 +9068,8 @@ var Canvas2Image = (function () {
 
                         if (light.space === "world") {
                             add("tmpVec3 = vec3(viewMatrix2 * vec4(lightDir" + i + ", 0.0) ).xyz;");
-                        } else {
-                            add("tmpVec3 = lightDir" + i + ";");
+                            add("vViewLightReverseDirAndDist" + i + " = vec4(-tmpVec3, 0.0);");
                         }
-
-                        add("vViewLightReverseDirAndDist" + i + " = vec4(-tmpVec3, 0.0);");
                     }
 
                     if (light.type === "point") {
@@ -9617,8 +9638,13 @@ var Canvas2Image = (function () {
                     if (light.type === "point") {
                         add("uniform vec3 lightAttenuation" + i + ";");
                     }
-
-                    add("varying vec4 vViewLightReverseDirAndDist" + i + ";"); // Vector from light to vertex
+                    if (light.type === "dir" && light.space === "view") {
+                        add("uniform vec3 lightDir" + i + ";");
+                    } if (light.type === "point" && light.space === "view") {
+                        add("uniform vec3 lightPos" + i + ";");
+                    } else {
+                        add("varying vec4 vViewLightReverseDirAndDist" + i + ";");
+                    }
                 }
             }
 
@@ -9797,7 +9823,7 @@ var Canvas2Image = (function () {
                 // SHADING
                 //--------------------------------------------------------------------------------
 
-                if (material.normalMap) {
+                if (geometry.uv && material.normalMap) {
                     if (material.normalMap.matrix) {
                         add("textureCoord = (normalMapMatrix * texturePos).xy;");
                     } else {
@@ -9943,8 +9969,15 @@ var Canvas2Image = (function () {
                     if (light.type === "ambient") {
                         continue;
                     }
-
-                    add("viewLightDir = normalize(vViewLightReverseDirAndDist" + i + ".xyz);"); // If normal mapping, the fragment->light vector will be in tangent space
+                    if (light.type === "dir" && light.space === "view") {
+                        add("viewLightDir = -normalize(lightDir" + i + ");");
+                    } else if (light.type === "point" && light.space === "view") {
+                        add("viewLightDir = normalize(lightPos" + i + " - vViewPosition);");
+                        //add("tmpVec3 = lightPos" + i + ".xyz - viewPosition.xyz;");
+                        //add("lightDist = abs(length(tmpVec3));");
+                    } else {
+                        add("viewLightDir = normalize(vViewLightReverseDirAndDist" + i + ".xyz);"); // If normal mapping, the fragment->light vector will be in tangent space
+                    }
 
                     add("light.direction = viewLightDir;");
                     add("light.color = lightIntensity" + i + " * lightColor" + i + ";");
@@ -9999,10 +10032,12 @@ var Canvas2Image = (function () {
             } else {
 
                 //--------------------------------------------------------------------------------
-                // NO SHADING - EMISSIVE ONLY
+                // NO SHADING - EMISSIVE and AMBIENT ONLY
                 //--------------------------------------------------------------------------------
 
-                add("vec3 outgoingLight = emissiveColor;");
+                add("ambientColor *= lightAmbient;");
+
+                add("vec3 outgoingLight = emissiveColor + ambientColor;");
             }
 
 
@@ -11829,16 +11864,16 @@ var Canvas2Image = (function () {
 
         draw: function () {
 
-            var params = this.state.params;
+            var uniforms = this.state.uniforms;
 
-            if (params) {
+            if (uniforms) {
 
                 var program = this.program.draw;
                 var name;
 
-                for (name in params) {
-                    if (params.hasOwnProperty(name)) {
-                        program.setUniform(name, params[name]);
+                for (name in uniforms) {
+                    if (uniforms.hasOwnProperty(name)) {
+                        program.setUniform(name, uniforms[name]);
                     }
                 }
             }
@@ -11854,16 +11889,16 @@ var Canvas2Image = (function () {
 
         draw: function () {
 
-            var params = this.state.params;
+            var uniforms = this.state.uniforms;
 
-            if (params) {
+            if (uniforms) {
 
                 var program = this.program.draw;
                 var name;
 
-                for (name in params) {
-                    if (params.hasOwnProperty(name)) {
-                        program.setUniform(name, params[name]);
+                for (name in uniforms) {
+                    if (uniforms.hasOwnProperty(name)) {
+                        program.setUniform(name, uniforms[name]);
                     }
                 }
             }
@@ -12150,7 +12185,6 @@ var Canvas2Image = (function () {
             var arg1 = arguments[0];
             var arg2 = arguments[1];
 
-
             /**
              The parent {{#crossLink "Scene"}}{{/crossLink}} that contains this Component.
 
@@ -12233,7 +12267,7 @@ var Canvas2Image = (function () {
              @type String
              @final
              */
-            this.id = cfg.id;
+            this.id = cfg.id; // Auto-generated by xeogl.Scene by default
 
             /**
              True as soon as this Component has been destroyed
@@ -12679,7 +12713,7 @@ var Canvas2Image = (function () {
                         }
                     }
 
-                    component = new componentClass(componentCfg);
+                    component = new componentClass(this.scene, componentCfg);
 
                     managingLifecycle = true;
                 }
@@ -12918,7 +12952,7 @@ var Canvas2Image = (function () {
             return component;
         },
 
-        _adopt: function(component) {
+        _adopt: function (component) {
 
             // Register component on this component so that we can
             // automatically destroy it when we destroy this component
@@ -13008,8 +13042,7 @@ var Canvas2Image = (function () {
 
                     return this._getJSON ? xeogl._apply(this._getJSON(), json) : json;
                 }
-            }
-            ,
+            },
 
             /**
              * String containing the serialized JSON state of this Component.
@@ -13020,11 +13053,78 @@ var Canvas2Image = (function () {
              */
             string: {
 
-                get: function () {
-                    return JSON.stringify(this.json, "\n", 4);
-                }
-            }
-            ,
+                get: (function () {
+
+                    // https://github.com/lydell/json-stringify-pretty-compact
+                    // Copyright 2014, 2016 Simon Lydell
+                    // X11 (“MIT”) Licensed. (See LICENSE.)
+
+                    function prettyStringify(obj, options) {
+                        options = options || {};
+                        var indent = JSON.stringify([1], null, get(options, 'indent', 2)).slice(2, -3);
+                        var maxLength = (indent === '' ? Infinity : get(options, 'maxLength', 80));
+                        return (function _stringify(obj, currentIndent, reserved) {
+                            if (obj && typeof obj.toJSON === 'function') {
+                                obj = obj.toJSON();
+                            }
+                            var string = JSON.stringify(obj);
+                            if (string === undefined) {
+                                return string;
+                            }
+                            var length = maxLength - currentIndent.length - reserved;
+                            if (string.length <= length) {
+                                var prettified = prettify(string);
+                                if (prettified.length <= length) {
+                                    return prettified;
+                                }
+                            }
+                            if (typeof obj === 'object' && obj !== null) {
+                                var nextIndent = currentIndent + indent;
+                                var items = [];
+                                var delimiters;
+                                var comma = function (array, index) {
+                                    return (index === array.length - 1 ? 0 : 1);
+                                };
+                                if (Array.isArray(obj)) {
+                                    for (var index = 0; index < obj.length; index++) {
+                                        items.push(_stringify(obj[index], nextIndent, comma(obj, index)) || 'null');
+                                    }
+                                    delimiters = '[]';
+                                } else {
+                                    Object.keys(obj).forEach(function (key, index, array) {
+                                        var keyPart = JSON.stringify(key) + ': ';
+                                        var value = _stringify(obj[key], nextIndent, keyPart.length + comma(array, index));
+                                        if (value !== undefined) {
+                                            items.push(keyPart + value);
+                                        }
+                                    });
+                                    delimiters = '{}';
+                                }
+                                if (items.length > 0) {
+                                    return [delimiters[0], indent + items.join(',\n' + nextIndent), delimiters[1]].join('\n' + currentIndent);
+                                }
+                            }
+                            return string;
+                        }(obj, '', 0));
+                    }
+
+                    var stringOrChar = /("(?:[^"]|\\.)*")|[:,]/g;
+
+                    function prettify(string) {
+                        return string.replace(stringOrChar, function (match, string) {
+                            return string ? match : match + ' ';
+                        })
+                    }
+
+                    function get(options, name, defaultValue) {
+                        return (name in options ? options[name] : defaultValue);
+                    }
+
+                    return function () {
+                        return prettyStringify(this.json, null, "\t");
+                    };
+                })()
+            },
 
             /**
              * Experimental: string containing a JavaScript expression that would instantiate this Component.
@@ -13036,10 +13136,7 @@ var Canvas2Image = (function () {
             js: {
 
                 get: function () {
-                    var json = this.json;
-                    delete json.id;
-                    var str = JSON.stringify(json, "\n", 4);
-                    return "new " + this.type + "(" + str + ");";
+                    return "new " + this.type + "(" + this.string + ");";
                 }
             }
         },
@@ -13301,25 +13398,6 @@ var Canvas2Image = (function () {
  var gotWebGL2 = scene.canvas.webgl2; // True if we have WebGL 2
  ````
 
- ## <a name="savingAndLoading">Saving and Loading Scenes</a>
-
- The entire runtime state of a Scene can be serialized and deserialized to and from JSON. This means you can create a
- Scene, then save it and restore it again to exactly how it was when you saved it.
-
- ````javascript
- // Serialize the scene to JSON
- var json = myScene.json;
-
- // Create another scene from that JSON, in a fresh canvas:
- var myOtherScene = new xeogl.Scene({
-      json: json
- });
-
- ***Note:*** this will save your {{#crossLink "Geometry"}}Geometry{{/crossLink}}s' array properties
- ({{#crossLink "Geometry/positions:property"}}positions{{/crossLink}}, {{#crossLink "Geometry/normals:property"}}normals{{/crossLink}},
- {{#crossLink "Geometry/indices:property"}}indices{{/crossLink}} etc) as JSON arrays, which may stress your browser
- if those arrays are huge.
-
  @class Scene
  @module xeogl
  @constructor
@@ -13369,8 +13447,6 @@ var Canvas2Image = (function () {
             var self = this;
 
             var transparent = !!cfg.transparent;
-
-            this._componentIDMap = new xeogl.utils.Map();
 
             /**
              * The epoch time (in milliseconds since 1970) when this Scene was instantiated.
@@ -13556,14 +13632,18 @@ var Canvas2Image = (function () {
 
                 if (this.components[c.id]) {
                     this.error("Component " + xeogl._inQuotes(c.id) + " already exists in Scene - ignoring ID, will randomly-generate instead");
-            //        c.id = this._componentIDMap.addItem(c);
+                    //        c.id = this._componentIDMap.addItem(c);
                     return;
                 }
             } else {
 
                 // Auto-generated ID
 
-                c.id = this._componentIDMap.addItem(c);
+                c.id = xeogl.math.createUUID();
+
+                while (this.components[c.id]) {
+                    c.id = xeogl.math.createUUID();
+                }
             }
 
             this.components[c.id] = c;
@@ -13580,7 +13660,6 @@ var Canvas2Image = (function () {
             }
 
             types[c.id] = c;
-
 
             c.on("destroyed", function () {
                 this._componentDestroyed(c);
@@ -13620,8 +13699,6 @@ var Canvas2Image = (function () {
         // Callbacks as members to reduce GC churn
 
         _componentDestroyed: function (c) {
-
-            this._componentIDMap.removeItem(c.id);
 
             delete this.components[c.id];
 
@@ -14682,6 +14759,11 @@ var Canvas2Image = (function () {
 
             return function (params) {
 
+                if (this.canvas.boundary[2] === 0 || this.canvas.boundary[3] === 0) {
+                    this.error("Picking not allowed while canvas has zero width or height");
+                    return null;
+                }
+
                 params = params || {};
 
                 params.pickSurface = params.pickSurface || params.rayPick; // Backwards compatibility
@@ -14822,8 +14904,8 @@ var Canvas2Image = (function () {
                                     nc[2] = normals[ic3 + 2];
 
                                     var normal = math.addVec3(math.addVec3(
-                                            math.mulVec3Scalar(na, bary[0], tempVec3),
-                                            math.mulVec3Scalar(nb, bary[1], tempVec3b), tempVec3c),
+                                        math.mulVec3Scalar(na, bary[0], tempVec3),
+                                        math.mulVec3Scalar(nb, bary[1], tempVec3b), tempVec3c),
                                         math.mulVec3Scalar(nc, bary[2], tempVec3d), tempVec3e);
 
                                     hit.normal = math.transformVec3(entity.transform.leafMatrix, normal, tempVec3f);
@@ -15098,36 +15180,20 @@ var Canvas2Image = (function () {
             // that exist between them are resolved correctly as the
             // components are instantiawhen when we load the JSON again.
 
-            var components = [];
             var component;
+            var componentJSONs = [];
 
             for (var id in this.components) {
                 if (this.components.hasOwnProperty(id)) {
 
                     component = this.components[id];
 
-                    // Don't serialize service components that
-                    // will always be created on this Scene
-
                     if (!component._getJSON) {
                         continue;
                     }
 
-                    // Serialize in same order as creation
-                    // in order to resolve inter-component dependencies
-
-                    components.unshift(component);
+                    componentJSONs.push(component.json);
                 }
-            }
-
-            components.sort(function (a, b) {
-                return a._componentOrder - b._componentOrder
-            });
-
-            var componentJSONs = [];
-
-            for (var i = 0, len = components.length; i < len; i++) {
-                componentJSONs.push(components[i].json);
             }
 
             return {
@@ -15135,8 +15201,7 @@ var Canvas2Image = (function () {
                 clearEachPass: this._clearEachPass,
                 components: componentJSONs
             };
-        }
-        ,
+        },
 
         _destroy: function () {
             this.clear();
@@ -17734,7 +17799,7 @@ var Canvas2Image = (function () {
         _getJSON: function () {
             return {
                 mode: this._state.mode,
-                dir: this._state.dir,
+                dir: xeogl.math.vecToArray(this._state.dir),
                 dist: this._state.dist
             };
         }
@@ -22758,17 +22823,31 @@ var Canvas2Image = (function () {
             }
 
             var json = {
-                primitive: this._state.primitiveName,
-                positions: this._positions,
-                uv: this._uvs,
-                colors: this._colors,
-                indices: this._indices
+                primitive: this._state.primitiveName
             };
+
+            var vecToArray = xeogl.math.vecToArray;
+
+            if (this._positions) {
+                json.positions =  vecToArray(this._positions);
+            }
+
+            if (this._uvs) {
+                json.uv =  vecToArray(this._uvs);
+            }
+
+            if (this._colors) {
+                json.colors =  vecToArray(this._colors);
+            }
+
+            if (this._indices) {
+                json.indices =  vecToArray(this._indices);
+            }
 
             if (this._state.autoNormals) {
                 json.autoNormals = true;
             } else {
-                json.normals = this._normals;
+                json.normals = vecToArray(this._normals);
             }
 
             return json;
@@ -23239,7 +23318,7 @@ var Canvas2Image = (function () {
 
         _getJSON: function () {
             return {
-                center: this._center.slice(),
+                center: xeogl.math.vecToArray(this._center),
                 xSize: this._xSize,
                 ySize: this._ySize,
                 zSize: this._zSize
@@ -23724,7 +23803,7 @@ var Canvas2Image = (function () {
         _getJSON: function () {
             return {
                 // Don't save lod
-                center: this._center.slice(),
+                center: xeogl.math.vecToArray(this._center),
                 radius: this._radius,
                 tube: this._tube,
                 radialSegments: this._radialSegments,
@@ -24120,7 +24199,7 @@ var Canvas2Image = (function () {
         _getJSON: function () {
             return {
                 // Don't save lod
-                center: this._center.slice(),
+                center: xeogl.math.vecToArray(this._center),
                 radius: this._radius,
                 heightSegments: this._heightSegments,
                 widthSegments: this._widthSegments
@@ -24579,7 +24658,7 @@ var Canvas2Image = (function () {
                 json.boundary = this._attached.boundary.id;
 
             } else if (this.positions) {
-                json.positions = this.positions;
+                json.positions = xeogl.math.vecToArray(this.positions);
             }
 
             return json;
@@ -24814,7 +24893,7 @@ var Canvas2Image = (function () {
                 json.boundary = this._attached.boundary.id;
 
             } else if (this.positions) {
-                this.positions = this.positions;
+                json.positions = xeogl.math.vecToArray(this.positions);
             }
 
             return json;
@@ -25623,7 +25702,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
         _getJSON: function () {
             return {
                 // Don't save lod
-                center: this._center.slice(),
+                center: xeogl.math.vecToArray(this._center),
                 radiusTop: this._radiusTop,
                 radiusBottom: this._radiusBottom,
                 height: this._height,
@@ -26075,7 +26154,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
         _getJSON: function () {
             return {
-                center: this._center.slice(),
+                center: xeogl.math.vecToArray(this._center),
                 xSize: this._xSize,
                 zSize: this._zSize,
                 xSegments: this._xSegments,
@@ -26618,275 +26697,268 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
             // Capture input events and publish them on this component
 
-            document.addEventListener("keydown",
-                this._keyDownListener = function (e) {
+            document.addEventListener("keydown", this._keyDownListener = function (e) {
 
-                    if (!self.enabled) {
-                        return;
+                if (!self.enabled) {
+                    return;
+                }
+
+                if (e.target.tagName !== "INPUT" && e.target.tagName !== "TEXTAREA") {
+
+                    if (e.ctrlKey) {
+                        self.ctrlDown = true;
+
+                    } else if (e.altKey) {
+                        self.altDown = true;
+
+                    } else {
+                        self.keyDown[e.keyCode] = true;
+
+                        /**
+                         * Fired whenever a key is pressed while the parent
+                         * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}} has input focus.
+                         * @event keydown
+                         * @param value {Number} The key code, for example {{#crossLink "Input/KEY_LEFT_ARROW:property"}}{{/crossLink}},
+                         */
+                        self.fire("keydown", e.keyCode, true);
                     }
+                }
 
-                    if (e.target.tagName !== "INPUT" && e.target.tagName !== "TEXTAREA") {
+                if (self.mouseover) {
+                    e.preventDefault();
+                }
 
-                        if (e.ctrlKey) {
-                            self.ctrlDown = true;
+            }, true);
 
-                        } else if (e.altKey) {
-                            self.altDown = true;
+            document.addEventListener("keyup", this._keyUpListener = function (e) {
 
-                        } else {
-                            self.keyDown[e.keyCode] = true;
+                if (!self.enabled) {
+                    return;
+                }
 
-                            /**
-                             * Fired whenever a key is pressed while the parent
-                             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}} has input focus.
-                             * @event keydown
-                             * @param value {Number} The key code, for example {{#crossLink "Input/KEY_LEFT_ARROW:property"}}{{/crossLink}},
-                             */
-                            self.fire("keydown", e.keyCode, true);
-                        }
+                if (e.target.tagName !== "INPUT" && e.target.tagName !== "TEXTAREA") {
+
+                    if (e.ctrlKey) {
+                        self.ctrlDown = false;
+
+                    } else if (e.altKey) {
+                        self.altDown = false;
+
+                    } else {
+                        self.keyDown[e.keyCode] = false;
+
+                        /**
+                         * Fired whenever a key is released while the parent
+                         * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}} has input focus.
+                         * @event keyup
+                         * @param value {Number} The key code, for example {{#crossLink "Input/KEY_LEFT_ARROW:property"}}{{/crossLink}},
+                         */
+                        self.fire("keyup", e.keyCode, true);
                     }
+                }
+            });
 
-                    if (self.mouseover) {
-                        e.preventDefault();
-                    }
+            cfg.element.addEventListener("mouseenter", this._mouseEnterListener = function (e) {
 
-                }, true);
+                if (!self.enabled) {
+                    return;
+                }
 
-            document.addEventListener("keyup",
-                this._keyUpListener = function (e) {
+                self.mouseover = true;
 
-                    if (!self.enabled) {
-                        return;
-                    }
+                var coords = self._getClickCoordsWithinElement(e);
 
-                    if (e.target.tagName !== "INPUT" && e.target.tagName !== "TEXTAREA") {
+                /**
+                 * Fired whenever the mouse is moved into of the parent
+                 * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
+                 * @event mouseenter
+                 * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink "Canvas"}}Canvas{{/crossLink}},
+                 */
+                self.fire("mouseenter", coords, true);
+            });
 
-                        if (e.ctrlKey) {
-                            self.ctrlDown = false;
+            cfg.element.addEventListener("mouseleave", this._mouseLeaveListener = function (e) {
 
-                        } else if (e.altKey) {
-                            self.altDown = false;
+                if (!self.enabled) {
+                    return;
+                }
 
-                        } else {
-                            self.keyDown[e.keyCode] = false;
+                self.mouseover = false;
 
-                            /**
-                             * Fired whenever a key is released while the parent
-                             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}} has input focus.
-                             * @event keyup
-                             * @param value {Number} The key code, for example {{#crossLink "Input/KEY_LEFT_ARROW:property"}}{{/crossLink}},
-                             */
-                            self.fire("keyup", e.keyCode, true);
-                        }
-                    }
-                });
+                var coords = self._getClickCoordsWithinElement(e);
 
-            cfg.element.addEventListener("mouseenter",
-                this._mouseDownListener = function (e) {
-
-                    if (!self.enabled) {
-                        return;
-                    }
-
-                    self.mouseover = true;
-
-                    var coords = self._getClickCoordsWithinElement(e);
-
-                    /**
-                     * Fired whenever the mouse is moved into of the parent
-                     * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
-                     * @event mouseenter
-                     * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink "Canvas"}}Canvas{{/crossLink}},
-                     */
-                    self.fire("mouseenter", coords, true);
-                });
-
-            cfg.element.addEventListener("mouseleave",
-                this._mouseDownListener = function (e) {
-
-                    if (!self.enabled) {
-                        return;
-                    }
-
-                    self.mouseover = false;
-
-                    var coords = self._getClickCoordsWithinElement(e);
-
-                    /**
-                     * Fired whenever the mouse is moved out of the parent
-                     * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
-                     * @event mouseleave
-                     * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink "Canvas"}}Canvas{{/crossLink}},
-                     */
-                    self.fire("mouseleave", coords, true);
-                });
+                /**
+                 * Fired whenever the mouse is moved out of the parent
+                 * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
+                 * @event mouseleave
+                 * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink "Canvas"}}Canvas{{/crossLink}},
+                 */
+                self.fire("mouseleave", coords, true);
+            });
 
 
-            cfg.element.addEventListener("mousedown",
-                this._mouseDownListener = function (e) {
+            cfg.element.addEventListener("mousedown", this._mouseDownListener = function (e) {
 
-                    if (!self.enabled) {
-                        return;
-                    }
+                if (!self.enabled) {
+                    return;
+                }
 
-                    switch (e.which) {
+                switch (e.which) {
 
-                        case 1:// Left button
-                            self.mouseDownLeft = true;
-                            break;
+                    case 1:// Left button
+                        self.mouseDownLeft = true;
+                        break;
 
-                        case 2:// Middle/both buttons
-                            self.mouseDownMiddle = true;
-                            break;
+                    case 2:// Middle/both buttons
+                        self.mouseDownMiddle = true;
+                        break;
 
-                        case 3:// Right button
-                            self.mouseDownRight = true;
-                            break;
+                    case 3:// Right button
+                        self.mouseDownRight = true;
+                        break;
 
-                        default:
-                            break;
-                    }
+                    default:
+                        break;
+                }
 
-                    var coords = self._getClickCoordsWithinElement(e);
+                var coords = self._getClickCoordsWithinElement(e);
 
-                    /**
-                     * Fired whenever the mouse is pressed over the parent
-                     * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
-                     * @event mousedown
-                     * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink "Canvas"}}Canvas{{/crossLink}},
-                     */
-                    self.fire("mousedown", coords, true);
+                cfg.element.focus();
 
-                    if (self.mouseover) {
-                        e.preventDefault();
-                    }
-                });
+                /**
+                 * Fired whenever the mouse is pressed over the parent
+                 * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
+                 * @event mousedown
+                 * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink "Canvas"}}Canvas{{/crossLink}},
+                 */
+                self.fire("mousedown", coords, true);
 
-            document.addEventListener("mouseup",
-                this._mouseUpListener = function (e) {
+                if (self.mouseover) {
+                    e.preventDefault();
+                }
+            });
 
-                    if (!self.enabled) {
-                        return;
-                    }
+            document.addEventListener("mouseup", this._mouseUpListener = function (e) {
 
-                    switch (e.which) {
+                if (!self.enabled) {
+                    return;
+                }
 
-                        case 1:// Left button
-                            self.mouseDownLeft = false;
-                            break;
+                switch (e.which) {
 
-                        case 2:// Middle/both buttons
-                            self.mouseDownMiddle = false;
-                            break;
+                    case 1:// Left button
+                        self.mouseDownLeft = false;
+                        break;
 
-                        case 3:// Right button
-                            self.mouseDownRight = false;
-                            break;
+                    case 2:// Middle/both buttons
+                        self.mouseDownMiddle = false;
+                        break;
 
-                        default:
-                            break;
-                    }
+                    case 3:// Right button
+                        self.mouseDownRight = false;
+                        break;
 
-                    var coords = self._getClickCoordsWithinElement(e);
+                    default:
+                        break;
+                }
 
-                    /**
-                     * Fired whenever the mouse is released over the parent
-                     * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
-                     * @event mouseup
-                     * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink "Canvas"}}Canvas{{/crossLink}},
-                     */
-                    self.fire("mouseup", coords, true);
+                var coords = self._getClickCoordsWithinElement(e);
 
-                    if (self.mouseover) {
-                        e.preventDefault();
-                    }
-                }, true);
+                /**
+                 * Fired whenever the mouse is released over the parent
+                 * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
+                 * @event mouseup
+                 * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink "Canvas"}}Canvas{{/crossLink}},
+                 */
+                self.fire("mouseup", coords, true);
 
-            document.addEventListener("dblclick",
-                this._dblClickListener = function (e) {
+                if (self.mouseover) {
+                    e.preventDefault();
+                }
+            }, true);
 
-                    if (!self.enabled) {
-                        return;
-                    }
+            document.addEventListener("dblclick", this._dblClickListener = function (e) {
 
-                    switch (e.which) {
+                if (!self.enabled) {
+                    return;
+                }
 
-                        case 1:// Left button
-                            self.mouseDownLeft = false;
-                            self.mouseDownRight = false;
-                            break;
+                switch (e.which) {
 
-                        case 2:// Middle/both buttons
-                            self.mouseDownMiddle = false;
-                            break;
+                    case 1:// Left button
+                        self.mouseDownLeft = false;
+                        self.mouseDownRight = false;
+                        break;
 
-                        case 3:// Right button
-                            self.mouseDownLeft = false;
-                            self.mouseDownRight = false;
-                            break;
+                    case 2:// Middle/both buttons
+                        self.mouseDownMiddle = false;
+                        break;
 
-                        default:
-                            break;
-                    }
+                    case 3:// Right button
+                        self.mouseDownLeft = false;
+                        self.mouseDownRight = false;
+                        break;
 
-                    var coords = self._getClickCoordsWithinElement(e);
+                    default:
+                        break;
+                }
 
-                    /**
-                     * Fired whenever the mouse is double-clicked over the parent
-                     * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
-                     * @event dblclick
-                     * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink "Canvas"}}Canvas{{/crossLink}},
-                     */
-                    self.fire("dblclick", coords, true);
+                var coords = self._getClickCoordsWithinElement(e);
 
-                    if (self.mouseover) {
-                        e.preventDefault();
-                    }
-                });
+                /**
+                 * Fired whenever the mouse is double-clicked over the parent
+                 * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
+                 * @event dblclick
+                 * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink "Canvas"}}Canvas{{/crossLink}},
+                 */
+                self.fire("dblclick", coords, true);
 
-            cfg.element.addEventListener("mousemove",
-                this._mouseMoveListener = function (e) {
+                if (self.mouseover) {
+                    e.preventDefault();
+                }
+            });
 
-                    if (!self.enabled) {
-                        return;
-                    }
+            cfg.element.addEventListener("mousemove", this._mouseMoveListener = function (e) {
 
-                    var coords = self._getClickCoordsWithinElement(e);
+                if (!self.enabled) {
+                    return;
+                }
 
-                    /**
-                     * Fired whenever the mouse is moved over the parent
-                     * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
-                     * @event mousedown
-                     * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink "Canvas"}}Canvas{{/crossLink}},
-                     */
-                    self.fire("mousemove", coords, true);
+                var coords = self._getClickCoordsWithinElement(e);
 
-                    if (self.mouseover) {
-                        e.preventDefault();
-                    }
-                });
+                /**
+                 * Fired whenever the mouse is moved over the parent
+                 * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
+                 * @event mousedown
+                 * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink "Canvas"}}Canvas{{/crossLink}},
+                 */
+                self.fire("mousemove", coords, true);
 
-            cfg.element.addEventListener("wheel",
-                this._mouseWheelListener = function (e, d) {
+                if (self.mouseover) {
+                    e.preventDefault();
+                }
+            });
 
-                    if (!self.enabled) {
-                        return;
-                    }
+            cfg.element.addEventListener("wheel", this._mouseWheelListener = function (e, d) {
 
-                    var delta = Math.max(-1, Math.min(1, -e.deltaY * 40));
+                if (!self.enabled) {
+                    return;
+                }
 
-                    /**
-                     * Fired whenever the mouse wheel is moved over the parent
-                     * {{#crossLink "Viewer"}}Viewer{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
-                     * @event mousewheel
-                     * @param delta {Number} The mouse wheel delta,
-                     */
-                    self.fire("mousewheel", delta, true);
+                var delta = Math.max(-1, Math.min(1, -e.deltaY * 40));
 
-                    if (self.mouseover) {
-                        e.preventDefault();
-                    }
-                });
+                /**
+                 * Fired whenever the mouse wheel is moved over the parent
+                 * {{#crossLink "Viewer"}}Viewer{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
+                 * @event mousewheel
+                 * @param delta {Number} The mouse wheel delta,
+                 */
+                self.fire("mousewheel", delta, true);
+
+                if (self.mouseover) {
+                    e.preventDefault();
+                }
+            });
 
             // mouseclicked
 
@@ -26898,29 +26970,27 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
                 // Tolerance between down and up positions for a mouse click
                 var tolerance = 2;
 
-                self.on("mousedown",
-                    function (params) {
-                        downX = params[0];
-                        downY = params[1];
-                    });
+                self.on("mousedown", function (params) {
+                    downX = params[0];
+                    downY = params[1];
+                });
 
-                self.on("mouseup",
-                    function (params) {
+                self.on("mouseup", function (params) {
 
-                        if (downX >= (params[0] - tolerance) &&
-                            downX <= (params[0] + tolerance) &&
-                            downY >= (params[1] - tolerance) &&
-                            downY <= (params[1] + tolerance)) {
+                    if (downX >= (params[0] - tolerance) &&
+                        downX <= (params[0] + tolerance) &&
+                        downY >= (params[1] - tolerance) &&
+                        downY <= (params[1] + tolerance)) {
 
-                            /**
-                             * Fired whenever the mouse is clicked over the parent
-                             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
-                             * @event mouseclicked
-                             * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink "Canvas"}}Canvas{{/crossLink}},
-                             */
-                            self.fire("mouseclicked", params, true);
-                        }
-                    });
+                        /**
+                         * Fired whenever the mouse is clicked over the parent
+                         * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
+                         * @event mouseclicked
+                         * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink "Canvas"}}Canvas{{/crossLink}},
+                         */
+                        self.fire("mouseclicked", params, true);
+                    }
+                });
             })();
 
 
@@ -27211,13 +27281,8 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
                     absolute: false
                 };
 
-                if (!window.OrientationChangeEvent) {
-                    self.warn("Browser event not supported: orientationchange");
-
-                } else {
-
-                    window.addEventListener('orientationchange',
-                        self._orientationchangedListener = function () {
+                if (window.OrientationChangeEvent) {
+                    window.addEventListener('orientationchange', self._orientationchangedListener = function () {
 
                             orientation = window.screen.orientation || window.screen.mozOrientation || window.msOrientation || null;
                             orientationAngle = orientation ? (orientationAngleLookup[orientation] || 0) : 0;
@@ -27237,13 +27302,8 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
                         false);
                 }
 
-                if (!window.DeviceMotionEvent) {
-                    self.warn("Browser event not supported: devicemotion");
-
-                } else {
-
-                    window.addEventListener('devicemotion',
-                        self._deviceMotionListener = function (e) {
+                if (window.DeviceMotionEvent) {
+                    window.addEventListener('devicemotion', self._deviceMotionListener = function (e) {
 
                             deviceMotionEvent.interval = e.interval;
                             deviceMotionEvent.orientationAngle = orientationAngle;
@@ -27288,13 +27348,8 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
                         false);
                 }
 
-                if (!window.DeviceOrientationEvent) {
-                    self.warn("Browser event not supported: deviceorientation");
-
-                } else {
-
-                    window.addEventListener("deviceorientation",
-                        self._deviceOrientListener = function (e) {
+                if (window.DeviceOrientationEvent) {
+                    window.addEventListener("deviceorientation", self._deviceOrientListener = function (e) {
 
                             deviceOrientationEvent.gamma = e.gamma;
                             deviceOrientationEvent.beta = e.beta;
@@ -28745,7 +28800,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
         _getJSON: function () {
             return {
-                color: this._state.color,
+                color: xeogl.math.vecToArray(this._state.color),
                 intensity: this._state.intensity
             };
         }
@@ -29089,10 +29144,11 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
         },
 
         _getJSON: function () {
+            var vecToArray = xeogl.math.vecToArray;
             var json = {
                 type: this._state.type,
-                dir: this._state.dir,
-                color: this._state.color,
+                dir: vecToArray(this._state.dir),
+                color: vecToArray(this._state.color),
                 intensity: this._state.intensity,
                 space: this._state.space
             };
@@ -29434,10 +29490,11 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
         },
 
         _getJSON: function () {
+            var vecToArray = xeogl.math.vecToArray;
             return {
                 type: this._state.type,
-                pos: this._state.pos,
-                color: this._state.color,
+                pos: vecToArray(this._state.pos),
+                color: vecToArray(this._state.color),
                 intensity: this._state.intensity,
                 constantAttenuation: this._state.attenuation[0],
                 linearAttenuation: this._state.attenuation[1],
@@ -29923,11 +29980,12 @@ TODO
         },
 
         _getJSON: function () {
+            var vecToArray = xeogl.math.vecToArray;
             var json = {
                 type: this._state.type,
-                pos: this._state.pos,
-                dir: this._state.dir,
-                color: this._state.color,
+                pos: vecToArray(this._state.pos),
+                dir: vecToArray(this._state.dir),
+                color: vecToArray(this._state.color),
                 intensity: this._state.intensity,
                 constantAttenuation: this._state.attenuation[0],
                 linearAttenuation: this._state.attenuation[1],
@@ -32591,16 +32649,15 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                             entityId = this._makeID(nodeId + ".entity." + i);
 
-                            //// Fake ID when clashing with existing entity ID
-                            //for  (j = 0; entities[entityId]; j++) {
-                            //    entityId = this._makeID(nodeId + ".entity." + i + "." + j);
-                            //}
+                            for  (j = 0; entities[entityId]; j++) {
+                               entityId = this._makeID(nodeId + ".entity." + i + "." + j);
+                            }
 
+                            var meta = node.extra || {};
+                            meta.name = node.name;
                             entity = new xeogl.Entity(scene, {
-                                // id: entityId,
-                                meta: {
-                                    name: node.name
-                                },
+                                id: entityId,
+                                meta: meta,
                                 material: material,
                                 geometry: geometry,
                                 transform: transform,
@@ -34073,14 +34130,16 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
         _getJSON: function () {
 
+            var vecToArray = xeogl.math.vecToArray;
+
             var json = {
 
                 // Colors
 
-                ambient: this._state.ambient.slice(),
-                diffuse: this._state.diffuse.slice(),
-                specular: this._state.specular.slice(),
-                emissive: this._state.emissive.slice()
+                ambient: vecToArray(this._state.ambient),
+                diffuse: vecToArray(this._state.diffuse),
+                specular: vecToArray(this._state.specular),
+                emissive: vecToArray(this._state.emissive)
             };
 
             if (this._state.opacity !== 1.0) {
@@ -35125,12 +35184,14 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
         _getJSON: function () {
 
+            var vecToArray = xeogl.math.vecToArray;
+
             var json = {
-                diffuse: this._state.diffuse.slice(),
-                specular: this._state.specular.slice(),
+                diffuse: vecToArray(this._state.diffuse),
+                specular: vecToArray(this._state.specular),
                 glossiness: this._state.glossiness,
                 specularF0: this._state.specularF0,
-                emissive: this._state.emissive.slice(),
+                emissive: vecToArray(this._state.emissive),
                 opacity: this._state.opacity
             };
 
@@ -36125,12 +36186,14 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
         _getJSON: function () {
 
+            var vecToArray = xeogl.math.vecToArray;
+
             var json = {
-                baseColor: this._state.baseColor.slice(),
+                baseColor: vecToArray(this._state.baseColor),
                 metallic: this._state.metallic,
                 roughness: this._state.roughness,
                 specularF0: this._state.specularF0,
-                emissive: this._state.emissive.slice(),
+                emissive: vecToArray(this._state.emissive),
                 opacity: this._state.opacity
             };
 
@@ -37076,11 +37139,11 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             var json = {};
 
             if (this._translate && (this._translate[0] !== 0 || this._translate[1] !== 0)) {
-                json.translate = this._translate;
+                json.translate = xeogl.math.vecToArray(this._translate);
             }
 
             if (this._scale && (this._scale[0] !== 1 || this._scale[1] !== 1)) {
-                json.scale = this._scale;
+                json.scale = xeogl.math.vecToArray(this._scale);
             }
 
             if (this._rotate !== 0) {
@@ -37378,9 +37441,10 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         },
 
         _getJSON: function () {
+            var vecToColor = xeogl.math.vecToColor;
             return {
-                edgeColor: this._state.edgeColor,
-                centerColor: this._state.centerColor,
+                edgeColor: vecToArray(this._state.edgeColor),
+                centerColor: vecToArray(this._state.centerColor),
                 edgeBias: this._state.edgeBias,
                 centerBias: this._state.centerBias,
                 power: this._state.power
@@ -40489,7 +40553,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             if (this._autoBoundary) {
                 json.autoBoundary = true;
             } else {
-                json.boundary = this._state.boundary.slice();
+                json.boundary = xeogl.math.vecToArray(this._state.boundary);
             }
             return json;
         }
@@ -40725,20 +40789,20 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  Finally, we animate the rippling by periodically updating the Shader's "time" uniform.
 
  ````javascript
- // Shader that's used by our Entity. Note the 'xeo_aPosition' and 'xeo_aUV attributes',
+ // Shader that's used by our Entity. Note the 'position' and 'uv attributes',
  // which will receive the positions and UVs from the Geometry. Also note the 'time'
- // uniform, which we'll be animating via Shader#setParams.
+ // uniform, which we'll be animating via Shader#setUniforms.
 
  var shader = new xeogl.Shader({
 
     // Vertex shading stage
     vertex: [
-        "attribute vec3 xeo_aPosition;",
-        "attribute vec2 xeo_aUV;",
+        "attribute vec3 position;",
+        "attribute vec2 uv;",
         "varying vec2 vUv;",
         "void main () {",
-        "    gl_Position = vec4(xeo_aPosition, 1.0);",
-        "    vUv = xeo_aUV;",
+        "    gl_Position = vec4(position, 1.0);",
+        "    vUv = uv;",
         "}"
     ],
 
@@ -40767,7 +40831,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
     ],
 
     // Initial value for the 'time' uniform in the fragment stage.
-    params: {
+    uniforms: {
         time: 0.0
     }
  });
@@ -40790,9 +40854,9 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  Now let's animate the "time" parameter on the Shader, to make the water ripple:
 
  ```` javascript
- entity.scene.on("tick", function(params) {
-     shader.setParams({
-         time: params.timeElapsed
+ entity.scene.on("tick", function(e) {
+     shader.setUniforms({
+         time: e.timeElapsed
      });
  });
  ````
@@ -40807,11 +40871,11 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  | Attribute  | Description | Depends on  |
  |---|---|
- | attribute vec3 xeo_aPosition   | Geometry vertex positions | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}} |
- | attribute vec2 xeo_aUV         | Geometry vertex UV coordinates | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/uv:property"}}{{/crossLink}}  |
- | attribute vec3 xeo_aNormal     | Geometry vertex normals | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/normals:property"}}{{/crossLink}}  |
- | attribute vec4 xeo_aColor      | Geometry vertex colors  | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/colors:property"}}{{/crossLink}}  |
- | attribute vec4 xeo_aTangent    | Geometry vertex tangents, for normal mapping | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/normals:property"}}{{/crossLink}} and {{#crossLink "Geometry/uv:property"}}{{/crossLink}}  |
+ | attribute vec3 position   | Geometry vertex positions | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}} |
+ | attribute vec2 uv         | Geometry vertex UV coordinates | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/uv:property"}}{{/crossLink}}  |
+ | attribute vec3 normal     | Geometry vertex normals | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/normals:property"}}{{/crossLink}}  |
+ | attribute vec4 color      | Geometry vertex colors  | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/colors:property"}}{{/crossLink}}  |
+ | attribute vec4 tangent    | Geometry vertex tangents, for normal mapping | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/normals:property"}}{{/crossLink}} and {{#crossLink "Geometry/uv:property"}}{{/crossLink}}  |
 
  #### Uniforms
 
@@ -40819,10 +40883,10 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  | Uniform  | Description | Depends on  |
  |---|---|
- | uniform mat4  xeo_uModelMatrix                                   | Modelling transform matrix | {{#crossLink "Transform"}}{{/crossLink}} |
- | uniform mat4  xeo_uModelNormalMatrix                             | Modelling transform normal matrix | {{#crossLink "Geometry/normals:property"}}Geometry normals{{/crossLink}} and {{#crossLink "Transform"}}{{/crossLink}} |
- | uniform mat4  xeo_uViewMatrix                                    | View transform matrix | {{#crossLink "Lookat"}}Lookat{{/crossLink}} |
- | uniform mat4  xeo_uViewNormalMatrix                              | View transform normal matrix | {{#crossLink "Geometry/normals:property"}}Geometry normals{{/crossLink}} and {{#crossLink "Lookat"}}Lookat{{/crossLink}} |
+ | uniform mat4  modelMatrix                                   | Modelling transform matrix | {{#crossLink "Transform"}}{{/crossLink}} |
+ | uniform mat4  modelNormalMatrix                             | Modelling transform normal matrix | {{#crossLink "Geometry/normals:property"}}Geometry normals{{/crossLink}} and {{#crossLink "Transform"}}{{/crossLink}} |
+ | uniform mat4  viewMatrix                                    | View transform matrix | {{#crossLink "Lookat"}}Lookat{{/crossLink}} |
+ | uniform mat4  viewNormalMatrix                              | View transform normal matrix | {{#crossLink "Geometry/normals:property"}}Geometry normals{{/crossLink}} and {{#crossLink "Lookat"}}Lookat{{/crossLink}} |
  | uniform mat4  xeo_uProjMatrix                                    | Projection transform matrix | {{#crossLink "Ortho"}}Ortho{{/crossLink}}, {{#crossLink "Frustum"}}Frustum{{/crossLink}} or {{#crossLink "Perspective"}}Perspective{{/crossLink}} |
  | uniform float xeo_uZNear                                         | Near clipping plane |{{#crossLink "Ortho"}}Ortho{{/crossLink}}, {{#crossLink "Frustum"}}Frustum{{/crossLink}} or {{#crossLink "Perspective"}}Perspective{{/crossLink}} |
  | uniform float xeo_uZFar                                          | Far clipping plane |{{#crossLink "Ortho"}}Ortho{{/crossLink}}, {{#crossLink "Frustum"}}Frustum{{/crossLink}} or {{#crossLink "Perspective"}}Perspective{{/crossLink}} |
@@ -40836,12 +40900,11 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  | uniform vec3 xeo_uLightLinearAttenuation&lt;***N***&gt;          | Linear attenuation factor for {{#crossLink "PointLight"}}{{/crossLink}} at index ***N*** in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "PointLight"}}{{/crossLink}} |
  | uniform vec3 xeo_uLightQuadraticAttenuation&lt;***N***&gt;       | Quadratic attenuation factor for {{#crossLink "PointLight"}}{{/crossLink}} at index ***N*** in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "PointLight"}}{{/crossLink}} |
  |---|---|
- | uniform vec3 xeo_uDiffuse;       |  | {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} |
- | uniform vec3 xeo_uSpecular;       |  | {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}} |
- | uniform vec3 xeo_uEmissive;       |  | {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}} |
- | uniform float xeo_uOpacity;       |  | {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} |
- | uniform float xeo_uShininess;       |  | {{#crossLink "PhongMaterial/shininess:property"}}{{/crossLink}} |
- | uniform float xeo_uDiffuseFresnelEdgeBias;       |  | {{#crossLink "Fresnel/edgeBias:property"}}{{/crossLink}} |
+ | uniform vec3 materialDiffuse;       |  | {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} |
+ | uniform vec3 materialSpecular;       |  | {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}} |
+ | uniform vec3 materialEmissive;       |  | {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}} |
+ | uniform float materialOpacity;       |  | {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} |
+ | uniform float materialShininess;       |  | {{#crossLink "PhongMaterial/shininess:property"}}{{/crossLink}} |
 
  #### Varying
 
@@ -40871,7 +40934,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Shader.
  @param [cfg.vertex=null] {String} GLSL Depends on code for the vertex shading staging.
  @param [cfg.fragment=null] {String} GLSL source code for the fragment shading staging.
- @param [cfg.params={}] {Object} Values for uniforms defined in the vertex and/or fragment stages.
+ @param [cfg.uniforms={}] {Object} Values for uniforms defined in the vertex and/or fragment stages.
  @extends Component
  */
 (function () {
@@ -40887,14 +40950,14 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             this._state = new xeogl.renderer.Shader({
                 vertex: null,
                 fragment: null,
-                params: {}
+                uniforms: {}
             });
 
             this.vertex = cfg.vertex;
 
             this.fragment = cfg.fragment;
 
-            this.setParams(cfg.params);
+            this.setUniforms(cfg.uniforms);
         },
 
         _props: {
@@ -40962,51 +41025,51 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
-             * Params for this Shader.
+             * Uniforms for this Shader.
              *
-             * Fires a {{#crossLink "Shader/params:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "Shader/uniforms:event"}}{{/crossLink}} event on change.
              *
-             * @property params
+             * @property uniforms
              * @default {}
              * @type {}
              */
-            params: {
+            uniforms: {
 
                 get: function () {
-                    return this._state.params;
+                    return this._state.uniforms;
                 }
             }
         },
 
         /**
-         * Sets one or more params for this Shader.
+         * Sets one or more uniforms for this Shader.
          *
-         * These will be individually overridden by any {{#crossLink "ShaderParams/setParams:method"}}params subsequently specified{{/crossLink}} on
+         * These will be individually overridden by any {{#crossLink "ShaderParams/setUniforms:method"}}uniforms subsequently specified{{/crossLink}} on
          * {{#crossLink "ShaderParams"}}ShaderParams{{/crossLink}} on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
          *
-         * Fires a {{#crossLink "Shader/params:event"}}{{/crossLink}} event on change.
+         * Fires a {{#crossLink "Shader/uniforms:event"}}{{/crossLink}} event on change.
          *
-         * @method setParams
-         * @param {} [params={}] Values for params to set on this Shader, keyed to their names.
+         * @method setUniforms
+         * @param {} [uniforms={}] Values for uniforms to set on this Shader, keyed to their names.
          */
-        setParams: function (params) {
+        setUniforms: function (uniforms) {
 
-            for (var name in params) {
-                if (params.hasOwnProperty(name)) {
-                    this._state.params[name] = params[name];
+            for (var name in uniforms) {
+                if (uniforms.hasOwnProperty(name)) {
+                    this._state.uniforms[name] = uniforms[name];
                 }
             }
 
             this._renderer.imageDirty = true;
 
             /**
-             * Fired whenever this Shader's  {{#crossLink "Shader/params:property"}}{{/crossLink}}
+             * Fired whenever this Shader's  {{#crossLink "Shader/uniforms:property"}}{{/crossLink}}
              * property has been updated.
              *
-             * @event params
+             * @event uniforms
              * @param value The property's new value
              */
-            this.fire("params", this._state.params);
+            this.fire("uniforms", this._state.uniforms);
         },
 
         _compile: function () {
@@ -41016,7 +41079,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         _getJSON: function () {
 
             var json = {
-                params: this._state.params
+                uniforms: this._state.uniforms
             };
 
             if (this._state.vertex) {
@@ -41096,7 +41159,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
     ],
 
     // Initial values for the 'time' uniform in the fragment stage.
-    params: {
+    uniforms: {
         time: 0.0
     }
  });
@@ -41114,7 +41177,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         indices:[ 0, 1, 2, 0, 2, 3 ]
     }),
     shaderParams1: new xeogl.ShaderParams({
-        params: {
+        uniforms: {
             time: 0.0
         }
     })
@@ -41133,7 +41196,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         indices:[ 0, 1, 2, 0, 2, 3 ]
     }),
     shaderParams: new xeogl.ShaderParams({
-        params: {
+        uniforms: {
             time: 0.0
         }
     })
@@ -41145,14 +41208,14 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  // Get the default Scene off the first Entity
  var scene = entity1.scene;
 
- scene.on("tick", function(params) {
+ scene.on("tick", function(e) {
 
-    entity1.shaderParams.setParams({
-        time: params.timeElapsed
+    entity1.shaderParams.setUniforms({
+        time: e.timeElapsed
     });
 
-    entity2.shaderParams.setParams({
-        time: params.timeElapsed  * 0.5
+    entity2.shaderParams.setUniforms({
+        time: e.timeElapsed  * 0.5
     });
 });
  ````
@@ -41165,7 +41228,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ShaderParams.
- @param [cfg.params={}] {Object} The {{#crossLink "Shader"}}Shader{{/crossLink}} parameter values.
+ @param [cfg.uniforms={}] {Object} The {{#crossLink "Shader"}}Shader{{/crossLink}} parameter values.
  @extends Component
  */
 (function () {
@@ -41179,60 +41242,60 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         _init: function (cfg) {
 
             this._state = new xeogl.renderer.ShaderParams({
-                params: {}
+                uniforms: {}
             });
 
-            this.setParams(cfg.params);
+            this.setUniforms(cfg.uniforms);
         },
 
         _props: {
-
+            
             /**
-             * Params for {{#crossLink "Shader"}}Shaders{{/crossLink}} on attached
+             * Uniforms for {{#crossLink "Shader"}}Shaders{{/crossLink}} on attached
              * {{#crossLink "Entity"}}Entities{{/crossLink}}.
              *
-             * Fires a {{#crossLink "Shader/params:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "Shader/uniforms:event"}}{{/crossLink}} event on change.
              *
-             * @property params
+             * @property uniforms
              * @default {}
              * @type {}
              */
-            params: {
+            uniforms: {
 
                 get: function () {
-                    return this._state.params;
+                    return this._state.uniforms;
                 }
             }
         },
 
         /**
-         * Sets one or more params for {{#crossLink "Shader"}}Shaders{{/crossLink}} on attached
+         * Sets one or more uniforms for {{#crossLink "Shader"}}Shaders{{/crossLink}} on attached
          * {{#crossLink "Entity"}}Entities{{/crossLink}}.
          *
-         * These will individually override any params of the same names that are {{#crossLink "Shader/setParams:method"}}already specified{{/crossLink}} on
+         * These will individually override any uniforms of the same names that are {{#crossLink "Shader/setUniforms:method"}}already specified{{/crossLink}} on
          * those {{#crossLink "Shader"}}Shaders{{/crossLink}}.
          *
-         * Fires a {{#crossLink "ShaderParams/params:event"}}{{/crossLink}} event on change.
+         * Fires a {{#crossLink "ShaderParams/uniforms:event"}}{{/crossLink}} event on change.
          *
-         * @method setParams
-         * @param {} [params={}] Values for params to set on the {{#crossLink "Shader"}}Shaders{{/crossLink}}, keyed to their names.
+         * @method setUniforms
+         * @param {} [uniforms={}] Values for uniforms to set on the {{#crossLink "Shader"}}Shaders{{/crossLink}}, keyed to their names.
          */
-        setParams: function (params) {
+        setUniforms: function (uniforms) {
 
-            for (var name in params) {
-                if (params.hasOwnProperty(name)) {
-                    this._state.params[name] = params[name];
+            for (var name in uniforms) {
+                if (uniforms.hasOwnProperty(name)) {
+                    this._state.uniforms[name] = uniforms[name];
                 }
             }
 
             this._renderer.imageDirty = true;
 
             /**
-             * Fired whenever this ShaderParams' {{#crossLink "ShaderParams/params:property"}}{{/crossLink}} property has been updated.
-             * @event params
+             * Fired whenever this ShaderParams' {{#crossLink "ShaderParams/uniforms:property"}}{{/crossLink}} property has been updated.
+             * @event uniforms
              * @param value The property's new value
              */
-            this.fire("params", this._state.params);
+            this.fire("uniforms", this._state.uniforms);
         },
 
         _compile: function () {
@@ -41241,7 +41304,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
         _getJSON: function () {
             return {
-                params: this._state.params
+                uniforms: this._state.uniforms
             };
         }
     });
@@ -41444,9 +41507,10 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         },
 
         _getJSON: function () {
+            var vecToArray = xeogl.math.vecToArray;
             return {
-                aabb: this.aabb,
-                center: this.center
+                aabb: vecToArray(this.aabb),
+                center: vecToArray(this.center)
             };
         }
     });
@@ -41803,11 +41867,12 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         },
 
         _getJSON: function () {
+            var vecToArray = xeogl.math.vecToArray;
             return {
-                obb: this.obb,
-                aabb: this.aabb,
-                center: this.center,
-                sphere: this.sphere
+                obb: vecToArray(this.obb),
+                aabb: vecToArray(this.aabb),
+                center: vecToArray(this.center),
+                sphere: vecToArray(this.sphere)
             };
         }
     });
@@ -42255,7 +42320,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
         _getJSON: function () {
             var json = {
-                matrix: Array.prototype.slice.call(this._matrix),
+                matrix: xeogl.math.vecToArray(this._matrix),
                 postMultiply: this._postMultiply
             };
             if (this._parent) {
@@ -42456,7 +42521,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
         _getJSON: function () {
             var json = {
-                xyz: this._xyz,
+                xyz: xeogl.math.vecToArray(this._xyz),
                 angle: this._angle
             };
             if (this._parent) {
@@ -42637,7 +42702,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
         _getJSON: function () {
             var json = {
-                xyzw: this._xyzw
+                xyzw: xeogl.math.vecToArray(this._xyzw)
             };
             if (this._parent) {
                 json.parent = this._parent.id;
@@ -42790,7 +42855,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
         _getJSON: function () {
             var json = {
-                xyz: this._xyz
+                xyz: xeogl.math.vecToArray(this._xyz)
             };
             if (this._parent) {
                 json.parent = this._parent.id;
@@ -42945,7 +43010,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
         _getJSON: function () {
             var json = {
-                xyz: this._xyz
+                xyz: xeogl.math.vecToArray(this._xyz)
             };
             if (this._parent) {
                 json.parent = this._parent.id;
@@ -43969,10 +44034,11 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         },
 
         _getJSON: function () {
+            var vecToArray = xeogl.math.vecToArray;
             var json = {
-                eye: this._eye.slice(),
-                look: this._look.slice(),
-                up: this._up.slice(),
+                eye: vecToArray(this._eye),
+                look: vecToArray(this._look),
+                up: vecToArray(this._up),
                 gimbalLockY: this._gimbalLockY
             };
             if (this._parent) {

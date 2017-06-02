@@ -435,7 +435,7 @@
 
         _getJSON: function () {
             var json = {
-                matrix: Array.prototype.slice.call(this._matrix),
+                matrix: xeogl.math.vecToArray(this._matrix),
                 postMultiply: this._postMultiply
             };
             if (this._parent) {
