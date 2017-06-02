@@ -274,7 +274,9 @@
                             desc: dummyText,
                             eye: lookat.eye,
                             look: lookat.look,
-                            up: lookat.up
+                            up: lookat.up,
+                            pinShown: true,
+                            labelShown: true
                         });
 
                         annotation.on("pinClicked", function () {
