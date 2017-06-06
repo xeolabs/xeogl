@@ -220,10 +220,10 @@
 
 <div class="box intro">
     <p>An <strong>Annotation</strong> is a labeled <a href="../classes/Pin.html" class="crosslink">Pin</a> that&#39;s attached to the surface of an <a href="../classes/Entity.html" class="crosslink">Entity</a>.</p>
-<p><a href="../../examples/#annotations_stories_tronTank"><img src="../../assets/images/screenshots/annotationsTank.png"></img></a></p>
+<p><a href="../../examples/#presentation_annotations_tronTank"><img src="../../assets/images/screenshots/annotationsTank.png"></img></a></p>
 <h2 id="overview">Overview</h2>
 <h4 id="position">Position</h4>
-<p>An Annotation is positioned within one of the triangles of its <a href="../classes/Entity.html" class="crosslink">Entity&#39;s</a> <a href="../classes/Geometry.html" class="crosslink">Geometry</a>. Wherever that triangles goes within the 3D view, the Annotation will automatically follow. An Annotation specifies its position with two properties:</p>
+<p>An Annotation is positioned within one of the triangles of its <a href="../classes/Entity.html" class="crosslink">Entity&#39;s</a> <a href="../classes/Geometry.html" class="crosslink">Geometry</a>. Wherever that triangle goes within the 3D view, the Annotation will automatically follow. An Annotation specifies its position with two properties:</p>
 <ul>
 <li><a href="../classes/Pin.html#property_primIndex" class="crosslink">primIndex</a>, which indicates the index of the triangle within the <a href="../classes/Geometry.html" class="crosslink">Geometry</a> <a href="../classes/Geometry.html#property_indices" class="crosslink">indices</a>, and</li>
 <li><a href="../classes/Pin.html#property_bary" class="crosslink">bary</a>, the barycentric coordinates of the position within the triangle.</li>
@@ -249,7 +249,6 @@
 <li><a href="../classes/Pin.html#property_occludable" class="crosslink">occludable</a> specifies whether the Annotation becomes invisible whenever its occluded by other objects in the 3D view, and</li>
 <li><a href="../classes/Pin.html#property_visible" class="crosslink">visible</a> indicates if the Annotations is currently visible.</li>
 </ul>
-<p><em>To determine if each Annotation is occluded, xeogl renders the scene to a hidden framebuffer, along with a colored point for each Annotation&#39;s position. Then xeogl determines each Annotation to be occluded if the pixel at its position does not match the special pin color. The color is configured as some unusual color that is not used elsewhere in the scene. This is a fast technique that works well for complex meshes, scaling up </em></p>
 <h4 id="vantage-points">Vantage points</h4>
 <p>Each Annotation may be configured with a vantage point from which to view it, given as <a href="../classes/Annotation.html#property_eye" class="crosslink">eye</a>, <a href="../classes/Annotation.html#property_look" class="crosslink">look</a> and <a href="../classes/Annotation.html#property_up" class="crosslink">up</a> properties.  To focus attention on an Annotation, you could set the <a href="../classes/Camera.html" class="crosslink">Camera&#39;s</a> <a href="../classes/Lookat.html" class="crosslink">Lookat</a> to that
 vantage point, or even fly to the vantage point using a <a href="../classes/CameraFlightAnimation.html" class="crosslink">CameraFlightAnimation</a> (which we&#39;ll demonstrate in the usage example below).</p>
@@ -1670,7 +1669,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_annotations_annotation.js.html#l331"><code>examples&#x2F;js&#x2F;annotations&#x2F;annotation.js:331</code></a>
+                            <a href="../files/examples_js_annotations_annotation.js.html#l329"><code>examples&#x2F;js&#x2F;annotations&#x2F;annotation.js:329</code></a>
                             </p>
                     
                     
@@ -1752,7 +1751,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_annotations_annotation.js.html#l365"><code>examples&#x2F;js&#x2F;annotations&#x2F;annotation.js:365</code></a>
+                            <a href="../files/examples_js_annotations_annotation.js.html#l363"><code>examples&#x2F;js&#x2F;annotations&#x2F;annotation.js:363</code></a>
                             </p>
                     
                     
@@ -1779,7 +1778,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_annotations_annotation.js.html#l261"><code>examples&#x2F;js&#x2F;annotations&#x2F;annotation.js:261</code></a>
+                            <a href="../files/examples_js_annotations_annotation.js.html#l259"><code>examples&#x2F;js&#x2F;annotations&#x2F;annotation.js:259</code></a>
                             </p>
                     
                     
@@ -1885,7 +1884,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_annotations_annotation.js.html#l497"><code>examples&#x2F;js&#x2F;annotations&#x2F;annotation.js:497</code></a>
+                            <a href="../files/examples_js_annotations_annotation.js.html#l495"><code>examples&#x2F;js&#x2F;annotations&#x2F;annotation.js:495</code></a>
                             </p>
                     
                     
@@ -1941,7 +1940,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_annotations_annotation.js.html#l398"><code>examples&#x2F;js&#x2F;annotations&#x2F;annotation.js:398</code></a>
+                            <a href="../files/examples_js_annotations_annotation.js.html#l396"><code>examples&#x2F;js&#x2F;annotations&#x2F;annotation.js:396</code></a>
                             </p>
                     
                     
@@ -2053,7 +2052,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_annotations_annotation.js.html#l464"><code>examples&#x2F;js&#x2F;annotations&#x2F;annotation.js:464</code></a>
+                            <a href="../files/examples_js_annotations_annotation.js.html#l462"><code>examples&#x2F;js&#x2F;annotations&#x2F;annotation.js:462</code></a>
                             </p>
                     
                     
@@ -2195,7 +2194,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_annotations_annotation.js.html#l297"><code>examples&#x2F;js&#x2F;annotations&#x2F;annotation.js:297</code></a>
+                            <a href="../files/examples_js_annotations_annotation.js.html#l295"><code>examples&#x2F;js&#x2F;annotations&#x2F;annotation.js:295</code></a>
                             </p>
                     
                     
@@ -2252,7 +2251,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_annotations_annotation.js.html#l431"><code>examples&#x2F;js&#x2F;annotations&#x2F;annotation.js:431</code></a>
+                            <a href="../files/examples_js_annotations_annotation.js.html#l429"><code>examples&#x2F;js&#x2F;annotations&#x2F;annotation.js:429</code></a>
                             </p>
                     
                     
@@ -2418,7 +2417,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_annotations_annotation.js.html#l352"><code>examples&#x2F;js&#x2F;annotations&#x2F;annotation.js:352</code></a>
+                            <a href="../files/examples_js_annotations_annotation.js.html#l350"><code>examples&#x2F;js&#x2F;annotations&#x2F;annotation.js:350</code></a>
                             </p>
                     
                     
@@ -2527,7 +2526,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_annotations_annotation.js.html#l385"><code>examples&#x2F;js&#x2F;annotations&#x2F;annotation.js:385</code></a>
+                            <a href="../files/examples_js_annotations_annotation.js.html#l383"><code>examples&#x2F;js&#x2F;annotations&#x2F;annotation.js:383</code></a>
                             </p>
                     
                     
@@ -2569,7 +2568,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_annotations_annotation.js.html#l284"><code>examples&#x2F;js&#x2F;annotations&#x2F;annotation.js:284</code></a>
+                            <a href="../files/examples_js_annotations_annotation.js.html#l282"><code>examples&#x2F;js&#x2F;annotations&#x2F;annotation.js:282</code></a>
                             </p>
                     
                     
@@ -2611,7 +2610,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_annotations_annotation.js.html#l516"><code>examples&#x2F;js&#x2F;annotations&#x2F;annotation.js:516</code></a>
+                            <a href="../files/examples_js_annotations_annotation.js.html#l514"><code>examples&#x2F;js&#x2F;annotations&#x2F;annotation.js:514</code></a>
                             </p>
                     
                     
@@ -2678,7 +2677,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_annotations_annotation.js.html#l418"><code>examples&#x2F;js&#x2F;annotations&#x2F;annotation.js:418</code></a>
+                            <a href="../files/examples_js_annotations_annotation.js.html#l416"><code>examples&#x2F;js&#x2F;annotations&#x2F;annotation.js:416</code></a>
                             </p>
                     
                     
@@ -2804,7 +2803,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_annotations_annotation.js.html#l251"><code>examples&#x2F;js&#x2F;annotations&#x2F;annotation.js:251</code></a>
+                            <a href="../files/examples_js_annotations_annotation.js.html#l249"><code>examples&#x2F;js&#x2F;annotations&#x2F;annotation.js:249</code></a>
                             </p>
                     
                     
@@ -2829,7 +2828,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_annotations_annotation.js.html#l484"><code>examples&#x2F;js&#x2F;annotations&#x2F;annotation.js:484</code></a>
+                            <a href="../files/examples_js_annotations_annotation.js.html#l482"><code>examples&#x2F;js&#x2F;annotations&#x2F;annotation.js:482</code></a>
                             </p>
                     
                     
@@ -2913,7 +2912,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_annotations_annotation.js.html#l318"><code>examples&#x2F;js&#x2F;annotations&#x2F;annotation.js:318</code></a>
+                            <a href="../files/examples_js_annotations_annotation.js.html#l316"><code>examples&#x2F;js&#x2F;annotations&#x2F;annotation.js:316</code></a>
                             </p>
                     
                     
@@ -2955,7 +2954,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_annotations_annotation.js.html#l451"><code>examples&#x2F;js&#x2F;annotations&#x2F;annotation.js:451</code></a>
+                            <a href="../files/examples_js_annotations_annotation.js.html#l449"><code>examples&#x2F;js&#x2F;annotations&#x2F;annotation.js:449</code></a>
                             </p>
                     
                     

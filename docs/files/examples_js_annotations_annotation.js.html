@@ -208,13 +208,13 @@
 /**
  An **Annotation** is a labeled {{#crossLink &quot;Pin&quot;}}{{/crossLink}} that&#x27;s attached to the surface of an {{#crossLink &quot;Entity&quot;}}{{/crossLink}}.
 
- &lt;a href=&quot;../../examples/#annotations_stories_tronTank&quot;&gt;&lt;img src=&quot;../../assets/images/screenshots/annotationsTank.png&quot;&gt;&lt;/img&gt;&lt;/a&gt;
+ &lt;a href=&quot;../../examples/#presentation_annotations_tronTank&quot;&gt;&lt;img src=&quot;../../assets/images/screenshots/annotationsTank.png&quot;&gt;&lt;/img&gt;&lt;/a&gt;
 
  ## Overview
 
  #### Position
 
- An Annotation is positioned within one of the triangles of its {{#crossLink &quot;Entity&quot;}}Entity&#x27;s{{/crossLink}} {{#crossLink &quot;Geometry&quot;}}{{/crossLink}}. Wherever that triangles goes within the 3D view, the Annotation will automatically follow. An Annotation specifies its position with two properties:
+ An Annotation is positioned within one of the triangles of its {{#crossLink &quot;Entity&quot;}}Entity&#x27;s{{/crossLink}} {{#crossLink &quot;Geometry&quot;}}{{/crossLink}}. Wherever that triangle goes within the 3D view, the Annotation will automatically follow. An Annotation specifies its position with two properties:
 
  * {{#crossLink &quot;Pin/primIndex:property&quot;}}{{/crossLink}}, which indicates the index of the triangle within the {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} {{#crossLink &quot;Geometry/indices:property&quot;}}{{/crossLink}}, and
  * {{#crossLink &quot;Pin/bary:property&quot;}}{{/crossLink}}, the barycentric coordinates of the position within the triangle.
@@ -242,8 +242,6 @@
 
  * {{#crossLink &quot;Pin/occludable:property&quot;}}{{/crossLink}} specifies whether the Annotation becomes invisible whenever its occluded by other objects in the 3D view, and
  * {{#crossLink &quot;Pin/visible:property&quot;}}{{/crossLink}} indicates if the Annotations is currently visible.
-
- *To determine if each Annotation is occluded, xeogl renders the scene to a hidden framebuffer, along with a colored point for each Annotation&#x27;s position. Then xeogl determines each Annotation to be occluded if the pixel at its position does not match the special pin color. The color is configured as some unusual color that is not used elsewhere in the scene. This is a fast technique that works well for complex meshes, scaling up *
 
  #### Vantage points
 

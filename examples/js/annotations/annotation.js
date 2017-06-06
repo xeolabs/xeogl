@@ -1,7 +1,7 @@
 /**
  An **Annotation** is a labeled {{#crossLink "Pin"}}{{/crossLink}} that's attached to the surface of an {{#crossLink "Entity"}}{{/crossLink}}.
 
- <a href="../../examples/#annotations_stories_tronTank"><img src="../../assets/images/screenshots/annotationsTank.png"></img></a>
+ <a href="../../examples/#presentation_annotations_tronTank"><img src="../../assets/images/screenshots/annotationsTank.png"></img></a>
 
  ## Overview
 
@@ -35,8 +35,6 @@
 
  * {{#crossLink "Pin/occludable:property"}}{{/crossLink}} specifies whether the Annotation becomes invisible whenever its occluded by other objects in the 3D view, and
  * {{#crossLink "Pin/visible:property"}}{{/crossLink}} indicates if the Annotations is currently visible.
-
- *To determine if each Annotation is occluded, xeogl renders the scene to a hidden framebuffer, along with a colored point for each Annotation's position. Then xeogl determines each Annotation to be occluded if the pixel at its position does not match the special pin color. The color is configured as some unusual color that is not used elsewhere in the scene. This is a fast technique that works well for complex meshes, scaling up *
 
  #### Vantage points
 
