@@ -492,7 +492,10 @@
 
                         self._annotations.push(annotation);
 
-                        self.text.push(&quot;[Annotation &quot; + glyph + &quot;](focusAnnotation(&quot; + i + &quot;)) - &quot; + dummyText);
+                        var text = self.text;
+                        text.push(&quot;[Annotation &quot; + glyph + &quot;](focusAnnotation(&quot; + i + &quot;)) - &quot; + dummyText);
+                        text.push(&quot;&quot;);
+                        self.text = text;
                     }
                 });
             }

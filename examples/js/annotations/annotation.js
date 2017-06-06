@@ -1,7 +1,7 @@
 /**
  An **Annotation** is a labeled {{#crossLink "Pin"}}{{/crossLink}} that's attached to the surface of an {{#crossLink "Entity"}}{{/crossLink}}.
 
- <a href="../../examples/#annotations_stories_tronTank"><img src="../../assets/images/screenshots/annotationsTank.png"></img></a>
+ <a href="../../examples/#presentation_annotations_tronTank"><img src="../../assets/images/screenshots/annotationsTank.png"></img></a>
 
  ## Overview
 
