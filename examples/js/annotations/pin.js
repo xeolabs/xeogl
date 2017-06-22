@@ -598,7 +598,7 @@
 
         _entityVisible: function (visible) {
             if (!visible) {
-                this.visible = false;
+                this._setVisible(false);
             }
             this._visTester.setPinTestable(this.id, visible);
         },
