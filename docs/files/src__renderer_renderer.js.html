@@ -63,7 +63,6 @@
                                 <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
-                                <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
@@ -71,7 +70,6 @@
                                 <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
                                 <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
-                                <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
                                 <li><a href="../classes/Entity.html">Entity</a></li>
                                 <li><a href="../classes/Fog.html">Fog</a></li>
@@ -111,8 +109,6 @@
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
-                                <li><a href="../classes/Shader.html">Shader</a></li>
-                                <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
                                 <li><a href="../classes/SpecularMaterial.html">SpecularMaterial</a></li>
@@ -121,7 +117,6 @@
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/SpotLight.html">SpotLight</a></li>
-                                <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
                                 <li><a href="../classes/Story.html">Story</a></li>
@@ -164,7 +159,6 @@
                                 <li><a href="..//modules/models.html">models</a></li>
                                 <li><a href="..//modules/outline.html">outline</a></li>
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
-                                <li><a href="..//modules/shaders.html">shaders</a></li>
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="..//modules/stories.html">stories</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
@@ -348,27 +342,6 @@
         this.layer = null;
 
         /**
-         Render state for an effects pipeline stage.
-         @property stage
-         @type {renderer.Layer}
-         */
-        this.stage = null;
-
-        /**
-         Depth buffer render state.
-         @property depthBuf
-         @type {renderer.DepthBuf}
-         */
-        this.depthBuf = null;
-
-        /**
-         Color buffer render state.
-         @property colorBuf
-         @type {renderer.ColorBuf}
-         */
-        this.colorBuf = null;
-
-        /**
          Lights render state.
          @property lights
          @type {renderer.Lights}
@@ -418,39 +391,11 @@
         this.stationary = null;
 
         /**
-         Color target render state.
-         @property colorTarget
-         @type {renderer.RenderTarget}
-         */
-        this.colorTarget = null;
-
-        /**
-         Depth target render state.
-         @property depthTarget
-         @type {renderer.RenderTarget}
-         */
-        this.depthTarget = null;
-
-        /**
          Cross-section planes render state.
          @property clips
          @type {renderer.Clips}
          */
         this.clips = null;
-
-        /**
-         Custom shader render state.
-         @property shader
-         @type {renderer.Shader}
-         */
-        this.shader = null;
-
-        /**
-         Render state providing custom shader params.
-         @property shaderParams
-         @type {renderer.Shader}
-         */
-        this.shaderParams = null;
 
         /**
          Geometry render state.
@@ -541,10 +486,7 @@
         // Attach to the object any states that we need to get off it later.
         // Most of these will be used when composing the object&#x27;s shader.
 
-        object.stage = this.stage;
         object.layer = this.layer;
-        object.colorTarget = this.colorTarget;
-        object.depthTarget = this.depthTarget;
         object.material = this.material;
         object.geometry = this.geometry;
         object.visibility = this.visibility;
@@ -566,7 +508,6 @@
             // with a hash is concatenated here
 
             this.geometry.hash,
-            this.shader.hash,
             this.clips.hash,
             this.material.hash,
             this.lights.hash,
@@ -618,17 +559,13 @@
         this._setChunk(object, 2, &quot;viewTransform&quot;, this.viewTransform);
         this._setChunk(object, 3, &quot;projTransform&quot;, this.projTransform);
         this._setChunk(object, 4, &quot;modes&quot;, this.modes);
-        this._setChunk(object, 5, &quot;shader&quot;, this.shader);
-        this._setChunk(object, 6, &quot;shaderParams&quot;, this.shaderParams);
-        this._setChunk(object, 7, &quot;depthBuf&quot;, this.depthBuf);
-        this._setChunk(object, 8, &quot;colorBuf&quot;, this.colorBuf);
-        this._setChunk(object, 9, &quot;lights&quot;, this.lights);
-        this._setChunk(object, 10, this.material.type, this.material); // Supports different material systems
-        this._setChunk(object, 11, &quot;clips&quot;, this.clips);
-        this._setChunk(object, 12, &quot;viewport&quot;, this.viewport);
-        this._setChunk(object, 13, &quot;outline&quot;, this.outline);
-        this._setChunk(object, 14, &quot;geometry&quot;, this.geometry);
-        this._setChunk(object, 15, &quot;draw&quot;, this.geometry, true); // Must be last
+        this._setChunk(object, 5, &quot;lights&quot;, this.lights);
+        this._setChunk(object, 6, this.material.type, this.material); // Supports different material systems
+        this._setChunk(object, 7, &quot;clips&quot;, this.clips);
+        this._setChunk(object, 8, &quot;viewport&quot;, this.viewport);
+        this._setChunk(object, 9, &quot;outline&quot;, this.outline);
+        this._setChunk(object, 10, &quot;geometry&quot;, this.geometry);
+        this._setChunk(object, 11, &quot;draw&quot;, this.geometry, true); // Must be last
 
         // Ambient light is global across everything in display, and
         // can never be disabled, so grab it now because we want to
@@ -825,8 +762,6 @@
                 object.sortKey = -1;
             } else {
                 object.sortKey =
-                    ((object.stage.priority + 1) * 100000000000000)
-                        //   + ((object.modes.transparent ? 2 : 1) * 100000000000000)
                     + ((object.layer.priority + 1) * 10000000000000)
                     + ((object.program.id + 1) * 100000000)
                     + ((object.material.id + 1) * 10000)
@@ -1035,8 +970,6 @@
 
             var frameCtx = this._frameCtx;
 
-            frameCtx.renderTarget = null;
-            frameCtx.renderBuf = null;
             frameCtx.depthbufEnabled = null;
             frameCtx.clearDepth = null;
             frameCtx.depthFunc = gl.LESS;
@@ -1148,7 +1081,6 @@
 
                 gl.enable(gl.CULL_FACE);
                 gl.enable(gl.BLEND);
-              //  gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
                 gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
                 numOutlinedObjects = 0;
@@ -1166,37 +1098,6 @@
 
                 // Transparent outlined objects are not supported yet
 
-                //if (numOutlinedObjects &gt; 0) {
-                //
-                //    gl.disable(gl.CULL_FACE);
-                //    gl.enable(gl.STENCIL_TEST);
-                //    gl.stencilFunc(gl.ALWAYS, 1, 1);
-                //    gl.stencilOp(gl.KEEP, gl.KEEP, gl.REPLACE);
-                //    gl.stencilMask(1);
-                //    gl.clearStencil(0);
-                //    gl.clear(gl.STENCIL_BUFFER_BIT);
-                //    // gl.enable(gl.DEPTH_TEST);
-                //
-                //    clearStateTracking();
-                //
-                //    for (i = 0, len = numOutlinedObjects; i &lt; len; i++) {
-                //        drawObject(frameCtx, outlinedObjects[i]);
-                //    }
-                //
-                //    gl.stencilFunc(gl.EQUAL, 0, 1);
-                //    gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
-                //    gl.stencilMask(0x00);
-                //    gl.disable(gl.CULL_FACE); // Need both faces for better corners with face-aligned normals
-                //
-                //    clearStateTracking();
-                //
-                //    for (i = 0, len = numOutlinedObjects; i &lt; len; i++) {
-                //        drawObjectOutline(frameCtx, outlinedObjects[i]);
-                //    }
-                //
-                //    gl.disable(gl.STENCIL_TEST);
-                //}
-
                 gl.disable(gl.BLEND);
             }
 
@@ -1208,10 +1109,6 @@
             frameStats.useProgram = frameCtx.useProgram;
             frameStats.bindTexture = frameCtx.bindTexture;
             frameStats.bindArray = frameCtx.bindArray;
-
-            if (frameCtx.renderBuf) {
-                frameCtx.renderBuf.unbind();
-            }
 
             var numTextureUnits = gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
 

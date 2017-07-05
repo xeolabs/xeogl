@@ -332,12 +332,6 @@
 
         function vertexDraw() {
 
-            var vertex = states.shader.vertex;
-
-            if (vertex) { // Custom vertex shader
-                return vertex;
-            }
-
             var i;
             var len;
             var lights = states.lights.lights;
@@ -576,12 +570,6 @@
         }
 
         function fragmentDraw() {
-
-            var fragment = states.shader.fragment;
-
-            if (fragment) { // Custom fragment shader
-                return fragment;
-            }
 
             var material = states.material;
             var geometry = states.geometry;

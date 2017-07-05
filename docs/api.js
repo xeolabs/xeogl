@@ -23,7 +23,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "CardboardEffect",
         "Clip",
         "Clips",
-        "ColorBuf",
         "Component",
         "Configs",
         "CubeTexture",
@@ -31,7 +30,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "Cull",
         "Curve",
         "CylinderGeometry",
-        "DepthBuf",
         "DirLight",
         "Entity",
         "Fog",
@@ -71,8 +69,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "Scale",
         "Scene",
         "SceneJSModel",
-        "Shader",
-        "ShaderParams",
         "Shadow",
         "Skybox",
         "SpecularMaterial",
@@ -81,7 +77,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "SplineCurve",
         "SplineCurveHelper",
         "SpotLight",
-        "Stage",
         "Stationary",
         "StereoEffect",
         "Story",
@@ -123,7 +118,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "models",
         "outline",
         "rendering",
-        "shaders",
         "skyboxes",
         "stories",
         "transforms",
@@ -250,11 +244,6 @@ YUI.add("yuidoc-meta", function(Y) {
             "displayName": "rendering",
             "name": "rendering",
             "description": "Components that influence the way entities are rendered with WebGL."
-        },
-        {
-            "displayName": "shaders",
-            "name": "shaders",
-            "description": "Components to define custom shaders."
         },
         {
             "displayName": "skyboxes",
