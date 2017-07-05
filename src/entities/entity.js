@@ -130,8 +130,6 @@
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
  @param [cfg.clips] {String|Clips} ID or instance of a {{#crossLink "Clips"}}Clips{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/clips:property"}}clips{{/crossLink}}.
- @param [cfg.depthBuf] {String|DepthBuf} ID or instance of a {{#crossLink "DepthBuf"}}DepthBuf{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
- parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, depth {{#crossLink "Scene/depthBuf:property"}}depthBuf{{/crossLink}}.
  @param [cfg.visibility] {String|Visibility} ID or instance of a {{#crossLink "Visibility"}}Visibility{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/visibility:property"}}visibility{{/crossLink}}.
  @param [cfg.cull] {String|Cull} ID or instance of a {{#crossLink "Cull"}}{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
@@ -148,8 +146,6 @@
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/material:property"}}material{{/crossLink}}.
  @param [cfg.morphTargets] {String|MorphTargets} ID or instance of a {{#crossLink "MorphTargets"}}MorphTargets{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s
  default instance, {{#crossLink "Scene/morphTargets:property"}}morphTargets{{/crossLink}}.
- @param [cfg.stage] {String|Stage} ID or instance of of a {{#crossLink "Stage"}}Stage{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
- {{#crossLink "Scene/stage:property"}}stage{{/crossLink}}.
  @param [cfg.transform] {String|Transform} ID or instance of a modelling transform to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
  {{#crossLink "Scene/transform:property"}}transform{{/crossLink}} (which is an identity matrix which performs no transformation).
  @param [cfg.viewport] {String|Viewport} ID or instance of a {{#crossLink "Viewport"}}{{/crossLink}} attached to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
@@ -188,10 +184,6 @@
 
             this.camera = cfg.camera;
             this.clips = cfg.clips;
-            this.colorTarget = cfg.colorTarget;
-            this.colorBuf = cfg.colorBuf;
-            this.depthTarget = cfg.depthTarget;
-            this.depthBuf = cfg.depthBuf;
             this.visibility = cfg.visibility;
             this.cull = cfg.cull;
             this.modes = cfg.modes;
@@ -200,9 +192,6 @@
             this.lights = cfg.lights;
             this.material = cfg.material;
             this.morphTargets = cfg.morphTargets;
-            this.shader = cfg.shader;
-            this.shaderParams = cfg.shaderParams;
-            this.stage = cfg.stage;
             this.transform = cfg.transform;
             this.billboard = cfg.billboard;
             this.stationary = cfg.stationary;
@@ -303,147 +292,6 @@
 
                 get: function () {
                     return this._attached.clips;
-                }
-            },
-
-            /**
-             * The {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} attached to this Entity.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/colorTarget:property"}}colorTarget{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * Fires an {{#crossLink "Entity/colorTarget:event"}}{{/crossLink}} event on change.
-             *
-             * @property colorTarget
-             * @private
-             * @type ColorTarget
-             */
-            colorTarget: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this Entity's  {{#crossLink "Entity/colorTarget:property"}}{{/crossLink}} property changes.
-                     * @event colorTarget
-                     * @param value The property's new value
-                     */
-                    this._attach({
-                        name: "colorTarget",
-                        type: "xeogl.ColorTarget",
-                        component: value,
-                        sceneDefault: true
-                    });
-                },
-
-                get: function () {
-                    return this._attached.colorTarget;
-                }
-            },
-
-            /**
-             * The {{#crossLink "ColorBuf"}}ColorBuf{{/crossLink}} attached to this Entity.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/colorBuf:property"}}colorBuf{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * Fires an {{#crossLink "Entity/colorBuf:event"}}{{/crossLink}} event on change.
-             *
-             * @property colorBuf
-             * @type ColorBuf
-             */
-            colorBuf: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this Entity's  {{#crossLink "Entity/colorBuf:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event colorBuf
-                     * @param value The property's new value
-                     */
-                    this._attach({
-                        name: "colorBuf",
-                        type: "xeogl.ColorBuf",
-                        component: value,
-                        sceneDefault: true
-                    });
-                },
-
-                get: function () {
-                    return this._attached.colorBuf;
-                }
-            },
-
-            /**
-             * The {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} attached to this Entity.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/depthTarget:property"}}depthTarget{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * Fires an {{#crossLink "Entity/depthTarget:event"}}{{/crossLink}} event on change.
-             *
-             * @property depthTarget
-             * @private
-             * @type DepthTarget
-             */
-            depthTarget: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this Entity's  {{#crossLink "Entity/depthTarget:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event depthTarget
-                     * @param value The property's new value
-                     */
-                    this._attach({
-                        name: "depthTarget",
-                        type: "xeogl.DepthTarget",
-                        component: value,
-                        sceneDefault: true
-                    });
-                },
-
-                get: function () {
-                    return this._attached.depthTarget;
-                }
-            },
-
-            /**
-             * The {{#crossLink "DepthBuf"}}DepthBuf{{/crossLink}} attached to this Entity.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
-             * parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/depthBuf:property"}}depthBuf{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * Fires an {{#crossLink "Entity/depthBuf:event"}}{{/crossLink}} event on change.
-             *
-             * @property depthBuf
-             * @type DepthBuf
-             */
-            depthBuf: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this Entity's  {{#crossLink "Entity/depthBuf:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event depthBuf
-                     * @param value The property's new value
-                     */
-                    this._attach({
-                        name: "depthBuf",
-                        type: "xeogl.DepthBuf",
-                        component: value,
-                        sceneDefault: true
-                    });
-                },
-
-                get: function () {
-                    return this._attached.depthBuf;
                 }
             },
 
@@ -743,112 +591,6 @@
 
                 get: function () {
                     return this._attached.morphTargets;
-                }
-            },
-
-            /**
-             * The {{#crossLink "Shader"}}Shader{{/crossLink}} attached to this Entity.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/shader:property"}}shader{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * Fires an {{#crossLink "Entity/shader:event"}}{{/crossLink}} event on change.
-             *
-             * @property shader
-             * @private
-             * @type Shader
-             */
-            shader: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this Entity's  {{#crossLink "Entity/shader:property"}}{{/crossLink}} property changes.
-                     * @event shader
-                     * @param value The property's new value
-                     */
-                    this._attach({
-                        name: "shader",
-                        type: "xeogl.Shader",
-                        component: value,
-                        sceneDefault: true
-                    });
-                },
-
-                get: function () {
-                    return this._attached.shader;
-                }
-            },
-
-            /**
-             * The {{#crossLink "ShaderParams"}}ShaderParams{{/crossLink}} attached to this Entity.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/shaderParams:property"}}shaderParams{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * Fires an {{#crossLink "Entity/shaderParams:event"}}{{/crossLink}} event on change.
-             *
-             * @property shaderParams
-             * @private
-             * @type ShaderParams
-             */
-            shaderParams: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this Entity's  {{#crossLink "Entity/shaderParams:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event shaderParams
-                     * @param value The property's new value
-                     */
-                    this._attach({
-                        name: "shaderParams",
-                        type: "xeogl.ShaderParams",
-                        component: value,
-                        sceneDefault: true
-                    });
-                },
-
-                get: function () {
-                    return this._attached.shaderParams;
-                }
-            },
-
-            /**
-             * The {{#crossLink "Stage"}}Stage{{/crossLink}} attached to this Entity.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/stage:property"}}stage{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * Fires an {{#crossLink "Entity/stage:event"}}{{/crossLink}} event on change.
-             *
-             * @property stage
-             * @type Stage
-             */
-            stage: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this Entity's  {{#crossLink "Entity/stage:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event stage
-                     * @param value The property's new value
-                     */
-                    this._attach({
-                        name: "stage",
-                        type: "xeogl.Stage",
-                        component: value,
-                        sceneDefault: true
-                    });
-                },
-
-                get: function () {
-                    return this._attached.stage;
                 }
             },
 
@@ -1462,10 +1204,6 @@
 
             attached.camera._compile();
             attached.clips._compile();
-            attached.colorTarget._compile();
-            attached.colorBuf._compile();
-            attached.depthTarget._compile();
-            attached.depthBuf._compile();
             attached.visibility._compile();
             attached.cull._compile();
             attached.modes._compile();
@@ -1473,9 +1211,6 @@
             attached.layer._compile();
             attached.lights._compile();
             attached.material._compile();
-            attached.shader._compile();
-            attached.shaderParams._compile();
-            attached.stage._compile();
             this._renderer.modelTransform = attached.transform._state;
             attached.billboard._compile();
             attached.stationary._compile();
@@ -1516,10 +1251,6 @@
             return {
                 camera: attached.camera.id,
                 clips: attached.clips.id,
-                colorTarget: attached.colorTarget.id,
-                colorBuf: attached.colorBuf.id,
-                depthTarget: attached.depthTarget.id,
-                depthBuf: attached.depthBuf.id,
                 visibility: attached.visibility.id,
                 cull: attached.cull.id,
                 modes: attached.modes.id,
@@ -1527,9 +1258,6 @@
                 layer: attached.layer.id,
                 lights: attached.lights.id,
                 material: attached.material.id,
-                shader: attached.shader.id,
-                shaderParams: attached.shaderParams.id,
-                stage: attached.stage.id,
                 transform: attached.transform.id,
                 billboard: attached.billboard.id,
                 stationary: attached.stationary.id,

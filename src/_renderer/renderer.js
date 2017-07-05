@@ -139,27 +139,6 @@
         this.layer = null;
 
         /**
-         Render state for an effects pipeline stage.
-         @property stage
-         @type {renderer.Layer}
-         */
-        this.stage = null;
-
-        /**
-         Depth buffer render state.
-         @property depthBuf
-         @type {renderer.DepthBuf}
-         */
-        this.depthBuf = null;
-
-        /**
-         Color buffer render state.
-         @property colorBuf
-         @type {renderer.ColorBuf}
-         */
-        this.colorBuf = null;
-
-        /**
          Lights render state.
          @property lights
          @type {renderer.Lights}
@@ -209,39 +188,11 @@
         this.stationary = null;
 
         /**
-         Color target render state.
-         @property colorTarget
-         @type {renderer.RenderTarget}
-         */
-        this.colorTarget = null;
-
-        /**
-         Depth target render state.
-         @property depthTarget
-         @type {renderer.RenderTarget}
-         */
-        this.depthTarget = null;
-
-        /**
          Cross-section planes render state.
          @property clips
          @type {renderer.Clips}
          */
         this.clips = null;
-
-        /**
-         Custom shader render state.
-         @property shader
-         @type {renderer.Shader}
-         */
-        this.shader = null;
-
-        /**
-         Render state providing custom shader params.
-         @property shaderParams
-         @type {renderer.Shader}
-         */
-        this.shaderParams = null;
 
         /**
          Geometry render state.
@@ -332,10 +283,7 @@
         // Attach to the object any states that we need to get off it later.
         // Most of these will be used when composing the object's shader.
 
-        object.stage = this.stage;
         object.layer = this.layer;
-        object.colorTarget = this.colorTarget;
-        object.depthTarget = this.depthTarget;
         object.material = this.material;
         object.geometry = this.geometry;
         object.visibility = this.visibility;
@@ -357,7 +305,6 @@
             // with a hash is concatenated here
 
             this.geometry.hash,
-            this.shader.hash,
             this.clips.hash,
             this.material.hash,
             this.lights.hash,
@@ -409,17 +356,13 @@
         this._setChunk(object, 2, "viewTransform", this.viewTransform);
         this._setChunk(object, 3, "projTransform", this.projTransform);
         this._setChunk(object, 4, "modes", this.modes);
-        this._setChunk(object, 5, "shader", this.shader);
-        this._setChunk(object, 6, "shaderParams", this.shaderParams);
-        this._setChunk(object, 7, "depthBuf", this.depthBuf);
-        this._setChunk(object, 8, "colorBuf", this.colorBuf);
-        this._setChunk(object, 9, "lights", this.lights);
-        this._setChunk(object, 10, this.material.type, this.material); // Supports different material systems
-        this._setChunk(object, 11, "clips", this.clips);
-        this._setChunk(object, 12, "viewport", this.viewport);
-        this._setChunk(object, 13, "outline", this.outline);
-        this._setChunk(object, 14, "geometry", this.geometry);
-        this._setChunk(object, 15, "draw", this.geometry, true); // Must be last
+        this._setChunk(object, 5, "lights", this.lights);
+        this._setChunk(object, 6, this.material.type, this.material); // Supports different material systems
+        this._setChunk(object, 7, "clips", this.clips);
+        this._setChunk(object, 8, "viewport", this.viewport);
+        this._setChunk(object, 9, "outline", this.outline);
+        this._setChunk(object, 10, "geometry", this.geometry);
+        this._setChunk(object, 11, "draw", this.geometry, true); // Must be last
 
         // Ambient light is global across everything in display, and
         // can never be disabled, so grab it now because we want to
@@ -616,7 +559,6 @@
                 object.sortKey = -1;
             } else {
                 object.sortKey =
-                    ((object.stage.priority + 1) * 100000000000000)
                     + ((object.layer.priority + 1) * 10000000000000)
                     + ((object.program.id + 1) * 100000000)
                     + ((object.material.id + 1) * 10000)
@@ -825,8 +767,6 @@
 
             var frameCtx = this._frameCtx;
 
-            frameCtx.renderTarget = null;
-            frameCtx.renderBuf = null;
             frameCtx.depthbufEnabled = null;
             frameCtx.clearDepth = null;
             frameCtx.depthFunc = gl.LESS;
@@ -967,10 +907,6 @@
             frameStats.bindTexture = frameCtx.bindTexture;
             frameStats.bindArray = frameCtx.bindArray;
 
-            if (frameCtx.renderBuf) {
-                frameCtx.renderBuf.unbind();
-            }
-
             var numTextureUnits = gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
 
             for (var ii = 0; ii < numTextureUnits; ii++) {
@@ -1101,10 +1037,6 @@
 
         var frameCtx = this._frameCtx;
 
-        frameCtx.depthbufEnabled = null;
-        frameCtx.clearDepth = null;
-        frameCtx.depthFunc = gl.LESS;
-        frameCtx.blendEnabled = false;
         frameCtx.backfaces = true;
         frameCtx.frontface = true; // true == "ccw" else "cw"
         frameCtx.textureUnit = 0;
@@ -1162,11 +1094,6 @@
         var gl = this.gl;
 
         var frameCtx = this._frameCtx;
-        frameCtx.renderBuf = null;
-        frameCtx.depthbufEnabled = null;
-        frameCtx.clearDepth = null;
-        frameCtx.depthFunc = gl.LESS;
-        frameCtx.blendEnabled = false;
         frameCtx.backfaces = true;
         frameCtx.frontface = true; // true == "ccw" else "cw"
         frameCtx.drawElements = 0;

@@ -139,18 +139,9 @@
     "src/entities/entity.js",
 
     "src/rendering/_module.js",
-    "src/rendering/colorBuf.js",
-    "src/rendering/depthBuf.js",
     "src/rendering/layer.js",
-    "src/rendering/colorTarget.js",
-    "src/rendering/depthTarget.js",
     "src/rendering/modes.js",
     "src/rendering/viewport.js",
-    "src/rendering/stage.js",
-
-    "src/shaders/_module.js",
-    "src/shaders/shader.js",
-    "src/shaders/shaderParams.js",
 
     "src/boundaries/_module.js",
     "src/boundaries/boundary2d.js",
