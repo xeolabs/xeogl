@@ -147,6 +147,13 @@
             "fors": {},
             "namespaces": {}
         },
+        "src/_renderer/renderer.new.js": {
+            "name": "src/_renderer/renderer.new.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
         "src/_renderer/renderer.old.js": {
             "name": "src/_renderer/renderer.old.js",
             "modules": {},
@@ -817,6 +824,24 @@
             "modules": {},
             "classes": {
                 "Model": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/outline/_module.js": {
+            "name": "src/outline/_module.js",
+            "modules": {
+                "outline": 1
+            },
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/outline/outline.js": {
+            "name": "src/outline/outline.js",
+            "modules": {},
+            "classes": {
+                "Outline": 1
             },
             "fors": {},
             "namespaces": {}
@@ -1510,6 +1535,7 @@
                 "materials": 1,
                 "math": 1,
                 "models": 1,
+                "outline": 1,
                 "rendering": 1,
                 "shaders": 1,
                 "transforms": 1,
@@ -1566,6 +1592,7 @@
                 "xeogl.math.math": 1,
                 "GLTFModel": 1,
                 "Model": 1,
+                "Outline": 1,
                 "ColorBuf": 1,
                 "DepthBuf": 1,
                 "Layer": 1,
@@ -2080,6 +2107,21 @@
             "file": "examples/js/models/sceneJSModel.js",
             "line": 1,
             "description": "Models are units of xeogl content."
+        },
+        "outline": {
+            "name": "outline",
+            "submodules": {},
+            "classes": {
+                "Outline": 1
+            },
+            "fors": {},
+            "is_submodule": 1,
+            "namespaces": {},
+            "module": "xeogl",
+            "namespace": "",
+            "file": "src/outline/outline.js",
+            "line": 1,
+            "description": "An outline rendering effect for emphasis."
         },
         "rendering": {
             "name": "rendering",
@@ -3204,6 +3246,12 @@
                             "name": "viewport",
                             "description": "ID or instance of a {{#crossLink \"Viewport\"}}{{/crossLink}} attached to this Entity. Must be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default instance,\n{{#crossLink \"Scene/viewport:property\"}}{{/crossLink}}, which is automatically resizes to the canvas.",
                             "type": "String|Viewport",
+                            "optional": true
+                        },
+                        {
+                            "name": "outline",
+                            "description": "ID or instance of a {{#crossLink \"Outline\"}}{{/crossLink}} attached to this Entity. Must be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default instance,\n{{#crossLink \"Scene/outline:property\"}}{{/crossLink}}.",
+                            "type": "String|Outline",
                             "optional": true
                         },
                         {
@@ -5420,6 +5468,65 @@
             ],
             "extends": "Component"
         },
+        "Outline": {
+            "name": "Outline",
+            "shortname": "Outline",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "xeogl",
+            "namespace": "",
+            "file": "src/outline/outline.js",
+            "line": 1,
+            "description": "A **Outline** renders an outline around attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n## Overview\n\nTODO\n\n## Usage\n\n````javascript\n\nvar outline = new xeogl.Outline({\n   thickness: 15,      // Default\n   color: [1,0,0]      // Default\n});\n\nnew xeogl.Entity({\n    geometry: new xeogl.TorusGeometry(),\n    outline: outline,\n    modes: new xeogl.Modes({\n       outline: false  // Hide the outline (default)\n    });\n});\n\nnew xeogl.Entity({\n    geometry: new xeogl.BoxGeometry(),\n    outline: outline,\n    modes: new xeogl.Modes({\n       outline: true  // Show the outline\n    });\n});\n````",
+            "submodule": "outline",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, creates this Outline within the\ndefault {{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Outline configuration",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, generated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this Outline.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "thickness",
+                            "description": "Thickness of the outline in pixels.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "15"
+                        },
+                        {
+                            "name": "color",
+                            "description": "The RGB outline color.",
+                            "type": "Float32Array",
+                            "optional": true,
+                            "optdefault": "[1,1,0]"
+                        }
+                    ]
+                }
+            ],
+            "extends": "Component"
+        },
         "ColorBuf": {
             "name": "ColorBuf",
             "shortname": "ColorBuf",
@@ -5609,7 +5716,7 @@
             "namespace": "",
             "file": "src/rendering/modes.js",
             "line": 1,
-            "description": "A **Modes** toggles various xeogl modes and capabilities for attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n## Overview\n\n* Though the rendering modes are defined by various different components attached to the {{#crossLink \"Entity\"}}Entities{{/crossLink}},\nModes components provide a single point through which you can toggle them on or off.\n* A Modes may be shared among multiple {{#crossLink \"Entity\"}}Entities{{/crossLink}} to toggle\nrendering modes for them as a group.\n\n<img src=\"../../../assets/images/Modes.png\"></img>\n\n## Usage\n\nIn this example we have a Modes that toggles rendering modes for two {{#crossLink \"Entity\"}}Entities{{/crossLink}}. The\nproperties of the Modes are initialised to their default values.\n\n````javascript\n// Create a Modes with default properties\nvar modes = new xeogl.Modes(scene, {\n   collidable: true,           // Include Entities in boundary calculations\n   pickable: true,             // Enable picking\n   clippable true,             // Enable effect of xeogl.Clip components\n   transparent : false,        // Disable transparency\n   backfaces : true,           // Render backfaces\n   frontface : \"ccw\"\n});\n\nvar boxGeometry = new xeogl.BoxGeometry();\n\n// Create two Entities whose rendering modes will be controlled by our Modes\n\nvar entity1 = new xeogl.Entity({\n    geometry: boxGeometry,\n    modes: modes,\n    translate: new xeogl.Translate({\n       xyz: [3, 0, 0]\n    })\n});\n\nvar entity2 = new xeogl.Entity(scene, {\n    geometry: boxGeometry,\n    modes: modes,\n    translate: new xeogl.Translate({\n       xyz: [3, 0, 0]\n    })\n});\n````",
+            "description": "A **Modes** toggles various xeogl modes and capabilities for attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n## Overview\n\n* Though the rendering modes are defined by various different components attached to the {{#crossLink \"Entity\"}}Entities{{/crossLink}},\nModes components provide a single point through which you can toggle them on or off.\n* A Modes may be shared among multiple {{#crossLink \"Entity\"}}Entities{{/crossLink}} to toggle\nrendering modes for them as a group.\n\n<img src=\"../../../assets/images/Modes.png\"></img>\n\n## Usage\n\nIn this example we have a Modes that toggles rendering modes for two {{#crossLink \"Entity\"}}Entities{{/crossLink}}. The\nproperties of the Modes are initialised to their default values.\n\n````javascript\n// Create a Modes with default properties\nvar modes = new xeogl.Modes(scene, {\n   collidable: true,           // Include Entities in boundary calculations\n   pickable: true,             // Enable picking\n   clippable true,             // Enable effect of xeogl.Clip components\n   transparent : false,        // Disable transparency\n   backfaces : true,           // Render backfaces\n   frontface : \"ccw\",          // Front faces have counter-clockwise vertex winding\n   outline: false              // Don't outline for emphasis\n});\n\nvar boxGeometry = new xeogl.BoxGeometry();\n\n// Create two Entities whose rendering modes will be controlled by our Modes\n\nvar entity1 = new xeogl.Entity({\n    geometry: boxGeometry,\n    modes: modes,\n    translate: new xeogl.Translate({\n       xyz: [3, 0, 0]\n    })\n});\n\nvar entity2 = new xeogl.Entity(scene, {\n    geometry: boxGeometry,\n    modes: modes,\n    translate: new xeogl.Translate({\n       xyz: [3, 0, 0]\n    })\n});\n````",
             "submodule": "rendering",
             "is_constructor": 1,
             "params": [
@@ -5692,6 +5799,13 @@
                             "type": "Boolean",
                             "optional": true,
                             "optdefault": "true"
+                        },
+                        {
+                            "name": "outline",
+                            "description": "Whether an outline is drawn around the attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
                         }
                     ]
                 }
@@ -9252,49 +9366,62 @@
         {
             "file": "src/_renderer/program.js",
             "line": 55,
+            "description": "The outline program",
+            "type": "webgl.Program",
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/program.js",
+            "line": 61,
             "description": "The count of display objects using this program",
             "type": "Number",
             "class": "CameraFlightAnimation"
         },
         {
             "file": "src/_renderer/program.js",
-            "line": 61,
+            "line": 67,
             "description": "True when successfully allocated",
             "type": "{boolean}",
             "class": "CameraFlightAnimation"
         },
         {
             "file": "src/_renderer/program.js",
-            "line": 67,
+            "line": 73,
             "description": "True when successfully compiled",
             "type": "{boolean}",
             "class": "CameraFlightAnimation"
         },
         {
             "file": "src/_renderer/program.js",
-            "line": 73,
+            "line": 79,
             "description": "True when successfully linked",
             "type": "{boolean}",
             "class": "CameraFlightAnimation"
         },
         {
             "file": "src/_renderer/program.js",
-            "line": 79,
+            "line": 85,
             "description": "True when successfully validated",
             "type": "{boolean}",
             "class": "CameraFlightAnimation"
         },
         {
             "file": "src/_renderer/program.js",
-            "line": 85,
+            "line": 91,
             "description": "Contains error log on failure to allocate, compile, validate or link",
             "type": "{boolean}",
             "class": "CameraFlightAnimation"
         },
         {
             "file": "src/_renderer/program.js",
-            "line": 95,
+            "line": 101,
             "description": "Creates the render and pick programs.\n This is also re-called to re-create them after WebGL context loss.",
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/program.js",
+            "line": 230,
+            "description": "Destroys this program.",
             "class": "CameraFlightAnimation"
         },
         {
@@ -9327,7 +9454,7 @@
         },
         {
             "file": "src/_renderer/programFactory.js",
-            "line": 75,
+            "line": 72,
             "description": "Rebuild all programs in the pool after WebGL context was lost and restored.",
             "class": "CameraFlightAnimation"
         },
@@ -9380,76 +9507,100 @@
                     "name": "fragmentShadow",
                     "description": "Fragment shader source for drawing the shadow buffer.",
                     "type": "String"
+                },
+                {
+                    "name": "vertexOutline",
+                    "description": "Vertex shader source for drawing outlines.",
+                    "type": "String"
+                },
+                {
+                    "name": "fragmentOutline",
+                    "description": "Fragment shader source for drawing outlines.",
+                    "type": "String"
                 }
             ],
             "class": "CameraFlightAnimation"
         },
         {
             "file": "src/_renderer/programSource.js",
-            "line": 24,
+            "line": 27,
             "description": "Hash code identifying the capabilities of the {@link xeogl.renderer.Program} that is compiled from this source",
             "type": "String",
             "class": "CameraFlightAnimation"
         },
         {
             "file": "src/_renderer/programSource.js",
-            "line": 30,
+            "line": 33,
             "description": "Vertex shader source for object picking",
             "type": "{Array of String]",
             "class": "CameraFlightAnimation"
         },
         {
             "file": "src/_renderer/programSource.js",
-            "line": 36,
+            "line": 39,
             "description": "Fragment shader source for object picking.",
             "type": "{Array of String}",
             "class": "CameraFlightAnimation"
         },
         {
             "file": "src/_renderer/programSource.js",
-            "line": 42,
+            "line": 45,
             "description": "Vertex shader source for primitive picking.",
             "type": "{Array of String]",
             "class": "CameraFlightAnimation"
         },
         {
             "file": "src/_renderer/programSource.js",
-            "line": 48,
+            "line": 51,
             "description": "Fragment shader source for primitive picking.",
             "type": "{Array of String}",
             "class": "CameraFlightAnimation"
         },
         {
             "file": "src/_renderer/programSource.js",
-            "line": 54,
+            "line": 57,
             "description": "Vertex shader source for drawing.",
             "type": "{Array of String}",
             "class": "CameraFlightAnimation"
         },
         {
             "file": "src/_renderer/programSource.js",
-            "line": 60,
+            "line": 63,
             "description": "Fragment shader source for drawing.",
             "type": "{Array of String}",
             "class": "CameraFlightAnimation"
         },
         {
             "file": "src/_renderer/programSource.js",
-            "line": 66,
+            "line": 69,
             "description": "Vertex shader source for rendering shadow buffer.",
             "type": "{Array of String}",
             "class": "CameraFlightAnimation"
         },
         {
             "file": "src/_renderer/programSource.js",
-            "line": 72,
+            "line": 75,
             "description": "Fragment shader source for rendering shadow buffer.",
             "type": "{Array of String}",
             "class": "CameraFlightAnimation"
         },
         {
             "file": "src/_renderer/programSource.js",
-            "line": 78,
+            "line": 81,
+            "description": "Vertex shader source for rendering outlines.",
+            "type": "{Array of String}",
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/programSource.js",
+            "line": 87,
+            "description": "Fragment shader source for rendering outlines.",
+            "type": "{Array of String}",
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/programSource.js",
+            "line": 93,
             "description": "Count of {@link xeogl.renderer.Program}s compiled from this program source code",
             "type": "Number",
             "class": "CameraFlightAnimation"
@@ -9462,13 +9613,13 @@
         },
         {
             "file": "src/_renderer/programSourceFactory.js",
-            "line": 36,
+            "line": 38,
             "description": "Get source code for a program to render the given states.\nAttempts to reuse cached source code for the given hash.",
             "class": "CameraFlightAnimation"
         },
         {
             "file": "src/_renderer/programSourceFactory.js",
-            "line": 137,
+            "line": 141,
             "description": "Releases program source code back to this factory.",
             "class": "CameraFlightAnimation"
         },
@@ -9694,37 +9845,46 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 262,
+            "line": 260,
+            "description": "Outline state.",
+            "itemtype": "property",
+            "name": "outline",
+            "type": "{renderer.Outline}",
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/renderer.js",
+            "line": 270,
             "description": "Flags the object list as needing to be rebuilt from the object map.",
             "class": "CameraFlightAnimation"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 267,
+            "line": 275,
             "description": "Flags the object list as needing state orders to be recomputed.",
             "class": "CameraFlightAnimation"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 272,
+            "line": 280,
             "description": "Flags the object list as needing to be state-sorted.",
             "class": "CameraFlightAnimation"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 277,
+            "line": 285,
             "description": "Flags the image as needing to be redrawn from the object list.",
             "class": "CameraFlightAnimation"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 283,
+            "line": 291,
             "description": "Reallocates WebGL resources for objects within this renderer.",
             "class": "CameraFlightAnimation"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 306,
+            "line": 314,
             "description": "Internally creates (or updates) a {@link xeogl.renderer.Object} of the given\nID from whatever component state cores are currently set on this {@link xeogl.Renderer}.\nThe object is created if it does not already exist in the display, otherwise\nit is updated with the current states, possibly replacing states already\nreferenced by the object.",
             "params": [
                 {
@@ -9737,12 +9897,12 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 449,
+            "line": 459,
             "class": "CameraFlightAnimation"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 505,
+            "line": 515,
             "description": "Removes an object from this Renderer",
             "params": [
                 {
@@ -9755,13 +9915,13 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 541,
+            "line": 551,
             "description": "Renders a new frame, if neccessary.",
             "class": "CameraFlightAnimation"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 878,
+            "line": 1021,
             "description": "Attempts to pick an object.",
             "params": [
                 {
@@ -9778,7 +9938,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 1097,
+            "line": 1240,
             "description": "Reads the colors of some pixels in the last rendered frame.",
             "params": [
                 {
@@ -9806,7 +9966,354 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 1143,
+            "line": 1286,
+            "description": "Destroys this Renderer.",
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/renderer.new.js",
+            "line": 7,
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/renderer.new.js",
+            "line": 25,
+            "description": "Indicates if the canvas is transparent",
+            "type": "{boolean}",
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/renderer.new.js",
+            "line": 31,
+            "description": "Optional callback to fire when renderer wants to\nbind an output framebuffer. This is useful when we need to bind a stereo output buffer for WebVR.\n\nWhen this is missing, the renderer will implicitly bind\nWebGL's default framebuffer.\n\nThe callback takes one parameter, which is the index of the current\nrendering pass in which the buffer is to be bound.\n\nUse like this: myRenderer.bindOutputFramebuffer = function(pass) { .. });",
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/renderer.new.js",
+            "line": 45,
+            "description": "Optional callback to fire when renderer wants to\nunbind any output drawing framebuffer that was\npreviously bound with #bindOutputFramebuffer.\n\nThe callback takes one parameter, which is the index of the current\nrendering pass in which the buffer is to be bound.\n\nUse like this: myRenderer.unbindOutputFramebuffer = function(pass) { .. });\n\nCallback takes no parameters.",
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/renderer.new.js",
+            "line": 65,
+            "description": "The current ambient color.",
+            "type": "Float32Array",
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/renderer.new.js",
+            "line": 113,
+            "description": "Visibility render state.",
+            "itemtype": "property",
+            "name": "visibility",
+            "type": "{renderer.Visibility}",
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/renderer.new.js",
+            "line": 120,
+            "description": "Culling render state.",
+            "itemtype": "property",
+            "name": "cull",
+            "type": "{renderer.Cull}",
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/renderer.new.js",
+            "line": 127,
+            "description": "Modes render state.",
+            "itemtype": "property",
+            "name": "modes",
+            "type": "{renderer.Modes}",
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/renderer.new.js",
+            "line": 134,
+            "description": "Render state for an effects layer.",
+            "itemtype": "property",
+            "name": "layer",
+            "type": "{renderer.Layer}",
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/renderer.new.js",
+            "line": 141,
+            "description": "Render state for an effects pipeline stage.",
+            "itemtype": "property",
+            "name": "stage",
+            "type": "{renderer.Layer}",
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/renderer.new.js",
+            "line": 148,
+            "description": "Depth buffer render state.",
+            "itemtype": "property",
+            "name": "depthBuf",
+            "type": "{renderer.DepthBuf}",
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/renderer.new.js",
+            "line": 155,
+            "description": "Color buffer render state.",
+            "itemtype": "property",
+            "name": "colorBuf",
+            "type": "{renderer.ColorBuf}",
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/renderer.new.js",
+            "line": 162,
+            "description": "Lights render state.",
+            "itemtype": "property",
+            "name": "lights",
+            "type": "{renderer.Lights}",
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/renderer.new.js",
+            "line": 169,
+            "description": "Material render state.",
+            "itemtype": "property",
+            "name": "material",
+            "type": "{renderer.Material}",
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/renderer.new.js",
+            "line": 176,
+            "description": "Modelling transform render state.",
+            "itemtype": "property",
+            "name": "modelTransform",
+            "type": "{renderer.Transform}",
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/renderer.new.js",
+            "line": 183,
+            "description": "View transform render state.",
+            "itemtype": "property",
+            "name": "viewTransform",
+            "type": "{renderer.Transform}",
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/renderer.new.js",
+            "line": 190,
+            "description": "Projection transform render state.",
+            "itemtype": "property",
+            "name": "projTransform",
+            "type": "{renderer.Transform}",
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/renderer.new.js",
+            "line": 197,
+            "description": "Billboard render state.",
+            "itemtype": "property",
+            "name": "billboard",
+            "type": "{renderer.Billboard}",
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/renderer.new.js",
+            "line": 204,
+            "description": "Stationary render state.",
+            "itemtype": "property",
+            "name": "stationary",
+            "type": "{renderer.Stationary}",
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/renderer.new.js",
+            "line": 211,
+            "description": "Color target render state.",
+            "itemtype": "property",
+            "name": "colorTarget",
+            "type": "{renderer.RenderTarget}",
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/renderer.new.js",
+            "line": 218,
+            "description": "Depth target render state.",
+            "itemtype": "property",
+            "name": "depthTarget",
+            "type": "{renderer.RenderTarget}",
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/renderer.new.js",
+            "line": 225,
+            "description": "Cross-section planes render state.",
+            "itemtype": "property",
+            "name": "clips",
+            "type": "{renderer.Clips}",
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/renderer.new.js",
+            "line": 232,
+            "description": "Custom shader render state.",
+            "itemtype": "property",
+            "name": "shader",
+            "type": "{renderer.Shader}",
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/renderer.new.js",
+            "line": 239,
+            "description": "Render state providing custom shader params.",
+            "itemtype": "property",
+            "name": "shaderParams",
+            "type": "{renderer.Shader}",
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/renderer.new.js",
+            "line": 246,
+            "description": "Geometry render state.",
+            "itemtype": "property",
+            "name": "geometry",
+            "type": "{renderer.Geometry}",
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/renderer.new.js",
+            "line": 253,
+            "description": "Viewport render state.",
+            "itemtype": "property",
+            "name": "viewport",
+            "type": "{renderer.Viewport}",
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/renderer.new.js",
+            "line": 260,
+            "description": "Outline state.",
+            "itemtype": "property",
+            "name": "outline",
+            "type": "{renderer.Outline}",
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/renderer.new.js",
+            "line": 270,
+            "description": "Flags the object list as needing to be rebuilt from the object map.",
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/renderer.new.js",
+            "line": 275,
+            "description": "Flags the object list as needing state orders to be recomputed.",
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/renderer.new.js",
+            "line": 280,
+            "description": "Flags the object list as needing to be state-sorted.",
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/renderer.new.js",
+            "line": 285,
+            "description": "Flags the image as needing to be redrawn from the object list.",
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/renderer.new.js",
+            "line": 291,
+            "description": "Reallocates WebGL resources for objects within this renderer.",
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/renderer.new.js",
+            "line": 314,
+            "description": "Internally creates (or updates) a {@link xeogl.renderer.Object} of the given\nID from whatever component state cores are currently set on this {@link xeogl.Renderer}.\nThe object is created if it does not already exist in the display, otherwise\nit is updated with the current states, possibly replacing states already\nreferenced by the object.",
+            "params": [
+                {
+                    "name": "objectId",
+                    "description": "ID of object to create or update",
+                    "type": "String"
+                }
+            ],
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/renderer.new.js",
+            "line": 459,
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/renderer.new.js",
+            "line": 515,
+            "description": "Removes an object from this Renderer",
+            "params": [
+                {
+                    "name": "objectId",
+                    "description": "ID of object to remove",
+                    "type": "String"
+                }
+            ],
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/renderer.new.js",
+            "line": 551,
+            "description": "Renders a new frame, if neccessary.",
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/renderer.new.js",
+            "line": 1015,
+            "description": "Attempts to pick an object.",
+            "params": [
+                {
+                    "name": "params",
+                    "description": "Picking params.",
+                    "type": "*"
+                }
+            ],
+            "return": {
+                "description": "Hit result, if any.",
+                "type": "*"
+            },
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/renderer.new.js",
+            "line": 1234,
+            "description": "Reads the colors of some pixels in the last rendered frame.",
+            "params": [
+                {
+                    "name": "pixels",
+                    "description": "",
+                    "type": "Float32Array"
+                },
+                {
+                    "name": "colors",
+                    "description": "",
+                    "type": "Float32Array"
+                },
+                {
+                    "name": "len",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "opaqueOnly",
+                    "description": "",
+                    "type": "Boolean"
+                }
+            ],
+            "class": "CameraFlightAnimation"
+        },
+        {
+            "file": "src/_renderer/renderer.new.js",
+            "line": 1280,
             "description": "Destroys this Renderer.",
             "class": "CameraFlightAnimation"
         },
@@ -11480,7 +11987,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 244,
+            "line": 246,
             "description": "Boundary of the Canvas in absolute browser window coordinates.\n\n### Usage:\n\n````javascript\nvar boundary = myScene.canvas.boundary;\n\nvar xmin = boundary[0];\nvar ymin = boundary[1];\nvar width = boundary[2];\nvar height = boundary[3];\n````",
             "itemtype": "property",
             "name": "boundary",
@@ -11492,7 +11999,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 281,
+            "line": 283,
             "description": "Fired whenever the WebGL context has been lost",
             "itemtype": "event",
             "name": "webglContextLost",
@@ -11502,7 +12009,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 294,
+            "line": 296,
             "description": "Fired whenever the WebGL context has been restored again after having previously being lost",
             "itemtype": "event",
             "name": "webglContextRestored",
@@ -11518,7 +12025,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 354,
+            "line": 356,
             "description": "Fired whenever this Canvas's {{#crossLink \"Canvas/boundary:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "boundary",
@@ -11534,7 +12041,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 391,
+            "line": 393,
             "description": "Creates a default canvas in the DOM.",
             "access": "private",
             "tagname": "",
@@ -11544,7 +12051,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 421,
+            "line": 423,
             "description": "Creates a image element behind the canvas, for purpose of showing a custom background.",
             "access": "private",
             "tagname": "",
@@ -11554,7 +12061,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 448,
+            "line": 450,
             "description": "Creates an invisible DIV over the canvas, for purpose of catching\ninput events without interfering with app-lever UI bits floating underneath.",
             "access": "private",
             "tagname": "",
@@ -11564,7 +12071,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 485,
+            "line": 487,
             "description": "Initialises the WebGL context",
             "access": "private",
             "tagname": "",
@@ -11574,7 +12081,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 518,
+            "line": 520,
             "description": "Fired whenever the canvas failed to get a WebGL context, which probably means that WebGL\nis either unsupported or has been disabled.",
             "itemtype": "event",
             "name": "webglContextFailed",
@@ -11584,7 +12091,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 527,
+            "line": 529,
             "description": "Returns a snapshot of this Canvas as a Base64-encoded image.\n\n#### Usage:\n````javascript\nimageElement.src = myScene.canvas.getSnapshot({\n    width: 500, // Defaults to size of canvas\n    height: 500,\n    format: \"png\" // Options are \"jpeg\" (default), \"png\" and \"bmp\"\n});\n````",
             "itemtype": "method",
             "name": "getSnapshot",
@@ -11627,7 +12134,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 585,
+            "line": 587,
             "description": "Reads colors of pixels from the last rendered frame.\n\n<p>Call this method like this:</p>\n\n````JavaScript\n\n// Ignore transparent pixels (default is false)\nvar opaqueOnly = true;\n\nvar colors = new Float32Array(8);\n\nmyCanvas.readPixels([ 100, 22, 12, 33 ], colors, 2, opaqueOnly);\n````\n\nThen the r,g,b components of the colors will be set to the colors at those pixels.",
             "params": [
                 {
@@ -11657,7 +12164,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 613,
+            "line": 615,
             "description": "A background color for the canvas. This is overridden by {{#crossLink \"Canvas/backgroundImage:property\"}}{{/crossLink}}.\n\nYou can set this to a new color at any time.\n\nFires a {{#crossLink \"Canvas/backgroundColor:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "backgroundColor",
@@ -11669,7 +12176,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 642,
+            "line": 644,
             "description": "Fired whenever this Canvas's {{#crossLink \"Canvas/backgroundColor:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "backgroundColor",
@@ -11685,7 +12192,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 655,
+            "line": 657,
             "description": "URL of a background image for the canvas. This is overrided by {{#crossLink \"Canvas/backgroundColor/property\"}}{{/crossLink}}.\n\nYou can set this to a new file path at any time.\n\nFires a {{#crossLink \"Canvas/background:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "backgroundImage",
@@ -11696,7 +12203,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 690,
+            "line": 692,
             "description": "Fired whenever this Canvas's {{#crossLink \"Canvas/backgroundImage:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "backgroundImage",
@@ -11712,7 +12219,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 703,
+            "line": 705,
             "description": "The busy {{#crossLink \"Spinner\"}}{{/crossLink}} for this Canvas.",
             "itemtype": "property",
             "name": "spinner",
@@ -11960,7 +12467,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 249,
+            "line": 251,
             "description": "Flag which indicates whether this CameraControl is in \"first person\" mode.\n\nIn \"first person\" mode (disabled by default) the look position rotates about the eye position. Otherwise,\nthe eye rotates about the look.\n\nFires a {{#crossLink \"KeyboardRotateCamera/firstPerson:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "firstPerson",
@@ -11972,7 +12479,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 272,
+            "line": 274,
             "description": "Fired whenever this CameraControl's {{#crossLink \"CameraControl/firstPerson:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "firstPerson",
@@ -11988,7 +12495,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 285,
+            "line": 287,
             "description": "The {{#crossLink \"Camera\"}}{{/crossLink}} being controlled by this CameraControl.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this CameraControl. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}} when set to\na null or undefined value.",
             "itemtype": "property",
             "name": "camera",
@@ -11999,7 +12506,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 299,
+            "line": 301,
             "description": "Fired whenever this CameraControl's {{#crossLink \"CameraControl/camera:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "camera",
@@ -12015,7 +12522,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 335,
+            "line": 337,
             "description": "Flag which indicates whether this CameraControl is active or not.\n\nFires an {{#crossLink \"CameraControl/active:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "active",
@@ -12026,7 +12533,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 365,
+            "line": 367,
             "description": "Fired whenever this CameraControl's {{#crossLink \"CameraControl/active:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "active",
@@ -12951,7 +13458,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 163,
+            "line": 165,
             "description": "Fired when this Entity is *picked* via a call to the {{#crossLink \"Canvas/pick:method\"}}{{/crossLink}} method\non the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s {{#crossLink \"Canvas\"}}Canvas {{/crossLink}}.",
             "itemtype": "event",
             "name": "picked",
@@ -12978,7 +13485,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 223,
+            "line": 226,
             "description": "The {{#crossLink \"Camera\"}}Camera{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/camera:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "camera",
@@ -12989,7 +13496,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 243,
+            "line": 246,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/camera:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "camera",
@@ -13005,7 +13512,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 272,
+            "line": 275,
             "description": "The {{#crossLink \"Clips\"}}Clips{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/clips:property\"}}clips{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/clips:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "clips",
@@ -13016,7 +13523,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 288,
+            "line": 291,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/clips:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "clips",
@@ -13032,7 +13539,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 306,
+            "line": 309,
             "description": "The {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/colorTarget:property\"}}colorTarget{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/colorTarget:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "colorTarget",
@@ -13045,7 +13552,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 323,
+            "line": 326,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/colorTarget:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "colorTarget",
@@ -13061,7 +13568,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 341,
+            "line": 344,
             "description": "The {{#crossLink \"ColorBuf\"}}ColorBuf{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/colorBuf:property\"}}colorBuf{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/colorBuf:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "colorBuf",
@@ -13072,7 +13579,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 357,
+            "line": 360,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/colorBuf:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "colorBuf",
@@ -13088,7 +13595,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 376,
+            "line": 379,
             "description": "The {{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/depthTarget:property\"}}depthTarget{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/depthTarget:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "depthTarget",
@@ -13101,7 +13608,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 393,
+            "line": 396,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/depthTarget:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "depthTarget",
@@ -13117,7 +13624,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 412,
+            "line": 415,
             "description": "The {{#crossLink \"DepthBuf\"}}DepthBuf{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/depthBuf:property\"}}depthBuf{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/depthBuf:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "depthBuf",
@@ -13128,7 +13635,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 428,
+            "line": 431,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/depthBuf:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "depthBuf",
@@ -13144,7 +13651,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 447,
+            "line": 450,
             "description": "The {{#crossLink \"Visibility\"}}Visibility{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/visibility:property\"}}visibility{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/visibility:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "visibility",
@@ -13155,7 +13662,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 463,
+            "line": 466,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/visibility:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "visibility",
@@ -13171,7 +13678,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 482,
+            "line": 485,
             "description": "The {{#crossLink \"Cull\"}}{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/cull:property\"}}cull{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/cull:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "cull",
@@ -13182,7 +13689,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 498,
+            "line": 501,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/cull:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "cull",
@@ -13198,7 +13705,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 518,
+            "line": 521,
             "description": "The {{#crossLink \"Modes\"}}Modes{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/modes:property\"}}modes{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/modes:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "modes",
@@ -13209,7 +13716,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 534,
+            "line": 537,
             "description": "Fired whenever this Entity's {{#crossLink \"Entity/modes:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "modes",
@@ -13225,7 +13732,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 553,
+            "line": 556,
             "description": "The {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/geometry:property\"}}camera{{/crossLink}}\n(a simple box) when set to a null or undefined value.\n\nFires an {{#crossLink \"Entity/geometry:event\"}}{{/crossLink}} event on change.\n\nUpdates {{#crossLink \"Entity/boundary\"}}{{/crossLink}},\n{{#crossLink \"Entity/worldObb\"}}{{/crossLink}} and\n{{#crossLink \"Entity/center\"}}{{/crossLink}}",
             "itemtype": "property",
             "name": "geometry",
@@ -13236,7 +13743,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 577,
+            "line": 580,
             "description": "Fired whenever this Entity's {{#crossLink \"Entity/geometry:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "modes",
@@ -13252,7 +13759,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 606,
+            "line": 609,
             "description": "The {{#crossLink \"Layer\"}}Layer{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/layer:property\"}}layer{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/layer:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "layer",
@@ -13263,7 +13770,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 622,
+            "line": 625,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/layer:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "layer",
@@ -13279,7 +13786,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 641,
+            "line": 644,
             "description": "The {{#crossLink \"Lights\"}}Lights{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/lights:property\"}}lights{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/lights:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "lights",
@@ -13290,7 +13797,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 657,
+            "line": 660,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/lights:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "lights",
@@ -13306,7 +13813,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 676,
+            "line": 679,
             "description": "The {{#crossLink \"Material\"}}Material{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/material:property\"}}material{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/material:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "material",
@@ -13317,7 +13824,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 692,
+            "line": 695,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/material:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "material",
@@ -13333,7 +13840,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 711,
+            "line": 714,
             "description": "The {{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/morphTargets:property\"}}morphTargets{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/morphTargets:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "morphTargets",
@@ -13346,7 +13853,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 728,
+            "line": 731,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/morphTargets:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "morphTargets",
@@ -13362,7 +13869,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 746,
+            "line": 749,
             "description": "The {{#crossLink \"Shader\"}}Shader{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/shader:property\"}}shader{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/shader:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "shader",
@@ -13375,7 +13882,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 763,
+            "line": 766,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/shader:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "shader",
@@ -13391,7 +13898,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 781,
+            "line": 784,
             "description": "The {{#crossLink \"ShaderParams\"}}ShaderParams{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/shaderParams:property\"}}shaderParams{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/shaderParams:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "shaderParams",
@@ -13404,7 +13911,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 798,
+            "line": 801,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/shaderParams:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "shaderParams",
@@ -13420,7 +13927,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 817,
+            "line": 820,
             "description": "The {{#crossLink \"Stage\"}}Stage{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/stage:property\"}}stage{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/stage:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "stage",
@@ -13431,7 +13938,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 833,
+            "line": 836,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/stage:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "stage",
@@ -13447,7 +13954,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 852,
+            "line": 855,
             "description": "The Local-to-World-space (modelling) {{#crossLink \"Transform\"}}{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/transform:property\"}}transform{{/crossLink}}\n(an identity matrix) when set to a null or undefined value.\n\nFires an {{#crossLink \"Entity/transform:event\"}}{{/crossLink}} event on change.\n\nUpdates {{#crossLink \"Entity/boundary\"}}{{/crossLink}},\n{{#crossLink \"Entity/worldObb\"}}{{/crossLink}} and\n{{#crossLink \"Entity/center\"}}{{/crossLink}}",
             "itemtype": "property",
             "name": "transform",
@@ -13458,7 +13965,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 876,
+            "line": 879,
             "description": "Fired whenever this Entity's {{#crossLink \"Entity/transform:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "transform",
@@ -13474,7 +13981,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 917,
+            "line": 920,
             "description": "The {{#crossLink \"Billboard\"}}{{/crossLink}} attached to this Entity.\n\nWhen {{#crossLink \"Billboard/property:active\"}}{{/crossLink}}, the {{#crossLink \"Billboard\"}}{{/crossLink}}\nwill keep this Entity oriented towards the viewpoint.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/billboard:property\"}}billboard{{/crossLink}}\n(an identity matrix) when set to a null or undefined value.\n\nFires an {{#crossLink \"Entity/billboard:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "billboard",
@@ -13485,7 +13992,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 936,
+            "line": 939,
             "description": "Fired whenever this Entity's {{#crossLink \"Entity/billboard:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "billboard",
@@ -13501,7 +14008,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 956,
+            "line": 959,
             "description": "The {{#crossLink \"Viewport\"}}{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. When set to a null or undefined value,\ndefaults to the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/viewport:property\"}}viewport{{/crossLink}},\nwhich automatically resizes to the canvas.\n\nFires an {{#crossLink \"Entity/viewport:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "viewport",
@@ -13512,7 +14019,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 972,
+            "line": 975,
             "description": "Fired whenever this Entity's {{#crossLink \"Entity/viewport:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "viewport",
@@ -13528,7 +14035,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 992,
+            "line": 995,
             "description": "The {{#crossLink \"Stationary\"}}{{/crossLink}} attached to this Entity.\n\nWhen {{#crossLink \"Stationary/property:active\"}}{{/crossLink}}, the {{#crossLink \"Stationary\"}}{{/crossLink}}\nwill prevent the translation component of the viewing transform from being applied to this Entity, yet\nstill allowing it to rotate.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/stationary:property\"}}stationary{{/crossLink}},\nwhich is disabled by default.\n\nFires an {{#crossLink \"Entity/stationary:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "stationary",
@@ -13539,7 +14046,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1012,
+            "line": 1015,
             "description": "Fired whenever this Entity's {{#crossLink \"Entity/stationary:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "stationary",
@@ -13555,7 +14062,34 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1032,
+            "line": 1035,
+            "description": "The {{#crossLink \"Outline\"}}Outline{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/outline:property\"}}Outline{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/outline:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "outline",
+            "type": "Outline",
+            "class": "Entity",
+            "module": "xeogl",
+            "submodule": "entities"
+        },
+        {
+            "file": "src/entities/entity.js",
+            "line": 1051,
+            "description": "Fired whenever this Entity's  {{#crossLink \"Entity/Outline:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "Outline",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Entity",
+            "module": "xeogl",
+            "submodule": "entities"
+        },
+        {
+            "file": "src/entities/entity.js",
+            "line": 1070,
             "description": "Local-space 3D boundary of this Entity.\n\nThis is a {{#crossLink \"Boundary3D\"}}{{/crossLink}} that encloses\nthe {{#crossLink \"Geometry\"}}{{/crossLink}} that is attached to this Entity.\n\nThe {{#crossLink \"Boundary3D\"}}{{/crossLink}} will fire an {{#crossLink \"Boundary3D/updated:event\"}}{{/crossLink}}\nevent whenever this Entity's {{#crossLink \"Entity/geometry:property\"}}{{/crossLink}} is linked to\na new {{#crossLink \"Geometry\"}}{{/crossLink}}, or whenever the {{#crossLink \"Geometry\"}}{{/crossLink}}'s\n{{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} are updated.\n\nThe a {{#crossLink \"Boundary3D\"}}{{/crossLink}} is lazy-instantiated the first time that this\nproperty is referenced. If {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} is then called on it,\nthen this property will be assigned to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance next\ntime it's referenced.",
             "itemtype": "property",
             "name": "localBoundary",
@@ -13567,7 +14101,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1059,
+            "line": 1097,
             "description": "World-space 3D boundary of this Entity.\n\nThis is a {{#crossLink \"Boundary3D\"}}{{/crossLink}} that encloses the {{#crossLink \"Geometry\"}}{{/crossLink}}\nthat is attached to this Entity after transformation by this Entity's modelling\n{{#crossLink \"Entity/transform:property\"}}{{/crossLink}}.\n\nThe {{#crossLink \"Boundary3D\"}}{{/crossLink}} will fire an {{#crossLink \"Boundary3D/updated:event\"}}{{/crossLink}}\nevent whenever this Entity's {{#crossLink \"Entity/geometry:property\"}}{{/crossLink}} is linked to\na new {{#crossLink \"Geometry\"}}{{/crossLink}}, or whenever the {{#crossLink \"Geometry\"}}{{/crossLink}}'s\n{{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} are updated.\n\nThe a {{#crossLink \"Boundary3D\"}}{{/crossLink}} is lazy-instantiated the first time that this\nproperty is referenced. If {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} is then called on it,\nthen this property will be assigned to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance next\ntime it's referenced.\n\n<h4>Example</h4>\n\n[here](http://xeogl.org/examples/#boundaries_Entity_worldBoundary)\n\n<h4>Performance</h4>\n\nTo minimize performance overhead, only reference this property if you need it, and destroy\nthe {{#crossLink \"Boundary3D\"}}{{/crossLink}} as soon as you don't need it anymore.",
             "itemtype": "property",
             "name": "worldBoundary",
@@ -13579,7 +14113,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1148,
+            "line": 1186,
             "description": "View-space 3D boundary of this Entity.\n\nThis is a {{#crossLink \"Boundary3D\"}}{{/crossLink}} that encloses the {{#crossLink \"Geometry\"}}{{/crossLink}}\nthat is attached to this Entity after transformation by this Entity's modelling\n{{#crossLink \"Entity/transform:property\"}}{{/crossLink}} and {{#crossLink \"Camera\"}}{{/crossLink}}\n{{#crossLink \"Camera/view:property\"}}view transform{{/crossLink}}.\n\nThe {{#crossLink \"Boundary3D\"}}{{/crossLink}} will fire an {{#crossLink \"Boundary3D/updated:event\"}}{{/crossLink}}\nevent whenever there are any changes to the {{#crossLink \"Geometry\"}}{{/crossLink}},\n{{#crossLink \"Entity/transform:property\"}}{{/crossLink}} or {{#crossLink \"Camera\"}}{{/crossLink}} that\nwould affect its extents.\n\nThe a {{#crossLink \"Boundary3D\"}}{{/crossLink}} is lazy-instantiated the first time that this\nproperty is referenced. If {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} is then called on it,\nthen this property will be assigned to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance next\ntime it's referenced.\n\n<h4>Performance</h4>\n\nTo minimize performance overhead, only reference this property if you need it, and destroy\nthe {{#crossLink \"Boundary3D\"}}{{/crossLink}} as soon as you don't need it anymore.",
             "itemtype": "property",
             "name": "viewBoundary",
@@ -13591,7 +14125,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1216,
+            "line": 1254,
             "description": "Canvas-space 2D boundary.\n\nThis is a {{#crossLink \"Boundary2D\"}}{{/crossLink}} that encloses this Entity's\n{{#crossLink \"Entity/geometry:property\"}}{{/crossLink}} after transformation by this Entity's modelling\n{{#crossLink \"Entity/transform:property\"}}{{/crossLink}} and {{#crossLink \"Camera\"}}{{/crossLink}}\n{{#crossLink \"Camera/view:property\"}}view{{/crossLink}} and\n{{#crossLink \"Camera/project:property\"}}projection{{/crossLink}} transforms.\n\nThe {{#crossLink \"Boundary2D\"}}{{/crossLink}} will fire an {{#crossLink \"Boundary3D/updated:event\"}}{{/crossLink}}\nevent whenever there are any changes to the {{#crossLink \"Geometry\"}}{{/crossLink}},\n{{#crossLink \"Entity/transform:property\"}}{{/crossLink}} or {{#crossLink \"Camera\"}}{{/crossLink}} that\nwould affect its extents.\n\nThe a {{#crossLink \"Boundary2D\"}}{{/crossLink}} is lazy-instantiated the first time that this\nproperty is referenced. If {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} is then called on it,\nthen this property will be assigned to a fresh {{#crossLink \"Boundary2D\"}}{{/crossLink}} instance next\ntime it's referenced.\n\n<h4>Performance</h4>\n\nTo minimize performance overhead, only reference this property if you need it, and destroy\nthe {{#crossLink \"Boundary2D\"}}{{/crossLink}} as soon as you don't need it anymore.",
             "itemtype": "property",
             "name": "canvasBoundary",
@@ -13603,7 +14137,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1285,
+            "line": 1323,
             "description": "JSON object containing the (GLSL) source code of the shaders for this Entity.\n\nThis is sometimes useful to have as a reference\nwhen constructing your own custom {{#crossLink \"Shader\"}}{{/crossLink}} components.\n\nWill return null if xeogl has not yet rendered this Entity.",
             "itemtype": "property",
             "name": "glsl",
@@ -13615,7 +14149,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1322,
+            "line": 1360,
             "description": "The (GLSL) source code of the shaders for this Entity, as a string.\n\nThis is sometimes useful to have as a reference\nwhen constructing your own custom {{#crossLink \"Shader\"}}{{/crossLink}} components.\n\nWill return null if xeogl has not yet rendered this Entity.",
             "itemtype": "property",
             "name": "glslString",
@@ -22520,6 +23054,63 @@
             "submodule": "models"
         },
         {
+            "file": "src/outline/outline.js",
+            "line": 68,
+            "description": "The Outline's thickness in pixels.\n\nFires a {{#crossLink \"Outline/thickness:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "thickness",
+            "default": "15",
+            "type": "Number",
+            "class": "Outline",
+            "module": "xeogl",
+            "submodule": "outline"
+        },
+        {
+            "file": "src/outline/outline.js",
+            "line": 96,
+            "description": "Fired whenever this Outline's  {{#crossLink \"Outline/thickness:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "thickness",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Outline",
+            "module": "xeogl",
+            "submodule": "outline"
+        },
+        {
+            "file": "src/outline/outline.js",
+            "line": 110,
+            "description": "The Outline's RGB color.\n\nFires a {{#crossLink \"Outline/color:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "color",
+            "default": "[1.0, 1.0, 0.0]",
+            "type": "Float32Array",
+            "class": "Outline",
+            "module": "xeogl",
+            "submodule": "outline"
+        },
+        {
+            "file": "src/outline/outline.js",
+            "line": 145,
+            "description": "Fired whenever this Outline's {{#crossLink \"Outline/color:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "color",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value",
+                    "type": "Float32Array"
+                }
+            ],
+            "class": "Outline",
+            "module": "xeogl",
+            "submodule": "outline"
+        },
+        {
             "file": "src/rendering/colorBuf.js",
             "line": 61,
             "description": "Indicates if blending is enabled for this ColorBuf.\n\nFires a {{#crossLink \"ColorBuf/blendEnabled:event\"}}{{/crossLink}} event on change.",
@@ -22790,7 +23381,7 @@
         },
         {
             "file": "src/rendering/modes.js",
-            "line": 107,
+            "line": 111,
             "description": "Whether this Modes enables picking of attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nPicking is performed via calls to {{#crossLink \"Canvas/pick:method\"}}Canvas#pick{{/crossLink}}.\n\nFires a {{#crossLink \"Modes/pickable:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "pickable",
@@ -22802,7 +23393,7 @@
         },
         {
             "file": "src/rendering/modes.js",
-            "line": 133,
+            "line": 137,
             "description": "Fired whenever this Modes' {{#crossLink \"Modes/pickable:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "pickable",
@@ -22818,7 +23409,7 @@
         },
         {
             "file": "src/rendering/modes.js",
-            "line": 147,
+            "line": 151,
             "description": "Whether this Modes enables clippable of attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nclippable is done by {{#crossLink \"Clips\"}}{{/crossLink}} that are also attached to\nthe {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nFires a {{#crossLink \"Modes/clippable:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "clippable",
@@ -22830,7 +23421,7 @@
         },
         {
             "file": "src/rendering/modes.js",
-            "line": 173,
+            "line": 177,
             "description": "Fired whenever this Modes' {{#crossLink \"Modes/clippable:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "clippable",
@@ -22846,7 +23437,7 @@
         },
         {
             "file": "src/rendering/modes.js",
-            "line": 187,
+            "line": 191,
             "description": "Whether this Modes sets attached {{#crossLink \"Entity\"}}Entities{{/crossLink}} transparent.\n\nWhen true. this property will set attached {{#crossLink \"Entity\"}}Entities{{/crossLink}} transparent (ie. to be rendered in a\ntransparency pass with blending enabled etc), while\nthe {{#crossLink \"PhongMaterial/opacity:property\"}}{{/crossLink}} will be used to indicate the **degree** of their transparency\n(ie. where opacity of 0.0 indicates maximum translucency and opacity of 1.0 indicates minimum translucency).\n\nFires a {{#crossLink \"Modes/transparent:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "transparent",
@@ -22858,7 +23449,7 @@
         },
         {
             "file": "src/rendering/modes.js",
-            "line": 215,
+            "line": 219,
             "description": "Fired whenever this Modes' {{#crossLink \"Modes/transparent:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "transparent",
@@ -22874,7 +23465,7 @@
         },
         {
             "file": "src/rendering/modes.js",
-            "line": 229,
+            "line": 233,
             "description": "Whether this Modes enables backfaces to be visible on attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nThe backfaces will belong to {{#crossLink \"Geometry\"}}{{/crossLink}} compoents that are also attached to\nthe {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nFires a {{#crossLink \"Modes/backfaces:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "backfaces",
@@ -22886,7 +23477,7 @@
         },
         {
             "file": "src/rendering/modes.js",
-            "line": 255,
+            "line": 259,
             "description": "Fired whenever this Modes' {{#crossLink \"Modes/backfaces:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "backfaces",
@@ -22902,7 +23493,7 @@
         },
         {
             "file": "src/rendering/modes.js",
-            "line": 269,
+            "line": 273,
             "description": "Indicates the winding direction of front faces on attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nThe faces will belong to {{#crossLink \"Geometry\"}}{{/crossLink}} components that are also attached to\nthe {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nFires a {{#crossLink \"Modes/frontface:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "frontface",
@@ -22914,7 +23505,7 @@
         },
         {
             "file": "src/rendering/modes.js",
-            "line": 295,
+            "line": 299,
             "description": "Fired whenever this Modes' {{#crossLink \"Modes/frontface:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "frontface",
@@ -22930,7 +23521,7 @@
         },
         {
             "file": "src/rendering/modes.js",
-            "line": 309,
+            "line": 313,
             "description": "Whether attached {{#crossLink \"Entity\"}}Entities{{/crossLink}} are included\nin boundary-related calculations.\n\nSet this false if the\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} are things like helpers or indicators that should not be included in boundary calculations.\n\nFor example, when set false, the {{#crossLink \"Entity/worldBoundary:property\"}}World-space boundary{{/crossLink}} of all attached {{#crossLink \"Entity\"}}Entities{{/crossLink}} would not be considered when calculating the {{#crossLink \"Scene/worldBoundary:property\"}}World-space boundary{{/crossLink}} of their\n{{#crossLink \"Scene\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"Modes/collidable:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "collidable",
@@ -22942,7 +23533,7 @@
         },
         {
             "file": "src/rendering/modes.js",
-            "line": 337,
+            "line": 341,
             "description": "Fired whenever this Modes' {{#crossLink \"Modes/collidable:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "collidable",
@@ -22958,7 +23549,7 @@
         },
         {
             "file": "src/rendering/modes.js",
-            "line": 352,
+            "line": 356,
             "description": "Whether attached {{#crossLink \"Entity\"}}Entities{{/crossLink}} casts shadows.\n\nFires a {{#crossLink \"Modes/castShadow:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "castShadow",
@@ -22970,7 +23561,7 @@
         },
         {
             "file": "src/rendering/modes.js",
-            "line": 375,
+            "line": 379,
             "description": "Fired whenever this Modes' {{#crossLink \"Modes/castShadow:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "castShadow",
@@ -22986,7 +23577,7 @@
         },
         {
             "file": "src/rendering/modes.js",
-            "line": 389,
+            "line": 393,
             "description": "Whether attached {{#crossLink \"Entity\"}}Entities{{/crossLink}} receives shadows.\n\nFires a {{#crossLink \"Modes/receiveShadow:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "receiveShadow",
@@ -22998,10 +23589,38 @@
         },
         {
             "file": "src/rendering/modes.js",
-            "line": 414,
+            "line": 418,
             "description": "Fired whenever this Modes' {{#crossLink \"Modes/receiveShadow:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "receiveShadow",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Modes",
+            "module": "xeogl",
+            "submodule": "rendering"
+        },
+        {
+            "file": "src/rendering/modes.js",
+            "line": 432,
+            "description": "Whether an outline is drawn around attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nFires a {{#crossLink \"Modes/outline:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "outline",
+            "default": "false",
+            "type": "Boolean",
+            "class": "Modes",
+            "module": "xeogl",
+            "submodule": "rendering"
+        },
+        {
+            "file": "src/rendering/modes.js",
+            "line": 455,
+            "description": "Fired whenever this Modes' {{#crossLink \"Modes/outline:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "outline",
             "params": [
                 {
                     "name": "value",
@@ -24809,7 +25428,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 454,
+            "line": 455,
             "description": "Fired whenever a component has been created within this Scene.",
             "itemtype": "event",
             "name": "componentCreated",
@@ -24825,7 +25444,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 496,
+            "line": 497,
             "description": "Fired whenever a component within this Scene has been destroyed.",
             "itemtype": "event",
             "name": "componentDestroyed",
@@ -24841,7 +25460,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 531,
+            "line": 532,
             "description": "Renders a single frame of this Scene.\n\nThe Scene will automatically call this method on itself to render after any updates, but you\ncan call this method to force a render if required. This method is typically used when we want\nto synchronously take a snapshot of the canvas and need everything rendered right at that moment.",
             "itemtype": "method",
             "name": "render",
@@ -24859,7 +25478,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 562,
+            "line": 563,
             "description": "Fired when about to render a frame for a Scene.",
             "itemtype": "event",
             "name": "rendering",
@@ -24880,7 +25499,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 575,
+            "line": 576,
             "description": "Fired when we have just rendered a frame for a Scene.",
             "itemtype": "event",
             "name": "rendering",
@@ -24901,7 +25520,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 589,
+            "line": 590,
             "description": "The number of {{#crossLink \"Scene/tick:property\"}}{{/crossLink}} that happen between each render or this Scene.\n\nFires a {{#crossLink \"Scene/ticksPerRender:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "ticksPerRender",
@@ -24912,7 +25531,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 619,
+            "line": 620,
             "description": "Fired whenever this Scene's {{#crossLink \"Scene/ticksPerRender:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "ticksPerRender",
@@ -24928,7 +25547,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 633,
+            "line": 634,
             "description": "The number of times this Scene renders per frame.\n\nFires a {{#crossLink \"Scene/passes:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "passes",
@@ -24939,7 +25558,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 665,
+            "line": 666,
             "description": "Fired whenever this Scene's {{#crossLink \"Scene/passes:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "passes",
@@ -24955,7 +25574,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 679,
+            "line": 680,
             "description": "When doing multiple passes per frame, specifies whether to clear the\ncanvas before each pass (true) or just before the first pass (false).\n\nFires a {{#crossLink \"Scene/clearEachPass:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "clearEachPass",
@@ -24966,7 +25585,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 703,
+            "line": 704,
             "description": "Fired whenever this Scene's {{#crossLink \"Scene/clearEachPass:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "clearEachPass",
@@ -24982,7 +25601,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 718,
+            "line": 719,
             "description": "The default projection transform provided by this Scene, which is\na {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}.\n\nThis {{#crossLink \"Perspective\"}}Perspective{{/crossLink}} has an\n{{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to\n\"default.project\", with all other properties set to their default\nvalues.\n\n{{#crossLink \"Camera\"}}Cameras{{/crossLink}} within this Scene\nare attached to this {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}\nby default.",
             "itemtype": "property",
             "name": "project",
@@ -24993,7 +25612,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 746,
+            "line": 747,
             "description": "The default viewing transform provided by this Scene, which is a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}.\n\nThis {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.view\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Camera\"}}Cameras{{/crossLink}} within this Scene are attached to\nthis {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "view",
@@ -25004,7 +25623,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 769,
+            "line": 770,
             "description": "The default {{#crossLink \"Camera\"}}Camera{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Camera\"}}Camera{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.camera\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to\nthis {{#crossLink \"Camera\"}}Camera{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "camera",
@@ -25015,7 +25634,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 794,
+            "line": 795,
             "description": "The default modelling {{#crossLink \"Transform\"}}{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Transform\"}}{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.transform\",\nwith all other properties initialised to their default values (ie. an identity matrix).\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to\nthis {{#crossLink \"Transform\"}}{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "transform",
@@ -25026,7 +25645,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 818,
+            "line": 819,
             "description": "The default {{#crossLink \"Billboard\"}}Billboard{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Billboard\"}}Billboard{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.billboard\"\nand an {{#crossLink \"Billboard/active:property\"}}{{/crossLink}} property set to false, to disable it.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Billboard\"}}Billboard{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "billboard",
@@ -25037,7 +25656,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 842,
+            "line": 843,
             "description": "The default {{#crossLink \"Stationary\"}}Stationary{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Stationary\"}}Stationary{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.stationary\"\nand an {{#crossLink \"Stationary/active:property\"}}{{/crossLink}} property set to false, to disable it.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Stationary\"}}Stationary{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "stationary",
@@ -25048,7 +25667,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 866,
+            "line": 867,
             "description": "The default {{#crossLink \"Clips\"}}Clips{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Clips\"}}Clips{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.clips\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Clips\"}}Clips{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "clips",
@@ -25059,7 +25678,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 889,
+            "line": 890,
             "description": "The default {{#crossLink \"ColorBuf\"}}ColorBuf{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"ColorBuf\"}}ColorBuf{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.colorBuf\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"ColorBuf\"}}ColorBuf{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "colorBuf",
@@ -25070,7 +25689,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 912,
+            "line": 913,
             "description": "The default {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} provided by this Scene.\n\nThe {{#crossLink \"ColorTarget\"}}DepthTarget{{/crossLink}} is\n{{#crossLink \"ColorTarget/active:property\"}}inactive{{/crossLink}} by default and will have an\n{{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.depthTarget\".\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "colorTarget",
@@ -25083,7 +25702,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 937,
+            "line": 938,
             "description": "The default {{#crossLink \"DepthBuf\"}}DepthBuf{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"DepthBuf\"}}DepthBuf{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.depthBuf\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"DepthBuf\"}}DepthBuf{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "depthBuf",
@@ -25094,7 +25713,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 961,
+            "line": 962,
             "description": "The default {{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} provided by this Scene.\n\nThe {{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} is\n{{#crossLink \"DepthTarget/active:property\"}}inactive{{/crossLink}} by default and has an\n{{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.depthTarget\".\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "depthTarget",
@@ -25107,7 +25726,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 986,
+            "line": 987,
             "description": "The default {{#crossLink \"Visibility\"}}Visibility{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Visibility\"}}Visibility{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.visibility\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Visibility\"}}Visibility{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "visibility",
@@ -25118,7 +25737,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1009,
+            "line": 1010,
             "description": "The default {{#crossLink \"Cull\"}}{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Cull\"}}cull{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.cull\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Cull\"}}{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "cull",
@@ -25129,7 +25748,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1032,
+            "line": 1033,
             "description": "The default {{#crossLink \"Modes\"}}Modes{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Modes\"}}Modes{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.modes\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Modes\"}}Modes{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "modes",
@@ -25140,7 +25759,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1054,
+            "line": 1055,
             "description": "The default geometry provided by this Scene, which is a {{#crossLink \"BoxGeometry\"}}BoxGeometry{{/crossLink}}.\n\nThis {{#crossLink \"BoxGeometry\"}}BoxGeometry{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.geometry\".\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Geometry\"}}Geometry{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "geometry",
@@ -25151,7 +25770,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1075,
+            "line": 1076,
             "description": "The default {{#crossLink \"Layer\"}}Layer{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Layer\"}}Layer{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.layer\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Layer\"}}Layer{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "layer",
@@ -25162,7 +25781,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1098,
+            "line": 1099,
             "description": "The default {{#crossLink \"Lights\"}}Lights{{/crossLink}} provided\nby this Scene.\n\nThis {{#crossLink \"Lights\"}}Lights{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to *````\"default.lights\"````*,\nwith all other properties initialised to their default values (ie. the default set of light sources for a {{#crossLink \"Lights\"}}Lights{{/crossLink}}).\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Lights\"}}Lights{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "lights",
@@ -25173,7 +25792,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1171,
+            "line": 1172,
             "description": "The {{#crossLink \"PhongMaterial\"}}PhongMaterial{{/crossLink}} provided as the default material by this Scene.\n\nThis {{#crossLink \"PhongMaterial\"}}PhongMaterial{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.material\", with all\nother properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"PhongMaterial\"}}PhongMaterial{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "material",
@@ -25184,7 +25803,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1194,
+            "line": 1195,
             "description": "The default {{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.morphTargets\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "morphTargets",
@@ -25197,7 +25816,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1217,
+            "line": 1218,
             "description": "The default {{#crossLink \"Shader\"}}Shader{{/crossLink}} provided by this Scene\n(which is initially an empty {{#crossLink \"Shader\"}}Shader{{/crossLink}} that has no effect).\n\nThis {{#crossLink \"Shader\"}}Shader{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.shader\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Shader\"}}Shader{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "shader",
@@ -25210,7 +25829,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1241,
+            "line": 1242,
             "description": "The default {{#crossLink \"ShaderParams\"}}ShaderParams{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"ShaderParams\"}}ShaderParams{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.shaderParams\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"ShaderParams\"}}{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "shaderParams",
@@ -25223,7 +25842,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1265,
+            "line": 1266,
             "description": "The default {{#crossLink \"Stage\"}}Stage{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Stage\"}}Stage{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.stage\" and\na {{#crossLink \"Stage/priority:property\"}}priority{{/crossLink}} equal to ````0````.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Stage\"}}Stage{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "stage",
@@ -25234,7 +25853,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1289,
+            "line": 1290,
             "description": "The default {{#crossLink \"Viewport\"}}{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Viewport\"}}{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.viewport\" and\n{{#crossLink \"Viewport/autoBoundary:property\"}}{{/crossLink}} set ````true````.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Viewport\"}}{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "viewport",
@@ -25245,7 +25864,18 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1314,
+            "line": 1315,
+            "description": "The default {{#crossLink \"Outline\"}}{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Outline\"}}{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.outline\",\na {{#crossLink \"Outline/color:property\"}}color{{/crossLink}} set to ````[1,1,0]````\na {{#crossLink \"Outline/thickness:property\"}}thickness{{/crossLink}} set to ````15````.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Outline\"}}{{/crossLink}} by default.",
+            "itemtype": "property",
+            "name": "outline",
+            "final": 1,
+            "type": "Outline",
+            "class": "Scene",
+            "module": "xeogl"
+        },
+        {
+            "file": "src/scene.js",
+            "line": 1341,
             "description": "The World-space 3D boundary of this Scene.\n\nThe {{#crossLink \"Boundary3D\"}}{{/crossLink}} will be lazy-initialized the first time\nyou reference this property, and will persist on this Scene until you\ncall {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} on the {{#crossLink \"Boundary3D\"}}{{/crossLink}}\nagain. The property will then be set to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance\nnext time you reference it.\n\n<h4>Performance</h4>\n\nTo minimize performance overhead, only reference this property if you need it, and destroy\nthe {{#crossLink \"Boundary3D\"}}{{/crossLink}} as soon as you don't need it anymore.",
             "itemtype": "property",
             "name": "worldBoundary",
@@ -25256,7 +25886,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1397,
+            "line": 1424,
             "description": "Attempts to pick an {{#crossLink \"Entity\"}}Entity{{/crossLink}} in this Scene.\n\nIgnores {{#crossLink \"Entity\"}}Entities{{/crossLink}} that are attached\nto either a {{#crossLink \"Stage\"}}Stage{{/crossLink}} with {{#crossLink \"Stage/pickable:property\"}}pickable{{/crossLink}}\nset *false* or a {{#crossLink \"Modes\"}}Modes{{/crossLink}} with {{#crossLink \"Modes/pickable:property\"}}pickable{{/crossLink}} set *false*.\n\nPicking the {{#crossLink \"Entity\"}}{{/crossLink}} at the given canvas coordinates:\n\n````javascript\nvar hit = scene.pick({\n    canvasPos: [23, 131]\n });\n\nif (hit) { // Picked an Entity\n    var entity = hit.entity;\n}\n````\n\n**Usage:**\n\nPicking the {{#crossLink \"Entity\"}}{{/crossLink}} that intersects a ray cast through the canvas:\n\n````javascript\nvar hit = scene.pick({\n    pickSurface: true,\n    canvasPos: [23, 131]\n });\n\nif (hit) { // Picked an Entity\n\n    var entity = hit.entity;\n\n    // These properties are only on the hit result when we do a ray-pick:\n\n    var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n    var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n    var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n    var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle\n    var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle\n    var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle\n    var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n    var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n    var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n}\n````\n\nPicking the {{#crossLink \"Entity\"}}{{/crossLink}} that intersects an arbitrarily-aligned World-space ray:\n\n````javascript\nvar hit = scene.pick({\n    pickSurface: true,       // Picking with arbitrarily-positioned ray\n    origin: [0,0,-5],    // Ray origin\n    direction: [0,0,1]   // Ray direction\n});\n\nif (hit) { // Picked an Entity with the ray\n\n    var entity = hit.entity;\n\n    var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n    var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n    var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n    var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle\n    var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle\n    var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle\n    var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n    var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n    var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n    var origin = hit.origin; // Float32Array containing the World-space ray origin\n    var direction = hit.direction; // Float32Array containing the World-space ray direction\n}\n````",
             "itemtype": "method",
             "name": "pick",
@@ -25303,7 +25933,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1709,
+            "line": 1736,
             "description": "Resets this Scene to its default state.\n\nReferences to any components in this Scene will become invalid.",
             "itemtype": "method",
             "name": "clear",
@@ -25312,7 +25942,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1735,
+            "line": 1762,
             "description": "Convenience method for creating or reusing a Component within this Scene.\n\nYou would typically use this method to conveniently instantiate components that you'd want to\nshare (ie. \"instance\") among your {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nThe method is given a component type, share ID and constructor attributes, like so:\n\n````javascript\nvar material = myScene.getComponent(\"xeogl.PhongMaterial\", \"myMaterial\", { diffuse: [1,0,0] });\n````\n\nThe first time you call this method for the given ````type```` and ````instanceId````, this method will create the\n{{#crossLink \"PhongMaterial\"}}{{/crossLink}}, passing the given  attributes to the component's constructor.\n\nIf you call this method again, specifying the same ````type```` and ````instanceId````, the method will return the same\ncomponent instance that it returned the first time, and will ignore the attributes:\n\n````javascript\nvar material2 = myScene.getComponent(\"xeogl.PhongMaterial\", \"myMaterial\", { specular: [1,1,0] });\n````\n\nEach time you call this method with the same ````type```` and ````instanceId````, the Scene will internally increment a\nreference count for the component instance. You can release the shared component instance with a call to\n{{#crossLink \"Scene/putSharedComponent:method\"}}{{/crossLink}}, and once you have released it as many\ntimes as you got it, the Scene will destroy the component.",
             "itemtype": "method",
             "name": "_getSharedComponent",
@@ -25340,7 +25970,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1849,
+            "line": 1876,
             "description": "Releases a shared component instance that was got earlier\nwith {{#crossLink \"Scene/getSharedComponent:method\"}}{{/crossLink}}.",
             "params": [
                 {
@@ -25354,7 +25984,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1877,
+            "line": 1904,
             "description": "Compiles and renders this Scene",
             "access": "private",
             "tagname": "",
@@ -29681,7 +30311,11 @@
     "warnings": [
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/_renderer/renderer.js:878"
+            "line": " src/_renderer/renderer.js:1021"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src/_renderer/renderer.new.js:1015"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -29697,7 +30331,7 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/canvas/canvas.js:527"
+            "line": " src/canvas/canvas.js:529"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -29781,11 +30415,11 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/scene.js:1397"
+            "line": " src/scene.js:1424"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/scene.js:1735"
+            "line": " src/scene.js:1762"
         },
         {
             "message": "unknown tag: demo",
@@ -30160,32 +30794,40 @@
             "line": " src/_renderer/program.js:49"
         },
         {
-            "message": "Missing item type\nThe count of display objects using this program",
+            "message": "Missing item type\nThe outline program",
             "line": " src/_renderer/program.js:55"
         },
         {
-            "message": "Missing item type\nTrue when successfully allocated",
+            "message": "Missing item type\nThe count of display objects using this program",
             "line": " src/_renderer/program.js:61"
         },
         {
-            "message": "Missing item type\nTrue when successfully compiled",
+            "message": "Missing item type\nTrue when successfully allocated",
             "line": " src/_renderer/program.js:67"
         },
         {
-            "message": "Missing item type\nTrue when successfully linked",
+            "message": "Missing item type\nTrue when successfully compiled",
             "line": " src/_renderer/program.js:73"
         },
         {
-            "message": "Missing item type\nTrue when successfully validated",
+            "message": "Missing item type\nTrue when successfully linked",
             "line": " src/_renderer/program.js:79"
         },
         {
-            "message": "Missing item type\nContains error log on failure to allocate, compile, validate or link",
+            "message": "Missing item type\nTrue when successfully validated",
             "line": " src/_renderer/program.js:85"
         },
         {
+            "message": "Missing item type\nContains error log on failure to allocate, compile, validate or link",
+            "line": " src/_renderer/program.js:91"
+        },
+        {
             "message": "Missing item type\nCreates the render and pick programs.\n This is also re-called to re-create them after WebGL context loss.",
-            "line": " src/_renderer/program.js:95"
+            "line": " src/_renderer/program.js:101"
+        },
+        {
+            "message": "Missing item type\nDestroys this program.",
+            "line": " src/_renderer/program.js:230"
         },
         {
             "message": "Missing item type\nManages {@link xeogl.renderer.ProgramState} instances.",
@@ -30201,7 +30843,7 @@
         },
         {
             "message": "Missing item type\nRebuild all programs in the pool after WebGL context was lost and restored.",
-            "line": " src/_renderer/programFactory.js:75"
+            "line": " src/_renderer/programFactory.js:72"
         },
         {
             "message": "Missing item type\nSource code for pick and draw shader programs, to be compiled into one or more {@link xeogl.renderer.Program}s",
@@ -30209,43 +30851,51 @@
         },
         {
             "message": "Missing item type\nHash code identifying the capabilities of the {@link xeogl.renderer.Program} that is compiled from this source",
-            "line": " src/_renderer/programSource.js:24"
+            "line": " src/_renderer/programSource.js:27"
         },
         {
             "message": "Missing item type\nVertex shader source for object picking",
-            "line": " src/_renderer/programSource.js:30"
+            "line": " src/_renderer/programSource.js:33"
         },
         {
             "message": "Missing item type\nFragment shader source for object picking.",
-            "line": " src/_renderer/programSource.js:36"
+            "line": " src/_renderer/programSource.js:39"
         },
         {
             "message": "Missing item type\nVertex shader source for primitive picking.",
-            "line": " src/_renderer/programSource.js:42"
+            "line": " src/_renderer/programSource.js:45"
         },
         {
             "message": "Missing item type\nFragment shader source for primitive picking.",
-            "line": " src/_renderer/programSource.js:48"
+            "line": " src/_renderer/programSource.js:51"
         },
         {
             "message": "Missing item type\nVertex shader source for drawing.",
-            "line": " src/_renderer/programSource.js:54"
+            "line": " src/_renderer/programSource.js:57"
         },
         {
             "message": "Missing item type\nFragment shader source for drawing.",
-            "line": " src/_renderer/programSource.js:60"
+            "line": " src/_renderer/programSource.js:63"
         },
         {
             "message": "Missing item type\nVertex shader source for rendering shadow buffer.",
-            "line": " src/_renderer/programSource.js:66"
+            "line": " src/_renderer/programSource.js:69"
         },
         {
             "message": "Missing item type\nFragment shader source for rendering shadow buffer.",
-            "line": " src/_renderer/programSource.js:72"
+            "line": " src/_renderer/programSource.js:75"
+        },
+        {
+            "message": "Missing item type\nVertex shader source for rendering outlines.",
+            "line": " src/_renderer/programSource.js:81"
+        },
+        {
+            "message": "Missing item type\nFragment shader source for rendering outlines.",
+            "line": " src/_renderer/programSource.js:87"
         },
         {
             "message": "Missing item type\nCount of {@link xeogl.renderer.Program}s compiled from this program source code",
-            "line": " src/_renderer/programSource.js:78"
+            "line": " src/_renderer/programSource.js:93"
         },
         {
             "message": "Missing item type\nManages creation, sharing and recycle of {@link xeogl.renderer.ProgramSource} instances",
@@ -30253,11 +30903,11 @@
         },
         {
             "message": "Missing item type\nGet source code for a program to render the given states.\nAttempts to reuse cached source code for the given hash.",
-            "line": " src/_renderer/programSourceFactory.js:36"
+            "line": " src/_renderer/programSourceFactory.js:38"
         },
         {
             "message": "Missing item type\nReleases program source code back to this factory.",
-            "line": " src/_renderer/programSourceFactory.js:137"
+            "line": " src/_renderer/programSourceFactory.js:141"
         },
         {
             "message": "Missing item type",
@@ -30281,51 +30931,119 @@
         },
         {
             "message": "Missing item type\nFlags the object list as needing to be rebuilt from the object map.",
-            "line": " src/_renderer/renderer.js:262"
+            "line": " src/_renderer/renderer.js:270"
         },
         {
             "message": "Missing item type\nFlags the object list as needing state orders to be recomputed.",
-            "line": " src/_renderer/renderer.js:267"
+            "line": " src/_renderer/renderer.js:275"
         },
         {
             "message": "Missing item type\nFlags the object list as needing to be state-sorted.",
-            "line": " src/_renderer/renderer.js:272"
+            "line": " src/_renderer/renderer.js:280"
         },
         {
             "message": "Missing item type\nFlags the image as needing to be redrawn from the object list.",
-            "line": " src/_renderer/renderer.js:277"
+            "line": " src/_renderer/renderer.js:285"
         },
         {
             "message": "Missing item type\nReallocates WebGL resources for objects within this renderer.",
-            "line": " src/_renderer/renderer.js:283"
+            "line": " src/_renderer/renderer.js:291"
         },
         {
             "message": "Missing item type\nInternally creates (or updates) a {@link xeogl.renderer.Object} of the given\nID from whatever component state cores are currently set on this {@link xeogl.Renderer}.\nThe object is created if it does not already exist in the display, otherwise\nit is updated with the current states, possibly replacing states already\nreferenced by the object.",
-            "line": " src/_renderer/renderer.js:306"
+            "line": " src/_renderer/renderer.js:314"
         },
         {
             "message": "Missing item type",
-            "line": " src/_renderer/renderer.js:449"
+            "line": " src/_renderer/renderer.js:459"
         },
         {
             "message": "Missing item type\nRemoves an object from this Renderer",
-            "line": " src/_renderer/renderer.js:505"
+            "line": " src/_renderer/renderer.js:515"
         },
         {
             "message": "Missing item type\nRenders a new frame, if neccessary.",
-            "line": " src/_renderer/renderer.js:541"
+            "line": " src/_renderer/renderer.js:551"
         },
         {
             "message": "Missing item type\nAttempts to pick an object.",
-            "line": " src/_renderer/renderer.js:878"
+            "line": " src/_renderer/renderer.js:1021"
         },
         {
             "message": "Missing item type\nReads the colors of some pixels in the last rendered frame.",
-            "line": " src/_renderer/renderer.js:1097"
+            "line": " src/_renderer/renderer.js:1240"
         },
         {
             "message": "Missing item type\nDestroys this Renderer.",
-            "line": " src/_renderer/renderer.js:1143"
+            "line": " src/_renderer/renderer.js:1286"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/_renderer/renderer.new.js:7"
+        },
+        {
+            "message": "Missing item type\nIndicates if the canvas is transparent",
+            "line": " src/_renderer/renderer.new.js:25"
+        },
+        {
+            "message": "Missing item type\nOptional callback to fire when renderer wants to\nbind an output framebuffer. This is useful when we need to bind a stereo output buffer for WebVR.\n\nWhen this is missing, the renderer will implicitly bind\nWebGL's default framebuffer.\n\nThe callback takes one parameter, which is the index of the current\nrendering pass in which the buffer is to be bound.\n\nUse like this: myRenderer.bindOutputFramebuffer = function(pass) { .. });",
+            "line": " src/_renderer/renderer.new.js:31"
+        },
+        {
+            "message": "Missing item type\nOptional callback to fire when renderer wants to\nunbind any output drawing framebuffer that was\npreviously bound with #bindOutputFramebuffer.\n\nThe callback takes one parameter, which is the index of the current\nrendering pass in which the buffer is to be bound.\n\nUse like this: myRenderer.unbindOutputFramebuffer = function(pass) { .. });\n\nCallback takes no parameters.",
+            "line": " src/_renderer/renderer.new.js:45"
+        },
+        {
+            "message": "Missing item type\nThe current ambient color.",
+            "line": " src/_renderer/renderer.new.js:65"
+        },
+        {
+            "message": "Missing item type\nFlags the object list as needing to be rebuilt from the object map.",
+            "line": " src/_renderer/renderer.new.js:270"
+        },
+        {
+            "message": "Missing item type\nFlags the object list as needing state orders to be recomputed.",
+            "line": " src/_renderer/renderer.new.js:275"
+        },
+        {
+            "message": "Missing item type\nFlags the object list as needing to be state-sorted.",
+            "line": " src/_renderer/renderer.new.js:280"
+        },
+        {
+            "message": "Missing item type\nFlags the image as needing to be redrawn from the object list.",
+            "line": " src/_renderer/renderer.new.js:285"
+        },
+        {
+            "message": "Missing item type\nReallocates WebGL resources for objects within this renderer.",
+            "line": " src/_renderer/renderer.new.js:291"
+        },
+        {
+            "message": "Missing item type\nInternally creates (or updates) a {@link xeogl.renderer.Object} of the given\nID from whatever component state cores are currently set on this {@link xeogl.Renderer}.\nThe object is created if it does not already exist in the display, otherwise\nit is updated with the current states, possibly replacing states already\nreferenced by the object.",
+            "line": " src/_renderer/renderer.new.js:314"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/_renderer/renderer.new.js:459"
+        },
+        {
+            "message": "Missing item type\nRemoves an object from this Renderer",
+            "line": " src/_renderer/renderer.new.js:515"
+        },
+        {
+            "message": "Missing item type\nRenders a new frame, if neccessary.",
+            "line": " src/_renderer/renderer.new.js:551"
+        },
+        {
+            "message": "Missing item type\nAttempts to pick an object.",
+            "line": " src/_renderer/renderer.new.js:1015"
+        },
+        {
+            "message": "Missing item type\nReads the colors of some pixels in the last rendered frame.",
+            "line": " src/_renderer/renderer.new.js:1234"
+        },
+        {
+            "message": "Missing item type\nDestroys this Renderer.",
+            "line": " src/_renderer/renderer.new.js:1280"
         },
         {
             "message": "Missing item type",
@@ -30521,23 +31239,23 @@
         },
         {
             "message": "Missing item type\nCreates a default canvas in the DOM.",
-            "line": " src/canvas/canvas.js:391"
+            "line": " src/canvas/canvas.js:393"
         },
         {
             "message": "Missing item type\nCreates a image element behind the canvas, for purpose of showing a custom background.",
-            "line": " src/canvas/canvas.js:421"
+            "line": " src/canvas/canvas.js:423"
         },
         {
             "message": "Missing item type\nCreates an invisible DIV over the canvas, for purpose of catching\ninput events without interfering with app-lever UI bits floating underneath.",
-            "line": " src/canvas/canvas.js:448"
+            "line": " src/canvas/canvas.js:450"
         },
         {
             "message": "Missing item type\nInitialises the WebGL context",
-            "line": " src/canvas/canvas.js:485"
+            "line": " src/canvas/canvas.js:487"
         },
         {
             "message": "Missing item type\nReads colors of pixels from the last rendered frame.\n\n<p>Call this method like this:</p>\n\n````JavaScript\n\n// Ignore transparent pixels (default is false)\nvar opaqueOnly = true;\n\nvar colors = new Float32Array(8);\n\nmyCanvas.readPixels([ 100, 22, 12, 33 ], colors, 2, opaqueOnly);\n````\n\nThen the r,g,b components of the colors will be set to the colors at those pixels.",
-            "line": " src/canvas/canvas.js:585"
+            "line": " src/canvas/canvas.js:587"
         },
         {
             "message": "Missing item type\nImplement protected virtual template method {{#crossLink \"Geometry/method:_update\"}}{{/crossLink}},\nto generate geometry data arrays.",
@@ -30873,11 +31591,11 @@
         },
         {
             "message": "Missing item type\nReleases a shared component instance that was got earlier\nwith {{#crossLink \"Scene/getSharedComponent:method\"}}{{/crossLink}}.",
-            "line": " src/scene.js:1849"
+            "line": " src/scene.js:1876"
         },
         {
             "message": "Missing item type\nCompiles and renders this Scene",
-            "line": " src/scene.js:1877"
+            "line": " src/scene.js:1904"
         },
         {
             "message": "Missing item type\nInformation about available WebGL support",

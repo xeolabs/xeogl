@@ -23,7 +23,8 @@
     clippable true,             // Enable effect of xeogl.Clip components
     transparent : false,        // Disable transparency
     backfaces : true,           // Render backfaces
-    frontface : "ccw"
+    frontface : "ccw",          // Front faces have counter-clockwise vertex winding
+    outline: false              // Don't outline for emphasis
  });
 
  var boxGeometry = new xeogl.BoxGeometry();
@@ -68,6 +69,7 @@
  {{#crossLink "Entity"}}Entities{{/crossLink}} are things like helpers or indicators that should not be included in boundary calculations.
  @param [cfg.castShadow=true] {Boolean} Whether attached {{#crossLink "Entity"}}Entities{{/crossLink}} cast shadows.
  @param [cfg.receiveShadow=true] {Boolean} Whether attached {{#crossLink "Entity"}}Entities{{/crossLink}} receive shadows.
+ @param [cfg.outline=false] {Boolean} Whether an outline is drawn around the attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
  @extends Component
  */
 (function () {
@@ -89,6 +91,7 @@
                 collidable: null,
                 castShadow: null,
                 receiveShadow: null,
+                outline: null,
                 hash: ""
             });
 
@@ -100,6 +103,7 @@
             this.collidable = cfg.collidable;
             this.castShadow = cfg.castShadow;
             this.receiveShadow = cfg.receiveShadow;
+            this.outline = cfg.outline;
         },
 
         _props: {
@@ -210,7 +214,7 @@
 
                     this._state.transparent = value;
 
-                    this._renderer.stateOrderDirty = true;
+                    this._renderer.imageDirty = true;
 
                     /**
                      Fired whenever this Modes' {{#crossLink "Modes/transparent:property"}}{{/crossLink}} property changes.
@@ -423,6 +427,43 @@
                 get: function () {
                     return this._state.receiveShadow;
                 }
+            },
+
+            /**
+             Whether an outline is drawn around attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+             Fires a {{#crossLink "Modes/outline:event"}}{{/crossLink}} event on change.
+
+             @property outline
+             @default false
+             @type Boolean
+             */
+            outline: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    if (value === this._state.outline) {
+                        return;
+                    }
+
+                    this._state.outline = value;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this Modes' {{#crossLink "Modes/outline:property"}}{{/crossLink}} property changes.
+
+                     @event outline
+                     @param value The property's new value
+                     */
+                    this.fire("outline", this._state.outline);
+                },
+
+                get: function () {
+                    return this._state.outline;
+                }
             }
         },
 
@@ -439,7 +480,8 @@
                 frontface: this._state.frontface,
                 collidable: this._state.collidable,
                 castShadow: this._state.castShadow,
-                receiveShadow: this._state.receiveShadow
+                receiveShadow: this._state.receiveShadow,
+                outline: this._state.outline
             };
         },
 

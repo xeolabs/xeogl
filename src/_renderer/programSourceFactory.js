@@ -32,6 +32,8 @@
         var fragmentPickPrimSrc;
         var vertexShadowSrc;
         var fragmentShadowSrc;
+        var vertexOutlineSrc;
+        var fragmentOutlineSrc;
 
         /**
          * Get source code for a program to render the given states.
@@ -71,7 +73,9 @@
                 vertexDraw(),
                 fragmentDraw(),
                 vertexShadow(),
-                fragmentShadow()
+                fragmentShadow(),
+                vertexOutline(),
+                fragmentOutline()
             );
 
             cache[hash] = source;
@@ -255,6 +259,75 @@
             //     add("   gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);");
             add("}");
             return fragmentShadowSrc = end();
+        }
+
+        function vertexOutline() {
+            begin();
+            add("attribute vec4 position;");
+            add("uniform mat4 modelMatrix;");
+            add("uniform mat4 viewMatrix;");
+            add("uniform mat4 projMatrix;");
+            add("uniform float thickness;");
+
+            if (normals) {
+                add("attribute vec3 normal;");
+            }
+
+            if (states.billboard.active) {
+                add("void billboard(inout mat4 mat) {");
+                add("   mat[0][0] = 1.0;");
+                add("   mat[0][1] = 0.0;");
+                add("   mat[0][2] = 0.0;");
+                if (states.billboard.spherical) {
+                    add("   mat[1][0] = 0.0;");
+                    add("   mat[1][1] = 1.0;");
+                    add("   mat[1][2] = 0.0;");
+                }
+                add("   mat[2][0] = 0.0;");
+                add("   mat[2][1] = 0.0;");
+                add("   mat[2][2] =1.0;");
+                add("}");
+            }
+
+            add("void main(void) {");
+
+            add("mat4 viewMatrix2 = viewMatrix;");
+            add("mat4 modelMatrix2 = modelMatrix;");
+
+            if (states.stationary.active) {
+                add("viewMatrix2[3][0] = viewMatrix2[3][1] = viewMatrix2[3][2] = 0.0;")
+            }
+
+            if (states.billboard.active) {
+                add("billboard(modelMatrix2);");
+                add("billboard(viewMatrix2);");
+            }
+
+            // Displacement
+
+            if (normals) {
+                add("vec4 projPos = projMatrix * viewMatrix2 * modelMatrix2 * vec4(position.xyz, 1.0); ");
+                add("  vec3 offset = (normalize(normal) * (thickness * 0.0005 * (projPos.z/1.0)));");
+            } else {
+                add("  vec3 offset = vec3(0.0, 0.0, 0.0);");
+            }
+
+            add("vec4 worldVertex = modelMatrix * vec4(position.xyz + offset, 1.0); ");
+
+            add("  gl_Position = projMatrix * (viewMatrix * worldVertex);");
+            add("}");
+            return vertexOutlineSrc = end();
+        }
+
+        function fragmentOutline() {
+            begin();
+            add("precision " + getFSFloatPrecision(states.gl) + " float;");
+            add("uniform vec3  color;");
+            add("void main(void) {");
+            add("   gl_FragColor = vec4(color, 1.0);");
+            add("}");
+
+            return fragmentOutlineSrc = end();
         }
 
         function vertexDraw() {
@@ -1023,7 +1096,8 @@
                     }
                     if (light.type === "dir" && light.space === "view") {
                         add("uniform vec3 lightDir" + i + ";");
-                    } if (light.type === "point" && light.space === "view") {
+                    }
+                    if (light.type === "point" && light.space === "view") {
                         add("uniform vec3 lightPos" + i + ";");
                     } else {
                         add("varying vec4 vViewLightReverseDirAndDist" + i + ";");

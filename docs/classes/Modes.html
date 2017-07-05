@@ -95,6 +95,7 @@
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
+                                <li><a href="../classes/Outline.html">Outline</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
@@ -161,6 +162,7 @@
                                 <li><a href="..//modules/materials.html">materials</a></li>
                                 <li><a href="..//modules/math.html">math</a></li>
                                 <li><a href="..//modules/models.html">models</a></li>
+                                <li><a href="..//modules/outline.html">outline</a></li>
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
                                 <li><a href="..//modules/shaders.html">shaders</a></li>
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
@@ -238,7 +240,8 @@ var modes = new xeogl.Modes(scene, {
    clippable true,             // Enable effect of xeogl.Clip components
    transparent : false,        // Disable transparency
    backfaces : true,           // Render backfaces
-   frontface : "ccw"
+   frontface : "ccw",          // Front faces have counter-clockwise vertex winding
+   outline: false              // Don&#39;t outline for emphasis
 });
 
 var boxGeometry = new xeogl.BoxGeometry();
@@ -445,6 +448,17 @@ var entity2 = new xeogl.Entity(scene, {
                                         </div>
         
                                     </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[outline=false]</code>
+                                            <span class="type">Boolean</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Whether an outline is drawn around the attached <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
+        
+                                        </div>
+        
+                                    </li>
                                 </ul>
                         </li>
                     </ul>
@@ -560,6 +574,10 @@ var entity2 = new xeogl.Entity(scene, {
 
                             </li>
                             <li class="index-item property">
+                                <a href="#property_outline">outline</a>
+
+                            </li>
+                            <li class="index-item property">
                                 <a href="#property_pickable">pickable</a>
 
                             </li>
@@ -617,6 +635,10 @@ var entity2 = new xeogl.Entity(scene, {
                             </li>
                             <li class="index-item event">
                                 <a href="#event_frontface">frontface</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_outline">outline</a>
 
                             </li>
                             <li class="index-item event">
@@ -1373,7 +1395,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_modes.js.html#l229"><code>src&#x2F;rendering&#x2F;modes.js:229</code></a>
+                            <a href="../files/src_rendering_modes.js.html#l233"><code>src&#x2F;rendering&#x2F;modes.js:233</code></a>
                             </p>
                     
                     
@@ -1402,7 +1424,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_modes.js.html#l352"><code>src&#x2F;rendering&#x2F;modes.js:352</code></a>
+                            <a href="../files/src_rendering_modes.js.html#l356"><code>src&#x2F;rendering&#x2F;modes.js:356</code></a>
                             </p>
                     
                     
@@ -1429,7 +1451,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_modes.js.html#l147"><code>src&#x2F;rendering&#x2F;modes.js:147</code></a>
+                            <a href="../files/src_rendering_modes.js.html#l151"><code>src&#x2F;rendering&#x2F;modes.js:151</code></a>
                             </p>
                     
                     
@@ -1458,7 +1480,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_modes.js.html#l309"><code>src&#x2F;rendering&#x2F;modes.js:309</code></a>
+                            <a href="../files/src_rendering_modes.js.html#l313"><code>src&#x2F;rendering&#x2F;modes.js:313</code></a>
                             </p>
                     
                     
@@ -1515,7 +1537,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_modes.js.html#l269"><code>src&#x2F;rendering&#x2F;modes.js:269</code></a>
+                            <a href="../files/src_rendering_modes.js.html#l273"><code>src&#x2F;rendering&#x2F;modes.js:273</code></a>
                             </p>
                     
                     
@@ -1635,6 +1657,33 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_outline" class="property item">
+                        <h3 class="name"><code>outline</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_rendering_modes.js.html#l432"><code>src&#x2F;rendering&#x2F;modes.js:432</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Whether an outline is drawn around attached <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
+                    <p>Fires a <a href="../classes/Modes.html#event_outline" class="crosslink">outline</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> false</p>
+                    
+                    
+                    </div>
                     <div id="property_pickable" class="property item">
                         <h3 class="name"><code>pickable</code></h3>
                         <span class="type">Boolean</span>
@@ -1646,7 +1695,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_modes.js.html#l107"><code>src&#x2F;rendering&#x2F;modes.js:107</code></a>
+                            <a href="../files/src_rendering_modes.js.html#l111"><code>src&#x2F;rendering&#x2F;modes.js:111</code></a>
                             </p>
                     
                     
@@ -1674,7 +1723,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_modes.js.html#l389"><code>src&#x2F;rendering&#x2F;modes.js:389</code></a>
+                            <a href="../files/src_rendering_modes.js.html#l393"><code>src&#x2F;rendering&#x2F;modes.js:393</code></a>
                             </p>
                     
                     
@@ -1788,7 +1837,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_modes.js.html#l187"><code>src&#x2F;rendering&#x2F;modes.js:187</code></a>
+                            <a href="../files/src_rendering_modes.js.html#l191"><code>src&#x2F;rendering&#x2F;modes.js:191</code></a>
                             </p>
                     
                     
@@ -1854,7 +1903,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_modes.js.html#l255"><code>src&#x2F;rendering&#x2F;modes.js:255</code></a>
+                            <a href="../files/src_rendering_modes.js.html#l259"><code>src&#x2F;rendering&#x2F;modes.js:259</code></a>
                             </p>
                     
                     
@@ -1896,7 +1945,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_modes.js.html#l375"><code>src&#x2F;rendering&#x2F;modes.js:375</code></a>
+                            <a href="../files/src_rendering_modes.js.html#l379"><code>src&#x2F;rendering&#x2F;modes.js:379</code></a>
                             </p>
                     
                     
@@ -1938,7 +1987,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_modes.js.html#l173"><code>src&#x2F;rendering&#x2F;modes.js:173</code></a>
+                            <a href="../files/src_rendering_modes.js.html#l177"><code>src&#x2F;rendering&#x2F;modes.js:177</code></a>
                             </p>
                     
                     
@@ -1980,7 +2029,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_modes.js.html#l337"><code>src&#x2F;rendering&#x2F;modes.js:337</code></a>
+                            <a href="../files/src_rendering_modes.js.html#l341"><code>src&#x2F;rendering&#x2F;modes.js:341</code></a>
                             </p>
                     
                     
@@ -2047,7 +2096,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_modes.js.html#l295"><code>src&#x2F;rendering&#x2F;modes.js:295</code></a>
+                            <a href="../files/src_rendering_modes.js.html#l299"><code>src&#x2F;rendering&#x2F;modes.js:299</code></a>
                             </p>
                     
                     
@@ -2055,6 +2104,48 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Fired whenever this Modes&#39; <a href="../classes/Modes.html#property_frontface" class="crosslink">frontface</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_outline" class="events item">
+                        <h3 class="name"><code>outline</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_rendering_modes.js.html#l455"><code>src&#x2F;rendering&#x2F;modes.js:455</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Modes&#39; <a href="../classes/Modes.html#property_outline" class="crosslink">outline</a> property changes.</p>
                     
                         </div>
                     
@@ -2089,7 +2180,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_modes.js.html#l133"><code>src&#x2F;rendering&#x2F;modes.js:133</code></a>
+                            <a href="../files/src_rendering_modes.js.html#l137"><code>src&#x2F;rendering&#x2F;modes.js:137</code></a>
                             </p>
                     
                     
@@ -2131,7 +2222,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_modes.js.html#l414"><code>src&#x2F;rendering&#x2F;modes.js:414</code></a>
+                            <a href="../files/src_rendering_modes.js.html#l418"><code>src&#x2F;rendering&#x2F;modes.js:418</code></a>
                             </p>
                     
                     
@@ -2173,7 +2264,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_modes.js.html#l215"><code>src&#x2F;rendering&#x2F;modes.js:215</code></a>
+                            <a href="../files/src_rendering_modes.js.html#l219"><code>src&#x2F;rendering&#x2F;modes.js:219</code></a>
                             </p>
                     
                     

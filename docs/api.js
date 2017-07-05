@@ -55,6 +55,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "OBBGeometry",
         "OBJGeometry",
         "Ortho",
+        "Outline",
         "Path",
         "PathGeometry",
         "Perspective",
@@ -120,6 +121,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "materials",
         "math",
         "models",
+        "outline",
         "rendering",
         "shaders",
         "skyboxes",
@@ -238,6 +240,11 @@ YUI.add("yuidoc-meta", function(Y) {
             "displayName": "models",
             "name": "models",
             "description": "Models are units of xeogl content."
+        },
+        {
+            "displayName": "outline",
+            "name": "outline",
+            "description": "An outline rendering effect for emphasis."
         },
         {
             "displayName": "rendering",

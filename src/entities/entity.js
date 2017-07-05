@@ -154,6 +154,8 @@
  {{#crossLink "Scene/transform:property"}}transform{{/crossLink}} (which is an identity matrix which performs no transformation).
  @param [cfg.viewport] {String|Viewport} ID or instance of a {{#crossLink "Viewport"}}{{/crossLink}} attached to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
  {{#crossLink "Scene/viewport:property"}}{{/crossLink}}, which is automatically resizes to the canvas.
+ @param [cfg.outline] {String|Outline} ID or instance of a {{#crossLink "Outline"}}{{/crossLink}} attached to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
+ {{#crossLink "Scene/outline:property"}}{{/crossLink}}.
  @param [cfg.loading] {Boolean} Flag which indicates that this Entity is freshly loaded. This will increment the
  {{#crossLink "Spinner/processes:property"}}Spinner processes{{/crossLink}} count, and then when this Entity is first
  rendered, will decrement the count again.
@@ -205,6 +207,7 @@
             this.billboard = cfg.billboard;
             this.stationary = cfg.stationary;
             this.viewport = cfg.viewport;
+            this.outline = cfg.outline;
 
             // Cached boundary for each coordinate space
             // The Entity's Geometry component caches the Local-space boundary
@@ -1030,6 +1033,41 @@
             },
 
             /**
+             * The {{#crossLink "Outline"}}Outline{{/crossLink}} attached to this Entity.
+             *
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
+             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/outline:property"}}Outline{{/crossLink}} when set to
+             * a null or undefined value.
+             *
+             * Fires an {{#crossLink "Entity/outline:event"}}{{/crossLink}} event on change.
+             *
+             * @property outline
+             * @type Outline
+             */
+            outline: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this Entity's  {{#crossLink "Entity/Outline:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event Outline
+                     * @param value The property's new value
+                     */
+                    this._attach({
+                        name: "outline",
+                        type: "xeogl.Outline",
+                        component: value,
+                        sceneDefault: true
+                    });
+                },
+
+                get: function () {
+                    return this._attached.outline;
+                }
+            },
+
+            /**
              * Local-space 3D boundary of this Entity.
              *
              * This is a {{#crossLink "Boundary3D"}}{{/crossLink}} that encloses
@@ -1442,6 +1480,7 @@
             attached.billboard._compile();
             attached.stationary._compile();
             attached.viewport._compile();
+            attached.outline._compile();
 
             // (Re)build this Entity in the renderer; for each Entity in teh scene graph,
             // there is an "object" in the renderer, that has the same ID as the entity
@@ -1494,7 +1533,8 @@
                 transform: attached.transform.id,
                 billboard: attached.billboard.id,
                 stationary: attached.stationary.id,
-                viewport: attached.viewport.id
+                viewport: attached.viewport.id,
+                outline: attached.outline.id
             };
         },
 
