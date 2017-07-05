@@ -63,7 +63,6 @@
                                 <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
-                                <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
@@ -71,7 +70,6 @@
                                 <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
                                 <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
-                                <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
                                 <li><a href="../classes/Entity.html">Entity</a></li>
                                 <li><a href="../classes/Fog.html">Fog</a></li>
@@ -111,8 +109,6 @@
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
-                                <li><a href="../classes/Shader.html">Shader</a></li>
-                                <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
                                 <li><a href="../classes/SpecularMaterial.html">SpecularMaterial</a></li>
@@ -121,7 +117,6 @@
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/SpotLight.html">SpotLight</a></li>
-                                <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
                                 <li><a href="../classes/Story.html">Story</a></li>
@@ -164,7 +159,6 @@
                                 <li><a href="..//modules/models.html">models</a></li>
                                 <li><a href="..//modules/outline.html">outline</a></li>
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
-                                <li><a href="..//modules/shaders.html">shaders</a></li>
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="..//modules/stories.html">stories</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
@@ -221,23 +215,23 @@
 
 
 <div class="box intro">
-    <p>A <strong>Layer</strong> sets the rendering order of <a href="../classes/Entity.html" class="crosslink">Entities</a> within their <a href="../classes/Stage.html" class="crosslink">Stages</a>.</p>
+    <p>A <strong>Layer</strong> sets the rendering order of <a href="../classes/Entity.html" class="crosslink">Entities</a> within their Stage.</p>
 <h2 id="overview">Overview</h2>
 <ul>
-<li>When xeogl renders a <a href="../classes/Scene.html" class="crosslink">Scene</a>, each <a href="../classes/Stage.html" class="crosslink">Stage</a> within that will render its bin
-of <a href="../classes/Entity.html" class="crosslink">Entities</a> in turn, from the lowest priority <a href="../classes/Stage.html" class="crosslink">Stage</a> to the highest.</li>
-<li><a href="../classes/Stage.html" class="crosslink">Stages</a> are typically used for ordering the render-to-texture steps in posteffects pipelines.</li>
-<li>You can control the render order of the individual <a href="../classes/Entity.html" class="crosslink">Entities</a> <strong><em>within</em></strong> a <a href="../classes/Stage.html" class="crosslink">Stage</a>
+<li>When xeogl renders a <a href="../classes/Scene.html" class="crosslink">Scene</a>, each Stage within that will render its bin
+of <a href="../classes/Entity.html" class="crosslink">Entities</a> in turn, from the lowest priority Stage to the highest.</li>
+<li>Stage are typically used for ordering the render-to-texture steps in posteffects pipelines.</li>
+<li>You can control the render order of the individual <a href="../classes/Entity.html" class="crosslink">Entities</a> <strong><em>within</em></strong> a Stage
 by associating them with <a href="../classes/Layer.html" class="crosslink">Layers</a>.</li>
 <li><a href="../classes/Layer.html" class="crosslink">Layers</a> are typically used to <a href="https://www.opengl.org/wiki/Transparency_Sorting" target="_other">transparency-sort</a> the
-<a href="../classes/Entity.html" class="crosslink">Entities</a> within <a href="../classes/Stage.html" class="crosslink">Stages</a>.</li>
+<a href="../classes/Entity.html" class="crosslink">Entities</a> within Stage.</li>
 <li><a href="../classes/Entity.html" class="crosslink">Entities</a> not explicitly attached to a Layer are implicitly
 attached to the <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default
 <a href="../classes/Scene.html#property_layer" class="crosslink">layer</a>. which has
 a <a href="../classes/Layer.html#property_priority" class="crosslink">priority</a> value of zero.</li>
-<li>You can use Layers without defining any <a href="../classes/Stage.html" class="crosslink">Stages</a> if you simply let your
+<li>You can use Layers without defining any Stage if you simply let your
 <a href="../classes/Entity.html" class="crosslink">Entities</a> fall back on the <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default
-<a href="../classes/Scene.html#property_stage" class="crosslink">stage</a>. which has a <a href="../classes/Stage.html#property_priority" class="crosslink">priority</a> value of zero.</li>
+Scene/stage:property. which has a Stage/priority:property value of zero.</li>
 </ul>
 <p><img src="../../../assets/images/Layer.png"></img></p>
 <h2 id="examples">Examples</h2>
@@ -251,9 +245,9 @@ which ensures that transparent entities are rendered farthest-to-nearest, so tha
 the box enclosing that is transparent and yellow, and the outermost box is transparent and green. We need the boxes to
 render in order innermost-to-outermost, in order to blend transparencies correctly.</p>
 <p><img src="../../assets/images/transparencySort.jpg"></img></p>
-<p>Our scene has one <a href="../classes/Stage.html" class="crosslink">Stage</a>, just for completeness. As mentioned earlier, you don&#39;t have to
-create this because the <a href="../classes/Scene.html" class="crosslink">Scene</a> will provide its default <a href="../classes/Stage.html" class="crosslink">Stage</a>.
-Then, within that <a href="../classes/Stage.html" class="crosslink">Stage</a>, we create an <a href="../classes/Entity.html" class="crosslink">Entity</a> for each box,
+<p>Our scene has one Stage, just for completeness. As mentioned earlier, you don&#39;t have to
+create this because the <a href="../classes/Scene.html" class="crosslink">Scene</a> will provide its default Stage.
+Then, within that Stage, we create an <a href="../classes/Entity.html" class="crosslink">Entity</a> for each box,
 each assigned to a different prioritised <a href="../classes/Layer.html" class="crosslink">Layer</a> to ensure that they are rendered in the right order.</p>
 <pre class="code prettyprint"><code class="lang-javascript">// A Stage, just for completeness
 // We could instead just implicitly default to the Scene&#39;s default Stage
@@ -491,10 +485,6 @@ var entity3 = new xeogl.Entity({
                     <h3>Properties</h3>
 
                     <ul class="index-list properties extends">
-                            <li class="index-item property">
-                                <a href="#property_active">active</a>
-
-                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_destroyed">destroyed</a>
 
@@ -543,10 +533,6 @@ var entity3 = new xeogl.Entity({
                     <h3>Events</h3>
 
                     <ul class="index-list events extends">
-                            <li class="index-item event">
-                                <a href="#event_active">active</a>
-
-                            </li>
                             <li class="index-item event inherited">
                                 <a href="#event_destroyed">destroyed</a>
 
@@ -1286,35 +1272,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property_active" class="property item">
-                        <h3 class="name"><code>active</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_rendering_depthTarget.js.html#l84"><code>src&#x2F;rendering&#x2F;depthTarget.js:84</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Indicates whether this DepthTarget is active or not.</p>
-                    <p>When active, the pixel depths of associated Entities will be rendered
-                    to this DepthTarget. When inactive, the colors will be written to the default WebGL depth buffer instead.</p>
-                    <p>Fires a DepthTarget/active:event event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> true</p>
-                    
-                    
-                    </div>
                     <div id="property_destroyed" class="property item inherited">
                         <h3 class="name"><code>destroyed</code></h3>
                         <span class="type">Boolean</span>
@@ -1461,8 +1418,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Indicates this Layer&#39;s rendering priority for the attached <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
-                    <p>Each <a href="../classes/Entity.html" class="crosslink">Entity</a> is also attached to a <a href="../classes/Stage.html" class="crosslink">Stage</a>, which sets a <em>stage</em> rendering
-                    priority via its <a href="../classes/Stage.html#property_priority" class="crosslink">priority</a> property.</p>
+                    <p>Each <a href="../classes/Entity.html" class="crosslink">Entity</a> is also attached to a Stage, which sets a <em>stage</em> rendering
+                    priority via its Stage/priority:property property.</p>
                     <p>Fires a <a href="../classes/Layer.html#event_priority" class="crosslink">priority</a> event on change.</p>
                     
                         </div>
@@ -1593,48 +1550,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="events" class="api-class-tabpanel">
                 <h2 class="off-left">Events</h2>
 
-                    <div id="event_active" class="events item">
-                        <h3 class="name"><code>active</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_rendering_depthTarget.js.html#l128"><code>src&#x2F;rendering&#x2F;depthTarget.js:128</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this DepthTarget&#39;s DepthTarget/active:property property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Boolean</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
                     <div id="event_destroyed" class="events item inherited">
                         <h3 class="name"><code>destroyed</code></h3>
                         <span class="type"></span>

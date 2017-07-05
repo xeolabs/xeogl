@@ -63,7 +63,6 @@
                                 <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
-                                <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
@@ -71,7 +70,6 @@
                                 <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
                                 <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
-                                <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
                                 <li><a href="../classes/Entity.html">Entity</a></li>
                                 <li><a href="../classes/Fog.html">Fog</a></li>
@@ -111,8 +109,6 @@
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
-                                <li><a href="../classes/Shader.html">Shader</a></li>
-                                <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
                                 <li><a href="../classes/SpecularMaterial.html">SpecularMaterial</a></li>
@@ -121,7 +117,6 @@
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/SpotLight.html">SpotLight</a></li>
-                                <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
                                 <li><a href="../classes/Story.html">Story</a></li>
@@ -164,7 +159,6 @@
                                 <li><a href="..//modules/models.html">models</a></li>
                                 <li><a href="..//modules/outline.html">outline</a></li>
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
-                                <li><a href="..//modules/shaders.html">shaders</a></li>
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="..//modules/stories.html">stories</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
@@ -218,11 +212,6 @@
  property to the image file path.
  * To create a Texture from an HTMLImageElement, set the Texture&#x27;s {{#crossLink &quot;Texture/image:property&quot;}}{{/crossLink}}
  property to the HTMLImageElement.
- * To render color images of {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} to a Texture, set the Texture&#x27;s {{#crossLink &quot;Texture/target:property&quot;}}{{/crossLink}}
- property to a {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}} that is attached to those {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
- * Similarly, to render depth images of {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} to a Texture, set the Texture&#x27;s {{#crossLink &quot;Texture/target:property&quot;}}{{/crossLink}}
- property to a {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
- * For special effects, we often use rendered Textures in combination with {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}} and {{#crossLink &quot;Stage&quot;}}Stages{{/crossLink}}.
 
  &lt;img src=&quot;../../assets/images/Texture.png&quot;&gt;&lt;/img&gt;
 
@@ -292,8 +281,6 @@
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Texture.
  @param [cfg.src=null] {String} Path to image file to load into this Texture. See the {{#crossLink &quot;Texture/src:property&quot;}}{{/crossLink}} property for more info.
  @param [cfg.image=null] {HTMLImageElement} HTML Image object to load into this Texture. See the {{#crossLink &quot;Texture/image:property&quot;}}{{/crossLink}} property for more info.
- @param [cfg.target=null] {String | xeogl.ColorTarget | xeogl.DepthTarget} Instance or ID of a {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}} or
- {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}} to source this Texture from. See the {{#crossLink &quot;Texture/target:property&quot;}}{{/crossLink}} property for more info.
  @param [cfg.minFilter=&quot;linearMipmapLinear&quot;] {String} How the texture is sampled when a texel covers less than one pixel. See the {{#crossLink &quot;Texture/minFilter:property&quot;}}{{/crossLink}} property for more info.
  @param [cfg.magFilter=&quot;linear&quot;] {String} How the texture is sampled when a texel covers more than one pixel. See the {{#crossLink &quot;Texture/magFilter:property&quot;}}{{/crossLink}} property for more info.
  @param [cfg.wrapS=&quot;repeat&quot;] {String} Wrap parameter for texture coordinate *S*. See the {{#crossLink &quot;Texture/wrapS:property&quot;}}{{/crossLink}} property for more info.
@@ -334,7 +321,6 @@
 
             this._src = null;   // URL string
             this._image = null; // HTMLImageElement
-            this._target = null;// xeogl.RenderTarget
 
             // Transformation
 
@@ -347,7 +333,6 @@
             this._matrixDirty = false;
             this._srcDirty = false;
             this._imageDirty = false;
-            this._targetDirty = false;
             this._propsDirty = false;
 
             // Handle WebGL context restore
@@ -376,8 +361,6 @@
             } else if (cfg.image) {
                 this.image = cfg.image; // Image object
 
-            } else if (cfg.target) {
-                this.target = cfg.target; // Render target
             }
 
             xeogl.stats.memory.textures++;
@@ -396,8 +379,6 @@
             } else if (this._src) {
                 this._srcDirty = true;
 
-            } else if (this._target) {
-                this._targetDirty = true;
             }
 
             this._needUpdate();
@@ -427,17 +408,6 @@
 
                 if (this._image) {
 
-                    if (this._onTargetActive) {
-                        this._target.off(this._onTargetActive);
-                        this._onTargetActive = null;
-                    }
-
-                    if (state.texture &amp;&amp; state.texture.renderBuffer) {
-
-                        // Detach from &quot;virtual texture&quot; provided by render target
-                        state.texture = null;
-                    }
-
                     if (!state.texture) {
                         state.texture = new xeogl.renderer.webgl.Texture2D(gl);
                     }
@@ -449,29 +419,6 @@
                     this._imageDirty = false;
                     this._propsDirty = true; // May now need to regenerate mipmaps etc
                 }
-            }
-
-            if (this._targetDirty) {
-
-                if (state.texture &amp;&amp; !state.texture.renderBuffer) {
-                    state.texture.destroy();
-                    state.texture = null;
-                }
-
-                if (this._onTargetActive) {
-                    this._target.off(this._onTargetActive);
-                    this._onTargetActive = null;
-                }
-
-                if (this._target) {
-                    this._onTargetActive = this._target.on(&quot;active&quot;,  // Called immediately when first bound
-                        function (active) {
-                            state.texture = active ? this._state.renderBuf.getTexture() : null;
-                        });
-                }
-
-                this._targetDirty = false;
-                this._propsDirty = true;
             }
 
             if (this._matrixDirty) {
@@ -512,9 +459,6 @@
             if (this._propsDirty) {
 
                 if (state.texture &amp;&amp; state.texture.setProps) {
-
-                    // TODO: Ability to set props on texture from _target&#x27;s RenderBuffer?
-
                     state.texture.setProps(state);
                 }
 
@@ -546,7 +490,6 @@
 
                     self._imageDirty = true;
                     self._srcDirty = false;
-                    self._targetDirty = false;
 
                     if (spinnerTextures) {
                         spinner.processes--;
@@ -602,13 +545,9 @@
             /**
              * Indicates an HTML DOM Image object to source this Texture from.
              *
-             * Alternatively, you could indicate the source via either of properties
-             * {{#crossLink &quot;Texture/src:property&quot;}}{{/crossLink}} or {{#crossLink &quot;Texture/target:property&quot;}}{{/crossLink}}.
-             *
              * Fires an {{#crossLink &quot;Texture/image:event&quot;}}{{/crossLink}} event on change.
              *
-             * Sets the {{#crossLink &quot;Texture/src:property&quot;}}{{/crossLink}} and
-             * {{#crossLink &quot;Texture/target:property&quot;}}{{/crossLink}} properties to null.
+             * Sets the {{#crossLink &quot;Texture/src:property&quot;}}{{/crossLink}} property to null.
              *
              * @property image
              * @default null
@@ -623,7 +562,6 @@
 
                     this._imageDirty = true;
                     this._srcDirty = false;
-                    this._targetDirty = false;
 
                     this._needUpdate();
 
@@ -643,13 +581,9 @@
             /**
              * Indicates a path to an image file to source this Texture from.
              *
-             * Alternatively, you could indicate the source via either of properties
-             * {{#crossLink &quot;Texture/image:property&quot;}}{{/crossLink}} or {{#crossLink &quot;Texture/target:property&quot;}}{{/crossLink}}.
-             *
              * Fires a {{#crossLink &quot;Texture/src:event&quot;}}{{/crossLink}} event on change.
              *
-             * Sets the {{#crossLink &quot;Texture/image:property&quot;}}{{/crossLink}} and
-             * {{#crossLink &quot;Texture/target:property&quot;}}{{/crossLink}} properties to null.
+             * Sets the {{#crossLink &quot;Texture/image:property&quot;}}{{/crossLink}} property to null.
              *
              * @property src
              * @default null
@@ -664,7 +598,6 @@
 
                     this._imageDirty = false;
                     this._srcDirty = true;
-                    this._targetDirty = false;
 
                     this._needUpdate();
 
@@ -679,62 +612,6 @@
 
                 get: function () {
                     return this._src;
-                }
-            },
-
-            /**
-             * Instance or ID of a {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}} or
-             * {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}} to source this Texture from.
-             *
-             * Alternatively, you could indicate the source via either of properties
-             * {{#crossLink &quot;Texture/src:property&quot;}}{{/crossLink}} or {{#crossLink &quot;Texture/image:property&quot;}}{{/crossLink}}.
-             *
-             * Fires a {{#crossLink &quot;Texture/target:event&quot;}}{{/crossLink}} event on change.
-             *
-             * Sets the {{#crossLink &quot;Texture/src:property&quot;}}{{/crossLink}} and
-             * {{#crossLink &quot;Texture/image:property&quot;}}{{/crossLink}} properties to null.
-             *
-             * @property target
-             * @default null
-             * @type String | xeogl.ColorTarget | xeogl.DepthTarget
-             */
-            target: {
-
-                set: function (value) {
-
-                    this._image = null;
-                    this._src = null;
-
-                    this._target = this._attach({
-                        name: &quot;renderBuf&quot;,
-                        type: null,
-                        component: value,
-                        sceneDefault: true,
-                        on: {
-                            active: {
-                                callback: this._onTargetActive,
-                                scope: this
-                            }
-                        }
-                    });
-
-                    this._imageDirty = false;
-                    this._srcDirty = false;
-                    this._targetDirty = true;
-
-                    this._needUpdate();
-
-                    /**
-                     * Fired whenever this Texture&#x27;s   {{#crossLink &quot;Texture/target:property&quot;}}{{/crossLink}} property changes.
-                     * @event target
-                     * @param value The property&#x27;s new value
-                     * @type String | xeogl.ColorTarget | xeogl.DepthTarget
-                     */
-                    this.fire(&quot;target&quot;, this._target);
-                },
-
-                get: function () {
-                    return this._attached.target;
                 }
             },
 
@@ -1144,9 +1021,6 @@
 
             if (this._src) {
                 json.src = this._src;
-
-            } else if (this._target) {
-                json.target = this._target.id;
 
             } else if (this._image) {
                 // TODO: Image data
