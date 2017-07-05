@@ -169,15 +169,15 @@ function materialGallery(menuId, cfg) {
     });
 
     window.flyTo = function (id) {
-        var entity = xeogl.scene.entities[id];
-        if (entity) {
-            cameraFlight.flyTo({
-                worldBoundary: entity.worldBoundary,
-                fit: true,
-                fitFOV: 35
-            });
-        }
-    };
+            var entity = xeogl.scene.entities[id];
+            if (entity) {
+                cameraFlight.flyTo({
+                    worldBoundary: entity.worldBoundary,
+                    fit: true,
+                    fitFOV: 35
+                });
+            }
+        };
 
     //---------------------------------------------------
     // Create a zSpace effect and stylus control

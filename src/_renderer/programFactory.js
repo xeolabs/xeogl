@@ -59,14 +59,11 @@
 
             var program = programState.program;
 
-            program.draw.destroy();
-            program.shadow.destroy();
-            program.pickObject.destroy();
-            program.pickPrimitive.destroy();
-
             xeogl.renderer.ProgramSourceFactory.putSource(program.hash);
 
             delete this._programStates[program.hash];
+
+            program.destroy();
 
             this.stats.memory.programs--;
         }

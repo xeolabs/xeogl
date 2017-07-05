@@ -435,5 +435,22 @@
     xeogl.renderer.Viewport = xeogl.renderer.State.extend({
         _ids: new xeogl.utils.Map({})
     });
+
+    /**
+
+     Outline state.
+
+     renderer.Outline
+     @module xeogl
+
+     @constructor
+     @param cfg {*} Configs
+     @param [cfg.thickness=15] {Number} Thickness of the outline in pixels.
+     @param [cfg.color=[1,0,0]] {Array of Number} The outline color,
+     @extends renderer.State
+     */
+    xeogl.renderer.Outline = xeogl.renderer.State.extend({
+        _ids: new xeogl.utils.Map({})
+    });
 })();
 

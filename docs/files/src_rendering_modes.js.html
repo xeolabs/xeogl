@@ -95,6 +95,7 @@
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
+                                <li><a href="../classes/Outline.html">Outline</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
@@ -161,6 +162,7 @@
                                 <li><a href="..//modules/materials.html">materials</a></li>
                                 <li><a href="..//modules/math.html">math</a></li>
                                 <li><a href="..//modules/models.html">models</a></li>
+                                <li><a href="..//modules/outline.html">outline</a></li>
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
                                 <li><a href="..//modules/shaders.html">shaders</a></li>
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
@@ -230,7 +232,8 @@
     clippable true,             // Enable effect of xeogl.Clip components
     transparent : false,        // Disable transparency
     backfaces : true,           // Render backfaces
-    frontface : &quot;ccw&quot;
+    frontface : &quot;ccw&quot;,          // Front faces have counter-clockwise vertex winding
+    outline: false              // Don&#x27;t outline for emphasis
  });
 
  var boxGeometry = new xeogl.BoxGeometry();
@@ -275,6 +278,7 @@
  {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} are things like helpers or indicators that should not be included in boundary calculations.
  @param [cfg.castShadow=true] {Boolean} Whether attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} cast shadows.
  @param [cfg.receiveShadow=true] {Boolean} Whether attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} receive shadows.
+ @param [cfg.outline=false] {Boolean} Whether an outline is drawn around the attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
  @extends Component
  */
 (function () {
@@ -296,6 +300,7 @@
                 collidable: null,
                 castShadow: null,
                 receiveShadow: null,
+                outline: null,
                 hash: &quot;&quot;
             });
 
@@ -307,6 +312,7 @@
             this.collidable = cfg.collidable;
             this.castShadow = cfg.castShadow;
             this.receiveShadow = cfg.receiveShadow;
+            this.outline = cfg.outline;
         },
 
         _props: {
@@ -417,7 +423,7 @@
 
                     this._state.transparent = value;
 
-                    this._renderer.stateOrderDirty = true;
+                    this._renderer.imageDirty = true;
 
                     /**
                      Fired whenever this Modes&#x27; {{#crossLink &quot;Modes/transparent:property&quot;}}{{/crossLink}} property changes.
@@ -630,6 +636,43 @@
                 get: function () {
                     return this._state.receiveShadow;
                 }
+            },
+
+            /**
+             Whether an outline is drawn around attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
+
+             Fires a {{#crossLink &quot;Modes/outline:event&quot;}}{{/crossLink}} event on change.
+
+             @property outline
+             @default false
+             @type Boolean
+             */
+            outline: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    if (value === this._state.outline) {
+                        return;
+                    }
+
+                    this._state.outline = value;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this Modes&#x27; {{#crossLink &quot;Modes/outline:property&quot;}}{{/crossLink}} property changes.
+
+                     @event outline
+                     @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;outline&quot;, this._state.outline);
+                },
+
+                get: function () {
+                    return this._state.outline;
+                }
             }
         },
 
@@ -646,7 +689,8 @@
                 frontface: this._state.frontface,
                 collidable: this._state.collidable,
                 castShadow: this._state.castShadow,
-                receiveShadow: this._state.receiveShadow
+                receiveShadow: this._state.receiveShadow,
+                outline: this._state.outline
             };
         },
 

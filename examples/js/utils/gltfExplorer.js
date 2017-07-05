@@ -11,6 +11,10 @@ var gltfExplorer = function (menuId, files) {
 
     var file = files[0];
 
+    var outline = xeogl.scene.outline;
+    outline.color = [1.0,1.0,0.0];
+    outline.thickness = 8;
+
     xeogl.scene.lights.lightMap = new xeogl.CubeTexture({
         src: [
             "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
@@ -52,28 +56,10 @@ var gltfExplorer = function (menuId, files) {
     var cameraFlight = new xeogl.CameraFlightAnimation();
 
     model.scene.on("tick", function () {
-        model.scene.camera.view.rotateEyeY(-0.1);
+        //model.scene.camera.view.rotateEyeY(-0.1);
     });
 
     window.flyTo = (function () {
-
-        var boundaryHelper = new xeogl.Entity({
-            geometry: {type: "xeogl.OBBGeometry"},
-            material: {
-                type: "xeogl.PhongMaterial",
-                diffuse: [0, 0, 0],
-                ambient: [0, 0, 0],
-                specular: [0, 0, 0],
-                emissive: [1.0, 1.0, 0.5],
-                lineWidth: 3
-            },
-            visibility: {
-                visible: false
-            },
-            modes: {
-                collidable: false
-            }
-        });
 
         var lastEntity;
 
@@ -83,8 +69,8 @@ var gltfExplorer = function (menuId, files) {
                 cameraFlight.flyTo();
                 if (lastEntity) {
                     lastEntity.modes.transparent = true;
+                    lastEntity.modes.outline = false;
                     lastEntity = null;
-                    boundaryHelper.visibility.visible = false;
                 }
                 return;
             }
@@ -95,12 +81,11 @@ var gltfExplorer = function (menuId, files) {
 
                 if (lastEntity) {
                     lastEntity.modes.transparent = true;
+                    lastEntity.modes.outline = false;
                 }
 
                 entity.modes.transparent = false;
-
-                boundaryHelper.geometry.obb = entity.worldBoundary.obb;
-                boundaryHelper.visibility.visible = true;
+                entity.modes.outline = true;
 
                 cameraFlight.flyTo({
                     aabb: entity.worldBoundary.aabb,

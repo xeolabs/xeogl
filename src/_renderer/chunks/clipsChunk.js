@@ -74,6 +74,10 @@
                     }
                 }
             }
+        },
+
+        outline: function(frameCtx) {
+            this.drawPick(frameCtx);
         }
     });
 

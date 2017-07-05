@@ -12,6 +12,7 @@
             this._uViewMatrixShadow = this.program.pickObject.getUniform("shadowViewMatrix");
             this._uViewMatrixPickObject = this.program.pickObject.getUniform("viewMatrix");
             this._uViewMatrixPickPrimitive = this.program.pickPrimitive.getUniform("viewMatrix");
+            this._uViewMatrixOutline = this.program.outline.getUniform("viewMatrix");
         },
 
         draw: function () {
@@ -41,6 +42,12 @@
         pickPrimitive: function (frameCtx) {
             if (this._uViewMatrixPickPrimitive) {
                 this._uViewMatrixPickPrimitive.setValue(frameCtx.pickViewMatrix || this.state.getMatrix());
+            }
+        },
+
+        outline: function () {
+            if (this._uViewMatrixOutline) {
+                this._uViewMatrixOutline.setValue(this.state.getMatrix());
             }
         }
     });

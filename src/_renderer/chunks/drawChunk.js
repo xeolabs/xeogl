@@ -69,6 +69,10 @@
             if (pickPositions) {
                 gl.drawArrays(state.primitive, 0, pickPositions.numItems / 3);
             }
+        },
+
+        outline: function(frameCtx) {
+            this.draw(frameCtx);
         }
     });
 

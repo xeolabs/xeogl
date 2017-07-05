@@ -14,12 +14,15 @@
      * @param {String} fragmentDraw Fragment shader source for drawing.
      * @param {String} vertexShadow Vertex shader source for drawing the shadow buffer.
      * @param {String} fragmentShadow Fragment shader source for drawing the shadow buffer.
+     * @param {String} vertexOutline Vertex shader source for drawing outlines.
+     * @param {String} fragmentOutline Fragment shader source for drawing outlines.
      */
     xeogl.renderer.ProgramSource = function (hash,
                                              vertexPickObject, fragmentPickObject,
                                              vertexPickPrimitive, fragmentPickPrimitive,
                                              vertexDraw, fragmentDraw,
-                                             vertexShadow, fragmentShadow) {
+                                             vertexShadow, fragmentShadow,
+                                             vertexOutline, fragmentOutline) {
 
         /**
          * Hash code identifying the capabilities of the {@link xeogl.renderer.Program} that is compiled from this source
@@ -74,6 +77,18 @@
          * @type {Array of String}
          */
         this.fragmentShadow = fragmentShadow;
+
+        /**
+         * Vertex shader source for rendering outlines.
+         * @type {Array of String}
+         */
+        this.vertexOutline = vertexOutline;
+
+        /**
+         * Fragment shader source for rendering outlines.
+         * @type {Array of String}
+         */
+        this.fragmentOutline = fragmentOutline;
 
         /**
          * Count of {@link xeogl.renderer.Program}s compiled from this program source code

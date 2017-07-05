@@ -26,6 +26,10 @@
             var pickPrimitive = this.program.pickPrimitive;
             this._aPositionPickPrimitive = pickPrimitive.getAttribute("position");
             this._aColorPickPrimitive = pickPrimitive.getAttribute("color");
+
+            var outline = this.program.outline;
+            this._aPositionOutline = outline.getAttribute("position");
+            this._aNormalOutline = outline.getAttribute("normal");
         },
 
         draw: function (frameCtx) {
@@ -108,6 +112,26 @@
 
             if (this._aColorPickPrimitive) {
                 this._aColorPickPrimitive.bindFloatArrayBuffer(state.getPickColors());
+            }
+        },
+
+        outline: function (frameCtx) {
+
+            var state = this.state;
+
+            if (this._aPositionOutline) {
+                this._aPositionOutline.bindFloatArrayBuffer(state.positions);
+                frameCtx.bindArray++;
+            }
+
+            if (this._aNormalOutline) {
+                this._aNormalOutline.bindFloatArrayBuffer(state.normals);
+                frameCtx.bindArray++;
+            }
+
+            if (state.indices) {
+                state.indices.bind();
+                frameCtx.bindArray++;
             }
         }
     });

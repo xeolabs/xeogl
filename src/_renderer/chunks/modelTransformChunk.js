@@ -12,6 +12,7 @@
             this._uModelMatrixShadow = this.program.shadow.getUniform("modelMatrix");
             this._uModelMatrixPickObject = this.program.pickObject.getUniform("modelMatrix");
             this._uModelMatrixPickPrimitive = this.program.pickPrimitive.getUniform("modelMatrix");
+            this._uModelMatrixOutline = this.program.outline.getUniform("modelMatrix");
         },
 
         draw: function () {
@@ -38,6 +39,12 @@
         pickPrimitive: function () {
             if (this._uModelMatrixPickPrimitive) {
                 this._uModelMatrixPickPrimitive.setValue(this.state.getMatrix());
+            }
+        },
+
+        outline: function () {
+            if (this._uModelMatrixOutline) {
+                this._uModelMatrixOutline.setValue(this.state.getMatrix());
             }
         }
     });

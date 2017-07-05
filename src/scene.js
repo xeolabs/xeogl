@@ -385,6 +385,7 @@
             dummy = this.stage;
             dummy = this.transform;
             dummy = this.viewport;
+            dummy = this.outline;
         },
 
         // Called by each component that is created with this Scene as parent.
@@ -1307,6 +1308,32 @@
                             id: "default.viewport",
                             autoBoundary: true,
                             isDefault: true
+                        });
+                }
+            },
+
+            /**
+             * The default {{#crossLink "Outline"}}{{/crossLink}} provided by this Scene.
+             *
+             * This {{#crossLink "Outline"}}{{/crossLink}} has
+             * an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.outline",
+             * a {{#crossLink "Outline/color:property"}}color{{/crossLink}} set to ````[1,1,0]````
+             * a {{#crossLink "Outline/thickness:property"}}thickness{{/crossLink}} set to ````15````.
+             *
+             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink "Outline"}}{{/crossLink}} by default.
+             *
+             * @property outline
+             * @final
+             * @type Outline
+             */
+            outline: {
+                get: function () {
+                    return this.components["default.outline"] ||
+                        new xeogl.Outline(this, {
+                            id: "default.outline",
+                            thickness: 15,
+                            color: [1,1,0]
                         });
                 }
             },

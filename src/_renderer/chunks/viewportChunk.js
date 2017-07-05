@@ -19,18 +19,19 @@
         },
 
         shadow: function () {
-            var boundary = this.state.boundary;
-            this.program.gl.viewport(boundary[0], boundary[1], boundary[2], boundary[3]);
+            this.draw();
         },
 
         pickObject: function () {
-            var boundary = this.state.boundary;
-            this.program.gl.viewport(boundary[0], boundary[1], boundary[2], boundary[3]);
+            this.draw();
         },
 
         pickPrimitive: function () {
-            var boundary = this.state.boundary;
-            this.program.gl.viewport(boundary[0], boundary[1], boundary[2], boundary[3]);
+            this.draw();
+        },
+
+        outline: function() {
+            this.draw();
         }
     });
 
