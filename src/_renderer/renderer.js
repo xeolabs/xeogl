@@ -84,12 +84,6 @@
         // draw list, along with any results of the render, such as pick hits
         this._frameCtx = {
             canvas: this.canvas,
-            renderTarget: null,
-            renderBuf: null,
-            depthbufEnabled: null,
-            clearDepth: null,
-            depthFunc: null,
-            blendEnabled: false,
             backfaces: true,
             frontface: true, // true = "ccw" else "cw"
             textureUnit: 0,
@@ -100,7 +94,6 @@
             bindTexture: 0,
             bindArray: null,
             pass: null,
-            bindOutputFramebuffer: null,
             pickIndex: 0,
             shadowViewMatrix: null,
             shadowProjmatrix: null,
@@ -137,27 +130,6 @@
          @type {renderer.Layer}
          */
         this.layer = null;
-
-        /**
-         Render state for an effects pipeline stage.
-         @property stage
-         @type {renderer.Layer}
-         */
-        this.stage = null;
-
-        /**
-         Depth buffer render state.
-         @property depthBuf
-         @type {renderer.DepthBuf}
-         */
-        this.depthBuf = null;
-
-        /**
-         Color buffer render state.
-         @property colorBuf
-         @type {renderer.ColorBuf}
-         */
-        this.colorBuf = null;
 
         /**
          Lights render state.
@@ -209,39 +181,11 @@
         this.stationary = null;
 
         /**
-         Color target render state.
-         @property colorTarget
-         @type {renderer.RenderTarget}
-         */
-        this.colorTarget = null;
-
-        /**
-         Depth target render state.
-         @property depthTarget
-         @type {renderer.RenderTarget}
-         */
-        this.depthTarget = null;
-
-        /**
          Cross-section planes render state.
          @property clips
          @type {renderer.Clips}
          */
         this.clips = null;
-
-        /**
-         Custom shader render state.
-         @property shader
-         @type {renderer.Shader}
-         */
-        this.shader = null;
-
-        /**
-         Render state providing custom shader params.
-         @property shaderParams
-         @type {renderer.Shader}
-         */
-        this.shaderParams = null;
 
         /**
          Geometry render state.
@@ -256,6 +200,14 @@
          @type {renderer.Viewport}
          */
         this.viewport = null;
+
+        /**
+         Outline state.
+         @property outline
+         @type {renderer.Outline}
+         */
+        this.outline = null;
+
 
         //----------------- Renderer dirty flags -------------------------------
 
@@ -324,10 +276,7 @@
         // Attach to the object any states that we need to get off it later.
         // Most of these will be used when composing the object's shader.
 
-        object.stage = this.stage;
         object.layer = this.layer;
-        object.colorTarget = this.colorTarget;
-        object.depthTarget = this.depthTarget;
         object.material = this.material;
         object.geometry = this.geometry;
         object.visibility = this.visibility;
@@ -337,6 +286,7 @@
         object.stationary = this.stationary;
         object.viewport = this.viewport;
         object.lights = this.lights;
+        object.outline = this.outline;
 
         // Build hash of the object's state configuration. This is used
         // to hash the object's shader so that it may be reused by other
@@ -348,7 +298,6 @@
             // with a hash is concatenated here
 
             this.geometry.hash,
-            this.shader.hash,
             this.clips.hash,
             this.material.hash,
             this.lights.hash,
@@ -400,16 +349,13 @@
         this._setChunk(object, 2, "viewTransform", this.viewTransform);
         this._setChunk(object, 3, "projTransform", this.projTransform);
         this._setChunk(object, 4, "modes", this.modes);
-        this._setChunk(object, 5, "shader", this.shader);
-        this._setChunk(object, 6, "shaderParams", this.shaderParams);
-        this._setChunk(object, 7, "depthBuf", this.depthBuf);
-        this._setChunk(object, 8, "colorBuf", this.colorBuf);
-        this._setChunk(object, 9, "lights", this.lights);
-        this._setChunk(object, 10, this.material.type, this.material); // Supports different material systems
-        this._setChunk(object, 11, "clips", this.clips);
-        this._setChunk(object, 12, "viewport", this.viewport);
-        this._setChunk(object, 13, "geometry", this.geometry);
-        this._setChunk(object, 14, "draw", this.geometry, true); // Must be last
+        this._setChunk(object, 5, "lights", this.lights);
+        this._setChunk(object, 6, this.material.type, this.material); // Supports different material systems
+        this._setChunk(object, 7, "clips", this.clips);
+        this._setChunk(object, 8, "viewport", this.viewport);
+        this._setChunk(object, 9, "outline", this.outline);
+        this._setChunk(object, 10, "geometry", this.geometry);
+        this._setChunk(object, 11, "draw", this.geometry, true); // Must be last
 
         // Ambient light is global across everything in display, and
         // can never be disabled, so grab it now because we want to
@@ -606,8 +552,6 @@
                 object.sortKey = -1;
             } else {
                 object.sortKey =
-                    ((object.stage.priority + 1) * 10000000000000000)
-                    + ((object.modes.transparent ? 2 : 1) * 100000000000000)
                     + ((object.layer.priority + 1) * 10000000000000)
                     + ((object.program.id + 1) * 100000000)
                     + ((object.material.id + 1) * 10000)
@@ -670,9 +614,9 @@
             if (shadowObjectLists.hasOwnProperty(lightId)) {
                 shadowObjectList = shadowObjectLists[lightId];
                 light = shadowObjectList.light;
-             //   if (light.shadowDirty) {
-                    this._renderShadowMap(light, shadowObjectList.objects);
-             //   }
+                //   if (light.shadowDirty) {
+                this._renderShadowMap(light, shadowObjectList.objects);
+                //   }
             }
         }
     };
@@ -698,10 +642,6 @@
 
         var frameCtx = this._frameCtx;
 
-        frameCtx.depthbufEnabled = null;
-        frameCtx.clearDepth = null;
-        frameCtx.depthFunc = gl.LESS;
-        frameCtx.blendEnabled = false;
         frameCtx.backfaces = true;
         frameCtx.frontface = true;
         frameCtx.drawElements = 0;
@@ -755,125 +695,224 @@
         renderBuf.unbind();
     };
 
-    xeogl.renderer.Renderer.prototype._renderObjectList = function (params) {
+    xeogl.renderer.Renderer.prototype._renderObjectList = (function () {
 
-        var gl = this.gl;
+        var outlinedObjects = [];
+        var transparentObjects = [];
+        var numTransparentObjects = 0;
 
-        var ambient = this._ambient;
-        var ambientColor;
-        if (ambient) {
-            var color = ambient.color;
-            var intensity = ambient.intensity;
-            this.ambientColor[0] = color[0] * intensity;
-            this.ambientColor[1] = color[1] * intensity;
-            this.ambientColor[2] = color[2] * intensity;
-        } else {
-            this.ambientColor[0] = 0;
-            this.ambientColor[1] = 0;
-            this.ambientColor[2] = 0;
-        }
+        var lastChunkId = new Int32Array(30);
 
-        var frameCtx = this._frameCtx;
-
-        frameCtx.renderTarget = null;
-        frameCtx.renderBuf = null;
-        frameCtx.depthbufEnabled = null;
-        frameCtx.clearDepth = null;
-        frameCtx.depthFunc = gl.LESS;
-        frameCtx.blendEnabled = false;
-        frameCtx.backfaces = true;
-        frameCtx.frontface = true; // true == "ccw" else "cw"
-        frameCtx.textureUnit = 0;
-        frameCtx.transparent = false; // True while rendering transparency bin
-        frameCtx.ambientColor = this.ambientColor;
-        frameCtx.drawElements = 0;
-        frameCtx.useProgram = 0;
-        frameCtx.bindTexture = 0;
-        frameCtx.bindArray = 0;
-        frameCtx.pass = params.pass;
-        frameCtx.bindOutputFramebuffer = this.bindOutputFramebuffer;
-        frameCtx.pickViewMatrix = params.pickViewMatrix;
-        frameCtx.pickProjMatrix = params.pickProjMatrix;
-        frameCtx.pickIndex = 0;
-
-        gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
-
-        if (this.transparent) { // Canvas is transparent
-            gl.clearColor(0, 0, 0, 0);
-        } else {
-            gl.clearColor(this.ambientColor[0], this.ambientColor[1], this.ambientColor[2], 1.0);
-        }
-
-        gl.enable(gl.DEPTH_TEST);
-        gl.frontFace(gl.CCW);
-        gl.disable(gl.CULL_FACE);
-        gl.disable(gl.BLEND);
-
-        var i;
-        var len;
-        var object;
-        var j;
-        var lenj;
-        var chunks;
-        var chunk;
-
-        var lastChunkId = this._lastChunkId = this._lastChunkId || new Int32Array(30);
-        for (i = 0; i < 20; i++) {
-            lastChunkId[i] = -9999999999999;
-        }
-
-        var startTime = (new Date()).getTime();
-
-        if (this.bindOutputFramebuffer) {
-            this.bindOutputFramebuffer(params.pass);
-        }
-
-        if (params.clear) {
-            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-        }
-
-        for (i = 0, len = this._objectListLen; i < len; i++) {
-            object = this._objectList[i];
-            if (!object.compiled || object.cull.culled === true || object.visibility.visible === false) {
-                continue;
+        function clearStateTracking() {
+            for (var i = 0; i < 20; i++) {
+                lastChunkId[i] = -9999999999;
             }
-            chunks = object.chunks;
-            for (j = 0, lenj = chunks.length; j < lenj; j++) {
-                chunk = chunks[j];
+        }
+
+        function drawObject(frameCtx, object) {
+            var chunks = object.chunks;
+            var chunk;
+            for (var i = 0, len = chunks.length; i < len; i++) {
+                chunk = chunks[i];
                 if (chunk) {
-                    if (chunk.draw && (chunk.unique || lastChunkId[j] !== chunk.id)) {
+                    if (chunk.draw && (chunk.unique || lastChunkId[i] !== chunk.id)) {
                         chunk.draw(frameCtx);
-                        lastChunkId[j] = chunk.id;
+                        lastChunkId[i] = chunk.id;
                     }
                 }
             }
         }
 
-        var endTime = Date.now();
-        var frameStats = this.stats.frame;
-
-        frameStats.renderTime = (endTime - startTime) / 1000.0;
-        frameStats.drawElements = frameCtx.drawElements;
-        frameStats.useProgram = frameCtx.useProgram;
-        frameStats.bindTexture = frameCtx.bindTexture;
-        frameStats.bindArray = frameCtx.bindArray;
-
-        if (frameCtx.renderBuf) {
-            frameCtx.renderBuf.unbind();
+        function drawObjectOutline(frameCtx, object) {
+            var chunks = object.chunks;
+            var chunk;
+            for (var i = 0, len = chunks.length; i < len; i++) {
+                chunk = chunks[i];
+                if (chunk) {
+                    if (chunk.outline && (chunk.unique || lastChunkId[i] !== chunk.id)) {
+                        chunk.outline(frameCtx);
+                        lastChunkId[i] = chunk.id;
+                    }
+                }
+            }
         }
 
-        var numTextureUnits = gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+        return function (params) {
 
-        for (var ii = 0; ii < numTextureUnits; ii++) {
-            gl.activeTexture(gl.TEXTURE0 + ii);
-            gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
-            gl.bindTexture(gl.TEXTURE_2D, null);
-        }
+            var gl = this.gl;
 
-        if (this.unbindOutputFramebuffer) {
-            this.unbindOutputFramebuffer(params.pass);
-        }
-    };
+            var ambient = this._ambient;
+            if (ambient) {
+                var color = ambient.color;
+                var intensity = ambient.intensity;
+                this.ambientColor[0] = color[0] * intensity;
+                this.ambientColor[1] = color[1] * intensity;
+                this.ambientColor[2] = color[2] * intensity;
+            } else {
+                this.ambientColor[0] = 0;
+                this.ambientColor[1] = 0;
+                this.ambientColor[2] = 0;
+            }
+
+            var frameCtx = this._frameCtx;
+
+            frameCtx.backfaces = true;
+            frameCtx.frontface = true; // true == "ccw" else "cw"
+            frameCtx.textureUnit = 0;
+            frameCtx.transparent = false; // True while rendering transparency bin
+            frameCtx.ambientColor = this.ambientColor;
+            frameCtx.drawElements = 0;
+            frameCtx.useProgram = 0;
+            frameCtx.bindTexture = 0;
+            frameCtx.bindArray = 0;
+            frameCtx.pass = params.pass;
+            frameCtx.pickViewMatrix = params.pickViewMatrix;
+            frameCtx.pickProjMatrix = params.pickProjMatrix;
+            frameCtx.pickIndex = 0;
+
+            gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+
+            if (this.transparent) { // Canvas is transparent
+                gl.clearColor(0, 0, 0, 0);
+            } else {
+                gl.clearColor(this.ambientColor[0], this.ambientColor[1], this.ambientColor[2], 1.0);
+            }
+
+            gl.enable(gl.DEPTH_TEST);
+            gl.frontFace(gl.CCW);
+            gl.enable(gl.CULL_FACE);
+
+            gl.depthMask(true);
+            gl.colorMask(true, true, true, false);
+
+            var i;
+            var len;
+            var object;
+
+            var startTime = (new Date()).getTime();
+
+            if (this.bindOutputFramebuffer) {
+                this.bindOutputFramebuffer(params.pass);
+            }
+
+            if (params.clear) {
+                gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
+            }
+
+            // Render opaque, non-outlined objects
+
+            var numOutlinedObjects = 0;
+
+            numTransparentObjects = 0;
+
+            clearStateTracking();
+
+            for (i = 0, len = this._objectListLen; i < len; i++) {
+                object = this._objectList[i];
+                if (!object.compiled || object.cull.culled === true || object.visibility.visible === false) {
+                    continue;
+                }
+                if (object.modes.transparent) {
+                    transparentObjects[numTransparentObjects++] = object;
+                    continue;
+                }
+                if (object.modes.outline) {
+                    outlinedObjects[numOutlinedObjects++] = object;
+                    continue;
+                }
+                drawObject(frameCtx, object);
+            }
+
+            // Render opaque outlined objects
+
+            if (numOutlinedObjects > 0) {
+
+                // Render objects
+
+                gl.enable(gl.STENCIL_TEST);
+                gl.stencilFunc(gl.ALWAYS, 1, 1);
+                gl.stencilOp(gl.KEEP, gl.KEEP, gl.REPLACE);
+                gl.stencilMask(1);
+                gl.clearStencil(0);
+                gl.clear(gl.STENCIL_BUFFER_BIT);
+
+                clearStateTracking();
+
+                for (i = 0; i < numOutlinedObjects; i++) {
+                    drawObject(frameCtx, outlinedObjects[i]);
+                }
+
+                // Render outlines
+
+                gl.stencilFunc(gl.EQUAL, 0, 1);
+                gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
+                gl.stencilMask(0x00);
+                gl.disable(gl.CULL_FACE); // Need both faces for better corners with face-aligned normals
+
+                clearStateTracking();
+
+                for (i = 0; i < numOutlinedObjects; i++) {
+                    drawObjectOutline(frameCtx, outlinedObjects[i]);
+                }
+
+                gl.disable(gl.STENCIL_TEST);
+            }
+
+            // Draw transparent objects
+
+            if (numTransparentObjects > 0) {
+
+                gl.enable(gl.CULL_FACE);
+                gl.enable(gl.BLEND);
+                gl.blendEquation( gl.FUNC_ADD );
+                gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA );
+
+
+                //gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+                gl.colorMask(true, true, true, true);
+
+
+                numOutlinedObjects = 0;
+
+                clearStateTracking();
+
+                for (i = 0; i < numTransparentObjects; i++) {
+                    object = transparentObjects[i];
+                    if (object.modes.outline) {
+                        outlinedObjects[numOutlinedObjects++] = object; // Build outlined list
+                        continue;
+                    }
+                    drawObject(frameCtx, object);
+                }
+
+                // Transparent outlined objects are not supported yet
+
+                gl.disable(gl.BLEND);
+                gl.colorMask(true, true, true, false);
+            }
+
+            var endTime = Date.now();
+            var frameStats = this.stats.frame;
+
+            frameStats.renderTime = (endTime - startTime) / 1000.0;
+            frameStats.drawElements = frameCtx.drawElements;
+            frameStats.useProgram = frameCtx.useProgram;
+            frameStats.bindTexture = frameCtx.bindTexture;
+            frameStats.bindArray = frameCtx.bindArray;
+
+            var numTextureUnits = gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+
+            for (var ii = 0; ii < numTextureUnits; ii++) {
+                gl.activeTexture(gl.TEXTURE0 + ii);
+                gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
+                gl.bindTexture(gl.TEXTURE_2D, null);
+            }
+
+            if (this.unbindOutputFramebuffer) {
+                this.unbindOutputFramebuffer(params.pass);
+            }
+        };
+    })();
 
     /**
      * Attempts to pick an object.
@@ -991,10 +1030,6 @@
 
         var frameCtx = this._frameCtx;
 
-        frameCtx.depthbufEnabled = null;
-        frameCtx.clearDepth = null;
-        frameCtx.depthFunc = gl.LESS;
-        frameCtx.blendEnabled = false;
         frameCtx.backfaces = true;
         frameCtx.frontface = true; // true == "ccw" else "cw"
         frameCtx.textureUnit = 0;
@@ -1009,7 +1044,6 @@
         gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
         gl.clearColor(0, 0, 0, 0);
         gl.enable(gl.DEPTH_TEST);
-        gl.frontFace(gl.CCW);
         gl.disable(gl.CULL_FACE);
         gl.disable(gl.BLEND);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -1052,11 +1086,6 @@
         var gl = this.gl;
 
         var frameCtx = this._frameCtx;
-        frameCtx.renderBuf = null;
-        frameCtx.depthbufEnabled = null;
-        frameCtx.clearDepth = null;
-        frameCtx.depthFunc = gl.LESS;
-        frameCtx.blendEnabled = false;
         frameCtx.backfaces = true;
         frameCtx.frontface = true; // true == "ccw" else "cw"
         frameCtx.drawElements = 0;
@@ -1070,7 +1099,6 @@
         gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
         gl.clearColor(0, 0, 0, 0);
         gl.enable(gl.DEPTH_TEST);
-        gl.frontFace(gl.CCW);
         gl.disable(gl.CULL_FACE);
         gl.disable(gl.BLEND);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);

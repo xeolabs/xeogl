@@ -49,7 +49,6 @@
                                 <li><a href="../classes/Billboard.html">Billboard</a></li>
                                 <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
-                                <li><a href="../classes/BoundingSphereGeometry.html">BoundingSphereGeometry</a></li>
                                 <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
                                 <li><a href="../classes/BuildableModel.html">BuildableModel</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
@@ -63,7 +62,6 @@
                                 <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
-                                <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
@@ -71,7 +69,6 @@
                                 <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
                                 <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
-                                <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
                                 <li><a href="../classes/Entity.html">Entity</a></li>
                                 <li><a href="../classes/Fog.html">Fog</a></li>
@@ -95,6 +92,7 @@
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
+                                <li><a href="../classes/Outline.html">Outline</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
@@ -110,8 +108,6 @@
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
-                                <li><a href="../classes/Shader.html">Shader</a></li>
-                                <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
                                 <li><a href="../classes/SpecularMaterial.html">SpecularMaterial</a></li>
@@ -120,7 +116,6 @@
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/SpotLight.html">SpotLight</a></li>
-                                <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
                                 <li><a href="../classes/Story.html">Story</a></li>
@@ -161,8 +156,8 @@
                                 <li><a href="..//modules/materials.html">materials</a></li>
                                 <li><a href="..//modules/math.html">math</a></li>
                                 <li><a href="..//modules/models.html">models</a></li>
+                                <li><a href="..//modules/outline.html">outline</a></li>
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
-                                <li><a href="..//modules/shaders.html">shaders</a></li>
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="..//modules/stories.html">stories</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
@@ -575,10 +570,6 @@
             dummy = this.project;
             dummy = this.camera;
             dummy = this.clips;
-            dummy = this.colorTarget;
-            dummy = this.colorBuf;
-            dummy = this.depthTarget;
-            dummy = this.depthBuf;
             dummy = this.visibility;
             dummy = this.cull;
             dummy = this.modes;
@@ -587,11 +578,9 @@
             dummy = this.lights;
             dummy = this.material;
             dummy = this.morphTargets;
-            dummy = this.shader;
-            dummy = this.shaderParams;
-            dummy = this.stage;
             dummy = this.transform;
             dummy = this.viewport;
+            dummy = this.outline;
         },
 
         // Called by each component that is created with this Scene as parent.
@@ -1094,103 +1083,6 @@
             },
 
             /**
-             * The default {{#crossLink &quot;ColorBuf&quot;}}ColorBuf{{/crossLink}} provided by this Scene.
-             *
-             * This {{#crossLink &quot;ColorBuf&quot;}}ColorBuf{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.colorBuf&quot;,
-             * with all other properties initialised to their default values.
-             *
-             * {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink &quot;ColorBuf&quot;}}ColorBuf{{/crossLink}} by default.
-             * @property colorBuf
-             * @final
-             * @type ColorBuf
-             */
-            colorBuf: {
-
-                get: function () {
-                    return this.components[&quot;default.colorBuf&quot;] ||
-                        new xeogl.ColorBuf(this, {
-                            id: &quot;default.colorBuf&quot;,
-                            isDefault: true
-                        });
-                }
-            },
-
-            /**
-             * The default {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}} provided by this Scene.
-             *
-             * The {{#crossLink &quot;ColorTarget&quot;}}DepthTarget{{/crossLink}} is
-             * {{#crossLink &quot;ColorTarget/active:property&quot;}}inactive{{/crossLink}} by default and will have an
-             * {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.depthTarget&quot;.
-             *
-             * {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}} by default.
-             * @property colorTarget
-             * @private
-             * @final
-             * @type ColorTarget
-             */
-            colorTarget: {
-                get: function () {
-                    return this.components[&quot;default.colorTarget&quot;] ||
-                        new xeogl.ColorTarget(this, {
-                            id: &quot;default.colorTarget&quot;,
-                            isDefault: true,
-                            active: false
-                        })
-                }
-            },
-
-            /**
-             * The default {{#crossLink &quot;DepthBuf&quot;}}DepthBuf{{/crossLink}} provided by this Scene.
-             *
-             * This {{#crossLink &quot;DepthBuf&quot;}}DepthBuf{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.depthBuf&quot;,
-             * with all other properties initialised to their default values.
-             *
-             * {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink &quot;DepthBuf&quot;}}DepthBuf{{/crossLink}} by default.
-             *
-             * @property depthBuf
-             * @final
-             * @type DepthBuf
-             */
-            depthBuf: {
-                get: function () {
-                    return this.components[&quot;default.depthBuf&quot;] ||
-                        new xeogl.DepthBuf(this, {
-                            id: &quot;default.depthBuf&quot;,
-                            isDefault: true,
-                            active: true
-                        });
-                }
-            },
-
-            /**
-             * The default {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}} provided by this Scene.
-             *
-             * The {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}} is
-             * {{#crossLink &quot;DepthTarget/active:property&quot;}}inactive{{/crossLink}} by default and has an
-             * {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.depthTarget&quot;.
-             *
-             * {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink &quot;DepthTarget&quot;}}DepthTarget{{/crossLink}} by default.
-             * @property depthTarget
-             * @private
-             * @final
-             * @type DepthTarget
-             */
-            depthTarget: {
-                get: function () {
-                    return this.components[&quot;default.depthTarget&quot;] ||
-                        new xeogl.DepthTarget(this, {
-                            id: &quot;default.depthTarget&quot;,
-                            isDefault: true,
-                            active: false
-                        });
-                }
-            },
-
-            /**
              * The default {{#crossLink &quot;Visibility&quot;}}Visibility{{/crossLink}} provided by this Scene.
              *
              * This {{#crossLink &quot;Visibility&quot;}}Visibility{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.visibility&quot;,
@@ -1422,78 +1314,6 @@
             },
 
             /**
-             * The default {{#crossLink &quot;Shader&quot;}}Shader{{/crossLink}} provided by this Scene
-             * (which is initially an empty {{#crossLink &quot;Shader&quot;}}Shader{{/crossLink}} that has no effect).
-             *
-             * This {{#crossLink &quot;Shader&quot;}}Shader{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.shader&quot;,
-             * with all other properties initialised to their default values.
-             *
-             * {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink &quot;Shader&quot;}}Shader{{/crossLink}} by default.
-             * @property shader
-             * @final
-             * @private
-             * @type Shader
-             */
-            shader: {
-                get: function () {
-                    return this.components[&quot;default.shader&quot;] ||
-                        this.components[&quot;default.shader&quot;] || new xeogl.Shader(this, {
-                            id: &quot;default.shader&quot;,
-                            isDefault: true
-                        });
-                }
-            },
-
-            /**
-             * The default {{#crossLink &quot;ShaderParams&quot;}}ShaderParams{{/crossLink}} provided by this Scene.
-             *
-             * This {{#crossLink &quot;ShaderParams&quot;}}ShaderParams{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.shaderParams&quot;,
-             * with all other properties initialised to their default values.
-             *
-             * {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink &quot;ShaderParams&quot;}}{{/crossLink}} by default.
-             *
-             * @property shaderParams
-             * @final
-             * @private
-             * @type ShaderParams
-             */
-            shaderParams: {
-                get: function () {
-                    return this.components[&quot;default.shaderParams&quot;] ||
-                        new xeogl.ShaderParams(this, {
-                            id: &quot;default.shaderParams&quot;,
-                            isDefault: true
-                        });
-                }
-            },
-
-            /**
-             * The default {{#crossLink &quot;Stage&quot;}}Stage{{/crossLink}} provided by this Scene.
-             *
-             * This {{#crossLink &quot;Stage&quot;}}Stage{{/crossLink}} has
-             * an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.stage&quot; and
-             * a {{#crossLink &quot;Stage/priority:property&quot;}}priority{{/crossLink}} equal to &#x60;&#x60;&#x60;&#x60;0&#x60;&#x60;&#x60;&#x60;.
-             *
-             * {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink &quot;Stage&quot;}}Stage{{/crossLink}} by default.
-             * @property stage
-             * @final
-             * @type Stage
-             */
-            stage: {
-                get: function () {
-                    return this.components[&quot;default.stage&quot;] ||
-                        new xeogl.Stage(this, {
-                            id: &quot;default.stage&quot;,
-                            priority: 0,
-                            isDefault: true
-                        });
-                }
-            },
-
-            /**
              * The default {{#crossLink &quot;Viewport&quot;}}{{/crossLink}} provided by this Scene.
              *
              * This {{#crossLink &quot;Viewport&quot;}}{{/crossLink}} has
@@ -1514,6 +1334,32 @@
                             id: &quot;default.viewport&quot;,
                             autoBoundary: true,
                             isDefault: true
+                        });
+                }
+            },
+
+            /**
+             * The default {{#crossLink &quot;Outline&quot;}}{{/crossLink}} provided by this Scene.
+             *
+             * This {{#crossLink &quot;Outline&quot;}}{{/crossLink}} has
+             * an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.outline&quot;,
+             * a {{#crossLink &quot;Outline/color:property&quot;}}color{{/crossLink}} set to &#x60;&#x60;&#x60;&#x60;[1,1,0]&#x60;&#x60;&#x60;&#x60;
+             * a {{#crossLink &quot;Outline/thickness:property&quot;}}thickness{{/crossLink}} set to &#x60;&#x60;&#x60;&#x60;15&#x60;&#x60;&#x60;&#x60;.
+             *
+             * {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink &quot;Outline&quot;}}{{/crossLink}} by default.
+             *
+             * @property outline
+             * @final
+             * @type Outline
+             */
+            outline: {
+                get: function () {
+                    return this.components[&quot;default.outline&quot;] ||
+                        new xeogl.Outline(this, {
+                            id: &quot;default.outline&quot;,
+                            thickness: 15,
+                            color: [1,1,0]
                         });
                 }
             },

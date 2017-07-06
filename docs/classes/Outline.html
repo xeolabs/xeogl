@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Shader - xeogl</title>
+    <title>Outline - xeogl</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link href='https://fonts.googleapis.com/css?family=Exo+2:400,800,900,700,600,500|Roboto:100,300,400,500,700,900'  rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
@@ -49,7 +49,6 @@
                                 <li><a href="../classes/Billboard.html">Billboard</a></li>
                                 <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
-                                <li><a href="../classes/BoundingSphereGeometry.html">BoundingSphereGeometry</a></li>
                                 <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
                                 <li><a href="../classes/BuildableModel.html">BuildableModel</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
@@ -63,7 +62,6 @@
                                 <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
-                                <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
@@ -71,7 +69,6 @@
                                 <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
                                 <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
-                                <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
                                 <li><a href="../classes/Entity.html">Entity</a></li>
                                 <li><a href="../classes/Fog.html">Fog</a></li>
@@ -95,6 +92,7 @@
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
+                                <li><a href="../classes/Outline.html">Outline</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
@@ -110,8 +108,6 @@
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
-                                <li><a href="../classes/Shader.html">Shader</a></li>
-                                <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
                                 <li><a href="../classes/SpecularMaterial.html">SpecularMaterial</a></li>
@@ -120,7 +116,6 @@
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/SpotLight.html">SpotLight</a></li>
-                                <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
                                 <li><a href="../classes/Story.html">Story</a></li>
@@ -161,8 +156,8 @@
                                 <li><a href="..//modules/materials.html">materials</a></li>
                                 <li><a href="..//modules/math.html">math</a></li>
                                 <li><a href="..//modules/models.html">models</a></li>
+                                <li><a href="..//modules/outline.html">outline</a></li>
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
-                                <li><a href="..//modules/shaders.html">shaders</a></li>
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="..//modules/stories.html">stories</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
@@ -201,7 +196,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>Shader</h1>
+<h1>Outline</h1>
 <div class="box meta">
 
         <div class="extends">
@@ -209,299 +204,49 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_shaders_shader.js.html#l1"><code>src&#x2F;shaders&#x2F;shader.js:1</code></a>
+            Defined in: <a href="../files/src_outline_outline.js.html#l1"><code>src&#x2F;outline&#x2F;outline.js:1</code></a>
         </div>
 
-            Module: <a href="../modules/shaders.html">shaders</a><br>
+            Module: <a href="../modules/outline.html">outline</a><br>
             Parent Module: <a href="../modules/xeogl.html">xeogl</a>
 
 </div>
 
 
 <div class="box intro">
-    <p>A <strong>Shader</strong> specifies a custom GLSL shader to apply when rendering attached <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
-<ul>
-<li>Normally you would rely on xeogl to automatically generate shaders for you, however the Shader component allows you to author them manually.</li>
-<li>You can use xeogl&#39;s reserved uniform and variable names in your Shaders to read all the WebGL state that&#39;s set by other
-components on the attached <a href="../classes/Entity.html" class="crosslink">Entities</a>.</li>
-<li>Use Shaders in combination with <a href="../classes/ShaderParams.html" class="crosslink">ShaderParams</a> components when you need to share
-the same Shaders among multiple <a href="../classes/Entity.html" class="crosslink">Entities</a> while setting the Shaders&#39; uniforms
-differently for each <a href="../classes/Entity.html" class="crosslink">Entity</a>.</li>
-<li>Use ColorTarget, DepthTarget
-and <a href="../classes/Texture.html" class="crosslink">Texture</a> components to connect the output of one Shader as input into another Shader.</li>
-</ul>
-<p><img src="../../../assets/images/Shader.png"></img></p>
+    <p>A <strong>Outline</strong> renders an outline around attached <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
+<h2 id="overview">Overview</h2>
+<p>TODO</p>
 <h2 id="usage">Usage</h2>
-<p>This example shows the simplest way to use a Shader, where we&#39;re just going to render a ripply water
-pattern to a screen-aligned quad.</p>
-<p><img src="../../assets/images/shaderExample1.png"></img></p>
-<p>In our scene definition, we have an  <a href="../classes/Entity.html" class="crosslink">Entity</a> that has a <a href="../classes/Geometry.html" class="crosslink">Geometry</a> that is our
-screen-aligned quad, plus a Shader that will render the fragments of that quad with our rippling water pattern.
-Finally, we animate the rippling by periodically updating the Shader&#39;s "time" uniform.</p>
-<pre class="code prettyprint"><code class="lang-javascript">// Shader that&#39;s used by our Entity. Note the &#39;position&#39; and &#39;uv attributes&#39;,
-// which will receive the positions and UVs from the Geometry. Also note the &#39;time&#39;
-// uniform, which we&#39;ll be animating via Shader#setUniforms.
-
-var shader = new xeogl.Shader({
-
-   // Vertex shading stage
-   vertex: [
-       "attribute vec3 position;",
-       "attribute vec2 uv;",
-       "varying vec2 vUv;",
-       "void main () {",
-       "    gl_Position = vec4(position, 1.0);",
-       "    vUv = uv;",
-       "}"
-   ],
-
-   // Fragment shading stage
-   fragment: [
-       "precision mediump float;",
-
-       "uniform float time;",
-       "varying vec2 vUv;",
-
-       "void main( void ) {",
-       "    vec2 sp = vUv;",
-       "    vec2 p = sp*5.0 - vec2(10.0);",
-       "    vec2 i = p;",
-       "    float c = 1.0;",
-       "    float inten = 0.10;",
-       "    for (int n = 0; n &lt; 10; n++) {",
-       "        float t = time * (1.0 - (3.0 / float(n+1)));",
-       "        i = p + vec2(cos(t - i.x) + sin(t + i.y), sin(t - i.y) + cos(t + i.x));",
-       "        c += 1.0/length(vec2(p.x / (sin(i.x+t)/inten),p.y / (cos(i.y+t)/inten)));",
-       "    }",
-       "    c /= float(10);",
-       "    c = 1.5-sqrt(c);",
-       "    gl_FragColor = vec4(vec3(c*c*c*c), 999.0) + vec4(0.0, 0.3, 0.5, 1.0);",
-       "}"
-   ],
-
-   // Initial value for the &#39;time&#39; uniform in the fragment stage.
-   uniforms: {
-       time: 0.0
-   }
+<pre class="code prettyprint"><code class="lang-javascript">
+var outline = new xeogl.Outline({
+   thickness: 15,      // Default
+   color: [1,0,0]      // Default
 });
 
-// A screen-aligned quad
-var quad = new xeogl.Geometry({
-   primitive:"triangles",
-   positions:[ 1, 1, 0, -1, 1, 0, -1, -1, 0, 1, -1, 0 ],
-   normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],
-   uv:[ 1, 1, 0, 1, 0, 0, 1, 0 ],
-   indices:[ 0, 1, 2, 0, 2, 3 ]
+new xeogl.Entity({
+    geometry: new xeogl.TorusGeometry(),
+    outline: outline,
+    modes: new xeogl.Modes({
+       outline: false  // Hide the outline (default)
+    });
 });
 
-var entity = new xeogl.Entity(scene, {
-   shader: shader,
-   geometry: quad
-});
-</code></pre>
-<p>Now let&#39;s animate the "time" parameter on the Shader, to make the water ripple:</p>
-<pre class="code prettyprint"><code class="lang-javascript">entity.scene.on("tick", function(e) {
-    shader.setUniforms({
-        time: e.timeElapsed
+new xeogl.Entity({
+    geometry: new xeogl.BoxGeometry(),
+    outline: outline,
+    modes: new xeogl.Modes({
+       outline: true  // Show the outline
     });
 });
 </code></pre>
-<h2 id="-a-name-inputs-shader-inputs-a-"><a name="inputs">Shader Inputs</a></h2>
-<p>xeogl provides the following inputs for your shaders (work in progress).</p>
-<h4 id="attributes">Attributes</h4>
-<p><em>Attributes are used only in vertex shaders</em></p>
-<table>
-<thead>
-<tr>
-<th>Attribute</th>
-<th>Description</th>
-<th>Depends on</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>attribute vec3 position</td>
-<td>Geometry vertex positions</td>
-<td><a href="../classes/Geometry.html" class="crosslink">Geometry</a> <a href="../classes/Geometry.html#property_positions" class="crosslink">positions</a></td>
-</tr>
-<tr>
-<td>attribute vec2 uv</td>
-<td>Geometry vertex UV coordinates</td>
-<td><a href="../classes/Geometry.html" class="crosslink">Geometry</a> <a href="../classes/Geometry.html#property_uv" class="crosslink">uv</a></td>
-</tr>
-<tr>
-<td>attribute vec3 normal</td>
-<td>Geometry vertex normals</td>
-<td><a href="../classes/Geometry.html" class="crosslink">Geometry</a> <a href="../classes/Geometry.html#property_normals" class="crosslink">normals</a></td>
-</tr>
-<tr>
-<td>attribute vec4 color</td>
-<td>Geometry vertex colors</td>
-<td><a href="../classes/Geometry.html" class="crosslink">Geometry</a> <a href="../classes/Geometry.html#property_colors" class="crosslink">colors</a></td>
-</tr>
-<tr>
-<td>attribute vec4 tangent</td>
-<td>Geometry vertex tangents, for normal mapping</td>
-<td><a href="../classes/Geometry.html" class="crosslink">Geometry</a> <a href="../classes/Geometry.html#property_normals" class="crosslink">normals</a> and <a href="../classes/Geometry.html#property_uv" class="crosslink">uv</a></td>
-</tr>
-</tbody>
-</table>
-<h4 id="uniforms">Uniforms</h4>
-<p><em>Uniforms are used in vertex and fragment shaders</em></p>
-<table>
-<thead>
-<tr>
-<th>Uniform</th>
-<th>Description</th>
-<th>Depends on</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>uniform mat4  modelMatrix</td>
-<td>Modelling transform matrix</td>
-<td><a href="../classes/Transform.html" class="crosslink">Transform</a></td>
-</tr>
-<tr>
-<td>uniform mat4  modelNormalMatrix</td>
-<td>Modelling transform normal matrix</td>
-<td><a href="../classes/Geometry.html#property_normals" class="crosslink">Geometry normals</a> and <a href="../classes/Transform.html" class="crosslink">Transform</a></td>
-</tr>
-<tr>
-<td>uniform mat4  viewMatrix</td>
-<td>View transform matrix</td>
-<td><a href="../classes/Lookat.html" class="crosslink">Lookat</a></td>
-</tr>
-<tr>
-<td>uniform mat4  viewNormalMatrix</td>
-<td>View transform normal matrix</td>
-<td><a href="../classes/Geometry.html#property_normals" class="crosslink">Geometry normals</a> and <a href="../classes/Lookat.html" class="crosslink">Lookat</a></td>
-</tr>
-<tr>
-<td>uniform mat4  xeo_uProjMatrix</td>
-<td>Projection transform matrix</td>
-<td><a href="../classes/Ortho.html" class="crosslink">Ortho</a>, <a href="../classes/Frustum.html" class="crosslink">Frustum</a> or <a href="../classes/Perspective.html" class="crosslink">Perspective</a></td>
-</tr>
-<tr>
-<td>uniform float xeo_uZNear</td>
-<td>Near clipping plane</td>
-<td><a href="../classes/Ortho.html" class="crosslink">Ortho</a>, <a href="../classes/Frustum.html" class="crosslink">Frustum</a> or <a href="../classes/Perspective.html" class="crosslink">Perspective</a></td>
-</tr>
-<tr>
-<td>uniform float xeo_uZFar</td>
-<td>Far clipping plane</td>
-<td><a href="../classes/Ortho.html" class="crosslink">Ortho</a>, <a href="../classes/Frustum.html" class="crosslink">Frustum</a> or <a href="../classes/Perspective.html" class="crosslink">Perspective</a></td>
-</tr>
-<tr>
-<td>---</td>
-<td>---</td>
-</tr>
-<tr>
-<td>uniform vec3  xeo_uLightAmbientColor</td>
-<td>Color of the first <a href="../classes/AmbientLight.html" class="crosslink">AmbientLight</a> in <a href="../classes/Lights.html" class="crosslink">Lights</a></td>
-<td><a href="../classes/AmbientLight.html" class="crosslink">AmbientLight</a></td>
-</tr>
-<tr>
-<td>uniform vec3 xeo_uLightColor&lt;<strong><em>N</em></strong>&gt;</td>
-<td>Diffuse color of <a href="../classes/DirLight.html" class="crosslink">DirLight</a> or <a href="../classes/PointLight.html" class="crosslink">PointLight</a> at index <strong><em>N</em></strong> in <a href="../classes/Lights.html" class="crosslink">Lights</a></td>
-<td><a href="../classes/DirLight.html" class="crosslink">DirLight</a> or <a href="../classes/PointLight.html" class="crosslink">PointLight</a></td>
-</tr>
-<tr>
-<td>uniform vec3 xeo_uLightIntensity&lt;<strong><em>N</em></strong>&gt;</td>
-<td>Specular color of <a href="../classes/DirLight.html" class="crosslink">DirLight</a> or <a href="../classes/PointLight.html" class="crosslink">PointLight</a> at index <strong><em>N</em></strong> in <a href="../classes/Lights.html" class="crosslink">Lights</a></td>
-<td><a href="../classes/DirLight.html" class="crosslink">DirLight</a> or <a href="../classes/PointLight.html" class="crosslink">PointLight</a></td>
-</tr>
-<tr>
-<td>uniform vec3 xeo_uLightDir&lt;<strong><em>N</em></strong>&gt;</td>
-<td>Direction of <a href="../classes/DirLight.html" class="crosslink">DirLight</a> at index <strong><em>N</em></strong> in <a href="../classes/Lights.html" class="crosslink">Lights</a></td>
-<td><a href="../classes/DirLight.html" class="crosslink">DirLight</a></td>
-</tr>
-<tr>
-<td>uniform vec3 xeo_uLightPos&lt;<strong><em>N</em></strong>&gt;</td>
-<td>Position of <a href="../classes/PointLight.html" class="crosslink">PointLight</a> at index <strong><em>N</em></strong> in <a href="../classes/Lights.html" class="crosslink">Lights</a></td>
-<td><a href="../classes/PointLight.html" class="crosslink">PointLight</a></td>
-</tr>
-<tr>
-<td>uniform vec3 xeo_uLightConstantAttenuation&lt;<strong><em>N</em></strong>&gt;</td>
-<td>Constant attenuation factor for <a href="../classes/PointLight.html" class="crosslink">PointLight</a> at index <strong><em>N</em></strong> in <a href="../classes/Lights.html" class="crosslink">Lights</a></td>
-<td><a href="../classes/PointLight.html" class="crosslink">PointLight</a></td>
-</tr>
-<tr>
-<td>uniform vec3 xeo_uLightLinearAttenuation&lt;<strong><em>N</em></strong>&gt;</td>
-<td>Linear attenuation factor for <a href="../classes/PointLight.html" class="crosslink">PointLight</a> at index <strong><em>N</em></strong> in <a href="../classes/Lights.html" class="crosslink">Lights</a></td>
-<td><a href="../classes/PointLight.html" class="crosslink">PointLight</a></td>
-</tr>
-<tr>
-<td>uniform vec3 xeo_uLightQuadraticAttenuation&lt;<strong><em>N</em></strong>&gt;</td>
-<td>Quadratic attenuation factor for <a href="../classes/PointLight.html" class="crosslink">PointLight</a> at index <strong><em>N</em></strong> in <a href="../classes/Lights.html" class="crosslink">Lights</a></td>
-<td><a href="../classes/PointLight.html" class="crosslink">PointLight</a></td>
-</tr>
-<tr>
-<td>---</td>
-<td>---</td>
-</tr>
-<tr>
-<td>uniform vec3 materialDiffuse;</td>
-<td></td>
-<td><a href="../classes/PhongMaterial.html#property_diffuse" class="crosslink">diffuse</a></td>
-</tr>
-<tr>
-<td>uniform vec3 materialSpecular;</td>
-<td></td>
-<td><a href="../classes/PhongMaterial.html#property_specular" class="crosslink">specular</a></td>
-</tr>
-<tr>
-<td>uniform vec3 materialEmissive;</td>
-<td></td>
-<td><a href="../classes/PhongMaterial.html#property_emissive" class="crosslink">emissive</a></td>
-</tr>
-<tr>
-<td>uniform float materialOpacity;</td>
-<td></td>
-<td><a href="../classes/PhongMaterial.html#property_opacity" class="crosslink">opacity</a></td>
-</tr>
-<tr>
-<td>uniform float materialShininess;</td>
-<td></td>
-<td><a href="../classes/PhongMaterial.html#property_shininess" class="crosslink">shininess</a></td>
-</tr>
-</tbody>
-</table>
-<h4 id="varying">Varying</h4>
-<p><em>Varying types are used in fragment shaders</em></p>
-<table>
-<thead>
-<tr>
-<th>Varying</th>
-<th>Description</th>
-<th>Depends on</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>varying vec4 xeo_vWorldPosition</td>
-<td></td>
-</tr>
-<tr>
-<td>varying vec4 xeo_vViewPosition</td>
-<td></td>
-</tr>
-<tr>
-<td>varying vec4 xeo_vColor</td>
-</tr>
-</tbody>
-</table>
-<h4 id="samplers">Samplers</h4>
-<p><em>Samplers are used in fragment shaders</em></p>
-<p>| Varying | Description | Depends on  |
-|---|---|---|</p>
 
 </div>
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_Shader" class="method item">
-            <h3 class="name"><code>Shader</code></h3>
+        <div id="method_Outline" class="method item">
+            <h3 class="name"><code>Outline</code></h3>
         
                 <div class="args">
                     <span class="paren">(</span><ul class="args-list inline commas">
@@ -525,7 +270,7 @@ var entity = new xeogl.Entity(scene, {
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_shaders_shader.js.html#l1"><code>src&#x2F;shaders&#x2F;shader.js:1</code></a>
+                <a href="../files/src_outline_outline.js.html#l1"><code>src&#x2F;outline&#x2F;outline.js:1</code></a>
                 </p>
         
         
@@ -547,8 +292,8 @@ var entity = new xeogl.Entity(scene, {
         
         
                             <div class="param-description">
-                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a> - creates this Shader in the default
-        <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted.</p>
+                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a>, creates this Outline within the
+        default <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted.</p>
         
                             </div>
         
@@ -560,7 +305,7 @@ var entity = new xeogl.Entity(scene, {
         
         
                             <div class="param-description">
-                                <p>Configs</p>
+                                <p>Outline configuration</p>
         
                             </div>
         
@@ -571,7 +316,7 @@ var entity = new xeogl.Entity(scene, {
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Optional ID, unique among all components in the parent scene, generated automatically when omitted.</p>
+                                            <p>Optional ID, unique among all components in the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>, generated automatically when omitted.</p>
         
                                         </div>
         
@@ -582,40 +327,29 @@ var entity = new xeogl.Entity(scene, {
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Optional map of user-defined metadata to attach to this Shader.</p>
+                                            <p>Optional map of user-defined metadata to attach to this Outline.</p>
         
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[vertex=null]</code>
-                                            <span class="type">String</span>
+                                            <code class="param-name optional">[thickness=15]</code>
+                                            <span class="type">Number</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>GLSL Depends on code for the vertex shading staging.</p>
+                                            <p>Thickness of the outline in pixels.</p>
         
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[fragment=null]</code>
-                                            <span class="type">String</span>
+                                            <code class="param-name optional">[color=[1,1,0]]</code>
+                                            <span class="type">Float32Array</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>GLSL source code for the fragment shading staging.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[uniforms]</code>
-                                            <span class="type"></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>{Object} Values for uniforms defined in the vertex and/or fragment stages.</p>
+                                            <p>The RGB outline color.</p>
         
                                         </div>
         
@@ -683,10 +417,6 @@ var entity = new xeogl.Entity(scene, {
                                 <a href="#method_once">once</a>
 
                             </li>
-                            <li class="index-item method">
-                                <a href="#method_setUniforms">setUniforms</a>
-
-                            </li>
                             <li class="index-item method inherited">
                                 <a href="#method_warn">warn</a>
 
@@ -698,12 +428,12 @@ var entity = new xeogl.Entity(scene, {
                     <h3>Properties</h3>
 
                     <ul class="index-list properties extends">
-                            <li class="index-item property inherited">
-                                <a href="#property_destroyed">destroyed</a>
+                            <li class="index-item property">
+                                <a href="#property_color">color</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_fragment">fragment</a>
+                            <li class="index-item property inherited">
+                                <a href="#property_destroyed">destroyed</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -734,16 +464,12 @@ var entity = new xeogl.Entity(scene, {
                                 <a href="#property_superTypes">superTypes</a>
 
                             </li>
+                            <li class="index-item property">
+                                <a href="#property_thickness">thickness</a>
+
+                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_type">type</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_uniforms">uniforms</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_vertex">vertex</a>
 
                             </li>
                     </ul>
@@ -754,20 +480,16 @@ var entity = new xeogl.Entity(scene, {
                     <h3>Events</h3>
 
                     <ul class="index-list events extends">
+                            <li class="index-item event">
+                                <a href="#event_color">color</a>
+
+                            </li>
                             <li class="index-item event inherited">
                                 <a href="#event_destroyed">destroyed</a>
 
                             </li>
                             <li class="index-item event">
-                                <a href="#event_fragment">fragment</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_uniforms">uniforms</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_vertex">vertex</a>
+                                <a href="#event_thickness">thickness</a>
 
                             </li>
                     </ul>
@@ -1438,65 +1160,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
 </div>
-<div id="method_setUniforms" class="method item">
-    <h3 class="name"><code>setUniforms</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code class="optional">[uniforms={}]</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_shaders_shader.js.html#l281"><code>src&#x2F;shaders&#x2F;shader.js:281</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Sets one or more uniforms for this Shader.</p>
-<p>These will be individually overridden by any <a href="../classes/ShaderParams.html#method_setUniforms" class="crosslink">uniforms subsequently specified</a> on
-<a href="../classes/ShaderParams.html" class="crosslink">ShaderParams</a> on attached <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
-<p>Fires a <a href="../classes/Shader.html#event_uniforms" class="crosslink">uniforms</a> event on change.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name optional">[uniforms={}]</code>
-                        <span class="type">Object</span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-
-
-                    <div class="param-description">
-                        <p>Values for uniforms to set on this Shader, keyed to their names.</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
 <div id="method_warn" class="method item inherited">
     <h3 class="name"><code>warn</code></h3>
 
@@ -1560,6 +1223,33 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
+                    <div id="property_color" class="property item">
+                        <h3 class="name"><code>color</code></h3>
+                        <span class="type">Float32Array</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_outline_outline.js.html#l110"><code>src&#x2F;outline&#x2F;outline.js:110</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Outline&#39;s RGB color.</p>
+                    <p>Fires a <a href="../classes/Outline.html#event_color" class="crosslink">color</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> [1.0, 1.0, 0.0]</p>
+                    
+                    
+                    </div>
                     <div id="property_destroyed" class="property item inherited">
                         <h3 class="name"><code>destroyed</code></h3>
                         <span class="type">Boolean</span>
@@ -1582,33 +1272,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         </div>
                     
-                    
-                    
-                    </div>
-                    <div id="property_fragment" class="property item">
-                        <h3 class="name"><code>fragment</code></h3>
-                        <span class="type">String</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_shaders_shader.js.html#l233"><code>src&#x2F;shaders&#x2F;shader.js:233</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>GLSL source code for this Shader&#39;s fragment stage.</p>
-                    <p>Fires a <a href="../classes/Shader.html#event_fragment" class="crosslink">fragment</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> null</p>
                     
                     
                     </div>
@@ -1801,6 +1464,33 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_thickness" class="property item">
+                        <h3 class="name"><code>thickness</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_outline_outline.js.html#l68"><code>src&#x2F;outline&#x2F;outline.js:68</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Outline&#39;s thickness in pixels.</p>
+                    <p>Fires a <a href="../classes/Outline.html#event_thickness" class="crosslink">thickness</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> 15</p>
+                    
+                    
+                    </div>
                     <div id="property_type" class="property item inherited">
                         <h3 class="name"><code>type</code></h3>
                         <span class="type">String</span>
@@ -1830,8 +1520,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_uniforms" class="property item">
-                        <h3 class="name"><code>uniforms</code></h3>
+            </div>
+
+
+            <div id="events" class="api-class-tabpanel">
+                <h2 class="off-left">Events</h2>
+
+                    <div id="event_color" class="events item">
+                        <h3 class="name"><code>color</code></h3>
                         <span class="type"></span>
                     
                     
@@ -1841,55 +1537,37 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_shaders_shader.js.html#l264"><code>src&#x2F;shaders&#x2F;shader.js:264</code></a>
+                            <a href="../files/src_outline_outline.js.html#l145"><code>src&#x2F;outline&#x2F;outline.js:145</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Uniforms for this Shader.</p>
-                    <p>Fires a <a href="../classes/Shader.html#event_uniforms" class="crosslink">uniforms</a> event on change.</p>
+                            <p>Fired whenever this Outline&#39;s <a href="../classes/Outline.html#property_color" class="crosslink">color</a> property changes.</p>
                     
                         </div>
                     
-                            <p><strong>Default:</strong> {}</p>
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Float32Array</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
                     
                     
                     </div>
-                    <div id="property_vertex" class="property item">
-                        <h3 class="name"><code>vertex</code></h3>
-                        <span class="type">String</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_shaders_shader.js.html#l202"><code>src&#x2F;shaders&#x2F;shader.js:202</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>GLSL source code for this Shader&#39;s vertex stage.</p>
-                    <p>Fires a <a href="../classes/Shader.html#event_vertex" class="crosslink">vertex</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> null</p>
-                    
-                    
-                    </div>
-            </div>
-
-
-            <div id="events" class="api-class-tabpanel">
-                <h2 class="off-left">Events</h2>
-
                     <div id="event_destroyed" class="events item inherited">
                         <h3 class="name"><code>destroyed</code></h3>
                         <span class="type"></span>
@@ -1915,8 +1593,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_fragment" class="events item">
-                        <h3 class="name"><code>fragment</code></h3>
+                    <div id="event_thickness" class="events item">
+                        <h3 class="name"><code>thickness</code></h3>
                         <span class="type"></span>
                     
                     
@@ -1926,99 +1604,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_shaders_shader.js.html#l250"><code>src&#x2F;shaders&#x2F;shader.js:250</code></a>
+                            <a href="../files/src_outline_outline.js.html#l96"><code>src&#x2F;outline&#x2F;outline.js:96</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this Shader&#39;s <a href="../classes/Shader.html#property_fragment" class="crosslink">fragment</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_uniforms" class="events item">
-                        <h3 class="name"><code>uniforms</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_shaders_shader.js.html#l302"><code>src&#x2F;shaders&#x2F;shader.js:302</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Shader&#39;s  <a href="../classes/Shader.html#property_uniforms" class="crosslink">uniforms</a>
-                    property has been updated.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_vertex" class="events item">
-                        <h3 class="name"><code>vertex</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_shaders_shader.js.html#l219"><code>src&#x2F;shaders&#x2F;shader.js:219</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Shader&#39;s <a href="../classes/Shader.html#property_vertex" class="crosslink">vertex</a> property changes.</p>
+                            <p>Fired whenever this Outline&#39;s  <a href="../classes/Outline.html#property_thickness" class="crosslink">thickness</a> property changes.</p>
                     
                         </div>
                     

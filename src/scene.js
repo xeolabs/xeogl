@@ -368,10 +368,6 @@
             dummy = this.project;
             dummy = this.camera;
             dummy = this.clips;
-            dummy = this.colorTarget;
-            dummy = this.colorBuf;
-            dummy = this.depthTarget;
-            dummy = this.depthBuf;
             dummy = this.visibility;
             dummy = this.cull;
             dummy = this.modes;
@@ -380,11 +376,9 @@
             dummy = this.lights;
             dummy = this.material;
             dummy = this.morphTargets;
-            dummy = this.shader;
-            dummy = this.shaderParams;
-            dummy = this.stage;
             dummy = this.transform;
             dummy = this.viewport;
+            dummy = this.outline;
         },
 
         // Called by each component that is created with this Scene as parent.
@@ -887,103 +881,6 @@
             },
 
             /**
-             * The default {{#crossLink "ColorBuf"}}ColorBuf{{/crossLink}} provided by this Scene.
-             *
-             * This {{#crossLink "ColorBuf"}}ColorBuf{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.colorBuf",
-             * with all other properties initialised to their default values.
-             *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "ColorBuf"}}ColorBuf{{/crossLink}} by default.
-             * @property colorBuf
-             * @final
-             * @type ColorBuf
-             */
-            colorBuf: {
-
-                get: function () {
-                    return this.components["default.colorBuf"] ||
-                        new xeogl.ColorBuf(this, {
-                            id: "default.colorBuf",
-                            isDefault: true
-                        });
-                }
-            },
-
-            /**
-             * The default {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} provided by this Scene.
-             *
-             * The {{#crossLink "ColorTarget"}}DepthTarget{{/crossLink}} is
-             * {{#crossLink "ColorTarget/active:property"}}inactive{{/crossLink}} by default and will have an
-             * {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.depthTarget".
-             *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} by default.
-             * @property colorTarget
-             * @private
-             * @final
-             * @type ColorTarget
-             */
-            colorTarget: {
-                get: function () {
-                    return this.components["default.colorTarget"] ||
-                        new xeogl.ColorTarget(this, {
-                            id: "default.colorTarget",
-                            isDefault: true,
-                            active: false
-                        })
-                }
-            },
-
-            /**
-             * The default {{#crossLink "DepthBuf"}}DepthBuf{{/crossLink}} provided by this Scene.
-             *
-             * This {{#crossLink "DepthBuf"}}DepthBuf{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.depthBuf",
-             * with all other properties initialised to their default values.
-             *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "DepthBuf"}}DepthBuf{{/crossLink}} by default.
-             *
-             * @property depthBuf
-             * @final
-             * @type DepthBuf
-             */
-            depthBuf: {
-                get: function () {
-                    return this.components["default.depthBuf"] ||
-                        new xeogl.DepthBuf(this, {
-                            id: "default.depthBuf",
-                            isDefault: true,
-                            active: true
-                        });
-                }
-            },
-
-            /**
-             * The default {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} provided by this Scene.
-             *
-             * The {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} is
-             * {{#crossLink "DepthTarget/active:property"}}inactive{{/crossLink}} by default and has an
-             * {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.depthTarget".
-             *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} by default.
-             * @property depthTarget
-             * @private
-             * @final
-             * @type DepthTarget
-             */
-            depthTarget: {
-                get: function () {
-                    return this.components["default.depthTarget"] ||
-                        new xeogl.DepthTarget(this, {
-                            id: "default.depthTarget",
-                            isDefault: true,
-                            active: false
-                        });
-                }
-            },
-
-            /**
              * The default {{#crossLink "Visibility"}}Visibility{{/crossLink}} provided by this Scene.
              *
              * This {{#crossLink "Visibility"}}Visibility{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.visibility",
@@ -1215,78 +1112,6 @@
             },
 
             /**
-             * The default {{#crossLink "Shader"}}Shader{{/crossLink}} provided by this Scene
-             * (which is initially an empty {{#crossLink "Shader"}}Shader{{/crossLink}} that has no effect).
-             *
-             * This {{#crossLink "Shader"}}Shader{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.shader",
-             * with all other properties initialised to their default values.
-             *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "Shader"}}Shader{{/crossLink}} by default.
-             * @property shader
-             * @final
-             * @private
-             * @type Shader
-             */
-            shader: {
-                get: function () {
-                    return this.components["default.shader"] ||
-                        this.components["default.shader"] || new xeogl.Shader(this, {
-                            id: "default.shader",
-                            isDefault: true
-                        });
-                }
-            },
-
-            /**
-             * The default {{#crossLink "ShaderParams"}}ShaderParams{{/crossLink}} provided by this Scene.
-             *
-             * This {{#crossLink "ShaderParams"}}ShaderParams{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.shaderParams",
-             * with all other properties initialised to their default values.
-             *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "ShaderParams"}}{{/crossLink}} by default.
-             *
-             * @property shaderParams
-             * @final
-             * @private
-             * @type ShaderParams
-             */
-            shaderParams: {
-                get: function () {
-                    return this.components["default.shaderParams"] ||
-                        new xeogl.ShaderParams(this, {
-                            id: "default.shaderParams",
-                            isDefault: true
-                        });
-                }
-            },
-
-            /**
-             * The default {{#crossLink "Stage"}}Stage{{/crossLink}} provided by this Scene.
-             *
-             * This {{#crossLink "Stage"}}Stage{{/crossLink}} has
-             * an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.stage" and
-             * a {{#crossLink "Stage/priority:property"}}priority{{/crossLink}} equal to ````0````.
-             *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "Stage"}}Stage{{/crossLink}} by default.
-             * @property stage
-             * @final
-             * @type Stage
-             */
-            stage: {
-                get: function () {
-                    return this.components["default.stage"] ||
-                        new xeogl.Stage(this, {
-                            id: "default.stage",
-                            priority: 0,
-                            isDefault: true
-                        });
-                }
-            },
-
-            /**
              * The default {{#crossLink "Viewport"}}{{/crossLink}} provided by this Scene.
              *
              * This {{#crossLink "Viewport"}}{{/crossLink}} has
@@ -1307,6 +1132,32 @@
                             id: "default.viewport",
                             autoBoundary: true,
                             isDefault: true
+                        });
+                }
+            },
+
+            /**
+             * The default {{#crossLink "Outline"}}{{/crossLink}} provided by this Scene.
+             *
+             * This {{#crossLink "Outline"}}{{/crossLink}} has
+             * an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.outline",
+             * a {{#crossLink "Outline/color:property"}}color{{/crossLink}} set to ````[1,1,0]````
+             * a {{#crossLink "Outline/thickness:property"}}thickness{{/crossLink}} set to ````15````.
+             *
+             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink "Outline"}}{{/crossLink}} by default.
+             *
+             * @property outline
+             * @final
+             * @type Outline
+             */
+            outline: {
+                get: function () {
+                    return this.components["default.outline"] ||
+                        new xeogl.Outline(this, {
+                            id: "default.outline",
+                            thickness: 15,
+                            color: [1,1,0]
                         });
                 }
             },

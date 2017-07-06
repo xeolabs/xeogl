@@ -196,7 +196,6 @@
         obb = worldBoundary.obb;
         aabb = worldBoundary.aabb;
         center = worldBoundary.center;
-        sphere = worldBoundary.sphere();
         //...
     });
 
@@ -207,9 +206,8 @@
 
  Since xeogl is all about lazy-execution to avoid needless work, the {{#crossLink "Boundary3D"}}{{/crossLink}} will
  only actually recompute its extents the first time we read its {{#crossLink "Boundary3D/obb:property"}}{{/crossLink}},
- {{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}}, {{#crossLink "Boundary3D/center:property"}}{{/crossLink}},
- {{#crossLink "Boundary3D/center:property"}}{{/crossLink}} or
- {{#crossLink "Boundary3D/sphere:property"}}{{/crossLink}} properties after it fired its
+ {{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}}, {{#crossLink "Boundary3D/center:property"}}{{/crossLink}} or
+ {{#crossLink "Boundary3D/center:property"}}{{/crossLink}} properties after it fired its
  last {{#crossLink "Boundary3D/updated:event"}}{{/crossLink}} event.
 
  Also, the Model lazy-instantiates its {{#crossLink "Boundary3D"}}{{/crossLink}} the first time we reference

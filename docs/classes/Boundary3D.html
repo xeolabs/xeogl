@@ -49,7 +49,6 @@
                                 <li><a href="../classes/Billboard.html">Billboard</a></li>
                                 <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
-                                <li><a href="../classes/BoundingSphereGeometry.html">BoundingSphereGeometry</a></li>
                                 <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
                                 <li><a href="../classes/BuildableModel.html">BuildableModel</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
@@ -63,7 +62,6 @@
                                 <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
-                                <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
@@ -71,7 +69,6 @@
                                 <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
                                 <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
-                                <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
                                 <li><a href="../classes/Entity.html">Entity</a></li>
                                 <li><a href="../classes/Fog.html">Fog</a></li>
@@ -95,6 +92,7 @@
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
+                                <li><a href="../classes/Outline.html">Outline</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
@@ -110,8 +108,6 @@
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
-                                <li><a href="../classes/Shader.html">Shader</a></li>
-                                <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
                                 <li><a href="../classes/SpecularMaterial.html">SpecularMaterial</a></li>
@@ -120,7 +116,6 @@
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/SpotLight.html">SpotLight</a></li>
-                                <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
                                 <li><a href="../classes/Story.html">Story</a></li>
@@ -161,8 +156,8 @@
                                 <li><a href="..//modules/materials.html">materials</a></li>
                                 <li><a href="..//modules/math.html">math</a></li>
                                 <li><a href="..//modules/models.html">models</a></li>
+                                <li><a href="..//modules/outline.html">outline</a></li>
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
-                                <li><a href="..//modules/shaders.html">shaders</a></li>
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="..//modules/stories.html">stories</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
@@ -229,7 +224,6 @@ containing homogeneous coordinates for the eight corner vertices, ie. each havin
 <li><a href="../classes/Boundary3D.html#property_aabb" class="crosslink">aabb</a> - an axis-aligned box (AABB) in a six-element Float32Array
 containing the min/max extents of the axis-aligned volume, ie. <code>[xmin,ymin,zmin,xmax,ymax,zmax]</code>,</li>
 <li><a href="../classes/Boundary3D.html#property_center" class="crosslink">center</a> - the center point as a three-element Float32Array containing elements <code>[x,y,z]</code> and</li>
-<li><a href="../classes/Boundary3D.html#property_sphere" class="crosslink">sphere</a> - a bounding sphere as a four-element Float32Array containing elements<code>[x,y,z,radius]</code>.</li>
 </ul>
 <p>As shown in the diagram below, the following xeogl components have Boundary3Ds:</p>
 <ul>
@@ -280,7 +274,6 @@ worldBoundary.on("updated", function() {
        obb = worldBoundary.obb;
        aabb = worldBoundary.aabb;
        center = worldBoundary.center;
-       sphere = worldBoundary.sphere();
        //...
    });
 
@@ -414,18 +407,7 @@ entity.scene.on("tick", function() {
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Optional initial 3D center</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[sphere]</code>
-                                            <span class="type">Float32Array</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Optional initial 3D bounding sphere.</p>
+                                            <p>Optional initial 3D center.</p>
         
                                         </div>
         
@@ -582,10 +564,6 @@ entity.scene.on("tick", function() {
                             </li>
                             <li class="index-item property inherited">
                                 <a href="#property_scene">scene</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_sphere">sphere</a>
 
                             </li>
                             <li class="index-item property inherited inherited">
@@ -1359,7 +1337,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_boundaries_boundary3d.js.html#l165"><code>src&#x2F;boundaries&#x2F;boundary3d.js:165</code></a>
+                            <a href="../files/src_boundaries_boundary3d.js.html#l158"><code>src&#x2F;boundaries&#x2F;boundary3d.js:158</code></a>
                             </p>
                     
                     
@@ -1387,7 +1365,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_boundaries_boundary3d.js.html#l187"><code>src&#x2F;boundaries&#x2F;boundary3d.js:187</code></a>
+                            <a href="../files/src_boundaries_boundary3d.js.html#l180"><code>src&#x2F;boundaries&#x2F;boundary3d.js:180</code></a>
                             </p>
                     
                     
@@ -1541,7 +1519,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_boundaries_boundary3d.js.html#l143"><code>src&#x2F;boundaries&#x2F;boundary3d.js:143</code></a>
+                            <a href="../files/src_boundaries_boundary3d.js.html#l136"><code>src&#x2F;boundaries&#x2F;boundary3d.js:136</code></a>
                             </p>
                     
                     
@@ -1578,34 +1556,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>The parent <a href="../classes/Scene.html" class="crosslink">Scene</a> that contains this Component.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_sphere" class="property item">
-                        <h3 class="name"><code>sphere</code></h3>
-                        <span class="type">Float32Array</span>
-                    
-                    
-                    
-                            <span class="flag final">final</span>
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_boundaries_boundary3d.js.html#l208"><code>src&#x2F;boundaries&#x2F;boundary3d.js:208</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>A spherical representation of this 3D boundary.</p>
-                    <p>The sphere is a four-element Float32Array containing the sphere center and
-                    radius, ie: <code>[xcenter, ycenter, zcenter, radius ]</code>.</p>
                     
                         </div>
                     
@@ -1744,7 +1694,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_boundaries_boundary3d.js.html#l106"><code>src&#x2F;boundaries&#x2F;boundary3d.js:106</code></a>
+                            <a href="../files/src_boundaries_boundary3d.js.html#l103"><code>src&#x2F;boundaries&#x2F;boundary3d.js:103</code></a>
                             </p>
                     
                     
@@ -1752,8 +1702,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Fired whenever this Boundary3D&#39;s <a href="../classes/Boundary3D.html#property_obb" class="crosslink">obb</a>,
-                    <a href="../classes/Boundary3D.html#property_aabb" class="crosslink">aabb</a>, <a href="../classes/Boundary3D.html#property_sphere" class="crosslink">sphere</a>
-                    or <a href="../classes/Boundary3D.html#property_center" class="crosslink">center</a> properties change.</p>
+                    <a href="../classes/Boundary3D.html#property_aabb" class="crosslink">aabb</a> or <a href="../classes/Boundary3D.html#property_center" class="crosslink">center</a> properties change.</p>
                     
                         </div>
                     

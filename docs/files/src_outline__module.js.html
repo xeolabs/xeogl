@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/_renderer/chunks/renderTargetChunk.js - xeogl</title>
+    <title>src/outline/_module.js - xeogl</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link href='https://fonts.googleapis.com/css?family=Exo+2:400,800,900,700,600,500|Roboto:100,300,400,500,700,900'  rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
@@ -49,7 +49,6 @@
                                 <li><a href="../classes/Billboard.html">Billboard</a></li>
                                 <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
-                                <li><a href="../classes/BoundingSphereGeometry.html">BoundingSphereGeometry</a></li>
                                 <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
                                 <li><a href="../classes/BuildableModel.html">BuildableModel</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
@@ -63,7 +62,6 @@
                                 <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
-                                <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
@@ -71,7 +69,6 @@
                                 <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
                                 <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
-                                <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
                                 <li><a href="../classes/Entity.html">Entity</a></li>
                                 <li><a href="../classes/Fog.html">Fog</a></li>
@@ -95,6 +92,7 @@
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
+                                <li><a href="../classes/Outline.html">Outline</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
@@ -110,8 +108,6 @@
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
-                                <li><a href="../classes/Shader.html">Shader</a></li>
-                                <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
                                 <li><a href="../classes/SpecularMaterial.html">SpecularMaterial</a></li>
@@ -120,7 +116,6 @@
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/SpotLight.html">SpotLight</a></li>
-                                <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
                                 <li><a href="../classes/Story.html">Story</a></li>
@@ -161,8 +156,8 @@
                                 <li><a href="..//modules/materials.html">materials</a></li>
                                 <li><a href="..//modules/math.html">math</a></li>
                                 <li><a href="..//modules/models.html">models</a></li>
+                                <li><a href="..//modules/outline.html">outline</a></li>
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
-                                <li><a href="..//modules/shaders.html">shaders</a></li>
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="..//modules/stories.html">stories</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
@@ -201,71 +196,16 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1 class="file-heading">File: src/_renderer/chunks/renderTargetChunk.js</h1>
+<h1 class="file-heading">File: src/outline/_module.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
-(function () {
-
-    &quot;use strict&quot;;
-
-    /**
-     *   Create display state chunk type for draw and pick render of renderTarget
-     */
-    xeogl.renderer.ChunkFactory.createChunkType({
-
-        type: &quot;renderTarget&quot;,
-
-        // Avoid reapplication of this chunk type after a program switch.
-
-        programGlobal: true,
-
-        draw: function (frameCtx) {
-
-            var gl = this.program.gl;
-            var state = this.state;
-
-            // Flush and unbind any render buffer already bound
-
-            if (frameCtx.renderBuf) {
-                gl.flush();
-                frameCtx.renderBuf.unbind();
-                frameCtx.renderBuf = null;
-
-                // Renderer hook to bind a custom output framebuffer
-                if (frameCtx.bindOutputFramebuffer) {
-                    frameCtx.bindOutputFramebuffer(frameCtx.pass);
-                }
-            }
-
-            // Set depthMode false and bail if no render buffer for this chunk
-            var renderBuf = state.renderBuf;
-            if (!renderBuf) {
-                frameCtx.depthMode = false;
-                return;
-            }
-
-            // Bind this chunk&#x27;s render buffer, set depthMode, enable blend if depthMode false, clear buffer
-            renderBuf.bind();
-
-            frameCtx.depthMode = (state.type === state.DEPTH);
-
-            if (frameCtx.blendEnabled &amp;&amp; !frameCtx.depthMode) {
-                gl.enable(gl.BLEND);
-                gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-            }
-
-            gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
-            gl.clearColor(frameCtx.ambientColor[0], frameCtx.ambientColor[1], frameCtx.ambientColor[2], 1.0);
-            //gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
-
-            //gl.clear(frameCtx.depthMode ? gl.COLOR_BUFFER_BIT : gl.DEPTH_BUFFER_BIT);
-
-            frameCtx.renderBuf = renderBuf;
-        }
-    });
-
-})();
+/**
+ * An outline rendering effect for emphasis.
+ *
+ * @module xeogl
+ * @submodule outline
+ */
     </pre>
 </div>
                     </div>

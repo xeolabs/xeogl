@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/shaders/shaderParams.js - xeogl</title>
+    <title>outline - xeogl</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link href='https://fonts.googleapis.com/css?family=Exo+2:400,800,900,700,600,500|Roboto:100,300,400,500,700,900'  rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
@@ -49,7 +49,6 @@
                                 <li><a href="../classes/Billboard.html">Billboard</a></li>
                                 <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
-                                <li><a href="../classes/BoundingSphereGeometry.html">BoundingSphereGeometry</a></li>
                                 <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
                                 <li><a href="../classes/BuildableModel.html">BuildableModel</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
@@ -63,7 +62,6 @@
                                 <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
-                                <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
@@ -71,7 +69,6 @@
                                 <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
                                 <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
-                                <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
                                 <li><a href="../classes/Entity.html">Entity</a></li>
                                 <li><a href="../classes/Fog.html">Fog</a></li>
@@ -95,6 +92,7 @@
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
+                                <li><a href="../classes/Outline.html">Outline</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
@@ -110,8 +108,6 @@
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
-                                <li><a href="../classes/Shader.html">Shader</a></li>
-                                <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
                                 <li><a href="../classes/SpecularMaterial.html">SpecularMaterial</a></li>
@@ -120,7 +116,6 @@
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/SpotLight.html">SpotLight</a></li>
-                                <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
                                 <li><a href="../classes/Story.html">Story</a></li>
@@ -161,8 +156,8 @@
                                 <li><a href="..//modules/materials.html">materials</a></li>
                                 <li><a href="..//modules/math.html">math</a></li>
                                 <li><a href="..//modules/models.html">models</a></li>
+                                <li><a href="..//modules/outline.html">outline</a></li>
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
-                                <li><a href="..//modules/shaders.html">shaders</a></li>
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="..//modules/stories.html">stories</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
@@ -201,227 +196,38 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1 class="file-heading">File: src/shaders/shaderParams.js</h1>
-
-<div class="file">
-    <pre class="code prettyprint linenums">
-/**
- A **ShaderParams** sets uniform values for {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}} on attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
+<h1>outline Module</h1>
+<div class="box clearfix meta">
 
 
- * Use ShaderParams components when you need to share the same {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}} among multiple {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}},
- while setting the {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}}&#x27; uniforms differently for each {{#crossLink &quot;Entity&quot;}}Entity{{/crossLink}}.
+        <div class="foundat">
+            Defined in: <a href="../files/src_outline_outline.js.html#l1"><code>src&#x2F;outline&#x2F;outline.js:1</code></a>
+        </div>
+
+</div>
 
 
- &lt;img src=&quot;../../../assets/images/ShaderParams.png&quot;&gt;&lt;/img&gt;
+<div class="box intro">
+    <p>An outline rendering effect for emphasis.</p>
 
- ## Usage
+</div>
 
- In this example we&#x27;ll create the effect shown below, in which we render a rippling water pattern to the left and right halves
- of the canvas, independently. We&#x27;ll have a {{#crossLink &quot;Shader&quot;}}{{/crossLink}} that creates the water pattern, which
- we&#x27;ll share between two {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
- Each {{#crossLink &quot;Entity&quot;}}{{/crossLink}} will have its own screen-aligned quad {{#crossLink &quot;Geometry&quot;}}{{/crossLink}},
- as well its own {{#crossLink &quot;ShaderParams&quot;}}{{/crossLink}} to update the update the {{#crossLink &quot;Shader&quot;}}{{/crossLink}}&#x27;s
- rippling rate independently.
 
- &lt;img src=&quot;../../assets/images/shaderParamsExample1.png&quot;&gt;&lt;/img&gt;
+<div class="yui3-g">
+    <div class="yui3-u-1-2">
+            <p>This module provides the following classes:</p>
 
- &#x60;&#x60;&#x60;&#x60;javascript
- // Shader that&#x27;s shared by both our Entities. Note the &#x27;xeo_aPosition&#x27; and &#x27;xeo_aUV attributes&#x27;,
- // which will receive the positions and UVs from the Geometry components. Also note the &#x27;time&#x27;
- // uniform, which we&#x27;ll be animating via the ShaderParams components.
+            <ul class="module-classes">
+                <li class="module-class">
+                    <a href="../classes/Outline.html">
+                        Outline
+                    </a>
+                </li>
+            </ul>
+    </div>
 
- var shader = new xeogl.Shader({
-
-    // Vertex shading stage
-    vertex: [
-        &quot;attribute vec3 xeo_aPosition;&quot;,
-        &quot;attribute vec2 xeo_aUV;&quot;,
-        &quot;varying vec2 vUv;&quot;,
-        &quot;void main () {&quot;,
-        &quot;    gl_Position = vec4(xeo_aPosition, 1.0);&quot;,
-        &quot;    vUv = xeo_aUV;&quot;,
-        &quot;}&quot;
-    ],
-
-    // Fragment shading stage
-    fragment: [
-        &quot;precision mediump float;&quot;,
-
-        &quot;uniform float time;&quot;,
-        &quot;varying vec2 vUv;&quot;,
-
-        &quot;void main( void ) {&quot;,
-        &quot;    vec2 sp = vUv;&quot;,
-        &quot;    vec2 p = sp*5.0 - vec2(10.0);&quot;,
-        &quot;    vec2 i = p;&quot;,
-        &quot;    float c = 1.0;&quot;,
-        &quot;    float inten = 0.10;&quot;,
-        &quot;    for (int n = 0; n &lt; 10; n++) {&quot;,
-        &quot;        float t = time * (1.0 - (3.0 / float(n+1)));&quot;,
-        &quot;        i = p + vec2(cos(t - i.x) + sin(t + i.y), sin(t - i.y) + cos(t + i.x));&quot;,
-        &quot;        c += 1.0/length(vec2(p.x / (sin(i.x+t)/inten),p.y / (cos(i.y+t)/inten)));&quot;,
-        &quot;    }&quot;,
-        &quot;    c /= float(10);&quot;,
-        &quot;    c = 1.5-sqrt(c);&quot;,
-        &quot;    gl_FragColor = vec4(vec3(c*c*c*c), 999.0) + vec4(0.0, 0.3, 0.5, 1.0);&quot;,
-        &quot;}&quot;
-    ],
-
-    // Initial values for the &#x27;time&#x27; uniform in the fragment stage.
-    uniforms: {
-        time: 0.0
-    }
- });
-
- // First Entity using our Shader, with a quad covering the left half of the canvas,
- // along with its own ShaderParams to independently set its own values for the Shader&#x27;s uniforms.
-
- var entity1 = new xeogl.Entity({
-    shader: shader,
-    geometry: new xeogl.Geometry({
-        primitive:&quot;triangles&quot;,
-        positions:[ 1, 1, 0, 0, 1, 0, 0, -1, 0, 1, -1, 0 ],
-        normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],
-        uv:[ 1, 1, 0, 1, 0, 0, 1, 0 ],
-        indices:[ 0, 1, 2, 0, 2, 3 ]
-    }),
-    shaderParams1: new xeogl.ShaderParams({
-        uniforms: {
-            time: 0.0
-        }
-    })
- });
-
- // Second Entity using the Shader, with a quad covering the right half of the canvas,
- // along with its own ShaderParams to independently set its own values for the Shader&#x27;s uniforms.
-
- var entity2 = new xeogl.Entity({
-    shader: shader,
-    geometry: new xeogl.Geometry({
-        primitive:&quot;triangles&quot;,
-        positions:[ 1, 1, 0, 0, 1, 0, 0, -1, 0, 1, -1, 0 ],
-        normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],
-        uv:[ 1, 1, 0, 1, 0, 0, 1, 0 ],
-        indices:[ 0, 1, 2, 0, 2, 3 ]
-    }),
-    shaderParams: new xeogl.ShaderParams({
-        uniforms: {
-            time: 0.0
-        }
-    })
- });
- &#x60;&#x60;&#x60;&#x60;
- Now let&#x27;s animate the &quot;time&quot; parameter on the Shader, for each Entity independently:
-
- &#x60;&#x60;&#x60;&#x60; javascript
- // Get the default Scene off the first Entity
- var scene = entity1.scene;
-
- scene.on(&quot;tick&quot;, function(e) {
-
-    entity1.shaderParams.setUniforms({
-        time: e.timeElapsed
-    });
-
-    entity2.shaderParams.setUniforms({
-        time: e.timeElapsed  * 0.5
-    });
-});
- &#x60;&#x60;&#x60;&#x60;
- @class ShaderParams
- @module xeogl
- @submodule shaders
- @constructor
- @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this ShaderParams in the default
- {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ShaderParams.
- @param [cfg.uniforms={}] {Object} The {{#crossLink &quot;Shader&quot;}}Shader{{/crossLink}} parameter values.
- @extends Component
- */
-(function () {
-
-    &quot;use strict&quot;;
-
-    xeogl.ShaderParams = xeogl.Component.extend({
-
-        type: &quot;xeogl.ShaderParams&quot;,
-
-        _init: function (cfg) {
-
-            this._state = new xeogl.renderer.ShaderParams({
-                uniforms: {}
-            });
-
-            this.setUniforms(cfg.uniforms);
-        },
-
-        _props: {
-            
-            /**
-             * Uniforms for {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}} on attached
-             * {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
-             *
-             * Fires a {{#crossLink &quot;Shader/uniforms:event&quot;}}{{/crossLink}} event on change.
-             *
-             * @property uniforms
-             * @default {}
-             * @type {}
-             */
-            uniforms: {
-
-                get: function () {
-                    return this._state.uniforms;
-                }
-            }
-        },
-
-        /**
-         * Sets one or more uniforms for {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}} on attached
-         * {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
-         *
-         * These will individually override any uniforms of the same names that are {{#crossLink &quot;Shader/setUniforms:method&quot;}}already specified{{/crossLink}} on
-         * those {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}}.
-         *
-         * Fires a {{#crossLink &quot;ShaderParams/uniforms:event&quot;}}{{/crossLink}} event on change.
-         *
-         * @method setUniforms
-         * @param {} [uniforms={}] Values for uniforms to set on the {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}}, keyed to their names.
-         */
-        setUniforms: function (uniforms) {
-
-            for (var name in uniforms) {
-                if (uniforms.hasOwnProperty(name)) {
-                    this._state.uniforms[name] = uniforms[name];
-                }
-            }
-
-            this._renderer.imageDirty = true;
-
-            /**
-             * Fired whenever this ShaderParams&#x27; {{#crossLink &quot;ShaderParams/uniforms:property&quot;}}{{/crossLink}} property has been updated.
-             * @event uniforms
-             * @param value The property&#x27;s new value
-             */
-            this.fire(&quot;uniforms&quot;, this._state.uniforms);
-        },
-
-        _compile: function () {
-            this._renderer.shaderParams = this._state;
-        },
-
-        _getJSON: function () {
-            return {
-                uniforms: this._state.uniforms
-            };
-        }
-    });
-
-})();
-
-    </pre>
+    <div class="yui3-u-1-2">
+    </div>
 </div>
                     </div>
                 </div>

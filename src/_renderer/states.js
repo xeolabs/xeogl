@@ -111,56 +111,6 @@
 
     /**
 
-     Stage state.
-
-     renderer.Stage
-     @module xeogl
-
-     @constructor
-     @param cfg {*} Configs
-     @param cfg.priority {Number} Stage render priority.
-     @extends renderer.State
-     */
-    xeogl.renderer.Stage = xeogl.renderer.State.extend({
-        _ids: new xeogl.utils.Map({})
-    });
-
-    /**
-
-     Depth buffer state.
-
-     renderer.DepthBuf
-     @module xeogl
-
-     @constructor
-     @param cfg {*} Configs
-     @param cfg.clearDepth {Number} Clear depth
-     @param cfg.depthBuf {String} Depth function
-     @extends renderer.State
-     */
-    xeogl.renderer.DepthBuf = xeogl.renderer.State.extend({
-        _ids: new xeogl.utils.Map({})
-    });
-
-    /**
-
-     Color buffer state.
-
-     renderer.ColorBuf
-     @module xeogl
-
-     @constructor
-     @param cfg {*} Configs
-     @param cfg.blendEnabled {Boolean} Indicates if blending is enebled for
-     @param cfg.colorMask {Array of String} The color mask
-     @extends renderer.State
-     */
-    xeogl.renderer.ColorBuf = xeogl.renderer.State.extend({
-        _ids: new xeogl.utils.Map({})
-    });
-
-    /**
-
      Renderer lights state.
 
      renderer.Lights
@@ -265,25 +215,6 @@
         _ids: new xeogl.utils.Map({})
     });
 
-
-    /**
-
-     Render target state.
-
-     renderer.RenderTarget
-     @module xeogl
-
-     @constructor
-     @param cfg {*} Configs
-     @extends renderer.State
-     */
-    xeogl.renderer.RenderTarget = xeogl.renderer.State.extend({
-        _ids: new xeogl.utils.Map({})
-    });
-
-    xeogl.renderer.RenderTarget.DEPTH = 0;
-    xeogl.renderer.RenderTarget.COLOR = 1;
-
     /**
 
      Clip planes state.
@@ -311,36 +242,6 @@
      @extends renderer.State
      */
     xeogl.renderer.MorphTargets = xeogl.renderer.State.extend({
-        _ids: new xeogl.utils.Map({})
-    });
-
-    /**
-
-     Shader state.
-
-     renderer.Shader
-     @module xeogl
-
-     @constructor
-     @param cfg {*} Configs
-     @extends renderer.State
-     */
-    xeogl.renderer.Shader = xeogl.renderer.State.extend({
-        _ids: new xeogl.utils.Map({})
-    });
-
-    /**
-
-     Shader parameters state.
-
-     renderer.ShaderParams
-     @module xeogl
-
-     @constructor
-     @param cfg {*} Configs
-     @extends renderer.State
-     */
-    xeogl.renderer.ShaderParams = xeogl.renderer.State.extend({
         _ids: new xeogl.utils.Map({})
     });
 
@@ -433,6 +334,23 @@
      @extends renderer.State
      */
     xeogl.renderer.Viewport = xeogl.renderer.State.extend({
+        _ids: new xeogl.utils.Map({})
+    });
+
+    /**
+
+     Outline state.
+
+     renderer.Outline
+     @module xeogl
+
+     @constructor
+     @param cfg {*} Configs
+     @param [cfg.thickness=15] {Number} Thickness of the outline in pixels.
+     @param [cfg.color=[1,0,0]] {Array of Number} The outline color,
+     @extends renderer.State
+     */
+    xeogl.renderer.Outline = xeogl.renderer.State.extend({
         _ids: new xeogl.utils.Map({})
     });
 })();

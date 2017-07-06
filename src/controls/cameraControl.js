@@ -208,7 +208,6 @@
 
             var worldBoundary = e.entity.worldBoundary;
             var aabb = worldBoundary.aabb;
-            var sphere = worldBoundary.sphere;
 
             this._boundaryHelper.geometry.aabb = aabb;
             //    this._boundaryHelper.visibility.visible = true;

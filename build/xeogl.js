@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2017-06-06
+ * Built on 2017-07-06
  *
  * MIT License
  * Copyright 2017, Lindsay Kay
@@ -3894,9 +3894,9 @@ var Canvas2Image = (function () {
     math.getAABB3Center = function (aabb, dest) {
         var r = dest || math.vec3();
 
-        r[0] = (aabb[3] + aabb[0] ) * 0.5;
-        r[1] = (aabb[4] + aabb[1] ) * 0.5;
-        r[2] = (aabb[5] + aabb[2] ) * 0.5;
+        r[0] = (aabb[0] + aabb[3] ) / 2;
+        r[1] = (aabb[1] + aabb[4] ) / 2;
+        r[2] = (aabb[2] + aabb[5] ) / 2;
 
         return r;
     };
@@ -5258,12 +5258,6 @@ var Canvas2Image = (function () {
         // draw list, along with any results of the render, such as pick hits
         this._frameCtx = {
             canvas: this.canvas,
-            renderTarget: null,
-            renderBuf: null,
-            depthbufEnabled: null,
-            clearDepth: null,
-            depthFunc: null,
-            blendEnabled: false,
             backfaces: true,
             frontface: true, // true = "ccw" else "cw"
             textureUnit: 0,
@@ -5274,7 +5268,6 @@ var Canvas2Image = (function () {
             bindTexture: 0,
             bindArray: null,
             pass: null,
-            bindOutputFramebuffer: null,
             pickIndex: 0,
             shadowViewMatrix: null,
             shadowProjmatrix: null,
@@ -5311,27 +5304,6 @@ var Canvas2Image = (function () {
          @type {renderer.Layer}
          */
         this.layer = null;
-
-        /**
-         Render state for an effects pipeline stage.
-         @property stage
-         @type {renderer.Layer}
-         */
-        this.stage = null;
-
-        /**
-         Depth buffer render state.
-         @property depthBuf
-         @type {renderer.DepthBuf}
-         */
-        this.depthBuf = null;
-
-        /**
-         Color buffer render state.
-         @property colorBuf
-         @type {renderer.ColorBuf}
-         */
-        this.colorBuf = null;
 
         /**
          Lights render state.
@@ -5383,39 +5355,11 @@ var Canvas2Image = (function () {
         this.stationary = null;
 
         /**
-         Color target render state.
-         @property colorTarget
-         @type {renderer.RenderTarget}
-         */
-        this.colorTarget = null;
-
-        /**
-         Depth target render state.
-         @property depthTarget
-         @type {renderer.RenderTarget}
-         */
-        this.depthTarget = null;
-
-        /**
          Cross-section planes render state.
          @property clips
          @type {renderer.Clips}
          */
         this.clips = null;
-
-        /**
-         Custom shader render state.
-         @property shader
-         @type {renderer.Shader}
-         */
-        this.shader = null;
-
-        /**
-         Render state providing custom shader params.
-         @property shaderParams
-         @type {renderer.Shader}
-         */
-        this.shaderParams = null;
 
         /**
          Geometry render state.
@@ -5430,6 +5374,14 @@ var Canvas2Image = (function () {
          @type {renderer.Viewport}
          */
         this.viewport = null;
+
+        /**
+         Outline state.
+         @property outline
+         @type {renderer.Outline}
+         */
+        this.outline = null;
+
 
         //----------------- Renderer dirty flags -------------------------------
 
@@ -5498,10 +5450,7 @@ var Canvas2Image = (function () {
         // Attach to the object any states that we need to get off it later.
         // Most of these will be used when composing the object's shader.
 
-        object.stage = this.stage;
         object.layer = this.layer;
-        object.colorTarget = this.colorTarget;
-        object.depthTarget = this.depthTarget;
         object.material = this.material;
         object.geometry = this.geometry;
         object.visibility = this.visibility;
@@ -5511,6 +5460,7 @@ var Canvas2Image = (function () {
         object.stationary = this.stationary;
         object.viewport = this.viewport;
         object.lights = this.lights;
+        object.outline = this.outline;
 
         // Build hash of the object's state configuration. This is used
         // to hash the object's shader so that it may be reused by other
@@ -5522,7 +5472,6 @@ var Canvas2Image = (function () {
             // with a hash is concatenated here
 
             this.geometry.hash,
-            this.shader.hash,
             this.clips.hash,
             this.material.hash,
             this.lights.hash,
@@ -5574,16 +5523,13 @@ var Canvas2Image = (function () {
         this._setChunk(object, 2, "viewTransform", this.viewTransform);
         this._setChunk(object, 3, "projTransform", this.projTransform);
         this._setChunk(object, 4, "modes", this.modes);
-        this._setChunk(object, 5, "shader", this.shader);
-        this._setChunk(object, 6, "shaderParams", this.shaderParams);
-        this._setChunk(object, 7, "depthBuf", this.depthBuf);
-        this._setChunk(object, 8, "colorBuf", this.colorBuf);
-        this._setChunk(object, 9, "lights", this.lights);
-        this._setChunk(object, 10, this.material.type, this.material); // Supports different material systems
-        this._setChunk(object, 11, "clips", this.clips);
-        this._setChunk(object, 12, "viewport", this.viewport);
-        this._setChunk(object, 13, "geometry", this.geometry);
-        this._setChunk(object, 14, "draw", this.geometry, true); // Must be last
+        this._setChunk(object, 5, "lights", this.lights);
+        this._setChunk(object, 6, this.material.type, this.material); // Supports different material systems
+        this._setChunk(object, 7, "clips", this.clips);
+        this._setChunk(object, 8, "viewport", this.viewport);
+        this._setChunk(object, 9, "outline", this.outline);
+        this._setChunk(object, 10, "geometry", this.geometry);
+        this._setChunk(object, 11, "draw", this.geometry, true); // Must be last
 
         // Ambient light is global across everything in display, and
         // can never be disabled, so grab it now because we want to
@@ -5780,8 +5726,6 @@ var Canvas2Image = (function () {
                 object.sortKey = -1;
             } else {
                 object.sortKey =
-                    ((object.stage.priority + 1) * 10000000000000000)
-                    + ((object.modes.transparent ? 2 : 1) * 100000000000000)
                     + ((object.layer.priority + 1) * 10000000000000)
                     + ((object.program.id + 1) * 100000000)
                     + ((object.material.id + 1) * 10000)
@@ -5844,9 +5788,9 @@ var Canvas2Image = (function () {
             if (shadowObjectLists.hasOwnProperty(lightId)) {
                 shadowObjectList = shadowObjectLists[lightId];
                 light = shadowObjectList.light;
-             //   if (light.shadowDirty) {
-                    this._renderShadowMap(light, shadowObjectList.objects);
-             //   }
+                //   if (light.shadowDirty) {
+                this._renderShadowMap(light, shadowObjectList.objects);
+                //   }
             }
         }
     };
@@ -5872,10 +5816,6 @@ var Canvas2Image = (function () {
 
         var frameCtx = this._frameCtx;
 
-        frameCtx.depthbufEnabled = null;
-        frameCtx.clearDepth = null;
-        frameCtx.depthFunc = gl.LESS;
-        frameCtx.blendEnabled = false;
         frameCtx.backfaces = true;
         frameCtx.frontface = true;
         frameCtx.drawElements = 0;
@@ -5929,125 +5869,224 @@ var Canvas2Image = (function () {
         renderBuf.unbind();
     };
 
-    xeogl.renderer.Renderer.prototype._renderObjectList = function (params) {
+    xeogl.renderer.Renderer.prototype._renderObjectList = (function () {
 
-        var gl = this.gl;
+        var outlinedObjects = [];
+        var transparentObjects = [];
+        var numTransparentObjects = 0;
 
-        var ambient = this._ambient;
-        var ambientColor;
-        if (ambient) {
-            var color = ambient.color;
-            var intensity = ambient.intensity;
-            this.ambientColor[0] = color[0] * intensity;
-            this.ambientColor[1] = color[1] * intensity;
-            this.ambientColor[2] = color[2] * intensity;
-        } else {
-            this.ambientColor[0] = 0;
-            this.ambientColor[1] = 0;
-            this.ambientColor[2] = 0;
-        }
+        var lastChunkId = new Int32Array(30);
 
-        var frameCtx = this._frameCtx;
-
-        frameCtx.renderTarget = null;
-        frameCtx.renderBuf = null;
-        frameCtx.depthbufEnabled = null;
-        frameCtx.clearDepth = null;
-        frameCtx.depthFunc = gl.LESS;
-        frameCtx.blendEnabled = false;
-        frameCtx.backfaces = true;
-        frameCtx.frontface = true; // true == "ccw" else "cw"
-        frameCtx.textureUnit = 0;
-        frameCtx.transparent = false; // True while rendering transparency bin
-        frameCtx.ambientColor = this.ambientColor;
-        frameCtx.drawElements = 0;
-        frameCtx.useProgram = 0;
-        frameCtx.bindTexture = 0;
-        frameCtx.bindArray = 0;
-        frameCtx.pass = params.pass;
-        frameCtx.bindOutputFramebuffer = this.bindOutputFramebuffer;
-        frameCtx.pickViewMatrix = params.pickViewMatrix;
-        frameCtx.pickProjMatrix = params.pickProjMatrix;
-        frameCtx.pickIndex = 0;
-
-        gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
-
-        if (this.transparent) { // Canvas is transparent
-            gl.clearColor(0, 0, 0, 0);
-        } else {
-            gl.clearColor(this.ambientColor[0], this.ambientColor[1], this.ambientColor[2], 1.0);
-        }
-
-        gl.enable(gl.DEPTH_TEST);
-        gl.frontFace(gl.CCW);
-        gl.disable(gl.CULL_FACE);
-        gl.disable(gl.BLEND);
-
-        var i;
-        var len;
-        var object;
-        var j;
-        var lenj;
-        var chunks;
-        var chunk;
-
-        var lastChunkId = this._lastChunkId = this._lastChunkId || new Int32Array(30);
-        for (i = 0; i < 20; i++) {
-            lastChunkId[i] = -9999999999999;
-        }
-
-        var startTime = (new Date()).getTime();
-
-        if (this.bindOutputFramebuffer) {
-            this.bindOutputFramebuffer(params.pass);
-        }
-
-        if (params.clear) {
-            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-        }
-
-        for (i = 0, len = this._objectListLen; i < len; i++) {
-            object = this._objectList[i];
-            if (!object.compiled || object.cull.culled === true || object.visibility.visible === false) {
-                continue;
+        function clearStateTracking() {
+            for (var i = 0; i < 20; i++) {
+                lastChunkId[i] = -9999999999;
             }
-            chunks = object.chunks;
-            for (j = 0, lenj = chunks.length; j < lenj; j++) {
-                chunk = chunks[j];
+        }
+
+        function drawObject(frameCtx, object) {
+            var chunks = object.chunks;
+            var chunk;
+            for (var i = 0, len = chunks.length; i < len; i++) {
+                chunk = chunks[i];
                 if (chunk) {
-                    if (chunk.draw && (chunk.unique || lastChunkId[j] !== chunk.id)) {
+                    if (chunk.draw && (chunk.unique || lastChunkId[i] !== chunk.id)) {
                         chunk.draw(frameCtx);
-                        lastChunkId[j] = chunk.id;
+                        lastChunkId[i] = chunk.id;
                     }
                 }
             }
         }
 
-        var endTime = Date.now();
-        var frameStats = this.stats.frame;
-
-        frameStats.renderTime = (endTime - startTime) / 1000.0;
-        frameStats.drawElements = frameCtx.drawElements;
-        frameStats.useProgram = frameCtx.useProgram;
-        frameStats.bindTexture = frameCtx.bindTexture;
-        frameStats.bindArray = frameCtx.bindArray;
-
-        if (frameCtx.renderBuf) {
-            frameCtx.renderBuf.unbind();
+        function drawObjectOutline(frameCtx, object) {
+            var chunks = object.chunks;
+            var chunk;
+            for (var i = 0, len = chunks.length; i < len; i++) {
+                chunk = chunks[i];
+                if (chunk) {
+                    if (chunk.outline && (chunk.unique || lastChunkId[i] !== chunk.id)) {
+                        chunk.outline(frameCtx);
+                        lastChunkId[i] = chunk.id;
+                    }
+                }
+            }
         }
 
-        var numTextureUnits = gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+        return function (params) {
 
-        for (var ii = 0; ii < numTextureUnits; ii++) {
-            gl.activeTexture(gl.TEXTURE0 + ii);
-            gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
-            gl.bindTexture(gl.TEXTURE_2D, null);
-        }
+            var gl = this.gl;
 
-        if (this.unbindOutputFramebuffer) {
-            this.unbindOutputFramebuffer(params.pass);
-        }
-    };
+            var ambient = this._ambient;
+            if (ambient) {
+                var color = ambient.color;
+                var intensity = ambient.intensity;
+                this.ambientColor[0] = color[0] * intensity;
+                this.ambientColor[1] = color[1] * intensity;
+                this.ambientColor[2] = color[2] * intensity;
+            } else {
+                this.ambientColor[0] = 0;
+                this.ambientColor[1] = 0;
+                this.ambientColor[2] = 0;
+            }
+
+            var frameCtx = this._frameCtx;
+
+            frameCtx.backfaces = true;
+            frameCtx.frontface = true; // true == "ccw" else "cw"
+            frameCtx.textureUnit = 0;
+            frameCtx.transparent = false; // True while rendering transparency bin
+            frameCtx.ambientColor = this.ambientColor;
+            frameCtx.drawElements = 0;
+            frameCtx.useProgram = 0;
+            frameCtx.bindTexture = 0;
+            frameCtx.bindArray = 0;
+            frameCtx.pass = params.pass;
+            frameCtx.pickViewMatrix = params.pickViewMatrix;
+            frameCtx.pickProjMatrix = params.pickProjMatrix;
+            frameCtx.pickIndex = 0;
+
+            gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+
+            if (this.transparent) { // Canvas is transparent
+                gl.clearColor(0, 0, 0, 0);
+            } else {
+                gl.clearColor(this.ambientColor[0], this.ambientColor[1], this.ambientColor[2], 1.0);
+            }
+
+            gl.enable(gl.DEPTH_TEST);
+            gl.frontFace(gl.CCW);
+            gl.enable(gl.CULL_FACE);
+
+            gl.depthMask(true);
+            gl.colorMask(true, true, true, false);
+
+            var i;
+            var len;
+            var object;
+
+            var startTime = (new Date()).getTime();
+
+            if (this.bindOutputFramebuffer) {
+                this.bindOutputFramebuffer(params.pass);
+            }
+
+            if (params.clear) {
+                gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
+            }
+
+            // Render opaque, non-outlined objects
+
+            var numOutlinedObjects = 0;
+
+            numTransparentObjects = 0;
+
+            clearStateTracking();
+
+            for (i = 0, len = this._objectListLen; i < len; i++) {
+                object = this._objectList[i];
+                if (!object.compiled || object.cull.culled === true || object.visibility.visible === false) {
+                    continue;
+                }
+                if (object.modes.transparent) {
+                    transparentObjects[numTransparentObjects++] = object;
+                    continue;
+                }
+                if (object.modes.outline) {
+                    outlinedObjects[numOutlinedObjects++] = object;
+                    continue;
+                }
+                drawObject(frameCtx, object);
+            }
+
+            // Render opaque outlined objects
+
+            if (numOutlinedObjects > 0) {
+
+                // Render objects
+
+                gl.enable(gl.STENCIL_TEST);
+                gl.stencilFunc(gl.ALWAYS, 1, 1);
+                gl.stencilOp(gl.KEEP, gl.KEEP, gl.REPLACE);
+                gl.stencilMask(1);
+                gl.clearStencil(0);
+                gl.clear(gl.STENCIL_BUFFER_BIT);
+
+                clearStateTracking();
+
+                for (i = 0; i < numOutlinedObjects; i++) {
+                    drawObject(frameCtx, outlinedObjects[i]);
+                }
+
+                // Render outlines
+
+                gl.stencilFunc(gl.EQUAL, 0, 1);
+                gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
+                gl.stencilMask(0x00);
+                gl.disable(gl.CULL_FACE); // Need both faces for better corners with face-aligned normals
+
+                clearStateTracking();
+
+                for (i = 0; i < numOutlinedObjects; i++) {
+                    drawObjectOutline(frameCtx, outlinedObjects[i]);
+                }
+
+                gl.disable(gl.STENCIL_TEST);
+            }
+
+            // Draw transparent objects
+
+            if (numTransparentObjects > 0) {
+
+                gl.enable(gl.CULL_FACE);
+                gl.enable(gl.BLEND);
+                gl.blendEquation( gl.FUNC_ADD );
+                gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA );
+
+
+                //gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+                gl.colorMask(true, true, true, true);
+
+
+                numOutlinedObjects = 0;
+
+                clearStateTracking();
+
+                for (i = 0; i < numTransparentObjects; i++) {
+                    object = transparentObjects[i];
+                    if (object.modes.outline) {
+                        outlinedObjects[numOutlinedObjects++] = object; // Build outlined list
+                        continue;
+                    }
+                    drawObject(frameCtx, object);
+                }
+
+                // Transparent outlined objects are not supported yet
+
+                gl.disable(gl.BLEND);
+                gl.colorMask(true, true, true, false);
+            }
+
+            var endTime = Date.now();
+            var frameStats = this.stats.frame;
+
+            frameStats.renderTime = (endTime - startTime) / 1000.0;
+            frameStats.drawElements = frameCtx.drawElements;
+            frameStats.useProgram = frameCtx.useProgram;
+            frameStats.bindTexture = frameCtx.bindTexture;
+            frameStats.bindArray = frameCtx.bindArray;
+
+            var numTextureUnits = gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+
+            for (var ii = 0; ii < numTextureUnits; ii++) {
+                gl.activeTexture(gl.TEXTURE0 + ii);
+                gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
+                gl.bindTexture(gl.TEXTURE_2D, null);
+            }
+
+            if (this.unbindOutputFramebuffer) {
+                this.unbindOutputFramebuffer(params.pass);
+            }
+        };
+    })();
 
     /**
      * Attempts to pick an object.
@@ -6165,10 +6204,6 @@ var Canvas2Image = (function () {
 
         var frameCtx = this._frameCtx;
 
-        frameCtx.depthbufEnabled = null;
-        frameCtx.clearDepth = null;
-        frameCtx.depthFunc = gl.LESS;
-        frameCtx.blendEnabled = false;
         frameCtx.backfaces = true;
         frameCtx.frontface = true; // true == "ccw" else "cw"
         frameCtx.textureUnit = 0;
@@ -6183,7 +6218,6 @@ var Canvas2Image = (function () {
         gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
         gl.clearColor(0, 0, 0, 0);
         gl.enable(gl.DEPTH_TEST);
-        gl.frontFace(gl.CCW);
         gl.disable(gl.CULL_FACE);
         gl.disable(gl.BLEND);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -6226,11 +6260,6 @@ var Canvas2Image = (function () {
         var gl = this.gl;
 
         var frameCtx = this._frameCtx;
-        frameCtx.renderBuf = null;
-        frameCtx.depthbufEnabled = null;
-        frameCtx.clearDepth = null;
-        frameCtx.depthFunc = gl.LESS;
-        frameCtx.blendEnabled = false;
         frameCtx.backfaces = true;
         frameCtx.frontface = true; // true == "ccw" else "cw"
         frameCtx.drawElements = 0;
@@ -6244,7 +6273,6 @@ var Canvas2Image = (function () {
         gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
         gl.clearColor(0, 0, 0, 0);
         gl.enable(gl.DEPTH_TEST);
-        gl.frontFace(gl.CCW);
         gl.disable(gl.CULL_FACE);
         gl.disable(gl.BLEND);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -7812,56 +7840,6 @@ var Canvas2Image = (function () {
 
     /**
 
-     Stage state.
-
-     renderer.Stage
-     @module xeogl
-
-     @constructor
-     @param cfg {*} Configs
-     @param cfg.priority {Number} Stage render priority.
-     @extends renderer.State
-     */
-    xeogl.renderer.Stage = xeogl.renderer.State.extend({
-        _ids: new xeogl.utils.Map({})
-    });
-
-    /**
-
-     Depth buffer state.
-
-     renderer.DepthBuf
-     @module xeogl
-
-     @constructor
-     @param cfg {*} Configs
-     @param cfg.clearDepth {Number} Clear depth
-     @param cfg.depthBuf {String} Depth function
-     @extends renderer.State
-     */
-    xeogl.renderer.DepthBuf = xeogl.renderer.State.extend({
-        _ids: new xeogl.utils.Map({})
-    });
-
-    /**
-
-     Color buffer state.
-
-     renderer.ColorBuf
-     @module xeogl
-
-     @constructor
-     @param cfg {*} Configs
-     @param cfg.blendEnabled {Boolean} Indicates if blending is enebled for
-     @param cfg.colorMask {Array of String} The color mask
-     @extends renderer.State
-     */
-    xeogl.renderer.ColorBuf = xeogl.renderer.State.extend({
-        _ids: new xeogl.utils.Map({})
-    });
-
-    /**
-
      Renderer lights state.
 
      renderer.Lights
@@ -7966,25 +7944,6 @@ var Canvas2Image = (function () {
         _ids: new xeogl.utils.Map({})
     });
 
-
-    /**
-
-     Render target state.
-
-     renderer.RenderTarget
-     @module xeogl
-
-     @constructor
-     @param cfg {*} Configs
-     @extends renderer.State
-     */
-    xeogl.renderer.RenderTarget = xeogl.renderer.State.extend({
-        _ids: new xeogl.utils.Map({})
-    });
-
-    xeogl.renderer.RenderTarget.DEPTH = 0;
-    xeogl.renderer.RenderTarget.COLOR = 1;
-
     /**
 
      Clip planes state.
@@ -8012,36 +7971,6 @@ var Canvas2Image = (function () {
      @extends renderer.State
      */
     xeogl.renderer.MorphTargets = xeogl.renderer.State.extend({
-        _ids: new xeogl.utils.Map({})
-    });
-
-    /**
-
-     Shader state.
-
-     renderer.Shader
-     @module xeogl
-
-     @constructor
-     @param cfg {*} Configs
-     @extends renderer.State
-     */
-    xeogl.renderer.Shader = xeogl.renderer.State.extend({
-        _ids: new xeogl.utils.Map({})
-    });
-
-    /**
-
-     Shader parameters state.
-
-     renderer.ShaderParams
-     @module xeogl
-
-     @constructor
-     @param cfg {*} Configs
-     @extends renderer.State
-     */
-    xeogl.renderer.ShaderParams = xeogl.renderer.State.extend({
         _ids: new xeogl.utils.Map({})
     });
 
@@ -8134,6 +8063,23 @@ var Canvas2Image = (function () {
      @extends renderer.State
      */
     xeogl.renderer.Viewport = xeogl.renderer.State.extend({
+        _ids: new xeogl.utils.Map({})
+    });
+
+    /**
+
+     Outline state.
+
+     renderer.Outline
+     @module xeogl
+
+     @constructor
+     @param cfg {*} Configs
+     @param [cfg.thickness=15] {Number} Thickness of the outline in pixels.
+     @param [cfg.color=[1,0,0]] {Array of Number} The outline color,
+     @extends renderer.State
+     */
+    xeogl.renderer.Outline = xeogl.renderer.State.extend({
         _ids: new xeogl.utils.Map({})
     });
 })();
@@ -8288,6 +8234,12 @@ var Canvas2Image = (function () {
         this.pickPrimitive = null;
 
         /**
+         * The outline program
+         * @type webgl.Program
+         */
+        this.outline = null;
+
+        /**
          * The count of display objects using this program
          * @type Number
          */
@@ -8345,6 +8297,7 @@ var Canvas2Image = (function () {
         this.shadow = new xeogl.renderer.webgl.Program(this.stats, gl, this.source.vertexShadow, this.source.fragmentShadow);
         this.pickObject = new xeogl.renderer.webgl.Program(this.stats, gl, this.source.vertexPickObject, this.source.fragmentPickObject);
         this.pickPrimitive = new xeogl.renderer.webgl.Program(this.stats, gl, this.source.vertexPickPrimitive, this.source.fragmentPickPrimitive);
+        this.outline = new xeogl.renderer.webgl.Program(this.stats, gl, this.source.vertexOutline, this.source.fragmentOutline);
 
         if (!this.draw.allocated) {
             this.errorLog = ["Draw program failed to allocate"].concat(this.draw.errorLog);
@@ -8363,6 +8316,11 @@ var Canvas2Image = (function () {
 
         if (!this.pickPrimitive.allocated) {
             this.errorLog = ["Primitive-picking program failed to allocate"].concat(this.pickPrimitive.errorLog);
+            return;
+        }
+
+        if (!this.outline.allocated) {
+            this.errorLog = ["Outline effect program failed to allocate"].concat(this.outline.errorLog);
             return;
         }
 
@@ -8388,6 +8346,11 @@ var Canvas2Image = (function () {
             return;
         }
 
+        if (!this.outline.compiled) {
+            this.errorLog = ["Outline effect program failed to compile"].concat(this.outline.errorLog);
+            return;
+        }
+
         this.compiled = true;
 
         if (!this.draw.linked) {
@@ -8407,6 +8370,11 @@ var Canvas2Image = (function () {
 
         if (!this.pickPrimitive.linked) {
             this.errorLog = ["Primitive-picking program failed to link"].concat(this.pickPrimitive.errorLog);
+            return;
+        }
+
+        if (!this.outline.linked) {
+            this.errorLog = ["Outline effect program failed to link"].concat(this.outline.errorLog);
             return;
         }
 
@@ -8432,7 +8400,33 @@ var Canvas2Image = (function () {
             return;
         }
 
+        if (!this.outline.validated) {
+            this.errorLog = ["Outline effect program failed to validate"].concat(this.outline.errorLog);
+            return;
+        }
+
         this.validated = true;
+    };
+
+    /**
+     * Destroys this program.
+     */
+    xeogl.renderer.Program.prototype.destroy = function() {
+        if (this.draw) {
+            this.draw.destroy();
+        }
+        if (this.shadow) {
+            this.shadow.destroy();
+        }
+        if (this.pickObject) {
+            this.pickObject.destroy();
+        }
+        if (this.pickPrimitive) {
+            this.pickPrimitive.destroy();
+        }
+        if (this.outline) {
+            this.outline.destroy();
+        }
     };
 
 })();
@@ -8497,14 +8491,11 @@ var Canvas2Image = (function () {
 
             var program = programState.program;
 
-            program.draw.destroy();
-            program.shadow.destroy();
-            program.pickObject.destroy();
-            program.pickPrimitive.destroy();
-
             xeogl.renderer.ProgramSourceFactory.putSource(program.hash);
 
             delete this._programStates[program.hash];
+
+            program.destroy();
 
             this.stats.memory.programs--;
         }
@@ -8545,12 +8536,15 @@ var Canvas2Image = (function () {
      * @param {String} fragmentDraw Fragment shader source for drawing.
      * @param {String} vertexShadow Vertex shader source for drawing the shadow buffer.
      * @param {String} fragmentShadow Fragment shader source for drawing the shadow buffer.
+     * @param {String} vertexOutline Vertex shader source for drawing outlines.
+     * @param {String} fragmentOutline Fragment shader source for drawing outlines.
      */
     xeogl.renderer.ProgramSource = function (hash,
                                              vertexPickObject, fragmentPickObject,
                                              vertexPickPrimitive, fragmentPickPrimitive,
                                              vertexDraw, fragmentDraw,
-                                             vertexShadow, fragmentShadow) {
+                                             vertexShadow, fragmentShadow,
+                                             vertexOutline, fragmentOutline) {
 
         /**
          * Hash code identifying the capabilities of the {@link xeogl.renderer.Program} that is compiled from this source
@@ -8607,6 +8601,18 @@ var Canvas2Image = (function () {
         this.fragmentShadow = fragmentShadow;
 
         /**
+         * Vertex shader source for rendering outlines.
+         * @type {Array of String}
+         */
+        this.vertexOutline = vertexOutline;
+
+        /**
+         * Fragment shader source for rendering outlines.
+         * @type {Array of String}
+         */
+        this.fragmentOutline = fragmentOutline;
+
+        /**
          * Count of {@link xeogl.renderer.Program}s compiled from this program source code
          * @type Number
          */
@@ -8649,6 +8655,8 @@ var Canvas2Image = (function () {
         var fragmentPickPrimSrc;
         var vertexShadowSrc;
         var fragmentShadowSrc;
+        var vertexOutlineSrc;
+        var fragmentOutlineSrc;
 
         /**
          * Get source code for a program to render the given states.
@@ -8688,7 +8696,9 @@ var Canvas2Image = (function () {
                 vertexDraw(),
                 fragmentDraw(),
                 vertexShadow(),
-                fragmentShadow()
+                fragmentShadow(),
+                vertexOutline(),
+                fragmentOutline()
             );
 
             cache[hash] = source;
@@ -8874,13 +8884,76 @@ var Canvas2Image = (function () {
             return fragmentShadowSrc = end();
         }
 
-        function vertexDraw() {
+        function vertexOutline() {
+            begin();
+            add("attribute vec4 position;");
+            add("uniform mat4 modelMatrix;");
+            add("uniform mat4 viewMatrix;");
+            add("uniform mat4 projMatrix;");
+            add("uniform float thickness;");
 
-            var vertex = states.shader.vertex;
-
-            if (vertex) { // Custom vertex shader
-                return vertex;
+            if (normals) {
+                add("attribute vec3 normal;");
             }
+
+            if (states.billboard.active) {
+                add("void billboard(inout mat4 mat) {");
+                add("   mat[0][0] = 1.0;");
+                add("   mat[0][1] = 0.0;");
+                add("   mat[0][2] = 0.0;");
+                if (states.billboard.spherical) {
+                    add("   mat[1][0] = 0.0;");
+                    add("   mat[1][1] = 1.0;");
+                    add("   mat[1][2] = 0.0;");
+                }
+                add("   mat[2][0] = 0.0;");
+                add("   mat[2][1] = 0.0;");
+                add("   mat[2][2] =1.0;");
+                add("}");
+            }
+
+            add("void main(void) {");
+
+            add("mat4 viewMatrix2 = viewMatrix;");
+            add("mat4 modelMatrix2 = modelMatrix;");
+
+            if (states.stationary.active) {
+                add("viewMatrix2[3][0] = viewMatrix2[3][1] = viewMatrix2[3][2] = 0.0;")
+            }
+
+            if (states.billboard.active) {
+                add("billboard(modelMatrix2);");
+                add("billboard(viewMatrix2);");
+            }
+
+            // Displacement
+
+            if (normals) {
+                add("vec4 projPos = projMatrix * viewMatrix2 * modelMatrix2 * vec4(position.xyz, 1.0); ");
+                add("  vec3 offset = (normalize(normal) * (thickness * 0.0005 * (projPos.z/1.0)));");
+            } else {
+                add("  vec3 offset = vec3(0.0, 0.0, 0.0);");
+            }
+
+            add("vec4 worldVertex = modelMatrix * vec4(position.xyz + offset, 1.0); ");
+
+            add("  gl_Position = projMatrix * (viewMatrix * worldVertex);");
+            add("}");
+            return vertexOutlineSrc = end();
+        }
+
+        function fragmentOutline() {
+            begin();
+            add("precision " + getFSFloatPrecision(states.gl) + " float;");
+            add("uniform vec3  color;");
+            add("void main(void) {");
+            add("   gl_FragColor = vec4(color, 1.0);");
+            add("}");
+
+            return fragmentOutlineSrc = end();
+        }
+
+        function vertexDraw() {
 
             var i;
             var len;
@@ -9120,12 +9193,6 @@ var Canvas2Image = (function () {
         }
 
         function fragmentDraw() {
-
-            var fragment = states.shader.fragment;
-
-            if (fragment) { // Custom fragment shader
-                return fragment;
-            }
 
             var material = states.material;
             var geometry = states.geometry;
@@ -9640,7 +9707,8 @@ var Canvas2Image = (function () {
                     }
                     if (light.type === "dir" && light.space === "view") {
                         add("uniform vec3 lightDir" + i + ";");
-                    } if (light.type === "point" && light.space === "view") {
+                    }
+                    if (light.type === "point" && light.space === "view") {
                         add("uniform vec3 lightPos" + i + ";");
                     } else {
                         add("varying vec4 vViewLightReverseDirAndDist" + i + ";");
@@ -10352,111 +10420,14 @@ var Canvas2Image = (function () {
                     }
                 }
             }
+        },
+
+        outline: function(frameCtx) {
+            this.drawPick(frameCtx);
         }
     });
 
 })();;(function () {
-
-    "use strict";
-
-    /**
-     *
-     */
-    xeogl.renderer.ChunkFactory.createChunkType({
-
-        type: "colorBuf",
-
-        // Avoid re-application of this chunk after a program switch.
-
-        programGlobal: true,
-
-        draw: function (frameCtx) {
-
-            if (!frameCtx.transparent) {
-
-                // Blending forced while rendering a transparent bin
-
-                var state = this.state;
-                var blendEnabled = state.blendEnabled;
-
-                var gl = this.program.gl;
-
-                if (frameCtx.blendEnabled !== blendEnabled) {
-
-                    if (blendEnabled) {
-                        gl.enable(gl.BLEND);
-
-                    } else {
-                        gl.disable(gl.BLEND);
-                    }
-
-                    frameCtx.blendEnabled = blendEnabled;
-                }
-
-                var colorMask = state.colorMask;
-
-                gl.colorMask(colorMask[0], colorMask[1], colorMask[2], colorMask[3]);
-            }
-        }
-    });
-
-})();
-;(function () {
-
-    "use strict";
-
-    /**
-     *
-     */
-    xeogl.renderer.ChunkFactory.createChunkType({
-
-        type: "depthBuf",
-
-        // Avoid reapplication of this chunk after a program switch.
-
-        programGlobal: true,
-
-        draw: function (frameCtx) {
-
-            var gl = this.program.gl;
-
-            var state = this.state;
-            var active = state.active;
-
-            if (frameCtx.depthbufEnabled !== active) {
-
-                if (active) {
-                    gl.enable(gl.DEPTH_TEST);
-
-                } else {
-                    gl.disable(gl.DEPTH_TEST);
-                }
-
-                frameCtx.depthbufEnabled = active;
-            }
-
-            var clearDepth = state.clearDepth;
-
-            if (frameCtx.clearDepth !== clearDepth) {
-                gl.clearDepth(clearDepth);
-                frameCtx.clearDepth = clearDepth;
-            }
-
-            var depthFunc = state.depthFunc;
-
-            if (frameCtx.depthFunc !== depthFunc) {
-                gl.depthFunc(depthFunc);
-                frameCtx.depthFunc = depthFunc;
-            }
-
-            if (state.clear) {
-                gl.clear(gl.DEPTH_BUFFER_BIT);
-            }
-        }
-    });
-
-})();
-;(function () {
 
     "use strict";
 
@@ -10527,6 +10498,10 @@ var Canvas2Image = (function () {
             if (pickPositions) {
                 gl.drawArrays(state.primitive, 0, pickPositions.numItems / 3);
             }
+        },
+
+        outline: function(frameCtx) {
+            this.draw(frameCtx);
         }
     });
 
@@ -10559,6 +10534,10 @@ var Canvas2Image = (function () {
             var pickPrimitive = this.program.pickPrimitive;
             this._aPositionPickPrimitive = pickPrimitive.getAttribute("position");
             this._aColorPickPrimitive = pickPrimitive.getAttribute("color");
+
+            var outline = this.program.outline;
+            this._aPositionOutline = outline.getAttribute("position");
+            this._aNormalOutline = outline.getAttribute("normal");
         },
 
         draw: function (frameCtx) {
@@ -10641,6 +10620,26 @@ var Canvas2Image = (function () {
 
             if (this._aColorPickPrimitive) {
                 this._aColorPickPrimitive.bindFloatArrayBuffer(state.getPickColors());
+            }
+        },
+
+        outline: function (frameCtx) {
+
+            var state = this.state;
+
+            if (this._aPositionOutline) {
+                this._aPositionOutline.bindFloatArrayBuffer(state.positions);
+                frameCtx.bindArray++;
+            }
+
+            if (this._aNormalOutline) {
+                this._aNormalOutline.bindFloatArrayBuffer(state.normals);
+                frameCtx.bindArray++;
+            }
+
+            if (state.indices) {
+                state.indices.bind();
+                frameCtx.bindArray++;
             }
         }
     });
@@ -10825,6 +10824,7 @@ var Canvas2Image = (function () {
             this._uModelMatrixShadow = this.program.shadow.getUniform("modelMatrix");
             this._uModelMatrixPickObject = this.program.pickObject.getUniform("modelMatrix");
             this._uModelMatrixPickPrimitive = this.program.pickPrimitive.getUniform("modelMatrix");
+            this._uModelMatrixOutline = this.program.outline.getUniform("modelMatrix");
         },
 
         draw: function () {
@@ -10851,6 +10851,12 @@ var Canvas2Image = (function () {
         pickPrimitive: function () {
             if (this._uModelMatrixPickPrimitive) {
                 this._uModelMatrixPickPrimitive.setValue(this.state.getMatrix());
+            }
+        },
+
+        outline: function () {
+            if (this._uModelMatrixOutline) {
+                this._uModelMatrixOutline.setValue(this.state.getMatrix());
             }
         }
     });
@@ -10895,29 +10901,6 @@ var Canvas2Image = (function () {
                     gl.frontFace(gl.CW);
                 }
                 frameCtx.frontface = frontface;
-            }
-
-            var transparent = state.transparent;
-
-            if (frameCtx.transparent !== transparent) {
-                if (!frameCtx.pick) {
-                    if (transparent) {
-
-                        // Entering a transparency bin
-
-                        gl.enable(gl.BLEND);
-                        //gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-                        gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-                        frameCtx.blendEnabled = true;
-                    } else {
-
-                        // Leaving a transparency bin
-
-                        gl.disable(gl.BLEND);
-                        frameCtx.blendEnabled = false;
-                    }
-                }
-                frameCtx.transparent = transparent;
             }
         },
 
@@ -11011,6 +10994,37 @@ var Canvas2Image = (function () {
             }
         }
     });
+})();
+;(function () {
+
+    "use strict";
+
+    xeogl.renderer.ChunkFactory.createChunkType({
+
+        type: "outline",
+
+        build: function () {
+
+            var outline = this.program.outline;
+
+            this._uColor = outline.getUniform("color");
+            this._uThickness = outline.getUniform("thickness");
+        },
+
+        outline: function (frameCtx) {
+
+            var state = this.state;
+
+            if (this._uColor) {
+                this._uColor.setValue(state.color);
+            }
+
+            if (this._uThickness) {
+                this._uThickness.setValue(state.thickness);
+            }
+        }
+    });
+
 })();
 ;(function () {
 
@@ -11748,6 +11762,10 @@ var Canvas2Image = (function () {
 
         pickPrimitive: function () {
             this.program.pickPrimitive.bind();
+        },
+
+        outline: function () {
+            this.program.outline.bind();
         }
     });
 })();
@@ -11767,6 +11785,7 @@ var Canvas2Image = (function () {
             this._uProjMatrixShadow = this.program.shadow.getUniform("shadowProjMatrix");
             this._uProjMatrixPickObject = this.program.pickObject.getUniform("projMatrix");
             this._uProjMatrixPickPrimitive = this.program.pickPrimitive.getUniform("projMatrix");
+            this._uProjMatrixOutline = this.program.outline.getUniform("projMatrix");
         },
 
         draw: function () {
@@ -11791,116 +11810,11 @@ var Canvas2Image = (function () {
             if (this._uProjMatrixPickPrimitive) {
                 this._uProjMatrixPickPrimitive.setValue(frameCtx.pickProjMatrix || this.state.getMatrix());
             }
-        }
-    });
+        },
 
-})();;(function () {
-
-    "use strict";
-
-    /**
-     *   Create display state chunk type for draw and pick render of renderTarget
-     */
-    xeogl.renderer.ChunkFactory.createChunkType({
-
-        type: "renderTarget",
-
-        // Avoid reapplication of this chunk type after a program switch.
-
-        programGlobal: true,
-
-        draw: function (frameCtx) {
-
-            var gl = this.program.gl;
-            var state = this.state;
-
-            // Flush and unbind any render buffer already bound
-
-            if (frameCtx.renderBuf) {
-                gl.flush();
-                frameCtx.renderBuf.unbind();
-                frameCtx.renderBuf = null;
-
-                // Renderer hook to bind a custom output framebuffer
-                if (frameCtx.bindOutputFramebuffer) {
-                    frameCtx.bindOutputFramebuffer(frameCtx.pass);
-                }
-            }
-
-            // Set depthMode false and bail if no render buffer for this chunk
-            var renderBuf = state.renderBuf;
-            if (!renderBuf) {
-                frameCtx.depthMode = false;
-                return;
-            }
-
-            // Bind this chunk's render buffer, set depthMode, enable blend if depthMode false, clear buffer
-            renderBuf.bind();
-
-            frameCtx.depthMode = (state.type === state.DEPTH);
-
-            if (frameCtx.blendEnabled && !frameCtx.depthMode) {
-                gl.enable(gl.BLEND);
-                gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-            }
-
-            gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
-            gl.clearColor(frameCtx.ambientColor[0], frameCtx.ambientColor[1], frameCtx.ambientColor[2], 1.0);
-            //gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
-
-            //gl.clear(frameCtx.depthMode ? gl.COLOR_BUFFER_BIT : gl.DEPTH_BUFFER_BIT);
-
-            frameCtx.renderBuf = renderBuf;
-        }
-    });
-
-})();;(function () {
-
-    "use strict";
-
-    xeogl.renderer.ChunkFactory.createChunkType({
-
-        type: "shader",
-
-        draw: function () {
-
-            var uniforms = this.state.uniforms;
-
-            if (uniforms) {
-
-                var program = this.program.draw;
-                var name;
-
-                for (name in uniforms) {
-                    if (uniforms.hasOwnProperty(name)) {
-                        program.setUniform(name, uniforms[name]);
-                    }
-                }
-            }
-        }
-    });
-})();;(function () {
-
-    "use strict";
-
-    xeogl.renderer.ChunkFactory.createChunkType({
-
-        type: "shaderParams",
-
-        draw: function () {
-
-            var uniforms = this.state.uniforms;
-
-            if (uniforms) {
-
-                var program = this.program.draw;
-                var name;
-
-                for (name in uniforms) {
-                    if (uniforms.hasOwnProperty(name)) {
-                        program.setUniform(name, uniforms[name]);
-                    }
-                }
+        outline: function (frameCtx) {
+            if (this._uProjMatrixOutline) {
+                this._uProjMatrixOutline.setValue(this.state.getMatrix());
             }
         }
     });
@@ -11919,6 +11833,7 @@ var Canvas2Image = (function () {
             this._uViewMatrixShadow = this.program.pickObject.getUniform("shadowViewMatrix");
             this._uViewMatrixPickObject = this.program.pickObject.getUniform("viewMatrix");
             this._uViewMatrixPickPrimitive = this.program.pickPrimitive.getUniform("viewMatrix");
+            this._uViewMatrixOutline = this.program.outline.getUniform("viewMatrix");
         },
 
         draw: function () {
@@ -11949,6 +11864,12 @@ var Canvas2Image = (function () {
             if (this._uViewMatrixPickPrimitive) {
                 this._uViewMatrixPickPrimitive.setValue(frameCtx.pickViewMatrix || this.state.getMatrix());
             }
+        },
+
+        outline: function () {
+            if (this._uViewMatrixOutline) {
+                this._uViewMatrixOutline.setValue(this.state.getMatrix());
+            }
         }
     });
 
@@ -11973,18 +11894,19 @@ var Canvas2Image = (function () {
         },
 
         shadow: function () {
-            var boundary = this.state.boundary;
-            this.program.gl.viewport(boundary[0], boundary[1], boundary[2], boundary[3]);
+            this.draw();
         },
 
         pickObject: function () {
-            var boundary = this.state.boundary;
-            this.program.gl.viewport(boundary[0], boundary[1], boundary[2], boundary[3]);
+            this.draw();
         },
 
         pickPrimitive: function () {
-            var boundary = this.state.boundary;
-            this.program.gl.viewport(boundary[0], boundary[1], boundary[2], boundary[3]);
+            this.draw();
+        },
+
+        outline: function() {
+            this.draw();
         }
     });
 
@@ -13603,10 +13525,6 @@ var Canvas2Image = (function () {
             dummy = this.project;
             dummy = this.camera;
             dummy = this.clips;
-            dummy = this.colorTarget;
-            dummy = this.colorBuf;
-            dummy = this.depthTarget;
-            dummy = this.depthBuf;
             dummy = this.visibility;
             dummy = this.cull;
             dummy = this.modes;
@@ -13615,11 +13533,9 @@ var Canvas2Image = (function () {
             dummy = this.lights;
             dummy = this.material;
             dummy = this.morphTargets;
-            dummy = this.shader;
-            dummy = this.shaderParams;
-            dummy = this.stage;
             dummy = this.transform;
             dummy = this.viewport;
+            dummy = this.outline;
         },
 
         // Called by each component that is created with this Scene as parent.
@@ -14122,103 +14038,6 @@ var Canvas2Image = (function () {
             },
 
             /**
-             * The default {{#crossLink "ColorBuf"}}ColorBuf{{/crossLink}} provided by this Scene.
-             *
-             * This {{#crossLink "ColorBuf"}}ColorBuf{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.colorBuf",
-             * with all other properties initialised to their default values.
-             *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "ColorBuf"}}ColorBuf{{/crossLink}} by default.
-             * @property colorBuf
-             * @final
-             * @type ColorBuf
-             */
-            colorBuf: {
-
-                get: function () {
-                    return this.components["default.colorBuf"] ||
-                        new xeogl.ColorBuf(this, {
-                            id: "default.colorBuf",
-                            isDefault: true
-                        });
-                }
-            },
-
-            /**
-             * The default {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} provided by this Scene.
-             *
-             * The {{#crossLink "ColorTarget"}}DepthTarget{{/crossLink}} is
-             * {{#crossLink "ColorTarget/active:property"}}inactive{{/crossLink}} by default and will have an
-             * {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.depthTarget".
-             *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} by default.
-             * @property colorTarget
-             * @private
-             * @final
-             * @type ColorTarget
-             */
-            colorTarget: {
-                get: function () {
-                    return this.components["default.colorTarget"] ||
-                        new xeogl.ColorTarget(this, {
-                            id: "default.colorTarget",
-                            isDefault: true,
-                            active: false
-                        })
-                }
-            },
-
-            /**
-             * The default {{#crossLink "DepthBuf"}}DepthBuf{{/crossLink}} provided by this Scene.
-             *
-             * This {{#crossLink "DepthBuf"}}DepthBuf{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.depthBuf",
-             * with all other properties initialised to their default values.
-             *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "DepthBuf"}}DepthBuf{{/crossLink}} by default.
-             *
-             * @property depthBuf
-             * @final
-             * @type DepthBuf
-             */
-            depthBuf: {
-                get: function () {
-                    return this.components["default.depthBuf"] ||
-                        new xeogl.DepthBuf(this, {
-                            id: "default.depthBuf",
-                            isDefault: true,
-                            active: true
-                        });
-                }
-            },
-
-            /**
-             * The default {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} provided by this Scene.
-             *
-             * The {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} is
-             * {{#crossLink "DepthTarget/active:property"}}inactive{{/crossLink}} by default and has an
-             * {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.depthTarget".
-             *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} by default.
-             * @property depthTarget
-             * @private
-             * @final
-             * @type DepthTarget
-             */
-            depthTarget: {
-                get: function () {
-                    return this.components["default.depthTarget"] ||
-                        new xeogl.DepthTarget(this, {
-                            id: "default.depthTarget",
-                            isDefault: true,
-                            active: false
-                        });
-                }
-            },
-
-            /**
              * The default {{#crossLink "Visibility"}}Visibility{{/crossLink}} provided by this Scene.
              *
              * This {{#crossLink "Visibility"}}Visibility{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.visibility",
@@ -14450,78 +14269,6 @@ var Canvas2Image = (function () {
             },
 
             /**
-             * The default {{#crossLink "Shader"}}Shader{{/crossLink}} provided by this Scene
-             * (which is initially an empty {{#crossLink "Shader"}}Shader{{/crossLink}} that has no effect).
-             *
-             * This {{#crossLink "Shader"}}Shader{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.shader",
-             * with all other properties initialised to their default values.
-             *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "Shader"}}Shader{{/crossLink}} by default.
-             * @property shader
-             * @final
-             * @private
-             * @type Shader
-             */
-            shader: {
-                get: function () {
-                    return this.components["default.shader"] ||
-                        this.components["default.shader"] || new xeogl.Shader(this, {
-                            id: "default.shader",
-                            isDefault: true
-                        });
-                }
-            },
-
-            /**
-             * The default {{#crossLink "ShaderParams"}}ShaderParams{{/crossLink}} provided by this Scene.
-             *
-             * This {{#crossLink "ShaderParams"}}ShaderParams{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.shaderParams",
-             * with all other properties initialised to their default values.
-             *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "ShaderParams"}}{{/crossLink}} by default.
-             *
-             * @property shaderParams
-             * @final
-             * @private
-             * @type ShaderParams
-             */
-            shaderParams: {
-                get: function () {
-                    return this.components["default.shaderParams"] ||
-                        new xeogl.ShaderParams(this, {
-                            id: "default.shaderParams",
-                            isDefault: true
-                        });
-                }
-            },
-
-            /**
-             * The default {{#crossLink "Stage"}}Stage{{/crossLink}} provided by this Scene.
-             *
-             * This {{#crossLink "Stage"}}Stage{{/crossLink}} has
-             * an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.stage" and
-             * a {{#crossLink "Stage/priority:property"}}priority{{/crossLink}} equal to ````0````.
-             *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "Stage"}}Stage{{/crossLink}} by default.
-             * @property stage
-             * @final
-             * @type Stage
-             */
-            stage: {
-                get: function () {
-                    return this.components["default.stage"] ||
-                        new xeogl.Stage(this, {
-                            id: "default.stage",
-                            priority: 0,
-                            isDefault: true
-                        });
-                }
-            },
-
-            /**
              * The default {{#crossLink "Viewport"}}{{/crossLink}} provided by this Scene.
              *
              * This {{#crossLink "Viewport"}}{{/crossLink}} has
@@ -14542,6 +14289,32 @@ var Canvas2Image = (function () {
                             id: "default.viewport",
                             autoBoundary: true,
                             isDefault: true
+                        });
+                }
+            },
+
+            /**
+             * The default {{#crossLink "Outline"}}{{/crossLink}} provided by this Scene.
+             *
+             * This {{#crossLink "Outline"}}{{/crossLink}} has
+             * an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.outline",
+             * a {{#crossLink "Outline/color:property"}}color{{/crossLink}} set to ````[1,1,0]````
+             * a {{#crossLink "Outline/thickness:property"}}thickness{{/crossLink}} set to ````15````.
+             *
+             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink "Outline"}}{{/crossLink}} by default.
+             *
+             * @property outline
+             * @final
+             * @type Outline
+             */
+            outline: {
+                get: function () {
+                    return this.components["default.outline"] ||
+                        new xeogl.Outline(this, {
+                            id: "default.outline",
+                            thickness: 15,
+                            color: [1,1,0]
                         });
                 }
             },
@@ -15605,40 +15378,21 @@ var Canvas2Image = (function () {
                 this._up1[2] = view.up[2];
 
                 var aabb;
-                var sphere;
                 var eye;
                 var look;
                 var up;
                 var componentId;
 
                 if (params.worldBoundary) {
-
-                    // Argument is a Component subtype with a worldBoundary
-
                     aabb = params.worldBoundary.aabb;
 
                 } else if (params.aabb) {
-
                     aabb = params.aabb;
 
-                    // Argument is a Boundary3D
-
-                } else if (params.length === 6) { // [xmin,ymin,zmin, xmax,ymax,zmax]
-
-                    // Argument is an AABB
-
+                } else if (params.length === 6) {
                     aabb = params;
 
-                    //} else if (params.length === 4) { // [x,y,z,radius]
-                    //
-                    //    // Argument is an OBB
-                    //
-                    //    sphere = params;
-
                 } else if (params.eye || params.look || params.up) {
-
-                    // Argument is eye, look and up positions
-
                     eye = params.eye;
                     look = params.look;
                     up = params.up;
@@ -15761,11 +15515,11 @@ var Canvas2Image = (function () {
         /**
          * Jumps this CameraFlightAnimation's {{#crossLink "Camera"}}{{/crossLink}} to the given target.
          *
+         *  * When the target is a boundary, this CameraFlightAnimation will position the {{#crossLink "Camera"}}{{/crossLink}}
+         *  at where the target fills most of the canvas.
+         *  * When the target is an explicit {{#crossLink "Camera"}}{{/crossLink}} position, given as ````eye````, ````look```` and ````up````
+         *  vectors, then this CameraFlightAnimation will jump the {{#crossLink "Camera"}}{{/crossLink}} to that target.
          *
-         *     * When the target is a boundary, this CameraFlightAnimation will position the {{#crossLink "Camera"}}{{/crossLink}}
-         *     at where the target fills most of the canvas.
-         *     * When the target is an explicit {{#crossLink "Camera"}}{{/crossLink}} position, given as ````eye````, ````look```` and ````up````
-         *      vectors, then this CameraFlightAnimation will jump the {{#crossLink "Camera"}}{{/crossLink}} to that target.
          * @method flyTo
          * @param params  {*|Component} Either a parameters object or a {{#crossLink "Component"}}{{/crossLink}} subtype that has a {{#crossLink "WorldBoundary"}}{{/crossLink}}.
          * @param[params.arc=0]  {Number} Factor in range [0..1] indicating how much the
@@ -15789,7 +15543,6 @@ var Canvas2Image = (function () {
 
         _jumpTo: (function () {
 
-            var eyeLookVec = math.vec3();
             var newEye = math.vec3();
             var newLook = math.vec3();
             var newUp = math.vec3();
@@ -15811,40 +15564,21 @@ var Canvas2Image = (function () {
                 var view = camera.view;
 
                 var aabb;
-                var sphere;
                 var componentId;
 
-                if (params.worldBoundary) {
+                if (params.worldBoundary) { // Component with a worldBoundary
 
-                    // Argument is a Component subtype with a worldBoundary
+                    aabb = params.worldBoundary.aabb;
 
-                    sphere = params.worldBoundary.sphere;
-
-                } else if (params.sphere) {
-
-                    sphere = params.sphere;
-
-                } else if (params.aabb) {
+                } else if (params.aabb) { // Boundary3D
 
                     aabb = params.aabb;
 
-                    // Argument is a Boundary3D
-
-                } else if (params.length === 6) { // [xmin,ymin,zmin, xmax,ymax,zmax]
-
-                    // Argument is an AABB
+                } else if (params.length === 6) { // AABB
 
                     aabb = params;
 
-                } else if (params.length === 4) { // [x,y,z,radius]
-
-                    // Argument is an OBB
-
-                    sphere = params;
-
-                } else if (params.eye || params.look || params.up) {
-
-                    // Argument is eye, look and up positions
+                } else if (params.eye || params.look || params.up) { // Camera pose
 
                     newEye = params.eye;
                     newLook = params.look;
@@ -15875,38 +15609,23 @@ var Canvas2Image = (function () {
                         return;
                     }
 
-                    sphere = worldBoundary.sphere;
+                    aabb = worldBoundary.aabb;
                 }
 
                 var offset = params.offset;
 
-                if (aabb || sphere) {
+                if (aabb) {
 
                     var diag;
 
-                    if (aabb) {
+                    if (aabb[3] <= aabb[0] || aabb[4] <= aabb[1] || aabb[5] <= aabb[2]) {
 
-                        if (aabb[3] <= aabb[0] || aabb[4] <= aabb[1] || aabb[5] <= aabb[2]) {
-
-                            // Don't fly to an empty boundary
-                            return;
-                        }
-
-                        diag = math.getAABB3Diag(aabb);
-                        math.getAABB3Center(aabb, newLook);
-
-                    } else {
-
-                        if (sphere[3] <= 0) {
-                            return;
-                        }
-
-                        diag = sphere[3] * 2;
-
-                        newLook[0] = sphere[0];
-                        newLook[1] = sphere[1];
-                        newLook[2] = sphere[2];
+                        // Don't fly to an empty boundary
+                        return;
                     }
+
+                    diag = math.getAABB3Diag(aabb);
+                    math.getAABB3Center(aabb, newLook);
 
                     if (this._trail) {
                         math.subVec3(view.look, newLook, newLookEyeVec);
@@ -16652,12 +16371,14 @@ var Canvas2Image = (function () {
             this.contextAttr.alpha = this.transparent;
 
             if (this.contextAttr.alpha === undefined || this.contextAttr.alpha === null) {
-                this.contextAttr.alphs = this.transparent;
+                this.contextAttr.alpha = this.transparent;
             }
 
             if (this.contextAttr.preserveDrawingBuffer === undefined || this.contextAttr.preserveDrawingBuffer === null) {
                 this.contextAttr.preserveDrawingBuffer = false;
             }
+
+            this.contextAttr.stencil = true;
 
             if (!cfg.canvas) {
 
@@ -18377,7 +18098,6 @@ var Canvas2Image = (function () {
 
             var worldBoundary = e.entity.worldBoundary;
             var aabb = worldBoundary.aabb;
-            var sphere = worldBoundary.sphere;
 
             this._boundaryHelper.geometry.aabb = aabb;
             //    this._boundaryHelper.visibility.visible = true;
@@ -21520,7 +21240,6 @@ var Canvas2Image = (function () {
         obb = localBoundary.obb;
         aabb = localBoundary.aabb;
         center = localBoundary.center;
-        sphere = localBoundary;
 
         //...
     });
@@ -24207,229 +23926,6 @@ var Canvas2Image = (function () {
         }
     });
 
-})();
-;/**
- An **BoundingSphereGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that shows the extents of a World-space bounding sphere.
-
- <a href="../../examples/#boundaries_entity_world_sphere"><img src="http://i.giphy.com/3oz8xRv4g56Y4pZKWk.gif"></img></a>
-
- ## Overview
-
- * A sphere is given as a four-element Float32Array containing elements````[x,y,z,radius]````.
- * Set the BoundingSphereGeometry's {{#crossLink "BoundingSphereGeometry/sphere:property"}}{{/crossLink}} property to a sphere to fix the BoundingSphereGeometry to those extents, or
- * Set the BoundingSphereGeometry's {{#crossLink "BoundingSphereGeometry/boundary:property"}}{{/crossLink}} property to a {{#crossLink "Boundary3D"}}{{/crossLink}}
- to make it dynamically fit itself to changes in the {{#crossLink "Boundary3D"}}{{/crossLink}}'s {{#crossLink "Boundary3D/sphere:property"}}{{/crossLink}} extents.
-
- ## Examples
-
- * [Rendering a BoundingSphereGeometry](../../examples/#boundaries_entity_world_sphere)
-
- ## Usage
-
- In the example below we'll render a transparent {{#crossLink "Entity"}}{{/crossLink}} with a BoundingSphereGeometry that shows the spherical extents of the
- World-space {{#crossLink "Boundary3D"}}{{/crossLink}} of another {{#crossLink "Entity"}}{{/crossLink}}:
-
- ````javascript
- // First Entity with a TorusGeometry
- var torus = new xeogl.Entity({
-     geometry: new xeogl.TorusGeometry()
- });
-
- // Second Entity with an BoundingSphereGeometry that shows a wireframe box
- // for the World-space boundary of the first Entity
-
- var boundaryHelper = new xeogl.Entity({
-
-     geometry: new xeogl.BoundingSphereGeometry({
-         boundary: torus.worldBoundary
-     }),
-
-     material: new xeogl.PhongMaterial({
-         diffuse: [0.5, 1.0, 0.5],
-         emissive: [0.5, 1.0, 0.5],
-         opacity: 0.4
-     }),
-
-     modes: new xeogl.Modes({
-        transparent: true
-     })
- });
- ````
-
- Now whenever our torus {{#crossLink "Entity"}}{{/crossLink}} changes shape or position, our BoundingSphereGeometry will automatically
- update to stay fitted to it.
-
- As shown below, we can also directly configure the BoundingSphereGeometry with
- the {{#crossLink "Boundary3D"}}{{/crossLink}}'s {{#crossLink "Boundary3D/aabb:property"}}AABB{{/crossLink}}. In this second example, we'll
- show the sphere as wireframe.
-
- ````javascript
- var boundaryHelper2 = new xeogl.Entity({
-
-     geometry: new xeogl.BoundingSphereGeometry({
-         boundary: torus.worldBoundary.sphere,
-         primitive: "lines"
-     }),
-
-     material: new xeogl.PhongMaterial({
-         diffuse: [0.5, 1.0, 0.5],
-         emissive: [0.5, 1.0, 0.5],
-         lineWidth:2
-     })
- });
- ````
- Note that, without the reference to a {{#crossLink "Boundary3D"}}{{/crossLink}}, our second BoundingSphereGeometry is fixed to the
- given AABB and will not automatically update whenever our torus {{#crossLink "Entity"}}{{/crossLink}} changes shape or position.
-
- @class BoundingSphereGeometry
- @module xeogl
- @submodule geometry
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this BoundingSphereGeometry in the default
- {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
- generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this BoundingSphereGeometry.
- @param [cfg.boundary] {Number|String|Boundary3D} ID or instance of a {{#crossLink "Boundary3D"}}{{/crossLink}}.
- @param [cfg.aabb] {Float32Array} An axis-aligned box (AABB) in a six-element Float32Array
- containing the min/max extents of the axis-aligned volume, ie. ````(xmin,ymin,zmin,xmax,ymax,zmax)````.
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    xeogl.BoundingSphereGeometry = xeogl.SphereGeometry.extend({
-
-        type: "xeogl.BoundingSphereGeometry",
-
-        _init: function (cfg) {
-
-            this._super(cfg);
-
-           // this.primitive = cfg.primitive || "lines";
-
-            if (cfg.boundary) {
-                this.boundary = cfg.boundary;
-
-            } else if (cfg.sphere) {
-                this.sphere = cfg.sphere;
-            }
-        },
-
-        _props: {
-
-            /**
-             A {{#crossLink "Boundary3D"}}{{/crossLink}} whose {{#crossLink "Boundary3D/aabb:property"}}OBB{{/crossLink}} we'll
-             dynamically fit this OBBGeometry to.
-
-             This property effectively replaces the {{#crossLink "BoundingSphereGeometry/aabb:property"}}{{/crossLink}} property.
-
-             Fires a {{#crossLink "BoundingSphereGeometry/boundary:event"}}{{/crossLink}} event on change.
-
-             @property boundary
-             @type Boundary3D
-             */
-            boundary: {
-
-                set: function (value) {
-
-                    var geometryDirty = false;
-                    var self = this;
-
-                    /**
-                     * Fired whenever this BoundingSphereGeometry's {{#crossLink "BoundingSphereGeometry/boundary:property"}}{{/crossLink}}
-                     * property changes.
-                     *
-                     * @event boundary
-                     * @param value The property's new value
-                     */
-                    this._attach({
-                        name: "boundary",
-                        type: "xeogl.Boundary3D",
-                        component: value,
-                        sceneDefault: false,
-                        on: {
-                            updated: function () {
-                                if (geometryDirty) {
-                                    return;
-                                }
-                                geometryDirty = true;
-                                xeogl.scheduleTask(function () {
-                                    self._setFromSphere(self._attached.boundary.sphere);
-                                    geometryDirty = false;
-                                });
-                            }
-                        },
-                        onAttached: function () {
-                            self._setFromSphere(self._attached.boundary.sphere);
-                        }
-                    });
-                },
-
-                get: function () {
-                    return this._attached.boundary;
-                }
-            },
-
-            /**
-             Sets this BoundingSphereGeometry to an axis-aligned box (SPHERE), given as a six-element Float32Array
-             containing the min/max extents of the
-             axis-aligned volume, ie. ````[xmin,ymin,zmin,xmax,ymax,zmax]````.
-
-             This property overrides the {{#crossLink "BoundingSphereGeometry/boundary:property"}}{{/crossLink}} property, causing it to become null.
-
-             @property sphere
-             @type Float32Array
-             */
-            sphere: {
-
-                set: function (value) {
-
-                    if (!value) {
-                        return;
-                    }
-
-                    if (this._attached.boundary) {
-                        this.boundary = null;
-                    }
-
-                    this._setFromSphere(value);
-                }
-            }
-        },
-
-        _setFromSphere: (function () {
-
-            var vec3 = xeogl.math.vec3();
-
-            return function (sphere) {
-
-                vec3[0] = sphere[0];
-                vec3[1] = sphere[1];
-                vec3[2] = sphere[2];
-
-                this.center = vec3;
-                this.radius = sphere[4];
-            };
-        })()
-
-        //_getJSON: function () {
-        //
-        //    var json = {};
-        //
-        //    if (this._attached.boundary) {
-        //        json.boundary = this._attached.boundary.id;
-        //
-        //    } else if (this.positions) {
-        //        this.positions = this.positions;
-        //    }
-        //
-        //    return json;
-        //},
-
-    });
 })();
 ;/**
  An **OBBGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that shows the extents of a World-space entity-oriented bounding box (OBB).
@@ -30630,7 +30126,6 @@ TODO
         obb = worldBoundary.obb;
         aabb = worldBoundary.aabb;
         center = worldBoundary.center;
-        sphere = worldBoundary.sphere();
         //...
     });
 
@@ -30641,9 +30136,8 @@ TODO
 
  Since xeogl is all about lazy-execution to avoid needless work, the {{#crossLink "Boundary3D"}}{{/crossLink}} will
  only actually recompute its extents the first time we read its {{#crossLink "Boundary3D/obb:property"}}{{/crossLink}},
- {{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}}, {{#crossLink "Boundary3D/center:property"}}{{/crossLink}},
- {{#crossLink "Boundary3D/center:property"}}{{/crossLink}} or
- {{#crossLink "Boundary3D/sphere:property"}}{{/crossLink}} properties after it fired its
+ {{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}}, {{#crossLink "Boundary3D/center:property"}}{{/crossLink}} or
+ {{#crossLink "Boundary3D/center:property"}}{{/crossLink}} properties after it fired its
  last {{#crossLink "Boundary3D/updated:event"}}{{/crossLink}} event.
 
  Also, the Model lazy-instantiates its {{#crossLink "Boundary3D"}}{{/crossLink}} the first time we reference
@@ -32932,6 +32426,187 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
     });
 
 })();;/**
+ * An outline rendering effect for emphasis.
+ *
+ * @module xeogl
+ * @submodule outline
+ */;/**
+ A **Outline** renders an outline around attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+ ## Overview
+
+ TODO
+
+ ## Usage
+
+ ````javascript
+
+ var outline = new xeogl.Outline({
+    thickness: 15,      // Default
+    color: [1,0,0]      // Default
+ });
+
+ new xeogl.Entity({
+     geometry: new xeogl.TorusGeometry(),
+     outline: outline,
+     modes: new xeogl.Modes({
+        outline: false  // Hide the outline (default)
+     });
+ });
+
+ new xeogl.Entity({
+     geometry: new xeogl.BoxGeometry(),
+     outline: outline,
+     modes: new xeogl.Modes({
+        outline: true  // Show the outline
+     });
+ });
+ ````
+
+ @class Outline
+ @module xeogl
+ @submodule outline
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this Outline within the
+ default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Outline configuration
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Outline.
+ @param [cfg.thickness=15] {Number} Thickness of the outline in pixels.
+ @param [cfg.color=[1,1,0]] {Float32Array} The RGB outline color.
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    xeogl.Outline = xeogl.Component.extend({
+
+        type: "xeogl.Outline",
+
+        _init: function (cfg) {
+
+            this._state = new xeogl.renderer.Outline({
+                thickness: 15,
+                color: xeogl.math.vec3([1.0, 1.0, 0.0])
+            });
+
+            this.thickness = cfg.thickness;
+            this.color = cfg.color;
+        },
+
+        _props: {
+
+            /**
+             * The Outline's thickness in pixels.
+             *
+             * Fires a {{#crossLink "Outline/thickness:event"}}{{/crossLink}} event on change.
+             *
+             * @property thickness
+             * @default 15
+             * @type Number
+             */
+            thickness: {
+
+                set: function (value) {
+
+                    // TODO: Only accept rendering thickness in range [0...MAX_thickness]
+
+                    value = value || 15;
+
+                    value = Math.round(value);
+
+
+                    if (value === this._state.thickness) {
+                        return;
+                    }
+
+                    this._state.thickness = value;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     * Fired whenever this Outline's  {{#crossLink "Outline/thickness:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event thickness
+                     * @param value The property's new value
+                     */
+                    this.fire("thickness", this._state.thickness);
+                },
+
+                get: function () {
+                    return this._state.thickness;
+                }
+            },
+
+            /**
+             The Outline's RGB color.
+
+             Fires a {{#crossLink "Outline/color:event"}}{{/crossLink}} event on change.
+
+             @property color
+             @default [1.0, 1.0, 0.0]
+             @type Float32Array
+             */
+            color: {
+
+                set: function (value) {
+
+                    var color = this._state.color;
+
+                    if (!color) {
+                        color = this._state.color = new Float32Array(3);
+
+                    } else if (value && color[0] === value[0] && color[1] === value[1] && color[2] === value[2]) {
+                        return;
+                    }
+
+                    if (value) {
+                        color[0] = value[0];
+                        color[1] = value[1];
+                        color[2] = value[2];
+
+                    } else {
+                        color[0] = 1;
+                        color[1] = 1;
+                        color[2] = 0;
+                    }
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     * Fired whenever this Outline's {{#crossLink "Outline/color:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event color
+                     * @param value {Float32Array} The property's new value
+                     */
+                    this.fire("color", this._state.color);
+                },
+
+                get: function () {
+                    return this._state.color;
+                }
+            }
+        },
+
+        _compile: function () {
+            this._renderer.outline = this._state;
+        },
+
+        _getJSON: function () {
+            return {
+                thickness: this._state.thickness,
+                color: xeogl.math.vecToArray(this._state.color)
+            };
+        },
+
+        _destroy: function () {
+            this._state.destroy();
+        }
+    });
+
+})();
+;/**
  * Components to define the surface appearance of Entities.
  *
  * @module xeogl
@@ -36246,11 +35921,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  property to the image file path.
  * To create a Texture from an HTMLImageElement, set the Texture's {{#crossLink "Texture/image:property"}}{{/crossLink}}
  property to the HTMLImageElement.
- * To render color images of {{#crossLink "Entity"}}Entities{{/crossLink}} to a Texture, set the Texture's {{#crossLink "Texture/target:property"}}{{/crossLink}}
- property to a {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} that is attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.
- * Similarly, to render depth images of {{#crossLink "Entity"}}Entities{{/crossLink}} to a Texture, set the Texture's {{#crossLink "Texture/target:property"}}{{/crossLink}}
- property to a {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.
- * For special effects, we often use rendered Textures in combination with {{#crossLink "Shader"}}Shaders{{/crossLink}} and {{#crossLink "Stage"}}Stages{{/crossLink}}.
 
  <img src="../../assets/images/Texture.png"></img>
 
@@ -36320,8 +35990,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Texture.
  @param [cfg.src=null] {String} Path to image file to load into this Texture. See the {{#crossLink "Texture/src:property"}}{{/crossLink}} property for more info.
  @param [cfg.image=null] {HTMLImageElement} HTML Image object to load into this Texture. See the {{#crossLink "Texture/image:property"}}{{/crossLink}} property for more info.
- @param [cfg.target=null] {String | xeogl.ColorTarget | xeogl.DepthTarget} Instance or ID of a {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} or
- {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} to source this Texture from. See the {{#crossLink "Texture/target:property"}}{{/crossLink}} property for more info.
  @param [cfg.minFilter="linearMipmapLinear"] {String} How the texture is sampled when a texel covers less than one pixel. See the {{#crossLink "Texture/minFilter:property"}}{{/crossLink}} property for more info.
  @param [cfg.magFilter="linear"] {String} How the texture is sampled when a texel covers more than one pixel. See the {{#crossLink "Texture/magFilter:property"}}{{/crossLink}} property for more info.
  @param [cfg.wrapS="repeat"] {String} Wrap parameter for texture coordinate *S*. See the {{#crossLink "Texture/wrapS:property"}}{{/crossLink}} property for more info.
@@ -36362,7 +36030,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
             this._src = null;   // URL string
             this._image = null; // HTMLImageElement
-            this._target = null;// xeogl.RenderTarget
 
             // Transformation
 
@@ -36375,7 +36042,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             this._matrixDirty = false;
             this._srcDirty = false;
             this._imageDirty = false;
-            this._targetDirty = false;
             this._propsDirty = false;
 
             // Handle WebGL context restore
@@ -36404,8 +36070,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             } else if (cfg.image) {
                 this.image = cfg.image; // Image object
 
-            } else if (cfg.target) {
-                this.target = cfg.target; // Render target
             }
 
             xeogl.stats.memory.textures++;
@@ -36423,9 +36087,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
             } else if (this._src) {
                 this._srcDirty = true;
-
-            } else if (this._target) {
-                this._targetDirty = true;
             }
 
             this._needUpdate();
@@ -36455,17 +36116,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                 if (this._image) {
 
-                    if (this._onTargetActive) {
-                        this._target.off(this._onTargetActive);
-                        this._onTargetActive = null;
-                    }
-
-                    if (state.texture && state.texture.renderBuffer) {
-
-                        // Detach from "virtual texture" provided by render target
-                        state.texture = null;
-                    }
-
                     if (!state.texture) {
                         state.texture = new xeogl.renderer.webgl.Texture2D(gl);
                     }
@@ -36477,29 +36127,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                     this._imageDirty = false;
                     this._propsDirty = true; // May now need to regenerate mipmaps etc
                 }
-            }
-
-            if (this._targetDirty) {
-
-                if (state.texture && !state.texture.renderBuffer) {
-                    state.texture.destroy();
-                    state.texture = null;
-                }
-
-                if (this._onTargetActive) {
-                    this._target.off(this._onTargetActive);
-                    this._onTargetActive = null;
-                }
-
-                if (this._target) {
-                    this._onTargetActive = this._target.on("active",  // Called immediately when first bound
-                        function (active) {
-                            state.texture = active ? this._state.renderBuf.getTexture() : null;
-                        });
-                }
-
-                this._targetDirty = false;
-                this._propsDirty = true;
             }
 
             if (this._matrixDirty) {
@@ -36540,9 +36167,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             if (this._propsDirty) {
 
                 if (state.texture && state.texture.setProps) {
-
-                    // TODO: Ability to set props on texture from _target's RenderBuffer?
-
                     state.texture.setProps(state);
                 }
 
@@ -36574,7 +36198,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                     self._imageDirty = true;
                     self._srcDirty = false;
-                    self._targetDirty = false;
 
                     if (spinnerTextures) {
                         spinner.processes--;
@@ -36630,13 +36253,9 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             /**
              * Indicates an HTML DOM Image object to source this Texture from.
              *
-             * Alternatively, you could indicate the source via either of properties
-             * {{#crossLink "Texture/src:property"}}{{/crossLink}} or {{#crossLink "Texture/target:property"}}{{/crossLink}}.
-             *
              * Fires an {{#crossLink "Texture/image:event"}}{{/crossLink}} event on change.
              *
-             * Sets the {{#crossLink "Texture/src:property"}}{{/crossLink}} and
-             * {{#crossLink "Texture/target:property"}}{{/crossLink}} properties to null.
+             * Sets the {{#crossLink "Texture/src:property"}}{{/crossLink}} property to null.
              *
              * @property image
              * @default null
@@ -36651,7 +36270,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                     this._imageDirty = true;
                     this._srcDirty = false;
-                    this._targetDirty = false;
 
                     this._needUpdate();
 
@@ -36671,13 +36289,9 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             /**
              * Indicates a path to an image file to source this Texture from.
              *
-             * Alternatively, you could indicate the source via either of properties
-             * {{#crossLink "Texture/image:property"}}{{/crossLink}} or {{#crossLink "Texture/target:property"}}{{/crossLink}}.
-             *
              * Fires a {{#crossLink "Texture/src:event"}}{{/crossLink}} event on change.
              *
-             * Sets the {{#crossLink "Texture/image:property"}}{{/crossLink}} and
-             * {{#crossLink "Texture/target:property"}}{{/crossLink}} properties to null.
+             * Sets the {{#crossLink "Texture/image:property"}}{{/crossLink}} property to null.
              *
              * @property src
              * @default null
@@ -36692,7 +36306,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                     this._imageDirty = false;
                     this._srcDirty = true;
-                    this._targetDirty = false;
 
                     this._needUpdate();
 
@@ -36707,62 +36320,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                 get: function () {
                     return this._src;
-                }
-            },
-
-            /**
-             * Instance or ID of a {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} or
-             * {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} to source this Texture from.
-             *
-             * Alternatively, you could indicate the source via either of properties
-             * {{#crossLink "Texture/src:property"}}{{/crossLink}} or {{#crossLink "Texture/image:property"}}{{/crossLink}}.
-             *
-             * Fires a {{#crossLink "Texture/target:event"}}{{/crossLink}} event on change.
-             *
-             * Sets the {{#crossLink "Texture/src:property"}}{{/crossLink}} and
-             * {{#crossLink "Texture/image:property"}}{{/crossLink}} properties to null.
-             *
-             * @property target
-             * @default null
-             * @type String | xeogl.ColorTarget | xeogl.DepthTarget
-             */
-            target: {
-
-                set: function (value) {
-
-                    this._image = null;
-                    this._src = null;
-
-                    this._target = this._attach({
-                        name: "renderBuf",
-                        type: null,
-                        component: value,
-                        sceneDefault: true,
-                        on: {
-                            active: {
-                                callback: this._onTargetActive,
-                                scope: this
-                            }
-                        }
-                    });
-
-                    this._imageDirty = false;
-                    this._srcDirty = false;
-                    this._targetDirty = true;
-
-                    this._needUpdate();
-
-                    /**
-                     * Fired whenever this Texture's   {{#crossLink "Texture/target:property"}}{{/crossLink}} property changes.
-                     * @event target
-                     * @param value The property's new value
-                     * @type String | xeogl.ColorTarget | xeogl.DepthTarget
-                     */
-                    this.fire("target", this._target);
-                },
-
-                get: function () {
-                    return this._attached.target;
                 }
             },
 
@@ -37173,9 +36730,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             if (this._src) {
                 json.src = this._src;
 
-            } else if (this._target) {
-                json.target = this._target.id;
-
             } else if (this._image) {
                 // TODO: Image data
                 // json.src = image.src;
@@ -37535,8 +37089,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  // which contains the extents of the boundary on each axis
  var aabb = worldBoundary.aabb;
 
- // Get the World-space bounding sphere:
- var sphere = worldBoundary.center;
  ````
 
  #### View-space
@@ -37594,8 +37146,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
  @param [cfg.clips] {String|Clips} ID or instance of a {{#crossLink "Clips"}}Clips{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/clips:property"}}clips{{/crossLink}}.
- @param [cfg.depthBuf] {String|DepthBuf} ID or instance of a {{#crossLink "DepthBuf"}}DepthBuf{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
- parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, depth {{#crossLink "Scene/depthBuf:property"}}depthBuf{{/crossLink}}.
  @param [cfg.visibility] {String|Visibility} ID or instance of a {{#crossLink "Visibility"}}Visibility{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/visibility:property"}}visibility{{/crossLink}}.
  @param [cfg.cull] {String|Cull} ID or instance of a {{#crossLink "Cull"}}{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
@@ -37612,12 +37162,12 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/material:property"}}material{{/crossLink}}.
  @param [cfg.morphTargets] {String|MorphTargets} ID or instance of a {{#crossLink "MorphTargets"}}MorphTargets{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s
  default instance, {{#crossLink "Scene/morphTargets:property"}}morphTargets{{/crossLink}}.
- @param [cfg.stage] {String|Stage} ID or instance of of a {{#crossLink "Stage"}}Stage{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
- {{#crossLink "Scene/stage:property"}}stage{{/crossLink}}.
  @param [cfg.transform] {String|Transform} ID or instance of a modelling transform to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
  {{#crossLink "Scene/transform:property"}}transform{{/crossLink}} (which is an identity matrix which performs no transformation).
  @param [cfg.viewport] {String|Viewport} ID or instance of a {{#crossLink "Viewport"}}{{/crossLink}} attached to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
  {{#crossLink "Scene/viewport:property"}}{{/crossLink}}, which is automatically resizes to the canvas.
+ @param [cfg.outline] {String|Outline} ID or instance of a {{#crossLink "Outline"}}{{/crossLink}} attached to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
+ {{#crossLink "Scene/outline:property"}}{{/crossLink}}.
  @param [cfg.loading] {Boolean} Flag which indicates that this Entity is freshly loaded. This will increment the
  {{#crossLink "Spinner/processes:property"}}Spinner processes{{/crossLink}} count, and then when this Entity is first
  rendered, will decrement the count again.
@@ -37650,10 +37200,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
             this.camera = cfg.camera;
             this.clips = cfg.clips;
-            this.colorTarget = cfg.colorTarget;
-            this.colorBuf = cfg.colorBuf;
-            this.depthTarget = cfg.depthTarget;
-            this.depthBuf = cfg.depthBuf;
             this.visibility = cfg.visibility;
             this.cull = cfg.cull;
             this.modes = cfg.modes;
@@ -37662,13 +37208,11 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             this.lights = cfg.lights;
             this.material = cfg.material;
             this.morphTargets = cfg.morphTargets;
-            this.shader = cfg.shader;
-            this.shaderParams = cfg.shaderParams;
-            this.stage = cfg.stage;
             this.transform = cfg.transform;
             this.billboard = cfg.billboard;
             this.stationary = cfg.stationary;
             this.viewport = cfg.viewport;
+            this.outline = cfg.outline;
 
             // Cached boundary for each coordinate space
             // The Entity's Geometry component caches the Local-space boundary
@@ -37764,147 +37308,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                 get: function () {
                     return this._attached.clips;
-                }
-            },
-
-            /**
-             * The {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} attached to this Entity.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/colorTarget:property"}}colorTarget{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * Fires an {{#crossLink "Entity/colorTarget:event"}}{{/crossLink}} event on change.
-             *
-             * @property colorTarget
-             * @private
-             * @type ColorTarget
-             */
-            colorTarget: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this Entity's  {{#crossLink "Entity/colorTarget:property"}}{{/crossLink}} property changes.
-                     * @event colorTarget
-                     * @param value The property's new value
-                     */
-                    this._attach({
-                        name: "colorTarget",
-                        type: "xeogl.ColorTarget",
-                        component: value,
-                        sceneDefault: true
-                    });
-                },
-
-                get: function () {
-                    return this._attached.colorTarget;
-                }
-            },
-
-            /**
-             * The {{#crossLink "ColorBuf"}}ColorBuf{{/crossLink}} attached to this Entity.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/colorBuf:property"}}colorBuf{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * Fires an {{#crossLink "Entity/colorBuf:event"}}{{/crossLink}} event on change.
-             *
-             * @property colorBuf
-             * @type ColorBuf
-             */
-            colorBuf: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this Entity's  {{#crossLink "Entity/colorBuf:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event colorBuf
-                     * @param value The property's new value
-                     */
-                    this._attach({
-                        name: "colorBuf",
-                        type: "xeogl.ColorBuf",
-                        component: value,
-                        sceneDefault: true
-                    });
-                },
-
-                get: function () {
-                    return this._attached.colorBuf;
-                }
-            },
-
-            /**
-             * The {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} attached to this Entity.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/depthTarget:property"}}depthTarget{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * Fires an {{#crossLink "Entity/depthTarget:event"}}{{/crossLink}} event on change.
-             *
-             * @property depthTarget
-             * @private
-             * @type DepthTarget
-             */
-            depthTarget: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this Entity's  {{#crossLink "Entity/depthTarget:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event depthTarget
-                     * @param value The property's new value
-                     */
-                    this._attach({
-                        name: "depthTarget",
-                        type: "xeogl.DepthTarget",
-                        component: value,
-                        sceneDefault: true
-                    });
-                },
-
-                get: function () {
-                    return this._attached.depthTarget;
-                }
-            },
-
-            /**
-             * The {{#crossLink "DepthBuf"}}DepthBuf{{/crossLink}} attached to this Entity.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
-             * parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/depthBuf:property"}}depthBuf{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * Fires an {{#crossLink "Entity/depthBuf:event"}}{{/crossLink}} event on change.
-             *
-             * @property depthBuf
-             * @type DepthBuf
-             */
-            depthBuf: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this Entity's  {{#crossLink "Entity/depthBuf:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event depthBuf
-                     * @param value The property's new value
-                     */
-                    this._attach({
-                        name: "depthBuf",
-                        type: "xeogl.DepthBuf",
-                        component: value,
-                        sceneDefault: true
-                    });
-                },
-
-                get: function () {
-                    return this._attached.depthBuf;
                 }
             },
 
@@ -38208,112 +37611,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
-             * The {{#crossLink "Shader"}}Shader{{/crossLink}} attached to this Entity.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/shader:property"}}shader{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * Fires an {{#crossLink "Entity/shader:event"}}{{/crossLink}} event on change.
-             *
-             * @property shader
-             * @private
-             * @type Shader
-             */
-            shader: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this Entity's  {{#crossLink "Entity/shader:property"}}{{/crossLink}} property changes.
-                     * @event shader
-                     * @param value The property's new value
-                     */
-                    this._attach({
-                        name: "shader",
-                        type: "xeogl.Shader",
-                        component: value,
-                        sceneDefault: true
-                    });
-                },
-
-                get: function () {
-                    return this._attached.shader;
-                }
-            },
-
-            /**
-             * The {{#crossLink "ShaderParams"}}ShaderParams{{/crossLink}} attached to this Entity.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/shaderParams:property"}}shaderParams{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * Fires an {{#crossLink "Entity/shaderParams:event"}}{{/crossLink}} event on change.
-             *
-             * @property shaderParams
-             * @private
-             * @type ShaderParams
-             */
-            shaderParams: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this Entity's  {{#crossLink "Entity/shaderParams:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event shaderParams
-                     * @param value The property's new value
-                     */
-                    this._attach({
-                        name: "shaderParams",
-                        type: "xeogl.ShaderParams",
-                        component: value,
-                        sceneDefault: true
-                    });
-                },
-
-                get: function () {
-                    return this._attached.shaderParams;
-                }
-            },
-
-            /**
-             * The {{#crossLink "Stage"}}Stage{{/crossLink}} attached to this Entity.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/stage:property"}}stage{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * Fires an {{#crossLink "Entity/stage:event"}}{{/crossLink}} event on change.
-             *
-             * @property stage
-             * @type Stage
-             */
-            stage: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this Entity's  {{#crossLink "Entity/stage:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event stage
-                     * @param value The property's new value
-                     */
-                    this._attach({
-                        name: "stage",
-                        type: "xeogl.Stage",
-                        component: value,
-                        sceneDefault: true
-                    });
-                },
-
-                get: function () {
-                    return this._attached.stage;
-                }
-            },
-
-            /**
              * The Local-to-World-space (modelling) {{#crossLink "Transform"}}{{/crossLink}} attached to this Entity.
              *
              * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
@@ -38490,6 +37787,41 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                 get: function () {
                     return this._attached.stationary;
+                }
+            },
+
+            /**
+             * The {{#crossLink "Outline"}}Outline{{/crossLink}} attached to this Entity.
+             *
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
+             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/outline:property"}}Outline{{/crossLink}} when set to
+             * a null or undefined value.
+             *
+             * Fires an {{#crossLink "Entity/outline:event"}}{{/crossLink}} event on change.
+             *
+             * @property outline
+             * @type Outline
+             */
+            outline: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this Entity's  {{#crossLink "Entity/Outline:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event Outline
+                     * @param value The property's new value
+                     */
+                    this._attach({
+                        name: "outline",
+                        type: "xeogl.Outline",
+                        component: value,
+                        sceneDefault: true
+                    });
+                },
+
+                get: function () {
+                    return this._attached.outline;
                 }
             },
 
@@ -38888,10 +38220,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
             attached.camera._compile();
             attached.clips._compile();
-            attached.colorTarget._compile();
-            attached.colorBuf._compile();
-            attached.depthTarget._compile();
-            attached.depthBuf._compile();
             attached.visibility._compile();
             attached.cull._compile();
             attached.modes._compile();
@@ -38899,13 +38227,11 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             attached.layer._compile();
             attached.lights._compile();
             attached.material._compile();
-            attached.shader._compile();
-            attached.shaderParams._compile();
-            attached.stage._compile();
             this._renderer.modelTransform = attached.transform._state;
             attached.billboard._compile();
             attached.stationary._compile();
             attached.viewport._compile();
+            attached.outline._compile();
 
             // (Re)build this Entity in the renderer; for each Entity in teh scene graph,
             // there is an "object" in the renderer, that has the same ID as the entity
@@ -38941,10 +38267,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             return {
                 camera: attached.camera.id,
                 clips: attached.clips.id,
-                colorTarget: attached.colorTarget.id,
-                colorBuf: attached.colorBuf.id,
-                depthTarget: attached.depthTarget.id,
-                depthBuf: attached.depthBuf.id,
                 visibility: attached.visibility.id,
                 cull: attached.cull.id,
                 modes: attached.modes.id,
@@ -38952,13 +38274,11 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                 layer: attached.layer.id,
                 lights: attached.lights.id,
                 material: attached.material.id,
-                shader: attached.shader.id,
-                shaderParams: attached.shaderParams.id,
-                stage: attached.stage.id,
                 transform: attached.transform.id,
                 billboard: attached.billboard.id,
                 stationary: attached.stationary.id,
-                viewport: attached.viewport.id
+                viewport: attached.viewport.id,
+                outline: attached.outline.id
             };
         },
 
@@ -38974,362 +38294,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  * @module xeogl
  * @submodule rendering
  */;/**
- A **ColorBuf** configures the WebGL color buffer for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
-
- ## Overview
-
- * A ColorBuf configures the way that pixels are written to the WebGL color buffer.
- * ColorBuf is not to be confused with {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}}, which stores rendered pixel
- colors for consumption by {{#crossLink "Texture"}}Textures{{/crossLink}}, used when performing *render-to-texture*.
-
- <img src="../../../assets/images/ColorBuf.png"></img>
-
- ## Usage
-
- This example creates a {{#crossLink "Entity"}}{{/crossLink}} with a ColorBuf
- that sets the WebGL color mask and enables blending:
-
- ````javascript
- new xeogl.Entity({
-     geometry: new xeogl.BoxGeometry(),
-     colorBuf: new xeogl.ColorBuf({
-         blendEnabled: true,
-         colorMask: [true, true, true, true]
-     })
- });
- ````
-
- @class ColorBuf
- @module xeogl
- @submodule rendering
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this ColorBuf within the
- default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} ColorBuf configuration
- @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ColorBuf.
- @param [cfg.blendEnabled=false] {Boolean} Indicates if blending is enabled.
- @param [cfg.colorMask=[true, true, true, true]] {Array of Boolean} The color mask,
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    xeogl.ColorBuf = xeogl.Component.extend({
-
-        type: "xeogl.ColorBuf",
-
-        _init: function (cfg) {
-
-            this._state = new xeogl.renderer.ColorBuf({
-                blendEnabled: false,
-                colorMask: [true, true, true, true]
-            });
-
-            this.blendEnabled = cfg.blendEnabled;
-            this.colorMask = cfg.colorMask;
-        },
-
-        _props: {
-
-            /**
-             * Indicates if blending is enabled for this ColorBuf.
-             *
-             * Fires a {{#crossLink "ColorBuf/blendEnabled:event"}}{{/crossLink}} event on change.
-             *
-             * @property blendEnabled
-             * @default false
-             * @type Boolean
-             */
-            blendEnabled: {
-
-                set: function (value) {
-
-                    this._state.blendEnabled = value === true;
-
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     Fired whenever this ColorBuf's {{#crossLink "ColorBuf/blendEnabled:property"}}{{/crossLink}} property changes.
-
-                     @event blendEnabled
-                     @param value {Boolean} The property's new value
-                     */
-                    this.fire("blendEnabled", this._state.blendEnabled);
-                },
-
-                get: function () {
-                    return this._state.blendEnabled;
-                }
-            },
-
-            /**
-             * Specifies whether red, green, blue, and alpha can or cannot be written into the frame buffer.
-             *
-             * Fires a {{#crossLink "ColorBuf/colorMask:event"}}{{/crossLink}} event on change.
-             *
-             * @property colorMask
-             * @default [true, true, true, true]
-             * @type {Four element array of Boolean}
-             */
-            colorMask: {
-
-                set: function (value) {
-
-                    this._state.colorMask = value || [true, true, true, true];
-
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     Fired whenever this ColorBuf's {{#crossLink "ColorBuf/colorMask:property"}}{{/crossLink}} property changes.
-
-                     @event colorMask
-                     @param value {Four element array of Boolean} The property's new value
-                     */
-                    this.fire("colorMask", this._state.colorMask);
-                },
-
-                get: function () {
-                    return this._state.colorMask;
-                }
-            }
-        },
-
-        _compile: function () {
-            this._renderer.colorBuf = this._state;
-        },
-
-        _getJSON: function () {
-            return {
-                blendEnabled: this._state.blendEnabled,
-                colorMask: this._state.colorMask
-            };
-        },
-
-        _destroy: function () {
-            this._state.destroy();
-        }
-    });
-
-})();
-;/**
- A **DepthBuf** configures the WebGL depth buffer for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
-
- ## Overview
-
- * A DepthBuf configures the way that pixel depths are written to the WebGL depth buffer
- * DepthBuf is not to be confused with {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}}, which stores rendered pixel
- depths for consumption by {{#crossLink "Texture"}}Textures{{/crossLink}}, used when performing *render-to-texture*.
-
- <img src="../../../assets/images/DepthBuf.png"></img>
-
- ## Usage
-
- The example below creates a {{#crossLink "Entity"}}{{/crossLink}} with a DepthBuf
- that uses the "less" depth comparison function and sets pixels depths to 0.5 whenever it's cleared.
-
- ````javascript
- new xeogl.Entity({
-     geometry: new xeogl.BoxGeometry(),
-     depthBuf: new xeogl.ColorBuf({
-         clearDepth: 0.5,
-         depthFunc: "less"
-     })
- });
- ````
-
- @class DepthBuf
- @module xeogl
- @submodule rendering
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this DepthBuf
- within the default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} DepthBuf configuration
- @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this DepthBuf.
- @param [cfg.clearDepth=1.0] {Number} The clear depth.
- @param [cfg.depthFunc="less"] {String} The depth function.
- @param [cfg.active=true] {Boolean} True when this DepthBuf is active.
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    xeogl.DepthBuf = xeogl.Component.extend({
-
-        type: "xeogl.DepthBuf",
-
-        _init: function (cfg) {
-
-            this._state = new xeogl.renderer.DepthBuf({
-                clearDepth: null,
-                depthFunc: null,
-                active: true
-            });
-
-            this.clearDepth = cfg.clearDepth;
-            this.depthFunc = cfg.depthFunc;
-            this.active = cfg.active;
-        },
-
-        _props: {
-
-            /**
-             * The clear depth for this DepthBuf.
-             *
-             * Fires a {{#crossLink "DepthBuf/clearDepth:event"}}{{/crossLink}} event on change.
-             *
-             * @property clearDepth
-             * @default 1.0
-             * @type Number
-             */
-            clearDepth: {
-
-                set: function (value) {
-
-                    this._state.clearDepth = value !== undefined ? value : 1.0;
-
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     Fired whenever this DepthBuf's {{#crossLink "DepthBuf/clearDepth:property"}}{{/crossLink}} property changes.
-
-                     @event clearDepth
-                     @param value {Number} The property's new value
-                     */
-                    this.fire("clearDepth",  this._state.clearDepth);
-                },
-
-                get: function () {
-                    return this._state.clearDepth;
-                }
-            },
-
-            /**
-             * The depth function for this DepthBuf.
-             *
-             * Accepted values are:
-             *
-             *
-             *     * "less"
-             *     * "equal"
-             *     * "lequal"
-             *     * "greater"
-             *     * "notequal"
-             *     * "gequal"
-             *
-             *
-             * Fires a {{#crossLink "DepthBuf/depthFunc:event"}}{{/crossLink}} event on change.
-             *
-             * @property depthFunc
-             * @default "less"
-             * @type Number
-             */
-            depthFunc: {
-
-                set: function (value) {
-
-                    value = value || "less";
-
-                    var enumName = this._depthFuncNames[value];
-
-                    if (enumName === undefined) {
-                        this.error("Unsupported value for 'clearFunc': '" + value +
-                            "' - supported values are 'less', 'equal', 'lequal', 'greater', 'notequal' and 'gequal. " +
-                            "Defaulting to 'less'.");
-
-                        enumName = "less";
-                    }
-
-                    this._state.depthFunc = this.scene.canvas.gl[enumName];
-                    this._state.depthFuncName = value;
-
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     Fired whenever this DepthBuf's {{#crossLink "DepthBuf/depthFunc:property"}}{{/crossLink}} property changes.
-                     @event depthFunc
-                     @param value {String} The property's new value
-                     */
-                    this.fire("depthFunc", this._state.depthFuncName);
-                },
-
-                get: function () {
-                    return this._state.depthFuncName;
-                }
-            },
-
-            /**
-             * Flag which indicates whether this DepthBuf is active or not.
-             *
-             * Fires an {{#crossLink "DepthBuf/active:event"}}{{/crossLink}} event on change.
-             *
-             * @property active
-             * @type Boolean
-             * @default true
-             */
-            active: {
-
-                set: function (value) {
-
-                    value = value !== false;
-
-                    if (this._state.active === value) {
-                        return;
-                    }
-                    
-                    this._state.active = value;
-
-                    this._renderer.imageDirty = true;
-                    
-                    /**
-                     * Fired whenever this DepthBuf's {{#crossLink "DepthBuf/active:property"}}{{/crossLink}} property changes.
-                     * @event active
-                     * @param value The property's new value
-                     */
-                    this.fire('active', this._state.active);
-                },
-
-                get: function () {
-                    return this._state.active;
-                }
-            }
-        },
-
-        /**
-         * Lookup GL depth function enums
-         * @private
-         */
-        _depthFuncNames: {
-            less: "LESS",
-            equal: "EQUAL",
-            lequal: "LEQUAL",
-            greater: "GREATER",
-            notequal: "NOTEQUAL",
-            gequal: "GEQUAL"
-        },
-
-        _compile: function () {
-            this._renderer.depthBuf = this._state;
-        },
-
-        _getJSON: function () {
-            return {
-                clearDepth: this._state.clearDepth,
-                depthFunc: this._state.depthFuncName,
-                active: this._state.active
-            };
-        },
-
-        _destroy: function () {
-            this._state.destroy();
-        }
-    });
-
-})();
-;/**
  A **Layer** sets the rendering order of {{#crossLink "Entity"}}Entities{{/crossLink}} within their {{#crossLink "Stage"}}Stages{{/crossLink}}.
 
  ## Overview
@@ -39526,383 +38490,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
 })();
 ;/**
- A **ColorTarget** is a  <a href="http://en.wikipedia.org/wiki/Render_Target" target="other">render target</a>  that
- captures the colors pixels rendered for associated {{#crossLink "Entity"}}Entities{{/crossLink}}.
-
- * ColorTargets are typically used when *rendering-to-texture*.
- * A ColorTarget provides the pixel colors as a dynamic color image that may be consumed by {{#crossLink "Texture"}}Textures{{/crossLink}}.
- * ColorTarget is not to be confused with {{#crossLink "ColorBuf"}}ColorBuf{{/crossLink}}, which configures ***how*** the pixel colors are written with respect to the WebGL color buffer.
- * Use {{#crossLink "Stage"}}Stages{{/crossLink}} when you need to ensure that a ColorTarget is rendered before
- the {{#crossLink "Texture"}}Textures{{/crossLink}} that consume it.
- * For special effects, we often use ColorTargets and {{#crossLink "Texture"}}Textures{{/crossLink}} in combination
- with {{#crossLink "DepthTarget"}}DepthTargets{{/crossLink}} and {{#crossLink "Shader"}}Shaders{{/crossLink}}.
-
- <img src="../../../assets/images/ColorTarget.png"></img>
-
- ## Usage
-
- This example contains an {{#crossLink "Entity"}}{{/crossLink}} that renders its pixel colors to a ColorTarget, which is then
- piped into a {{#crossLink "Texture"}}{{/crossLink}} that's applied to a second {{#crossLink "Entity"}}{{/crossLink}}.
-
- ````javascript
- var colorTarget = new xeogl.ColorTarget();
-
- // First Entity renders to the ColorTarget
-
- var entity1 = new xeogl.Entity({
-    geometry: new xeogl.BoxGeometry(),
-    colorTarget: colorTarget
- });
-
-
- // Second Entity is textured with the
- // image of the first Entity
-
- var entity2 = new xeogl.Entity({
-     geometry: new xeogl.BoxGeometry()
-     material: new xeogl.PhongMaterial({
-         diffuseMap: new xeogl.Texture({
-            target: colorTarget
-         })
-     })
-});
- ````
-
-
- @module xeogl
- @submodule rendering
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this ColorTarget within the
- default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} ColorTarget configuration
- @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ColorTarget.
- @param [cfg.active=true] {Boolean} Indicates if this ColorTarget is active or not.
- @param [cfg.size=null] {Array of Number} Optional fixed size for the ColorTarget's pixel buffer. When this is null, the buffer
- will dynamically resize to the canvas.
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    xeogl.ColorTarget = xeogl.Component.extend({
-
-        type: "xeogl.ColorTarget",
-
-        _init: function (cfg) {
-
-            this._state = new xeogl.renderer.RenderTarget({
-                type: xeogl.renderer.RenderTarget.COLOR,
-                renderBuf: null
-            });
-
-            var canvas = this.scene.canvas;
-            var self = this;
-
-            this._webglContextRestored = canvas.on("webglContextRestored",
-                function () {
-                    if (self._state.renderBuf) {
-                        self._state.renderBuf.webglRestored(canvas.gl);
-                    }
-                });
-
-            this.size = cfg.size;
-            this.active = cfg.active;
-        },
-
-        _props: {
-
-            /**
-             * The resolution of this ColorTarget's pixel buffer.
-             *
-             * Fires an {{#crossLink "ColorTarget/size:event"}}{{/crossLink}} event on change.
-             *
-             * @property size
-             * @default null
-             * @type {Array of Number}
-             */
-            size: {
-
-                set: function (value) {
-
-                    value = value || null;
-
-                    this._size = value;
-
-                    if (this._active) {
-                        this._state.renderBuf.setSize(this._size);
-                    }
-
-                    /**
-                     Fired whenever this ColorTarget's {{#crossLink "ColorTarget/size:property"}}{{/crossLink}} property changes.
-                     @event size
-                     @param value {Array of Number} The property's new value
-                     */
-                    this.fire("size", this._size);
-                },
-
-                get: function () {
-                    return this._size;
-                }
-            },
-
-            /**
-             * Determines whether this ColorTarget is active or not.
-             *
-             * When active, the pixel colors of associated {{#crossLink "Entities"}}{{/crossLink}} will be rendered
-             * to this ColorTarget. When inactive, the colors will be written to the default WebGL color buffer instead.
-             *
-             * Fires a {{#crossLink "ColorTarget/active:event"}}{{/crossLink}} event on change.
-             *
-             * @property active
-             * @default true
-             * @type Number
-             */
-            active: {
-
-                set: function (value) {
-
-                    value = value !== false;
-
-                    if (this._active === value) {
-                        return;
-                    }
-
-                    var state = this._state;
-                    this._active = value;
-
-                    if (this._active) {
-
-                        var canvas = this.scene.canvas;
-
-                        state.renderBuf = new xeogl.renderer.webgl.RenderBuffer({
-                            canvas: canvas.canvas,
-                            gl: canvas.gl,
-                            size: this._size
-                        });
-
-                        this._renderer.imageDirty = true;
-
-                    } else {
-
-                        if (state.renderBuf) {
-                            state.renderBuf.destroy();
-                            state.renderBuf = null;
-                        }
-                    }
-
-                    /**
-                     Fired whenever this ColorTarget's {{#crossLink "ColorTarget/active:property"}}{{/crossLink}} property changes.
-
-                     @event active
-                     @param value {Boolean} The property's new value
-                     */
-                    this.fire("active", this._active);
-                },
-
-                get: function () {
-                    return this._active;
-                }
-            }
-        },
-
-        _compile: function () {
-            this._renderer.colorTarget = this._state;
-        },
-
-        _getJSON: function () {
-
-            var json = {
-                active: this._active
-            };
-
-            if (this._size) {
-                json.size = this._size
-            }
-
-            return json;
-        },
-
-        _destroy: function () {
-
-            this.scene.canvas.off(this._webglContextRestored);
-
-            if (this._state.renderBuf) {
-                this._state.renderBuf.destroy();
-            }
-
-            this._state.destroy();
-        }
-    });
-
-})();
-;/**
- A **DepthTarget** is a  <a href="http://en.wikipedia.org/wiki/Render_Target" target="other">render target</a>  that
- captures the depths of the pixels rendered for the attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
-
- * DepthTargets are typically used when *rendering-to-texture*.
- * A DepthTarget provides the pixel depths as a dynamic color-encoded image that may be fed into {{#crossLink "Texture"}}Textures{{/crossLink}}.
- * DepthTarget is not to be confused with {{#crossLink "DepthBuf"}}DepthBuf{{/crossLink}}, which configures ***how*** the pixel depths are written with respect to the WebGL depth buffer.
- * Use {{#crossLink "Stage"}}Stages{{/crossLink}} when you need to ensure that a DepthTarget is rendered before
- the {{#crossLink "Texture"}}Textures{{/crossLink}} that consume it.
- * For special effects, we often use DepthTargets and {{#crossLink "Texture"}}Textures{{/crossLink}} in combination
- with {{#crossLink "DepthTarget"}}DepthTargets{{/crossLink}} and {{#crossLink "Shader"}}Shaders{{/crossLink}}.
-
- <img src="../../../assets/images/DepthTarget.png"></img>
-
- ## Usage
-
- This example contains an {{#crossLink "Entity"}}{{/crossLink}} that renders its (RBGA-encoded) pixel depths to a DepthTarget, which is then
- piped into a {{#crossLink "Texture"}}{{/crossLink}} that's applied to a second {{#crossLink "Entity"}}{{/crossLink}}.
-
- ````javascript
- var depthTarget = new xeogl.DepthTarget();
-
- // First Entity renders to the DepthTarget
-
- var entity1 = new xeogl.Entity({
-    geometry: new xeogl.BoxGeometry(),
-    depthTarget: depthTarget
- });
-
- // Second Entity is textured with the image of the first Entity
-
- var entity2 = new xeogl.Entity({
-     geometry: new xeogl.BoxGeometry()
-     material: new xeogl.PhongMaterial({
-         diffuseMap: new xeogl.Texture({
-            target: depthTarget
-         })
-     })
- });
- ````
-
- @module xeogl
- @submodule rendering
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this DepthTarget within the
- default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} DepthTarget configuration
- @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this DepthTarget.
- @param [cfg.active=true] {Boolean} Indicates if this DepthTarget is active or not.
-
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    xeogl.DepthTarget = xeogl.Component.extend({
-
-        type: "xeogl.DepthTarget",
-
-        _init: function (cfg) {
-
-            this._state = new xeogl.renderer.RenderTarget({
-                type: xeogl.renderer.RenderTarget.DEPTH,
-                renderBuf: null
-            });
-
-            var canvas = this.scene.canvas;
-            var self = this;
-
-            this._webglContextRestored = canvas.on("webglContextRestored",
-                function () {
-                    if (self._state.renderBuf) {
-                        self._state.renderBuf.webglRestored(canvas.gl);
-                    }
-                });
-
-            this.active = cfg.active;
-        },
-
-        _props: {
-
-            /**
-             * Indicates whether this DepthTarget is active or not.
-             *
-             * When active, the pixel depths of associated {{#crossLink "Entities"}}{{/crossLink}} will be rendered
-             * to this DepthTarget. When inactive, the colors will be written to the default WebGL depth buffer instead.
-             *
-             * Fires a {{#crossLink "DepthTarget/active:event"}}{{/crossLink}} event on change.
-             *
-             * @property active
-             * @default true
-             * @type Number
-             */
-            active: {
-
-                set: function (value) {
-
-                    value = value !== false;
-
-                    if (this._active === value) {
-                        return;
-                    }
-
-                    this._active = value;
-                    var state = this._state;
-
-                    if (this._active) {
-
-                        var canvas = this.scene.canvas;
-
-                        state.renderBuf = new xeogl.renderer.webgl.RenderBuffer({
-                            canvas: canvas.canvas,
-                            gl: canvas.gl
-                        });
-
-                        this._renderer.imageDirty = true;
-
-
-                    } else {
-                        if (state.renderBuf) {
-                            state.renderBuf.destroy();
-                            state.renderBuf = null;
-                        }
-                    }
-
-                    /**
-                     Fired whenever this DepthTarget's {{#crossLink "DepthTarget/active:property"}}{{/crossLink}} property changes.
-
-                     @event active
-                     @param value {Boolean} The property's new value
-                     */
-                    this.fire("active", this._active);
-                },
-
-                get: function () {
-                    return this._active;
-                }
-            }
-        },
-
-        _compile: function () {
-            this._renderer.depthTarget = this._state;
-        },
-
-        _getJSON: function () {
-            return {
-                active: this._active
-            };
-        },
-
-        _destroy: function () {
-
-            this.scene.canvas.off(this._webglContextRestored);
-
-            if (this._state.renderBuf) {
-                this._state.renderBuf.destroy();
-            }
-
-            this._state.destroy();
-        }
-    });
-
-})();
-;/**
  A **Modes** toggles various xeogl modes and capabilities for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Overview
@@ -39927,7 +38514,8 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
     clippable true,             // Enable effect of xeogl.Clip components
     transparent : false,        // Disable transparency
     backfaces : true,           // Render backfaces
-    frontface : "ccw"
+    frontface : "ccw",          // Front faces have counter-clockwise vertex winding
+    outline: false              // Don't outline for emphasis
  });
 
  var boxGeometry = new xeogl.BoxGeometry();
@@ -39972,6 +38560,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  {{#crossLink "Entity"}}Entities{{/crossLink}} are things like helpers or indicators that should not be included in boundary calculations.
  @param [cfg.castShadow=true] {Boolean} Whether attached {{#crossLink "Entity"}}Entities{{/crossLink}} cast shadows.
  @param [cfg.receiveShadow=true] {Boolean} Whether attached {{#crossLink "Entity"}}Entities{{/crossLink}} receive shadows.
+ @param [cfg.outline=false] {Boolean} Whether an outline is drawn around the attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
  @extends Component
  */
 (function () {
@@ -39993,6 +38582,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                 collidable: null,
                 castShadow: null,
                 receiveShadow: null,
+                outline: null,
                 hash: ""
             });
 
@@ -40004,6 +38594,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             this.collidable = cfg.collidable;
             this.castShadow = cfg.castShadow;
             this.receiveShadow = cfg.receiveShadow;
+            this.outline = cfg.outline;
         },
 
         _props: {
@@ -40114,7 +38705,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                     this._state.transparent = value;
 
-                    this._renderer.stateOrderDirty = true;
+                    this._renderer.imageDirty = true;
 
                     /**
                      Fired whenever this Modes' {{#crossLink "Modes/transparent:property"}}{{/crossLink}} property changes.
@@ -40327,6 +38918,43 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                 get: function () {
                     return this._state.receiveShadow;
                 }
+            },
+
+            /**
+             Whether an outline is drawn around attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+             Fires a {{#crossLink "Modes/outline:event"}}{{/crossLink}} event on change.
+
+             @property outline
+             @default false
+             @type Boolean
+             */
+            outline: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    if (value === this._state.outline) {
+                        return;
+                    }
+
+                    this._state.outline = value;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this Modes' {{#crossLink "Modes/outline:property"}}{{/crossLink}} property changes.
+
+                     @event outline
+                     @param value The property's new value
+                     */
+                    this.fire("outline", this._state.outline);
+                },
+
+                get: function () {
+                    return this._state.outline;
+                }
             }
         },
 
@@ -40343,7 +38971,8 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                 frontface: this._state.frontface,
                 collidable: this._state.collidable,
                 castShadow: this._state.castShadow,
-                receiveShadow: this._state.receiveShadow
+                receiveShadow: this._state.receiveShadow,
+                outline: this._state.outline
             };
         },
 
@@ -40561,756 +39190,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
 })();
 ;/**
- A **Stage** is a bin of {{#crossLink "Entity"}}Entities{{/crossLink}} that is rendered in a specified priority with respect to
- other Stages in the same {{#crossLink "Scene"}}{{/crossLink}}.
-
- ## Overview
-
- * When the parent {{#crossLink "Scene"}}Scene{{/crossLink}} renders, each Stage renders its bin
- of {{#crossLink "Entity"}}Entities{{/crossLink}} in turn, from the lowest priority Stage to the highest.
- * Stages are typically used for ordering the render-to-texture steps in posteffects pipelines.
- * You can control the render order of the individual {{#crossLink "Entity"}}Entities{{/crossLink}} ***within*** a Stage
- by associating them with {{#crossLink "Layer"}}Layers{{/crossLink}}.
- * {{#crossLink "Layer"}}Layers{{/crossLink}} are typically used to <a href="https://www.opengl.org/wiki/Transparency_Sorting" target="_other">transparency-sort</a> the
- {{#crossLink "Entity"}}Entities{{/crossLink}} within Stages.
- * {{#crossLink "Entity"}}Entities{{/crossLink}} not explicitly attached to a Stage are implicitly
- attached to the {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
- {{#crossLink "Scene/stage:property"}}stage{{/crossLink}}. which has
- a {{#crossLink "Stage/priority:property"}}{{/crossLink}} value of zero.
-
- <img src="../../../assets/images/Stage.png"></img>
-
- ## Examples
-
- * [Procedural texture using RTT](../../examples/#materials_texture_procedural)
-
- ## Usage
-
- In this example we're performing render-to-texture using {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} and
- {{#crossLink "Texture"}}{{/crossLink}} components.
-
- The first Entity renders its fragment colors to a {{#crossLink "ColorTarget"}}{{/crossLink}}, which is piped into a
- {{#crossLink "Texture"}}{{/crossLink}} that's applied to a second {{#crossLink "Entity"}}{{/crossLink}}. To ensure
- that the {{#crossLink "ColorTarget"}}{{/crossLink}} is rendered ***before*** the {{#crossLink "Texture"}}{{/crossLink}}
- that consumes it, we've attached each {{#crossLink "Entity"}}{{/crossLink}} to a prioritized {{#crossLink "Stage"}}{{/crossLink}}.
-
- ````javascript
- // First stage: an Entity that renders to a ColorTarget
- var entity1 = new xeogl.Entity({
-    stage: new xeogl.Stage({
-        priority: 0
-    }),
-    geometry: new xeogl.BoxGeometry(),
-    colorTarget: new xeogl.ColorTarget()
- });
-
- // Second stage: an Entity with a Texture that sources from the ColorTarget
- var entity2 = new xeogl.Entity({
-    stage: new xeogl.Stage( {
-        priority: 1
-    }),
-    material: new xeogl.PhongMaterial({
-        diffuseMap: new xeogl.Texture({
-            target: entity1.colorTarget
-        })
-    }),
-    geometry: new xeogl.BoxGeometry()
- });
- ````
-
- @class Stage
- @module xeogl
- @submodule rendering
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Stage in the default
- {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Stage.
- @param [cfg.priority=0] {Number} The rendering priority for the attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
- @param [cfg.pickable=true] {Boolean} Indicates whether attached {{#crossLink "Entity"}}Entities{{/crossLink}} are pickable.
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    xeogl.Stage = xeogl.Component.extend({
-
-        type: "xeogl.Stage",
-
-        _init: function (cfg) {
-
-            this._state = new xeogl.renderer.Stage({
-                priority: null,
-                pickable: true
-            });
-
-            this.priority = cfg.priority;
-            this.pickable = cfg.pickable;
-        },
-
-        _props: {
-
-            priority: {
-
-                /**
-                 * Indicates the rendering priority for the
-                 * {{#crossLink "Entity"}}Entities{{/crossLink}} in
-                 * this Stage.
-                 *
-                 * Fires a {{#crossLink "Stage/priority:event"}}{{/crossLink}}
-                 * event on change.
-                 *
-                 * @property priority
-                 * @default 0
-                 * @type Number
-                 */
-                set: function (value) {
-
-                    value = value || 0;
-
-                    if (value === this._state.priority) {
-                        return;
-                    }
-
-                    value = Math.round(value);
-
-                    this._state.priority = value;
-
-                    this._renderer.stateOrderDirty = true;
-
-                    /**
-                     * Fired whenever this Stage's
-                     * {{#crossLink "Stage/priority:property"}}{{/crossLink}}
-                     * property changes.
-                     *
-                     * @event priority
-                     * @param value The property's new value
-                     */
-                    this.fire("priority", this._state.priority);
-                },
-
-                get: function () {
-                    return this._state.priority;
-                }
-            },
-
-            /**
-             * Indicates whether the attached
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} are
-             * pickable (see {{#crossLink "Canvas/pick:method"}}Canvas#pick{{/crossLink}}).
-             *
-             * Fires a {{#crossLink "Stage/pickable:event"}}{{/crossLink}} event on change.
-             *
-             * @property pickable
-             * @default true
-             * @type Boolean
-             */
-            pickable: {
-
-                set: function (value) {
-
-                    value = value !== false;
-
-                    if (this._state.pickable === value) {
-                        return;
-                    }
-
-                    this._state.pickable = value;
-
-                    // No need to trigger a render;
-                    // state is only used when picking
-
-                    /**
-                     * Fired whenever this Stage's
-                     * {{#crossLink "Stage/pickable:pickable"}}{{/crossLink}}
-                     * property changes.
-                     *
-                     * @event pickable
-                     * @param value The property's new value
-                     */
-                    this.fire("pickable", this._state.pickable);
-                },
-
-                get: function () {
-                    return this._state.pickable;
-                }
-            }
-        },
-
-        _compile: function () {
-            this._renderer.stage = this._state;
-        },
-
-        _getJSON: function () {
-            return {
-                priority: this.priority,
-                pickable: this.pickable
-            };
-        },
-
-        _destroy: function () {
-            this._state.destroy();
-        }
-    });
-
-})();
-;/**
- * Components to define custom shaders.
- *
- * @module xeogl
- * @submodule shaders
- */;/**
- A **Shader** specifies a custom GLSL shader to apply when rendering attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
-
-
- * Normally you would rely on xeogl to automatically generate shaders for you, however the Shader component allows you to author them manually.
- * You can use xeogl's reserved uniform and variable names in your Shaders to read all the WebGL state that's set by other
- components on the attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
- * Use Shaders in combination with {{#crossLink "ShaderParams"}}ShaderParams{{/crossLink}} components when you need to share
- the same Shaders among multiple {{#crossLink "Entity"}}Entities{{/crossLink}} while setting the Shaders' uniforms
- differently for each {{#crossLink "Entity"}}Entity{{/crossLink}}.
- * Use {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}}, {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}}
- and {{#crossLink "Texture"}}Texture{{/crossLink}} components to connect the output of one Shader as input into another Shader.
-
-
- <img src="../../../assets/images/Shader.png"></img>
-
- ## Usage
-
- This example shows the simplest way to use a Shader, where we're just going to render a ripply water
- pattern to a screen-aligned quad.
-
- <img src="../../assets/images/shaderExample1.png"></img>
-
- In our scene definition, we have an  {{#crossLink "Entity"}}Entity{{/crossLink}} that has a {{#crossLink "Geometry"}}Geometry{{/crossLink}} that is our
- screen-aligned quad, plus a Shader that will render the fragments of that quad with our rippling water pattern.
- Finally, we animate the rippling by periodically updating the Shader's "time" uniform.
-
- ````javascript
- // Shader that's used by our Entity. Note the 'position' and 'uv attributes',
- // which will receive the positions and UVs from the Geometry. Also note the 'time'
- // uniform, which we'll be animating via Shader#setUniforms.
-
- var shader = new xeogl.Shader({
-
-    // Vertex shading stage
-    vertex: [
-        "attribute vec3 position;",
-        "attribute vec2 uv;",
-        "varying vec2 vUv;",
-        "void main () {",
-        "    gl_Position = vec4(position, 1.0);",
-        "    vUv = uv;",
-        "}"
-    ],
-
-    // Fragment shading stage
-    fragment: [
-        "precision mediump float;",
-
-        "uniform float time;",
-        "varying vec2 vUv;",
-
-        "void main( void ) {",
-        "    vec2 sp = vUv;",
-        "    vec2 p = sp*5.0 - vec2(10.0);",
-        "    vec2 i = p;",
-        "    float c = 1.0;",
-        "    float inten = 0.10;",
-        "    for (int n = 0; n < 10; n++) {",
-        "        float t = time * (1.0 - (3.0 / float(n+1)));",
-        "        i = p + vec2(cos(t - i.x) + sin(t + i.y), sin(t - i.y) + cos(t + i.x));",
-        "        c += 1.0/length(vec2(p.x / (sin(i.x+t)/inten),p.y / (cos(i.y+t)/inten)));",
-        "    }",
-        "    c /= float(10);",
-        "    c = 1.5-sqrt(c);",
-        "    gl_FragColor = vec4(vec3(c*c*c*c), 999.0) + vec4(0.0, 0.3, 0.5, 1.0);",
-        "}"
-    ],
-
-    // Initial value for the 'time' uniform in the fragment stage.
-    uniforms: {
-        time: 0.0
-    }
- });
-
- // A screen-aligned quad
- var quad = new xeogl.Geometry({
-    primitive:"triangles",
-    positions:[ 1, 1, 0, -1, 1, 0, -1, -1, 0, 1, -1, 0 ],
-    normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],
-    uv:[ 1, 1, 0, 1, 0, 0, 1, 0 ],
-    indices:[ 0, 1, 2, 0, 2, 3 ]
- });
-
- var entity = new xeogl.Entity(scene, {
-    shader: shader,
-    geometry: quad
- });
-
- ````
- Now let's animate the "time" parameter on the Shader, to make the water ripple:
-
- ```` javascript
- entity.scene.on("tick", function(e) {
-     shader.setUniforms({
-         time: e.timeElapsed
-     });
- });
- ````
-
- ## <a name="inputs">Shader Inputs</a>
-
- xeogl provides the following inputs for your shaders (work in progress).
-
- #### Attributes
-
- *Attributes are used only in vertex shaders*
-
- | Attribute  | Description | Depends on  |
- |---|---|
- | attribute vec3 position   | Geometry vertex positions | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}} |
- | attribute vec2 uv         | Geometry vertex UV coordinates | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/uv:property"}}{{/crossLink}}  |
- | attribute vec3 normal     | Geometry vertex normals | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/normals:property"}}{{/crossLink}}  |
- | attribute vec4 color      | Geometry vertex colors  | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/colors:property"}}{{/crossLink}}  |
- | attribute vec4 tangent    | Geometry vertex tangents, for normal mapping | {{#crossLink "Geometry"}}Geometry{{/crossLink}} {{#crossLink "Geometry/normals:property"}}{{/crossLink}} and {{#crossLink "Geometry/uv:property"}}{{/crossLink}}  |
-
- #### Uniforms
-
- *Uniforms are used in vertex and fragment shaders*
-
- | Uniform  | Description | Depends on  |
- |---|---|
- | uniform mat4  modelMatrix                                   | Modelling transform matrix | {{#crossLink "Transform"}}{{/crossLink}} |
- | uniform mat4  modelNormalMatrix                             | Modelling transform normal matrix | {{#crossLink "Geometry/normals:property"}}Geometry normals{{/crossLink}} and {{#crossLink "Transform"}}{{/crossLink}} |
- | uniform mat4  viewMatrix                                    | View transform matrix | {{#crossLink "Lookat"}}Lookat{{/crossLink}} |
- | uniform mat4  viewNormalMatrix                              | View transform normal matrix | {{#crossLink "Geometry/normals:property"}}Geometry normals{{/crossLink}} and {{#crossLink "Lookat"}}Lookat{{/crossLink}} |
- | uniform mat4  xeo_uProjMatrix                                    | Projection transform matrix | {{#crossLink "Ortho"}}Ortho{{/crossLink}}, {{#crossLink "Frustum"}}Frustum{{/crossLink}} or {{#crossLink "Perspective"}}Perspective{{/crossLink}} |
- | uniform float xeo_uZNear                                         | Near clipping plane |{{#crossLink "Ortho"}}Ortho{{/crossLink}}, {{#crossLink "Frustum"}}Frustum{{/crossLink}} or {{#crossLink "Perspective"}}Perspective{{/crossLink}} |
- | uniform float xeo_uZFar                                          | Far clipping plane |{{#crossLink "Ortho"}}Ortho{{/crossLink}}, {{#crossLink "Frustum"}}Frustum{{/crossLink}} or {{#crossLink "Perspective"}}Perspective{{/crossLink}} |
- |---|---|
- | uniform vec3  xeo_uLightAmbientColor                             | Color of the first {{#crossLink "AmbientLight"}}{{/crossLink}} in {{#crossLink "Lights"}}{{/crossLink}}| {{#crossLink "AmbientLight"}}{{/crossLink}} |
- | uniform vec3 xeo_uLightColor&lt;***N***&gt;                    | Diffuse color of {{#crossLink "DirLight"}}{{/crossLink}} or {{#crossLink "PointLight"}}{{/crossLink}} at index ***N*** in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "DirLight"}}{{/crossLink}} or {{#crossLink "PointLight"}}{{/crossLink}} |
- | uniform vec3 xeo_uLightIntensity&lt;***N***&gt;                   | Specular color of {{#crossLink "DirLight"}}{{/crossLink}} or {{#crossLink "PointLight"}}{{/crossLink}} at index ***N*** in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "DirLight"}}{{/crossLink}} or {{#crossLink "PointLight"}}{{/crossLink}} |
- | uniform vec3 xeo_uLightDir&lt;***N***&gt;                        | Direction of {{#crossLink "DirLight"}}{{/crossLink}} at index ***N*** in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "DirLight"}}{{/crossLink}} |
- | uniform vec3 xeo_uLightPos&lt;***N***&gt;                        | Position of {{#crossLink "PointLight"}}{{/crossLink}} at index ***N*** in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "PointLight"}}{{/crossLink}} |
- | uniform vec3 xeo_uLightConstantAttenuation&lt;***N***&gt;        | Constant attenuation factor for {{#crossLink "PointLight"}}{{/crossLink}} at index ***N*** in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "PointLight"}}{{/crossLink}} |
- | uniform vec3 xeo_uLightLinearAttenuation&lt;***N***&gt;          | Linear attenuation factor for {{#crossLink "PointLight"}}{{/crossLink}} at index ***N*** in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "PointLight"}}{{/crossLink}} |
- | uniform vec3 xeo_uLightQuadraticAttenuation&lt;***N***&gt;       | Quadratic attenuation factor for {{#crossLink "PointLight"}}{{/crossLink}} at index ***N*** in {{#crossLink "Lights"}}{{/crossLink}} | {{#crossLink "PointLight"}}{{/crossLink}} |
- |---|---|
- | uniform vec3 materialDiffuse;       |  | {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} |
- | uniform vec3 materialSpecular;       |  | {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}} |
- | uniform vec3 materialEmissive;       |  | {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}} |
- | uniform float materialOpacity;       |  | {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} |
- | uniform float materialShininess;       |  | {{#crossLink "PhongMaterial/shininess:property"}}{{/crossLink}} |
-
- #### Varying
-
- *Varying types are used in fragment shaders*
-
- | Varying | Description | Depends on  |
- |---|---|---|
- | varying vec4 xeo_vWorldPosition | |
- | varying vec4 xeo_vViewPosition | |
- | varying vec4 xeo_vColor | |
-
- #### Samplers
-
- *Samplers are used in fragment shaders*
-
- | Varying | Description | Depends on  |
- |---|---|---|
-
- @class Shader
- @module xeogl
- @submodule shaders
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Shader in the default
- {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Shader.
- @param [cfg.vertex=null] {String} GLSL Depends on code for the vertex shading staging.
- @param [cfg.fragment=null] {String} GLSL source code for the fragment shading staging.
- @param [cfg.uniforms={}] {Object} Values for uniforms defined in the vertex and/or fragment stages.
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    xeogl.Shader = xeogl.Component.extend({
-
-        type: "xeogl.Shader",
-
-        _init: function (cfg) {
-
-            this._state = new xeogl.renderer.Shader({
-                vertex: null,
-                fragment: null,
-                uniforms: {}
-            });
-
-            this.vertex = cfg.vertex;
-
-            this.fragment = cfg.fragment;
-
-            this.setUniforms(cfg.uniforms);
-        },
-
-        _props: {
-
-            /**
-             * GLSL source code for this Shader's vertex stage.
-             *
-             * Fires a {{#crossLink "Shader/vertex:event"}}{{/crossLink}} event on change.
-             *
-             * @property vertex
-             * @default null
-             * @type String
-             */
-            vertex: {
-
-                set: function (value) {
-
-                    this._state.vertex = value;
-
-                    this.fire("dirty", true);
-
-                    /**
-                     * Fired whenever this Shader's {{#crossLink "Shader/vertex:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event vertex
-                     * @param value The property's new value
-                     */
-                    this.fire("vertex", this._state.vertex);
-                },
-
-                get: function () {
-                    return this._state.vertex;
-                }
-            },
-
-            /**
-             * GLSL source code for this Shader's fragment stage.
-             *
-             * Fires a {{#crossLink "Shader/fragment:event"}}{{/crossLink}} event on change.
-             *
-             * @property fragment
-             * @default null
-             * @type String
-             */
-            fragment: {
-
-                set: function (value) {
-
-                    this._state.fragment = value;
-
-                    this.fire("dirty", true);
-
-                    /**
-                     * Fired whenever this Shader's {{#crossLink "Shader/fragment:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event fragment
-                     * @param value The property's new value
-                     */
-                    this.fire("fragment", this._state.fragment);
-                },
-
-                get: function () {
-                    return this._state.fragment;
-                }
-            },
-
-            /**
-             * Uniforms for this Shader.
-             *
-             * Fires a {{#crossLink "Shader/uniforms:event"}}{{/crossLink}} event on change.
-             *
-             * @property uniforms
-             * @default {}
-             * @type {}
-             */
-            uniforms: {
-
-                get: function () {
-                    return this._state.uniforms;
-                }
-            }
-        },
-
-        /**
-         * Sets one or more uniforms for this Shader.
-         *
-         * These will be individually overridden by any {{#crossLink "ShaderParams/setUniforms:method"}}uniforms subsequently specified{{/crossLink}} on
-         * {{#crossLink "ShaderParams"}}ShaderParams{{/crossLink}} on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
-         *
-         * Fires a {{#crossLink "Shader/uniforms:event"}}{{/crossLink}} event on change.
-         *
-         * @method setUniforms
-         * @param {} [uniforms={}] Values for uniforms to set on this Shader, keyed to their names.
-         */
-        setUniforms: function (uniforms) {
-
-            for (var name in uniforms) {
-                if (uniforms.hasOwnProperty(name)) {
-                    this._state.uniforms[name] = uniforms[name];
-                }
-            }
-
-            this._renderer.imageDirty = true;
-
-            /**
-             * Fired whenever this Shader's  {{#crossLink "Shader/uniforms:property"}}{{/crossLink}}
-             * property has been updated.
-             *
-             * @event uniforms
-             * @param value The property's new value
-             */
-            this.fire("uniforms", this._state.uniforms);
-        },
-
-        _compile: function () {
-            this._renderer.shader = this._state;
-        },
-
-        _getJSON: function () {
-
-            var json = {
-                uniforms: this._state.uniforms
-            };
-
-            if (this._state.vertex) {
-                json.vertex = this._state.vertex;
-            }
-
-            if (this._state.fragment) {
-                json.fragment = this._state.fragment;
-            }
-
-            return json;
-        }
-    });
-
-})();
-;/**
- A **ShaderParams** sets uniform values for {{#crossLink "Shader"}}Shaders{{/crossLink}} on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
-
-
- * Use ShaderParams components when you need to share the same {{#crossLink "Shader"}}Shaders{{/crossLink}} among multiple {{#crossLink "Entity"}}Entities{{/crossLink}},
- while setting the {{#crossLink "Shader"}}Shaders{{/crossLink}}' uniforms differently for each {{#crossLink "Entity"}}Entity{{/crossLink}}.
-
-
- <img src="../../../assets/images/ShaderParams.png"></img>
-
- ## Usage
-
- In this example we'll create the effect shown below, in which we render a rippling water pattern to the left and right halves
- of the canvas, independently. We'll have a {{#crossLink "Shader"}}{{/crossLink}} that creates the water pattern, which
- we'll share between two {{#crossLink "Entity"}}Entities{{/crossLink}}.
- Each {{#crossLink "Entity"}}{{/crossLink}} will have its own screen-aligned quad {{#crossLink "Geometry"}}{{/crossLink}},
- as well its own {{#crossLink "ShaderParams"}}{{/crossLink}} to update the update the {{#crossLink "Shader"}}{{/crossLink}}'s
- rippling rate independently.
-
- <img src="../../assets/images/shaderParamsExample1.png"></img>
-
- ````javascript
- // Shader that's shared by both our Entities. Note the 'xeo_aPosition' and 'xeo_aUV attributes',
- // which will receive the positions and UVs from the Geometry components. Also note the 'time'
- // uniform, which we'll be animating via the ShaderParams components.
-
- var shader = new xeogl.Shader({
-
-    // Vertex shading stage
-    vertex: [
-        "attribute vec3 xeo_aPosition;",
-        "attribute vec2 xeo_aUV;",
-        "varying vec2 vUv;",
-        "void main () {",
-        "    gl_Position = vec4(xeo_aPosition, 1.0);",
-        "    vUv = xeo_aUV;",
-        "}"
-    ],
-
-    // Fragment shading stage
-    fragment: [
-        "precision mediump float;",
-
-        "uniform float time;",
-        "varying vec2 vUv;",
-
-        "void main( void ) {",
-        "    vec2 sp = vUv;",
-        "    vec2 p = sp*5.0 - vec2(10.0);",
-        "    vec2 i = p;",
-        "    float c = 1.0;",
-        "    float inten = 0.10;",
-        "    for (int n = 0; n < 10; n++) {",
-        "        float t = time * (1.0 - (3.0 / float(n+1)));",
-        "        i = p + vec2(cos(t - i.x) + sin(t + i.y), sin(t - i.y) + cos(t + i.x));",
-        "        c += 1.0/length(vec2(p.x / (sin(i.x+t)/inten),p.y / (cos(i.y+t)/inten)));",
-        "    }",
-        "    c /= float(10);",
-        "    c = 1.5-sqrt(c);",
-        "    gl_FragColor = vec4(vec3(c*c*c*c), 999.0) + vec4(0.0, 0.3, 0.5, 1.0);",
-        "}"
-    ],
-
-    // Initial values for the 'time' uniform in the fragment stage.
-    uniforms: {
-        time: 0.0
-    }
- });
-
- // First Entity using our Shader, with a quad covering the left half of the canvas,
- // along with its own ShaderParams to independently set its own values for the Shader's uniforms.
-
- var entity1 = new xeogl.Entity({
-    shader: shader,
-    geometry: new xeogl.Geometry({
-        primitive:"triangles",
-        positions:[ 1, 1, 0, 0, 1, 0, 0, -1, 0, 1, -1, 0 ],
-        normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],
-        uv:[ 1, 1, 0, 1, 0, 0, 1, 0 ],
-        indices:[ 0, 1, 2, 0, 2, 3 ]
-    }),
-    shaderParams1: new xeogl.ShaderParams({
-        uniforms: {
-            time: 0.0
-        }
-    })
- });
-
- // Second Entity using the Shader, with a quad covering the right half of the canvas,
- // along with its own ShaderParams to independently set its own values for the Shader's uniforms.
-
- var entity2 = new xeogl.Entity({
-    shader: shader,
-    geometry: new xeogl.Geometry({
-        primitive:"triangles",
-        positions:[ 1, 1, 0, 0, 1, 0, 0, -1, 0, 1, -1, 0 ],
-        normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],
-        uv:[ 1, 1, 0, 1, 0, 0, 1, 0 ],
-        indices:[ 0, 1, 2, 0, 2, 3 ]
-    }),
-    shaderParams: new xeogl.ShaderParams({
-        uniforms: {
-            time: 0.0
-        }
-    })
- });
- ````
- Now let's animate the "time" parameter on the Shader, for each Entity independently:
-
- ```` javascript
- // Get the default Scene off the first Entity
- var scene = entity1.scene;
-
- scene.on("tick", function(e) {
-
-    entity1.shaderParams.setUniforms({
-        time: e.timeElapsed
-    });
-
-    entity2.shaderParams.setUniforms({
-        time: e.timeElapsed  * 0.5
-    });
-});
- ````
- @class ShaderParams
- @module xeogl
- @submodule shaders
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this ShaderParams in the default
- {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ShaderParams.
- @param [cfg.uniforms={}] {Object} The {{#crossLink "Shader"}}Shader{{/crossLink}} parameter values.
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    xeogl.ShaderParams = xeogl.Component.extend({
-
-        type: "xeogl.ShaderParams",
-
-        _init: function (cfg) {
-
-            this._state = new xeogl.renderer.ShaderParams({
-                uniforms: {}
-            });
-
-            this.setUniforms(cfg.uniforms);
-        },
-
-        _props: {
-            
-            /**
-             * Uniforms for {{#crossLink "Shader"}}Shaders{{/crossLink}} on attached
-             * {{#crossLink "Entity"}}Entities{{/crossLink}}.
-             *
-             * Fires a {{#crossLink "Shader/uniforms:event"}}{{/crossLink}} event on change.
-             *
-             * @property uniforms
-             * @default {}
-             * @type {}
-             */
-            uniforms: {
-
-                get: function () {
-                    return this._state.uniforms;
-                }
-            }
-        },
-
-        /**
-         * Sets one or more uniforms for {{#crossLink "Shader"}}Shaders{{/crossLink}} on attached
-         * {{#crossLink "Entity"}}Entities{{/crossLink}}.
-         *
-         * These will individually override any uniforms of the same names that are {{#crossLink "Shader/setUniforms:method"}}already specified{{/crossLink}} on
-         * those {{#crossLink "Shader"}}Shaders{{/crossLink}}.
-         *
-         * Fires a {{#crossLink "ShaderParams/uniforms:event"}}{{/crossLink}} event on change.
-         *
-         * @method setUniforms
-         * @param {} [uniforms={}] Values for uniforms to set on the {{#crossLink "Shader"}}Shaders{{/crossLink}}, keyed to their names.
-         */
-        setUniforms: function (uniforms) {
-
-            for (var name in uniforms) {
-                if (uniforms.hasOwnProperty(name)) {
-                    this._state.uniforms[name] = uniforms[name];
-                }
-            }
-
-            this._renderer.imageDirty = true;
-
-            /**
-             * Fired whenever this ShaderParams' {{#crossLink "ShaderParams/uniforms:property"}}{{/crossLink}} property has been updated.
-             * @event uniforms
-             * @param value The property's new value
-             */
-            this.fire("uniforms", this._state.uniforms);
-        },
-
-        _compile: function () {
-            this._renderer.shaderParams = this._state;
-        },
-
-        _getJSON: function () {
-            return {
-                uniforms: this._state.uniforms
-            };
-        }
-    });
-
-})();
-;/**
  * Components to support spatial queries (eg. collisions etc).
  *
  * @module xeogl
@@ -41489,7 +39368,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                 // Lazy-allocate
 
-                this._obb = math.OBB2();
+                this._obb = math.OBB3();
                 this._aabb = math.AABB2();
                 this._center = math.vec2();
             }
@@ -41529,7 +39408,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  * {{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}} - an axis-aligned box (AABB) in a six-element Float32Array
  containing the min/max extents of the axis-aligned volume, ie. ````[xmin,ymin,zmin,xmax,ymax,zmax]````,
  * {{#crossLink "Boundary3D/center:property"}}{{/crossLink}} - the center point as a three-element Float32Array containing elements ````[x,y,z]```` and
- * {{#crossLink "Boundary3D/sphere:property"}}{{/crossLink}} - a bounding sphere as a four-element Float32Array containing elements````[x,y,z,radius]````.
 
  As shown in the diagram below, the following xeogl components have Boundary3Ds:
 
@@ -41585,7 +39463,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         obb = worldBoundary.obb;
         aabb = worldBoundary.aabb;
         center = worldBoundary.center;
-        sphere = worldBoundary.sphere();
         //...
     });
 
@@ -41611,8 +39488,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Boundary3D.
  @param [cfg.obb] {Float32Array} Optional initial 3D object-aligned bounding volume (OBB).
  @param [cfg.aabb] {Float32Array} Optional initial 3D axis-aligned bounding volume (AABB).
- @param [cfg.center] {Float32Array} Optional initial 3D center
- @param [cfg.sphere] {Float32Array} Optional initial 3D bounding sphere.
+ @param [cfg.center] {Float32Array} Optional initial 3D center.
  @param [cfg.getDirty] {Function} Optional callback to check if parent component has new OBB, positions or transform matrix.
  @param [cfg.getOBB] {Function} Optional callback to get new OBB from parent.
  @param [cfg.getMatrix] {Function} Optional callback to get new transform matrix from parent.
@@ -41622,8 +39498,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
 /**
  * Fired whenever this Boundary3D's {{#crossLink "Boundary3D/obb:property"}}{{/crossLink}},
- * {{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}}, {{#crossLink "Boundary3D/sphere:property"}}{{/crossLink}}
- * or {{#crossLink "Boundary3D/center:property"}}{{/crossLink}} properties change.
+ * {{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}} or {{#crossLink "Boundary3D/center:property"}}{{/crossLink}} properties change.
  * @event updated
  */
 (function () {
@@ -41639,10 +39514,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             // Cached bounding boxes (oriented and axis-aligned)
             this._obb = cfg.obb || null;
             this._aabb = cfg.aabb || null;
-
-            // Cached bounding sphere
-            this._sphere = cfg.sphere || null;
-
+            
             // Cached center point
             this._center = cfg.center || null;
 
@@ -41720,32 +39592,10 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                     return this._center;
                 }
-            },
-
-            /**
-             * A spherical representation of this 3D boundary.
-             *
-             * The sphere is a four-element Float32Array containing the sphere center and
-             * radius, ie: ````[xcenter, ycenter, zcenter, radius ]````.
-             *
-             * @property sphere
-             * @final
-             * @type {Float32Array}
-             */
-            sphere: {
-
-                get: function () {
-
-                    if (this._getDirty()) {
-                        this._buildBoundary();
-                    }
-
-                    return this._sphere;
-                }
             }
         },
 
-        // Builds the obb, aabb, sphere and center.
+        // Builds the obb, aabb and center.
 
         _buildBoundary: function () {
 
@@ -41761,21 +39611,17 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                 this._aabb = xeogl.math.AABB3();
             }
 
-            if (!this._sphere) {
-                this._sphere = xeogl.math.vec4();
-            }
-
             if (!this._center) {
                 this._center = xeogl.math.vec3();
             }
-            
+
             var aabb = this._getAABB ? this._getAABB() : null;
 
             if (aabb) {
 
                 // Got AABB
 
-                // Derive OBB, sphere and center
+                // Derive OBB and center
 
                 this._aabb[0] = aabb[0];
                 this._aabb[1] = aabb[1];
@@ -41785,9 +39631,8 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                 this._aabb[5] = aabb[5];
 
                 math.AABB3ToOBB3(this._aabb, this._obb);
-                math.OBB3ToSphere3(this._obb, this._sphere);
-                math.getSphere3Center(this._sphere, this._center);
-                
+                math.getAABB3Center(this._aabb, this._center);
+
                 return;
             }
 
@@ -41807,14 +39652,12 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                     // Got transform matrix
 
-                    // Transform OBB by matrix, derive AABB, sphere and center
+                    // Transform OBB by matrix, derive AABB and center
 
                     math.positions3ToAABB3(positions, this._aabb);
                     math.AABB3ToOBB3(this._aabb, this._obb);
                     math.transformOBB3(matrix, this._obb);
-                    math.OBB3ToAABB3(this._obb, this._aabb);
-                    math.OBB3ToSphere3(this._obb, this._sphere);
-                    math.getSphere3Center(this._sphere, this._center);
+                    math.getAABB3Center(this._aabb, this._center);
 
                     return;
                 }
@@ -41823,9 +39666,8 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                 math.positions3ToAABB3(positions, this._aabb);
                 math.AABB3ToOBB3(this._aabb, this._obb);
-                math.OBB3ToSphere3(this._obb, this._sphere);
-                math.getSphere3Center(this._sphere, this._center);
-                
+                math.getAABB3Center(this._aabb, this._center);
+
                 return
             }
 
@@ -41845,8 +39687,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                     math.transformOBB3(matrix, obb, this._obb);
                     math.OBB3ToAABB3(this._obb, this._aabb);
-                    math.OBB3ToSphere3(this._obb, this._sphere);
-                    math.getSphere3Center(this._sphere, this._center);
+                    math.getAABB3Center(this._aabb, this._center);
 
                     return;
                 }
@@ -41860,8 +39701,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                 }
 
                 math.OBB3ToAABB3(this._obb, this._aabb);
-                math.OBB3ToSphere3(this._obb, this._sphere);
-                math.getSphere3Center(this._sphere, this._center);
+                math.getAABB3Center(this._aabb, this._center);
 
             }
         },
@@ -41871,8 +39711,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             return {
                 obb: vecToArray(this.obb),
                 aabb: vecToArray(this.aabb),
-                center: vecToArray(this.center),
-                sphere: vecToArray(this.sphere)
+                center: vecToArray(this.center)
             };
         }
     });

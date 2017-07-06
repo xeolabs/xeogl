@@ -49,7 +49,6 @@
                                 <li><a href="../classes/Billboard.html">Billboard</a></li>
                                 <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
-                                <li><a href="../classes/BoundingSphereGeometry.html">BoundingSphereGeometry</a></li>
                                 <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
                                 <li><a href="../classes/BuildableModel.html">BuildableModel</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
@@ -63,7 +62,6 @@
                                 <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
-                                <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
@@ -71,7 +69,6 @@
                                 <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
                                 <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
-                                <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
                                 <li><a href="../classes/Entity.html">Entity</a></li>
                                 <li><a href="../classes/Fog.html">Fog</a></li>
@@ -95,6 +92,7 @@
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
+                                <li><a href="../classes/Outline.html">Outline</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
@@ -110,8 +108,6 @@
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
-                                <li><a href="../classes/Shader.html">Shader</a></li>
-                                <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
                                 <li><a href="../classes/SpecularMaterial.html">SpecularMaterial</a></li>
@@ -120,7 +116,6 @@
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/SpotLight.html">SpotLight</a></li>
-                                <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
                                 <li><a href="../classes/Story.html">Story</a></li>
@@ -161,8 +156,8 @@
                                 <li><a href="..//modules/materials.html">materials</a></li>
                                 <li><a href="..//modules/math.html">math</a></li>
                                 <li><a href="..//modules/models.html">models</a></li>
+                                <li><a href="..//modules/outline.html">outline</a></li>
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
-                                <li><a href="..//modules/shaders.html">shaders</a></li>
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="..//modules/stories.html">stories</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
@@ -228,11 +223,6 @@
 property to the image file path.</li>
 <li>To create a Texture from an HTMLImageElement, set the Texture&#39;s <a href="../classes/Texture.html#property_image" class="crosslink">image</a>
 property to the HTMLImageElement.</li>
-<li>To render color images of <a href="../classes/Entity.html" class="crosslink">Entities</a> to a Texture, set the Texture&#39;s <a href="../classes/Texture.html#property_target" class="crosslink">target</a>
-property to a ColorTarget that is attached to those <a href="../classes/Entity.html" class="crosslink">Entities</a>.</li>
-<li>Similarly, to render depth images of <a href="../classes/Entity.html" class="crosslink">Entities</a> to a Texture, set the Texture&#39;s <a href="../classes/Texture.html#property_target" class="crosslink">target</a>
-property to a DepthTarget that is attached to those <a href="../classes/Entity.html" class="crosslink">Entities</a>.</li>
-<li>For special effects, we often use rendered Textures in combination with <a href="../classes/Shader.html" class="crosslink">Shaders</a> and <a href="../classes/Stage.html" class="crosslink">Stages</a>.</li>
 </ul>
 <p><img src="../../assets/images/Texture.png"></img></p>
 <h2 id="examples">Examples</h2>
@@ -396,18 +386,6 @@ colors directly provide the diffuse and specular components for each fragment ac
         
                                         <div class="param-description">
                                             <p>HTML Image object to load into this Texture. See the <a href="../classes/Texture.html#property_image" class="crosslink">image</a> property for more info.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[target=null]</code>
-                                            <span class="type">String | xeogl.ColorTarget | xeogl.DepthTarget</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Instance or ID of a ColorTarget or
-        DepthTarget to source this Texture from. See the <a href="../classes/Texture.html#property_target" class="crosslink">target</a> property for more info.</p>
         
                                         </div>
         
@@ -635,10 +613,6 @@ colors directly provide the diffuse and specular components for each fragment ac
 
                             </li>
                             <li class="index-item property">
-                                <a href="#property_target">target</a>
-
-                            </li>
-                            <li class="index-item property">
                                 <a href="#property_translate">translate</a>
 
                             </li>
@@ -700,10 +674,6 @@ colors directly provide the diffuse and specular components for each fragment ac
                             </li>
                             <li class="index-item event">
                                 <a href="#event_src">src</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_target">target</a>
 
                             </li>
                             <li class="index-item event">
@@ -1485,7 +1455,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_texture.js.html#l862"><code>src&#x2F;materials&#x2F;texture.js:862</code></a>
+                            <a href="../files/src_materials_texture.js.html#l744"><code>src&#x2F;materials&#x2F;texture.js:744</code></a>
                             </p>
                     
                     
@@ -1538,7 +1508,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_texture.js.html#l393"><code>src&#x2F;materials&#x2F;texture.js:393</code></a>
+                            <a href="../files/src_materials_texture.js.html#l341"><code>src&#x2F;materials&#x2F;texture.js:341</code></a>
                             </p>
                     
                     
@@ -1546,11 +1516,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Indicates an HTML DOM Image object to source this Texture from.</p>
-                    <p>Alternatively, you could indicate the source via either of properties
-                    <a href="../classes/Texture.html#property_src" class="crosslink">src</a> or <a href="../classes/Texture.html#property_target" class="crosslink">target</a>.</p>
                     <p>Fires an <a href="../classes/Texture.html#event_image" class="crosslink">image</a> event on change.</p>
-                    <p>Sets the <a href="../classes/Texture.html#property_src" class="crosslink">src</a> and
-                    <a href="../classes/Texture.html#property_target" class="crosslink">target</a> properties to null.</p>
+                    <p>Sets the <a href="../classes/Texture.html#property_src" class="crosslink">src</a> property to null.</p>
                     
                         </div>
                     
@@ -1620,7 +1587,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_texture.js.html#l708"><code>src&#x2F;materials&#x2F;texture.js:708</code></a>
+                            <a href="../files/src_materials_texture.js.html#l590"><code>src&#x2F;materials&#x2F;texture.js:590</code></a>
                             </p>
                     
                     
@@ -1677,7 +1644,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_texture.js.html#l631"><code>src&#x2F;materials&#x2F;texture.js:631</code></a>
+                            <a href="../files/src_materials_texture.js.html#l513"><code>src&#x2F;materials&#x2F;texture.js:513</code></a>
                             </p>
                     
                     
@@ -1731,7 +1698,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_texture.js.html#l594"><code>src&#x2F;materials&#x2F;texture.js:594</code></a>
+                            <a href="../files/src_materials_texture.js.html#l476"><code>src&#x2F;materials&#x2F;texture.js:476</code></a>
                             </p>
                     
                     
@@ -1758,7 +1725,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_texture.js.html#l563"><code>src&#x2F;materials&#x2F;texture.js:563</code></a>
+                            <a href="../files/src_materials_texture.js.html#l445"><code>src&#x2F;materials&#x2F;texture.js:445</code></a>
                             </p>
                     
                     
@@ -1811,7 +1778,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_texture.js.html#l434"><code>src&#x2F;materials&#x2F;texture.js:434</code></a>
+                            <a href="../files/src_materials_texture.js.html#l377"><code>src&#x2F;materials&#x2F;texture.js:377</code></a>
                             </p>
                     
                     
@@ -1819,11 +1786,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Indicates a path to an image file to source this Texture from.</p>
-                    <p>Alternatively, you could indicate the source via either of properties
-                    <a href="../classes/Texture.html#property_image" class="crosslink">image</a> or <a href="../classes/Texture.html#property_target" class="crosslink">target</a>.</p>
                     <p>Fires a <a href="../classes/Texture.html#event_src" class="crosslink">src</a> event on change.</p>
-                    <p>Sets the <a href="../classes/Texture.html#property_image" class="crosslink">image</a> and
-                    <a href="../classes/Texture.html#property_target" class="crosslink">target</a> properties to null.</p>
+                    <p>Sets the <a href="../classes/Texture.html#property_image" class="crosslink">image</a> property to null.</p>
                     
                         </div>
                     
@@ -1892,38 +1856,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_target" class="property item">
-                        <h3 class="name"><code>target</code></h3>
-                        <span class="type">String | xeogl.ColorTarget | xeogl.DepthTarget</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_texture.js.html#l476"><code>src&#x2F;materials&#x2F;texture.js:476</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Instance or ID of a ColorTarget or
-                    DepthTarget to source this Texture from.</p>
-                    <p>Alternatively, you could indicate the source via either of properties
-                    <a href="../classes/Texture.html#property_src" class="crosslink">src</a> or <a href="../classes/Texture.html#property_image" class="crosslink">image</a>.</p>
-                    <p>Fires a <a href="../classes/Texture.html#event_target" class="crosslink">target</a> event on change.</p>
-                    <p>Sets the <a href="../classes/Texture.html#property_src" class="crosslink">src</a> and
-                    <a href="../classes/Texture.html#property_image" class="crosslink">image</a> properties to null.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> null</p>
-                    
-                    
-                    </div>
                     <div id="property_translate" class="property item">
                         <h3 class="name"><code>translate</code></h3>
                         <span class="type">Array(Number)</span>
@@ -1935,7 +1867,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_texture.js.html#l532"><code>src&#x2F;materials&#x2F;texture.js:532</code></a>
+                            <a href="../files/src_materials_texture.js.html#l414"><code>src&#x2F;materials&#x2F;texture.js:414</code></a>
                             </p>
                     
                     
@@ -1991,7 +1923,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_texture.js.html#l758"><code>src&#x2F;materials&#x2F;texture.js:758</code></a>
+                            <a href="../files/src_materials_texture.js.html#l640"><code>src&#x2F;materials&#x2F;texture.js:640</code></a>
                             </p>
                     
                     
@@ -2025,7 +1957,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_texture.js.html#l810"><code>src&#x2F;materials&#x2F;texture.js:810</code></a>
+                            <a href="../files/src_materials_texture.js.html#l692"><code>src&#x2F;materials&#x2F;texture.js:692</code></a>
                             </p>
                     
                     
@@ -2090,7 +2022,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_texture.js.html#l886"><code>src&#x2F;materials&#x2F;texture.js:886</code></a>
+                            <a href="../files/src_materials_texture.js.html#l768"><code>src&#x2F;materials&#x2F;texture.js:768</code></a>
                             </p>
                     
                     
@@ -2132,7 +2064,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_texture.js.html#l421"><code>src&#x2F;materials&#x2F;texture.js:421</code></a>
+                            <a href="../files/src_materials_texture.js.html#l364"><code>src&#x2F;materials&#x2F;texture.js:364</code></a>
                             </p>
                     
                     
@@ -2174,7 +2106,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_texture.js.html#l348"><code>src&#x2F;materials&#x2F;texture.js:348</code></a>
+                            <a href="../files/src_materials_texture.js.html#l296"><code>src&#x2F;materials&#x2F;texture.js:296</code></a>
                             </p>
                     
                     
@@ -2216,7 +2148,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_texture.js.html#l355"><code>src&#x2F;materials&#x2F;texture.js:355</code></a>
+                            <a href="../files/src_materials_texture.js.html#l303"><code>src&#x2F;materials&#x2F;texture.js:303</code></a>
                             </p>
                     
                     
@@ -2259,7 +2191,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_texture.js.html#l745"><code>src&#x2F;materials&#x2F;texture.js:745</code></a>
+                            <a href="../files/src_materials_texture.js.html#l627"><code>src&#x2F;materials&#x2F;texture.js:627</code></a>
                             </p>
                     
                     
@@ -2301,7 +2233,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_texture.js.html#l695"><code>src&#x2F;materials&#x2F;texture.js:695</code></a>
+                            <a href="../files/src_materials_texture.js.html#l577"><code>src&#x2F;materials&#x2F;texture.js:577</code></a>
                             </p>
                     
                     
@@ -2343,7 +2275,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_texture.js.html#l618"><code>src&#x2F;materials&#x2F;texture.js:618</code></a>
+                            <a href="../files/src_materials_texture.js.html#l500"><code>src&#x2F;materials&#x2F;texture.js:500</code></a>
                             </p>
                     
                     
@@ -2385,7 +2317,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_texture.js.html#l581"><code>src&#x2F;materials&#x2F;texture.js:581</code></a>
+                            <a href="../files/src_materials_texture.js.html#l463"><code>src&#x2F;materials&#x2F;texture.js:463</code></a>
                             </p>
                     
                     
@@ -2427,7 +2359,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_texture.js.html#l462"><code>src&#x2F;materials&#x2F;texture.js:462</code></a>
+                            <a href="../files/src_materials_texture.js.html#l400"><code>src&#x2F;materials&#x2F;texture.js:400</code></a>
                             </p>
                     
                     
@@ -2435,48 +2367,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Fired whenever this Texture&#39;s <a href="../classes/Texture.html#property_src" class="crosslink">src</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_target" class="events item">
-                        <h3 class="name"><code>target</code></h3>
-                        <span class="type">String | xeogl.ColorTarget | xeogl.DepthTarget</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_texture.js.html#l518"><code>src&#x2F;materials&#x2F;texture.js:518</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Texture&#39;s   <a href="../classes/Texture.html#property_target" class="crosslink">target</a> property changes.</p>
                     
                         </div>
                     
@@ -2511,7 +2401,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_texture.js.html#l550"><code>src&#x2F;materials&#x2F;texture.js:550</code></a>
+                            <a href="../files/src_materials_texture.js.html#l432"><code>src&#x2F;materials&#x2F;texture.js:432</code></a>
                             </p>
                     
                     
@@ -2553,7 +2443,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_texture.js.html#l797"><code>src&#x2F;materials&#x2F;texture.js:797</code></a>
+                            <a href="../files/src_materials_texture.js.html#l679"><code>src&#x2F;materials&#x2F;texture.js:679</code></a>
                             </p>
                     
                     
@@ -2595,7 +2485,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_texture.js.html#l849"><code>src&#x2F;materials&#x2F;texture.js:849</code></a>
+                            <a href="../files/src_materials_texture.js.html#l731"><code>src&#x2F;materials&#x2F;texture.js:731</code></a>
                             </p>
                     
                     

@@ -9,7 +9,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "Billboard",
         "Boundary2D",
         "Boundary3D",
-        "BoundingSphereGeometry",
         "BoxGeometry",
         "BuildableModel",
         "Camera",
@@ -23,7 +22,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "CardboardEffect",
         "Clip",
         "Clips",
-        "ColorBuf",
         "Component",
         "Configs",
         "CubeTexture",
@@ -31,7 +29,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "Cull",
         "Curve",
         "CylinderGeometry",
-        "DepthBuf",
         "DirLight",
         "Entity",
         "Fog",
@@ -55,6 +52,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "OBBGeometry",
         "OBJGeometry",
         "Ortho",
+        "Outline",
         "Path",
         "PathGeometry",
         "Perspective",
@@ -70,8 +68,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "Scale",
         "Scene",
         "SceneJSModel",
-        "Shader",
-        "ShaderParams",
         "Shadow",
         "Skybox",
         "SpecularMaterial",
@@ -80,7 +76,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "SplineCurve",
         "SplineCurveHelper",
         "SpotLight",
-        "Stage",
         "Stationary",
         "StereoEffect",
         "Story",
@@ -120,8 +115,8 @@ YUI.add("yuidoc-meta", function(Y) {
         "materials",
         "math",
         "models",
+        "outline",
         "rendering",
-        "shaders",
         "skyboxes",
         "stories",
         "transforms",
@@ -240,14 +235,14 @@ YUI.add("yuidoc-meta", function(Y) {
             "description": "Models are units of xeogl content."
         },
         {
+            "displayName": "outline",
+            "name": "outline",
+            "description": "An outline rendering effect for emphasis."
+        },
+        {
             "displayName": "rendering",
             "name": "rendering",
             "description": "Components that influence the way entities are rendered with WebGL."
-        },
-        {
-            "displayName": "shaders",
-            "name": "shaders",
-            "description": "Components to define custom shaders."
         },
         {
             "displayName": "skyboxes",

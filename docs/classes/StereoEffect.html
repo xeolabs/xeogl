@@ -49,7 +49,6 @@
                                 <li><a href="../classes/Billboard.html">Billboard</a></li>
                                 <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
-                                <li><a href="../classes/BoundingSphereGeometry.html">BoundingSphereGeometry</a></li>
                                 <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
                                 <li><a href="../classes/BuildableModel.html">BuildableModel</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
@@ -63,7 +62,6 @@
                                 <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
-                                <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
@@ -71,7 +69,6 @@
                                 <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
                                 <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
-                                <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
                                 <li><a href="../classes/Entity.html">Entity</a></li>
                                 <li><a href="../classes/Fog.html">Fog</a></li>
@@ -95,6 +92,7 @@
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
+                                <li><a href="../classes/Outline.html">Outline</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
@@ -110,8 +108,6 @@
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
-                                <li><a href="../classes/Shader.html">Shader</a></li>
-                                <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
                                 <li><a href="../classes/SpecularMaterial.html">SpecularMaterial</a></li>
@@ -120,7 +116,6 @@
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/SpotLight.html">SpotLight</a></li>
-                                <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
                                 <li><a href="../classes/Story.html">Story</a></li>
@@ -161,8 +156,8 @@
                                 <li><a href="..//modules/materials.html">materials</a></li>
                                 <li><a href="..//modules/math.html">math</a></li>
                                 <li><a href="..//modules/models.html">models</a></li>
+                                <li><a href="..//modules/outline.html">outline</a></li>
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
-                                <li><a href="..//modules/shaders.html">shaders</a></li>
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="..//modules/stories.html">stories</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
@@ -487,10 +482,6 @@ var stereoEffect = new xeogl.StereoEffect({
                                 <a href="#property_active">active</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_active">active</a>
-
-                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_billboard">billboard</a>
 
@@ -508,31 +499,11 @@ var stereoEffect = new xeogl.StereoEffect({
 
                             </li>
                             <li class="index-item property inherited">
-                                <a href="#property_colorBuf">colorBuf</a>
-
-                            </li>
-                            <li class="index-item property private inherited">
-                                <a href="#property_colorTarget">colorTarget</a>
-
-                            </li>
-                            <li class="index-item property inherited">
                                 <a href="#property_cull">cull</a>
 
                             </li>
                             <li class="index-item property inherited">
-                                <a href="#property_depthBuf">depthBuf</a>
-
-                            </li>
-                            <li class="index-item property private inherited">
-                                <a href="#property_depthTarget">depthTarget</a>
-
-                            </li>
-                            <li class="index-item property inherited">
                                 <a href="#property_destroyed">destroyed</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_entity">entity</a>
 
                             </li>
                             <li class="index-item property">
@@ -592,19 +563,11 @@ var stereoEffect = new xeogl.StereoEffect({
 
                             </li>
                             <li class="index-item property inherited">
-                                <a href="#property_scene">scene</a>
-
-                            </li>
-                            <li class="index-item property private inherited">
-                                <a href="#property_shader">shader</a>
-
-                            </li>
-                            <li class="index-item property private inherited">
-                                <a href="#property_shaderParams">shaderParams</a>
+                                <a href="#property_outline">outline</a>
 
                             </li>
                             <li class="index-item property inherited">
-                                <a href="#property_stage">stage</a>
+                                <a href="#property_scene">scene</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -631,12 +594,12 @@ var stereoEffect = new xeogl.StereoEffect({
                                 <a href="#property_viewBoundary">viewBoundary</a>
 
                             </li>
-                            <li class="index-item property inherited">
-                                <a href="#property_viewport">viewport</a>
-
-                            </li>
                             <li class="index-item property">
                                 <a href="#property_Viewport">Viewport</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_viewport">viewport</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -659,10 +622,6 @@ var stereoEffect = new xeogl.StereoEffect({
                                 <a href="#event_active">active</a>
 
                             </li>
-                            <li class="index-item event">
-                                <a href="#event_active">active</a>
-
-                            </li>
                             <li class="index-item event inherited">
                                 <a href="#event_billboard">billboard</a>
 
@@ -676,31 +635,11 @@ var stereoEffect = new xeogl.StereoEffect({
 
                             </li>
                             <li class="index-item event inherited">
-                                <a href="#event_colorBuf">colorBuf</a>
-
-                            </li>
-                            <li class="index-item event inherited">
-                                <a href="#event_colorTarget">colorTarget</a>
-
-                            </li>
-                            <li class="index-item event inherited">
                                 <a href="#event_cull">cull</a>
 
                             </li>
                             <li class="index-item event inherited">
-                                <a href="#event_depthBuf">depthBuf</a>
-
-                            </li>
-                            <li class="index-item event inherited">
-                                <a href="#event_depthTarget">depthTarget</a>
-
-                            </li>
-                            <li class="index-item event inherited">
                                 <a href="#event_destroyed">destroyed</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_entity">entity</a>
 
                             </li>
                             <li class="index-item event">
@@ -728,19 +667,11 @@ var stereoEffect = new xeogl.StereoEffect({
 
                             </li>
                             <li class="index-item event inherited">
+                                <a href="#event_Outline">Outline</a>
+
+                            </li>
+                            <li class="index-item event inherited">
                                 <a href="#event_picked">picked</a>
-
-                            </li>
-                            <li class="index-item event inherited">
-                                <a href="#event_shader">shader</a>
-
-                            </li>
-                            <li class="index-item event inherited">
-                                <a href="#event_shaderParams">shaderParams</a>
-
-                            </li>
-                            <li class="index-item event inherited">
-                                <a href="#event_stage">stage</a>
 
                             </li>
                             <li class="index-item event inherited">
@@ -1505,33 +1436,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_effects_highlightEntityEffect.js.html#l162"><code>examples&#x2F;js&#x2F;effects&#x2F;highlightEntityEffect.js:162</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Flag which indicates whether this HighlightEntityEffect is active or not.</p>
-                    <p>Fires an HighlightEntityEffect/active:event event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> true</p>
-                    
-                    
-                    </div>
-                    <div id="property_active" class="property item">
-                        <h3 class="name"><code>active</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
                             <a href="../files/examples_js_effects_stereoEffect.js.html#l213"><code>examples&#x2F;js&#x2F;effects&#x2F;stereoEffect.js:213</code></a>
                             </p>
                     
@@ -1559,7 +1463,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_billboard">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l917"><code>src&#x2F;entities&#x2F;entity.js:917</code></a>
+                            <a href="../files/src_entities_entity.js.html#l660"><code>src&#x2F;entities&#x2F;entity.js:660</code></a>
                             </p>
                     
                     
@@ -1625,7 +1529,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_canvasBoundary">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l1216"><code>src&#x2F;entities&#x2F;entity.js:1216</code></a>
+                            <a href="../files/src_entities_entity.js.html#l994"><code>src&#x2F;entities&#x2F;entity.js:994</code></a>
                             </p>
                     
                     
@@ -1667,7 +1571,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_clips">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l272"><code>src&#x2F;entities&#x2F;entity.js:272</code></a>
+                            <a href="../files/src_entities_entity.js.html#l262"><code>src&#x2F;entities&#x2F;entity.js:262</code></a>
                             </p>
                     
                     
@@ -1685,65 +1589,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_colorBuf" class="property item inherited">
-                        <h3 class="name"><code>colorBuf</code></h3>
-                        <span class="type"><a href="../classes/ColorBuf.html" class="crosslink">ColorBuf</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Entity.html#property_colorBuf">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l341"><code>src&#x2F;entities&#x2F;entity.js:341</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The <a href="../classes/ColorBuf.html" class="crosslink">ColorBuf</a> attached to this Entity.</p>
-                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Entity. Defaults to the parent
-                    <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_colorBuf" class="crosslink">colorBuf</a> when set to
-                    a null or undefined value.</p>
-                    <p>Fires an <a href="../classes/Entity.html#event_colorBuf" class="crosslink">colorBuf</a> event on change.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_colorTarget" class="property item private inherited">
-                        <h3 class="name"><code>colorTarget</code></h3>
-                        <span class="type">ColorTarget</span>
-                    
-                    
-                            <span class="flag private">private</span>
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Entity.html#property_colorTarget">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l306"><code>src&#x2F;entities&#x2F;entity.js:306</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The ColorTarget attached to this Entity.</p>
-                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Entity. Defaults to the parent
-                    <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_colorTarget" class="crosslink">colorTarget</a> when set to
-                    a null or undefined value.</p>
-                    <p>Fires an <a href="../classes/Entity.html#event_colorTarget" class="crosslink">colorTarget</a> event on change.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
                     <div id="property_cull" class="property item inherited">
                         <h3 class="name"><code>cull</code></h3>
                         <span class="type"><a href="../classes/Cull.html" class="crosslink">Cull</a></span>
@@ -1755,7 +1600,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_cull">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l482"><code>src&#x2F;entities&#x2F;entity.js:482</code></a>
+                            <a href="../files/src_entities_entity.js.html#l331"><code>src&#x2F;entities&#x2F;entity.js:331</code></a>
                             </p>
                     
                     
@@ -1767,65 +1612,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_cull" class="crosslink">cull</a> when set to
                     a null or undefined value.</p>
                     <p>Fires an <a href="../classes/Entity.html#event_cull" class="crosslink">cull</a> event on change.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_depthBuf" class="property item inherited">
-                        <h3 class="name"><code>depthBuf</code></h3>
-                        <span class="type"><a href="../classes/DepthBuf.html" class="crosslink">DepthBuf</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Entity.html#property_depthBuf">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l412"><code>src&#x2F;entities&#x2F;entity.js:412</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The <a href="../classes/DepthBuf.html" class="crosslink">DepthBuf</a> attached to this Entity.</p>
-                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Entity. Defaults to the
-                    parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_depthBuf" class="crosslink">depthBuf</a> when set to
-                    a null or undefined value.</p>
-                    <p>Fires an <a href="../classes/Entity.html#event_depthBuf" class="crosslink">depthBuf</a> event on change.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_depthTarget" class="property item private inherited">
-                        <h3 class="name"><code>depthTarget</code></h3>
-                        <span class="type">DepthTarget</span>
-                    
-                    
-                            <span class="flag private">private</span>
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Entity.html#property_depthTarget">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l376"><code>src&#x2F;entities&#x2F;entity.js:376</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The DepthTarget attached to this Entity.</p>
-                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Entity. Defaults to the parent
-                    <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_depthTarget" class="crosslink">depthTarget</a> when set to
-                    a null or undefined value.</p>
-                    <p>Fires an <a href="../classes/Entity.html#event_depthTarget" class="crosslink">depthTarget</a> event on change.</p>
                     
                         </div>
                     
@@ -1854,33 +1640,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         </div>
                     
-                    
-                    
-                    </div>
-                    <div id="property_entity" class="property item">
-                        <h3 class="name"><code>entity</code></h3>
-                        <span class="type"><a href="../classes/Entity.html" class="crosslink">Entity</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_effects_highlightEntityEffect.js.html#l104"><code>examples&#x2F;js&#x2F;effects&#x2F;highlightEntityEffect.js:104</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>ID or instance of the <a href="../classes/Entity.html" class="crosslink">Entity</a> to highlight with this HighlightEntityEffect.</p>
-                    <p>Fires a HighlightEntityEffect/entity:event event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> null</p>
                     
                     
                     </div>
@@ -1922,7 +1681,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_geometry">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l553"><code>src&#x2F;entities&#x2F;entity.js:553</code></a>
+                            <a href="../files/src_entities_entity.js.html#l402"><code>src&#x2F;entities&#x2F;entity.js:402</code></a>
                             </p>
                     
                     
@@ -1955,7 +1714,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_glsl">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l1285"><code>src&#x2F;entities&#x2F;entity.js:1285</code></a>
+                            <a href="../files/src_entities_entity.js.html#l1063"><code>src&#x2F;entities&#x2F;entity.js:1063</code></a>
                             </p>
                     
                     
@@ -1964,7 +1723,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="description">
                             <p>JSON object containing the (GLSL) source code of the shaders for this Entity.</p>
                     <p>This is sometimes useful to have as a reference
-                    when constructing your own custom <a href="../classes/Shader.html" class="crosslink">Shader</a> components.</p>
+                    when constructing your own custom Shader components.</p>
                     <p>Will return null if xeogl has not yet rendered this Entity.</p>
                     
                         </div>
@@ -1984,7 +1743,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_glslString">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l1322"><code>src&#x2F;entities&#x2F;entity.js:1322</code></a>
+                            <a href="../files/src_entities_entity.js.html#l1100"><code>src&#x2F;entities&#x2F;entity.js:1100</code></a>
                             </p>
                     
                     
@@ -1993,7 +1752,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="description">
                             <p>The (GLSL) source code of the shaders for this Entity, as a string.</p>
                     <p>This is sometimes useful to have as a reference
-                    when constructing your own custom <a href="../classes/Shader.html" class="crosslink">Shader</a> components.</p>
+                    when constructing your own custom Shader components.</p>
                     <p>Will return null if xeogl has not yet rendered this Entity.</p>
                     
                         </div>
@@ -2089,7 +1848,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_layer">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l606"><code>src&#x2F;entities&#x2F;entity.js:606</code></a>
+                            <a href="../files/src_entities_entity.js.html#l455"><code>src&#x2F;entities&#x2F;entity.js:455</code></a>
                             </p>
                     
                     
@@ -2118,7 +1877,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_lights">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l641"><code>src&#x2F;entities&#x2F;entity.js:641</code></a>
+                            <a href="../files/src_entities_entity.js.html#l490"><code>src&#x2F;entities&#x2F;entity.js:490</code></a>
                             </p>
                     
                     
@@ -2148,7 +1907,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_localBoundary">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l1032"><code>src&#x2F;entities&#x2F;entity.js:1032</code></a>
+                            <a href="../files/src_entities_entity.js.html#l810"><code>src&#x2F;entities&#x2F;entity.js:810</code></a>
                             </p>
                     
                     
@@ -2183,7 +1942,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_material">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l676"><code>src&#x2F;entities&#x2F;entity.js:676</code></a>
+                            <a href="../files/src_entities_entity.js.html#l525"><code>src&#x2F;entities&#x2F;entity.js:525</code></a>
                             </p>
                     
                     
@@ -2237,7 +1996,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_modes">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l518"><code>src&#x2F;entities&#x2F;entity.js:518</code></a>
+                            <a href="../files/src_entities_entity.js.html#l367"><code>src&#x2F;entities&#x2F;entity.js:367</code></a>
                             </p>
                     
                     
@@ -2267,7 +2026,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_morphTargets">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l711"><code>src&#x2F;entities&#x2F;entity.js:711</code></a>
+                            <a href="../files/src_entities_entity.js.html#l560"><code>src&#x2F;entities&#x2F;entity.js:560</code></a>
                             </p>
                     
                     
@@ -2279,6 +2038,35 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_morphTargets" class="crosslink">morphTargets</a> when set to
                     a null or undefined value.</p>
                     <p>Fires an <a href="../classes/Entity.html#event_morphTargets" class="crosslink">morphTargets</a> event on change.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_outline" class="property item inherited">
+                        <h3 class="name"><code>outline</code></h3>
+                        <span class="type"><a href="../classes/Outline.html" class="crosslink">Outline</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Entity.html#property_outline">Entity</a>:
+                            <a href="../files/src_entities_entity.js.html#l775"><code>src&#x2F;entities&#x2F;entity.js:775</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The <a href="../classes/Outline.html" class="crosslink">Outline</a> attached to this Entity.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Entity. Defaults to the parent
+                    <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_outline" class="crosslink">Outline</a> when set to
+                    a null or undefined value.</p>
+                    <p>Fires an Entity/outline:event event on change.</p>
                     
                         </div>
                     
@@ -2311,95 +2099,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_shader" class="property item private inherited">
-                        <h3 class="name"><code>shader</code></h3>
-                        <span class="type"><a href="../classes/Shader.html" class="crosslink">Shader</a></span>
-                    
-                    
-                            <span class="flag private">private</span>
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Entity.html#property_shader">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l746"><code>src&#x2F;entities&#x2F;entity.js:746</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The <a href="../classes/Shader.html" class="crosslink">Shader</a> attached to this Entity.</p>
-                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Entity. Defaults to the parent
-                    <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_shader" class="crosslink">shader</a> when set to
-                    a null or undefined value.</p>
-                    <p>Fires an <a href="../classes/Entity.html#event_shader" class="crosslink">shader</a> event on change.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_shaderParams" class="property item private inherited">
-                        <h3 class="name"><code>shaderParams</code></h3>
-                        <span class="type"><a href="../classes/ShaderParams.html" class="crosslink">ShaderParams</a></span>
-                    
-                    
-                            <span class="flag private">private</span>
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Entity.html#property_shaderParams">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l781"><code>src&#x2F;entities&#x2F;entity.js:781</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The <a href="../classes/ShaderParams.html" class="crosslink">ShaderParams</a> attached to this Entity.</p>
-                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Entity. Defaults to the parent
-                    <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_shaderParams" class="crosslink">shaderParams</a> when set to
-                    a null or undefined value.</p>
-                    <p>Fires an <a href="../classes/Entity.html#event_shaderParams" class="crosslink">shaderParams</a> event on change.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_stage" class="property item inherited">
-                        <h3 class="name"><code>stage</code></h3>
-                        <span class="type"><a href="../classes/Stage.html" class="crosslink">Stage</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Entity.html#property_stage">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l817"><code>src&#x2F;entities&#x2F;entity.js:817</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The <a href="../classes/Stage.html" class="crosslink">Stage</a> attached to this Entity.</p>
-                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Entity. Defaults to the parent
-                    <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_stage" class="crosslink">stage</a> when set to
-                    a null or undefined value.</p>
-                    <p>Fires an <a href="../classes/Entity.html#event_stage" class="crosslink">stage</a> event on change.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
                     <div id="property_stationary" class="property item inherited">
                         <h3 class="name"><code>stationary</code></h3>
                         <span class="type"><a href="../classes/Stationary.html" class="crosslink">Stationary</a></span>
@@ -2411,7 +2110,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_stationary">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l992"><code>src&#x2F;entities&#x2F;entity.js:992</code></a>
+                            <a href="../files/src_entities_entity.js.html#l735"><code>src&#x2F;entities&#x2F;entity.js:735</code></a>
                             </p>
                     
                     
@@ -2504,7 +2203,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_transform">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l852"><code>src&#x2F;entities&#x2F;entity.js:852</code></a>
+                            <a href="../files/src_entities_entity.js.html#l595"><code>src&#x2F;entities&#x2F;entity.js:595</code></a>
                             </p>
                     
                     
@@ -2566,7 +2265,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_viewBoundary">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l1148"><code>src&#x2F;entities&#x2F;entity.js:1148</code></a>
+                            <a href="../files/src_entities_entity.js.html#l926"><code>src&#x2F;entities&#x2F;entity.js:926</code></a>
                             </p>
                     
                     
@@ -2590,35 +2289,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     <p>To minimize performance overhead, only reference this property if you need it, and destroy
                     the <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> as soon as you don&#39;t need it anymore.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_viewport" class="property item inherited">
-                        <h3 class="name"><code>viewport</code></h3>
-                        <span class="type"><a href="../classes/Viewport.html" class="crosslink">Viewport</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Entity.html#property_viewport">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l956"><code>src&#x2F;entities&#x2F;entity.js:956</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The <a href="../classes/Viewport.html" class="crosslink">Viewport</a> attached to this Entity.</p>
-                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Entity. When set to a null or undefined value,
-                    defaults to the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_viewport" class="crosslink">viewport</a>,
-                    which automatically resizes to the canvas.</p>
-                    <p>Fires an <a href="../classes/Entity.html#event_viewport" class="crosslink">viewport</a> event on change.</p>
                     
                         </div>
                     
@@ -2653,6 +2323,35 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_viewport" class="property item inherited">
+                        <h3 class="name"><code>viewport</code></h3>
+                        <span class="type"><a href="../classes/Viewport.html" class="crosslink">Viewport</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Entity.html#property_viewport">Entity</a>:
+                            <a href="../files/src_entities_entity.js.html#l699"><code>src&#x2F;entities&#x2F;entity.js:699</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The <a href="../classes/Viewport.html" class="crosslink">Viewport</a> attached to this Entity.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Entity. When set to a null or undefined value,
+                    defaults to the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_viewport" class="crosslink">viewport</a>,
+                    which automatically resizes to the canvas.</p>
+                    <p>Fires an <a href="../classes/Entity.html#event_viewport" class="crosslink">viewport</a> event on change.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_visibility" class="property item inherited">
                         <h3 class="name"><code>visibility</code></h3>
                         <span class="type"><a href="../classes/Visibility.html" class="crosslink">Visibility</a></span>
@@ -2664,7 +2363,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_visibility">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l447"><code>src&#x2F;entities&#x2F;entity.js:447</code></a>
+                            <a href="../files/src_entities_entity.js.html#l296"><code>src&#x2F;entities&#x2F;entity.js:296</code></a>
                             </p>
                     
                     
@@ -2694,7 +2393,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_worldBoundary">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l1059"><code>src&#x2F;entities&#x2F;entity.js:1059</code></a>
+                            <a href="../files/src_entities_entity.js.html#l837"><code>src&#x2F;entities&#x2F;entity.js:837</code></a>
                             </p>
                     
                     
@@ -2732,48 +2431,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="events" class="api-class-tabpanel">
                 <h2 class="off-left">Events</h2>
 
-                    <div id="event_active" class="events item">
-                        <h3 class="name"><code>active</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_effects_highlightEntityEffect.js.html#l185"><code>examples&#x2F;js&#x2F;effects&#x2F;highlightEntityEffect.js:185</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this HighlightEntityEffect&#39;s HighlightEntityEffect/active:property property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
                     <div id="event_active" class="events item">
                         <h3 class="name"><code>active</code></h3>
                         <span class="type"></span>
@@ -2827,7 +2484,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#event_billboard">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l936"><code>src&#x2F;entities&#x2F;entity.js:936</code></a>
+                            <a href="../files/src_entities_entity.js.html#l679"><code>src&#x2F;entities&#x2F;entity.js:679</code></a>
                             </p>
                     
                     
@@ -2916,7 +2573,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#event_clips">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l288"><code>src&#x2F;entities&#x2F;entity.js:288</code></a>
+                            <a href="../files/src_entities_entity.js.html#l278"><code>src&#x2F;entities&#x2F;entity.js:278</code></a>
                             </p>
                     
                     
@@ -2924,90 +2581,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Fired whenever this Entity&#39;s  <a href="../classes/Entity.html#property_clips" class="crosslink">clips</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_colorBuf" class="events item inherited">
-                        <h3 class="name"><code>colorBuf</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Entity.html#event_colorBuf">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l357"><code>src&#x2F;entities&#x2F;entity.js:357</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Entity&#39;s  <a href="../classes/Entity.html#property_colorBuf" class="crosslink">colorBuf</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_colorTarget" class="events item inherited">
-                        <h3 class="name"><code>colorTarget</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Entity.html#event_colorTarget">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l323"><code>src&#x2F;entities&#x2F;entity.js:323</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Entity&#39;s  <a href="../classes/Entity.html#property_colorTarget" class="crosslink">colorTarget</a> property changes.</p>
                     
                         </div>
                     
@@ -3042,7 +2615,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#event_cull">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l498"><code>src&#x2F;entities&#x2F;entity.js:498</code></a>
+                            <a href="../files/src_entities_entity.js.html#l347"><code>src&#x2F;entities&#x2F;entity.js:347</code></a>
                             </p>
                     
                     
@@ -3050,90 +2623,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Fired whenever this Entity&#39;s  <a href="../classes/Entity.html#property_cull" class="crosslink">cull</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_depthBuf" class="events item inherited">
-                        <h3 class="name"><code>depthBuf</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Entity.html#event_depthBuf">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l428"><code>src&#x2F;entities&#x2F;entity.js:428</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Entity&#39;s  <a href="../classes/Entity.html#property_depthBuf" class="crosslink">depthBuf</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_depthTarget" class="events item inherited">
-                        <h3 class="name"><code>depthTarget</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Entity.html#event_depthTarget">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l393"><code>src&#x2F;entities&#x2F;entity.js:393</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Entity&#39;s  <a href="../classes/Entity.html#property_depthTarget" class="crosslink">depthTarget</a> property changes.</p>
                     
                         </div>
                     
@@ -3179,48 +2668,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         </div>
                     
-                    
-                    
-                    </div>
-                    <div id="event_entity" class="events item">
-                        <h3 class="name"><code>entity</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_effects_highlightEntityEffect.js.html#l119"><code>examples&#x2F;js&#x2F;effects&#x2F;highlightEntityEffect.js:119</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Highlights&#39;s HighlightEntityEffect/entity:property property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
                     
                     
                     </div>
@@ -3277,7 +2724,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#event_layer">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l622"><code>src&#x2F;entities&#x2F;entity.js:622</code></a>
+                            <a href="../files/src_entities_entity.js.html#l471"><code>src&#x2F;entities&#x2F;entity.js:471</code></a>
                             </p>
                     
                     
@@ -3319,7 +2766,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#event_lights">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l657"><code>src&#x2F;entities&#x2F;entity.js:657</code></a>
+                            <a href="../files/src_entities_entity.js.html#l506"><code>src&#x2F;entities&#x2F;entity.js:506</code></a>
                             </p>
                     
                     
@@ -3361,7 +2808,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#event_material">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l692"><code>src&#x2F;entities&#x2F;entity.js:692</code></a>
+                            <a href="../files/src_entities_entity.js.html#l541"><code>src&#x2F;entities&#x2F;entity.js:541</code></a>
                             </p>
                     
                     
@@ -3406,7 +2853,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Entity
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_entities_entity.js.html#l534"><code>src&#x2F;entities&#x2F;entity.js:534</code></a>
+                            <a href="../files/src_entities_entity.js.html#l383"><code>src&#x2F;entities&#x2F;entity.js:383</code></a>
                             </p>
                     
                     
@@ -3448,7 +2895,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#event_morphTargets">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l728"><code>src&#x2F;entities&#x2F;entity.js:728</code></a>
+                            <a href="../files/src_entities_entity.js.html#l577"><code>src&#x2F;entities&#x2F;entity.js:577</code></a>
                             </p>
                     
                     
@@ -3456,6 +2903,48 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Fired whenever this Entity&#39;s  <a href="../classes/Entity.html#property_morphTargets" class="crosslink">morphTargets</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_Outline" class="events item inherited">
+                        <h3 class="name"><code>Outline</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Entity.html#event_Outline">Entity</a>:
+                            <a href="../files/src_entities_entity.js.html#l791"><code>src&#x2F;entities&#x2F;entity.js:791</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Entity&#39;s  Entity/Outline:property property changes.</p>
                     
                         </div>
                     
@@ -3490,7 +2979,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#event_picked">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l163"><code>src&#x2F;entities&#x2F;entity.js:163</code></a>
+                            <a href="../files/src_entities_entity.js.html#l159"><code>src&#x2F;entities&#x2F;entity.js:159</code></a>
                             </p>
                     
                     
@@ -3544,132 +3033,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_shader" class="events item inherited">
-                        <h3 class="name"><code>shader</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Entity.html#event_shader">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l763"><code>src&#x2F;entities&#x2F;entity.js:763</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Entity&#39;s  <a href="../classes/Entity.html#property_shader" class="crosslink">shader</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_shaderParams" class="events item inherited">
-                        <h3 class="name"><code>shaderParams</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Entity.html#event_shaderParams">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l798"><code>src&#x2F;entities&#x2F;entity.js:798</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Entity&#39;s  <a href="../classes/Entity.html#property_shaderParams" class="crosslink">shaderParams</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_stage" class="events item inherited">
-                        <h3 class="name"><code>stage</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Entity.html#event_stage">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l833"><code>src&#x2F;entities&#x2F;entity.js:833</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Entity&#39;s  <a href="../classes/Entity.html#property_stage" class="crosslink">stage</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
                     <div id="event_stationary" class="events item inherited">
                         <h3 class="name"><code>stationary</code></h3>
                         <span class="type"></span>
@@ -3681,7 +3044,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#event_stationary">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l1012"><code>src&#x2F;entities&#x2F;entity.js:1012</code></a>
+                            <a href="../files/src_entities_entity.js.html#l755"><code>src&#x2F;entities&#x2F;entity.js:755</code></a>
                             </p>
                     
                     
@@ -3724,7 +3087,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#event_transform">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l876"><code>src&#x2F;entities&#x2F;entity.js:876</code></a>
+                            <a href="../files/src_entities_entity.js.html#l619"><code>src&#x2F;entities&#x2F;entity.js:619</code></a>
                             </p>
                     
                     
@@ -3810,7 +3173,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#event_viewport">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l972"><code>src&#x2F;entities&#x2F;entity.js:972</code></a>
+                            <a href="../files/src_entities_entity.js.html#l715"><code>src&#x2F;entities&#x2F;entity.js:715</code></a>
                             </p>
                     
                     
@@ -3853,7 +3216,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#event_visibility">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l463"><code>src&#x2F;entities&#x2F;entity.js:463</code></a>
+                            <a href="../files/src_entities_entity.js.html#l312"><code>src&#x2F;entities&#x2F;entity.js:312</code></a>
                             </p>
                     
                     

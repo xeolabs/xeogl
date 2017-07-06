@@ -49,7 +49,6 @@
                                 <li><a href="../classes/Billboard.html">Billboard</a></li>
                                 <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
-                                <li><a href="../classes/BoundingSphereGeometry.html">BoundingSphereGeometry</a></li>
                                 <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
                                 <li><a href="../classes/BuildableModel.html">BuildableModel</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
@@ -63,7 +62,6 @@
                                 <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
-                                <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
@@ -71,7 +69,6 @@
                                 <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
                                 <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
-                                <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
                                 <li><a href="../classes/Entity.html">Entity</a></li>
                                 <li><a href="../classes/Fog.html">Fog</a></li>
@@ -95,6 +92,7 @@
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
+                                <li><a href="../classes/Outline.html">Outline</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
@@ -110,8 +108,6 @@
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
-                                <li><a href="../classes/Shader.html">Shader</a></li>
-                                <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
                                 <li><a href="../classes/SpecularMaterial.html">SpecularMaterial</a></li>
@@ -120,7 +116,6 @@
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/SpotLight.html">SpotLight</a></li>
-                                <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
                                 <li><a href="../classes/Story.html">Story</a></li>
@@ -161,8 +156,8 @@
                                 <li><a href="..//modules/materials.html">materials</a></li>
                                 <li><a href="..//modules/math.html">math</a></li>
                                 <li><a href="..//modules/models.html">models</a></li>
+                                <li><a href="..//modules/outline.html">outline</a></li>
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
-                                <li><a href="..//modules/shaders.html">shaders</a></li>
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="..//modules/stories.html">stories</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
@@ -219,7 +214,6 @@
  * {{#crossLink &quot;Boundary3D/aabb:property&quot;}}{{/crossLink}} - an axis-aligned box (AABB) in a six-element Float32Array
  containing the min/max extents of the axis-aligned volume, ie. &#x60;&#x60;&#x60;&#x60;[xmin,ymin,zmin,xmax,ymax,zmax]&#x60;&#x60;&#x60;&#x60;,
  * {{#crossLink &quot;Boundary3D/center:property&quot;}}{{/crossLink}} - the center point as a three-element Float32Array containing elements &#x60;&#x60;&#x60;&#x60;[x,y,z]&#x60;&#x60;&#x60;&#x60; and
- * {{#crossLink &quot;Boundary3D/sphere:property&quot;}}{{/crossLink}} - a bounding sphere as a four-element Float32Array containing elements&#x60;&#x60;&#x60;&#x60;[x,y,z,radius]&#x60;&#x60;&#x60;&#x60;.
 
  As shown in the diagram below, the following xeogl components have Boundary3Ds:
 
@@ -275,7 +269,6 @@
         obb = worldBoundary.obb;
         aabb = worldBoundary.aabb;
         center = worldBoundary.center;
-        sphere = worldBoundary.sphere();
         //...
     });
 
@@ -301,8 +294,7 @@
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Boundary3D.
  @param [cfg.obb] {Float32Array} Optional initial 3D object-aligned bounding volume (OBB).
  @param [cfg.aabb] {Float32Array} Optional initial 3D axis-aligned bounding volume (AABB).
- @param [cfg.center] {Float32Array} Optional initial 3D center
- @param [cfg.sphere] {Float32Array} Optional initial 3D bounding sphere.
+ @param [cfg.center] {Float32Array} Optional initial 3D center.
  @param [cfg.getDirty] {Function} Optional callback to check if parent component has new OBB, positions or transform matrix.
  @param [cfg.getOBB] {Function} Optional callback to get new OBB from parent.
  @param [cfg.getMatrix] {Function} Optional callback to get new transform matrix from parent.
@@ -312,8 +304,7 @@
 
 /**
  * Fired whenever this Boundary3D&#x27;s {{#crossLink &quot;Boundary3D/obb:property&quot;}}{{/crossLink}},
- * {{#crossLink &quot;Boundary3D/aabb:property&quot;}}{{/crossLink}}, {{#crossLink &quot;Boundary3D/sphere:property&quot;}}{{/crossLink}}
- * or {{#crossLink &quot;Boundary3D/center:property&quot;}}{{/crossLink}} properties change.
+ * {{#crossLink &quot;Boundary3D/aabb:property&quot;}}{{/crossLink}} or {{#crossLink &quot;Boundary3D/center:property&quot;}}{{/crossLink}} properties change.
  * @event updated
  */
 (function () {
@@ -329,10 +320,7 @@
             // Cached bounding boxes (oriented and axis-aligned)
             this._obb = cfg.obb || null;
             this._aabb = cfg.aabb || null;
-
-            // Cached bounding sphere
-            this._sphere = cfg.sphere || null;
-
+            
             // Cached center point
             this._center = cfg.center || null;
 
@@ -410,32 +398,10 @@
 
                     return this._center;
                 }
-            },
-
-            /**
-             * A spherical representation of this 3D boundary.
-             *
-             * The sphere is a four-element Float32Array containing the sphere center and
-             * radius, ie: &#x60;&#x60;&#x60;&#x60;[xcenter, ycenter, zcenter, radius ]&#x60;&#x60;&#x60;&#x60;.
-             *
-             * @property sphere
-             * @final
-             * @type {Float32Array}
-             */
-            sphere: {
-
-                get: function () {
-
-                    if (this._getDirty()) {
-                        this._buildBoundary();
-                    }
-
-                    return this._sphere;
-                }
             }
         },
 
-        // Builds the obb, aabb, sphere and center.
+        // Builds the obb, aabb and center.
 
         _buildBoundary: function () {
 
@@ -451,21 +417,17 @@
                 this._aabb = xeogl.math.AABB3();
             }
 
-            if (!this._sphere) {
-                this._sphere = xeogl.math.vec4();
-            }
-
             if (!this._center) {
                 this._center = xeogl.math.vec3();
             }
-            
+
             var aabb = this._getAABB ? this._getAABB() : null;
 
             if (aabb) {
 
                 // Got AABB
 
-                // Derive OBB, sphere and center
+                // Derive OBB and center
 
                 this._aabb[0] = aabb[0];
                 this._aabb[1] = aabb[1];
@@ -475,9 +437,8 @@
                 this._aabb[5] = aabb[5];
 
                 math.AABB3ToOBB3(this._aabb, this._obb);
-                math.OBB3ToSphere3(this._obb, this._sphere);
-                math.getSphere3Center(this._sphere, this._center);
-                
+                math.getAABB3Center(this._aabb, this._center);
+
                 return;
             }
 
@@ -497,14 +458,12 @@
 
                     // Got transform matrix
 
-                    // Transform OBB by matrix, derive AABB, sphere and center
+                    // Transform OBB by matrix, derive AABB and center
 
                     math.positions3ToAABB3(positions, this._aabb);
                     math.AABB3ToOBB3(this._aabb, this._obb);
                     math.transformOBB3(matrix, this._obb);
-                    math.OBB3ToAABB3(this._obb, this._aabb);
-                    math.OBB3ToSphere3(this._obb, this._sphere);
-                    math.getSphere3Center(this._sphere, this._center);
+                    math.getAABB3Center(this._aabb, this._center);
 
                     return;
                 }
@@ -513,9 +472,8 @@
 
                 math.positions3ToAABB3(positions, this._aabb);
                 math.AABB3ToOBB3(this._aabb, this._obb);
-                math.OBB3ToSphere3(this._obb, this._sphere);
-                math.getSphere3Center(this._sphere, this._center);
-                
+                math.getAABB3Center(this._aabb, this._center);
+
                 return
             }
 
@@ -535,8 +493,7 @@
 
                     math.transformOBB3(matrix, obb, this._obb);
                     math.OBB3ToAABB3(this._obb, this._aabb);
-                    math.OBB3ToSphere3(this._obb, this._sphere);
-                    math.getSphere3Center(this._sphere, this._center);
+                    math.getAABB3Center(this._aabb, this._center);
 
                     return;
                 }
@@ -550,8 +507,7 @@
                 }
 
                 math.OBB3ToAABB3(this._obb, this._aabb);
-                math.OBB3ToSphere3(this._obb, this._sphere);
-                math.getSphere3Center(this._sphere, this._center);
+                math.getAABB3Center(this._aabb, this._center);
 
             }
         },
@@ -561,8 +517,7 @@
             return {
                 obb: vecToArray(this.obb),
                 aabb: vecToArray(this.aabb),
-                center: vecToArray(this.center),
-                sphere: vecToArray(this.sphere)
+                center: vecToArray(this.center)
             };
         }
     });

@@ -30,6 +30,10 @@
 
         pickPrimitive: function () {
             this.program.pickPrimitive.bind();
+        },
+
+        outline: function () {
+            this.program.outline.bind();
         }
     });
 })();

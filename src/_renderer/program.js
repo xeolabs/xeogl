@@ -53,6 +53,12 @@
         this.pickPrimitive = null;
 
         /**
+         * The outline program
+         * @type webgl.Program
+         */
+        this.outline = null;
+
+        /**
          * The count of display objects using this program
          * @type Number
          */
@@ -110,6 +116,7 @@
         this.shadow = new xeogl.renderer.webgl.Program(this.stats, gl, this.source.vertexShadow, this.source.fragmentShadow);
         this.pickObject = new xeogl.renderer.webgl.Program(this.stats, gl, this.source.vertexPickObject, this.source.fragmentPickObject);
         this.pickPrimitive = new xeogl.renderer.webgl.Program(this.stats, gl, this.source.vertexPickPrimitive, this.source.fragmentPickPrimitive);
+        this.outline = new xeogl.renderer.webgl.Program(this.stats, gl, this.source.vertexOutline, this.source.fragmentOutline);
 
         if (!this.draw.allocated) {
             this.errorLog = ["Draw program failed to allocate"].concat(this.draw.errorLog);
@@ -128,6 +135,11 @@
 
         if (!this.pickPrimitive.allocated) {
             this.errorLog = ["Primitive-picking program failed to allocate"].concat(this.pickPrimitive.errorLog);
+            return;
+        }
+
+        if (!this.outline.allocated) {
+            this.errorLog = ["Outline effect program failed to allocate"].concat(this.outline.errorLog);
             return;
         }
 
@@ -153,6 +165,11 @@
             return;
         }
 
+        if (!this.outline.compiled) {
+            this.errorLog = ["Outline effect program failed to compile"].concat(this.outline.errorLog);
+            return;
+        }
+
         this.compiled = true;
 
         if (!this.draw.linked) {
@@ -172,6 +189,11 @@
 
         if (!this.pickPrimitive.linked) {
             this.errorLog = ["Primitive-picking program failed to link"].concat(this.pickPrimitive.errorLog);
+            return;
+        }
+
+        if (!this.outline.linked) {
+            this.errorLog = ["Outline effect program failed to link"].concat(this.outline.errorLog);
             return;
         }
 
@@ -197,7 +219,33 @@
             return;
         }
 
+        if (!this.outline.validated) {
+            this.errorLog = ["Outline effect program failed to validate"].concat(this.outline.errorLog);
+            return;
+        }
+
         this.validated = true;
+    };
+
+    /**
+     * Destroys this program.
+     */
+    xeogl.renderer.Program.prototype.destroy = function() {
+        if (this.draw) {
+            this.draw.destroy();
+        }
+        if (this.shadow) {
+            this.shadow.destroy();
+        }
+        if (this.pickObject) {
+            this.pickObject.destroy();
+        }
+        if (this.pickPrimitive) {
+            this.pickPrimitive.destroy();
+        }
+        if (this.outline) {
+            this.outline.destroy();
+        }
     };
 
 })();

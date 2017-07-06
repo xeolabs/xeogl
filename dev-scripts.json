@@ -45,6 +45,7 @@
     "src/_renderer/chunks/lightsChunk.js",
     "src/_renderer/chunks/modelTransformChunk.js",
     "src/_renderer/chunks/modesChunk.js",
+    "src/_renderer/chunks/outlineChunk.js",
     "src/_renderer/chunks/phongMaterialChunk.js",
     "src/_renderer/chunks/metallicMaterialChunk.js",
     "src/_renderer/chunks/specularMaterialChunk.js",
@@ -96,7 +97,6 @@
     "src/geometry/boxGeometry.js",
     "src/geometry/torusGeometry.js",
     "src/geometry/sphereGeometry.js",
-    "src/geometry/boundingSphereGeometry.js",
     "src/geometry/obbGeometry.js",
     "src/geometry/aabbGeometry.js",
     "src/geometry/pathGeometry.js",
@@ -123,6 +123,9 @@
     "src/models/gltf/glTFLoader.js",
     "src/models/gltfModel.js",
 
+    "src/outline/_module.js",
+    "src/outline/outline.js",
+
     "src/materials/_module.js",
     "src/materials/material.js",
     "src/materials/phongMaterial.js",
@@ -135,18 +138,9 @@
     "src/entities/entity.js",
 
     "src/rendering/_module.js",
-    "src/rendering/colorBuf.js",
-    "src/rendering/depthBuf.js",
     "src/rendering/layer.js",
-    "src/rendering/colorTarget.js",
-    "src/rendering/depthTarget.js",
     "src/rendering/modes.js",
     "src/rendering/viewport.js",
-    "src/rendering/stage.js",
-
-    "src/shaders/_module.js",
-    "src/shaders/shader.js",
-    "src/shaders/shaderParams.js",
 
     "src/boundaries/_module.js",
     "src/boundaries/boundary2d.js",

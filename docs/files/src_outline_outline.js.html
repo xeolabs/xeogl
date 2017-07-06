@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/rendering/colorTarget.js - xeogl</title>
+    <title>src/outline/outline.js - xeogl</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link href='https://fonts.googleapis.com/css?family=Exo+2:400,800,900,700,600,500|Roboto:100,300,400,500,700,900'  rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
@@ -49,7 +49,6 @@
                                 <li><a href="../classes/Billboard.html">Billboard</a></li>
                                 <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
-                                <li><a href="../classes/BoundingSphereGeometry.html">BoundingSphereGeometry</a></li>
                                 <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
                                 <li><a href="../classes/BuildableModel.html">BuildableModel</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
@@ -63,7 +62,6 @@
                                 <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
-                                <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
@@ -71,7 +69,6 @@
                                 <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
                                 <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
-                                <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
                                 <li><a href="../classes/Entity.html">Entity</a></li>
                                 <li><a href="../classes/Fog.html">Fog</a></li>
@@ -95,6 +92,7 @@
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
+                                <li><a href="../classes/Outline.html">Outline</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
@@ -110,8 +108,6 @@
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
-                                <li><a href="../classes/Shader.html">Shader</a></li>
-                                <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
                                 <li><a href="../classes/SpecularMaterial.html">SpecularMaterial</a></li>
@@ -120,7 +116,6 @@
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/SpotLight.html">SpotLight</a></li>
-                                <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
                                 <li><a href="../classes/Story.html">Story</a></li>
@@ -161,8 +156,8 @@
                                 <li><a href="..//modules/materials.html">materials</a></li>
                                 <li><a href="..//modules/math.html">math</a></li>
                                 <li><a href="..//modules/models.html">models</a></li>
+                                <li><a href="..//modules/outline.html">outline</a></li>
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
-                                <li><a href="..//modules/shaders.html">shaders</a></li>
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="..//modules/stories.html">stories</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
@@ -201,217 +196,181 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1 class="file-heading">File: src/rendering/colorTarget.js</h1>
+<h1 class="file-heading">File: src/outline/outline.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
- A **ColorTarget** is a  &lt;a href=&quot;http://en.wikipedia.org/wiki/Render_Target&quot; target=&quot;other&quot;&gt;render target&lt;/a&gt;  that
- captures the colors pixels rendered for associated {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
+ A **Outline** renders an outline around attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
 
- * ColorTargets are typically used when *rendering-to-texture*.
- * A ColorTarget provides the pixel colors as a dynamic color image that may be consumed by {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}}.
- * ColorTarget is not to be confused with {{#crossLink &quot;ColorBuf&quot;}}ColorBuf{{/crossLink}}, which configures ***how*** the pixel colors are written with respect to the WebGL color buffer.
- * Use {{#crossLink &quot;Stage&quot;}}Stages{{/crossLink}} when you need to ensure that a ColorTarget is rendered before
- the {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}} that consume it.
- * For special effects, we often use ColorTargets and {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}} in combination
- with {{#crossLink &quot;DepthTarget&quot;}}DepthTargets{{/crossLink}} and {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}}.
+ ## Overview
 
- &lt;img src=&quot;../../../assets/images/ColorTarget.png&quot;&gt;&lt;/img&gt;
+ TODO
 
  ## Usage
 
- This example contains an {{#crossLink &quot;Entity&quot;}}{{/crossLink}} that renders its pixel colors to a ColorTarget, which is then
- piped into a {{#crossLink &quot;Texture&quot;}}{{/crossLink}} that&#x27;s applied to a second {{#crossLink &quot;Entity&quot;}}{{/crossLink}}.
-
  &#x60;&#x60;&#x60;&#x60;javascript
- var colorTarget = new xeogl.ColorTarget();
 
- // First Entity renders to the ColorTarget
-
- var entity1 = new xeogl.Entity({
-    geometry: new xeogl.BoxGeometry(),
-    colorTarget: colorTarget
+ var outline = new xeogl.Outline({
+    thickness: 15,      // Default
+    color: [1,0,0]      // Default
  });
 
+ new xeogl.Entity({
+     geometry: new xeogl.TorusGeometry(),
+     outline: outline,
+     modes: new xeogl.Modes({
+        outline: false  // Hide the outline (default)
+     });
+ });
 
- // Second Entity is textured with the
- // image of the first Entity
-
- var entity2 = new xeogl.Entity({
-     geometry: new xeogl.BoxGeometry()
-     material: new xeogl.PhongMaterial({
-         diffuseMap: new xeogl.Texture({
-            target: colorTarget
-         })
-     })
-});
+ new xeogl.Entity({
+     geometry: new xeogl.BoxGeometry(),
+     outline: outline,
+     modes: new xeogl.Modes({
+        outline: true  // Show the outline
+     });
+ });
  &#x60;&#x60;&#x60;&#x60;
 
-
+ @class Outline
  @module xeogl
- @submodule rendering
+ @submodule outline
  @constructor
- @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, creates this ColorTarget within the
+ @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, creates this Outline within the
  default {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} ColorTarget configuration
+ @param [cfg] {*} Outline configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ColorTarget.
- @param [cfg.active=true] {Boolean} Indicates if this ColorTarget is active or not.
- @param [cfg.size=null] {Array of Number} Optional fixed size for the ColorTarget&#x27;s pixel buffer. When this is null, the buffer
- will dynamically resize to the canvas.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Outline.
+ @param [cfg.thickness=15] {Number} Thickness of the outline in pixels.
+ @param [cfg.color=[1,1,0]] {Float32Array} The RGB outline color.
  @extends Component
  */
 (function () {
 
     &quot;use strict&quot;;
 
-    xeogl.ColorTarget = xeogl.Component.extend({
+    xeogl.Outline = xeogl.Component.extend({
 
-        type: &quot;xeogl.ColorTarget&quot;,
+        type: &quot;xeogl.Outline&quot;,
 
         _init: function (cfg) {
 
-            this._state = new xeogl.renderer.RenderTarget({
-                type: xeogl.renderer.RenderTarget.COLOR,
-                renderBuf: null
+            this._state = new xeogl.renderer.Outline({
+                thickness: 15,
+                color: xeogl.math.vec3([1.0, 1.0, 0.0])
             });
 
-            var canvas = this.scene.canvas;
-            var self = this;
-
-            this._webglContextRestored = canvas.on(&quot;webglContextRestored&quot;,
-                function () {
-                    if (self._state.renderBuf) {
-                        self._state.renderBuf.webglRestored(canvas.gl);
-                    }
-                });
-
-            this.size = cfg.size;
-            this.active = cfg.active;
+            this.thickness = cfg.thickness;
+            this.color = cfg.color;
         },
 
         _props: {
 
             /**
-             * The resolution of this ColorTarget&#x27;s pixel buffer.
+             * The Outline&#x27;s thickness in pixels.
              *
-             * Fires an {{#crossLink &quot;ColorTarget/size:event&quot;}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink &quot;Outline/thickness:event&quot;}}{{/crossLink}} event on change.
              *
-             * @property size
-             * @default null
-             * @type {Array of Number}
+             * @property thickness
+             * @default 15
+             * @type Number
              */
-            size: {
+            thickness: {
 
                 set: function (value) {
 
-                    value = value || null;
+                    // TODO: Only accept rendering thickness in range [0...MAX_thickness]
 
-                    this._size = value;
+                    value = value || 15;
 
-                    if (this._active) {
-                        this._state.renderBuf.setSize(this._size);
+                    value = Math.round(value);
+
+
+                    if (value === this._state.thickness) {
+                        return;
                     }
 
+                    this._state.thickness = value;
+
+                    this._renderer.imageDirty = true;
+
                     /**
-                     Fired whenever this ColorTarget&#x27;s {{#crossLink &quot;ColorTarget/size:property&quot;}}{{/crossLink}} property changes.
-                     @event size
-                     @param value {Array of Number} The property&#x27;s new value
+                     * Fired whenever this Outline&#x27;s  {{#crossLink &quot;Outline/thickness:property&quot;}}{{/crossLink}} property changes.
+                     *
+                     * @event thickness
+                     * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;size&quot;, this._size);
+                    this.fire(&quot;thickness&quot;, this._state.thickness);
                 },
 
                 get: function () {
-                    return this._size;
+                    return this._state.thickness;
                 }
             },
 
             /**
-             * Determines whether this ColorTarget is active or not.
-             *
-             * When active, the pixel colors of associated {{#crossLink &quot;Entities&quot;}}{{/crossLink}} will be rendered
-             * to this ColorTarget. When inactive, the colors will be written to the default WebGL color buffer instead.
-             *
-             * Fires a {{#crossLink &quot;ColorTarget/active:event&quot;}}{{/crossLink}} event on change.
-             *
-             * @property active
-             * @default true
-             * @type Number
+             The Outline&#x27;s RGB color.
+
+             Fires a {{#crossLink &quot;Outline/color:event&quot;}}{{/crossLink}} event on change.
+
+             @property color
+             @default [1.0, 1.0, 0.0]
+             @type Float32Array
              */
-            active: {
+            color: {
 
                 set: function (value) {
 
-                    value = value !== false;
+                    var color = this._state.color;
 
-                    if (this._active === value) {
+                    if (!color) {
+                        color = this._state.color = new Float32Array(3);
+
+                    } else if (value &amp;&amp; color[0] === value[0] &amp;&amp; color[1] === value[1] &amp;&amp; color[2] === value[2]) {
                         return;
                     }
 
-                    var state = this._state;
-                    this._active = value;
-
-                    if (this._active) {
-
-                        var canvas = this.scene.canvas;
-
-                        state.renderBuf = new xeogl.renderer.webgl.RenderBuffer({
-                            canvas: canvas.canvas,
-                            gl: canvas.gl,
-                            size: this._size
-                        });
-
-                        this._renderer.imageDirty = true;
+                    if (value) {
+                        color[0] = value[0];
+                        color[1] = value[1];
+                        color[2] = value[2];
 
                     } else {
-
-                        if (state.renderBuf) {
-                            state.renderBuf.destroy();
-                            state.renderBuf = null;
-                        }
+                        color[0] = 1;
+                        color[1] = 1;
+                        color[2] = 0;
                     }
 
-                    /**
-                     Fired whenever this ColorTarget&#x27;s {{#crossLink &quot;ColorTarget/active:property&quot;}}{{/crossLink}} property changes.
+                    this._renderer.imageDirty = true;
 
-                     @event active
-                     @param value {Boolean} The property&#x27;s new value
+                    /**
+                     * Fired whenever this Outline&#x27;s {{#crossLink &quot;Outline/color:property&quot;}}{{/crossLink}} property changes.
+                     *
+                     * @event color
+                     * @param value {Float32Array} The property&#x27;s new value
                      */
-                    this.fire(&quot;active&quot;, this._active);
+                    this.fire(&quot;color&quot;, this._state.color);
                 },
 
                 get: function () {
-                    return this._active;
+                    return this._state.color;
                 }
             }
         },
 
         _compile: function () {
-            this._renderer.colorTarget = this._state;
+            this._renderer.outline = this._state;
         },
 
         _getJSON: function () {
-
-            var json = {
-                active: this._active
+            return {
+                thickness: this._state.thickness,
+                color: xeogl.math.vecToArray(this._state.color)
             };
-
-            if (this._size) {
-                json.size = this._size
-            }
-
-            return json;
         },
 
         _destroy: function () {
-
-            this.scene.canvas.off(this._webglContextRestored);
-
-            if (this._state.renderBuf) {
-                this._state.renderBuf.destroy();
-            }
-
             this._state.destroy();
         }
     });

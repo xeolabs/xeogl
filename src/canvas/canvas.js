@@ -189,12 +189,14 @@
             this.contextAttr.alpha = this.transparent;
 
             if (this.contextAttr.alpha === undefined || this.contextAttr.alpha === null) {
-                this.contextAttr.alphs = this.transparent;
+                this.contextAttr.alpha = this.transparent;
             }
 
             if (this.contextAttr.preserveDrawingBuffer === undefined || this.contextAttr.preserveDrawingBuffer === null) {
                 this.contextAttr.preserveDrawingBuffer = false;
             }
+
+            this.contextAttr.stencil = true;
 
             if (!cfg.canvas) {
 

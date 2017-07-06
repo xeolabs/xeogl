@@ -49,7 +49,6 @@
                                 <li><a href="../classes/Billboard.html">Billboard</a></li>
                                 <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
-                                <li><a href="../classes/BoundingSphereGeometry.html">BoundingSphereGeometry</a></li>
                                 <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
                                 <li><a href="../classes/BuildableModel.html">BuildableModel</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
@@ -63,7 +62,6 @@
                                 <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
-                                <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
@@ -71,7 +69,6 @@
                                 <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
                                 <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
-                                <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
                                 <li><a href="../classes/Entity.html">Entity</a></li>
                                 <li><a href="../classes/Fog.html">Fog</a></li>
@@ -95,6 +92,7 @@
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
+                                <li><a href="../classes/Outline.html">Outline</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
@@ -110,8 +108,6 @@
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
-                                <li><a href="../classes/Shader.html">Shader</a></li>
-                                <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
                                 <li><a href="../classes/SpecularMaterial.html">SpecularMaterial</a></li>
@@ -120,7 +116,6 @@
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/SpotLight.html">SpotLight</a></li>
-                                <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
                                 <li><a href="../classes/Story.html">Story</a></li>
@@ -161,8 +156,8 @@
                                 <li><a href="..//modules/materials.html">materials</a></li>
                                 <li><a href="..//modules/math.html">math</a></li>
                                 <li><a href="..//modules/models.html">models</a></li>
+                                <li><a href="..//modules/outline.html">outline</a></li>
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
-                                <li><a href="..//modules/shaders.html">shaders</a></li>
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="..//modules/stories.html">stories</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
@@ -479,40 +474,21 @@
                 this._up1[2] = view.up[2];
 
                 var aabb;
-                var sphere;
                 var eye;
                 var look;
                 var up;
                 var componentId;
 
                 if (params.worldBoundary) {
-
-                    // Argument is a Component subtype with a worldBoundary
-
                     aabb = params.worldBoundary.aabb;
 
                 } else if (params.aabb) {
-
                     aabb = params.aabb;
 
-                    // Argument is a Boundary3D
-
-                } else if (params.length === 6) { // [xmin,ymin,zmin, xmax,ymax,zmax]
-
-                    // Argument is an AABB
-
+                } else if (params.length === 6) {
                     aabb = params;
 
-                    //} else if (params.length === 4) { // [x,y,z,radius]
-                    //
-                    //    // Argument is an OBB
-                    //
-                    //    sphere = params;
-
                 } else if (params.eye || params.look || params.up) {
-
-                    // Argument is eye, look and up positions
-
                     eye = params.eye;
                     look = params.look;
                     up = params.up;
@@ -635,11 +611,11 @@
         /**
          * Jumps this CameraFlightAnimation&#x27;s {{#crossLink &quot;Camera&quot;}}{{/crossLink}} to the given target.
          *
+         *  * When the target is a boundary, this CameraFlightAnimation will position the {{#crossLink &quot;Camera&quot;}}{{/crossLink}}
+         *  at where the target fills most of the canvas.
+         *  * When the target is an explicit {{#crossLink &quot;Camera&quot;}}{{/crossLink}} position, given as &#x60;&#x60;&#x60;&#x60;eye&#x60;&#x60;&#x60;&#x60;, &#x60;&#x60;&#x60;&#x60;look&#x60;&#x60;&#x60;&#x60; and &#x60;&#x60;&#x60;&#x60;up&#x60;&#x60;&#x60;&#x60;
+         *  vectors, then this CameraFlightAnimation will jump the {{#crossLink &quot;Camera&quot;}}{{/crossLink}} to that target.
          *
-         *     * When the target is a boundary, this CameraFlightAnimation will position the {{#crossLink &quot;Camera&quot;}}{{/crossLink}}
-         *     at where the target fills most of the canvas.
-         *     * When the target is an explicit {{#crossLink &quot;Camera&quot;}}{{/crossLink}} position, given as &#x60;&#x60;&#x60;&#x60;eye&#x60;&#x60;&#x60;&#x60;, &#x60;&#x60;&#x60;&#x60;look&#x60;&#x60;&#x60;&#x60; and &#x60;&#x60;&#x60;&#x60;up&#x60;&#x60;&#x60;&#x60;
-         *      vectors, then this CameraFlightAnimation will jump the {{#crossLink &quot;Camera&quot;}}{{/crossLink}} to that target.
          * @method flyTo
          * @param params  {*|Component} Either a parameters object or a {{#crossLink &quot;Component&quot;}}{{/crossLink}} subtype that has a {{#crossLink &quot;WorldBoundary&quot;}}{{/crossLink}}.
          * @param[params.arc=0]  {Number} Factor in range [0..1] indicating how much the
@@ -663,7 +639,6 @@
 
         _jumpTo: (function () {
 
-            var eyeLookVec = math.vec3();
             var newEye = math.vec3();
             var newLook = math.vec3();
             var newUp = math.vec3();
@@ -685,40 +660,21 @@
                 var view = camera.view;
 
                 var aabb;
-                var sphere;
                 var componentId;
 
-                if (params.worldBoundary) {
+                if (params.worldBoundary) { // Component with a worldBoundary
 
-                    // Argument is a Component subtype with a worldBoundary
+                    aabb = params.worldBoundary.aabb;
 
-                    sphere = params.worldBoundary.sphere;
-
-                } else if (params.sphere) {
-
-                    sphere = params.sphere;
-
-                } else if (params.aabb) {
+                } else if (params.aabb) { // Boundary3D
 
                     aabb = params.aabb;
 
-                    // Argument is a Boundary3D
-
-                } else if (params.length === 6) { // [xmin,ymin,zmin, xmax,ymax,zmax]
-
-                    // Argument is an AABB
+                } else if (params.length === 6) { // AABB
 
                     aabb = params;
 
-                } else if (params.length === 4) { // [x,y,z,radius]
-
-                    // Argument is an OBB
-
-                    sphere = params;
-
-                } else if (params.eye || params.look || params.up) {
-
-                    // Argument is eye, look and up positions
+                } else if (params.eye || params.look || params.up) { // Camera pose
 
                     newEye = params.eye;
                     newLook = params.look;
@@ -749,38 +705,23 @@
                         return;
                     }
 
-                    sphere = worldBoundary.sphere;
+                    aabb = worldBoundary.aabb;
                 }
 
                 var offset = params.offset;
 
-                if (aabb || sphere) {
+                if (aabb) {
 
                     var diag;
 
-                    if (aabb) {
+                    if (aabb[3] &lt;= aabb[0] || aabb[4] &lt;= aabb[1] || aabb[5] &lt;= aabb[2]) {
 
-                        if (aabb[3] &lt;= aabb[0] || aabb[4] &lt;= aabb[1] || aabb[5] &lt;= aabb[2]) {
-
-                            // Don&#x27;t fly to an empty boundary
-                            return;
-                        }
-
-                        diag = math.getAABB3Diag(aabb);
-                        math.getAABB3Center(aabb, newLook);
-
-                    } else {
-
-                        if (sphere[3] &lt;= 0) {
-                            return;
-                        }
-
-                        diag = sphere[3] * 2;
-
-                        newLook[0] = sphere[0];
-                        newLook[1] = sphere[1];
-                        newLook[2] = sphere[2];
+                        // Don&#x27;t fly to an empty boundary
+                        return;
                     }
+
+                    diag = math.getAABB3Diag(aabb);
+                    math.getAABB3Center(aabb, newLook);
 
                     if (this._trail) {
                         math.subVec3(view.look, newLook, newLookEyeVec);

@@ -49,7 +49,6 @@
                                 <li><a href="../classes/Billboard.html">Billboard</a></li>
                                 <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
-                                <li><a href="../classes/BoundingSphereGeometry.html">BoundingSphereGeometry</a></li>
                                 <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
                                 <li><a href="../classes/BuildableModel.html">BuildableModel</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
@@ -63,7 +62,6 @@
                                 <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
-                                <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
@@ -71,7 +69,6 @@
                                 <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
                                 <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
-                                <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
                                 <li><a href="../classes/Entity.html">Entity</a></li>
                                 <li><a href="../classes/Fog.html">Fog</a></li>
@@ -95,6 +92,7 @@
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
+                                <li><a href="../classes/Outline.html">Outline</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
@@ -110,8 +108,6 @@
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
-                                <li><a href="../classes/Shader.html">Shader</a></li>
-                                <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Shadow.html">Shadow</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
                                 <li><a href="../classes/SpecularMaterial.html">SpecularMaterial</a></li>
@@ -120,7 +116,6 @@
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/SpotLight.html">SpotLight</a></li>
-                                <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
                                 <li><a href="../classes/Story.html">Story</a></li>
@@ -161,8 +156,8 @@
                                 <li><a href="..//modules/materials.html">materials</a></li>
                                 <li><a href="..//modules/math.html">math</a></li>
                                 <li><a href="..//modules/models.html">models</a></li>
+                                <li><a href="..//modules/outline.html">outline</a></li>
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
-                                <li><a href="..//modules/shaders.html">shaders</a></li>
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="..//modules/stories.html">stories</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
@@ -239,6 +234,8 @@
         var fragmentPickPrimSrc;
         var vertexShadowSrc;
         var fragmentShadowSrc;
+        var vertexOutlineSrc;
+        var fragmentOutlineSrc;
 
         /**
          * Get source code for a program to render the given states.
@@ -278,7 +275,9 @@
                 vertexDraw(),
                 fragmentDraw(),
                 vertexShadow(),
-                fragmentShadow()
+                fragmentShadow(),
+                vertexOutline(),
+                fragmentOutline()
             );
 
             cache[hash] = source;
@@ -464,13 +463,76 @@
             return fragmentShadowSrc = end();
         }
 
-        function vertexDraw() {
+        function vertexOutline() {
+            begin();
+            add(&quot;attribute vec4 position;&quot;);
+            add(&quot;uniform mat4 modelMatrix;&quot;);
+            add(&quot;uniform mat4 viewMatrix;&quot;);
+            add(&quot;uniform mat4 projMatrix;&quot;);
+            add(&quot;uniform float thickness;&quot;);
 
-            var vertex = states.shader.vertex;
-
-            if (vertex) { // Custom vertex shader
-                return vertex;
+            if (normals) {
+                add(&quot;attribute vec3 normal;&quot;);
             }
+
+            if (states.billboard.active) {
+                add(&quot;void billboard(inout mat4 mat) {&quot;);
+                add(&quot;   mat[0][0] = 1.0;&quot;);
+                add(&quot;   mat[0][1] = 0.0;&quot;);
+                add(&quot;   mat[0][2] = 0.0;&quot;);
+                if (states.billboard.spherical) {
+                    add(&quot;   mat[1][0] = 0.0;&quot;);
+                    add(&quot;   mat[1][1] = 1.0;&quot;);
+                    add(&quot;   mat[1][2] = 0.0;&quot;);
+                }
+                add(&quot;   mat[2][0] = 0.0;&quot;);
+                add(&quot;   mat[2][1] = 0.0;&quot;);
+                add(&quot;   mat[2][2] =1.0;&quot;);
+                add(&quot;}&quot;);
+            }
+
+            add(&quot;void main(void) {&quot;);
+
+            add(&quot;mat4 viewMatrix2 = viewMatrix;&quot;);
+            add(&quot;mat4 modelMatrix2 = modelMatrix;&quot;);
+
+            if (states.stationary.active) {
+                add(&quot;viewMatrix2[3][0] = viewMatrix2[3][1] = viewMatrix2[3][2] = 0.0;&quot;)
+            }
+
+            if (states.billboard.active) {
+                add(&quot;billboard(modelMatrix2);&quot;);
+                add(&quot;billboard(viewMatrix2);&quot;);
+            }
+
+            // Displacement
+
+            if (normals) {
+                add(&quot;vec4 projPos = projMatrix * viewMatrix2 * modelMatrix2 * vec4(position.xyz, 1.0); &quot;);
+                add(&quot;  vec3 offset = (normalize(normal) * (thickness * 0.0005 * (projPos.z/1.0)));&quot;);
+            } else {
+                add(&quot;  vec3 offset = vec3(0.0, 0.0, 0.0);&quot;);
+            }
+
+            add(&quot;vec4 worldVertex = modelMatrix * vec4(position.xyz + offset, 1.0); &quot;);
+
+            add(&quot;  gl_Position = projMatrix * (viewMatrix * worldVertex);&quot;);
+            add(&quot;}&quot;);
+            return vertexOutlineSrc = end();
+        }
+
+        function fragmentOutline() {
+            begin();
+            add(&quot;precision &quot; + getFSFloatPrecision(states.gl) + &quot; float;&quot;);
+            add(&quot;uniform vec3  color;&quot;);
+            add(&quot;void main(void) {&quot;);
+            add(&quot;   gl_FragColor = vec4(color, 1.0);&quot;);
+            add(&quot;}&quot;);
+
+            return fragmentOutlineSrc = end();
+        }
+
+        function vertexDraw() {
 
             var i;
             var len;
@@ -710,12 +772,6 @@
         }
 
         function fragmentDraw() {
-
-            var fragment = states.shader.fragment;
-
-            if (fragment) { // Custom fragment shader
-                return fragment;
-            }
 
             var material = states.material;
             var geometry = states.geometry;
@@ -1230,7 +1286,8 @@
                     }
                     if (light.type === &quot;dir&quot; &amp;&amp; light.space === &quot;view&quot;) {
                         add(&quot;uniform vec3 lightDir&quot; + i + &quot;;&quot;);
-                    } if (light.type === &quot;point&quot; &amp;&amp; light.space === &quot;view&quot;) {
+                    }
+                    if (light.type === &quot;point&quot; &amp;&amp; light.space === &quot;view&quot;) {
                         add(&quot;uniform vec3 lightPos&quot; + i + &quot;;&quot;);
                     } else {
                         add(&quot;varying vec4 vViewLightReverseDirAndDist&quot; + i + &quot;;&quot;);
