@@ -9,7 +9,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "Billboard",
         "Boundary2D",
         "Boundary3D",
-        "BoundingSphereGeometry",
         "BoxGeometry",
         "BuildableModel",
         "Camera",

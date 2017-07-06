@@ -97,7 +97,6 @@
     "src/geometry/boxGeometry.js",
     "src/geometry/torusGeometry.js",
     "src/geometry/sphereGeometry.js",
-    "src/geometry/boundingSphereGeometry.js",
     "src/geometry/obbGeometry.js",
     "src/geometry/aabbGeometry.js",
     "src/geometry/pathGeometry.js",

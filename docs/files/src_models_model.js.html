@@ -49,7 +49,6 @@
                                 <li><a href="../classes/Billboard.html">Billboard</a></li>
                                 <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
-                                <li><a href="../classes/BoundingSphereGeometry.html">BoundingSphereGeometry</a></li>
                                 <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
                                 <li><a href="../classes/BuildableModel.html">BuildableModel</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
@@ -399,7 +398,6 @@
         obb = worldBoundary.obb;
         aabb = worldBoundary.aabb;
         center = worldBoundary.center;
-        sphere = worldBoundary.sphere();
         //...
     });
 
@@ -410,9 +408,8 @@
 
  Since xeogl is all about lazy-execution to avoid needless work, the {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}} will
  only actually recompute its extents the first time we read its {{#crossLink &quot;Boundary3D/obb:property&quot;}}{{/crossLink}},
- {{#crossLink &quot;Boundary3D/aabb:property&quot;}}{{/crossLink}}, {{#crossLink &quot;Boundary3D/center:property&quot;}}{{/crossLink}},
- {{#crossLink &quot;Boundary3D/center:property&quot;}}{{/crossLink}} or
- {{#crossLink &quot;Boundary3D/sphere:property&quot;}}{{/crossLink}} properties after it fired its
+ {{#crossLink &quot;Boundary3D/aabb:property&quot;}}{{/crossLink}}, {{#crossLink &quot;Boundary3D/center:property&quot;}}{{/crossLink}} or
+ {{#crossLink &quot;Boundary3D/center:property&quot;}}{{/crossLink}} properties after it fired its
  last {{#crossLink &quot;Boundary3D/updated:event&quot;}}{{/crossLink}} event.
 
  Also, the Model lazy-instantiates its {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}} the first time we reference

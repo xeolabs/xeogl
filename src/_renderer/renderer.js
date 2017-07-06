@@ -84,12 +84,6 @@
         // draw list, along with any results of the render, such as pick hits
         this._frameCtx = {
             canvas: this.canvas,
-            renderTarget: null,
-            renderBuf: null,
-            depthbufEnabled: null,
-            clearDepth: null,
-            depthFunc: null,
-            blendEnabled: false,
             backfaces: true,
             frontface: true, // true = "ccw" else "cw"
             textureUnit: 0,
@@ -100,7 +94,6 @@
             bindTexture: 0,
             bindArray: null,
             pass: null,
-            bindOutputFramebuffer: null,
             pickIndex: 0,
             shadowViewMatrix: null,
             shadowProjmatrix: null,
@@ -649,10 +642,6 @@
 
         var frameCtx = this._frameCtx;
 
-        frameCtx.depthbufEnabled = null;
-        frameCtx.clearDepth = null;
-        frameCtx.depthFunc = gl.LESS;
-        frameCtx.blendEnabled = false;
         frameCtx.backfaces = true;
         frameCtx.frontface = true;
         frameCtx.drawElements = 0;
@@ -709,10 +698,10 @@
     xeogl.renderer.Renderer.prototype._renderObjectList = (function () {
 
         var outlinedObjects = [];
-        var lastChunkId = new Int32Array(30);
-
         var transparentObjects = [];
         var numTransparentObjects = 0;
+
+        var lastChunkId = new Int32Array(30);
 
         function clearStateTracking() {
             for (var i = 0; i < 20; i++) {
@@ -767,10 +756,6 @@
 
             var frameCtx = this._frameCtx;
 
-            frameCtx.depthbufEnabled = null;
-            frameCtx.clearDepth = null;
-            frameCtx.depthFunc = gl.LESS;
-            frameCtx.blendEnabled = false;
             frameCtx.backfaces = true;
             frameCtx.frontface = true; // true == "ccw" else "cw"
             frameCtx.textureUnit = 0;
@@ -781,7 +766,6 @@
             frameCtx.bindTexture = 0;
             frameCtx.bindArray = 0;
             frameCtx.pass = params.pass;
-            frameCtx.bindOutputFramebuffer = this.bindOutputFramebuffer;
             frameCtx.pickViewMatrix = params.pickViewMatrix;
             frameCtx.pickProjMatrix = params.pickProjMatrix;
             frameCtx.pickIndex = 0;
@@ -797,7 +781,9 @@
             gl.enable(gl.DEPTH_TEST);
             gl.frontFace(gl.CCW);
             gl.enable(gl.CULL_FACE);
+
             gl.depthMask(true);
+            gl.colorMask(true, true, true, false);
 
             var i;
             var len;
@@ -878,7 +864,13 @@
 
                 gl.enable(gl.CULL_FACE);
                 gl.enable(gl.BLEND);
-                gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+                gl.blendEquation( gl.FUNC_ADD );
+                gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA );
+
+
+                //gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+                gl.colorMask(true, true, true, true);
+
 
                 numOutlinedObjects = 0;
 
@@ -896,6 +888,7 @@
                 // Transparent outlined objects are not supported yet
 
                 gl.disable(gl.BLEND);
+                gl.colorMask(true, true, true, false);
             }
 
             var endTime = Date.now();
@@ -1051,7 +1044,6 @@
         gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
         gl.clearColor(0, 0, 0, 0);
         gl.enable(gl.DEPTH_TEST);
-        gl.frontFace(gl.CCW);
         gl.disable(gl.CULL_FACE);
         gl.disable(gl.BLEND);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -1107,7 +1099,6 @@
         gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
         gl.clearColor(0, 0, 0, 0);
         gl.enable(gl.DEPTH_TEST);
-        gl.frontFace(gl.CCW);
         gl.disable(gl.CULL_FACE);
         gl.disable(gl.BLEND);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);

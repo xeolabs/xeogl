@@ -71,8 +71,6 @@
  // which contains the extents of the boundary on each axis
  var aabb = worldBoundary.aabb;
 
- // Get the World-space bounding sphere:
- var sphere = worldBoundary.center;
  ````
 
  #### View-space

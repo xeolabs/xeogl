@@ -3894,9 +3894,9 @@ var Canvas2Image = (function () {
     math.getAABB3Center = function (aabb, dest) {
         var r = dest || math.vec3();
 
-        r[0] = (aabb[3] + aabb[0] ) * 0.5;
-        r[1] = (aabb[4] + aabb[1] ) * 0.5;
-        r[2] = (aabb[5] + aabb[2] ) * 0.5;
+        r[0] = (aabb[0] + aabb[3] ) / 2;
+        r[1] = (aabb[1] + aabb[4] ) / 2;
+        r[2] = (aabb[2] + aabb[5] ) / 2;
 
         return r;
     };
@@ -5258,12 +5258,6 @@ var Canvas2Image = (function () {
         // draw list, along with any results of the render, such as pick hits
         this._frameCtx = {
             canvas: this.canvas,
-            renderTarget: null,
-            renderBuf: null,
-            depthbufEnabled: null,
-            clearDepth: null,
-            depthFunc: null,
-            blendEnabled: false,
             backfaces: true,
             frontface: true, // true = "ccw" else "cw"
             textureUnit: 0,
@@ -5274,7 +5268,6 @@ var Canvas2Image = (function () {
             bindTexture: 0,
             bindArray: null,
             pass: null,
-            bindOutputFramebuffer: null,
             pickIndex: 0,
             shadowViewMatrix: null,
             shadowProjmatrix: null,
@@ -5823,10 +5816,6 @@ var Canvas2Image = (function () {
 
         var frameCtx = this._frameCtx;
 
-        frameCtx.depthbufEnabled = null;
-        frameCtx.clearDepth = null;
-        frameCtx.depthFunc = gl.LESS;
-        frameCtx.blendEnabled = false;
         frameCtx.backfaces = true;
         frameCtx.frontface = true;
         frameCtx.drawElements = 0;
@@ -5883,10 +5872,10 @@ var Canvas2Image = (function () {
     xeogl.renderer.Renderer.prototype._renderObjectList = (function () {
 
         var outlinedObjects = [];
-        var lastChunkId = new Int32Array(30);
-
         var transparentObjects = [];
         var numTransparentObjects = 0;
+
+        var lastChunkId = new Int32Array(30);
 
         function clearStateTracking() {
             for (var i = 0; i < 20; i++) {
@@ -5941,10 +5930,6 @@ var Canvas2Image = (function () {
 
             var frameCtx = this._frameCtx;
 
-            frameCtx.depthbufEnabled = null;
-            frameCtx.clearDepth = null;
-            frameCtx.depthFunc = gl.LESS;
-            frameCtx.blendEnabled = false;
             frameCtx.backfaces = true;
             frameCtx.frontface = true; // true == "ccw" else "cw"
             frameCtx.textureUnit = 0;
@@ -5955,7 +5940,6 @@ var Canvas2Image = (function () {
             frameCtx.bindTexture = 0;
             frameCtx.bindArray = 0;
             frameCtx.pass = params.pass;
-            frameCtx.bindOutputFramebuffer = this.bindOutputFramebuffer;
             frameCtx.pickViewMatrix = params.pickViewMatrix;
             frameCtx.pickProjMatrix = params.pickProjMatrix;
             frameCtx.pickIndex = 0;
@@ -5971,7 +5955,9 @@ var Canvas2Image = (function () {
             gl.enable(gl.DEPTH_TEST);
             gl.frontFace(gl.CCW);
             gl.enable(gl.CULL_FACE);
+
             gl.depthMask(true);
+            gl.colorMask(true, true, true, false);
 
             var i;
             var len;
@@ -6052,7 +6038,13 @@ var Canvas2Image = (function () {
 
                 gl.enable(gl.CULL_FACE);
                 gl.enable(gl.BLEND);
-                gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+                gl.blendEquation( gl.FUNC_ADD );
+                gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA );
+
+
+                //gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+                gl.colorMask(true, true, true, true);
+
 
                 numOutlinedObjects = 0;
 
@@ -6070,6 +6062,7 @@ var Canvas2Image = (function () {
                 // Transparent outlined objects are not supported yet
 
                 gl.disable(gl.BLEND);
+                gl.colorMask(true, true, true, false);
             }
 
             var endTime = Date.now();
@@ -6211,10 +6204,6 @@ var Canvas2Image = (function () {
 
         var frameCtx = this._frameCtx;
 
-        frameCtx.depthbufEnabled = null;
-        frameCtx.clearDepth = null;
-        frameCtx.depthFunc = gl.LESS;
-        frameCtx.blendEnabled = false;
         frameCtx.backfaces = true;
         frameCtx.frontface = true; // true == "ccw" else "cw"
         frameCtx.textureUnit = 0;
@@ -6229,7 +6218,6 @@ var Canvas2Image = (function () {
         gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
         gl.clearColor(0, 0, 0, 0);
         gl.enable(gl.DEPTH_TEST);
-        gl.frontFace(gl.CCW);
         gl.disable(gl.CULL_FACE);
         gl.disable(gl.BLEND);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -6272,11 +6260,6 @@ var Canvas2Image = (function () {
         var gl = this.gl;
 
         var frameCtx = this._frameCtx;
-        frameCtx.renderBuf = null;
-        frameCtx.depthbufEnabled = null;
-        frameCtx.clearDepth = null;
-        frameCtx.depthFunc = gl.LESS;
-        frameCtx.blendEnabled = false;
         frameCtx.backfaces = true;
         frameCtx.frontface = true; // true == "ccw" else "cw"
         frameCtx.drawElements = 0;
@@ -6290,7 +6273,6 @@ var Canvas2Image = (function () {
         gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
         gl.clearColor(0, 0, 0, 0);
         gl.enable(gl.DEPTH_TEST);
-        gl.frontFace(gl.CCW);
         gl.disable(gl.CULL_FACE);
         gl.disable(gl.BLEND);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -15396,40 +15378,21 @@ var Canvas2Image = (function () {
                 this._up1[2] = view.up[2];
 
                 var aabb;
-                var sphere;
                 var eye;
                 var look;
                 var up;
                 var componentId;
 
                 if (params.worldBoundary) {
-
-                    // Argument is a Component subtype with a worldBoundary
-
                     aabb = params.worldBoundary.aabb;
 
                 } else if (params.aabb) {
-
                     aabb = params.aabb;
 
-                    // Argument is a Boundary3D
-
-                } else if (params.length === 6) { // [xmin,ymin,zmin, xmax,ymax,zmax]
-
-                    // Argument is an AABB
-
+                } else if (params.length === 6) {
                     aabb = params;
 
-                    //} else if (params.length === 4) { // [x,y,z,radius]
-                    //
-                    //    // Argument is an OBB
-                    //
-                    //    sphere = params;
-
                 } else if (params.eye || params.look || params.up) {
-
-                    // Argument is eye, look and up positions
-
                     eye = params.eye;
                     look = params.look;
                     up = params.up;
@@ -15552,11 +15515,11 @@ var Canvas2Image = (function () {
         /**
          * Jumps this CameraFlightAnimation's {{#crossLink "Camera"}}{{/crossLink}} to the given target.
          *
+         *  * When the target is a boundary, this CameraFlightAnimation will position the {{#crossLink "Camera"}}{{/crossLink}}
+         *  at where the target fills most of the canvas.
+         *  * When the target is an explicit {{#crossLink "Camera"}}{{/crossLink}} position, given as ````eye````, ````look```` and ````up````
+         *  vectors, then this CameraFlightAnimation will jump the {{#crossLink "Camera"}}{{/crossLink}} to that target.
          *
-         *     * When the target is a boundary, this CameraFlightAnimation will position the {{#crossLink "Camera"}}{{/crossLink}}
-         *     at where the target fills most of the canvas.
-         *     * When the target is an explicit {{#crossLink "Camera"}}{{/crossLink}} position, given as ````eye````, ````look```` and ````up````
-         *      vectors, then this CameraFlightAnimation will jump the {{#crossLink "Camera"}}{{/crossLink}} to that target.
          * @method flyTo
          * @param params  {*|Component} Either a parameters object or a {{#crossLink "Component"}}{{/crossLink}} subtype that has a {{#crossLink "WorldBoundary"}}{{/crossLink}}.
          * @param[params.arc=0]  {Number} Factor in range [0..1] indicating how much the
@@ -15580,7 +15543,6 @@ var Canvas2Image = (function () {
 
         _jumpTo: (function () {
 
-            var eyeLookVec = math.vec3();
             var newEye = math.vec3();
             var newLook = math.vec3();
             var newUp = math.vec3();
@@ -15602,40 +15564,21 @@ var Canvas2Image = (function () {
                 var view = camera.view;
 
                 var aabb;
-                var sphere;
                 var componentId;
 
-                if (params.worldBoundary) {
+                if (params.worldBoundary) { // Component with a worldBoundary
 
-                    // Argument is a Component subtype with a worldBoundary
+                    aabb = params.worldBoundary.aabb;
 
-                    sphere = params.worldBoundary.sphere;
-
-                } else if (params.sphere) {
-
-                    sphere = params.sphere;
-
-                } else if (params.aabb) {
+                } else if (params.aabb) { // Boundary3D
 
                     aabb = params.aabb;
 
-                    // Argument is a Boundary3D
-
-                } else if (params.length === 6) { // [xmin,ymin,zmin, xmax,ymax,zmax]
-
-                    // Argument is an AABB
+                } else if (params.length === 6) { // AABB
 
                     aabb = params;
 
-                } else if (params.length === 4) { // [x,y,z,radius]
-
-                    // Argument is an OBB
-
-                    sphere = params;
-
-                } else if (params.eye || params.look || params.up) {
-
-                    // Argument is eye, look and up positions
+                } else if (params.eye || params.look || params.up) { // Camera pose
 
                     newEye = params.eye;
                     newLook = params.look;
@@ -15666,38 +15609,23 @@ var Canvas2Image = (function () {
                         return;
                     }
 
-                    sphere = worldBoundary.sphere;
+                    aabb = worldBoundary.aabb;
                 }
 
                 var offset = params.offset;
 
-                if (aabb || sphere) {
+                if (aabb) {
 
                     var diag;
 
-                    if (aabb) {
+                    if (aabb[3] <= aabb[0] || aabb[4] <= aabb[1] || aabb[5] <= aabb[2]) {
 
-                        if (aabb[3] <= aabb[0] || aabb[4] <= aabb[1] || aabb[5] <= aabb[2]) {
-
-                            // Don't fly to an empty boundary
-                            return;
-                        }
-
-                        diag = math.getAABB3Diag(aabb);
-                        math.getAABB3Center(aabb, newLook);
-
-                    } else {
-
-                        if (sphere[3] <= 0) {
-                            return;
-                        }
-
-                        diag = sphere[3] * 2;
-
-                        newLook[0] = sphere[0];
-                        newLook[1] = sphere[1];
-                        newLook[2] = sphere[2];
+                        // Don't fly to an empty boundary
+                        return;
                     }
+
+                    diag = math.getAABB3Diag(aabb);
+                    math.getAABB3Center(aabb, newLook);
 
                     if (this._trail) {
                         math.subVec3(view.look, newLook, newLookEyeVec);
@@ -18170,7 +18098,6 @@ var Canvas2Image = (function () {
 
             var worldBoundary = e.entity.worldBoundary;
             var aabb = worldBoundary.aabb;
-            var sphere = worldBoundary.sphere;
 
             this._boundaryHelper.geometry.aabb = aabb;
             //    this._boundaryHelper.visibility.visible = true;
@@ -21313,7 +21240,6 @@ var Canvas2Image = (function () {
         obb = localBoundary.obb;
         aabb = localBoundary.aabb;
         center = localBoundary.center;
-        sphere = localBoundary;
 
         //...
     });
@@ -24000,229 +23926,6 @@ var Canvas2Image = (function () {
         }
     });
 
-})();
-;/**
- An **BoundingSphereGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that shows the extents of a World-space bounding sphere.
-
- <a href="../../examples/#boundaries_entity_world_sphere"><img src="http://i.giphy.com/3oz8xRv4g56Y4pZKWk.gif"></img></a>
-
- ## Overview
-
- * A sphere is given as a four-element Float32Array containing elements````[x,y,z,radius]````.
- * Set the BoundingSphereGeometry's {{#crossLink "BoundingSphereGeometry/sphere:property"}}{{/crossLink}} property to a sphere to fix the BoundingSphereGeometry to those extents, or
- * Set the BoundingSphereGeometry's {{#crossLink "BoundingSphereGeometry/boundary:property"}}{{/crossLink}} property to a {{#crossLink "Boundary3D"}}{{/crossLink}}
- to make it dynamically fit itself to changes in the {{#crossLink "Boundary3D"}}{{/crossLink}}'s {{#crossLink "Boundary3D/sphere:property"}}{{/crossLink}} extents.
-
- ## Examples
-
- * [Rendering a BoundingSphereGeometry](../../examples/#boundaries_entity_world_sphere)
-
- ## Usage
-
- In the example below we'll render a transparent {{#crossLink "Entity"}}{{/crossLink}} with a BoundingSphereGeometry that shows the spherical extents of the
- World-space {{#crossLink "Boundary3D"}}{{/crossLink}} of another {{#crossLink "Entity"}}{{/crossLink}}:
-
- ````javascript
- // First Entity with a TorusGeometry
- var torus = new xeogl.Entity({
-     geometry: new xeogl.TorusGeometry()
- });
-
- // Second Entity with an BoundingSphereGeometry that shows a wireframe box
- // for the World-space boundary of the first Entity
-
- var boundaryHelper = new xeogl.Entity({
-
-     geometry: new xeogl.BoundingSphereGeometry({
-         boundary: torus.worldBoundary
-     }),
-
-     material: new xeogl.PhongMaterial({
-         diffuse: [0.5, 1.0, 0.5],
-         emissive: [0.5, 1.0, 0.5],
-         opacity: 0.4
-     }),
-
-     modes: new xeogl.Modes({
-        transparent: true
-     })
- });
- ````
-
- Now whenever our torus {{#crossLink "Entity"}}{{/crossLink}} changes shape or position, our BoundingSphereGeometry will automatically
- update to stay fitted to it.
-
- As shown below, we can also directly configure the BoundingSphereGeometry with
- the {{#crossLink "Boundary3D"}}{{/crossLink}}'s {{#crossLink "Boundary3D/aabb:property"}}AABB{{/crossLink}}. In this second example, we'll
- show the sphere as wireframe.
-
- ````javascript
- var boundaryHelper2 = new xeogl.Entity({
-
-     geometry: new xeogl.BoundingSphereGeometry({
-         boundary: torus.worldBoundary.sphere,
-         primitive: "lines"
-     }),
-
-     material: new xeogl.PhongMaterial({
-         diffuse: [0.5, 1.0, 0.5],
-         emissive: [0.5, 1.0, 0.5],
-         lineWidth:2
-     })
- });
- ````
- Note that, without the reference to a {{#crossLink "Boundary3D"}}{{/crossLink}}, our second BoundingSphereGeometry is fixed to the
- given AABB and will not automatically update whenever our torus {{#crossLink "Entity"}}{{/crossLink}} changes shape or position.
-
- @class BoundingSphereGeometry
- @module xeogl
- @submodule geometry
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this BoundingSphereGeometry in the default
- {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
- generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this BoundingSphereGeometry.
- @param [cfg.boundary] {Number|String|Boundary3D} ID or instance of a {{#crossLink "Boundary3D"}}{{/crossLink}}.
- @param [cfg.aabb] {Float32Array} An axis-aligned box (AABB) in a six-element Float32Array
- containing the min/max extents of the axis-aligned volume, ie. ````(xmin,ymin,zmin,xmax,ymax,zmax)````.
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    xeogl.BoundingSphereGeometry = xeogl.SphereGeometry.extend({
-
-        type: "xeogl.BoundingSphereGeometry",
-
-        _init: function (cfg) {
-
-            this._super(cfg);
-
-           // this.primitive = cfg.primitive || "lines";
-
-            if (cfg.boundary) {
-                this.boundary = cfg.boundary;
-
-            } else if (cfg.sphere) {
-                this.sphere = cfg.sphere;
-            }
-        },
-
-        _props: {
-
-            /**
-             A {{#crossLink "Boundary3D"}}{{/crossLink}} whose {{#crossLink "Boundary3D/aabb:property"}}OBB{{/crossLink}} we'll
-             dynamically fit this OBBGeometry to.
-
-             This property effectively replaces the {{#crossLink "BoundingSphereGeometry/aabb:property"}}{{/crossLink}} property.
-
-             Fires a {{#crossLink "BoundingSphereGeometry/boundary:event"}}{{/crossLink}} event on change.
-
-             @property boundary
-             @type Boundary3D
-             */
-            boundary: {
-
-                set: function (value) {
-
-                    var geometryDirty = false;
-                    var self = this;
-
-                    /**
-                     * Fired whenever this BoundingSphereGeometry's {{#crossLink "BoundingSphereGeometry/boundary:property"}}{{/crossLink}}
-                     * property changes.
-                     *
-                     * @event boundary
-                     * @param value The property's new value
-                     */
-                    this._attach({
-                        name: "boundary",
-                        type: "xeogl.Boundary3D",
-                        component: value,
-                        sceneDefault: false,
-                        on: {
-                            updated: function () {
-                                if (geometryDirty) {
-                                    return;
-                                }
-                                geometryDirty = true;
-                                xeogl.scheduleTask(function () {
-                                    self._setFromSphere(self._attached.boundary.sphere);
-                                    geometryDirty = false;
-                                });
-                            }
-                        },
-                        onAttached: function () {
-                            self._setFromSphere(self._attached.boundary.sphere);
-                        }
-                    });
-                },
-
-                get: function () {
-                    return this._attached.boundary;
-                }
-            },
-
-            /**
-             Sets this BoundingSphereGeometry to an axis-aligned box (SPHERE), given as a six-element Float32Array
-             containing the min/max extents of the
-             axis-aligned volume, ie. ````[xmin,ymin,zmin,xmax,ymax,zmax]````.
-
-             This property overrides the {{#crossLink "BoundingSphereGeometry/boundary:property"}}{{/crossLink}} property, causing it to become null.
-
-             @property sphere
-             @type Float32Array
-             */
-            sphere: {
-
-                set: function (value) {
-
-                    if (!value) {
-                        return;
-                    }
-
-                    if (this._attached.boundary) {
-                        this.boundary = null;
-                    }
-
-                    this._setFromSphere(value);
-                }
-            }
-        },
-
-        _setFromSphere: (function () {
-
-            var vec3 = xeogl.math.vec3();
-
-            return function (sphere) {
-
-                vec3[0] = sphere[0];
-                vec3[1] = sphere[1];
-                vec3[2] = sphere[2];
-
-                this.center = vec3;
-                this.radius = sphere[4];
-            };
-        })()
-
-        //_getJSON: function () {
-        //
-        //    var json = {};
-        //
-        //    if (this._attached.boundary) {
-        //        json.boundary = this._attached.boundary.id;
-        //
-        //    } else if (this.positions) {
-        //        this.positions = this.positions;
-        //    }
-        //
-        //    return json;
-        //},
-
-    });
 })();
 ;/**
  An **OBBGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that shows the extents of a World-space entity-oriented bounding box (OBB).
@@ -30423,7 +30126,6 @@ TODO
         obb = worldBoundary.obb;
         aabb = worldBoundary.aabb;
         center = worldBoundary.center;
-        sphere = worldBoundary.sphere();
         //...
     });
 
@@ -30434,9 +30136,8 @@ TODO
 
  Since xeogl is all about lazy-execution to avoid needless work, the {{#crossLink "Boundary3D"}}{{/crossLink}} will
  only actually recompute its extents the first time we read its {{#crossLink "Boundary3D/obb:property"}}{{/crossLink}},
- {{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}}, {{#crossLink "Boundary3D/center:property"}}{{/crossLink}},
- {{#crossLink "Boundary3D/center:property"}}{{/crossLink}} or
- {{#crossLink "Boundary3D/sphere:property"}}{{/crossLink}} properties after it fired its
+ {{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}}, {{#crossLink "Boundary3D/center:property"}}{{/crossLink}} or
+ {{#crossLink "Boundary3D/center:property"}}{{/crossLink}} properties after it fired its
  last {{#crossLink "Boundary3D/updated:event"}}{{/crossLink}} event.
 
  Also, the Model lazy-instantiates its {{#crossLink "Boundary3D"}}{{/crossLink}} the first time we reference
@@ -36386,7 +36087,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
             } else if (this._src) {
                 this._srcDirty = true;
-
             }
 
             this._needUpdate();
@@ -37389,8 +37089,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  // which contains the extents of the boundary on each axis
  var aabb = worldBoundary.aabb;
 
- // Get the World-space bounding sphere:
- var sphere = worldBoundary.center;
  ````
 
  #### View-space
@@ -39670,7 +39368,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                 // Lazy-allocate
 
-                this._obb = math.OBB2();
+                this._obb = math.OBB3();
                 this._aabb = math.AABB2();
                 this._center = math.vec2();
             }
@@ -39710,7 +39408,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  * {{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}} - an axis-aligned box (AABB) in a six-element Float32Array
  containing the min/max extents of the axis-aligned volume, ie. ````[xmin,ymin,zmin,xmax,ymax,zmax]````,
  * {{#crossLink "Boundary3D/center:property"}}{{/crossLink}} - the center point as a three-element Float32Array containing elements ````[x,y,z]```` and
- * {{#crossLink "Boundary3D/sphere:property"}}{{/crossLink}} - a bounding sphere as a four-element Float32Array containing elements````[x,y,z,radius]````.
 
  As shown in the diagram below, the following xeogl components have Boundary3Ds:
 
@@ -39766,7 +39463,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         obb = worldBoundary.obb;
         aabb = worldBoundary.aabb;
         center = worldBoundary.center;
-        sphere = worldBoundary.sphere();
         //...
     });
 
@@ -39792,8 +39488,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Boundary3D.
  @param [cfg.obb] {Float32Array} Optional initial 3D object-aligned bounding volume (OBB).
  @param [cfg.aabb] {Float32Array} Optional initial 3D axis-aligned bounding volume (AABB).
- @param [cfg.center] {Float32Array} Optional initial 3D center
- @param [cfg.sphere] {Float32Array} Optional initial 3D bounding sphere.
+ @param [cfg.center] {Float32Array} Optional initial 3D center.
  @param [cfg.getDirty] {Function} Optional callback to check if parent component has new OBB, positions or transform matrix.
  @param [cfg.getOBB] {Function} Optional callback to get new OBB from parent.
  @param [cfg.getMatrix] {Function} Optional callback to get new transform matrix from parent.
@@ -39803,8 +39498,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
 /**
  * Fired whenever this Boundary3D's {{#crossLink "Boundary3D/obb:property"}}{{/crossLink}},
- * {{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}}, {{#crossLink "Boundary3D/sphere:property"}}{{/crossLink}}
- * or {{#crossLink "Boundary3D/center:property"}}{{/crossLink}} properties change.
+ * {{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}} or {{#crossLink "Boundary3D/center:property"}}{{/crossLink}} properties change.
  * @event updated
  */
 (function () {
@@ -39820,10 +39514,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             // Cached bounding boxes (oriented and axis-aligned)
             this._obb = cfg.obb || null;
             this._aabb = cfg.aabb || null;
-
-            // Cached bounding sphere
-            this._sphere = cfg.sphere || null;
-
+            
             // Cached center point
             this._center = cfg.center || null;
 
@@ -39901,32 +39592,10 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                     return this._center;
                 }
-            },
-
-            /**
-             * A spherical representation of this 3D boundary.
-             *
-             * The sphere is a four-element Float32Array containing the sphere center and
-             * radius, ie: ````[xcenter, ycenter, zcenter, radius ]````.
-             *
-             * @property sphere
-             * @final
-             * @type {Float32Array}
-             */
-            sphere: {
-
-                get: function () {
-
-                    if (this._getDirty()) {
-                        this._buildBoundary();
-                    }
-
-                    return this._sphere;
-                }
             }
         },
 
-        // Builds the obb, aabb, sphere and center.
+        // Builds the obb, aabb and center.
 
         _buildBoundary: function () {
 
@@ -39942,21 +39611,17 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                 this._aabb = xeogl.math.AABB3();
             }
 
-            if (!this._sphere) {
-                this._sphere = xeogl.math.vec4();
-            }
-
             if (!this._center) {
                 this._center = xeogl.math.vec3();
             }
-            
+
             var aabb = this._getAABB ? this._getAABB() : null;
 
             if (aabb) {
 
                 // Got AABB
 
-                // Derive OBB, sphere and center
+                // Derive OBB and center
 
                 this._aabb[0] = aabb[0];
                 this._aabb[1] = aabb[1];
@@ -39966,9 +39631,8 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                 this._aabb[5] = aabb[5];
 
                 math.AABB3ToOBB3(this._aabb, this._obb);
-                math.OBB3ToSphere3(this._obb, this._sphere);
-                math.getSphere3Center(this._sphere, this._center);
-                
+                math.getAABB3Center(this._aabb, this._center);
+
                 return;
             }
 
@@ -39988,14 +39652,12 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                     // Got transform matrix
 
-                    // Transform OBB by matrix, derive AABB, sphere and center
+                    // Transform OBB by matrix, derive AABB and center
 
                     math.positions3ToAABB3(positions, this._aabb);
                     math.AABB3ToOBB3(this._aabb, this._obb);
                     math.transformOBB3(matrix, this._obb);
-                    math.OBB3ToAABB3(this._obb, this._aabb);
-                    math.OBB3ToSphere3(this._obb, this._sphere);
-                    math.getSphere3Center(this._sphere, this._center);
+                    math.getAABB3Center(this._aabb, this._center);
 
                     return;
                 }
@@ -40004,9 +39666,8 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                 math.positions3ToAABB3(positions, this._aabb);
                 math.AABB3ToOBB3(this._aabb, this._obb);
-                math.OBB3ToSphere3(this._obb, this._sphere);
-                math.getSphere3Center(this._sphere, this._center);
-                
+                math.getAABB3Center(this._aabb, this._center);
+
                 return
             }
 
@@ -40026,8 +39687,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                     math.transformOBB3(matrix, obb, this._obb);
                     math.OBB3ToAABB3(this._obb, this._aabb);
-                    math.OBB3ToSphere3(this._obb, this._sphere);
-                    math.getSphere3Center(this._sphere, this._center);
+                    math.getAABB3Center(this._aabb, this._center);
 
                     return;
                 }
@@ -40041,8 +39701,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                 }
 
                 math.OBB3ToAABB3(this._obb, this._aabb);
-                math.OBB3ToSphere3(this._obb, this._sphere);
-                math.getSphere3Center(this._sphere, this._center);
+                math.getAABB3Center(this._aabb, this._center);
 
             }
         },
@@ -40052,8 +39711,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             return {
                 obb: vecToArray(this.obb),
                 aabb: vecToArray(this.aabb),
-                center: vecToArray(this.center),
-                sphere: vecToArray(this.sphere)
+                center: vecToArray(this.center)
             };
         }
     });

@@ -12,7 +12,6 @@
  * {{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}} - an axis-aligned box (AABB) in a six-element Float32Array
  containing the min/max extents of the axis-aligned volume, ie. ````[xmin,ymin,zmin,xmax,ymax,zmax]````,
  * {{#crossLink "Boundary3D/center:property"}}{{/crossLink}} - the center point as a three-element Float32Array containing elements ````[x,y,z]```` and
- * {{#crossLink "Boundary3D/sphere:property"}}{{/crossLink}} - a bounding sphere as a four-element Float32Array containing elements````[x,y,z,radius]````.
 
  As shown in the diagram below, the following xeogl components have Boundary3Ds:
 
@@ -68,7 +67,6 @@
         obb = worldBoundary.obb;
         aabb = worldBoundary.aabb;
         center = worldBoundary.center;
-        sphere = worldBoundary.sphere();
         //...
     });
 
@@ -94,8 +92,7 @@
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Boundary3D.
  @param [cfg.obb] {Float32Array} Optional initial 3D object-aligned bounding volume (OBB).
  @param [cfg.aabb] {Float32Array} Optional initial 3D axis-aligned bounding volume (AABB).
- @param [cfg.center] {Float32Array} Optional initial 3D center
- @param [cfg.sphere] {Float32Array} Optional initial 3D bounding sphere.
+ @param [cfg.center] {Float32Array} Optional initial 3D center.
  @param [cfg.getDirty] {Function} Optional callback to check if parent component has new OBB, positions or transform matrix.
  @param [cfg.getOBB] {Function} Optional callback to get new OBB from parent.
  @param [cfg.getMatrix] {Function} Optional callback to get new transform matrix from parent.
@@ -105,8 +102,7 @@
 
 /**
  * Fired whenever this Boundary3D's {{#crossLink "Boundary3D/obb:property"}}{{/crossLink}},
- * {{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}}, {{#crossLink "Boundary3D/sphere:property"}}{{/crossLink}}
- * or {{#crossLink "Boundary3D/center:property"}}{{/crossLink}} properties change.
+ * {{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}} or {{#crossLink "Boundary3D/center:property"}}{{/crossLink}} properties change.
  * @event updated
  */
 (function () {
@@ -122,10 +118,7 @@
             // Cached bounding boxes (oriented and axis-aligned)
             this._obb = cfg.obb || null;
             this._aabb = cfg.aabb || null;
-
-            // Cached bounding sphere
-            this._sphere = cfg.sphere || null;
-
+            
             // Cached center point
             this._center = cfg.center || null;
 
@@ -203,32 +196,10 @@
 
                     return this._center;
                 }
-            },
-
-            /**
-             * A spherical representation of this 3D boundary.
-             *
-             * The sphere is a four-element Float32Array containing the sphere center and
-             * radius, ie: ````[xcenter, ycenter, zcenter, radius ]````.
-             *
-             * @property sphere
-             * @final
-             * @type {Float32Array}
-             */
-            sphere: {
-
-                get: function () {
-
-                    if (this._getDirty()) {
-                        this._buildBoundary();
-                    }
-
-                    return this._sphere;
-                }
             }
         },
 
-        // Builds the obb, aabb, sphere and center.
+        // Builds the obb, aabb and center.
 
         _buildBoundary: function () {
 
@@ -244,21 +215,17 @@
                 this._aabb = xeogl.math.AABB3();
             }
 
-            if (!this._sphere) {
-                this._sphere = xeogl.math.vec4();
-            }
-
             if (!this._center) {
                 this._center = xeogl.math.vec3();
             }
-            
+
             var aabb = this._getAABB ? this._getAABB() : null;
 
             if (aabb) {
 
                 // Got AABB
 
-                // Derive OBB, sphere and center
+                // Derive OBB and center
 
                 this._aabb[0] = aabb[0];
                 this._aabb[1] = aabb[1];
@@ -268,9 +235,8 @@
                 this._aabb[5] = aabb[5];
 
                 math.AABB3ToOBB3(this._aabb, this._obb);
-                math.OBB3ToSphere3(this._obb, this._sphere);
-                math.getSphere3Center(this._sphere, this._center);
-                
+                math.getAABB3Center(this._aabb, this._center);
+
                 return;
             }
 
@@ -290,14 +256,12 @@
 
                     // Got transform matrix
 
-                    // Transform OBB by matrix, derive AABB, sphere and center
+                    // Transform OBB by matrix, derive AABB and center
 
                     math.positions3ToAABB3(positions, this._aabb);
                     math.AABB3ToOBB3(this._aabb, this._obb);
                     math.transformOBB3(matrix, this._obb);
-                    math.OBB3ToAABB3(this._obb, this._aabb);
-                    math.OBB3ToSphere3(this._obb, this._sphere);
-                    math.getSphere3Center(this._sphere, this._center);
+                    math.getAABB3Center(this._aabb, this._center);
 
                     return;
                 }
@@ -306,9 +270,8 @@
 
                 math.positions3ToAABB3(positions, this._aabb);
                 math.AABB3ToOBB3(this._aabb, this._obb);
-                math.OBB3ToSphere3(this._obb, this._sphere);
-                math.getSphere3Center(this._sphere, this._center);
-                
+                math.getAABB3Center(this._aabb, this._center);
+
                 return
             }
 
@@ -328,8 +291,7 @@
 
                     math.transformOBB3(matrix, obb, this._obb);
                     math.OBB3ToAABB3(this._obb, this._aabb);
-                    math.OBB3ToSphere3(this._obb, this._sphere);
-                    math.getSphere3Center(this._sphere, this._center);
+                    math.getAABB3Center(this._aabb, this._center);
 
                     return;
                 }
@@ -343,8 +305,7 @@
                 }
 
                 math.OBB3ToAABB3(this._obb, this._aabb);
-                math.OBB3ToSphere3(this._obb, this._sphere);
-                math.getSphere3Center(this._sphere, this._center);
+                math.getAABB3Center(this._aabb, this._center);
 
             }
         },
@@ -354,8 +315,7 @@
             return {
                 obb: vecToArray(this.obb),
                 aabb: vecToArray(this.aabb),
-                center: vecToArray(this.center),
-                sphere: vecToArray(this.sphere)
+                center: vecToArray(this.center)
             };
         }
     });

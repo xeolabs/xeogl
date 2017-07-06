@@ -172,7 +172,7 @@
 
                 // Lazy-allocate
 
-                this._obb = math.OBB2();
+                this._obb = math.OBB3();
                 this._aabb = math.AABB2();
                 this._center = math.vec2();
             }
