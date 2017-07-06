@@ -180,7 +180,6 @@
         obb = localBoundary.obb;
         aabb = localBoundary.aabb;
         center = localBoundary.center;
-        sphere = localBoundary;
 
         //...
     });

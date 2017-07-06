@@ -165,9 +165,9 @@
     math.getAABB3Center = function (aabb, dest) {
         var r = dest || math.vec3();
 
-        r[0] = (aabb[3] + aabb[0] ) * 0.5;
-        r[1] = (aabb[4] + aabb[1] ) * 0.5;
-        r[2] = (aabb[5] + aabb[2] ) * 0.5;
+        r[0] = (aabb[0] + aabb[3] ) / 2;
+        r[1] = (aabb[1] + aabb[4] ) / 2;
+        r[2] = (aabb[2] + aabb[5] ) / 2;
 
         return r;
     };

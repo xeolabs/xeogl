@@ -272,40 +272,21 @@
                 this._up1[2] = view.up[2];
 
                 var aabb;
-                var sphere;
                 var eye;
                 var look;
                 var up;
                 var componentId;
 
                 if (params.worldBoundary) {
-
-                    // Argument is a Component subtype with a worldBoundary
-
                     aabb = params.worldBoundary.aabb;
 
                 } else if (params.aabb) {
-
                     aabb = params.aabb;
 
-                    // Argument is a Boundary3D
-
-                } else if (params.length === 6) { // [xmin,ymin,zmin, xmax,ymax,zmax]
-
-                    // Argument is an AABB
-
+                } else if (params.length === 6) {
                     aabb = params;
 
-                    //} else if (params.length === 4) { // [x,y,z,radius]
-                    //
-                    //    // Argument is an OBB
-                    //
-                    //    sphere = params;
-
                 } else if (params.eye || params.look || params.up) {
-
-                    // Argument is eye, look and up positions
-
                     eye = params.eye;
                     look = params.look;
                     up = params.up;
@@ -428,11 +409,11 @@
         /**
          * Jumps this CameraFlightAnimation's {{#crossLink "Camera"}}{{/crossLink}} to the given target.
          *
+         *  * When the target is a boundary, this CameraFlightAnimation will position the {{#crossLink "Camera"}}{{/crossLink}}
+         *  at where the target fills most of the canvas.
+         *  * When the target is an explicit {{#crossLink "Camera"}}{{/crossLink}} position, given as ````eye````, ````look```` and ````up````
+         *  vectors, then this CameraFlightAnimation will jump the {{#crossLink "Camera"}}{{/crossLink}} to that target.
          *
-         *     * When the target is a boundary, this CameraFlightAnimation will position the {{#crossLink "Camera"}}{{/crossLink}}
-         *     at where the target fills most of the canvas.
-         *     * When the target is an explicit {{#crossLink "Camera"}}{{/crossLink}} position, given as ````eye````, ````look```` and ````up````
-         *      vectors, then this CameraFlightAnimation will jump the {{#crossLink "Camera"}}{{/crossLink}} to that target.
          * @method flyTo
          * @param params  {*|Component} Either a parameters object or a {{#crossLink "Component"}}{{/crossLink}} subtype that has a {{#crossLink "WorldBoundary"}}{{/crossLink}}.
          * @param[params.arc=0]  {Number} Factor in range [0..1] indicating how much the
@@ -456,7 +437,6 @@
 
         _jumpTo: (function () {
 
-            var eyeLookVec = math.vec3();
             var newEye = math.vec3();
             var newLook = math.vec3();
             var newUp = math.vec3();
@@ -478,40 +458,21 @@
                 var view = camera.view;
 
                 var aabb;
-                var sphere;
                 var componentId;
 
-                if (params.worldBoundary) {
+                if (params.worldBoundary) { // Component with a worldBoundary
 
-                    // Argument is a Component subtype with a worldBoundary
+                    aabb = params.worldBoundary.aabb;
 
-                    sphere = params.worldBoundary.sphere;
-
-                } else if (params.sphere) {
-
-                    sphere = params.sphere;
-
-                } else if (params.aabb) {
+                } else if (params.aabb) { // Boundary3D
 
                     aabb = params.aabb;
 
-                    // Argument is a Boundary3D
-
-                } else if (params.length === 6) { // [xmin,ymin,zmin, xmax,ymax,zmax]
-
-                    // Argument is an AABB
+                } else if (params.length === 6) { // AABB
 
                     aabb = params;
 
-                } else if (params.length === 4) { // [x,y,z,radius]
-
-                    // Argument is an OBB
-
-                    sphere = params;
-
-                } else if (params.eye || params.look || params.up) {
-
-                    // Argument is eye, look and up positions
+                } else if (params.eye || params.look || params.up) { // Camera pose
 
                     newEye = params.eye;
                     newLook = params.look;
@@ -542,38 +503,23 @@
                         return;
                     }
 
-                    sphere = worldBoundary.sphere;
+                    aabb = worldBoundary.aabb;
                 }
 
                 var offset = params.offset;
 
-                if (aabb || sphere) {
+                if (aabb) {
 
                     var diag;
 
-                    if (aabb) {
+                    if (aabb[3] <= aabb[0] || aabb[4] <= aabb[1] || aabb[5] <= aabb[2]) {
 
-                        if (aabb[3] <= aabb[0] || aabb[4] <= aabb[1] || aabb[5] <= aabb[2]) {
-
-                            // Don't fly to an empty boundary
-                            return;
-                        }
-
-                        diag = math.getAABB3Diag(aabb);
-                        math.getAABB3Center(aabb, newLook);
-
-                    } else {
-
-                        if (sphere[3] <= 0) {
-                            return;
-                        }
-
-                        diag = sphere[3] * 2;
-
-                        newLook[0] = sphere[0];
-                        newLook[1] = sphere[1];
-                        newLook[2] = sphere[2];
+                        // Don't fly to an empty boundary
+                        return;
                     }
+
+                    diag = math.getAABB3Diag(aabb);
+                    math.getAABB3Center(aabb, newLook);
 
                     if (this._trail) {
                         math.subVec3(view.look, newLook, newLookEyeVec);
