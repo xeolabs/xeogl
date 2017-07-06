@@ -914,8 +914,8 @@
                     var geometry;
                     var entityId;
                     var j;
-                    var entities = scene.types[&quot;xeogl.Entity&quot;];
                     var entity;
+                    var entities;
 
                     for (imeshes = 0; imeshes &lt; lenMeshes; imeshes++) {
 
@@ -934,8 +934,11 @@
 
                             entityId = this._makeID(nodeId + &quot;.entity.&quot; + i);
 
-                            for  (j = 0; entities[entityId]; j++) {
-                               entityId = this._makeID(nodeId + &quot;.entity.&quot; + i + &quot;.&quot; + j);
+                            entities = scene.types[&quot;xeogl.Entity&quot;];
+                            if (entities) {
+                                for (j = 0; entities[entityId]; j++) {
+                                    entityId = this._makeID(nodeId + &quot;.entity.&quot; + i + &quot;.&quot; + j);
+                                }
                             }
 
                             var meta = node.extra || {};

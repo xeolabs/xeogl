@@ -32123,8 +32123,8 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                     var geometry;
                     var entityId;
                     var j;
-                    var entities = scene.types["xeogl.Entity"];
                     var entity;
+                    var entities;
 
                     for (imeshes = 0; imeshes < lenMeshes; imeshes++) {
 
@@ -32143,8 +32143,11 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                             entityId = this._makeID(nodeId + ".entity." + i);
 
-                            for  (j = 0; entities[entityId]; j++) {
-                               entityId = this._makeID(nodeId + ".entity." + i + "." + j);
+                            entities = scene.types["xeogl.Entity"];
+                            if (entities) {
+                                for (j = 0; entities[entityId]; j++) {
+                                    entityId = this._makeID(nodeId + ".entity." + i + "." + j);
+                                }
                             }
 
                             var meta = node.extra || {};
