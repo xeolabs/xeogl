@@ -350,7 +350,7 @@
 
                     // Component type
 
-                    type = component;
+                    var type = component;
 
                     types = this.scene.types[type];
 
@@ -361,7 +361,7 @@
 
                     for (componentId in types) {
                         if (types.hasOwnProperty(componentId)) {
-                            this._add(types[componentId]);
+                            this.add(types[componentId]);
                         }
                     }
 
@@ -439,7 +439,7 @@
 
                 var rootTransform = component.transform;
 
-                if (!rootTransform) {
+                if (!rootTransform || rootTransform.id === "default.transform") {
 
                     component.transform = self._dummyRootTransform;
 
