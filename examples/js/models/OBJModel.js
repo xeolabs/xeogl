@@ -1,5 +1,5 @@
 /**
- An **OBJModel** is a {{#crossLink "Model"}}{{/crossLink}} that loads itself from an OBJ file and companion MTL file(s).
+ An **OBJModel** is a {{#crossLink "Model"}}{{/crossLink}} that loads itself from OBJ and MTL files.
 
  <a href="../../examples/#importing_obj_conferenceRoom"><img src="../../../assets/images/screenshots/OBJModel.png"></img></a>
 
@@ -11,8 +11,8 @@
 
  OBJModel inherits these capabilities from its {{#crossLink "Model"}}{{/crossLink}} base class:
 
- * Allows you to access and manipulate the components within it.
- * Can be transformed within World-space by attaching it to a {{#crossLink "Transform"}}{{/crossLink}}.
+ * Allows you to access and manipulate the components within it (as mentioned).
+ * Can be transformed as a unit within World-space by attaching it to a {{#crossLink "Transform"}}{{/crossLink}}.
  * Provides its World-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}}.
 
  ## Usage
@@ -97,7 +97,7 @@
 
  ## Credits
 
- Parts of OBJModel's parser are derived from the THREE.js OBJ and MTL loaders:
+ Parts of the OBJModel parser are derived from the THREE.js OBJ and MTL loaders:
 
  * https://github.com/mrdoob/three.js/blob/dev/examples/js/loaders/OBJLoader.js
  * https://github.com/mrdoob/three.js/blob/dev/examples/js/loaders/MTLLoader.js
