@@ -73,7 +73,7 @@
  var quadGeometry = new xeogl.Geometry({
 
         // Supported primitives are 'points', 'lines', 'line-loop', 'line-strip', 'triangles',
-        // 'triangle-strip' and 'triangle-fan'.primitive: "triangles",
+        // 'triangle-strip' and 'triangle-fan'
         primitive: "triangles",
 
         // Vertex positions
