@@ -783,9 +783,14 @@
         "src/models/gltfModel.js": {
             "name": "src/models/gltfModel.js",
             "modules": {},
-            "classes": {
-                "GLTFModel": 1
-            },
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/models/gltfModel_v2.js": {
+            "name": "src/models/gltfModel_v2.js",
+            "modules": {},
+            "classes": {},
             "fors": {},
             "namespaces": {}
         },
@@ -1287,6 +1292,15 @@
             "fors": {},
             "namespaces": {}
         },
+        "examples/js/models/OBJModel.js": {
+            "name": "examples/js/models/OBJModel.js",
+            "modules": {},
+            "classes": {
+                "OBJModel": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
         "examples/js/models/_module.js": {
             "name": "examples/js/models/_module.js",
             "modules": {},
@@ -1299,6 +1313,15 @@
             "modules": {},
             "classes": {
                 "BuildableModel": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "examples/js/models/gltfModel.js": {
+            "name": "examples/js/models/gltfModel.js",
+            "modules": {},
+            "classes": {
+                "GLTFModel": 1
             },
             "fors": {},
             "namespaces": {}
@@ -1525,6 +1548,7 @@
                 "TeapotGeometry": 1,
                 "VectorTextGeometry": 1,
                 "PointMarkings": 1,
+                "OBJModel": 1,
                 "BuildableModel": 1,
                 "SceneJSModel": 1,
                 "ZSpaceEffect": 1,
@@ -1983,6 +2007,7 @@
             "classes": {
                 "GLTFModel": 1,
                 "Model": 1,
+                "OBJModel": 1,
                 "BuildableModel": 1,
                 "SceneJSModel": 1
             },
@@ -3284,7 +3309,7 @@
             "namespace": "",
             "file": "src/geometry/geometry.js",
             "line": 1,
-            "description": "A **Geometry** defines a mesh for attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n<a href=\"../../examples/#geometry_triangles_texture\"><img src=\"../../assets/images/screenshots/BoxGeometry.png\"></img></a>\n\n## Overview\n\n* Like everything in xeogl, all properties on a Geometry are dynamically editable.\n* Set a Geometry's {{#crossLink \"Geometry/autoNormals:property\"}}{{/crossLink}} ````true```` to make the Geometry automatically generate it's vertex normal vectors from its {{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} and {{#crossLink \"Geometry/indices:property\"}}{{/crossLink}}.\n* When no shape is specified, a Geometry will be a 2x2x2 box by default.\n* A {{#crossLink \"Scene\"}}{{/crossLink}} provides a 2x2x2 box for {{#crossLink \"Entity\"}}Entities{{/crossLink}}\nby default when they are not configured with a Geometry.\n* A Geometry provides its local-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}}.\n\n<img src=\"../../../assets/images/Geometry.png\"></img>\n\n## Examples\n\n* [Simple triangle mesh](../../examples/#geometry_triangles)\n* [Triangle mesh with diffuse texture](../../examples/#geometry_triangles_texture)\n* [Triangle mesh with vertex colors](../../examples/#geometry_triangles_vertexColors)\n* [Wireframe box](../../examples/#geometry_lines)\n* [Dynamically modifying a TorusGeometry](../../examples/#geometry_modifying)\n\n## Usage\n\n### Default shape</a>\n\nIf you create a Geometry with no specified shape, it will default to a box-shaped triangle mesh with dimensions 2x2x2:\n\n```` javascript\nvar entity = new xeogl.Entity({\n   geometry: new xeogl.Geometry() // 2x2x2 box\n});\n````\n\n### Scene's default Geometry\n\nIf you create an {{#crossLink \"Entity\"}}{{/crossLink}} with no Geometry, it will inherit its {{#crossLink \"Scene\"}}Scene's{{/crossLink}}\ndefault {{#crossLink \"Scene/geometry:property\"}}{{/crossLink}}, which is a 2x2x2 triangle mesh box:\n\n```` javascript\nvar entity2 = new xeogl.Entity();\n````\n\n### Sharing among Entities\n\nxeogl components can be shared among multiple {{#crossLink \"Entity\"}}Entities{{/crossLink}}. For components like\nGeometry and {{#crossLink \"Texture\"}}{{/crossLink}}, this can provide significant memory\nand performance savings. To render the example below, xeogl will issue two draw WebGL calls, one for\neach {{#crossLink \"Entity\"}}{{/crossLink}}, but will only need to bind the Geometry's arrays once on WebGL.\n\n```` javascript\nvar boxGeometry = new xeogl.BoxGeometry();\n\nnew xeogl.Entity({\n   geometry: boxGeometry\n});\n\nnew xeogl.Entity({\n   geometry: boxGeometry,\n   transform:  new xeogl.Translate({\n       xyz: [5, 0, 0\n   })\n});\n````\n\n### Creating a custom Geometry\n\nLet's create an {{#crossLink \"Entity\"}}{{/crossLink}} with a custom Geometry that's a quad-shaped triangle mesh:\n\n```` javascript\nvar quadGeometry = new xeogl.Geometry({\n\n       // Supported primitives are 'points', 'lines', 'line-loop', 'line-strip', 'triangles',\n       // 'triangle-strip' and 'triangle-fan'.primitive: \"triangles\",\n       primitive: \"triangles\",\n\n       // Vertex positions\n       positions : [\n           -1.0, -1.0, 1.0,  // 0\n            1.0, -1.0, 1.0,  // 1\n            1.0,  1.0, 1.0,  // 2\n           -1.0,  1.0, 1.0   // 3\n       ],\n\n       // Vertex colors\n       colors: [\n           1.0,  1.0,  1.0,  1.0, // 0\n           1.0,  0.0,  0.0,  1.0, // 1\n           0.0,  1.0,  0.0,  1.0, // 2\n           0.0,  0.0,  1.0,  1.0  // 3\n       ],\n\n       // Vertex normals\n       normals: [\n           0, 0, 1, // 0\n           0, 0, 1, // 1\n           0, 0, 1, // 2\n           0, 0, 1  // 3\n       ],\n\n       // UV coordinates\n       uv: [\n           0, 0, // 0\n           1, 0, // 1\n           1, 1, // 2\n           1, 0  // 3\n       ],\n\n       // Triangle indices\n       indices: [\n           0,  1,  2,\n           0,  2,  3\n       ]\n});\n\nvar quadEntity = new xeogl.Entity({\n   geometry: quadGeometry\n});\n````\n## Editing Geometry\n\nRecall that everything in xeogl is dynamically editable. Let's update the\n{{#crossLink \"Geometry/indices:property\"}}{{/crossLink}} to reverse the direction of the triangles:\n\n````javascript\ncustomGeometry.indices = [ 2, 1, 0, 3, 2, 0 ];\n````\n\nNow let's make it wireframe by changing its primitive type from ````triangles```` to ````lines````:\n\n````javascript\nquadGeometry.primitive = \"lines\";\n````\n\n````javascript\n````\n\n### Toggling back-faces on and off\n\nNow we'll attach a {{#crossLink \"Modes\"}}{{/crossLink}} to that last {{#crossLink \"Entity\"}}{{/crossLink}}, so that\nwe can show or hide its {{#crossLink \"Geometry\"}}Geometry's{{/crossLink}} backfaces:\n\n```` javascript\nvar modes = new xeogl.Modes();\n\nquadEntity.modes = modes;\n\n// Hide backfaces\n\nmodes.backfaces = false;\n````\n\n### Setting front-face vertex winding\n\nThe <a href=\"https://www.opengl.org/wiki/Face_Culling\" target=\"other\">vertex winding order</a> of each face determines\nwhether it's a front-face or a back-face.\n\nBy default, xeogl considers faces to be front-faces if they have a counter-clockwise\nwinding order, but we can change that by setting the {{#crossLink \"Modes\"}}{{/crossLink}}\n{{#crossLink \"Modes/frontface:property\"}}{{/crossLink}} property:\n\n```` javascript\n// Set the winding order for front-faces to clockwise\n// Options are \"ccw\" for counter-clockwise or \"cw\" for clockwise\n\nmodes.frontface = \"cw\";\n````\n\n### Getting the Local-space boundary\n\nWe can get a Geometry's Local-space {{#crossLink \"Boundary3D\"}}{{/crossLink}} like so:\n\n````javascript\nvar localBoundary = quadGeometry.localBoundary;\n\nlocalBoundary.on(\"updated\", function() {\n\n       obb = localBoundary.obb;\n       aabb = localBoundary.aabb;\n       center = localBoundary.center;\n\n       //...\n   });\n````",
+            "description": "A **Geometry** defines a mesh for attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n<a href=\"../../examples/#geometry_triangles_texture\"><img src=\"../../assets/images/screenshots/BoxGeometry.png\"></img></a>\n\n## Overview\n\n* Like everything in xeogl, all properties on a Geometry are dynamically editable.\n* Set a Geometry's {{#crossLink \"Geometry/autoNormals:property\"}}{{/crossLink}} ````true```` to make the Geometry automatically generate it's vertex normal vectors from its {{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} and {{#crossLink \"Geometry/indices:property\"}}{{/crossLink}}.\n* When no shape is specified, a Geometry will be a 2x2x2 box by default.\n* A {{#crossLink \"Scene\"}}{{/crossLink}} provides a 2x2x2 box for {{#crossLink \"Entity\"}}Entities{{/crossLink}}\nby default when they are not configured with a Geometry.\n* A Geometry provides its local-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}}.\n\n<img src=\"../../../assets/images/Geometry.png\"></img>\n\n## Examples\n\n* [Simple triangle mesh](../../examples/#geometry_triangles)\n* [Triangle mesh with diffuse texture](../../examples/#geometry_triangles_texture)\n* [Triangle mesh with vertex colors](../../examples/#geometry_triangles_vertexColors)\n* [Wireframe box](../../examples/#geometry_lines)\n* [Dynamically modifying a TorusGeometry](../../examples/#geometry_modifying)\n\n## Usage\n\n### Default shape</a>\n\nIf you create a Geometry with no specified shape, it will default to a box-shaped triangle mesh with dimensions 2x2x2:\n\n```` javascript\nvar entity = new xeogl.Entity({\n   geometry: new xeogl.Geometry() // 2x2x2 box\n});\n````\n\n### Scene's default Geometry\n\nIf you create an {{#crossLink \"Entity\"}}{{/crossLink}} with no Geometry, it will inherit its {{#crossLink \"Scene\"}}Scene's{{/crossLink}}\ndefault {{#crossLink \"Scene/geometry:property\"}}{{/crossLink}}, which is a 2x2x2 triangle mesh box:\n\n```` javascript\nvar entity2 = new xeogl.Entity();\n````\n\n### Sharing among Entities\n\nxeogl components can be shared among multiple {{#crossLink \"Entity\"}}Entities{{/crossLink}}. For components like\nGeometry and {{#crossLink \"Texture\"}}{{/crossLink}}, this can provide significant memory\nand performance savings. To render the example below, xeogl will issue two draw WebGL calls, one for\neach {{#crossLink \"Entity\"}}{{/crossLink}}, but will only need to bind the Geometry's arrays once on WebGL.\n\n```` javascript\nvar boxGeometry = new xeogl.BoxGeometry();\n\nnew xeogl.Entity({\n   geometry: boxGeometry\n});\n\nnew xeogl.Entity({\n   geometry: boxGeometry,\n   transform:  new xeogl.Translate({\n       xyz: [5, 0, 0\n   })\n});\n````\n\n### Creating a custom Geometry\n\nLet's create an {{#crossLink \"Entity\"}}{{/crossLink}} with a custom Geometry that's a quad-shaped triangle mesh:\n\n```` javascript\nvar quadGeometry = new xeogl.Geometry({\n\n       // Supported primitives are 'points', 'lines', 'line-loop', 'line-strip', 'triangles',\n       // 'triangle-strip' and 'triangle-fan'\n       primitive: \"triangles\",\n\n       // Vertex positions\n       positions : [\n           -1.0, -1.0, 1.0,  // 0\n            1.0, -1.0, 1.0,  // 1\n            1.0,  1.0, 1.0,  // 2\n           -1.0,  1.0, 1.0   // 3\n       ],\n\n       // Vertex colors\n       colors: [\n           1.0,  1.0,  1.0,  1.0, // 0\n           1.0,  0.0,  0.0,  1.0, // 1\n           0.0,  1.0,  0.0,  1.0, // 2\n           0.0,  0.0,  1.0,  1.0  // 3\n       ],\n\n       // Vertex normals\n       normals: [\n           0, 0, 1, // 0\n           0, 0, 1, // 1\n           0, 0, 1, // 2\n           0, 0, 1  // 3\n       ],\n\n       // UV coordinates\n       uv: [\n           0, 0, // 0\n           1, 0, // 1\n           1, 1, // 2\n           1, 0  // 3\n       ],\n\n       // Triangle indices\n       indices: [\n           0,  1,  2,\n           0,  2,  3\n       ]\n});\n\nvar quadEntity = new xeogl.Entity({\n   geometry: quadGeometry\n});\n````\n## Editing Geometry\n\nRecall that everything in xeogl is dynamically editable. Let's update the\n{{#crossLink \"Geometry/indices:property\"}}{{/crossLink}} to reverse the direction of the triangles:\n\n````javascript\ncustomGeometry.indices = [ 2, 1, 0, 3, 2, 0 ];\n````\n\nNow let's make it wireframe by changing its primitive type from ````triangles```` to ````lines````:\n\n````javascript\nquadGeometry.primitive = \"lines\";\n````\n\n````javascript\n````\n\n### Toggling back-faces on and off\n\nNow we'll attach a {{#crossLink \"Modes\"}}{{/crossLink}} to that last {{#crossLink \"Entity\"}}{{/crossLink}}, so that\nwe can show or hide its {{#crossLink \"Geometry\"}}Geometry's{{/crossLink}} backfaces:\n\n```` javascript\nvar modes = new xeogl.Modes();\n\nquadEntity.modes = modes;\n\n// Hide backfaces\n\nmodes.backfaces = false;\n````\n\n### Setting front-face vertex winding\n\nThe <a href=\"https://www.opengl.org/wiki/Face_Culling\" target=\"other\">vertex winding order</a> of each face determines\nwhether it's a front-face or a back-face.\n\nBy default, xeogl considers faces to be front-faces if they have a counter-clockwise\nwinding order, but we can change that by setting the {{#crossLink \"Modes\"}}{{/crossLink}}\n{{#crossLink \"Modes/frontface:property\"}}{{/crossLink}} property:\n\n```` javascript\n// Set the winding order for front-faces to clockwise\n// Options are \"ccw\" for counter-clockwise or \"cw\" for clockwise\n\nmodes.frontface = \"cw\";\n````\n\n### Getting the Local-space boundary\n\nWe can get a Geometry's Local-space {{#crossLink \"Boundary3D\"}}{{/crossLink}} like so:\n\n````javascript\nvar localBoundary = quadGeometry.localBoundary;\n\nlocalBoundary.on(\"updated\", function() {\n\n       obb = localBoundary.obb;\n       aabb = localBoundary.aabb;\n       center = localBoundary.center;\n\n       //...\n   });\n````",
             "submodule": "geometry",
             "is_constructor": 1,
             "params": [
@@ -5064,9 +5089,9 @@
             "extension_for": [],
             "module": "xeogl",
             "namespace": "",
-            "file": "src/models/gltfModel.js",
+            "file": "examples/js/models/gltfModel.js",
             "line": 1,
-            "description": "A **GLTFModel** is a {{#crossLink \"Model\"}}{{/crossLink}} that loads itself from a <a href=\"https://github.com/KhronosGroup/glTF\" target = \"_other\">glTF</a> file.\n\n<a href=\"../../examples/#importing_gltf_gearbox\"><img src=\"../../../assets/images/gltf/glTF_gearbox_squashed.png\"></img></a>\n\n## Overview\n\n* A GLTFModel is a container of {{#crossLink \"Component\"}}Components{{/crossLink}} that loads itself from a glTF file.\n* It begins loading as soon as you set its {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}\nproperty to the location of a valid glTF file.\n* You can set {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}} to a new file path at any time, which causes\nthe GLTFModel to clear itself and load components from the new file.\n\nIt inherits these capabilities from its {{#crossLink \"Model\"}}{{/crossLink}} base class:\n\n* Allows you to access and manipulate the components within it.\n* Can be transformed within World-space by attaching it to a {{#crossLink \"Transform\"}}{{/crossLink}}.\n* Provides its World-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}}.\n\n<img src=\"../../../assets/images/GLTFModel.png\"></img>\n\n## Usage\n\n### Loading glTF\n\nLoad a glTF file by creating a GLTFModel:\n\n````javascript\nvar gearbox = new xeogl.GLTFModel({\n  id: \"gearbox\",\n  src: \"models/gltf/gearbox/gearbox_assy.gltf\"\n});\n````\n\nA GLTFModel prefixes its own ID to those of its components. Its ID is optional and defaults to\nthe value of {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}. In this example we're providing our own short ID,\nhowever, in order to keep the component IDs short and easy to use.\n\nThe GLTFModel begins loading the glTF file immediately. Bind a callback to be notified when the file has loaded (which\nfires immediately if already loaded):\n\n````javascript\ngearbox.on(\"loaded\", function() {\n       // GLTFModel has loaded!\n   });\n````\n\nTo switch to a different glTF file, simply update {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}:\n\n````javascript\ngearbox.src = \"models/gltf/buggy/buggy.gltf\"\n````\n\n### Accessing components\n\nOnce the GLTFModel has loaded, its {{#crossLink \"Scene\"}}{{/crossLink}} will contain various components that represent the elements of the glTF file. \nWe'll now access some of those components by ID, to query and update them programmatically.\n\n**Transforms**\n\nLet's reposition one of the {{#crossLink \"Entity\"}}Entities{{/crossLink}} in our GLTFModel. We'll get the {{#crossLink \"Transform\"}}{{/crossLink}} that\npositions our target {{#crossLink \"Entity\"}}{{/crossLink}}, in this case a gear. Then we'll update its matrix to translate it ten units along the negative Z-axis.\n\n````javascript\nvar transform = gearbox.scene.components[\"gearbox#n274017_gear_53t-node.transform\"];\n\ntransform.matrix = xeogl.math.translationMat4v([0,0,-10]);\n````\n\nNote the format of the {{#crossLink \"Transform\"}}{{/crossLink}}'s ID:\n\n````<GLTFModel ID>#<glTF node ID>.transform````\n\nFrom left to right, the format contains the GLTFModel's ID, the ID of the glTF node that contains the transform, then\n\"transform\", to distinguish it from the IDs of any other components loaded from elements on the same glTF node.\n\n**Entities**\n\nLet's make our gear {{#crossLink \"Entity\"}}{{/crossLink}} invisible. This time we'll get the {{#crossLink \"Entity\"}}{{/crossLink}} itself, then update\nits {{#crossLink \"Visibility\"}}{{/crossLink}} component:\n\n````javascript\nvar gear53 = gearbox.scene.components[\"gearbox#n274017_gear_53.entity.0\"];\n\ngear53.visibility.visible = false;\n````\n\nNote the format of the {{#crossLink \"Entity\"}}{{/crossLink}}'s ID: ````<GLTFModel ID>#<glTF node ID>.entity.<glTF mesh index>````\n\nA glTF scene node may contain multiple meshes, and for each of those xeogl will create an individual {{#crossLink \"Entity\"}}{{/crossLink}}. As\nbefore, the part before the hash is the ID of the GLTFModel, which is then followed by the ID of the glTF node, then \"entity\"\nto signify that this is an Entity ID, then finally an index to differentiate the Entity from those loaded from other\nmeshes on the same glTF node.\n\nWhen we load multiple Entities from a glTF node, then they will share the same {{#crossLink \"Transform\"}}{{/crossLink}} and {{#crossLink \"Visibility\"}}{{/crossLink}} components. This\nlets us update their transformation and visibility as a group, as if they were a composite entity that represents\nthe glTF node.\n\n\n## Examples\n\n* [Damaged Helmet with metal/rough PBR materials](../../examples/#importing_gltf_pbr_metallic_helmet)\n* [Gearbox with entity explorer](../../examples/#importing_gltf_explorer)\n* [Ensuring individual materials on GLTFModel entities](../../examples/#models_filter_uniqueMaterials)\n* [Baking transform hierarchies in a GLTFModel](../../examples/#models_filter_bakeTransforms)",
+            "description": "A **GLTFModel** is a {{#crossLink \"Model\"}}{{/crossLink}} loaded from a <a href=\"https://github.com/KhronosGroup/glTF\" target = \"_other\">glTF</a> file.\n\n<a href=\"../../examples/#importing_gltf_gearbox\"><img src=\"../../../assets/images/gltf/glTF_gearbox_squashed.png\"></img></a>\n\n## Overview\n\n* A GLTFModel is a container of {{#crossLink \"Component\"}}Components{{/crossLink}} that loads itself from a glTF file.\n* It begins loading as soon as you set its {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}\nproperty to the location of a valid glTF file.\n* You can set {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}} to a new file path at any time, which causes\nthe GLTFModel to clear itself and load components from the new file.\n\nIt inherits these capabilities from its {{#crossLink \"Model\"}}{{/crossLink}} base class:\n\n* Allows you to access and manipulate the components within it.\n* Can be transformed within World-space by attaching it to a {{#crossLink \"Transform\"}}{{/crossLink}}.\n* Provides its World-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}}.\n\n## Supported glTF features\n\nTODO\n\n| Property | Type | Range | Default Value | Space | Description |\n|:--------:|:----:|:-----:|:-------------:|:-----:|:-----------:|\n|  {{#crossLink \"MetallicMaterial/baseColor:property\"}}{{/crossLink}} | Array | [0, 1] for all components | [1,1,1,1] | linear | The RGB components of the base color of the material. |\n| {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The metallic-ness the material (1 for metals, 0 for non-metals). |\n| {{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The roughness of the material surface. |\n\n<img src=\"../../../assets/images/GLTFModel.png\"></img>\n\n## Usage\n\n### Loading glTF\n\nLoad a glTF file by creating a GLTFModel:\n\n````javascript\nvar gearbox = new xeogl.GLTFModel({\n  id: \"gearbox\",\n  src: \"models/gltf/gearbox/gearbox_assy.gltf\"\n});\n````\n\nA GLTFModel prefixes its own ID to those of its components. Its ID is optional and defaults to\nthe value of {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}. In this example we're providing our own short ID,\nhowever, in order to keep the component IDs short and easy to use.\n\nThe GLTFModel begins loading the glTF file immediately. Bind a callback to be notified when the file has loaded (which\nfires immediately if already loaded):\n\n````javascript\ngearbox.on(\"loaded\", function() {\n       // GLTFModel has loaded!\n   });\n````\n\nYou can also bind a callback to fire if loading fails:\n\n````javascript\ngearbox.on(\"error\", function(msg) {\n       // Error occurred\n   });\n````\n\nTo switch to a different glTF file, simply update {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}:\n\n````javascript\ngearbox.src = \"models/gltf/buggy/buggy.gltf\"\n````\n\n### Accessing components\n\nOnce the GLTFModel has loaded, its {{#crossLink \"Scene\"}}{{/crossLink}} will contain various components that represent the elements of the glTF file.\nWe'll now access some of those components by ID, to query and update them programmatically.\n\n**Transforms**\n\nLet's reposition one of the {{#crossLink \"Entity\"}}Entities{{/crossLink}} in our GLTFModel. We'll get the {{#crossLink \"Transform\"}}{{/crossLink}} that\npositions our target {{#crossLink \"Entity\"}}{{/crossLink}}, in this case a gear. Then we'll update its matrix to translate it ten units along the negative Z-axis.\n\n````javascript\nvar transform = gearbox.scene.components[\"gearbox#n274017_gear_53t-node.transform\"];\n\ntransform.matrix = xeogl.math.translationMat4v([0,0,-10]);\n````\n\nNote the format of the {{#crossLink \"Transform\"}}{{/crossLink}}'s ID:\n\n````<GLTFModel ID>#<glTF node ID>.transform````\n\nFrom left to right, the format contains the GLTFModel's ID, the ID of the glTF node that contains the transform, then\n\"transform\", to distinguish it from the IDs of any other components loaded from elements on the same glTF node.\n\n**Entities**\n\nLet's make our gear {{#crossLink \"Entity\"}}{{/crossLink}} invisible. This time we'll get the {{#crossLink \"Entity\"}}{{/crossLink}} itself, then update\nits {{#crossLink \"Visibility\"}}{{/crossLink}} component:\n\n````javascript\nvar gear53 = gearbox.scene.components[\"gearbox#n274017_gear_53.entity.0\"];\n\ngear53.visibility.visible = false;\n````\n\nNote the format of the {{#crossLink \"Entity\"}}{{/crossLink}}'s ID: ````<GLTFModel ID>#<glTF node ID>.entity.<glTF mesh index>````\n\nA glTF scene node may contain multiple meshes, and for each of those xeogl will create an individual {{#crossLink \"Entity\"}}{{/crossLink}}. As\nbefore, the part before the hash is the ID of the GLTFModel, which is then followed by the ID of the glTF node, then \"entity\"\nto signify that this is an Entity ID, then finally an index to differentiate the Entity from those loaded from other\nmeshes on the same glTF node.\n\nWhen we load multiple Entities from a glTF node, then they will share the same {{#crossLink \"Transform\"}}{{/crossLink}} and {{#crossLink \"Visibility\"}}{{/crossLink}} components. This\nlets us update their transformation and visibility as a group, as if they were a composite entity that represents\nthe glTF node.\n\n\n## Examples\n\n* [Damaged Helmet with metal/rough PBR materials](../../examples/#importing_gltf_pbr_metallic_helmet)\n* [Gearbox with entity explorer](../../examples/#importing_gltf_explorer)\n* [Ensuring individual materials on GLTFModel entities](../../examples/#models_filter_uniqueMaterials)\n* [Baking transform hierarchies in a GLTFModel](../../examples/#models_filter_bakeTransforms)",
             "submodule": "models",
             "is_constructor": 1,
             "params": [
@@ -5123,7 +5148,7 @@
             "namespace": "",
             "file": "src/models/model.js",
             "line": 1,
-            "description": "A **Model** is a group of {{#crossLink \"Component\"}}Components{{/crossLink}} within a xeogl {{#crossLink \"Scene\"}}{{/crossLink}}.\n\n## Overview\n\n* A Model \"owns\" its components, automatically deleting them when the Model is deleted.\n* Can be attached to a modelling {{#crossLink \"Transform\"}}{{/crossLink}}, to transform its components as a group, within World-space.\n* Provides the collective World-space boundary of its components as a {{#crossLink \"Boundary3D\"}}{{/crossLink}}, which\nupdates its extents automatically as components are added and removed, or Transforms are updated.\n\nA Model is subclassed by (at least):\n\n* {{#crossLink \"GLTFModel\"}}{{/crossLink}}, which loads its components from glTF files.\n* {{#crossLink \"SceneJSModel\"}}{{/crossLink}}, which loads its components from SceneJS scene definitions.\n* {{#crossLink \"BuildableModel\"}}{{/crossLink}}, which provides a fluent API for building its components.\n\n<img src=\"../../../assets/images/Model.png\"></img>\n\n## Usage\n\n### Adding and removing components\n\nWhen adding components to a Model, it's usually easiest to just add their configuration objects and let the Model\ninternally instantiate them, as shown below.\n\nAs mentioned, a Model \"owns\" all the components contained within it, destroying them when we destroy\nthe Model or call its {{#crossLink \"Model/destroyAll:method\"}}{{/crossLink}} method.\n\n````javascript\nvar model = new xeogl.Model();\n\nvar geometry = model.add({\n   type: \"xeogl.TorusGeometry\"\n});\n\nvar material = model.add({\n   type: \"xeogl.PhongMaterial\"\n   diffuse: [0.4, 0.4, 9.0]\n});\n\nmodel.add({\n   type: \"xeogl.Entity\",\n   geometry: geometry,\n   material: material\n});\n````\n\nAs shown below, we can also add our own component instances, supplying them either by reference or ID.\n\nNote that the components must be in the same {{#crossLink \"Scene\"}}{{/crossLink}} as the model.\n\n````javascript\n// Add by instance\nvar myEntity = new xeogl.Entity({\n   geometry: geometry,\n   material: material\n});\nmodel.add(myEntity);\n\n// Add by ID\nnew xeogl.Entity({\n   id: \"myEntity\",\n   geometry: geometry,\n   material: material\n})\nmodel.add(\"myEntity\");\n````\n\nSince xeogl aims to be as declarative as possible, we can also add components all in one shot,\nvia the Model's constructor:\n\n````javascript\nmodel = new xeogl.Model({\n   components: [\n       {\n           type: \"xeogl.TorusGeometry\",\n           id: \"myGeometry\"\n       },\n       {\n           type: \"xeogl.PhongMaterial\",\n           id: \"myMaterial\",\n           diffuse: [0.4, 0.4, 0.9]\n       },\n       {\n           type: \"xeogl.Entity\",\n           id: \"myEntity\",\n           geometry: \"myGeometry\",\n           material: \"myMaterial\"\n       }\n   ]\n});\n````\n\n### Finding components\n\nOur Model now has various components within itself, which we can find by their IDs.\n\nTo find the components grouped by their types, drop this expression into the browser's JavaScript\ndebug console (we're using Chrome here):\n\n````\nmodel.types;\n````\n\nThe result is the value of the Model's {{#crossLink \"Model/types:property\"}}types{{/crossLink}} map, which\ncontains its components, mapped to their types:\n\n<img src=\"../../../assets/images/screenshots/Model_findingComponents.png\"></img>\n\nHere we've expanded the {{#crossLink \"PhongMaterial\"}}{{/crossLink}} components, and we can see\nour {{#crossLink \"PhongMaterial\"}}{{/crossLink}}.\n\nLet's get that {{#crossLink \"PhongMaterial\"}}{{/crossLink}} from our Model's\n{{#crossLink \"Model/components:property\"}}{{/crossLink}} map and change its diffuse color:\n\n```` JavaScript\nvar material = model.components[\"myMaterial\"];\nmaterial.diffuse = [0.9, 0.4, 0.4];\n````\n\nThe Model also has an {{#crossLink \"Model/entities:property\"}}{{/crossLink}} map, in which we can find our {{#crossLink \"Entity\"}}{{/crossLink}}:\n\n<img src=\"../../../assets/images/screenshots/Model.entities.png\"></img>\n\n### Transforming a Model\n\nAs well as allowing us organize the lifecycle of groups of components, a Model also lets us transform them as a group.\n\nWe can attach a modeling {{#crossLink \"Transform\"}}{{/crossLink}} to our Model, as a either a\nconfiguration object or a component instance:\n\n```` Javascript\n// Attach transforms as a configuration object:\nmodel.transform = {\n       type: \"xeogl.Translate\",\n       xyz: [-35, 0, 0],\n       parent: {\n           type: \"xeogl.Rotate\",\n           xyz: [0, 1, 0],\n           angle: 45\n       }\n    };\n\n// Attach our own transform instances:\nmodel.transform = new xeogl.Translate({\n       xyz: [-35, 0, 0],\n       parent: new xeogl.Rotate({\n           xyz: [0, 1, 0],\n           angle: 45\n       })\n    });\n````\n\nWe can also provide the {{#crossLink \"Transform\"}}{{/crossLink}} to the Model constructor, as either configuration\nobjects or instances.\n\nHere we'll provide them as configuration objects:\n\n```` Javascript\n// Model internally instantiates our transform components:\nvar model3 = new xeogl.Model({\n       transform: {\n           type: \"xeogl.Translate\",\n           xyz: [-35, 0, 0],\n           parent: {\n               type: \"xeogl.Rotate\",\n               xyz: [0, 1, 0],\n               angle: 45\n           }\n       }\n    });\n\n````\n\nNote that, as with the components we added before, the Model will manage the lifecycles of our {{#crossLink \"Transform\"}}{{/crossLink}} components,\ndestroying them when we destroy the Model or call its {{#crossLink \"Model/destroyAll:method\"}}{{/crossLink}} method. Also, when we call {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} on a Model component, the component will remove itself from the Model first.\n\n### Getting the World-space boundary of a Model\n\nA Model's {{#crossLink \"Model/worldBoundary:property\"}}{{/crossLink}} property is a {{#crossLink \"Boundary3D\"}}{{/crossLink}}\nthat provides the collective World-space boundary of all its components. The {{#crossLink \"Boundary3D\"}}{{/crossLink}} will\nautomatically adjust its extents whenever we add or remove components to its Model, or whenever we update the Model's {{#crossLink \"Transform\"}}Transforms{{/crossLink}}.\n\nLet's get the {{#crossLink \"Boundary3D\"}}{{/crossLink}} from our first Model, subscribe to changes on its extents,\nthen animate one of the Model's {{#crossLink \"Transform\"}}Transforms{{/crossLink}}, which will cause the {{#crossLink \"Boundary3D\"}}{{/crossLink}} to fire an\n{{#crossLink \"Boundary3D/updated:event\"}}{{/crossLink}} event each time its extents change:\n\n```` Javascript\nvar worldBoundary = model.worldBoundary;\n\nworldBoundary.on(\"updated\", function() {\n\n       // See docs on xeogl.Boundary3D for\n       // the format of these properties\n\n       obb = worldBoundary.obb;\n       aabb = worldBoundary.aabb;\n       center = worldBoundary.center;\n       //...\n   });\n\nmodel.scene.on(\"tick\", function() {\n       model.transform.parent.angle += 0.2;\n   });\n````\n\nSince xeogl is all about lazy-execution to avoid needless work, the {{#crossLink \"Boundary3D\"}}{{/crossLink}} will\nonly actually recompute its extents the first time we read its {{#crossLink \"Boundary3D/obb:property\"}}{{/crossLink}},\n{{#crossLink \"Boundary3D/aabb:property\"}}{{/crossLink}}, {{#crossLink \"Boundary3D/center:property\"}}{{/crossLink}} or\n{{#crossLink \"Boundary3D/center:property\"}}{{/crossLink}} properties after it fired its\nlast {{#crossLink \"Boundary3D/updated:event\"}}{{/crossLink}} event.\n\nAlso, the Model lazy-instantiates its {{#crossLink \"Boundary3D\"}}{{/crossLink}} the first time we reference\nthe Model's {{#crossLink \"Model/worldBoundary:property\"}}{{/crossLink}} property. Since the {{#crossLink \"Boundary3D\"}}{{/crossLink}}\nis going to hang around in memory and fire {{#crossLink \"Boundary3D/updated:event\"}}{{/crossLink}} events each time we add or\nremove components, or animate {{#crossLink \"Transform\"}}Transforms{{/crossLink}}, for efficiency we should destroy the {{#crossLink \"Boundary3D\"}}{{/crossLink}}\nas soon as we no longer need it.\n\nFinally, when we destroy a Model, it will also destroy its {{#crossLink \"Boundary3D\"}}{{/crossLink}}, if it\ncurrently has one.",
+            "description": "A **Model** is a collection of {{#crossLink \"Component\"}}Components{{/crossLink}}.\n\n## Overview\n\n* A Model owns the components that are added to it, automatically destroying them when the Model is destroyed.\n* Can be attached to a {{#crossLink \"Transform\"}}{{/crossLink}} hierarchy, to transform its components as a group, within World-space.\n* Provides the collective World-space boundary of its components in an automatically updating {{#crossLink \"Boundary3D\"}}{{/crossLink}}.\n\nA Model is subclassed by (at least):\n\n* {{#crossLink \"GLTFModel\"}}{{/crossLink}}, which loads its components from glTF files.\n* {{#crossLink \"OBJModel\"}}{{/crossLink}}, which loads its components from .OBJ and .MTL files.\n* {{#crossLink \"SceneJSModel\"}}{{/crossLink}}, which loads its components from SceneJS scene definitions.\n* {{#crossLink \"BuildableModel\"}}{{/crossLink}}, which provides a fluent API for building its components.\n\n<img src=\"../../../assets/images/Model.png\"></img>\n\n## Usage\n\n### Adding and removing components\n\nWhen adding components to a Model, it's usually easiest to just add their configuration objects and let the Model\ninternally instantiate them, as shown below.\n\nAs mentioned, a Model owns all the components added to it, destroying them when we destroy\nthe Model or call its {{#crossLink \"Model/destroyAll:method\"}}{{/crossLink}} method.\n\n````javascript\nvar model = new xeogl.Model();\n\nvar geometry = model.add({\n   type: \"xeogl.TorusGeometry\"\n});\n\nvar material = model.add({\n   type: \"xeogl.PhongMaterial\"\n   diffuse: [0.4, 0.4, 9.0]\n});\n\nmodel.add({\n   type: \"xeogl.Entity\",\n   geometry: geometry,\n   material: material\n});\n````\n\nAs shown below, we can also add our own component instances, supplying them either by reference or ID.\n\nNote that the components must be in the same {{#crossLink \"Scene\"}}{{/crossLink}} as the model.\n\n````javascript\n// Add by instance\nvar myEntity = new xeogl.Entity({\n   geometry: geometry,\n   material: material\n});\nmodel.add(myEntity);\n\n// Add by ID\nnew xeogl.Entity({\n   id: \"myEntity\",\n   geometry: geometry,\n   material: material\n})\nmodel.add(\"myEntity\");\n````\n\nSince xeogl aims to be as declarative as possible, we can also add components all in one shot,\nvia the Model's constructor:\n\n````javascript\nmodel = new xeogl.Model({\n   components: [\n       {\n           type: \"xeogl.TorusGeometry\",\n           id: \"myGeometry\"\n       },\n       {\n           type: \"xeogl.PhongMaterial\",\n           id: \"myMaterial\",\n           diffuse: [0.4, 0.4, 0.9]\n       },\n       {\n           type: \"xeogl.Entity\",\n           id: \"myEntity\",\n           geometry: \"myGeometry\",\n           material: \"myMaterial\"\n       }\n   ]\n});\n````\n\n### Finding components\n\nOur Model now has various components within itself, which we can find by their IDs.\n\nTo find the components grouped by their types, drop this expression into the browser's JavaScript\ndebug console (we're using Chrome here):\n\n````\nmodel.types;\n````\n\nThe result is the value of the Model's {{#crossLink \"Model/types:property\"}}types{{/crossLink}} map, which\ncontains its components, mapped to their types:\n\n<img src=\"../../../assets/images/screenshots/Model_findingComponents.png\"></img>\n\nHere we've expanded the {{#crossLink \"PhongMaterial\"}}{{/crossLink}} components, and we can see\nour {{#crossLink \"PhongMaterial\"}}{{/crossLink}}.\n\nLet's get that {{#crossLink \"PhongMaterial\"}}{{/crossLink}} from our Model's\n{{#crossLink \"Model/components:property\"}}{{/crossLink}} map and change its diffuse color:\n\n```` JavaScript\nvar material = model.components[\"myMaterial\"];\nmaterial.diffuse = [0.9, 0.4, 0.4];\n````\n\nThe Model also has an {{#crossLink \"Model/entities:property\"}}{{/crossLink}} map, in which we can find our {{#crossLink \"Entity\"}}{{/crossLink}}:\n\n<img src=\"../../../assets/images/screenshots/Model.entities.png\"></img>\n\n### Transforming a Model\n\nAs well as allowing us organize the lifecycle of groups of components, a Model also lets us transform them as a group.\n\nWe can attach a modeling {{#crossLink \"Transform\"}}{{/crossLink}} to our Model, as a either a\nconfiguration object or a component instance:\n\n```` Javascript\n// Attach transforms as a configuration object:\nmodel.transform = {\n       type: \"xeogl.Translate\",\n       xyz: [-35, 0, 0],\n       parent: {\n           type: \"xeogl.Rotate\",\n           xyz: [0, 1, 0],\n           angle: 45\n       }\n    };\n\n// Attach our own transform instances:\nmodel.transform = new xeogl.Translate({\n       xyz: [-35, 0, 0],\n       parent: new xeogl.Rotate({\n           xyz: [0, 1, 0],\n           angle: 45\n       })\n    });\n````\n\nWe can also provide the {{#crossLink \"Transform\"}}{{/crossLink}} to the Model constructor, as either configuration\nobjects or instances.\n\nHere we'll provide them as configuration objects:\n\n```` Javascript\n// Model internally instantiates our transform components:\nvar model3 = new xeogl.Model({\n       transform: {\n           type: \"xeogl.Translate\",\n           xyz: [-35, 0, 0],\n           parent: {\n               type: \"xeogl.Rotate\",\n               xyz: [0, 1, 0],\n               angle: 45\n           }\n       }\n    });\n\n````\n\nNote that, as with the components we added before, the Model will manage the lifecycles of our {{#crossLink \"Transform\"}}{{/crossLink}} components,\ndestroying them when we destroy the Model or call its {{#crossLink \"Model/destroyAll:method\"}}{{/crossLink}} method. Also, when we call {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} on a Model component, the component will remove itself from the Model first.\n\n### Getting the World-space boundary of a Model\n\nA Model's {{#crossLink \"Model/worldBoundary:property\"}}{{/crossLink}} property is a {{#crossLink \"Boundary3D\"}}{{/crossLink}}\nthat provides the collective World-space boundary of all its components. The {{#crossLink \"Boundary3D\"}}{{/crossLink}} will\nautomatically adjust its extents whenever we add or remove components to its Model, or whenever we update the Model's {{#crossLink \"Transform\"}}Transforms{{/crossLink}}.\n\nLet's get the {{#crossLink \"Boundary3D\"}}{{/crossLink}} from our first Model, subscribe to changes on its extents,\nthen animate one of the Model's {{#crossLink \"Transform\"}}Transforms{{/crossLink}}, which will cause the {{#crossLink \"Boundary3D\"}}{{/crossLink}} to fire an\n{{#crossLink \"Boundary3D/updated:event\"}}{{/crossLink}} event each time its extents change:\n\n```` Javascript\nvar worldBoundary = model.worldBoundary;\n\nworldBoundary.on(\"updated\", function() {\n\n       // See docs on xeogl.Boundary3D for\n       // the format of these properties\n\n       obb = worldBoundary.obb;\n       aabb = worldBoundary.aabb;\n       center = worldBoundary.center;\n       //...\n   });\n\nmodel.scene.on(\"tick\", function() {\n       model.transform.parent.angle += 0.2;\n   });\n````\n\nSince xeogl is all about lazy-execution to avoid needless work, the {{#crossLink \"Boundary3D\"}}{{/crossLink}} will\nonly actually recompute its extents the first time we read its {{#crossLink \"Boundary3D/obb:property\"}}{{/crossLink}},\n{{#crossLink \"Boundary3D/aabb:property\"}}{{/crossLink}}, {{#crossLink \"Boundary3D/center:property\"}}{{/crossLink}} or\n{{#crossLink \"Boundary3D/center:property\"}}{{/crossLink}} properties after it fired its\nlast {{#crossLink \"Boundary3D/updated:event\"}}{{/crossLink}} event.\n\nAlso, the Model lazy-instantiates its {{#crossLink \"Boundary3D\"}}{{/crossLink}} the first time we reference\nthe Model's {{#crossLink \"Model/worldBoundary:property\"}}{{/crossLink}} property. Since the {{#crossLink \"Boundary3D\"}}{{/crossLink}}\nis going to hang around in memory and fire {{#crossLink \"Boundary3D/updated:event\"}}{{/crossLink}} events each time we add or\nremove components, or animate {{#crossLink \"Transform\"}}Transforms{{/crossLink}}, for efficiency we should destroy the {{#crossLink \"Boundary3D\"}}{{/crossLink}}\nas soon as we no longer need it.\n\nFinally, when we destroy a Model, it will also destroy its {{#crossLink \"Boundary3D\"}}{{/crossLink}}, if it\ncurrently has one.",
             "submodule": "models",
             "is_constructor": 1,
             "params": [
@@ -7778,6 +7803,63 @@
             ],
             "extends": "CameraController"
         },
+        "OBJModel": {
+            "name": "OBJModel",
+            "shortname": "OBJModel",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "xeogl",
+            "namespace": "",
+            "file": "examples/js/models/OBJModel.js",
+            "line": 1,
+            "description": "An **OBJModel** is a {{#crossLink \"Model\"}}{{/crossLink}} that loads itself from OBJ and MTL files.\n\n<a href=\"../../examples/#importing_obj_conferenceRoom\"><img src=\"../../../assets/images/screenshots/OBJModel.png\"></img></a>\n\n## Overview\n\n* Begins loading as soon as you set its {{#crossLink \"OBJModel/src:property\"}}{{/crossLink}} property to the location of an OBJ file.\n* Once loaded, contains an {{#crossLink \"Entity\"}}{{/crossLink}} for each object. The {{#crossLink \"Entity\"}}Entities{{/crossLink}} can then be independently shown, hidden, colored, transformed etc.\n* Set {{#crossLink \"OBJModel/src:property\"}}{{/crossLink}} to a new file path at any time, to clear the OBJModel and load components from the new file.\n\nOBJModel inherits these capabilities from its {{#crossLink \"Model\"}}{{/crossLink}} base class:\n\n* Allows you to access and manipulate the components within it (as mentioned).\n* Can be transformed us a unit within World-space by attaching it to a {{#crossLink \"Transform\"}}{{/crossLink}}.\n* Provides its World-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}}.\n\n## Usage\n\nLet's load the conference room model (shown in the screenshot above):\n\n````javascript\nvar confRoom = new xeogl.OBJModel({\n    id: \"confRoom\",\n    src: \"models/obj/conference/conference.obj\"\n});\n````\n\nBind a callback to fire when the model has loaded:\n\n````javascript\nconfRoom.on(\"loaded\", function() {\n    // OBJModel has loaded!\n});\n````\n\nThat fires immediately if the OBJModel already happens to be loaded. You can also bind a callback to fire if loading fails:\n\n````javascript\nconfRoom.on(\"error\", function(msg) {\n    // Error occurred\n});\n````\n\nTo switch to a different OBJ file, simply update {{#crossLink \"OBJModel/src:property\"}}{{/crossLink}}:\n\n````javascript\nconfRoom.src = \"models/obj/female02/female02.obj\";\n````\n\n### Fitting to view\n\n````javascript\nvar cameraFlight = new xeogl.CameraFlightAnimation();\ncameraFlight.flyTo(confRoom);\n````\n\n### Accessing components\n\nLet's make everything  transparent, except for the conference table and chairs:\n\n````javascript\nfor (var id in confRoom.entities) {\n   var entity = confRoom.entities[id];\n   switch (id) {\n       case \"confRoom#mesh31\":\n       case \"confRoom#mesh29\":\n       case \"confRoom#mesh30\":\n           break;\n       default: // Not a chair entity\n           entity.modes.transparent = true;\n           entity.material.opacity = 0.5;\n   }\n}\n````\n\nNote the format of the {{#crossLink \"Entity\"}}{{/crossLink}} IDs - an OBJModel prefixes its own ID to the IDs of its components:\n\n````<OBJModel ID>#<OBJ object/group ID>````\n\n**Transforms**\n\nLet's move the white table top upwards:\n\n````javascript\nvar tableTop = confRoom.entities[\"confRoom#mesh29\"];\ntableTop.transform = new xeogl.Translate({\n   xyz: [0, 150, 0],\n   parent: tableTop.transform\n});\n````\n\n## Examples\n\n* [Conference room model](../../examples/#importing_obj_conferenceRoom)\n* [Two character models](../../examples/#importing_obj_people)\n\n## Credits\n\nParts of the OBJModel parser are derived from the THREE.js OBJ and MTL loaders:\n\n* https://github.com/mrdoob/three.js/blob/dev/examples/js/loaders/OBJLoader.js\n* https://github.com/mrdoob/three.js/blob/dev/examples/js/loaders/MTLLoader.js",
+            "submodule": "models",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this OBJModel in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}},\ngenerated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this OBJModel.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "src",
+                            "description": "Path to an OBJ file. You can set this to a new file path at any time, which will cause the\nOBJModel to load components from the new file (after first destroying any components loaded from a previous file path).",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "transform",
+                            "description": "A Local-to-World-space (modelling) {{#crossLink \"Transform\"}}{{/crossLink}} to attach to this OBJModel.\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this OBJModel. Internally, the given\n{{#crossLink \"Transform\"}}{{/crossLink}} will be inserted above each top-most {{#crossLink \"Transform\"}}Transform{{/crossLink}}\nthat the OBJModel attaches to its {{#crossLink \"Entity\"}}Entities{{/crossLink}}.",
+                            "type": "Number|String|Transform",
+                            "optional": true
+                        }
+                    ]
+                }
+            ],
+            "extends": "Model"
+        },
         "BuildableModel": {
             "name": "BuildableModel",
             "shortname": "BuildableModel",
@@ -9011,203 +9093,25 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 7,
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.js",
-            "line": 25,
-            "description": "Indicates if the canvas is transparent",
-            "type": "{boolean}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.js",
-            "line": 31,
+            "line": 27,
             "description": "Optional callback to fire when renderer wants to\nbind an output framebuffer. This is useful when we need to bind a stereo output buffer for WebVR.\n\nWhen this is missing, the renderer will implicitly bind\nWebGL's default framebuffer.\n\nThe callback takes one parameter, which is the index of the current\nrendering pass in which the buffer is to be bound.\n\nUse like this: myRenderer.bindOutputFramebuffer = function(pass) { .. });",
             "class": "CameraFlightAnimation"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 45,
+            "line": 41,
             "description": "Optional callback to fire when renderer wants to\nunbind any output drawing framebuffer that was\npreviously bound with #bindOutputFramebuffer.\n\nThe callback takes one parameter, which is the index of the current\nrendering pass in which the buffer is to be bound.\n\nUse like this: myRenderer.unbindOutputFramebuffer = function(pass) { .. });\n\nCallback takes no parameters.",
             "class": "CameraFlightAnimation"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 65,
-            "description": "The current ambient color.",
-            "type": "Float32Array",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.js",
-            "line": 106,
-            "description": "Visibility render state.",
-            "itemtype": "property",
-            "name": "visibility",
-            "type": "{renderer.Visibility}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.js",
-            "line": 113,
-            "description": "Culling render state.",
-            "itemtype": "property",
-            "name": "cull",
-            "type": "{renderer.Cull}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.js",
-            "line": 120,
-            "description": "Modes render state.",
-            "itemtype": "property",
-            "name": "modes",
-            "type": "{renderer.Modes}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.js",
-            "line": 127,
-            "description": "Render state for an effects layer.",
-            "itemtype": "property",
-            "name": "layer",
-            "type": "{renderer.Layer}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.js",
-            "line": 134,
-            "description": "Lights render state.",
-            "itemtype": "property",
-            "name": "lights",
-            "type": "{renderer.Lights}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.js",
-            "line": 141,
-            "description": "Material render state.",
-            "itemtype": "property",
-            "name": "material",
-            "type": "{renderer.Material}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.js",
-            "line": 148,
-            "description": "Modelling transform render state.",
-            "itemtype": "property",
-            "name": "modelTransform",
-            "type": "{renderer.Transform}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.js",
-            "line": 155,
-            "description": "View transform render state.",
-            "itemtype": "property",
-            "name": "viewTransform",
-            "type": "{renderer.Transform}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.js",
-            "line": 162,
-            "description": "Projection transform render state.",
-            "itemtype": "property",
-            "name": "projTransform",
-            "type": "{renderer.Transform}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.js",
-            "line": 169,
-            "description": "Billboard render state.",
-            "itemtype": "property",
-            "name": "billboard",
-            "type": "{renderer.Billboard}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.js",
-            "line": 176,
-            "description": "Stationary render state.",
-            "itemtype": "property",
-            "name": "stationary",
-            "type": "{renderer.Stationary}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.js",
-            "line": 183,
-            "description": "Cross-section planes render state.",
-            "itemtype": "property",
-            "name": "clips",
-            "type": "{renderer.Clips}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.js",
-            "line": 190,
-            "description": "Geometry render state.",
-            "itemtype": "property",
-            "name": "geometry",
-            "type": "{renderer.Geometry}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.js",
-            "line": 197,
-            "description": "Viewport render state.",
-            "itemtype": "property",
-            "name": "viewport",
-            "type": "{renderer.Viewport}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.js",
-            "line": 204,
-            "description": "Outline state.",
-            "itemtype": "property",
-            "name": "outline",
-            "type": "{renderer.Outline}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.js",
-            "line": 214,
-            "description": "Flags the object list as needing to be rebuilt from the object map.",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.js",
-            "line": 219,
-            "description": "Flags the object list as needing state orders to be recomputed.",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.js",
-            "line": 224,
-            "description": "Flags the object list as needing to be state-sorted.",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.js",
-            "line": 229,
-            "description": "Flags the image as needing to be redrawn from the object list.",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.js",
-            "line": 235,
+            "line": 101,
             "description": "Reallocates WebGL resources for objects within this renderer.",
             "class": "CameraFlightAnimation"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 258,
+            "line": 114,
             "description": "Internally creates (or updates) a {@link xeogl.renderer.Object} of the given\nID from whatever component state cores are currently set on this {@link xeogl.Renderer}.\nThe object is created if it does not already exist in the display, otherwise\nit is updated with the current states, possibly replacing states already\nreferenced by the object.",
             "params": [
                 {
@@ -9220,77 +9124,14 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 395,
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.js",
-            "line": 451,
-            "description": "Removes an object from this Renderer",
-            "params": [
-                {
-                    "name": "objectId",
-                    "description": "ID of object to remove",
-                    "type": "String"
-                }
-            ],
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.js",
-            "line": 487,
-            "description": "Renders a new frame, if neccessary.",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.js",
-            "line": 917,
+            "line": 685,
             "description": "Attempts to pick an object.",
-            "params": [
-                {
-                    "name": "params",
-                    "description": "Picking params.",
-                    "type": "*"
-                }
-            ],
-            "return": {
-                "description": "Hit result, if any.",
-                "type": "*"
-            },
             "class": "CameraFlightAnimation"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 1125,
-            "description": "Reads the colors of some pixels in the last rendered frame.",
-            "params": [
-                {
-                    "name": "pixels",
-                    "description": "",
-                    "type": "Float32Array"
-                },
-                {
-                    "name": "colors",
-                    "description": "",
-                    "type": "Float32Array"
-                },
-                {
-                    "name": "len",
-                    "description": "",
-                    "type": "Number"
-                },
-                {
-                    "name": "opaqueOnly",
-                    "description": "",
-                    "type": "Boolean"
-                }
-            ],
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.js",
-            "line": 1171,
-            "description": "Destroys this Renderer.",
+            "line": 887,
+            "description": "Reads the colors of some pixels in the current image.",
             "class": "CameraFlightAnimation"
         },
         {
@@ -21911,6 +21752,60 @@
             "submodule": "models"
         },
         {
+            "file": "src/models/gltfModel_v2.js",
+            "line": 159,
+            "description": "Path to a glTF file.\n\nYou can set this to a new file path at any time (except while loading), which will cause the GLTFModel to load components from\nthe new file (after first destroying any components loaded from a previous file path).\n\nFires a {{#crossLink \"GLTFModel/src:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "src",
+            "type": "String",
+            "class": "GLTFModel",
+            "module": "xeogl",
+            "submodule": "models"
+        },
+        {
+            "file": "src/models/gltfModel_v2.js",
+            "line": 185,
+            "description": "Fired whenever this GLTFModel has finished loading components from the glTF file\nspecified by {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}.",
+            "itemtype": "event",
+            "name": "loaded",
+            "class": "GLTFModel",
+            "module": "xeogl",
+            "submodule": "models"
+        },
+        {
+            "file": "src/models/gltfModel_v2.js",
+            "line": 208,
+            "description": "Fired whenever this GLTFModel fails to load the glTF file\nspecified by {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}.",
+            "itemtype": "event",
+            "name": "error",
+            "params": [
+                {
+                    "name": "msg",
+                    "description": "Description of the error",
+                    "type": "String"
+                }
+            ],
+            "class": "GLTFModel",
+            "module": "xeogl",
+            "submodule": "models"
+        },
+        {
+            "file": "src/models/gltfModel_v2.js",
+            "line": 217,
+            "description": "Fired whenever this GLTFModel's {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "src",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "GLTFModel",
+            "module": "xeogl",
+            "submodule": "models"
+        },
+        {
             "file": "src/models/model.js",
             "line": 245,
             "description": "JavaScript class name for this Component.",
@@ -27560,6 +27455,43 @@
             "submodule": "marking"
         },
         {
+            "file": "examples/js/models/OBJModel.js",
+            "line": 142,
+            "description": "Path to a Wavefront OBJ file.\n\nYou can set this to a new file path at any time, which will cause the OBJModel to load components from\nthe new file (after first destroying any components loaded from a previous file path).\n\nAlso loads materials from any MTL files referenced in the OBJ.\n\nFires a {{#crossLink \"OBJModel/src:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "src",
+            "type": "String",
+            "class": "OBJModel",
+            "module": "xeogl",
+            "submodule": "models"
+        },
+        {
+            "file": "examples/js/models/OBJModel.js",
+            "line": 170,
+            "description": "Fired whenever this OBJModel has finished loading components from the OBJ file\nspecified by {{#crossLink \"OBJModel/src:property\"}}{{/crossLink}}.",
+            "itemtype": "event",
+            "name": "loaded",
+            "class": "OBJModel",
+            "module": "xeogl",
+            "submodule": "models"
+        },
+        {
+            "file": "examples/js/models/OBJModel.js",
+            "line": 203,
+            "description": "Fired whenever this OBJModel's {{#crossLink \"OBJModel/src:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "src",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "OBJModel",
+            "module": "xeogl",
+            "submodule": "models"
+        },
+        {
             "file": "examples/js/models/buildableModel.js",
             "line": 98,
             "description": "Adds an asset to this BuildableModel.\n\nThe asset is given as a configuration object, to be lazy-instantiated as soon as an entity is built from\nit with {{#crossLink \"BuildableModel/entity:method\"}}entity(){{/crossLink}}.\n\n#### Usage\n\nAdding a {{#crossLink \"PhongMaterial\"}}{{/crossLink}} asset with ID \"gridMaterial\":\n\n````javascript\nbuildableModel.asset(\"gridMaterial\", {\n    type: \"xeogl.PhongMaterial\",\n    ambient: [0.9, 0.3, 0.9],\n    shininess: 30,\n    diffuseMap: {\n        src: \"textures/diffuse/uvGrid2.jpg\"\n    }\n});\n````\n\nAdding a {{#crossLink \"BoxGeometry\"}}{{/crossLink}} asset with ID \"boxGeometry\":\n\n````javascript\nbuildableModel.asset(\"boxGeometry\", {\n    type: \"xeogl.BoxGeometry\",\n    xSize: 1.0,\n    ySize: 1.0,\n    zSize: 1.0\n});\n````",
@@ -27758,6 +27690,60 @@
             "itemtype": "method",
             "name": "reset",
             "class": "BuildableModel",
+            "module": "xeogl",
+            "submodule": "models"
+        },
+        {
+            "file": "examples/js/models/gltfModel.js",
+            "line": 159,
+            "description": "Path to a glTF file.\n\nYou can set this to a new file path at any time (except while loading), which will cause the GLTFModel to load components from\nthe new file (after first destroying any components loaded from a previous file path).\n\nFires a {{#crossLink \"GLTFModel/src:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "src",
+            "type": "String",
+            "class": "GLTFModel",
+            "module": "xeogl",
+            "submodule": "models"
+        },
+        {
+            "file": "examples/js/models/gltfModel.js",
+            "line": 185,
+            "description": "Fired whenever this GLTFModel has finished loading components from the glTF file\nspecified by {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}.",
+            "itemtype": "event",
+            "name": "loaded",
+            "class": "GLTFModel",
+            "module": "xeogl",
+            "submodule": "models"
+        },
+        {
+            "file": "examples/js/models/gltfModel.js",
+            "line": 207,
+            "description": "Fired whenever this GLTFModel fails to load the glTF file\nspecified by {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}.",
+            "itemtype": "event",
+            "name": "error",
+            "params": [
+                {
+                    "name": "msg",
+                    "description": "Description of the error",
+                    "type": "String"
+                }
+            ],
+            "class": "GLTFModel",
+            "module": "xeogl",
+            "submodule": "models"
+        },
+        {
+            "file": "examples/js/models/gltfModel.js",
+            "line": 216,
+            "description": "Fired whenever this GLTFModel's {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "src",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "GLTFModel",
             "module": "xeogl",
             "submodule": "models"
         },
@@ -28772,10 +28758,6 @@
     "warnings": [
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/_renderer/renderer.js:917"
-        },
-        {
-            "message": "replacing incorrect tag: returns with return",
             "line": " src/_renderer/renderer.new.js:1015"
         },
         {
@@ -29359,72 +29341,28 @@
             "line": " src/_renderer/programSourceFactory.js:141"
         },
         {
-            "message": "Missing item type",
-            "line": " src/_renderer/renderer.js:7"
-        },
-        {
-            "message": "Missing item type\nIndicates if the canvas is transparent",
-            "line": " src/_renderer/renderer.js:25"
-        },
-        {
             "message": "Missing item type\nOptional callback to fire when renderer wants to\nbind an output framebuffer. This is useful when we need to bind a stereo output buffer for WebVR.\n\nWhen this is missing, the renderer will implicitly bind\nWebGL's default framebuffer.\n\nThe callback takes one parameter, which is the index of the current\nrendering pass in which the buffer is to be bound.\n\nUse like this: myRenderer.bindOutputFramebuffer = function(pass) { .. });",
-            "line": " src/_renderer/renderer.js:31"
+            "line": " src/_renderer/renderer.js:27"
         },
         {
             "message": "Missing item type\nOptional callback to fire when renderer wants to\nunbind any output drawing framebuffer that was\npreviously bound with #bindOutputFramebuffer.\n\nThe callback takes one parameter, which is the index of the current\nrendering pass in which the buffer is to be bound.\n\nUse like this: myRenderer.unbindOutputFramebuffer = function(pass) { .. });\n\nCallback takes no parameters.",
-            "line": " src/_renderer/renderer.js:45"
-        },
-        {
-            "message": "Missing item type\nThe current ambient color.",
-            "line": " src/_renderer/renderer.js:65"
-        },
-        {
-            "message": "Missing item type\nFlags the object list as needing to be rebuilt from the object map.",
-            "line": " src/_renderer/renderer.js:214"
-        },
-        {
-            "message": "Missing item type\nFlags the object list as needing state orders to be recomputed.",
-            "line": " src/_renderer/renderer.js:219"
-        },
-        {
-            "message": "Missing item type\nFlags the object list as needing to be state-sorted.",
-            "line": " src/_renderer/renderer.js:224"
-        },
-        {
-            "message": "Missing item type\nFlags the image as needing to be redrawn from the object list.",
-            "line": " src/_renderer/renderer.js:229"
+            "line": " src/_renderer/renderer.js:41"
         },
         {
             "message": "Missing item type\nReallocates WebGL resources for objects within this renderer.",
-            "line": " src/_renderer/renderer.js:235"
+            "line": " src/_renderer/renderer.js:101"
         },
         {
             "message": "Missing item type\nInternally creates (or updates) a {@link xeogl.renderer.Object} of the given\nID from whatever component state cores are currently set on this {@link xeogl.Renderer}.\nThe object is created if it does not already exist in the display, otherwise\nit is updated with the current states, possibly replacing states already\nreferenced by the object.",
-            "line": " src/_renderer/renderer.js:258"
-        },
-        {
-            "message": "Missing item type",
-            "line": " src/_renderer/renderer.js:395"
-        },
-        {
-            "message": "Missing item type\nRemoves an object from this Renderer",
-            "line": " src/_renderer/renderer.js:451"
-        },
-        {
-            "message": "Missing item type\nRenders a new frame, if neccessary.",
-            "line": " src/_renderer/renderer.js:487"
+            "line": " src/_renderer/renderer.js:114"
         },
         {
             "message": "Missing item type\nAttempts to pick an object.",
-            "line": " src/_renderer/renderer.js:917"
+            "line": " src/_renderer/renderer.js:685"
         },
         {
-            "message": "Missing item type\nReads the colors of some pixels in the last rendered frame.",
-            "line": " src/_renderer/renderer.js:1125"
-        },
-        {
-            "message": "Missing item type\nDestroys this Renderer.",
-            "line": " src/_renderer/renderer.js:1171"
+            "message": "Missing item type\nReads the colors of some pixels in the current image.",
+            "line": " src/_renderer/renderer.js:887"
         },
         {
             "message": "Missing item type",

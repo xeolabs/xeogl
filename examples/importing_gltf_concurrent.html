@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="../build/xeogl.js"></script>
+
+<body>
+
+<div id="info">
+    <h1>Two <a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModels</a> loading concurrently</h1>
+</div>
+
+<div id="logos">
+    <a href="https://www.khronos.org/gltf" target="_parent"><img src="../assets/images/logos/gltf.png"></a>
+</div>
+
+<script>
+
+    var gearbox = new xeogl.GLTFModel({
+        src: "models/gltf/1.0/GearboxAssy/glTF/GearboxAssy.gltf"
+    });
+
+    var saw = new xeogl.GLTFModel({
+        src: "models/gltf/2.0/Reciprocating_Saw/PBR-SpecGloss/Reciprocating_Saw.gltf",
+        transform: new xeogl.Rotate({
+            xyz: [1, 0, 0],
+            angle: 90
+        })
+    });
+
+    new xeogl.CameraControl();
+
+    var view = gearbox.scene.camera.view;
+
+    view.eye = [184.21, 10.54, -7.03];
+    view.look = [159.20, 17.02, 3.21];
+    view.up = [-0.15, 0.97, 0.13];
+
+    new xeogl.CameraControl();
+
+    gearbox.scene.on("tick", function () {
+        view.rotateEyeY(-0.1);
+        view.rotateEyeX(0.02);
+    });
+
+</script>
+</body>
+</html>

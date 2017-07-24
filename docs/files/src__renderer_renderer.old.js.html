@@ -91,6 +91,7 @@
                                 <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
+                                <li><a href="../classes/OBJModel.html">OBJModel</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Outline.html">Outline</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
@@ -303,7 +304,7 @@
             bindArray: null,
             pass: null,
             bindOutputFramebuffer: null,
-            pickIndex: 0,
+            pickObjectIndex: 0,
             shadowViewMatrix: null,
             shadowProjmatrix: null,
             pickViewMatrix: null,
@@ -996,7 +997,7 @@
         frameCtx.bindOutputFramebuffer = this.bindOutputFramebuffer;
         frameCtx.pickViewMatrix = params.pickViewMatrix;
         frameCtx.pickProjMatrix = params.pickProjMatrix;
-        frameCtx.pickIndex = 0;
+        frameCtx.pickObjectIndex = 0;
 
         gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
 
@@ -1206,7 +1207,7 @@
         frameCtx.bindArray = 0;
         frameCtx.pickViewMatrix = pickViewMatrix;
         frameCtx.pickProjMatrix = pickProjMatrix;
-        frameCtx.pickIndex = 0;
+        frameCtx.pickObjectIndex = 0;
 
         gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
         gl.clearColor(0, 0, 0, 0);
@@ -1267,7 +1268,7 @@
         frameCtx.bindArray = 0;
         frameCtx.pickViewMatrix = pickViewMatrix;
         frameCtx.pickProjMatrix = pickProjMatrix;
-        frameCtx.pickIndex = 0;
+        frameCtx.pickObjectIndex = 0;
 
         gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
         gl.clearColor(0, 0, 0, 0);

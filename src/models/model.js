@@ -1,16 +1,16 @@
 /**
- A **Model** is a group of {{#crossLink "Component"}}Components{{/crossLink}} within a xeogl {{#crossLink "Scene"}}{{/crossLink}}.
+ A **Model** is a collection of {{#crossLink "Component"}}Components{{/crossLink}}.
 
  ## Overview
 
- * A Model "owns" its components, automatically deleting them when the Model is deleted.
- * Can be attached to a modelling {{#crossLink "Transform"}}{{/crossLink}}, to transform its components as a group, within World-space.
- * Provides the collective World-space boundary of its components as a {{#crossLink "Boundary3D"}}{{/crossLink}}, which
- updates its extents automatically as components are added and removed, or Transforms are updated.
+ * A Model owns the components that are added to it, automatically destroying them when the Model is destroyed.
+ * Can be attached to a {{#crossLink "Transform"}}{{/crossLink}} hierarchy, to transform its components as a group, within World-space.
+ * Provides the collective World-space boundary of its components in an automatically updating {{#crossLink "Boundary3D"}}{{/crossLink}}.
 
  A Model is subclassed by (at least):
 
  * {{#crossLink "GLTFModel"}}{{/crossLink}}, which loads its components from glTF files.
+ * {{#crossLink "OBJModel"}}{{/crossLink}}, which loads its components from .OBJ and .MTL files.
  * {{#crossLink "SceneJSModel"}}{{/crossLink}}, which loads its components from SceneJS scene definitions.
  * {{#crossLink "BuildableModel"}}{{/crossLink}}, which provides a fluent API for building its components.
 
@@ -23,7 +23,7 @@
  When adding components to a Model, it's usually easiest to just add their configuration objects and let the Model
  internally instantiate them, as shown below.
 
- As mentioned, a Model "owns" all the components contained within it, destroying them when we destroy
+ As mentioned, a Model owns all the components added to it, destroying them when we destroy
  the Model or call its {{#crossLink "Model/destroyAll:method"}}{{/crossLink}} method.
 
  ````javascript
@@ -350,7 +350,7 @@
 
                     // Component type
 
-                    type = component;
+                    var type = component;
 
                     types = this.scene.types[type];
 
@@ -361,7 +361,7 @@
 
                     for (componentId in types) {
                         if (types.hasOwnProperty(componentId)) {
-                            this._add(types[componentId]);
+                            this.add(types[componentId]);
                         }
                     }
 
@@ -439,7 +439,7 @@
 
                 var rootTransform = component.transform;
 
-                if (!rootTransform) {
+                if (!rootTransform || rootTransform.id === "default.transform") {
 
                     component.transform = self._dummyRootTransform;
 

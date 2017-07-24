@@ -18,11 +18,26 @@
 
 <script>
 
+    //--------------------------------------------
+    // Add a lightmap to make our PBR look good
+    //--------------------------------------------
+
+//    xeogl.scene.lights.lightMap = new xeogl.CubeTexture({
+//        src: [
+//            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
+//            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png",
+//            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png",
+//            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png",
+//            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png",
+//            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png"
+//        ]
+//    });
+
     //---- GLTFModel  ----------------------------------------------------------
 
     // Load glTF
     var gearbox = new xeogl.GLTFModel({
-        src: "models/gltf/1.0/GearboxAssy/glTF/GearboxAssy.gltf"
+        src: "models/gltf/2.0/GearboxAssy/PBR-MetalRoughness/gearbox_assy.gltf"
     });
 
     // Set initial camera position

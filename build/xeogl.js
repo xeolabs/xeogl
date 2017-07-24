@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2017-07-06
+ * Built on 2017-07-24
  *
  * MIT License
  * Copyright 2017, Lindsay Kay
@@ -5176,11 +5176,10 @@ var Canvas2Image = (function () {
 
     "use strict";
 
+    const LEN_CHUNKS = 12;
+
     xeogl.renderer = xeogl.renderer || {};
 
-    /**
-     *
-     */
     xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
 
         options = options || {};
@@ -5194,12 +5193,9 @@ var Canvas2Image = (function () {
         this._objectFactory = new xeogl.renderer.ObjectFactory();
         this._chunkFactory = new xeogl.renderer.ChunkFactory();
 
-        this._shadowLightObjects = {}; // Objects for each light that has a shadow
+        this._shadowLightObjects = {}; // WIP: Objects for each light that has a shadow
 
-        /**
-         * Indicates if the canvas is transparent
-         * @type {boolean}
-         */
+        // Indicates if the canvas is transparent
         this.transparent = options.transparent === true;
 
         /**
@@ -5236,173 +5232,43 @@ var Canvas2Image = (function () {
         // The current ambient color, if available
         this._ambient = null;
 
-        /**
-         * The current ambient color.
-         * @type Float32Array
-         */
+        // The current ambient color.
         this.ambientColor = xeogl.math.vec4([0, 0, 0, 1]);
 
         // Objects in a list, ordered by state
         this._objectList = [];
         this._objectListLen = 0;
 
-        // List of objects that were rendered in the last picking pass,
-        // for indexing when using color-index picking
+        // List of objects that were rendered in the last picking pass, for indexing when using color-index picking
         this._objectPickList = [];
         this._objectPickListLen = 0;
 
         // Shadow->Object lookup
         this._shadowObjectLists = {};
 
-        // The frame context holds state shared across a single render of the
-        // draw list, along with any results of the render, such as pick hits
-        this._frameCtx = {
-            canvas: this.canvas,
-            backfaces: true,
-            frontface: true, // true = "ccw" else "cw"
-            textureUnit: 0,
-            transparent: false, // True while rendering transparency bin
-            ambientColor: null,
-            drawElements: 0,
-            useProgram: 0,
-            bindTexture: 0,
-            bindArray: null,
-            pass: null,
-            pickIndex: 0,
-            shadowViewMatrix: null,
-            shadowProjmatrix: null,
-            pickViewMatrix: null,
-            pickProjmatrix: null
-        };
+        // Render states 
 
-        //----------------- Render states --------------------------------------
-
-        /**
-         Visibility render state.
-         @property visibility
-         @type {renderer.Visibility}
-         */
         this.visibility = null;
-
-        /**
-         Culling render state.
-         @property cull
-         @type {renderer.Cull}
-         */
         this.cull = null;
-
-        /**
-         Modes render state.
-         @property modes
-         @type {renderer.Modes}
-         */
         this.modes = null;
-
-        /**
-         Render state for an effects layer.
-         @property layer
-         @type {renderer.Layer}
-         */
         this.layer = null;
-
-        /**
-         Lights render state.
-         @property lights
-         @type {renderer.Lights}
-         */
         this.lights = null;
-
-        /**
-         Material render state.
-         @property material
-         @type {renderer.Material}
-         */
         this.material = null;
-
-        /**
-         Modelling transform render state.
-         @property modelTransform
-         @type {renderer.Transform}
-         */
         this.modelTransform = null;
-
-        /**
-         View transform render state.
-         @property viewTransform
-         @type {renderer.Transform}
-         */
         this.viewTransform = null;
-
-        /**
-         Projection transform render state.
-         @property projTransform
-         @type {renderer.Transform}
-         */
         this.projTransform = null;
-
-        /**
-         Billboard render state.
-         @property billboard
-         @type {renderer.Billboard}
-         */
         this.billboard = null;
-
-        /**
-         Stationary render state.
-         @property stationary
-         @type {renderer.Stationary}
-         */
         this.stationary = null;
-
-        /**
-         Cross-section planes render state.
-         @property clips
-         @type {renderer.Clips}
-         */
         this.clips = null;
-
-        /**
-         Geometry render state.
-         @property geometry
-         @type {renderer.Geometry}
-         */
         this.geometry = null;
-
-        /**
-         Viewport render state.
-         @property viewport
-         @type {renderer.Viewport}
-         */
         this.viewport = null;
-
-        /**
-         Outline state.
-         @property outline
-         @type {renderer.Outline}
-         */
         this.outline = null;
 
+        // Dirty flags 
 
-        //----------------- Renderer dirty flags -------------------------------
-
-        /**
-         * Flags the object list as needing to be rebuilt from the object map.
-         */
         this.objectListDirty = true;
-
-        /**
-         * Flags the object list as needing state orders to be recomputed.
-         */
         this.stateOrderDirty = true;
-
-        /**
-         * Flags the object list as needing to be state-sorted.
-         */
         this.stateSortDirty = true;
-
-        /**
-         * Flags the image as needing to be redrawn from the object list.
-         */
         this.imageDirty = true;
     };
 
@@ -5410,22 +5276,12 @@ var Canvas2Image = (function () {
      * Reallocates WebGL resources for objects within this renderer.
      */
     xeogl.renderer.Renderer.prototype.webglRestored = function (gl) {
-
         this.gl = gl;
-
-        // Re-allocate programs
         this._programFactory.webglRestored(gl);
-
-        // Re-bind chunks to the programs
         this._chunkFactory.webglRestored();
-
-        // Rebuild pick buffer
-        if (this.pickBuf) {
-            this.pickBuf.webglRestored(gl);
+        if (this._pickBuf) {
+            this._pickBuf.webglRestored(gl);
         }
-
-        // Need redraw
-
         this.imageDirty = true;
     };
 
@@ -5447,9 +5303,6 @@ var Canvas2Image = (function () {
             object.hash = "";
         }
 
-        // Attach to the object any states that we need to get off it later.
-        // Most of these will be used when composing the object's shader.
-
         object.layer = this.layer;
         object.material = this.material;
         object.geometry = this.geometry;
@@ -5467,10 +5320,6 @@ var Canvas2Image = (function () {
         // objects that have the same state configuration.
 
         var hash = ([
-
-            // Make sure that every state type
-            // with a hash is concatenated here
-
             this.geometry.hash,
             this.clips.hash,
             this.material.hash,
@@ -5478,10 +5327,7 @@ var Canvas2Image = (function () {
             this.modes.hash,
             this.billboard.hash,
             this.stationary.hash
-
         ]).join(";");
-
-        var newProgram = false;
 
         if (hash !== object.hash) {
 
@@ -5493,8 +5339,6 @@ var Canvas2Image = (function () {
 
             object.program = this._programFactory.get(hash, this);
             object.hash = hash;
-
-            newProgram = true;
 
             // Handle shader error
 
@@ -5512,11 +5356,6 @@ var Canvas2Image = (function () {
                 }
             }
         }
-
-        // Build list of draw chunks on the object
-
-        // The order of some of these is important because some chunks will set
-        // state on this._frameCtx to be consumed by other chunks downstream
 
         this._setChunk(object, 0, "program", object.program); // Must be first
         this._setChunk(object, 1, "modelTransform", this.modelTransform);
@@ -5537,15 +5376,12 @@ var Canvas2Image = (function () {
 
         // Also grab the first spotlight we get, because we'll use that to cast shadows
 
-        this._setAmbientAndSpotLights(this.lights);
+        this._setAmbientLights(this.lights);
 
         if (!this.objects[objectId]) {
             this.objects[objectId] = object;
             this.objectListDirty = true;
-
         } else {
-
-            // At the very least, the object sort order will need be recomputed
             this.stateOrderDirty = true;
         }
 
@@ -5566,146 +5402,86 @@ var Canvas2Image = (function () {
         }
     };
 
-    /** Adds a render state chunk to a render graph object.
-     */
-    xeogl.renderer.Renderer.prototype._setChunk = function (object, order, type, state, neg) {
-
+    xeogl.renderer.Renderer.prototype._setChunk = function (object, chunkIndex, type, state, neg) {
         var id;
-
         var chunkType = this._chunkFactory.types[type];
-
         if (type === "program") {
             id = (object.program.id + 1) * 100000000;
-
         } else if (chunkType.constructor.prototype.programGlobal) {
             id = state.id;
-
         } else {
             id = ((object.program.id + 1) * 100000000) + ((state.id + 1));
         }
-
-        if (neg) {
+        if (neg) { // <<--------------- What's this for?
             id *= 100000;
         }
-
-        var oldChunk = object.chunks[order];
-
+        var oldChunk = object.chunks[chunkIndex];
         if (oldChunk) {
             this._chunkFactory.putChunk(oldChunk);
-            object.chunks[order] = null;
         }
-
-        // Attach new chunk
-
-        object.chunks[order] = this._chunkFactory.getChunk(id, type, object.program.program, state);
+        object.chunks[chunkIndex] = this._chunkFactory.getChunk(id, type, object.program.program, state);
     };
 
-    // Sets the singular ambient and spot lights
-    xeogl.renderer.Renderer.prototype._setAmbientAndSpotLights = function (state) {
-
+    xeogl.renderer.Renderer.prototype._setAmbientLights = function (state) {
         var lights = state.lights;
         var light;
-
         for (var i = 0, len = lights.length; i < len; i++) {
-
             light = lights[i];
-
             if (light.type === "ambient") {
-
                 this._ambient = light;
-            }
-
-            if (light.type === "spot") {
-
-                this._spotLight = light;
             }
         }
     };
 
-    /**
-     * Removes an object from this Renderer
-     *
-     * @param {String} objectId ID of object to remove
-     */
     xeogl.renderer.Renderer.prototype.removeObject = function (objectId) {
-
         var object = this.objects[objectId];
-
         if (!object) {
-            console.error("xeogl.renderer.Chunkfactory.removeObject: object not found: " + objectId);
+            console.error("xeogl.renderer.Renderer.removeObject: object not found: " + objectId);
             return;
         }
-
-        // Release draw chunks
         var chunks = object.chunks;
         for (var i = 0, len = chunks.length; i < len; i++) {
             this._chunkFactory.putChunk(chunks[i]);
             chunks[i] = null;
         }
-
-        // Release object's shader
         this._programFactory.put(object.program);
-
         object.program = null;
         object.hash = null;
-
-        // Release object
         this._objectFactory.put(object);
-
         delete this.objects[objectId];
-
-        // Need to repack object map into fast iteration list
         this.objectListDirty = true;
     };
 
-    /**
-     * Renders a new frame, if neccessary.
-     */
     xeogl.renderer.Renderer.prototype.render = function (params) {
-
         params = params || {};
-
-        this._prepareDisplay();
-
+        this._update();
         if (this.imageDirty || params.force) {
-
             if (xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"]) { // In case context lost/recovered
                 this.gl.getExtension("OES_element_index_uint");
             }
-
-            this._renderShadowMaps();
-
-            this._renderObjectList({
-                clear: (params.clear !== false),
-                opaqueOnly: params.opaqueOnly,
-                pass: params.pass
-            });
-
+            this._drawShadowMap();
+            this._drawObjects(params);
             this.stats.frame.frameCount++;
             this.imageDirty = false;
         }
     };
 
-
-    xeogl.renderer.Renderer.prototype._prepareDisplay = function () {
-
+    xeogl.renderer.Renderer.prototype._update = function () {
         if (this.objectListDirty) {
-            this._buildObjectList(); // Build the scene object list
+            this._buildObjectList();
             this.objectListDirty = false;
-            this.stateOrderDirty = true; // Now needs state ordering
+            this.stateOrderDirty = true;
         }
-
         if (this.stateOrderDirty) {
-            this._makeStateSortKeys(); // Determine the state sort order
+            this._makeStateSortKeys();
             this.stateOrderDirty = false;
-            this.stateSortDirty = true; // Now needs state sorting
+            this.stateSortDirty = true;
         }
-
         if (this.stateSortDirty) {
-            this._stateSort(); // State sort the scene object list
+            this._stateSort();
             this._buildShadowObjectLists();
             this.stateSortDirty = false;
-            this.imageDirty = true; // Now need to build object draw list
+            this.imageDirty = true;
         }
     };
 
@@ -5715,6 +5491,9 @@ var Canvas2Image = (function () {
             if (this.objects.hasOwnProperty(objectId)) {
                 this._objectList[this._objectListLen++] = this.objects[objectId];
             }
+        }
+        for (var i = this._objectListLen, len = this._objectList.length; i < len; i) {
+            this._objectList[i] = null; // Release memory
         }
     };
 
@@ -5726,7 +5505,7 @@ var Canvas2Image = (function () {
                 object.sortKey = -1;
             } else {
                 object.sortKey =
-                    + ((object.layer.priority + 1) * 10000000000000)
+                    +((object.layer.priority + 1) * 10000000000000)
                     + ((object.program.id + 1) * 100000000)
                     + ((object.material.id + 1) * 10000)
                     + object.geometry.id;
@@ -5742,7 +5521,6 @@ var Canvas2Image = (function () {
     };
 
     xeogl.renderer.Renderer.prototype._buildShadowObjectLists = function () {
-
         var i;
         var len;
         var object;
@@ -5751,12 +5529,10 @@ var Canvas2Image = (function () {
         var lights;
         var light;
         var shadowObjectList;
-
-        this._shadowObjectLists = {}; // TODO: Optimize to avoid garbage collection?
-
+        this._shadowObjectLists = {}; // TODO: Optimize for GC
         for (i = 0, len = this._objectListLen; i < len; i++) {
             object = this._objectList[i];
-            if (!object.compiled || object.cull.culled === true || object.visibility.visible === false || object.modes.castShadow === false) {
+            if (!object.compiled || !object.modes.castShadow || object.visibility.visible) {
                 continue;
             }
             lights = object.lights.lights;
@@ -5777,109 +5553,111 @@ var Canvas2Image = (function () {
         }
     };
 
-    xeogl.renderer.Renderer.prototype._renderShadowMaps = function () {
-
+    xeogl.renderer.Renderer.prototype._drawShadowMap = function () {
         var lightId;
         var shadowObjectLists = this._shadowObjectLists;
         var shadowObjectList;
         var light;
-
         for (lightId in shadowObjectLists) {
             if (shadowObjectLists.hasOwnProperty(lightId)) {
                 shadowObjectList = shadowObjectLists[lightId];
                 light = shadowObjectList.light;
                 //   if (light.shadowDirty) {
-                this._renderShadowMap(light, shadowObjectList.objects);
+                this._drawLightShadows(light, shadowObjectList.objects);
                 //   }
             }
         }
     };
 
-    xeogl.renderer.Renderer.prototype._renderShadowMap = function (light, objects) {
+    xeogl.renderer.Renderer.prototype._drawLightShadows = (function () {
 
-        var shadow = light.shadow;
+        var frameCtx = {};
+        var lastChunkId = new Int32Array(LEN_CHUNKS);
 
-        if (!shadow) {
-            return;
-        }
-
-        var gl = this.gl;
-
-        var renderBuf = light.getShadowRenderBuf();
-
-        if (!renderBuf) {
-            return;
-        }
-
-        renderBuf.bind();
-        renderBuf.clear();
-
-        var frameCtx = this._frameCtx;
-
-        frameCtx.backfaces = true;
-        frameCtx.frontface = true;
-        frameCtx.drawElements = 0;
-        frameCtx.useProgram = 0;
-        frameCtx.shadowViewMatrix = light.getShadowViewMatrix();
-        frameCtx.shadowProjMatrix = light.getShadowProjMatrix();
-
-        gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
-        gl.enable(gl.DEPTH_TEST);
-        gl.frontFace(gl.CCW);
-        gl.disable(gl.CULL_FACE);
-        gl.disable(gl.BLEND);
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-        var i;
-        var len;
-        var j;
-        var lenj;
-        var chunks;
-        var chunk;
-        var object;
-
-        var lastChunkId = this._lastChunkId = this._lastChunkId || new Int32Array(30);
-        for (i = 0; i < 20; i++) {
-            lastChunkId[i] = -9999999999999;
-        }
-
-        for (i = 0, len = objects.length; i < len; i++) {
-
-            object = objects[i];
-
-            if (!object.compiled || object.cull.culled === true || object.visibility.visible === false) {
-                continue;
+        function clearStateTracking() {
+            for (var i = 0; i < LEN_CHUNKS; i++) {
+                lastChunkId[i] = null;
             }
+        }
 
-            chunks = object.chunks;
-
-            for (j = 0, lenj = chunks.length; j < lenj; j++) {
-                chunk = chunks[j];
+        function drawObjectShadow(frameCtx, object) {
+            var chunks = object.chunks;
+            var chunk;
+            for (var i = 0, len = chunks.length; i < len; i++) {
+                chunk = chunks[i];
                 if (chunk) {
-                    if (chunk.shadow && (chunk.unique || lastChunkId[j] !== chunk.id)) {
+                    if (chunk.shadow && (chunk.unique || lastChunkId[i] !== chunk.id)) {
                         chunk.shadow(frameCtx);
-                        lastChunkId[j] = chunk.id;
+                        lastChunkId[i] = chunk.id;
                     }
                 }
             }
         }
 
-        gl.finish();
+        return function (light, objects) {
 
-        renderBuf.unbind();
-    };
+            var shadow = light.shadow;
 
-    xeogl.renderer.Renderer.prototype._renderObjectList = (function () {
+            if (!shadow) {
+                return;
+            }
+
+            var renderBuf = light.getShadowRenderBuf();
+
+            if (!renderBuf) {
+                return;
+            }
+
+            renderBuf.bind();
+            renderBuf.clear();
+
+            frameCtx.backfaces = true;
+            frameCtx.frontface = true;
+            frameCtx.drawElements = 0;
+            frameCtx.useProgram = 0;
+            frameCtx.shadowViewMatrix = light.getShadowViewMatrix();
+            frameCtx.shadowProjMatrix = light.getShadowProjMatrix();
+
+            var gl = this.gl;
+
+            gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+            gl.enable(gl.DEPTH_TEST);
+            gl.disable(gl.BLEND);
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+            var i;
+            var len;
+            var object;
+
+            clearStateTracking();
+
+            for (i = 0, len = objects.length; i < len; i++) {
+                object = objects[i];
+                if (!object.compiled || !object.visibility.visible) {
+                    continue; // For now, culled objects still cast shadows
+                }
+                drawObjectShadow(frameCtx, object);
+            }
+
+            gl.finish();
+
+            renderBuf.unbind();
+        };
+    })();
+
+    xeogl.renderer.Renderer.prototype._drawObjects = (function () {
 
         var outlinedObjects = [];
         var transparentObjects = [];
         var numTransparentObjects = 0;
 
-        var lastChunkId = new Int32Array(30);
+        var lastChunkId = new Int32Array(LEN_CHUNKS);
+
+        var frameCtx = {};
 
         function clearStateTracking() {
-            for (var i = 0; i < 20; i++) {
-                lastChunkId[i] = -9999999999;
+            for (var i = 0; i < LEN_CHUNKS; i++) {
+                lastChunkId[i] = null;
             }
         }
 
@@ -5928,21 +5706,15 @@ var Canvas2Image = (function () {
                 this.ambientColor[2] = 0;
             }
 
-            var frameCtx = this._frameCtx;
-
             frameCtx.backfaces = true;
             frameCtx.frontface = true; // true == "ccw" else "cw"
             frameCtx.textureUnit = 0;
-            frameCtx.transparent = false; // True while rendering transparency bin
             frameCtx.ambientColor = this.ambientColor;
             frameCtx.drawElements = 0;
             frameCtx.useProgram = 0;
             frameCtx.bindTexture = 0;
             frameCtx.bindArray = 0;
             frameCtx.pass = params.pass;
-            frameCtx.pickViewMatrix = params.pickViewMatrix;
-            frameCtx.pickProjMatrix = params.pickProjMatrix;
-            frameCtx.pickIndex = 0;
 
             gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
 
@@ -5954,8 +5726,8 @@ var Canvas2Image = (function () {
 
             gl.enable(gl.DEPTH_TEST);
             gl.frontFace(gl.CCW);
-            gl.enable(gl.CULL_FACE);
-
+          //  gl.enable(gl.CULL_FACE);
+            gl.disable(gl.CULL_FACE);
             gl.depthMask(true);
             gl.colorMask(true, true, true, false);
 
@@ -5969,7 +5741,7 @@ var Canvas2Image = (function () {
                 this.bindOutputFramebuffer(params.pass);
             }
 
-            if (params.clear) {
+            if (params.clear !== false) {
                 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
             }
 
@@ -6038,13 +5810,9 @@ var Canvas2Image = (function () {
 
                 gl.enable(gl.CULL_FACE);
                 gl.enable(gl.BLEND);
-                gl.blendEquation( gl.FUNC_ADD );
-                gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA );
-
-
-                //gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+                gl.blendEquation(gl.FUNC_ADD);
+                gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
                 gl.colorMask(true, true, true, true);
-
 
                 numOutlinedObjects = 0;
 
@@ -6090,9 +5858,6 @@ var Canvas2Image = (function () {
 
     /**
      * Attempts to pick an object.
-     *
-     * @param {*} params Picking params.
-     * @returns {*} Hit result, if any.
      */
     xeogl.renderer.Renderer.prototype.pick = (function () {
 
@@ -6106,18 +5871,14 @@ var Canvas2Image = (function () {
         return function (params) {
 
             var hit = null;
-            var pickBuf = this.pickBuf;
 
-            if (!pickBuf) {  // Lazy-create the pick buffer
-                pickBuf = new xeogl.renderer.webgl.RenderBuffer(this.canvas, this.gl);
-                this.pickBuf = pickBuf;
-            }
-
-            this._prepareDisplay();
+            this._update();
 
             if (xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"]) { // In case context lost/recovered
                 this.gl.getExtension("OES_element_index_uint");
             }
+
+            var pickBuf = this._pickBuf || (this._pickBuf = new xeogl.renderer.webgl.RenderBuffer(this.canvas, this.gl));
 
             pickBuf.bind();
             pickBuf.clear();
@@ -6154,16 +5915,17 @@ var Canvas2Image = (function () {
                 }
             }
 
-            this._pickObject(pickViewMatrix, pickProjMatrix);
+            this._pickObjectPass(pickViewMatrix, pickProjMatrix);
 
             // Convert picked pixel color to object index
+
             var pix = pickBuf.read(pickBufX, pickBufY);
             var pickedObjectIndex = pix[0] + pix[1] * 256 + pix[2] * 65536;
             pickedObjectIndex = (pickedObjectIndex >= 1) ? pickedObjectIndex - 1 : -1;
 
             var object = this._objectPickList[pickedObjectIndex];
 
-            if (object) { // Object was picked
+            if (object) { // Object picked
 
                 hit = {
                     entity: object.id
@@ -6173,11 +5935,12 @@ var Canvas2Image = (function () {
 
                     pickBuf.clear();
 
-                    this._pickPrimitive(object, pickViewMatrix, pickProjMatrix);
+                    this._pickPrimitivePass(object, pickViewMatrix, pickProjMatrix);
 
                     this.gl.finish();
 
                     // Convert picked pixel color to primitive index
+
                     pix = pickBuf.read(pickBufX, pickBufY);
                     var primIndex = pix[0] + (pix[1] * 256) + (pix[2] * 256 * 256) + (pix[3] * 256 * 256 * 256);
                     primIndex *= 3; // Convert from triangle number to first vertex in indices
@@ -6198,155 +5961,139 @@ var Canvas2Image = (function () {
     })();
 
 
-    xeogl.renderer.Renderer.prototype._pickObject = function (pickViewMatrix, pickProjMatrix) {
+    xeogl.renderer.Renderer.prototype._pickObjectPass = (function () {
 
-        var gl = this.gl;
+        var frameCtx = {};
 
-        var frameCtx = this._frameCtx;
+        var lastChunkId = new Int32Array(LEN_CHUNKS);
 
-        frameCtx.backfaces = true;
-        frameCtx.frontface = true; // true == "ccw" else "cw"
-        frameCtx.textureUnit = 0;
-        frameCtx.drawElements = 0;
-        frameCtx.useProgram = 0;
-        frameCtx.bindTexture = 0;
-        frameCtx.bindArray = 0;
-        frameCtx.pickViewMatrix = pickViewMatrix;
-        frameCtx.pickProjMatrix = pickProjMatrix;
-        frameCtx.pickIndex = 0;
-
-        gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
-        gl.clearColor(0, 0, 0, 0);
-        gl.enable(gl.DEPTH_TEST);
-        gl.disable(gl.CULL_FACE);
-        gl.disable(gl.BLEND);
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-        var i;
-        var len;
-        var j;
-        var lenj;
-        var chunks;
-        var chunk;
-
-        var lastChunkId = this._lastChunkId = this._lastChunkId || new Int32Array(30);
-        for (i = 0; i < 20; i++) {
-            lastChunkId[i] = -9999999999999;
+        function clearStateTracking() {
+            for (var i = 0; i < LEN_CHUNKS; i++) {
+                lastChunkId[i] = null;
+            }
         }
 
-        this._objectPickListLen = 0;
-        var object;
-        for (i = 0, len = this._objectListLen; i < len; i++) {
-            object = this._objectList[i];
-            if (!object.compiled || object.cull.culled === true || object.visibility.visible === false || object.modes.pickable === false) {
-                continue;
-            }
-            this._objectPickList[this._objectPickListLen++] = object;
-            chunks = object.chunks;
-            for (j = 0, lenj = chunks.length; j < lenj; j++) {
-                chunk = chunks[j];
+        function pickObject(frameCtx, object) {
+            var chunks = object.chunks;
+            var chunk;
+            for (var i = 0, len = chunks.length; i < len; i++) {
+                chunk = chunks[i];
                 if (chunk) {
-                    if (chunk.pickObject && (chunk.unique || lastChunkId[j] !== chunk.id)) {
+                    if (chunk.pickObject && (chunk.unique || lastChunkId[i] !== chunk.id)) {
                         chunk.pickObject(frameCtx);
-                        lastChunkId[j] = chunk.id;
+                        lastChunkId[i] = chunk.id;
                     }
                 }
             }
         }
-    };
 
-    xeogl.renderer.Renderer.prototype._pickPrimitive = function (object, pickViewMatrix, pickProjMatrix) {
+        return function (pickViewMatrix, pickProjMatrix) {
 
-        var gl = this.gl;
+            frameCtx.backfaces = true;
+            frameCtx.frontface = true; // true == "ccw" else "cw"
+            frameCtx.pickViewMatrix = pickViewMatrix;
+            frameCtx.pickProjMatrix = pickProjMatrix;
+            frameCtx.pickObjectIndex = 0;
 
-        var frameCtx = this._frameCtx;
-        frameCtx.backfaces = true;
-        frameCtx.frontface = true; // true == "ccw" else "cw"
-        frameCtx.drawElements = 0;
-        frameCtx.useProgram = 0;
-        frameCtx.bindTexture = 0;
-        frameCtx.bindArray = 0;
-        frameCtx.pickViewMatrix = pickViewMatrix;
-        frameCtx.pickProjMatrix = pickProjMatrix;
-        frameCtx.pickIndex = 0;
+            var gl = this.gl;
 
-        gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
-        gl.clearColor(0, 0, 0, 0);
-        gl.enable(gl.DEPTH_TEST);
-        gl.disable(gl.CULL_FACE);
-        gl.disable(gl.BLEND);
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+            gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+            gl.clearColor(0, 0, 0, 0);
+            gl.enable(gl.DEPTH_TEST);
+            gl.disable(gl.CULL_FACE);
+            gl.disable(gl.BLEND);
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        var i;
-        var len;
-        var chunks;
-        var chunk;
+            clearStateTracking();
 
-        var lastChunkId = this._lastChunkId = this._lastChunkId || new Int32Array(30);
-        for (i = 0; i < 20; i++) {
-            lastChunkId[i] = -9999999999999;
-        }
+            this._objectPickListLen = 0;
 
-        chunks = object.chunks;
-        for (i = 0, len = chunks.length; i < len; i++) {
-            chunk = chunks[i];
-            if (chunk.pickPrimitive) {
-                chunk.pickPrimitive(frameCtx);
+            var i;
+            var len;
+            var object;
+
+            for (i = 0, len = this._objectListLen; i < len; i++) {
+                object = this._objectList[i];
+                if (!object.compiled || object.cull.culled === true || object.visibility.visible === false || object.modes.pickable === false) {
+                    continue;
+                }
+                this._objectPickList[this._objectPickListLen++] = object;
+                pickObject(frameCtx, object);
             }
-        }
-    };
+        };
+    })();
+
+    xeogl.renderer.Renderer.prototype._pickPrimitivePass = (function () {
+
+        var frameCtx = {};
+
+        return function (object, pickViewMatrix, pickProjMatrix) {
+
+            frameCtx.backfaces = true;
+            frameCtx.frontface = true; // true == "ccw" else "cw"
+            frameCtx.pickViewMatrix = pickViewMatrix;
+            frameCtx.pickProjMatrix = pickProjMatrix;
+
+            var gl = this.gl;
+
+            gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+            gl.clearColor(0, 0, 0, 0);
+            gl.enable(gl.DEPTH_TEST);
+            gl.disable(gl.CULL_FACE);
+            gl.disable(gl.BLEND);
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+            var i;
+            var len;
+            var chunks;
+            var chunk;
+
+            chunks = object.chunks;
+            for (i = 0, len = chunks.length; i < len; i++) {
+                chunk = chunks[i];
+                if (chunk.pickPrimitive) {
+                    chunk.pickPrimitive(frameCtx);
+                }
+            }
+        };
+    })();
 
     /**
-     * Reads the colors of some pixels in the last rendered frame.
-     *
-     * @param {Float32Array} pixels
-     * @param {Float32Array} colors
-     * @param {Number} len
-     * @param {Boolean} opaqueOnly
+     * Reads the colors of some pixels in the current image.
      */
     xeogl.renderer.Renderer.prototype.readPixels = function (pixels, colors, len, opaqueOnly) {
-
-        if (!this._readPixelBuf) {
-            this._readPixelBuf = new xeogl.renderer.webgl.RenderBuffer(this.canvas, this.gl);
-        }
-
-        this._readPixelBuf.bind();
-
-        this._readPixelBuf.clear();
-
+        var renderBuf = this._readPixelBuf || (this._readPixelBuf = new xeogl.renderer.webgl.RenderBuffer(this.canvas, this.gl));
+        renderBuf.bind();
+        renderBuf.clear();
         this.render({
             force: true,
             opaqueOnly: opaqueOnly
         });
-
         var color;
         var i;
         var j;
         var k;
-
         for (i = 0; i < len; i++) {
-
             j = i * 2;
             k = i * 4;
-
-            color = this._readPixelBuf.read(pixels[j], pixels[j + 1]);
-
+            color = renderBuf.read(pixels[j], pixels[j + 1]);
             colors[k] = color[0];
             colors[k + 1] = color[1];
             colors[k + 2] = color[2];
             colors[k + 3] = color[3];
         }
-
-        this._readPixelBuf.unbind();
-
+        renderBuf.unbind();
         this.imageDirty = true;
     };
 
-    /**
-     * Destroys this Renderer.
-     */
     xeogl.renderer.Renderer.prototype.destroy = function () {
         this._programFactory.destroy();
+        if (this._pickBuf) {
+            this._pickBuf.destroy();
+        }
+        if (this._readPixelBuf) {
+            this._readPixelBuf.destroy();
+        }
     };
 })();
 ;(function () {
@@ -10473,18 +10220,17 @@ var Canvas2Image = (function () {
 
             if (this._uPickColorObject) {
 
-                frameCtx.pickIndex++;
+                frameCtx.pickObjectIndex++;
 
-                var b = frameCtx.pickIndex >> 16 & 0xFF;
-                var g = frameCtx.pickIndex >> 8 & 0xFF;
-                var r = frameCtx.pickIndex & 0xFF;
+                var b = frameCtx.pickObjectIndex >> 16 & 0xFF;
+                var g = frameCtx.pickObjectIndex >> 8 & 0xFF;
+                var r = frameCtx.pickObjectIndex & 0xFF;
 
                 this._uPickColorObject.setValue([r / 255, g / 255, b / 255, 1]);
             }
 
             if (state.indices) {
                 gl.drawElements(state.primitive, state.indices.numItems, state.indices.itemType, 0);
-                frameCtx.drawElements++;
             }
         },
 
@@ -21133,7 +20879,7 @@ var Canvas2Image = (function () {
  var quadGeometry = new xeogl.Geometry({
 
         // Supported primitives are 'points', 'lines', 'line-loop', 'line-strip', 'triangles',
-        // 'triangle-strip' and 'triangle-fan'.primitive: "triangles",
+        // 'triangle-strip' and 'triangle-fan'
         primitive: "triangles",
 
         // Vertex positions
@@ -29929,18 +29675,18 @@ TODO
  * @module xeogl
  * @submodule models
  */;/**
- A **Model** is a group of {{#crossLink "Component"}}Components{{/crossLink}} within a xeogl {{#crossLink "Scene"}}{{/crossLink}}.
+ A **Model** is a collection of {{#crossLink "Component"}}Components{{/crossLink}}.
 
  ## Overview
 
- * A Model "owns" its components, automatically deleting them when the Model is deleted.
- * Can be attached to a modelling {{#crossLink "Transform"}}{{/crossLink}}, to transform its components as a group, within World-space.
- * Provides the collective World-space boundary of its components as a {{#crossLink "Boundary3D"}}{{/crossLink}}, which
- updates its extents automatically as components are added and removed, or Transforms are updated.
+ * A Model owns the components that are added to it, automatically destroying them when the Model is destroyed.
+ * Can be attached to a {{#crossLink "Transform"}}{{/crossLink}} hierarchy, to transform its components as a group, within World-space.
+ * Provides the collective World-space boundary of its components in an automatically updating {{#crossLink "Boundary3D"}}{{/crossLink}}.
 
  A Model is subclassed by (at least):
 
  * {{#crossLink "GLTFModel"}}{{/crossLink}}, which loads its components from glTF files.
+ * {{#crossLink "OBJModel"}}{{/crossLink}}, which loads its components from .OBJ and .MTL files.
  * {{#crossLink "SceneJSModel"}}{{/crossLink}}, which loads its components from SceneJS scene definitions.
  * {{#crossLink "BuildableModel"}}{{/crossLink}}, which provides a fluent API for building its components.
 
@@ -29953,7 +29699,7 @@ TODO
  When adding components to a Model, it's usually easiest to just add their configuration objects and let the Model
  internally instantiate them, as shown below.
 
- As mentioned, a Model "owns" all the components contained within it, destroying them when we destroy
+ As mentioned, a Model owns all the components added to it, destroying them when we destroy
  the Model or call its {{#crossLink "Model/destroyAll:method"}}{{/crossLink}} method.
 
  ````javascript
@@ -30280,7 +30026,7 @@ TODO
 
                     // Component type
 
-                    type = component;
+                    var type = component;
 
                     types = this.scene.types[type];
 
@@ -30291,7 +30037,7 @@ TODO
 
                     for (componentId in types) {
                         if (types.hasOwnProperty(componentId)) {
-                            this._add(types[componentId]);
+                            this.add(types[componentId]);
                         }
                     }
 
@@ -30369,7 +30115,7 @@ TODO
 
                 var rootTransform = component.transform;
 
-                if (!rootTransform) {
+                if (!rootTransform || rootTransform.id === "default.transform") {
 
                     component.transform = self._dummyRootTransform;
 

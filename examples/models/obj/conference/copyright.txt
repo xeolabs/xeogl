@@ -1,0 +1,4 @@
+Greg Ward's conference room model, recreated by Kenzie Lamar from various sources.  Wood texture map
+based on public domain image at http://opengameart.org/content/3-seamless-darkwood-textures.
+
+Scale by 0.003 to get meters

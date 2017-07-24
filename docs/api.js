@@ -51,6 +51,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "Nintendo3DSGeometry",
         "OBBGeometry",
         "OBJGeometry",
+        "OBJModel",
         "Ortho",
         "Outline",
         "Path",

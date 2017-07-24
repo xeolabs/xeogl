@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.js"></script>
+    <script src="js/models/OBJModel.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <h1><a href="../docs/classes/OBJModel.html" target="_parent">OBJModels</a> loaded from OBJ and MTL
+        files
+    </h1>
+</div>
+
+<script>
+
+    // Load the male model
+
+    var maleModel = new xeogl.OBJModel({
+        id: "maleModel",
+        src: "models/obj/male02/male02.obj"
+    });
+
+    // Move the male model to one side
+
+    maleModel.transform = new xeogl.Translate({xyz: [-50, 0, -60]});
+
+    // Load a female model
+
+    var femaleModel = new xeogl.OBJModel({
+        id: "femaleModel",
+        src: "models/obj/female02/female02.obj"
+    });
+
+    // Fit to view when both models are loaded
+
+    maleModel.on("loaded", function () {
+        femaleModel.on("loaded", function () {
+
+            var cameraFlight = new xeogl.CameraFlightAnimation();
+            cameraFlight.flyTo(maleModel.scene);
+
+            var femaleArm = femaleModel.entities["femaleModel#mesh2.002_mesh2-geometry__03_-_Default1noCulli__03_-_Default1noCulli"];
+            femaleArm.transform = new xeogl.Translate({
+                xyz: [10,0,0],
+                parent: femaleArm.transform
+            });
+
+
+        });
+    });
+
+    // Enable camera interaction
+
+    new xeogl.CameraControl();
+
+</script>
+</body>
+</html>

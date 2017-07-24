@@ -91,6 +91,7 @@
                                 <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
+                                <li><a href="../classes/OBJModel.html">OBJModel</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Outline.html">Outline</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
@@ -214,17 +215,17 @@
 
 
 <div class="box intro">
-    <p>A <strong>Model</strong> is a group of <a href="../classes/Component.html" class="crosslink">Components</a> within a xeogl <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+    <p>A <strong>Model</strong> is a collection of <a href="../classes/Component.html" class="crosslink">Components</a>.</p>
 <h2 id="overview">Overview</h2>
 <ul>
-<li>A Model "owns" its components, automatically deleting them when the Model is deleted.</li>
-<li>Can be attached to a modelling <a href="../classes/Transform.html" class="crosslink">Transform</a>, to transform its components as a group, within World-space.</li>
-<li>Provides the collective World-space boundary of its components as a <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a>, which
-updates its extents automatically as components are added and removed, or Transforms are updated.</li>
+<li>A Model owns the components that are added to it, automatically destroying them when the Model is destroyed.</li>
+<li>Can be attached to a <a href="../classes/Transform.html" class="crosslink">Transform</a> hierarchy, to transform its components as a group, within World-space.</li>
+<li>Provides the collective World-space boundary of its components in an automatically updating <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a>.</li>
 </ul>
 <p>A Model is subclassed by (at least):</p>
 <ul>
 <li><a href="../classes/GLTFModel.html" class="crosslink">GLTFModel</a>, which loads its components from glTF files.</li>
+<li><a href="../classes/OBJModel.html" class="crosslink">OBJModel</a>, which loads its components from .OBJ and .MTL files.</li>
 <li><a href="../classes/SceneJSModel.html" class="crosslink">SceneJSModel</a>, which loads its components from SceneJS scene definitions.</li>
 <li><a href="../classes/BuildableModel.html" class="crosslink">BuildableModel</a>, which provides a fluent API for building its components.</li>
 </ul>
@@ -233,7 +234,7 @@ updates its extents automatically as components are added and removed, or Transf
 <h3 id="adding-and-removing-components">Adding and removing components</h3>
 <p>When adding components to a Model, it&#39;s usually easiest to just add their configuration objects and let the Model
 internally instantiate them, as shown below.</p>
-<p>As mentioned, a Model "owns" all the components contained within it, destroying them when we destroy
+<p>As mentioned, a Model owns all the components added to it, destroying them when we destroy
 the Model or call its <a href="../classes/Model.html#method_destroyAll" class="crosslink">destroyAll</a> method.</p>
 <pre class="code prettyprint"><code class="lang-javascript">var model = new xeogl.Model();
 
