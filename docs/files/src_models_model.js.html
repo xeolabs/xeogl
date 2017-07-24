@@ -91,6 +91,7 @@
                                 <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
+                                <li><a href="../classes/OBJModel.html">OBJModel</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Outline.html">Outline</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
@@ -201,18 +202,18 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
- A **Model** is a group of {{#crossLink &quot;Component&quot;}}Components{{/crossLink}} within a xeogl {{#crossLink &quot;Scene&quot;}}{{/crossLink}}.
+ A **Model** is a collection of {{#crossLink &quot;Component&quot;}}Components{{/crossLink}}.
 
  ## Overview
 
- * A Model &quot;owns&quot; its components, automatically deleting them when the Model is deleted.
- * Can be attached to a modelling {{#crossLink &quot;Transform&quot;}}{{/crossLink}}, to transform its components as a group, within World-space.
- * Provides the collective World-space boundary of its components as a {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}}, which
- updates its extents automatically as components are added and removed, or Transforms are updated.
+ * A Model owns the components that are added to it, automatically destroying them when the Model is destroyed.
+ * Can be attached to a {{#crossLink &quot;Transform&quot;}}{{/crossLink}} hierarchy, to transform its components as a group, within World-space.
+ * Provides the collective World-space boundary of its components in an automatically updating {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}}.
 
  A Model is subclassed by (at least):
 
  * {{#crossLink &quot;GLTFModel&quot;}}{{/crossLink}}, which loads its components from glTF files.
+ * {{#crossLink &quot;OBJModel&quot;}}{{/crossLink}}, which loads its components from .OBJ and .MTL files.
  * {{#crossLink &quot;SceneJSModel&quot;}}{{/crossLink}}, which loads its components from SceneJS scene definitions.
  * {{#crossLink &quot;BuildableModel&quot;}}{{/crossLink}}, which provides a fluent API for building its components.
 
@@ -225,7 +226,7 @@
  When adding components to a Model, it&#x27;s usually easiest to just add their configuration objects and let the Model
  internally instantiate them, as shown below.
 
- As mentioned, a Model &quot;owns&quot; all the components contained within it, destroying them when we destroy
+ As mentioned, a Model owns all the components added to it, destroying them when we destroy
  the Model or call its {{#crossLink &quot;Model/destroyAll:method&quot;}}{{/crossLink}} method.
 
  &#x60;&#x60;&#x60;&#x60;javascript
@@ -552,7 +553,7 @@
 
                     // Component type
 
-                    type = component;
+                    var type = component;
 
                     types = this.scene.types[type];
 
@@ -563,7 +564,7 @@
 
                     for (componentId in types) {
                         if (types.hasOwnProperty(componentId)) {
-                            this._add(types[componentId]);
+                            this.add(types[componentId]);
                         }
                     }
 
@@ -641,7 +642,7 @@
 
                 var rootTransform = component.transform;
 
-                if (!rootTransform) {
+                if (!rootTransform || rootTransform.id === &quot;default.transform&quot;) {
 
                     component.transform = self._dummyRootTransform;
 
