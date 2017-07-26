@@ -11,6 +11,10 @@
 
     <link href="css/styles.css" rel="stylesheet"/>
 
+    <script src="js/annotations/pin.js"></script>
+    <script src="js/annotations/annotation.js"></script>
+    <link href="js/annotations/annotation-style.css" rel="stylesheet"/>
+
 <body>
 
 <div id="info" class="dark">
@@ -71,13 +75,7 @@
         //    var cameraFlight = new xeogl.CameraFlightAnimation();
         //    cameraFlight.flyTo(model);
 
-        explode();
-        xray();
-        outline();
-    });
-
-    function xray() {
-        xrayEntities([
+        xray([
             "sportsCar#Body_Hatch_253",
             "sportsCar#Body_BodyShell_290",
             "sportsCar#Body_RDoorRot_RDoorPivot_DooR_199",
@@ -102,23 +100,9 @@
             "sportsCar#Body_BodyShell_Detail_14",
             "sportsCar#Body_InnerShellRoof_213",
             "sportsCar#Body_212_InnerShellRoof"
-        ], 0.4);
-    }
+        ], 0.3);
 
-    function xrayEntities(ids, opacity) {
-        for (var i = 0, len = ids.length; i < len; i++) {
-            var id = ids [i];
-            var entity = model.entities[id];
-            entity.material.opacity = opacity;
-            entity.modes.transparent = (opacity < 1.0);
-        }
-    }
-
-    function explode() {
-
-        moveEntities([], [0, 1.7, 0]);
-
-        moveEntities([
+        translate([
             "sportsCar#Body_Hatch_253",
             "sportsCar#Body_BodyShell_290",
             "sportsCar#Body_RDoorRot_RDoorPivot_DooR_199",
@@ -134,62 +118,128 @@
             "sportsCar#Body_219_BodyShell"
         ], [0, 1.5, 0]);
 
-        moveEntities([
+        translate([
             "sportsCar#Chassis_265_UnderCover"
         ], [0, -0.6, 0]);
 
-        moveEntities([], [0, 0.3, 0]);
+        translate([], [0, 0.3, 0]);
 
-        moveEntities([
+        translate([
             "sportsCar#Body_RDoorRot_RDoorPivot_DooR_308"
         ], [-0.5, 0, 0]);
 
-        moveEntities([
+        translate([
             "sportsCar#Body_LDoorRot_LDoorPivot_DoorL_308"
         ], [0.5, 0, 0]);
 
-        moveEntities([
+        translate([
             "sportsCar#WheelLF_Wheels_Tires_158",
             "sportsCar#Wheels_WheelLR_Tires2_158"
         ], [0.5, 0, 0]);
 
-        moveEntities([
+        translate([
             "sportsCar#WheelLF_Wheels_321_Tires",
             "sportsCar#Wheels_WheelLR_321_Tires2"
         ], [1.0, 0, 0]);
 
-        moveEntities([
+        translate([
             "sportsCar#Wheels_WheelRF_Tires_158",
             "sportsCar#Wheels_WheelRR_Tires2_158"
         ], [-0.5, 0, 0]);
 
-        moveEntities([
+        translate([
             "sportsCar#Wheels_WheelRF_321_Tires",
             "sportsCar#Wheels_WheelRR_321_Tires2"
         ], [-1.0, 0, 0]);
-    }
 
-    function moveEntities(ids, xyz) {
-        for (var i = 0, len = ids.length; i < len; i++) {
-            var id = ids [i];
-            var entity = model.entities[id];
-            entity.transform = new xeogl.Translate({
-                xyz: xyz,
-                parent: entity.transform
-            });
-        }
-    }
 
-    function outline() {
-        outlineEntities([
+        outline([
             "sportsCar#Wheels_WheelRF_321_Tires",
             "sportsCar#Wheels_WheelRR_321_Tires2",
             "sportsCar#WheelLF_Wheels_321_Tires",
             "sportsCar#Wheels_WheelLR_321_Tires2"
         ]);
+
+        setTimeout(function() {
+            explosion.play();
+        }, 1000);
+    });
+
+    var Animation = function () {
+
+        var queue = [];
+        var running = false;
+        var dir = 1;
+        var t = 0;
+
+        model.scene.on("tick", function () {
+            if (!running) {
+                return;
+            }
+            if (t < 0) {
+                t = 0;
+                running = false;
+            }
+            if (t > 1) {
+                t = 1;
+                running = false;
+            }
+            for (var i = 0, len = queue.length; i < len; i++) {
+                queue[i](t);
+            }
+            t += 0.02 * dir;
+        });
+
+        this.add = function (f) {
+            queue.push(f);
+        };
+
+        this.play = function () {
+            running = true;
+            dir = 1.0;
+            t = 0.0
+        };
+
+        this.rewind = function () {
+            running = true;
+            dir = -1.0;
+            t = 1.0
+        };
+    };
+
+    var explosion = new Animation();
+
+    function xray(ids, opacity) {
+        for (var i = 0, len = ids.length; i < len; i++) {
+            var id = ids [i];
+            explosion.add((function () {
+                var entity = model.entities[id];
+                var startOpacity = entity.material.opacity;
+                return function (t) {
+                    var newOpacity = startOpacity + (t * (opacity - startOpacity));
+                    entity.material.opacity = newOpacity;
+                    entity.modes.transparent = (newOpacity < 1.0);
+                };
+            })());
+        }
     }
 
-    function outlineEntities(ids) {
+    function translate(ids, xyz) {
+        for (var i = 0, len = ids.length; i < len; i++) {
+            var id = ids [i];
+            explosion.add((function () {
+                var entity = model.entities[id];
+                entity.transform = new xeogl.Translate({
+                    parent: entity.transform
+                });
+                return function (t) {
+                    entity.transform.xyz = [xyz[0] * t, xyz[1] * t, xyz[2] * t]
+                };
+            })());
+        }
+    }
+
+    function outline(ids) {
         for (var i = 0, len = ids.length; i < len; i++) {
             var id = ids [i];
             var entity = model.entities[id];
