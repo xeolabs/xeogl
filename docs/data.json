@@ -9124,13 +9124,13 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 685,
+            "line": 686,
             "description": "Attempts to pick an object.",
             "class": "CameraFlightAnimation"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 887,
+            "line": 888,
             "description": "Reads the colors of some pixels in the current image.",
             "class": "CameraFlightAnimation"
         },
@@ -27477,7 +27477,7 @@
         },
         {
             "file": "examples/js/models/OBJModel.js",
-            "line": 196,
+            "line": 179,
             "description": "Fired whenever this OBJModel's {{#crossLink \"OBJModel/src:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "src",
@@ -27485,6 +27485,64 @@
                 {
                     "name": "value",
                     "description": "The property's new value"
+                }
+            ],
+            "class": "OBJModel",
+            "module": "xeogl",
+            "submodule": "models"
+        },
+        {
+            "file": "examples/js/models/OBJModel.js",
+            "line": 209,
+            "description": "Loads OBJ and MTL from file(s) into a {{#crossLink \"Model\"}}{{/crossLink}}.",
+            "params": [
+                {
+                    "name": "model",
+                    "description": "Model to load into.",
+                    "type": "Model"
+                },
+                {
+                    "name": "src",
+                    "description": "Path to OBJ file.",
+                    "type": "String"
+                },
+                {
+                    "name": "ok",
+                    "description": "Completion callback.",
+                    "type": "Function",
+                    "optional": true
+                }
+            ],
+            "class": "OBJModel",
+            "module": "xeogl",
+            "submodule": "models"
+        },
+        {
+            "file": "examples/js/models/OBJModel.js",
+            "line": 239,
+            "description": "Parses OBJ and MTL text strings into a {{#crossLink \"Model\"}}{{/crossLink}}.",
+            "params": [
+                {
+                    "name": "model",
+                    "description": "Model to load into.",
+                    "type": "Model"
+                },
+                {
+                    "name": "objText",
+                    "description": "OBJ text string.",
+                    "type": "String"
+                },
+                {
+                    "name": "mtlText",
+                    "description": "MTL text string.",
+                    "type": "String",
+                    "optional": true
+                },
+                {
+                    "name": "basePath",
+                    "description": "Base path for external resources.",
+                    "type": "String",
+                    "optional": true
                 }
             ],
             "class": "OBJModel",
@@ -27716,7 +27774,49 @@
         },
         {
             "file": "examples/js/models/gltfModel.js",
-            "line": 207,
+            "line": 200,
+            "description": "Fired whenever this GLTFModel's {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "src",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "GLTFModel",
+            "module": "xeogl",
+            "submodule": "models"
+        },
+        {
+            "file": "examples/js/models/gltfModel.js",
+            "line": 227,
+            "description": "Loads glTF from a URL into a {{#crossLink \"Model\"}}{{/crossLink}}.",
+            "params": [
+                {
+                    "name": "model",
+                    "description": "Model to load into.",
+                    "type": "Model"
+                },
+                {
+                    "name": "src",
+                    "description": "Path to glTF file.",
+                    "type": "String"
+                },
+                {
+                    "name": "ok",
+                    "description": "Completion callback.",
+                    "type": "Function",
+                    "optional": true
+                }
+            ],
+            "class": "GLTFModel",
+            "module": "xeogl",
+            "submodule": "models"
+        },
+        {
+            "file": "examples/js/models/gltfModel.js",
+            "line": 257,
             "description": "Fired whenever this GLTFModel fails to load the glTF file\nspecified by {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "error",
@@ -27733,14 +27833,24 @@
         },
         {
             "file": "examples/js/models/gltfModel.js",
-            "line": 216,
-            "description": "Fired whenever this GLTFModel's {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "src",
+            "line": 268,
+            "description": "Parses glTF JSON into a {{#crossLink \"Model\"}}{{/crossLink}}.",
             "params": [
                 {
-                    "name": "value",
-                    "description": "The property's new value"
+                    "name": "model",
+                    "description": "Model to parse into.",
+                    "type": "Model"
+                },
+                {
+                    "name": "gltf",
+                    "description": "The glTF JSON.",
+                    "type": "Object"
+                },
+                {
+                    "name": "basePath",
+                    "description": "Base path path to find external resources on, if any.",
+                    "type": "String",
+                    "optional": true
                 }
             ],
             "class": "GLTFModel",
@@ -29358,11 +29468,11 @@
         },
         {
             "message": "Missing item type\nAttempts to pick an object.",
-            "line": " src/_renderer/renderer.js:685"
+            "line": " src/_renderer/renderer.js:686"
         },
         {
             "message": "Missing item type\nReads the colors of some pixels in the current image.",
-            "line": " src/_renderer/renderer.js:887"
+            "line": " src/_renderer/renderer.js:888"
         },
         {
             "message": "Missing item type",
@@ -30107,6 +30217,22 @@
         {
             "message": "Missing item type\nLoads data into this PointMarkings.\nClears this PointMarkings first.",
             "line": " examples/js/marking/pointMarkings.js:170"
+        },
+        {
+            "message": "Missing item type\nLoads OBJ and MTL from file(s) into a {{#crossLink \"Model\"}}{{/crossLink}}.",
+            "line": " examples/js/models/OBJModel.js:209"
+        },
+        {
+            "message": "Missing item type\nParses OBJ and MTL text strings into a {{#crossLink \"Model\"}}{{/crossLink}}.",
+            "line": " examples/js/models/OBJModel.js:239"
+        },
+        {
+            "message": "Missing item type\nLoads glTF from a URL into a {{#crossLink \"Model\"}}{{/crossLink}}.",
+            "line": " examples/js/models/gltfModel.js:227"
+        },
+        {
+            "message": "Missing item type\nParses glTF JSON into a {{#crossLink \"Model\"}}{{/crossLink}}.",
+            "line": " examples/js/models/gltfModel.js:268"
         },
         {
             "message": "Missing item type",

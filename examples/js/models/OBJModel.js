@@ -174,24 +174,7 @@
 
                     this._src = value;
 
-                    // Increment processes represented by loading spinner
-                    // Spinner appears as soon as count is non-zero
-
-                    var spinner = this.scene.canvas.spinner;
-                    spinner.processes++;
-
-                    var self = this;
-
-                    load(this, this._src, function () {
-
-                        // Decrement processes represented by loading spinner
-                        // Spinner disappears if the count is now zero
-                        spinner.processes--;
-
-                        xeogl.scheduleTask(function () {
-                            self.fire("loaded", true);
-                        });
-                    });
+                    xeogl.OBJModel.load(this, this._src);
 
                     /**
                      Fired whenever this OBJModel's {{#crossLink "OBJModel/src:property"}}{{/crossLink}} property changes.
@@ -205,14 +188,6 @@
                     return this._src;
                 }
             }
-        },
-
-        loadMTL: function (mtlText) { // TODO
-
-        },
-
-        loadOBJ: function (objText) { // TODO
-
         },
 
         _getJSON: function () {
@@ -231,24 +206,57 @@
         }
     });
 
+    /**
+     * Loads OBJ and MTL from file(s) into a {{#crossLink "Model"}}{{/crossLink}}.
+     *
+     * @param {Model} model Model to load into.
+     * @param {String} src Path to OBJ file.
+     * @param {Function} [ok] Completion callback.
+     */
+    xeogl.OBJModel.load = function (model, src, ok) {
 
-    //--------------------------------------------------------------------------------------------
-    // Loads OBJ and its associated MTL files
-    //--------------------------------------------------------------------------------------------
-
-    var load = function (model, src, ok) {
+        var spinner = model.scene.canvas.spinner;
+        spinner.processes++;
 
         loadOBJ(model, src, function (state) {
-
             loadMTLs(model, state, function () {
 
                 createEntities(model, state);
 
-                ok();
+                spinner.processes--;
+
+                xeogl.scheduleTask(function () {
+                    model.fire("loaded", true);
+                });
+
+                if (ok) {
+                    ok();
+                }
             });
         });
     };
 
+    /**
+     * Parses OBJ and MTL text strings into a {{#crossLink "Model"}}{{/crossLink}}.
+     *
+     * @param {Model} model Model to load into.
+     * @param {String} objText OBJ text string.
+     * @param {String} [mtlText] MTL text string.
+     * @param {String} [basePath] Base path for external resources.
+     */
+    xeogl.OBJModel.parse = function (model, objText, mtlText, basePath) {
+        if (!objText) {
+            this.warn("load() param expected: objText");
+            return;
+        }
+        var state = parseOBJ(model, objText, null);
+        if (mtlText) {
+            parseMTL(model, mtlText, basePath);
+        }
+        createEntities(model, state);
+        model.src = null;
+        model.fire("loaded");
+    };
 
     //--------------------------------------------------------------------------------------------
     // Loads OBJ
@@ -263,7 +271,18 @@
     // https://github.com/mrdoob/three.js/blob/dev/examples/js/loaders/MTLLoader.js
     //--------------------------------------------------------------------------------------------
 
-    var loadOBJ = (function () {
+    var loadOBJ = function (model, url, ok) {
+
+        loadFile(url, function (text) {
+                var state = parseOBJ(model, text, url);
+                ok(state);
+            },
+            function (error) {
+                model.error(error);
+            });
+    };
+
+    var parseOBJ = (function () {
 
         const regexp = {
             // v float float float
@@ -290,7 +309,9 @@
             material_use_pattern: /^usemtl /
         };
 
-        return function (model, url, ok) {
+        return function (model, text, url) {
+
+            url = url || ""
 
             var state = {
                 src: url,
@@ -304,22 +325,6 @@
             };
 
             startObject(state, "", false);
-
-            loadFile(url, function (text) {
-                    parseOBJ(model, state, text, ok);
-                    ok(state);
-                },
-                function (error) {
-                    model.error(error);
-                });
-        };
-
-        function getBasePath(src) {
-            var n = src.lastIndexOf('/');
-            return (n === -1) ? src : src.substring(0, n + 1);
-        }
-
-        function parseOBJ(model, state, text) {
 
             // Parts of this parser logic are derived from the THREE.js OBJ loader:
             // https://github.com/mrdoob/three.js/blob/dev/examples/js/loaders/OBJLoader.js
@@ -508,6 +513,13 @@
                     return;
                 }
             }
+
+            return state;
+        };
+
+        function getBasePath(src) {
+            var n = src.lastIndexOf('/');
+            return (n === -1) ? src : src.substring(0, n + 1);
         }
 
         function startObject(state, id, fromDeclaration) {
@@ -682,7 +694,7 @@
         var srcList = Object.keys(state.materialLibraries);
         var numToLoad = srcList.length;
         for (var i = 0, len = numToLoad; i < len; i++) {
-            loadMTL(model, state, basePath + srcList[i], function () {
+            loadMTL(model, basePath, basePath + srcList[i], function () {
                 if (--numToLoad === 0) {
                     ok();
                 }
@@ -694,23 +706,22 @@
     // Loads an MTL file
     //--------------------------------------------------------------------------------------------
 
-    var loadMTL = (function () {
+    var loadMTL = function (model, basePath, src, ok) {
+        loadFile(src, function (text) {
+                parseMTL(model, text, basePath);
+                ok();
+            },
+            function (error) {
+                model.error(error);
+                ok();
+            });
+    };
+
+    var parseMTL = (function () {
 
         var delimiter_pattern = /\s+/;
 
-        return function (model, state, src, ok) {
-            loadFile(src,
-                function (text) {
-                    parseMTL(model, state, text);
-                    ok();
-                },
-                function (error) {
-                    model.error(error);
-                    ok();
-                });
-        };
-
-        function parseMTL(model, state, mtlText) {
+        return function (model, mtlText, basePath) {
 
             var lines = mtlText.split('\n');
             var materialCfg = {
@@ -722,7 +733,8 @@
             var key;
             var value;
             var alpha;
-            var basePath = state.basePath;
+
+            basePath = basePath || "";
 
             for (var i = 0; i < lines.length; i++) {
 
@@ -750,6 +762,10 @@
                             id: value
                         };
                         needCreate = true;
+                        break;
+
+                    case 'ka':
+                        materialCfg.ambient = parseRGB(value);
                         break;
 
                     case 'kd':
@@ -798,14 +814,14 @@
                         break;
 
                     default:
-                        model.error("Unrecognized token: " + key);
+                       // model.error("Unrecognized token: " + key);
                 }
             }
 
             if (needCreate) {
                 createMaterial(model, materialCfg);
             }
-        }
+        };
 
         function createTexture(model, basePath, value) {
             var textureCfg = {};
@@ -844,7 +860,6 @@
         }
 
     })();
-
     //--------------------------------------------------------------------------------------------
     // Creates entities from parsed state
     //--------------------------------------------------------------------------------------------
@@ -895,8 +910,6 @@
                     material = model.scene.components[materialId];
                     if (!material) {
                         model.error("Material not found: " + materialId);
-                    } else {
-                        model.log("Using material: " + materialId);
                     }
                 } else {
                     material = new xeogl.PhongMaterial(model, {
@@ -914,7 +927,7 @@
                     material: material,
                     modes: {
                         transparent: (material && material.opacity < 1),
-                        backfaces: false,
+                        backfaces: true,
                         pickable: true
                     }
                 });

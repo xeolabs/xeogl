@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.js"></script>
+
+    <script src="js/models/OBJModel.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <h1><a href="../docs/classes/OBJModel.html" target="_parent">OBJModel.parse</a> - parsing OBJ and MTL text</h1>
+</div>
+
+<script>
+
+    xeogl.scene.lights.lights = [
+        new xeogl.AmbientLight({
+            color: [0.9, 0.9, 0.9]
+        }),
+        new xeogl.PointLight({
+            pos: [-40, 30, 40],
+            color: [1.0, 1.0, 1.0],
+            space: "view"
+        }),
+        new xeogl.PointLight({
+            pos: [40, 20, 20],
+            color: [1.0, 1.0, 1.0],
+            space: "view"
+        }),
+        new xeogl.PointLight({
+            pos: [-20, 80, -80],
+            color: [1.0, 1.0, 1.0],
+            space: "view"
+        })
+    ];
+
+
+    var model = new xeogl.Model();
+
+    model.scene.canvas.spinner.processes++;
+
+    var basePath = "models/obj/sportsCar/";
+
+    loadText(basePath + "sportsCar.obj", function (objText) {
+
+        loadText(basePath + "sportsCar.mtl", function (mtlText) {
+
+            xeogl.OBJModel.parse(model, objText, mtlText, basePath);
+
+            model.scene.canvas.spinner.processes--;
+        });
+    });
+
+    function loadText(src, ok) {
+        var request = new XMLHttpRequest();
+        request.overrideMimeType("application/json");
+        request.open('GET', src, true);
+        request.onreadystatechange = function () {
+            if (request.readyState == 4 && // Request finished, response ready
+                    request.status == "200") { // Status OK
+                ok(request.responseText, this);
+            }
+        };
+        request.send(null);
+    }
+
+    var view = xeogl.scene.camera.view;
+
+    view.rotateEyeY(-30);
+    view.rotateEyeX(15);
+
+    var cameraControl = new xeogl.CameraControl();
+
+    model.on("loaded", function () {
+        var cameraFlight = new xeogl.CameraFlightAnimation();
+        cameraFlight.flyTo(model);
+    });
+
+    // Start orbiting thecamera
+    model.scene.on("tick", function () {
+        model.scene.camera.view.rotateEyeY(-0.2);
+    });
+
+</script>
+</body>
+</html>
