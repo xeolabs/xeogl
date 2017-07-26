@@ -634,10 +634,11 @@
 
             if (numTransparentObjects > 0) {
 
-                gl.enable(gl.CULL_FACE);
                 gl.enable(gl.BLEND);
+                gl.depthMask(false);
                 gl.blendEquation(gl.FUNC_ADD);
-                gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+                gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+
                 gl.colorMask(true, true, true, true);
 
                 numOutlinedObjects = 0;

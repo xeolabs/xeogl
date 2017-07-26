@@ -42,17 +42,8 @@
 
     maleModel.on("loaded", function () {
         femaleModel.on("loaded", function () {
-
             var cameraFlight = new xeogl.CameraFlightAnimation();
             cameraFlight.flyTo(maleModel.scene);
-
-            var femaleArm = femaleModel.entities["femaleModel#mesh2.002_mesh2-geometry__03_-_Default1noCulli__03_-_Default1noCulli"];
-            femaleArm.transform = new xeogl.Translate({
-                xyz: [10,0,0],
-                parent: femaleArm.transform
-            });
-
-
         });
     });
 
