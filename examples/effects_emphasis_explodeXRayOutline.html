@@ -11,9 +11,7 @@
 
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="js/annotations/pin.js"></script>
-    <script src="js/annotations/annotation.js"></script>
-    <link href="js/annotations/annotation-style.css" rel="stylesheet"/>
+    <script src="js/geometry/vectorTextGeometry.js"></script>
 
 <body>
 
@@ -21,7 +19,7 @@
     <h1><a href="../docs/classes/OBJModel.html" target="_parent">OBJModel</a> - explode, xray and outline effects </h1>
 </div>
 
-<script>
+<script id="source">
 
     // A simple animation system that supports animation of opacity and translation
     // of Entities within a single interpolation frame
@@ -254,12 +252,13 @@
             zSize: 20
         }),
         material: new xeogl.PhongMaterial({
-            shininess: 170,
-            specular: [0.2, 0.2, 0.2],
+//            shininess: 170,
+//            specular: [0.2, 0.2, 0.2],
             diffuseMap: new xeogl.Texture({
                 src: "textures/diffuse/UVCheckerMap11-1024.png",
                 scale: [-5.0, 5.0]
-            })
+            }),
+            xopacity: 0.99
         }),
         transform: new xeogl.Translate({
             xyz: [0, -1.1, 0]
@@ -267,7 +266,87 @@
         modes: new xeogl.Modes({
             backfaces: false,
             collidable: false,
-            pickable: false
+            pickable: false,
+            transparent: false
+        })
+    });
+
+    // Source code vector text
+
+    var size = 10;
+    var textHeight = size / 2.0;
+    var textSize = 0.35;
+
+    var code = document.getElementById("source").innerText;
+
+    var codeMaterial = new xeogl.PhongMaterial({
+        emissive: [0.5, 0.5, 0.8],
+        lineWidth: 2
+    });
+
+    var codeModes = new xeogl.Modes({
+        backfaces: false,
+        collidable: false,
+        pickable: false
+    });
+
+    new xeogl.Entity({
+        material: codeMaterial,
+        modes: codeModes,
+        geometry: new xeogl.VectorTextGeometry({
+            text: code.substring(0, 800),
+            size: textSize
+        }),
+        transform: new xeogl.Translate({
+            xyz: [-size, textHeight, -size]
+        })
+    });
+
+    new xeogl.Entity({
+        material: codeMaterial,
+        modes: codeModes,
+        geometry: new xeogl.VectorTextGeometry({
+            text: code.substring(800, 1600),
+            size: textSize
+        }),
+        transform: new xeogl.Rotate({
+            xyz: [0,1, 0],
+            angle: -90,
+            parent: new xeogl.Translate({
+                xyz: [size, textHeight, -size]
+            })
+        })
+    });
+
+    new xeogl.Entity({
+        material: codeMaterial,
+        modes: codeModes,
+        geometry: new xeogl.VectorTextGeometry({
+            text: code.substring(1600, 2400),
+            size: textSize
+        }),
+        transform: new xeogl.Rotate({
+            xyz: [0, 1, 0],
+            angle: -180,
+            parent: new xeogl.Translate({
+                xyz: [size, textHeight, size]
+            })
+        })
+    });
+
+    new xeogl.Entity({
+        material: codeMaterial,
+        modes: codeModes,
+        geometry: new xeogl.VectorTextGeometry({
+            text: code.substring(2400, 3200),
+            size: textSize
+        }),
+        transform: new xeogl.Rotate({
+            xyz: [0,1, 0],
+            angle: 90,
+            parent: new xeogl.Translate({
+                xyz: [-size, textHeight, size]
+            })
         })
     });
 
