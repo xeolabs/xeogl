@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2017-07-24
+ * Built on 2017-07-26
  *
  * MIT License
  * Copyright 2017, Lindsay Kay
@@ -5808,10 +5808,11 @@ var Canvas2Image = (function () {
 
             if (numTransparentObjects > 0) {
 
-                gl.enable(gl.CULL_FACE);
                 gl.enable(gl.BLEND);
+                gl.depthMask(false);
                 gl.blendEquation(gl.FUNC_ADD);
-                gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+                gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+
                 gl.colorMask(true, true, true, true);
 
                 numOutlinedObjects = 0;
