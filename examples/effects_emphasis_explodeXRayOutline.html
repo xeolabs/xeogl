@@ -52,21 +52,24 @@
     // Set up camera
 
     var view = xeogl.scene.camera.view;
-    view.rotateEyeY(-30);
-    view.rotateEyeX(15);
+    view.eye = [-4.98, 1.89, 0.72];
+    view.look = [0, 0.52, -0.05];
+    view.up = [0.26, 0.54, -0.05];
+
+    view.rotateEyeY(20);
 
     var cameraControl = new xeogl.CameraControl();
 
     model.scene.on("tick", function () {
-        model.scene.camera.view.rotateEyeY(-0.4);
+        model.scene.camera.view.rotateEyeY(0.1);
     });
 
     // Emphasis effects
 
     model.on("loaded", function () {
 
-        var cameraFlight = new xeogl.CameraFlightAnimation();
-        cameraFlight.flyTo(model);
+        //    var cameraFlight = new xeogl.CameraFlightAnimation();
+        //    cameraFlight.flyTo(model);
 
         explode();
         xray();
@@ -93,10 +96,12 @@
             "sportsCar#Body_LDoorRot_LDoorPivot_DoorL_308",
             "sportsCar#Body_210_RDoorRot_RDoorPivot_DooR",
             "sportsCar#Body_210_LDoorRot_LDoorPivot_DoorL",
-                "sportsCar#Body_Hatch_39",
-                "sportsCar#Body_282_Tail001",
-                "sportsCar#Body_InnerShell_311",
-                "sportsCar#Body_BodyShell_Detail_14"
+            "sportsCar#Body_Hatch_39",
+            "sportsCar#Body_282_Tail001",
+            "sportsCar#Body_InnerShell_311",
+            "sportsCar#Body_BodyShell_Detail_14",
+            "sportsCar#Body_InnerShellRoof_213",
+            "sportsCar#Body_212_InnerShellRoof"
         ], 0.4);
     }
 
@@ -111,18 +116,29 @@
 
     function explode() {
 
+        moveEntities([], [0, 1.7, 0]);
+
         moveEntities([
             "sportsCar#Body_Hatch_253",
             "sportsCar#Body_BodyShell_290",
             "sportsCar#Body_RDoorRot_RDoorPivot_DooR_199",
             "sportsCar#Body_BodyShell_264",
-            "sportsCar#Body_BodyShell_289",
             "sportsCar#Body_LDoorRot_LDoorPivot_DoorL_199",
-            "sportsCar#Body_219_BodyShell",
             "sportsCar#Body_BodyShell_Detail_228",
-            "sportsCar#Chassis_265_UnderCover",
-            "sportsCar#Body_InnerShell_312"
-        ], [0, 1.3, 0]);
+            "sportsCar#Body_InnerShell_312",
+            "sportsCar#Body_BodyShell_289",
+            "sportsCar#Body_282_Tail001",
+            "sportsCar#Body_212_InnerShellRoof",
+            "sportsCar#Body_InnerShellRoof_213",
+            "sportsCar#38_Window001",
+            "sportsCar#Body_219_BodyShell"
+        ], [0, 1.5, 0]);
+
+        moveEntities([
+            "sportsCar#Chassis_265_UnderCover"
+        ], [0, -0.6, 0]);
+
+        moveEntities([], [0, 0.3, 0]);
 
         moveEntities([
             "sportsCar#Body_RDoorRot_RDoorPivot_DooR_308"
@@ -180,6 +196,31 @@
             entity.modes.outline = true;
         }
     }
+
+    // Ground plane
+
+    new xeogl.Entity({
+        geometry: new xeogl.PlaneGeometry({
+            xSize: 20,
+            zSize: 20
+        }),
+        material: new xeogl.PhongMaterial({
+            shininess: 170,
+            specular: [0.2, 0.2, 0.2],
+            diffuseMap: new xeogl.Texture({
+                src: "textures/diffuse/UVCheckerMap11-1024.png",
+                scale: [-5.0, 5.0]
+            })
+        }),
+        transform: new xeogl.Translate({
+            xyz: [0, -1.1, 0]
+        }),
+        modes: new xeogl.Modes({
+            backfaces: false,
+            collidable: false,
+            pickable: false
+        })
+    });
 
 </script>
 </body>
