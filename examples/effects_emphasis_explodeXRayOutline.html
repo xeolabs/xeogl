@@ -23,6 +23,85 @@
 
 <script>
 
+    // A simple animation system that supports animation of opacity and translation
+    // of Entities within a single interpolation frame
+
+    var Animation = function () {
+
+        var tasks = [];
+        var dir = 0;
+        var t = 0;
+
+        xeogl.scene.on("tick", function () {
+            if (dir === 0) {
+                return;
+            }
+            if (t < 0) {
+                t = 0;
+                dir = 0;
+            }
+            if (t > 1) {
+                t = 1;
+                dir = 0;
+            }
+            for (var i = 0, len = tasks.length; i < len; i++) {
+                tasks[i](t);
+            }
+            t += 0.02 * dir;
+        });
+
+        this.xray = function (ids, opacity) {
+            for (var i = 0, len = ids.length; i < len; i++) {
+                var id = ids [i];
+                tasks.push((function () {
+                    var entity = model.entities[id];
+                    var startOpacity = entity.material.opacity;
+                    return function (t) {
+                        var newOpacity = startOpacity + (t * (opacity - startOpacity));
+                        entity.material.opacity = newOpacity;
+                        entity.modes.transparent = (newOpacity < 1.0);
+                    };
+                })());
+            }
+            return this;
+        };
+
+        this.translate = function (ids, xyz) {
+            for (var i = 0, len = ids.length; i < len; i++) {
+                var id = ids [i];
+                tasks.push((function () {
+                    var entity = model.entities[id];
+                    entity.transform = new xeogl.Translate({
+                        parent: entity.transform
+                    });
+                    return function (t) {
+                        entity.transform.xyz = [xyz[0] * t, xyz[1] * t, xyz[2] * t]
+                    };
+                })());
+            }
+            return this;
+        };
+
+        this.outline = function (ids) {
+            for (var i = 0, len = ids.length; i < len; i++) {
+                var id = ids [i];
+                var entity = model.entities[id];
+                entity.modes.outline = true;
+            }
+            return this;
+        };
+
+        this.play = function () {
+            dir = 1.0;
+            t = 0.0
+        };
+
+        this.rewind = function () {
+            dir = -1.0;
+            t = 1.0
+        };
+    };
+
     // Custom lights
 
     xeogl.scene.lights.lights = [
@@ -64,188 +143,108 @@
 
     var cameraControl = new xeogl.CameraControl();
 
+    // Slowly orbit the model
+
     model.scene.on("tick", function () {
         model.scene.camera.view.rotateEyeY(0.1);
     });
 
-    // Emphasis effects
+    // When model loaded, build the animation
+    // and schedule it to start after a short delay
 
     model.on("loaded", function () {
 
-        //    var cameraFlight = new xeogl.CameraFlightAnimation();
-        //    cameraFlight.flyTo(model);
+        var animation = new Animation();
 
-        xray([
-            "sportsCar#Body_Hatch_253",
-            "sportsCar#Body_BodyShell_290",
-            "sportsCar#Body_RDoorRot_RDoorPivot_DooR_199",
-            "sportsCar#Body_BodyShell_264",
-            "sportsCar#Body_BodyShell_289",
-            "sportsCar#Body_LDoorRot_LDoorPivot_DoorL_199",
-            "sportsCar#Body_219_BodyShell",
-            "sportsCar#Wheels_WheelRR_Tires2_158",
-            "sportsCar#Wheels_WheelRF_Tires_158",
-            "sportsCar#Wheels_WheelLR_Tires2_158",
-            "sportsCar#WheelLF_Wheels_Tires_158",
-            "sportsCar#Body_BodyShell_Detail_228",
-            "sportsCar#Chassis_265_UnderCover",
-            "sportsCar#Body_InnerShell_312",
-            "sportsCar#Body_RDoorRot_RDoorPivot_DooR_308",
-            "sportsCar#Body_LDoorRot_LDoorPivot_DoorL_308",
-            "sportsCar#Body_210_RDoorRot_RDoorPivot_DooR",
-            "sportsCar#Body_210_LDoorRot_LDoorPivot_DoorL",
-            "sportsCar#Body_Hatch_39",
-            "sportsCar#Body_282_Tail001",
-            "sportsCar#Body_InnerShell_311",
-            "sportsCar#Body_BodyShell_Detail_14",
-            "sportsCar#Body_InnerShellRoof_213",
-            "sportsCar#Body_212_InnerShellRoof"
-        ], 0.3);
+        animation.xray([
+                    "sportsCar#Body_Hatch_253",
+                    "sportsCar#Body_BodyShell_290",
+                    "sportsCar#Body_RDoorRot_RDoorPivot_DooR_199",
+                    "sportsCar#Body_BodyShell_264",
+                    "sportsCar#Body_BodyShell_289",
+                    "sportsCar#Body_LDoorRot_LDoorPivot_DoorL_199",
+                    "sportsCar#Body_219_BodyShell",
+                    "sportsCar#Wheels_WheelRR_Tires2_158",
+                    "sportsCar#Wheels_WheelRF_Tires_158",
+                    "sportsCar#Wheels_WheelLR_Tires2_158",
+                    "sportsCar#WheelLF_Wheels_Tires_158",
+                    "sportsCar#Body_BodyShell_Detail_228",
+                    "sportsCar#Chassis_265_UnderCover",
+                    "sportsCar#Body_InnerShell_312",
+                    "sportsCar#Body_RDoorRot_RDoorPivot_DooR_308",
+                    "sportsCar#Body_LDoorRot_LDoorPivot_DoorL_308",
+                    "sportsCar#Body_210_RDoorRot_RDoorPivot_DooR",
+                    "sportsCar#Body_210_LDoorRot_LDoorPivot_DoorL",
+                    "sportsCar#Body_Hatch_39",
+                    "sportsCar#Body_282_Tail001",
+                    "sportsCar#Body_InnerShell_311",
+                    "sportsCar#Body_BodyShell_Detail_14",
+                    "sportsCar#Body_InnerShellRoof_213",
+                    "sportsCar#Body_212_InnerShellRoof"
+                ], 0.3)
 
-        translate([
-            "sportsCar#Body_Hatch_253",
-            "sportsCar#Body_BodyShell_290",
-            "sportsCar#Body_RDoorRot_RDoorPivot_DooR_199",
-            "sportsCar#Body_BodyShell_264",
-            "sportsCar#Body_LDoorRot_LDoorPivot_DoorL_199",
-            "sportsCar#Body_BodyShell_Detail_228",
-            "sportsCar#Body_InnerShell_312",
-            "sportsCar#Body_BodyShell_289",
-            "sportsCar#Body_282_Tail001",
-            "sportsCar#Body_212_InnerShellRoof",
-            "sportsCar#Body_InnerShellRoof_213",
-            "sportsCar#38_Window001",
-            "sportsCar#Body_219_BodyShell"
-        ], [0, 1.5, 0]);
+                .translate([
+                    "sportsCar#Body_Hatch_253",
+                    "sportsCar#Body_BodyShell_290",
+                    "sportsCar#Body_RDoorRot_RDoorPivot_DooR_199",
+                    "sportsCar#Body_BodyShell_264",
+                    "sportsCar#Body_LDoorRot_LDoorPivot_DoorL_199",
+                    "sportsCar#Body_BodyShell_Detail_228",
+                    "sportsCar#Body_InnerShell_312",
+                    "sportsCar#Body_BodyShell_289",
+                    "sportsCar#Body_282_Tail001",
+                    "sportsCar#Body_212_InnerShellRoof",
+                    "sportsCar#Body_InnerShellRoof_213",
+                    "sportsCar#38_Window001",
+                    "sportsCar#Body_219_BodyShell"
+                ], [0, 1.5, 0])
 
-        translate([
-            "sportsCar#Chassis_265_UnderCover"
-        ], [0, -0.6, 0]);
+                .translate([
+                    "sportsCar#Chassis_265_UnderCover"
+                ], [0, -0.6, 0])
 
-        translate([], [0, 0.3, 0]);
+                .translate([], [0, 0.3, 0])
 
-        translate([
-            "sportsCar#Body_RDoorRot_RDoorPivot_DooR_308"
-        ], [-0.5, 0, 0]);
+                .translate([
+                    "sportsCar#Body_RDoorRot_RDoorPivot_DooR_308"
+                ], [-0.5, 0, 0])
 
-        translate([
-            "sportsCar#Body_LDoorRot_LDoorPivot_DoorL_308"
-        ], [0.5, 0, 0]);
+                .translate([
+                    "sportsCar#Body_LDoorRot_LDoorPivot_DoorL_308"
+                ], [0.5, 0, 0])
 
-        translate([
-            "sportsCar#WheelLF_Wheels_Tires_158",
-            "sportsCar#Wheels_WheelLR_Tires2_158"
-        ], [0.5, 0, 0]);
+                .translate([
+                    "sportsCar#WheelLF_Wheels_Tires_158",
+                    "sportsCar#Wheels_WheelLR_Tires2_158"
+                ], [0.5, 0, 0])
 
-        translate([
-            "sportsCar#WheelLF_Wheels_321_Tires",
-            "sportsCar#Wheels_WheelLR_321_Tires2"
-        ], [1.0, 0, 0]);
+                .translate([
+                    "sportsCar#WheelLF_Wheels_321_Tires",
+                    "sportsCar#Wheels_WheelLR_321_Tires2"
+                ], [1.0, 0, 0])
 
-        translate([
-            "sportsCar#Wheels_WheelRF_Tires_158",
-            "sportsCar#Wheels_WheelRR_Tires2_158"
-        ], [-0.5, 0, 0]);
+                .translate([
+                    "sportsCar#Wheels_WheelRF_Tires_158",
+                    "sportsCar#Wheels_WheelRR_Tires2_158"
+                ], [-0.5, 0, 0])
 
-        translate([
-            "sportsCar#Wheels_WheelRF_321_Tires",
-            "sportsCar#Wheels_WheelRR_321_Tires2"
-        ], [-1.0, 0, 0]);
+                .translate([
+                    "sportsCar#Wheels_WheelRF_321_Tires",
+                    "sportsCar#Wheels_WheelRR_321_Tires2"
+                ], [-1.0, 0, 0])
 
+                .outline([
+                    "sportsCar#Wheels_WheelRF_321_Tires",
+                    "sportsCar#Wheels_WheelRR_321_Tires2",
+                    "sportsCar#WheelLF_Wheels_321_Tires",
+                    "sportsCar#Wheels_WheelLR_321_Tires2"
+                ]);
 
-        outline([
-            "sportsCar#Wheels_WheelRF_321_Tires",
-            "sportsCar#Wheels_WheelRR_321_Tires2",
-            "sportsCar#WheelLF_Wheels_321_Tires",
-            "sportsCar#Wheels_WheelLR_321_Tires2"
-        ]);
-
-        setTimeout(function() {
-            explosion.play();
+        setTimeout(function () {
+            animation.play();
         }, 1000);
+
     });
-
-    var Animation = function () {
-
-        var queue = [];
-        var running = false;
-        var dir = 1;
-        var t = 0;
-
-        model.scene.on("tick", function () {
-            if (!running) {
-                return;
-            }
-            if (t < 0) {
-                t = 0;
-                running = false;
-            }
-            if (t > 1) {
-                t = 1;
-                running = false;
-            }
-            for (var i = 0, len = queue.length; i < len; i++) {
-                queue[i](t);
-            }
-            t += 0.02 * dir;
-        });
-
-        this.add = function (f) {
-            queue.push(f);
-        };
-
-        this.play = function () {
-            running = true;
-            dir = 1.0;
-            t = 0.0
-        };
-
-        this.rewind = function () {
-            running = true;
-            dir = -1.0;
-            t = 1.0
-        };
-    };
-
-    var explosion = new Animation();
-
-    function xray(ids, opacity) {
-        for (var i = 0, len = ids.length; i < len; i++) {
-            var id = ids [i];
-            explosion.add((function () {
-                var entity = model.entities[id];
-                var startOpacity = entity.material.opacity;
-                return function (t) {
-                    var newOpacity = startOpacity + (t * (opacity - startOpacity));
-                    entity.material.opacity = newOpacity;
-                    entity.modes.transparent = (newOpacity < 1.0);
-                };
-            })());
-        }
-    }
-
-    function translate(ids, xyz) {
-        for (var i = 0, len = ids.length; i < len; i++) {
-            var id = ids [i];
-            explosion.add((function () {
-                var entity = model.entities[id];
-                entity.transform = new xeogl.Translate({
-                    parent: entity.transform
-                });
-                return function (t) {
-                    entity.transform.xyz = [xyz[0] * t, xyz[1] * t, xyz[2] * t]
-                };
-            })());
-        }
-    }
-
-    function outline(ids) {
-        for (var i = 0, len = ids.length; i < len; i++) {
-            var id = ids [i];
-            var entity = model.entities[id];
-            entity.modes.outline = true;
-        }
-    }
 
     // Ground plane
 
