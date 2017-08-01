@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.min.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <h1>mouse over the <a href="../docs/classes/Entity.html" target="_parent">Entities</a> to pick them</h1>
+</div>
+
+<script>
+
+    // Load glTF model
+
+    var gearbox = new xeogl.GLTFModel({
+        src: "models/gltf/2.0/GearboxAssy/PBR-MetalRoughness/gearbox_assy.gltf"
+    });
+
+    // Set initial camera position
+    var view = gearbox.scene.camera.view;
+    view.eye = [174.46, 16.91, -21.92];
+    view.look = [159.2, 17.02, 3.21];
+    view.up = [-0.17, 0.89, 0.4];
+
+    var scene = xeogl.scene;
+
+    var cameraControl = new xeogl.CameraControl();
+
+    // Ensure entities in our gearbox have unique materials
+    // so we can highlight the entities separately
+
+    gearbox.on("loaded", function () {
+        gearbox.iterate(function (c) {
+            if (c.isType("xeogl.Entity")) {
+                c.material = c.material.clone();
+                gearbox.add(c.material); // Ensure new materials get destroyed with gearbox
+            }
+        });
+    });
+
+    // Attempt to pick a Entity on each mouse move.
+    // Highlight each Entity that we successfully pick.
+
+    var input = scene.input;
+
+    var lastEntity = null;
+    var lastEmissive = null;
+
+    input.on("mousemove", function (coords) {
+
+        var hit = scene.pick({
+            canvasPos: coords
+        });
+
+        if (hit) {
+
+            if (!lastEntity || hit.entity.id !== lastEntity.id) {
+
+                if (lastEntity) {
+                    lastEntity.material.emissive = lastEmissive;
+                }
+
+                lastEntity = hit.entity;
+                lastEmissive = hit.entity.material.emissive.slice();
+
+                hit.entity.material.emissive = [0.5, 1, 0.5];
+            }
+        } else {
+
+            if (lastEntity) {
+                lastEntity.material.emissive = lastEmissive;
+                lastEntity = null;
+            }
+        }
+    });
+
+</script>
+</body>
+</html>

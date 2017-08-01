@@ -333,7 +333,7 @@
             this._matrixDirty = false;
             this._srcDirty = false;
             this._imageDirty = false;
-            this._propsDirty = false;
+            this._propsDirty = true;
 
             // Handle WebGL context restore
 
@@ -360,7 +360,6 @@
 
             } else if (cfg.image) {
                 this.image = cfg.image; // Image object
-
             }
 
             xeogl.stats.memory.textures++;
@@ -573,7 +572,7 @@
                 },
 
                 get: function () {
-                    return this._state.image;
+                    return this._image;
                 }
             },
 

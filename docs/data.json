@@ -1317,8 +1317,8 @@
             "fors": {},
             "namespaces": {}
         },
-        "examples/js/models/gltfModel.js": {
-            "name": "examples/js/models/gltfModel.js",
+        "examples/js/models/glTFModel.js": {
+            "name": "examples/js/models/glTFModel.js",
             "modules": {},
             "classes": {
                 "GLTFModel": 1
@@ -5089,7 +5089,7 @@
             "extension_for": [],
             "module": "xeogl",
             "namespace": "",
-            "file": "examples/js/models/gltfModel.js",
+            "file": "examples/js/models/glTFModel.js",
             "line": 1,
             "description": "A **GLTFModel** is a {{#crossLink \"Model\"}}{{/crossLink}} loaded from a <a href=\"https://github.com/KhronosGroup/glTF\" target = \"_other\">glTF</a> file.\n\n<a href=\"../../examples/#importing_gltf_gearbox\"><img src=\"../../../assets/images/gltf/glTF_gearbox_squashed.png\"></img></a>\n\n## Overview\n\n* A GLTFModel is a container of {{#crossLink \"Component\"}}Components{{/crossLink}} that loads itself from a glTF file.\n* It begins loading as soon as you set its {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}\nproperty to the location of a valid glTF file.\n* You can set {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}} to a new file path at any time, which causes\nthe GLTFModel to clear itself and load components from the new file.\n\nIt inherits these capabilities from its {{#crossLink \"Model\"}}{{/crossLink}} base class:\n\n* Allows you to access and manipulate the components within it.\n* Can be transformed within World-space by attaching it to a {{#crossLink \"Transform\"}}{{/crossLink}}.\n* Provides its World-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}}.\n\n## Supported glTF features\n\nTODO\n\n| Property | Type | Range | Default Value | Space | Description |\n|:--------:|:----:|:-----:|:-------------:|:-----:|:-----------:|\n|  {{#crossLink \"MetallicMaterial/baseColor:property\"}}{{/crossLink}} | Array | [0, 1] for all components | [1,1,1,1] | linear | The RGB components of the base color of the material. |\n| {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The metallic-ness the material (1 for metals, 0 for non-metals). |\n| {{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The roughness of the material surface. |\n\n<img src=\"../../../assets/images/GLTFModel.png\"></img>\n\n## Usage\n\n### Loading glTF\n\nLoad a glTF file by creating a GLTFModel:\n\n````javascript\nvar gearbox = new xeogl.GLTFModel({\n  id: \"gearbox\",\n  src: \"models/gltf/gearbox/gearbox_assy.gltf\"\n});\n````\n\nA GLTFModel prefixes its own ID to those of its components. Its ID is optional and defaults to\nthe value of {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}. In this example we're providing our own short ID,\nhowever, in order to keep the component IDs short and easy to use.\n\nThe GLTFModel begins loading the glTF file immediately. Bind a callback to be notified when the file has loaded (which\nfires immediately if already loaded):\n\n````javascript\ngearbox.on(\"loaded\", function() {\n       // GLTFModel has loaded!\n   });\n````\n\nYou can also bind a callback to fire if loading fails:\n\n````javascript\ngearbox.on(\"error\", function(msg) {\n       // Error occurred\n   });\n````\n\nTo switch to a different glTF file, simply update {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}:\n\n````javascript\ngearbox.src = \"models/gltf/buggy/buggy.gltf\"\n````\n\n### Accessing components\n\nOnce the GLTFModel has loaded, its {{#crossLink \"Scene\"}}{{/crossLink}} will contain various components that represent the elements of the glTF file.\nWe'll now access some of those components by ID, to query and update them programmatically.\n\n**Transforms**\n\nLet's reposition one of the {{#crossLink \"Entity\"}}Entities{{/crossLink}} in our GLTFModel. We'll get the {{#crossLink \"Transform\"}}{{/crossLink}} that\npositions our target {{#crossLink \"Entity\"}}{{/crossLink}}, in this case a gear. Then we'll update its matrix to translate it ten units along the negative Z-axis.\n\n````javascript\nvar transform = gearbox.scene.components[\"gearbox#n274017_gear_53t-node.transform\"];\n\ntransform.matrix = xeogl.math.translationMat4v([0,0,-10]);\n````\n\nNote the format of the {{#crossLink \"Transform\"}}{{/crossLink}}'s ID:\n\n````<GLTFModel ID>#<glTF node ID>.transform````\n\nFrom left to right, the format contains the GLTFModel's ID, the ID of the glTF node that contains the transform, then\n\"transform\", to distinguish it from the IDs of any other components loaded from elements on the same glTF node.\n\n**Entities**\n\nLet's make our gear {{#crossLink \"Entity\"}}{{/crossLink}} invisible. This time we'll get the {{#crossLink \"Entity\"}}{{/crossLink}} itself, then update\nits {{#crossLink \"Visibility\"}}{{/crossLink}} component:\n\n````javascript\nvar gear53 = gearbox.scene.components[\"gearbox#n274017_gear_53.entity.0\"];\n\ngear53.visibility.visible = false;\n````\n\nNote the format of the {{#crossLink \"Entity\"}}{{/crossLink}}'s ID: ````<GLTFModel ID>#<glTF node ID>.entity.<glTF mesh index>````\n\nA glTF scene node may contain multiple meshes, and for each of those xeogl will create an individual {{#crossLink \"Entity\"}}{{/crossLink}}. As\nbefore, the part before the hash is the ID of the GLTFModel, which is then followed by the ID of the glTF node, then \"entity\"\nto signify that this is an Entity ID, then finally an index to differentiate the Entity from those loaded from other\nmeshes on the same glTF node.\n\nWhen we load multiple Entities from a glTF node, then they will share the same {{#crossLink \"Transform\"}}{{/crossLink}} and {{#crossLink \"Visibility\"}}{{/crossLink}} components. This\nlets us update their transformation and visibility as a group, as if they were a composite entity that represents\nthe glTF node.\n\n\n## Examples\n\n* [Damaged Helmet with metal/rough PBR materials](../../examples/#importing_gltf_pbr_metallic_helmet)\n* [Gearbox with entity explorer](../../examples/#importing_gltf_explorer)\n* [Ensuring individual materials on GLTFModel entities](../../examples/#models_filter_uniqueMaterials)\n* [Baking transform hierarchies in a GLTFModel](../../examples/#models_filter_bakeTransforms)",
             "submodule": "models",
@@ -11139,7 +11139,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 246,
+            "line": 248,
             "description": "Boundary of the Canvas in absolute browser window coordinates.\n\n### Usage:\n\n````javascript\nvar boundary = myScene.canvas.boundary;\n\nvar xmin = boundary[0];\nvar ymin = boundary[1];\nvar width = boundary[2];\nvar height = boundary[3];\n````",
             "itemtype": "property",
             "name": "boundary",
@@ -11151,7 +11151,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 283,
+            "line": 285,
             "description": "Fired whenever the WebGL context has been lost",
             "itemtype": "event",
             "name": "webglContextLost",
@@ -11161,7 +11161,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 296,
+            "line": 298,
             "description": "Fired whenever the WebGL context has been restored again after having previously being lost",
             "itemtype": "event",
             "name": "webglContextRestored",
@@ -11177,7 +11177,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 356,
+            "line": 358,
             "description": "Fired whenever this Canvas's {{#crossLink \"Canvas/boundary:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "boundary",
@@ -11193,7 +11193,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 393,
+            "line": 395,
             "description": "Creates a default canvas in the DOM.",
             "access": "private",
             "tagname": "",
@@ -11203,7 +11203,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 423,
+            "line": 425,
             "description": "Creates a image element behind the canvas, for purpose of showing a custom background.",
             "access": "private",
             "tagname": "",
@@ -11213,7 +11213,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 450,
+            "line": 452,
             "description": "Creates an invisible DIV over the canvas, for purpose of catching\ninput events without interfering with app-lever UI bits floating underneath.",
             "access": "private",
             "tagname": "",
@@ -11223,7 +11223,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 487,
+            "line": 489,
             "description": "Initialises the WebGL context",
             "access": "private",
             "tagname": "",
@@ -11233,7 +11233,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 520,
+            "line": 522,
             "description": "Fired whenever the canvas failed to get a WebGL context, which probably means that WebGL\nis either unsupported or has been disabled.",
             "itemtype": "event",
             "name": "webglContextFailed",
@@ -11243,7 +11243,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 529,
+            "line": 531,
             "description": "Returns a snapshot of this Canvas as a Base64-encoded image.\n\n#### Usage:\n````javascript\nimageElement.src = myScene.canvas.getSnapshot({\n    width: 500, // Defaults to size of canvas\n    height: 500,\n    format: \"png\" // Options are \"jpeg\" (default), \"png\" and \"bmp\"\n});\n````",
             "itemtype": "method",
             "name": "getSnapshot",
@@ -11286,7 +11286,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 587,
+            "line": 589,
             "description": "Reads colors of pixels from the last rendered frame.\n\n<p>Call this method like this:</p>\n\n````JavaScript\n\n// Ignore transparent pixels (default is false)\nvar opaqueOnly = true;\n\nvar colors = new Float32Array(8);\n\nmyCanvas.readPixels([ 100, 22, 12, 33 ], colors, 2, opaqueOnly);\n````\n\nThen the r,g,b components of the colors will be set to the colors at those pixels.",
             "params": [
                 {
@@ -11316,7 +11316,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 615,
+            "line": 617,
             "description": "A background color for the canvas. This is overridden by {{#crossLink \"Canvas/backgroundImage:property\"}}{{/crossLink}}.\n\nYou can set this to a new color at any time.\n\nFires a {{#crossLink \"Canvas/backgroundColor:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "backgroundColor",
@@ -11328,7 +11328,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 644,
+            "line": 646,
             "description": "Fired whenever this Canvas's {{#crossLink \"Canvas/backgroundColor:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "backgroundColor",
@@ -11344,7 +11344,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 657,
+            "line": 659,
             "description": "URL of a background image for the canvas. This is overrided by {{#crossLink \"Canvas/backgroundColor/property\"}}{{/crossLink}}.\n\nYou can set this to a new file path at any time.\n\nFires a {{#crossLink \"Canvas/background:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "backgroundImage",
@@ -11355,7 +11355,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 692,
+            "line": 694,
             "description": "Fired whenever this Canvas's {{#crossLink \"Canvas/backgroundImage:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "backgroundImage",
@@ -11371,7 +11371,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 705,
+            "line": 707,
             "description": "The busy {{#crossLink \"Spinner\"}}{{/crossLink}} for this Canvas.",
             "itemtype": "property",
             "name": "spinner",
@@ -18785,7 +18785,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 296,
+            "line": 295,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/image:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "image",
@@ -18802,7 +18802,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 303,
+            "line": 302,
             "description": "Fired whenever this Texture has loaded the\nimage file that its {{#crossLink \"Texture/src:property\"}}{{/crossLink}} property currently points to.",
             "itemtype": "event",
             "name": "loaded",
@@ -18819,7 +18819,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 341,
+            "line": 340,
             "description": "Indicates an HTML DOM Image object to source this Texture from.\n\nFires an {{#crossLink \"Texture/image:event\"}}{{/crossLink}} event on change.\n\nSets the {{#crossLink \"Texture/src:property\"}}{{/crossLink}} property to null.",
             "itemtype": "property",
             "name": "image",
@@ -18831,7 +18831,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 364,
+            "line": 363,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/image:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "image",
@@ -18848,7 +18848,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 377,
+            "line": 376,
             "description": "Indicates a path to an image file to source this Texture from.\n\nFires a {{#crossLink \"Texture/src:event\"}}{{/crossLink}} event on change.\n\nSets the {{#crossLink \"Texture/image:property\"}}{{/crossLink}} property to null.",
             "itemtype": "property",
             "name": "src",
@@ -18860,7 +18860,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 400,
+            "line": 399,
             "description": "Fired whenever this Texture's {{#crossLink \"Texture/src:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "src",
@@ -18877,7 +18877,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 414,
+            "line": 413,
             "description": "2D translation vector that will be added to this Texture's *S* and *T* coordinates.\n\nFires a {{#crossLink \"Texture/translate:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "translate",
@@ -18889,7 +18889,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 432,
+            "line": 431,
             "description": "Fired whenever this Texture's   {{#crossLink \"Texture/translate:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "translate",
@@ -18906,7 +18906,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 445,
+            "line": 444,
             "description": "2D scaling vector that will be applied to this Texture's *S* and *T* coordinates.\n\nFires a {{#crossLink \"Texture/scale:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "scale",
@@ -18918,7 +18918,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 463,
+            "line": 462,
             "description": "Fired whenever this Texture's   {{#crossLink \"Texture/scale:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "scale",
@@ -18935,7 +18935,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 476,
+            "line": 475,
             "description": "Rotation, in degrees, that will be applied to this Texture's *S* and *T* coordinates.\n\nFires a {{#crossLink \"Texture/rotate:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "rotate",
@@ -18947,7 +18947,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 500,
+            "line": 499,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/rotate:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "rotate",
@@ -18964,7 +18964,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 513,
+            "line": 512,
             "description": "How this Texture is sampled when a texel covers less than one pixel.\n\nOptions are:\n\n\n    * **\"nearest\"** - Uses the value of the texture element that is nearest\n    (in Manhattan distance) to the center of the pixel being textured.\n\n    * **\"linear\"** - Uses the weighted average of the four texture elements that are\n    closest to the center of the pixel being textured.\n\n    * **\"nearestMipmapNearest\"** - Chooses the mipmap that most closely matches the\n    size of the pixel being textured and uses the \"nearest\" criterion (the texture\n    element nearest to the center of the pixel) to produce a texture value.\n\n    * **\"linearMipmapNearest\"** - Chooses the mipmap that most closely matches the size of\n    the pixel being textured and uses the \"linear\" criterion (a weighted average of the\n    four texture elements that are closest to the center of the pixel) to produce a\n    texture value.\n\n    * **\"nearestMipmapLinear\"** - Chooses the two mipmaps that most closely\n    match the size of the pixel being textured and uses the \"nearest\" criterion\n    (the texture element nearest to the center of the pixel) to produce a texture\n    value from each mipmap. The final texture value is a weighted average of those two\n    values.\n\n    * **\"linearMipmapLinear\"** - **(default)** - Chooses the two mipmaps that most closely match the size\n    of the pixel being textured and uses the \"linear\" criterion (a weighted average\n    of the four texture elements that are closest to the center of the pixel) to\n    produce a texture value from each mipmap. The final texture value is a weighted\n    average of those two values.\n\n\nFires a {{#crossLink \"Texture/minFilter:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "minFilter",
@@ -18976,7 +18976,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 577,
+            "line": 576,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/minFilter:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "minFilter",
@@ -18993,7 +18993,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 590,
+            "line": 589,
             "description": "How this Texture is sampled when a texel covers more than one pixel.\n\nOptions are:\n\n\n    * **\"nearest\"** - Uses the value of the texture element that is nearest\n    (in Manhattan distance) to the center of the pixel being textured.\n    * **\"linear\"** - **(default)** - Uses the weighted average of the four texture elements that are\n    closest to the center of the pixel being textured.\n\n\nFires a {{#crossLink \"Texture/magFilter:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "magFilter",
@@ -19005,7 +19005,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 627,
+            "line": 626,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/magFilter:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "magFilter",
@@ -19022,7 +19022,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 640,
+            "line": 639,
             "description": "Wrap parameter for this Texture's *S* coordinate.\n\nOptions are:\n\n\n    * **\"clampToEdge\"** -  causes *S* coordinates to be clamped to the size of the texture.\n    * **\"mirroredRepeat\"** - causes the *S* coordinate to be set to the fractional part of the texture coordinate\n    if the integer part of *S* is even; if the integer part of *S* is odd, then the *S* texture coordinate is\n    set to *1 - frac ⁡ S* , where *frac ⁡ S* represents the fractional part of *S*.\n    * **\"repeat\"** - **(default)** - causes the integer part of the *S* coordinate to be ignored; xeogl uses only the\n    fractional part, thereby creating a repeating pattern.\n\n\nFires a {{#crossLink \"Texture/wrapS:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "wrapS",
@@ -19034,7 +19034,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 679,
+            "line": 678,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/wrapS:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "wrapS",
@@ -19051,7 +19051,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 692,
+            "line": 691,
             "description": "Wrap parameter for this Texture's *T* coordinate.\n\nOptions are:\n\n\n    * **\"clampToEdge\"** -  Causes *T* coordinates to be clamped to the size of the texture.\n    * **\"mirroredRepeat\"** - Causes the *T* coordinate to be set to the fractional part of the texture coordinate\n    if the integer part of *T* is even; if the integer part of *T* is odd, then the *T* texture coordinate is\n    set to *1 - frac ⁡ S* , where *frac ⁡ S* represents the fractional part of *T*.\n    * **\"repeat\"** - **(default)** - Causes the integer part of the *T* coordinate to be ignored; xeogl uses only the\n    fractional part, thereby creating a repeating pattern.\n\n\nFires a {{#crossLink \"Texture/wrapT:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "wrapT",
@@ -19063,7 +19063,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 731,
+            "line": 730,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/wrapT:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "wrapT",
@@ -19080,7 +19080,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 744,
+            "line": 743,
             "description": "Flips this Texture's source data along its vertical axis when true.\n\nFires a {{#crossLink \"Texture/flipY:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "flipY",
@@ -19092,7 +19092,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 768,
+            "line": 767,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/flipY:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "flipY",
@@ -27752,7 +27752,7 @@
             "submodule": "models"
         },
         {
-            "file": "examples/js/models/gltfModel.js",
+            "file": "examples/js/models/glTFModel.js",
             "line": 159,
             "description": "Path to a glTF file.\n\nYou can set this to a new file path at any time (except while loading), which will cause the GLTFModel to load components from\nthe new file (after first destroying any components loaded from a previous file path).\n\nFires a {{#crossLink \"GLTFModel/src:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
@@ -27763,7 +27763,7 @@
             "submodule": "models"
         },
         {
-            "file": "examples/js/models/gltfModel.js",
+            "file": "examples/js/models/glTFModel.js",
             "line": 185,
             "description": "Fired whenever this GLTFModel has finished loading components from the glTF file\nspecified by {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}.",
             "itemtype": "event",
@@ -27773,7 +27773,7 @@
             "submodule": "models"
         },
         {
-            "file": "examples/js/models/gltfModel.js",
+            "file": "examples/js/models/glTFModel.js",
             "line": 200,
             "description": "Fired whenever this GLTFModel's {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
@@ -27789,7 +27789,7 @@
             "submodule": "models"
         },
         {
-            "file": "examples/js/models/gltfModel.js",
+            "file": "examples/js/models/glTFModel.js",
             "line": 227,
             "description": "Loads glTF from a URL into a {{#crossLink \"Model\"}}{{/crossLink}}.",
             "params": [
@@ -27815,7 +27815,7 @@
             "submodule": "models"
         },
         {
-            "file": "examples/js/models/gltfModel.js",
+            "file": "examples/js/models/glTFModel.js",
             "line": 257,
             "description": "Fired whenever this GLTFModel fails to load the glTF file\nspecified by {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}.",
             "itemtype": "event",
@@ -27832,7 +27832,7 @@
             "submodule": "models"
         },
         {
-            "file": "examples/js/models/gltfModel.js",
+            "file": "examples/js/models/glTFModel.js",
             "line": 268,
             "description": "Parses glTF JSON into a {{#crossLink \"Model\"}}{{/crossLink}}.",
             "params": [
@@ -28884,7 +28884,7 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/canvas/canvas.js:529"
+            "line": " src/canvas/canvas.js:531"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -29736,23 +29736,23 @@
         },
         {
             "message": "Missing item type\nCreates a default canvas in the DOM.",
-            "line": " src/canvas/canvas.js:393"
+            "line": " src/canvas/canvas.js:395"
         },
         {
             "message": "Missing item type\nCreates a image element behind the canvas, for purpose of showing a custom background.",
-            "line": " src/canvas/canvas.js:423"
+            "line": " src/canvas/canvas.js:425"
         },
         {
             "message": "Missing item type\nCreates an invisible DIV over the canvas, for purpose of catching\ninput events without interfering with app-lever UI bits floating underneath.",
-            "line": " src/canvas/canvas.js:450"
+            "line": " src/canvas/canvas.js:452"
         },
         {
             "message": "Missing item type\nInitialises the WebGL context",
-            "line": " src/canvas/canvas.js:487"
+            "line": " src/canvas/canvas.js:489"
         },
         {
             "message": "Missing item type\nReads colors of pixels from the last rendered frame.\n\n<p>Call this method like this:</p>\n\n````JavaScript\n\n// Ignore transparent pixels (default is false)\nvar opaqueOnly = true;\n\nvar colors = new Float32Array(8);\n\nmyCanvas.readPixels([ 100, 22, 12, 33 ], colors, 2, opaqueOnly);\n````\n\nThen the r,g,b components of the colors will be set to the colors at those pixels.",
-            "line": " src/canvas/canvas.js:587"
+            "line": " src/canvas/canvas.js:589"
         },
         {
             "message": "Missing item type\nImplement protected virtual template method {{#crossLink \"Geometry/method:_update\"}}{{/crossLink}},\nto generate geometry data arrays.",
@@ -30228,11 +30228,11 @@
         },
         {
             "message": "Missing item type\nLoads glTF from a URL into a {{#crossLink \"Model\"}}{{/crossLink}}.",
-            "line": " examples/js/models/gltfModel.js:227"
+            "line": " examples/js/models/glTFModel.js:227"
         },
         {
             "message": "Missing item type\nParses glTF JSON into a {{#crossLink \"Model\"}}{{/crossLink}}.",
-            "line": " examples/js/models/gltfModel.js:268"
+            "line": " examples/js/models/glTFModel.js:268"
         },
         {
             "message": "Missing item type",
