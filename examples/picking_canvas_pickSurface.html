@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="../build/xeogl.js"></script>
+
+<body>
+
+<div id="info">
+    <h1>mouse over the <a href="../docs/classes/Entity.html" target="_parent">Entities</a> to ray-pick their surfaces</h1>
+</div>
+
+<script>
+
+    var gearbox = new xeogl.GLTFModel({
+        src: "models/gltf/2.0/GearboxAssy/PBR-MetalRoughness/gearbox_assy.gltf"
+    });
+
+    // Ensure entities in our gearbox have unique materials
+    // so we can highlight the entities separately
+
+    gearbox.on("loaded", function () {
+        gearbox.iterate(function (c) {
+            if (c.isType("xeogl.Entity")) {
+                c.material = c.material.clone();
+                gearbox.add(c.material); // Ensure new materials get destroyed with gearbox
+            }
+        });
+    });
+
+    var scene = xeogl.scene;
+
+    // Set initial camera position
+    var view = scene.camera.view;
+    view.eye = [174.46, 16.91, -21.92];
+    view.look = [159.2, 17.02, 3.21];
+    view.up = [-0.17, 0.89, 0.4];
+
+    // Allow user camera control
+    new xeogl.CameraControl();
+
+    //--------------------------------------------
+    // Create helper to show ray-Entity hits
+    //--------------------------------------------
+
+    var hitHelper = new (function () {
+
+        var entity = new xeogl.Entity({
+            geometry: new xeogl.SphereGeometry({radius: 0.35}),
+            material: new xeogl.PhongMaterial({emissive: [1, 0, 0], diffuse: [0, 0, 0]}),
+            transform: new xeogl.Translate(),
+            modes: new xeogl.Modes({pickable: false}),
+            visibility: new xeogl.Visibility({visible: false})
+        });
+
+        this.show = function (hit) {
+            entity.transform.xyz = hit.worldPos;
+            entity.visibility.visible = true;
+        };
+
+        this.hide = function () {
+            entity.visibility.visible = false;
+        };
+    })();
+
+    //--------------------------------------------------------------------
+
+    // Attempt to pick a Entity on each mouse move.
+    // Highlight each Entity that we successfully pick.
+
+    var input = scene.input;
+
+    var lastEntity = null;
+    var lastEmissive = null;
+
+    input.on("mousemove", function (coords) {
+
+        var hit = scene.pick({
+            canvasPos: coords,
+            pickSurface: true  // <<------ This causes picking to find the intersection point on the entity
+        });
+
+        if (hit) {
+
+            if (!lastEntity || hit.entity.id !== lastEntity.id) {
+
+                if (lastEntity) {
+                    lastEntity.material.emissive = lastEmissive;
+                }
+
+                lastEntity = hit.entity;
+                lastEmissive = hit.entity.material.emissive.slice();
+
+                hit.entity.material.emissive = [0.5, 1, 0.5];
+            }
+
+            hitHelper.show(hit);
+
+        } else {
+
+            if (lastEntity) {
+                lastEntity.material.emissive = lastEmissive;
+                lastEntity = null;
+
+                hitHelper.hide();
+            }
+        }
+    });
+
+</script>
+</body>
+</html>

@@ -7,29 +7,26 @@
 
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
 
 <body>
 
 <div id="info">
-    <a href="http://xeogl.org" target="_parent" >xeogl</a><br><br>picking <a
-        href="../docs/classes/Entity.html" target="_parent">Entities</a> using an arbitrarily-positioned World-space ray
+    <h1>picking surfaces of <a href="../docs/classes/Entity.html" target="_parent">Entities</a> using an arbitrary World-space ray
+    </h1>
 </div>
 
 <script>
 
-    //---- GLTFModel  ----------------------------------------------------------
-
-    // Load glTF
     var gearbox = new xeogl.GLTFModel({
-        src: "models/gltf/1.0/GearboxAssy/glTF/GearboxAssy.gltf"
+        src: "models/gltf/2.0/GearboxAssy/PBR-MetalRoughness/gearbox_assy.gltf"
     });
 
     // Set initial camera position
     var view = gearbox.scene.camera.view;
-    view.eye = [184.21, 10.54, -7.03];
-    view.look = [159.20, 17.02, 3.21];
-    view.up = [-0.15, 0.97, 0.13];
+    view.eye = [174.46, 16.91, -21.92];
+    view.look = [159.2, 17.02, 3.21];
+    view.up = [-0.17, 0.89, 0.4];
 
     // Zoom camera out a bit
 
@@ -73,8 +70,8 @@
         };
 
         this.setHighlighted = function (highlighted) {
-            entity.material.emissive = highlighted ? [1.0, 0.5, 0.5] : [0.5, 0.3, 0.3];
-            entity.material.lineWidth = highlighted ? 4 : 2;
+            entity.material.emissive = highlighted ? [0.5, 1.0, 0.5] : [0.5, 0.3, 0.3];
+            entity.material.lineWidth = highlighted ? 6 : 2;
         };
     })();
 
@@ -85,7 +82,7 @@
     var hitHelper = new (function () {
 
         var entity = new xeogl.Entity({
-            geometry: new xeogl.SphereGeometry({radius: 0.2}),
+            geometry: new xeogl.SphereGeometry({radius: 0.35}),
             material: new xeogl.PhongMaterial({emissive: [1, 0, 0], diffuse: [0, 0, 0]}),
             transform: new xeogl.Translate(),
             modes: new xeogl.Modes({pickable: false}),
@@ -102,45 +99,6 @@
         };
     })();
 
-
-    //--------------------------------------------
-    // Create helper to show our drawing
-    //--------------------------------------------
-
-    var drawingHelper = new (function () {
-
-        var points = [];
-        var indices = [];
-
-        var entity = new xeogl.Entity({
-            geometry: new xeogl.Geometry({
-                primitive: "points",
-                positions: [0, 0, 0]
-            }),
-            material: new xeogl.PhongMaterial({
-                emissive: [0.4, 1, 0.4],
-                diffuse: [0, 0, 0],
-                pointSize: 5
-            }),
-            modes: new xeogl.Modes({
-                pickable: false,
-                collidable: false
-            })
-        });
-
-        this.addPoint = function (pos) {
-
-            points.push(pos[0]);
-            points.push(pos[1]);
-            points.push(pos[2]);
-
-            indices.push(indices.length);
-
-            entity.geometry.positions = points;
-            entity.geometry.indices = indices;
-        };
-    })();
-
     //--------------------------------------------------------------------
 
     var rayOrigin = new Float32Array([169.20, 17.02, -10.0]);
@@ -149,13 +107,26 @@
     var xinc = -0.04;
     var i = 0;
 
+    var lastEntity = null;
+    var lastEmissive = null;
+
     gearbox.on("loaded", function () {
+
+        // Ensure entities in our gearbox have unique materials
+        // so we can highlight the entities separately
+
+        gearbox.iterate(function (c) {
+            if (c.isType("xeogl.Entity")) {
+                c.material = c.material.clone();
+                gearbox.add(c.material); // Ensure new materials get destroyed with gearbox
+            }
+        });
 
         gearbox.scene.on("tick", function () {
 
             // Orbit the camera
-            view.rotateEyeY(xinc < 0 ? 0.2 : -0.2);
-            view.rotateEyeX(xinc < 0 ? 0.1 : -0.1);
+            //view.rotateEyeY(xinc < 0 ? 0.2 : -0.2);
+            // view.rotateEyeX(xinc < 0 ? 0.1 : -0.1);
 
             rayOrigin[0] += xinc;
             rayOrigin[1] = 12 - Math.sin(rayOrigin[0] * 2.0) * 5;
@@ -178,18 +149,33 @@
             if (hit && hit.worldPos) {
 
                 hitHelper.show(hit);
-                rayHelper.setHighlighted(true);
 
-                drawingHelper.addPoint(hit.worldPos);
+                if (!lastEntity || hit.entity.id !== lastEntity.id) {
+
+                    if (lastEntity) {
+                        lastEntity.material.emissive = lastEmissive;
+                    }
+
+                    lastEntity = hit.entity;
+                    lastEmissive = hit.entity.material.emissive.slice();
+
+                    hit.entity.material.emissive = [0.4, 0.7, 0.4];
+
+                    rayHelper.setHighlighted(true);
+                }
 
             } else {
+
+                if (lastEntity) {
+                    lastEntity.material.emissive = lastEmissive;
+                    lastEntity = null;
+                }
 
                 hitHelper.hide();
                 rayHelper.setHighlighted(false);
             }
         });
     });
-
 </script>
 </body>
 </html>

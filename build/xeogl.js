@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2017-07-26
+ * Built on 2017-08-01
  *
  * MIT License
  * Copyright 2017, Lindsay Kay
@@ -16117,13 +16117,15 @@ var Canvas2Image = (function () {
             this.contextAttr = cfg.contextAttr || {};
             this.contextAttr.alpha = this.transparent;
 
-            if (this.contextAttr.alpha === undefined || this.contextAttr.alpha === null) {
-                this.contextAttr.alpha = this.transparent;
-            }
+            //if (this.contextAttr.alpha === undefined || this.contextAttr.alpha === null) {
+            //    this.contextAttr.alpha = this.transparent;
+            //}
 
             if (this.contextAttr.preserveDrawingBuffer === undefined || this.contextAttr.preserveDrawingBuffer === null) {
                 this.contextAttr.preserveDrawingBuffer = false;
             }
+
+            this.contextAttr.alpha = true;
 
             this.contextAttr.stencil = true;
 
@@ -35792,7 +35794,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             this._matrixDirty = false;
             this._srcDirty = false;
             this._imageDirty = false;
-            this._propsDirty = false;
+            this._propsDirty = true;
 
             // Handle WebGL context restore
 
@@ -35819,7 +35821,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
             } else if (cfg.image) {
                 this.image = cfg.image; // Image object
-
             }
 
             xeogl.stats.memory.textures++;
@@ -36032,7 +36033,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                 },
 
                 get: function () {
-                    return this._state.image;
+                    return this._image;
                 }
             },
 

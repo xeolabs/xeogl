@@ -370,7 +370,7 @@
                 },
 
                 get: function () {
-                    return this._state.image;
+                    return this._image;
                 }
             },
 

@@ -18,35 +18,15 @@
 
 <script>
 
-    //--------------------------------------------
-    // Add a lightmap to make our PBR look good
-    //--------------------------------------------
-
-//    xeogl.scene.lights.lightMap = new xeogl.CubeTexture({
-//        src: [
-//            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
-//            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png",
-//            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png",
-//            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png",
-//            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png",
-//            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png"
-//        ]
-//    });
-
-    //---- GLTFModel  ----------------------------------------------------------
-
-    // Load glTF
     var gearbox = new xeogl.GLTFModel({
         src: "models/gltf/2.0/GearboxAssy/PBR-MetalRoughness/gearbox_assy.gltf"
     });
 
     // Set initial camera position
     var view = gearbox.scene.camera.view;
-    view.eye = [184.21, 10.54, -7.03];
-    view.look = [159.20, 17.02, 3.21];
-    view.up = [-0.15, 0.97, 0.13];
-
-    view.rotateEyeX(20);
+    view.eye = [174.46, 16.91, -21.92];
+    view.look = [159.2, 17.02, 3.21];
+    view.up = [-0.17, 0.89, 0.4];
 
     // Zoom camera out a bit
 
@@ -97,8 +77,8 @@
 
     //--------------------------------------------------------------------
 
-    var rayOrigin = new Float32Array([169.20, 17.02, -20.0]);
-    var rayDirection = new Float32Array([0, 10, 60]);
+    var rayOrigin = new Float32Array([169.20, 17.02, -10.0]);
+    var rayDirection = new Float32Array([0, 10, 30]);
 
     var xinc = -0.04;
     var i = 0;
@@ -121,7 +101,7 @@
         gearbox.scene.on("tick", function () {
 
             // Orbit the camera
-            view.rotateEyeY(xinc < 0 ? 0.2 : -0.2);
+            //  view.rotateEyeY(xinc < 0 ? 0.2 : -0.2);
 
             rayOrigin[0] += xinc;
             rayOrigin[1] = 12 - Math.sin(rayOrigin[0] * 2.0) * 5;

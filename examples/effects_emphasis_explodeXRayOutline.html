@@ -15,9 +15,7 @@
 
 <body>
 
-<div id="info" class="dark">
-    <h1><a href="../docs/classes/OBJModel.html" target="_parent">OBJModel</a> - explode, xray and outline effects </h1>
-</div>
+<div id="main"></div>
 
 <script id="source">
 
@@ -29,6 +27,7 @@
         var tasks = [];
         var dir = 0;
         var t = 0;
+        var ok;
 
         xeogl.scene.on("tick", function () {
             if (dir === 0) {
@@ -45,10 +44,23 @@
             for (var i = 0, len = tasks.length; i < len; i++) {
                 tasks[i](t);
             }
-            t += 0.02 * dir;
+            if (dir !== 0) {
+                t += 0.03 * dir;
+            } else {
+                if (ok) {
+                    ok();
+                }
+            }
         });
 
         this.xray = function (ids, opacity) {
+            var opacityFresnel = new xeogl.Fresnel({
+                edgeBias: 0.2,
+                centerBias: 0.8,
+                edgeColor: [1.0, 1.0, 1.0],
+                centerColor: [0.0, 0.0, 0.0],
+                power: 1.0
+            });
             for (var i = 0, len = ids.length; i < len; i++) {
                 var id = ids [i];
                 tasks.push((function () {
@@ -56,8 +68,10 @@
                     var startOpacity = entity.material.opacity;
                     return function (t) {
                         var newOpacity = startOpacity + (t * (opacity - startOpacity));
-                        entity.material.opacity = newOpacity;
+                        entity.material.opacity =newOpacity;
                         entity.modes.transparent = (newOpacity < 1.0);
+
+                      //  entity.material.opacityFresnel = opacityFresnel;
                     };
                 })());
             }
@@ -80,18 +94,10 @@
             return this;
         };
 
-        this.outline = function (ids) {
-            for (var i = 0, len = ids.length; i < len; i++) {
-                var id = ids [i];
-                var entity = model.entities[id];
-                entity.modes.outline = true;
-            }
-            return this;
-        };
-
-        this.play = function () {
+        this.play = function (_ok) {
             dir = 1.0;
             t = 0.0
+            ok = _ok;
         };
 
         this.rewind = function () {
@@ -99,6 +105,76 @@
             t = 1.0
         };
     };
+
+    function spin() {
+        model.scene.on("tick", function () {
+            model.scene.camera.view.rotateEyeY(0.2);
+        });
+    }
+
+    function outline(ids) {
+        for (var i = 0, len = ids.length; i < len; i++) {
+            var id = ids [i];
+            var entity = model.entities[id];
+            entity.modes.outline = true;
+        }
+    }
+
+    var createTitle = (function () {
+        var leftY = 250;
+        var rightY = 250;
+        return function (id, color, text, side, fontSize) {
+
+            var div = document.createElement("div");
+            div.id = id;
+
+            div.style["padding-top"] = "3px";
+            div.style["padding-bottom"] = "3px";
+            div.style["padding-left"] = "80px";
+            div.style["padding-right"] = "14px";
+//            div.style["border"] = "2px solid white";
+            div.style["font-size"] = fontSize ? "" + fontSize + "px" : "40px";
+            div.style["font-weight"] = "900";
+            div.style.opacity = "0.9";
+            div.style.position = "absolute";
+            if (side === "right") {
+                div.style.right = "0px";
+                div.style.top = rightY + "px";
+                div.style["border-right"] = "0";
+                rightY += 80;
+            } else {
+                div.style.left = "-20px";
+                div.style.top = leftY + "px";
+                div.style["border-left"] = "0";
+                leftY += 50 + fontSize;
+            }
+//            div.style.visibility="hidden";
+
+            div.style.background = color;
+            div.style.color = "white";
+            //  div.style["font-style"] = "italic";
+            div.style.transform = "skewX(-10deg)";
+            div.innerHTML = "<a style='text-decoration: none; color: white' href='./examples/#importing_gltf_pbr_metallic_helmet'>" + text + "</a>";
+
+            document.getElementById("main").appendChild(div);
+
+
+        };
+    })();
+
+    var viewFit = (function () {
+        var aabb = new Float32Array(6);
+        var cameraFlight = new xeogl.CameraFlightAnimation();
+        return function (ids) {
+            xeogl.math.collapseAABB3(aabb);
+            for (var i = 0, len = ids.length; i < len; i++) {
+                var id = ids [i];
+                var entity = model.entities[id];
+                xeogl.math.expandAABB3(aabb, entity.worldBoundary.aabb);
+            }
+            cameraFlight.flyTo(aabb);
+        };
+    })();
 
     // Custom lights
 
@@ -137,110 +213,157 @@
     view.look = [0, 0.52, -0.05];
     view.up = [0.26, 0.54, -0.05];
 
-    view.rotateEyeY(20);
+    view.rotateEyeY(200);
 
     var cameraControl = new xeogl.CameraControl();
 
-    // Slowly orbit the model
-
-    model.scene.on("tick", function () {
-        model.scene.camera.view.rotateEyeY(0.1);
-    });
+    //    createTitle("start0", "black", "xeogl", "left", 40);
+    //    createTitle("start0", "orange", "an open source", "left", 40);
+    //    createTitle("start1", "orange", "3D visualization engine", "left", 40);
+    //    createTitle("start2", "orange", "on WebGL", "left", 40);
+    //    createTitle("start2", "lightgreen", "get started!", "left", 20);
 
     // When model loaded, build the animation
     // and schedule it to start after a short delay
 
     model.on("loaded", function () {
 
-        var animation = new Animation();
+        var xray = new Animation();
 
-        animation.xray([
-                    "sportsCar#Body_Hatch_253",
-                    "sportsCar#Body_BodyShell_290",
-                    "sportsCar#Body_RDoorRot_RDoorPivot_DooR_199",
-                    "sportsCar#Body_BodyShell_264",
-                    "sportsCar#Body_BodyShell_289",
-                    "sportsCar#Body_LDoorRot_LDoorPivot_DoorL_199",
-                    "sportsCar#Body_219_BodyShell",
-                    "sportsCar#Wheels_WheelRR_Tires2_158",
-                    "sportsCar#Wheels_WheelRF_Tires_158",
-                    "sportsCar#Wheels_WheelLR_Tires2_158",
-                    "sportsCar#WheelLF_Wheels_Tires_158",
-                    "sportsCar#Body_BodyShell_Detail_228",
-                    "sportsCar#Chassis_265_UnderCover",
-                    "sportsCar#Body_InnerShell_312",
-                    "sportsCar#Body_RDoorRot_RDoorPivot_DooR_308",
-                    "sportsCar#Body_LDoorRot_LDoorPivot_DoorL_308",
-                    "sportsCar#Body_210_RDoorRot_RDoorPivot_DooR",
-                    "sportsCar#Body_210_LDoorRot_LDoorPivot_DoorL",
-                    "sportsCar#Body_Hatch_39",
-                    "sportsCar#Body_282_Tail001",
-                    "sportsCar#Body_InnerShell_311",
-                    "sportsCar#Body_BodyShell_Detail_14",
-                    "sportsCar#Body_InnerShellRoof_213",
-                    "sportsCar#Body_212_InnerShellRoof"
-                ], 0.3)
+        xray.xray([
+            "sportsCar#Body_Hatch_253",
+            "sportsCar#Body_BodyShell_290",
+            "sportsCar#Body_RDoorRot_RDoorPivot_DooR_199",
+            "sportsCar#Body_BodyShell_264",
+            "sportsCar#Body_BodyShell_289",
+            "sportsCar#Body_LDoorRot_LDoorPivot_DoorL_199",
+            "sportsCar#Body_219_BodyShell",
+            "sportsCar#Wheels_WheelRR_Tires2_158",
+            "sportsCar#Wheels_WheelRF_Tires_158",
+            "sportsCar#Wheels_WheelLR_Tires2_158",
+            "sportsCar#WheelLF_Wheels_Tires_158",
+            "sportsCar#Body_BodyShell_Detail_228",
+            "sportsCar#Chassis_265_UnderCover",
+            "sportsCar#Body_InnerShell_312",
+            "sportsCar#Body_RDoorRot_RDoorPivot_DooR_308",
+            "sportsCar#Body_LDoorRot_LDoorPivot_DoorL_308",
+            "sportsCar#Body_210_RDoorRot_RDoorPivot_DooR",
+            "sportsCar#Body_210_LDoorRot_LDoorPivot_DoorL",
+            "sportsCar#Body_Hatch_39",
+            "sportsCar#Body_282_Tail001",
+            "sportsCar#Body_InnerShell_311",
+            "sportsCar#Body_BodyShell_Detail_14",
+            "sportsCar#Body_InnerShellRoof_213",
+            "sportsCar#Body_212_InnerShellRoof",
+            "sportsCar#Body_BodyShell_69_FrontMesh",
+            "sportsCar#Body_BodyShell_FrontMesh_70",
+            "sportsCar#Body_BodyShell_24_Detail",
+            "sportsCar#Body_Hatch_279_StopLamp",
+            "sportsCar#Body_Tail_p170",
+            "sportsCar#Body_Tail_p168",
+            "sportsCar#TailLamp_TailLamp_R_274",
+            "sportsCar#TailLamp_L_TailLamp_274",
+            "sportsCar#Body_Tail_p19",
+            "sportsCar#Body_Tail_297",
+            "sportsCar#Body_Tail_p169",
+            "sportsCar#Body_Tail_p21",
+            "sportsCar#Body_Tail_p165",
+            "sportsCar#Body_Tail_296",
+            "sportsCar#Body_Tail_p166",
+            "sportsCar#Body_Tail_295",
+            "sportsCar#Body_Tail_294",
+            "sportsCar#Sus_RR_178",
+            "sportsCar#HeadLight_R_13",
+            "sportsCar#Body_BodyShell_Detail_226",
+            "sportsCar#HeadLight_R_297"
+        ], 0.4);
 
-                .translate([
-                    "sportsCar#Body_Hatch_253",
-                    "sportsCar#Body_BodyShell_290",
-                    "sportsCar#Body_RDoorRot_RDoorPivot_DooR_199",
-                    "sportsCar#Body_BodyShell_264",
-                    "sportsCar#Body_LDoorRot_LDoorPivot_DoorL_199",
-                    "sportsCar#Body_BodyShell_Detail_228",
-                    "sportsCar#Body_InnerShell_312",
-                    "sportsCar#Body_BodyShell_289",
-                    "sportsCar#Body_282_Tail001",
-                    "sportsCar#Body_212_InnerShellRoof",
-                    "sportsCar#Body_InnerShellRoof_213",
-                    "sportsCar#38_Window001",
-                    "sportsCar#Body_219_BodyShell"
-                ], [0, 1.5, 0])
+        var roofExplode = new Animation();
 
+        roofExplode.translate([
+            "sportsCar#Body_Hatch_253",
+            "sportsCar#Body_BodyShell_290",
+            "sportsCar#Body_RDoorRot_RDoorPivot_DooR_199",
+            "sportsCar#Body_BodyShell_264",
+            "sportsCar#Body_LDoorRot_LDoorPivot_DoorL_199",
+            "sportsCar#Body_BodyShell_Detail_228",
+            "sportsCar#Body_InnerShell_312",
+            "sportsCar#Body_BodyShell_289",
+            "sportsCar#Body_282_Tail001",
+            "sportsCar#Body_212_InnerShellRoof",
+            "sportsCar#Body_InnerShellRoof_213",
+            "sportsCar#38_Window001",
+            "sportsCar#Body_219_BodyShell"
+        ], [0, 1.25, 0]);
+
+        var wheelsExplode = new Animation();
+
+        wheelsExplode
                 .translate([
                     "sportsCar#Chassis_265_UnderCover"
                 ], [0, -0.6, 0])
-
-                .translate([], [0, 0.3, 0])
-
                 .translate([
                     "sportsCar#Body_RDoorRot_RDoorPivot_DooR_308"
                 ], [-0.5, 0, 0])
-
                 .translate([
                     "sportsCar#Body_LDoorRot_LDoorPivot_DoorL_308"
                 ], [0.5, 0, 0])
-
                 .translate([
                     "sportsCar#WheelLF_Wheels_Tires_158",
                     "sportsCar#Wheels_WheelLR_Tires2_158"
-                ], [0.5, 0, 0])
-
+                ], [1.0, 0, 0])
                 .translate([
                     "sportsCar#WheelLF_Wheels_321_Tires",
                     "sportsCar#Wheels_WheelLR_321_Tires2"
-                ], [1.0, 0, 0])
-
+                ], [0.5, 0, 0])
                 .translate([
                     "sportsCar#Wheels_WheelRF_Tires_158",
                     "sportsCar#Wheels_WheelRR_Tires2_158"
-                ], [-0.5, 0, 0])
-
+                ], [-1.0, 0, 0])
                 .translate([
                     "sportsCar#Wheels_WheelRF_321_Tires",
                     "sportsCar#Wheels_WheelRR_321_Tires2"
-                ], [-1.0, 0, 0])
+                ], [-0.5, 0, 0]);
 
-                .outline([
-                    "sportsCar#Wheels_WheelRF_321_Tires",
-                    "sportsCar#Wheels_WheelRR_321_Tires2",
-                    "sportsCar#WheelLF_Wheels_321_Tires",
-                    "sportsCar#Wheels_WheelLR_321_Tires2"
-                ]);
+        var tailExplode = new Animation();
+
+        tailExplode.translate([
+            "sportsCar#Body_Hatch_279_StopLamp",
+            "sportsCar#Body_Tail_p170",
+            "sportsCar#Body_Tail_p168",
+            "sportsCar#TailLamp_TailLamp_R_274",
+            "sportsCar#TailLamp_L_TailLamp_274",
+            "sportsCar#Body_Tail_p19",
+            "sportsCar#Body_Tail_297",
+            "sportsCar#Body_Tail_p169",
+            "sportsCar#Body_Tail_p21",
+            "sportsCar#Body_Tail_p165",
+            "sportsCar#Body_Tail_296",
+            "sportsCar#Body_Tail_p166",
+            "sportsCar#Body_Tail_295",
+            "sportsCar#Body_Tail_294"
+        ], [0, 0, -0.5]);
+
+        spin();
 
         setTimeout(function () {
-            animation.play();
-        }, 200);
+
+            xray.play(function () {
+
+                wheelsExplode.play();
+
+                roofExplode.play();
+                tailExplode.play(function () {
+
+                    outline([
+                        "sportsCar#Wheels_WheelRF_321_Tires",
+                        "sportsCar#Wheels_WheelRR_321_Tires2",
+                        "sportsCar#WheelLF_Wheels_321_Tires",
+                        "sportsCar#Wheels_WheelLR_321_Tires2"
+                    ]);
+                });
+            });
+        }, 2000);
 
     });
 
@@ -252,8 +375,8 @@
             zSize: 20
         }),
         material: new xeogl.PhongMaterial({
-//            shininess: 170,
-//            specular: [0.2, 0.2, 0.2],
+            shininess: 170,
+            specular: [0.1, 0.1, 0.3],
             diffuseMap: new xeogl.Texture({
                 src: "textures/diffuse/UVCheckerMap11-1024.png",
                 scale: [-5.0, 5.0]
@@ -271,84 +394,136 @@
         })
     });
 
-    // Source code vector text
+    //    var solidBox = new xeogl.Entity({
+    //        geometry: new xeogl.BoxGeometry({
+    //            xSize: 10,
+    //            ySize: 10,
+    //            zSize: 10
+    //        }),
+    //        material: new xeogl.PhongMaterial({
+    //            emissive: [.5,.5,.5],
+    //            specular: [0.0, 0.0, 0.0],
+    //           //  ambient: [0.4, 0.4, 0.4],
+    //            diffuse: [.7,.7,.7],
+    //            shininess: 200,
+    //            emissiveMap: new xeogl.Texture({
+    //                src: "textures/diffuse/gridBlueOnWhite.png",
+    //                scale: [-4, 4]
+    //            }),
+    //            opacity: 1
+    //        }),
+    //        modes: new xeogl.Modes({
+    //            backfaces: true,
+    //            transparent: false
+    //        }),
+    //        transform: new xeogl.Translate({
+    //            xyz: [0, 9, 0]
+    //        }),
+    //        lights: new xeogl.Lights({
+    //            lights: [
+    //                new xeogl.DirLight({
+    //                    dir: [0.0, 0.0, 1.0],
+    //                    color: [1.0, 1.0, 0.9],
+    //                    intensity: 0.9,
+    //                    space: "view"
+    //                }),
+    //                new xeogl.DirLight({
+    //                    dir: [0.1, 0.1, -0.7],
+    //                    color: [0.5, 0.5, 0.5],
+    //                    intensity: 0.9,
+    //                    space: "view"
+    //                })
+    //            ]
+    //        }),
+    //        layer: new xeogl.Layer({
+    //            priority: 1
+    //        }),
+    //        visibility: new xeogl.Visibility({
+    //            visible: true
+    //        })
+    //    });
 
-//    var size = 10;
-//    var textHeight = size / 2.0;
-//    var textSize = 0.35;
+
+//    // Source code vector text
+//    (function () {
 //
-//    var code = document.getElementById("source").innerText;
+//        var size = 10;
+//        var textHeight = size / 2.0;
+//        var textSize = 0.35;
 //
-//    var codeMaterial = new xeogl.PhongMaterial({
-//        emissive: [0.5, 0.5, 0.8],
-//        lineWidth: 2
-//    });
+//        var code = document.getElementById("source").innerText;
 //
-//    var codeModes = new xeogl.Modes({
-//        backfaces: false,
-//        collidable: false,
-//        pickable: false
-//    });
+//        var codeMaterial = new xeogl.PhongMaterial({
+//            emissive: [0.5, 0.5, 0.8],
+//            lineWidth: 2
+//        });
 //
-//    new xeogl.Entity({
-//        material: codeMaterial,
-//        modes: codeModes,
-//        geometry: new xeogl.VectorTextGeometry({
-//            text: code.substring(0, 800),
-//            size: textSize
-//        }),
-//        transform: new xeogl.Translate({
-//            xyz: [-size, textHeight, -size]
-//        })
-//    });
+//        var codeModes = new xeogl.Modes({
+//            backfaces: false,
+//            collidable: false,
+//            pickable: false
+//        });
 //
-//    new xeogl.Entity({
-//        material: codeMaterial,
-//        modes: codeModes,
-//        geometry: new xeogl.VectorTextGeometry({
-//            text: code.substring(800, 1600),
-//            size: textSize
-//        }),
-//        transform: new xeogl.Rotate({
-//            xyz: [0,1, 0],
-//            angle: -90,
-//            parent: new xeogl.Translate({
-//                xyz: [size, textHeight, -size]
+//        new xeogl.Entity({
+//            material: codeMaterial,
+//            modes: codeModes,
+//            geometry: new xeogl.VectorTextGeometry({
+//                text: code.substring(0, 800),
+//                size: textSize
+//            }),
+//            transform: new xeogl.Translate({
+//                xyz: [-size, textHeight, -size]
 //            })
-//        })
-//    });
+//        });
 //
-//    new xeogl.Entity({
-//        material: codeMaterial,
-//        modes: codeModes,
-//        geometry: new xeogl.VectorTextGeometry({
-//            text: code.substring(1600, 2400),
-//            size: textSize
-//        }),
-//        transform: new xeogl.Rotate({
-//            xyz: [0, 1, 0],
-//            angle: -180,
-//            parent: new xeogl.Translate({
-//                xyz: [size, textHeight, size]
+//        new xeogl.Entity({
+//            material: codeMaterial,
+//            modes: codeModes,
+//            geometry: new xeogl.VectorTextGeometry({
+//                text: code.substring(800, 1600),
+//                size: textSize
+//            }),
+//            transform: new xeogl.Rotate({
+//                xyz: [0, 1, 0],
+//                angle: -90,
+//                parent: new xeogl.Translate({
+//                    xyz: [size, textHeight, -size]
+//                })
 //            })
-//        })
-//    });
+//        });
 //
-//    new xeogl.Entity({
-//        material: codeMaterial,
-//        modes: codeModes,
-//        geometry: new xeogl.VectorTextGeometry({
-//            text: code.substring(2400, 3200),
-//            size: textSize
-//        }),
-//        transform: new xeogl.Rotate({
-//            xyz: [0,1, 0],
-//            angle: 90,
-//            parent: new xeogl.Translate({
-//                xyz: [-size, textHeight, size]
+//        new xeogl.Entity({
+//            material: codeMaterial,
+//            modes: codeModes,
+//            geometry: new xeogl.VectorTextGeometry({
+//                text: code.substring(1600, 2400),
+//                size: textSize
+//            }),
+//            transform: new xeogl.Rotate({
+//                xyz: [0, 1, 0],
+//                angle: -180,
+//                parent: new xeogl.Translate({
+//                    xyz: [size, textHeight, size]
+//                })
 //            })
-//        })
-//    });
+//        });
+//
+//        new xeogl.Entity({
+//            material: codeMaterial,
+//            modes: codeModes,
+//            geometry: new xeogl.VectorTextGeometry({
+//                text: code.substring(2400, 3200),
+//                size: textSize
+//            }),
+//            transform: new xeogl.Rotate({
+//                xyz: [0, 1, 0],
+//                angle: 90,
+//                parent: new xeogl.Translate({
+//                    xyz: [-size, textHeight, size]
+//                })
+//            })
+//        });
+//    })();
 
 </script>
 </body>
