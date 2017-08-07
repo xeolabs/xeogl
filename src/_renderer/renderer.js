@@ -262,7 +262,6 @@
     xeogl.renderer.Renderer.prototype.removeObject = function (objectId) {
         var object = this.objects[objectId];
         if (!object) {
-            console.error("xeogl.renderer.Renderer.removeObject: object not found: " + objectId);
             return;
         }
         var chunks = object.chunks;
