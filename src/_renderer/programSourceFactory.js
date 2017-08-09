@@ -1333,7 +1333,7 @@
                         add("textureCoord = texturePos.xy;");
                     }
                     add("vec3 metalRoughRGB = texture2D(metallicRoughnessMap, textureCoord).rgb;");
-                    add("metallic *= metalRoughRGB.r;");
+                    add("metallic *= metalRoughRGB.b;");
                     add("roughness *= metalRoughRGB.g;");
                 }
 
