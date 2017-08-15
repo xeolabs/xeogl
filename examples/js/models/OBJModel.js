@@ -165,7 +165,7 @@
                          specified by {{#crossLink "OBJModel/src:property"}}{{/crossLink}}.
                          @event loaded
                          */
-                        this.fire("loaded");
+                        this.fire("loaded", true, true);
 
                         return;
                     }
@@ -255,7 +255,7 @@
         }
         createEntities(model, state);
         model.src = null;
-        model.fire("loaded");
+        model.fire("loaded", true, true);
     };
 
     //--------------------------------------------------------------------------------------------
