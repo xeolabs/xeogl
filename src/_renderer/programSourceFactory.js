@@ -1232,7 +1232,9 @@
                 } else {
                     add("textureCoord = texturePos.xy;");
                 }
-                add("diffuseColor *= texture2D(baseColorMap, textureCoord).rgb;");
+                add("vec4 baseColorTexel = texture2D(baseColorMap, textureCoord);");
+                add("diffuseColor *= baseColorTexel.rgb;");
+             //   add("opacity *= baseColorTexel.a;");
             }
 
             if (geometry.uv && material.emissiveMap) {
