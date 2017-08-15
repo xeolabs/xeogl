@@ -1,0 +1,5 @@
+Adam character
+Author: Unity Technologies
+Source: https://www.assetstore.unity3d.com/en/#!/content/74842
+
+License: Unity Asset Store EULA (https://unity3d.com/fr/legal/as_terms)
