@@ -15196,7 +15196,7 @@
         },
         {
             "file": "src/lighting/cubeTexture.js",
-            "line": 116,
+            "line": 119,
             "description": "Fired whenever this CubeTexture has loaded the\nimage files that its {{#crossLink \"CubeTexture/src:property\"}}{{/crossLink}} property currently points to.",
             "itemtype": "event",
             "name": "loaded",
@@ -15213,7 +15213,7 @@
         },
         {
             "file": "src/lighting/cubeTexture.js",
-            "line": 165,
+            "line": 168,
             "description": "Array of paths to six image files to source this CubeTexture.\n\nFires a {{#crossLink \"CubeTexture/src:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "src",
@@ -15225,7 +15225,7 @@
         },
         {
             "file": "src/lighting/cubeTexture.js",
-            "line": 184,
+            "line": 187,
             "description": "Fired whenever this CubeTexture's {{#crossLink \"CubeTexture/src:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "src",
@@ -15242,7 +15242,7 @@
         },
         {
             "file": "src/lighting/cubeTexture.js",
-            "line": 198,
+            "line": 201,
             "description": "Flips this CubeTexture's source data along its vertical axis when true.\n\nFires a {{#crossLink \"CubeTexture/flipY:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "flipY",
@@ -15254,7 +15254,7 @@
         },
         {
             "file": "src/lighting/cubeTexture.js",
-            "line": 222,
+            "line": 225,
             "description": "Fired whenever this CubeTexture's  {{#crossLink \"CubeTexture/flipY:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "flipY",
