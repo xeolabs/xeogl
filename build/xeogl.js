@@ -29337,6 +29337,7 @@ TODO
             this._images = [];
 
             var loadFailed = false;
+            var numLoaded = 0;
 
             for (var i = 0; i < src.length; i++) {
 
@@ -29357,7 +29358,9 @@ TODO
 
                         self._images[index] = _image;
 
-                        if (self._images.length === src.length) {
+                        numLoaded++;
+
+                        if (numLoaded === 6) {
 
                             self._imageDirty = true;
 
