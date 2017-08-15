@@ -8,6 +8,7 @@
     <link href="css/styles.css" rel="stylesheet"/>
 
     <script src="../build/xeogl.min.js"></script>
+    <script src="js/models/glTFModel.js"></script>
 
     <script src="libs/gl-matrix-min.js"></script>
     <script src="js/zspace/zSpaceEffect_complete.js"></script>
@@ -22,7 +23,7 @@
             href="../docs/classes/ZSpaceEffect.html"
             target="_parent">ZSpaceEffect</a></h1>
 
-    <pre id="log">model:  Reciprocating Saw - [<a href='models/gltf/2.0/Reciprocating_Saw/PBR-SpecGloss/README.md'
+    <pre id="log">model:  Reciprocating Saw - [<a href='models/gltf/ReciprocatingSaw/README.md'
                                                   target="_parent">model info</a>]</pre>
 
 </div>
@@ -35,7 +36,7 @@
     //----------------------------------------------------------------------------
 
     var model = new xeogl.GLTFModel({
-        src: "models/gltf/2.0/Reciprocating_Saw/PBR-SpecGloss/Reciprocating_Saw.gltf",
+        src: "models/gltf/ReciprocatingSaw/glTF/ReciprocatingSaw.gltf",
         transform: new xeogl.Rotate({
             xyz: [1, 0, 0],
             angle: 90
@@ -77,6 +78,12 @@
             new xeogl.ZSpaceStylusControl();
         } else {
             document.getElementById("log").innerText = "(zSpace not detected) ";
+
+            // Viewpoint for non-zSpace viewing
+            var view = model.scene.camera.view;
+            view.eye = [-110.8940200805664, -44.85665512084961, 276.6570739746094];
+            view.look = [-110.8940200805664, -44.85665512084961, -0.46092796325683594];
+            view.up = [0, 1, 0];
         }
     });
 
