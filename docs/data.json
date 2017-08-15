@@ -126,27 +126,6 @@
             "fors": {},
             "namespaces": {}
         },
-        "src/_renderer/renderer.new.js": {
-            "name": "src/_renderer/renderer.new.js",
-            "modules": {},
-            "classes": {},
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/_renderer/renderer.old.js": {
-            "name": "src/_renderer/renderer.old.js",
-            "modules": {},
-            "classes": {},
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/_renderer/renderer.opt.js": {
-            "name": "src/_renderer/renderer.opt.js",
-            "modules": {},
-            "classes": {},
-            "fors": {},
-            "namespaces": {}
-        },
         "src/_renderer/states.js": {
             "name": "src/_renderer/states.js",
             "modules": {},
@@ -776,20 +755,6 @@
             "modules": {
                 "models": 1
             },
-            "classes": {},
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/models/gltfModel.js": {
-            "name": "src/models/gltfModel.js",
-            "modules": {},
-            "classes": {},
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/models/gltfModel_v2.js": {
-            "name": "src/models/gltfModel_v2.js",
-            "modules": {},
             "classes": {},
             "fors": {},
             "namespaces": {}
@@ -1506,7 +1471,6 @@
                 "SpecularMaterial": 1,
                 "Texture": 1,
                 "xeogl.math.math": 1,
-                "GLTFModel": 1,
                 "Model": 1,
                 "Outline": 1,
                 "Layer": 1,
@@ -1550,6 +1514,7 @@
                 "PointMarkings": 1,
                 "OBJModel": 1,
                 "BuildableModel": 1,
+                "GLTFModel": 1,
                 "SceneJSModel": 1,
                 "ZSpaceEffect": 1,
                 "ZSpaceStylusControl": 1,
@@ -2005,10 +1970,10 @@
             "name": "models",
             "submodules": {},
             "classes": {
-                "GLTFModel": 1,
                 "Model": 1,
                 "OBJModel": 1,
                 "BuildableModel": 1,
+                "GLTFModel": 1,
                 "SceneJSModel": 1
             },
             "fors": {},
@@ -5079,63 +5044,6 @@
             "line": 12,
             "description": "This utility object provides math functions that are used within xeogl. These functions are also part of xeogl's\npublic API and are therefore available for you to use within your application code."
         },
-        "GLTFModel": {
-            "name": "GLTFModel",
-            "shortname": "GLTFModel",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "module": "xeogl",
-            "namespace": "",
-            "file": "examples/js/models/glTFModel.js",
-            "line": 1,
-            "description": "A **GLTFModel** is a {{#crossLink \"Model\"}}{{/crossLink}} loaded from a <a href=\"https://github.com/KhronosGroup/glTF\" target = \"_other\">glTF</a> file.\n\n<a href=\"../../examples/#importing_gltf_gearbox\"><img src=\"../../../assets/images/gltf/glTF_gearbox_squashed.png\"></img></a>\n\n## Overview\n\n* A GLTFModel is a container of {{#crossLink \"Component\"}}Components{{/crossLink}} that loads itself from a glTF file.\n* It begins loading as soon as you set its {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}\nproperty to the location of a valid glTF file.\n* You can set {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}} to a new file path at any time, which causes\nthe GLTFModel to clear itself and load components from the new file.\n\nIt inherits these capabilities from its {{#crossLink \"Model\"}}{{/crossLink}} base class:\n\n* Allows you to access and manipulate the components within it.\n* Can be transformed within World-space by attaching it to a {{#crossLink \"Transform\"}}{{/crossLink}}.\n* Provides its World-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}}.\n\n## Supported glTF features\n\nTODO\n\n| Property | Type | Range | Default Value | Space | Description |\n|:--------:|:----:|:-----:|:-------------:|:-----:|:-----------:|\n|  {{#crossLink \"MetallicMaterial/baseColor:property\"}}{{/crossLink}} | Array | [0, 1] for all components | [1,1,1,1] | linear | The RGB components of the base color of the material. |\n| {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The metallic-ness the material (1 for metals, 0 for non-metals). |\n| {{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The roughness of the material surface. |\n\n<img src=\"../../../assets/images/GLTFModel.png\"></img>\n\n## Usage\n\n### Loading glTF\n\nLoad a glTF file by creating a GLTFModel:\n\n````javascript\nvar gearbox = new xeogl.GLTFModel({\n  id: \"gearbox\",\n  src: \"models/gltf/gearbox/gearbox_assy.gltf\"\n});\n````\n\nA GLTFModel prefixes its own ID to those of its components. Its ID is optional and defaults to\nthe value of {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}. In this example we're providing our own short ID,\nhowever, in order to keep the component IDs short and easy to use.\n\nThe GLTFModel begins loading the glTF file immediately. Bind a callback to be notified when the file has loaded (which\nfires immediately if already loaded):\n\n````javascript\ngearbox.on(\"loaded\", function() {\n       // GLTFModel has loaded!\n   });\n````\n\nYou can also bind a callback to fire if loading fails:\n\n````javascript\ngearbox.on(\"error\", function(msg) {\n       // Error occurred\n   });\n````\n\nTo switch to a different glTF file, simply update {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}:\n\n````javascript\ngearbox.src = \"models/gltf/buggy/buggy.gltf\"\n````\n\n### Accessing components\n\nOnce the GLTFModel has loaded, its {{#crossLink \"Scene\"}}{{/crossLink}} will contain various components that represent the elements of the glTF file.\nWe'll now access some of those components by ID, to query and update them programmatically.\n\n**Transforms**\n\nLet's reposition one of the {{#crossLink \"Entity\"}}Entities{{/crossLink}} in our GLTFModel. We'll get the {{#crossLink \"Transform\"}}{{/crossLink}} that\npositions our target {{#crossLink \"Entity\"}}{{/crossLink}}, in this case a gear. Then we'll update its matrix to translate it ten units along the negative Z-axis.\n\n````javascript\nvar transform = gearbox.scene.components[\"gearbox#n274017_gear_53t-node.transform\"];\n\ntransform.matrix = xeogl.math.translationMat4v([0,0,-10]);\n````\n\nNote the format of the {{#crossLink \"Transform\"}}{{/crossLink}}'s ID:\n\n````<GLTFModel ID>#<glTF node ID>.transform````\n\nFrom left to right, the format contains the GLTFModel's ID, the ID of the glTF node that contains the transform, then\n\"transform\", to distinguish it from the IDs of any other components loaded from elements on the same glTF node.\n\n**Entities**\n\nLet's make our gear {{#crossLink \"Entity\"}}{{/crossLink}} invisible. This time we'll get the {{#crossLink \"Entity\"}}{{/crossLink}} itself, then update\nits {{#crossLink \"Visibility\"}}{{/crossLink}} component:\n\n````javascript\nvar gear53 = gearbox.scene.components[\"gearbox#n274017_gear_53.entity.0\"];\n\ngear53.visibility.visible = false;\n````\n\nNote the format of the {{#crossLink \"Entity\"}}{{/crossLink}}'s ID: ````<GLTFModel ID>#<glTF node ID>.entity.<glTF mesh index>````\n\nA glTF scene node may contain multiple meshes, and for each of those xeogl will create an individual {{#crossLink \"Entity\"}}{{/crossLink}}. As\nbefore, the part before the hash is the ID of the GLTFModel, which is then followed by the ID of the glTF node, then \"entity\"\nto signify that this is an Entity ID, then finally an index to differentiate the Entity from those loaded from other\nmeshes on the same glTF node.\n\nWhen we load multiple Entities from a glTF node, then they will share the same {{#crossLink \"Transform\"}}{{/crossLink}} and {{#crossLink \"Visibility\"}}{{/crossLink}} components. This\nlets us update their transformation and visibility as a group, as if they were a composite entity that represents\nthe glTF node.\n\n\n## Examples\n\n* [Damaged Helmet with metal/rough PBR materials](../../examples/#importing_gltf_pbr_metallic_helmet)\n* [Gearbox with entity explorer](../../examples/#importing_gltf_explorer)\n* [Ensuring individual materials on GLTFModel entities](../../examples/#models_filter_uniqueMaterials)\n* [Baking transform hierarchies in a GLTFModel](../../examples/#models_filter_bakeTransforms)",
-            "submodule": "models",
-            "is_constructor": 1,
-            "params": [
-                {
-                    "name": "scene",
-                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this GLTFModel in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
-                    "type": "Scene",
-                    "optional": true
-                },
-                {
-                    "name": "cfg",
-                    "description": "Configs",
-                    "type": "*",
-                    "optional": true,
-                    "props": [
-                        {
-                            "name": "id",
-                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}},\ngenerated automatically when omitted.",
-                            "type": "String",
-                            "optional": true
-                        },
-                        {
-                            "name": "meta",
-                            "description": "Optional map of user-defined metadata to attach to this GLTFModel.",
-                            "type": "String:Object",
-                            "optional": true
-                        },
-                        {
-                            "name": "src",
-                            "description": "Path to a glTF file. You can set this to a new file path at any time, which will cause the\nGLTFModel to load components from the new file (after first destroying any components loaded from a previous file path).",
-                            "type": "String",
-                            "optional": true
-                        },
-                        {
-                            "name": "transform",
-                            "description": "A Local-to-World-space (modelling) {{#crossLink \"Transform\"}}{{/crossLink}} to attach to this GLTFModel.\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this GLTFModel. Internally, the given\n{{#crossLink \"Transform\"}}{{/crossLink}} will be inserted above each top-most {{#crossLink \"Transform\"}}Transform{{/crossLink}}\nthat the GLTFModel attaches to its {{#crossLink \"Entity\"}}Entities{{/crossLink}}.",
-                            "type": "Number|String|Transform",
-                            "optional": true
-                        }
-                    ]
-                }
-            ],
-            "extends": "Model"
-        },
         "Model": {
             "name": "Model",
             "shortname": "Model",
@@ -6518,7 +6426,7 @@
             "namespace": "",
             "file": "examples/js/animation/cameraPathAnimation.js",
             "line": 1,
-            "description": "A **CameraPathAnimation** animates a {{#crossLink \"Camera\"}}{{/crossLink}} along a {{#crossLink \"CameraPath\"}}{{/crossLink}}.\n\n## Overview\n\n* Animates a {{#crossLink \"Camera\"}}{{/crossLink}} along a {{#crossLink \"CameraPath\"}}{{/crossLink}}\n* Attaches to a {{#crossLink \"Camera\"}}{{/crossLink}}, which by default is the {{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Camera\"}}{{/crossLink}} when none is specified.\n* Requires that the {{#crossLink \"Camera\"}}{{/crossLink}} have a {{#crossLink \"Lookat\"}}{{/crossLink}} for its {{#crossLink \"Camera/view:property\"}}view{{/crossLink}} transform.\n\n<img src=\"../../../assets/images/CameraPathAnimation.png\"></img>\n\n## Examples\n\n* [Interpolating a Camera along a path](../../examples/#animation_camera_path_interpolation)\n* [Flying directly to each frame on a path](../../examples/#animation_camera_path_flyToFrame)\n* [Jumping directly to each frame on a path](../../examples/#animation_camera_path_scrubToFrame)\n* [A menu of Camera waypoints to fly to](../../examples/#animation_camera_path_frameMenu)\n\n## Usage\n\n### 1. Interpolating a Camera along a path\n\nIn this example we'll use the CameraPathAnimation's\n{{#crossLink \"CameraPathAnimation/play\"}}{{/crossLink}} method to smoothly <b>interpolate</b>\nthe default {{#crossLink \"Camera\"}}{{/crossLink}} along a {{#crossLink \"CameraPath\"}}{{/crossLink}}:\n\n<a href=\"../../examples/#animation_camera_path_interpolation\"><img src=\"http://i.giphy.com/l0MYDGMYzdFf6TqRW.gif\"></img></a>\n\n````Javascript\n// Load a model from glTF\n\nvar gearbox = new xeogl.GLTFModel({\n        src: \"models/gltf/1.0/GearboxAssy/glTF/GearboxAssy.gltf\"\n});\n\n// Define a CameraPath\n\nvar cameraPath = new xeogl.CameraPath({\n    frames: [\n        {t: 0, eye: [184.21, 10.54, -7.03], look: [159.2, 17.02, 3.21], up: [-0.15, 0.97, 0.13]},\n        {t: 1, eye: [184.91, 10.10, -11.26], look: [171.03, 13.69, -5.57], up: [-0.15, 0.97, 0.12]},\n        {t: 2, eye: [181.37, 12.35, -16.93], look: [171.03, 13.69, -5.57], up: [-0.17, 0.93, 0.28]},\n        {t: 2, eye: [174.01, 13.55, -20.70], look: [171.03, 13.69, -5.57], up: [-0.01, 0.90, 0.40]},\n        {t: 4, eye: [166.48, 14.36, -20.30], look: [171.03, 13.69, -5.57], up: [0.19, 0.88, 0.40]},\n        {t: 5, eye: [160.32, 14.69, -16.63], look: [171.03, 13.69, -5.57], up: [0.36, 0.87, 0.29]},\n        {t: 6, eye: [156.67, 17.97, -4.77], look: [162.53, 17.42, 1.28], up: [0.36, 0.87, 0.29]},\n        {t: 7, eye: [151.14, 16.68, -10.04], look: [158.94, 15.95, -1.99], up: [0.36, 0.87, 0.29]},\n        {t: 8, eye: [146.26, 17.56, -4.77], look: [152.13, 17.05, 1.28], up: [0.36, 0.87, 0.28]},\n        {t: 9, eye: [137.26, 18.36, -9.65], look: [149.76, 17.27, 3.24], up: [0.36, 0.87, 0.28]},\n        {t: 10, eye: [139.04, 18.29, -11.17], look: [149.76, 17.27, 3.24], up: [0.32, 0.87, 0.33]},\n        {t: 11, eye: [140.66, 18.13, -12.26], look: [149.76, 17.27, 3.24], up: [0.28, 0.87, 0.35]},\n        {t: 12, eye: [147.18, 17.66, -14.56], look: [149.76, 17.27, 3.24], up: [0.12, 0.89, 0.41]},\n        {t: 13, eye: [158.05, 16.33, -12.69], look: [149.76, 17.27, 3.24], up: [-0.11, 0.91, 0.34]},\n        {t: 14, eye: [150.11, 13.26, -6.69], look: [147.95, 13.50, -2.52], up: [-0.11, 0.91, 0.34]},\n        {t: 15, eye: [149.27, 13.00, -3.34], look: [148.72, 13.05, -2.29], up: [-0.11, 0.91, 0.35]},\n        {t: 16, eye: [152.62, 11.65, -4.87], look: [148.47, 12.08, 3.08], up: [-0.11, 0.91, 0.35]},\n        {t: 17, eye: [153.35, 12.24, -1.84], look: [148.69, 12.72, 7.01], up: [-0.11, 0.91, 0.35]},\n        {t: 18, eye: [156.49, 12.11, 0.74], look: [148.69, 12.72, 7.012], up: [-0.23, 0.92, 0.26]},\n        {t: 19, eye: [158.52, 11.98, 5.21], look: [148.69, 12.72, 7.01], up: [-0.32, 0.92, 0.12]},\n        {t: 20, eye: [158.60, 11.50, 7.91], look: [148.69, 12.72, 7.01], up: [-0.30, 0.94, 0.035]},\n        {t: 21, eye: [157.60, 11.76, 11.51], look: [148.69, 12.72, 7.01], up: [-0.31, 0.93, -0.089]},\n        {t: 22, eye: [152.67, 18.35, 14.29], look: [148.69, 12.72, 7.01], up: [-0.46, 0.51, -0.70]},\n        {t: 23, eye: [148.79, 21.67, 11.52], look: [148.69, 12.72, 7.01], up: [-0.15, 0.036, -0.97]},\n        {t: 24, eye: [147.11, 22.40, 9.07], look: [148.69, 12.72, 7.01], up: [0.38, -0.16, -0.89]},\n        {t: 25, eye: [144.80, 21.92, 6.23], look: [148.69, 12.72, 7.01], up: [0.98, -0.02, 0.03]},\n        {t: 26, eye: [144.11, 20.18, 2.13], look: [148.69, 12.72, 7.01], up: [0.71, 0.29, 0.62]},\n        {t: 27, eye: [145.87, 17.37, -1.40], look: [148.69, 12.72, 7.01], up: [0.31, 0.60, 0.71]},\n        {t: 28, eye: [144.37, 19.17, -7.33], look: [146.13, 16.27, -2.08], up: [0.31, 0.60, 0.71]},\n        {t: 29, eye: [142.54, 21.91, -17.26], look: [146.89, 14.81, -4.28], up: [0.31, 0.60, 0.71]}\n    ]\n});\n\n// Once the model has loaded, animate the\n// (default Scene's default Camera) along the CameraPath\n\nvar cameraPathAnimation = new xeogl.CameraPathAnimation({\n    cameraPath: cameraPath\n});\n\ngearbox.on(\"loaded\", function () {\n    cameraPathAnimation.play();\n});\n````\n\n<br>\n### 2. Flying directly to each frame on a path\n\nIn this example, we'll use the CameraPathAnimation's {{#crossLink \"CameraPathAnimation/flyToFrame\"}}{{/crossLink}} method\nto <b>fly</b> the {{#crossLink \"Camera\"}}{{/crossLink}} directly to each frame on the {{#crossLink \"CameraPath\"}}{{/crossLink}}:\n\n<a href=\"../../examples/#animation_camera_path_flyToFrame\"><img src=\"http://i.giphy.com/l3vQYNjsnAQwPBeYU.gif\"></img></a>\n\n````javascript\nvar i = 0;\nvar dir = 1;\n\ngearbox.on(\"loaded\", function () {\n    function nextFrame() {\n        cameraPathAnimation.flyToFrame(i += dir, function() { setTimeout(nextFrame, 1000); });\n\n        if (i <= 0 || i >= 29) {\n            dir = -dir;\n        }\n    }\n    nextFrame();\n});\n````\n<br>\n### 3. Jumping directly to each frame on a path\n\nIn this example, we'll use the CameraPathAnimation's {{#crossLink \"CameraPathAnimation/scrubToFrame\"}}{{/crossLink}} method\nto <b>jump</b> the {{#crossLink \"Camera\"}}{{/crossLink}} directly to each frame on the {{#crossLink \"CameraPath\"}}{{/crossLink}}:\n\n<a href=\"../../examples/#animation_camera_path_scrubToFrame\"><img src=\"http://i.giphy.com/l0Hlyqk7kewTjSBZ6.gif\"></img></a>\n\n````javascript\nvar i = 0;\nvar dir = 1;\n\ngearbox.on(\"loaded\", function () {\n    function nextFrame() {\n        cameraPathAnimation.scrubToFrame(i += dir);\n\n        if (i <= 0 || i >= 29) {\n            dir = -dir;\n        }\n        setTimeout(nextFrame, 1000);\n    }\n    nextFrame();\n});\n````",
+            "description": "A **CameraPathAnimation** animates a {{#crossLink \"Camera\"}}{{/crossLink}} along a {{#crossLink \"CameraPath\"}}{{/crossLink}}.\n\n## Overview\n\n* Animates a {{#crossLink \"Camera\"}}{{/crossLink}} along a {{#crossLink \"CameraPath\"}}{{/crossLink}}\n* Attaches to a {{#crossLink \"Camera\"}}{{/crossLink}}, which by default is the {{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Camera\"}}{{/crossLink}} when none is specified.\n* Requires that the {{#crossLink \"Camera\"}}{{/crossLink}} have a {{#crossLink \"Lookat\"}}{{/crossLink}} for its {{#crossLink \"Camera/view:property\"}}view{{/crossLink}} transform.\n\n<img src=\"../../../assets/images/CameraPathAnimation.png\"></img>\n\n## Examples\n\n* [Interpolating a Camera along a path](../../examples/#animation_camera_path_interpolation)\n* [Flying directly to each frame on a path](../../examples/#animation_camera_path_flyToFrame)\n* [Jumping directly to each frame on a path](../../examples/#animation_camera_path_scrubToFrame)\n* [A menu of Camera waypoints to fly to](../../examples/#animation_camera_path_frameMenu)\n\n## Usage\n\n### 1. Interpolating a Camera along a path\n\nIn this example we'll use the CameraPathAnimation's\n{{#crossLink \"CameraPathAnimation/play\"}}{{/crossLink}} method to smoothly <b>interpolate</b>\nthe default {{#crossLink \"Camera\"}}{{/crossLink}} along a {{#crossLink \"CameraPath\"}}{{/crossLink}}:\n\n<a href=\"../../examples/#animation_camera_path_interpolation\"><img src=\"http://i.giphy.com/l0MYDGMYzdFf6TqRW.gif\"></img></a>\n\n````Javascript\n// Load a model from glTF\n\nvar gearbox = new xeogl.GLTFModel({\n        src: \"models/gltf/GearboxAssy/glTF/GearboxAssy.gltf\"\n});\n\n// Define a CameraPath\n\nvar cameraPath = new xeogl.CameraPath({\n    frames: [\n        {t: 0, eye: [184.21, 10.54, -7.03], look: [159.2, 17.02, 3.21], up: [-0.15, 0.97, 0.13]},\n        {t: 1, eye: [184.91, 10.10, -11.26], look: [171.03, 13.69, -5.57], up: [-0.15, 0.97, 0.12]},\n        {t: 2, eye: [181.37, 12.35, -16.93], look: [171.03, 13.69, -5.57], up: [-0.17, 0.93, 0.28]},\n        {t: 2, eye: [174.01, 13.55, -20.70], look: [171.03, 13.69, -5.57], up: [-0.01, 0.90, 0.40]},\n        {t: 4, eye: [166.48, 14.36, -20.30], look: [171.03, 13.69, -5.57], up: [0.19, 0.88, 0.40]},\n        {t: 5, eye: [160.32, 14.69, -16.63], look: [171.03, 13.69, -5.57], up: [0.36, 0.87, 0.29]},\n        {t: 6, eye: [156.67, 17.97, -4.77], look: [162.53, 17.42, 1.28], up: [0.36, 0.87, 0.29]},\n        {t: 7, eye: [151.14, 16.68, -10.04], look: [158.94, 15.95, -1.99], up: [0.36, 0.87, 0.29]},\n        {t: 8, eye: [146.26, 17.56, -4.77], look: [152.13, 17.05, 1.28], up: [0.36, 0.87, 0.28]},\n        {t: 9, eye: [137.26, 18.36, -9.65], look: [149.76, 17.27, 3.24], up: [0.36, 0.87, 0.28]},\n        {t: 10, eye: [139.04, 18.29, -11.17], look: [149.76, 17.27, 3.24], up: [0.32, 0.87, 0.33]},\n        {t: 11, eye: [140.66, 18.13, -12.26], look: [149.76, 17.27, 3.24], up: [0.28, 0.87, 0.35]},\n        {t: 12, eye: [147.18, 17.66, -14.56], look: [149.76, 17.27, 3.24], up: [0.12, 0.89, 0.41]},\n        {t: 13, eye: [158.05, 16.33, -12.69], look: [149.76, 17.27, 3.24], up: [-0.11, 0.91, 0.34]},\n        {t: 14, eye: [150.11, 13.26, -6.69], look: [147.95, 13.50, -2.52], up: [-0.11, 0.91, 0.34]},\n        {t: 15, eye: [149.27, 13.00, -3.34], look: [148.72, 13.05, -2.29], up: [-0.11, 0.91, 0.35]},\n        {t: 16, eye: [152.62, 11.65, -4.87], look: [148.47, 12.08, 3.08], up: [-0.11, 0.91, 0.35]},\n        {t: 17, eye: [153.35, 12.24, -1.84], look: [148.69, 12.72, 7.01], up: [-0.11, 0.91, 0.35]},\n        {t: 18, eye: [156.49, 12.11, 0.74], look: [148.69, 12.72, 7.012], up: [-0.23, 0.92, 0.26]},\n        {t: 19, eye: [158.52, 11.98, 5.21], look: [148.69, 12.72, 7.01], up: [-0.32, 0.92, 0.12]},\n        {t: 20, eye: [158.60, 11.50, 7.91], look: [148.69, 12.72, 7.01], up: [-0.30, 0.94, 0.035]},\n        {t: 21, eye: [157.60, 11.76, 11.51], look: [148.69, 12.72, 7.01], up: [-0.31, 0.93, -0.089]},\n        {t: 22, eye: [152.67, 18.35, 14.29], look: [148.69, 12.72, 7.01], up: [-0.46, 0.51, -0.70]},\n        {t: 23, eye: [148.79, 21.67, 11.52], look: [148.69, 12.72, 7.01], up: [-0.15, 0.036, -0.97]},\n        {t: 24, eye: [147.11, 22.40, 9.07], look: [148.69, 12.72, 7.01], up: [0.38, -0.16, -0.89]},\n        {t: 25, eye: [144.80, 21.92, 6.23], look: [148.69, 12.72, 7.01], up: [0.98, -0.02, 0.03]},\n        {t: 26, eye: [144.11, 20.18, 2.13], look: [148.69, 12.72, 7.01], up: [0.71, 0.29, 0.62]},\n        {t: 27, eye: [145.87, 17.37, -1.40], look: [148.69, 12.72, 7.01], up: [0.31, 0.60, 0.71]},\n        {t: 28, eye: [144.37, 19.17, -7.33], look: [146.13, 16.27, -2.08], up: [0.31, 0.60, 0.71]},\n        {t: 29, eye: [142.54, 21.91, -17.26], look: [146.89, 14.81, -4.28], up: [0.31, 0.60, 0.71]}\n    ]\n});\n\n// Once the model has loaded, animate the\n// (default Scene's default Camera) along the CameraPath\n\nvar cameraPathAnimation = new xeogl.CameraPathAnimation({\n    cameraPath: cameraPath\n});\n\ngearbox.on(\"loaded\", function () {\n    cameraPathAnimation.play();\n});\n````\n\n<br>\n### 2. Flying directly to each frame on a path\n\nIn this example, we'll use the CameraPathAnimation's {{#crossLink \"CameraPathAnimation/flyToFrame\"}}{{/crossLink}} method\nto <b>fly</b> the {{#crossLink \"Camera\"}}{{/crossLink}} directly to each frame on the {{#crossLink \"CameraPath\"}}{{/crossLink}}:\n\n<a href=\"../../examples/#animation_camera_path_flyToFrame\"><img src=\"http://i.giphy.com/l3vQYNjsnAQwPBeYU.gif\"></img></a>\n\n````javascript\nvar i = 0;\nvar dir = 1;\n\ngearbox.on(\"loaded\", function () {\n    function nextFrame() {\n        cameraPathAnimation.flyToFrame(i += dir, function() { setTimeout(nextFrame, 1000); });\n\n        if (i <= 0 || i >= 29) {\n            dir = -dir;\n        }\n    }\n    nextFrame();\n});\n````\n<br>\n### 3. Jumping directly to each frame on a path\n\nIn this example, we'll use the CameraPathAnimation's {{#crossLink \"CameraPathAnimation/scrubToFrame\"}}{{/crossLink}} method\nto <b>jump</b> the {{#crossLink \"Camera\"}}{{/crossLink}} directly to each frame on the {{#crossLink \"CameraPath\"}}{{/crossLink}}:\n\n<a href=\"../../examples/#animation_camera_path_scrubToFrame\"><img src=\"http://i.giphy.com/l0Hlyqk7kewTjSBZ6.gif\"></img></a>\n\n````javascript\nvar i = 0;\nvar dir = 1;\n\ngearbox.on(\"loaded\", function () {\n    function nextFrame() {\n        cameraPathAnimation.scrubToFrame(i += dir);\n\n        if (i <= 0 || i >= 29) {\n            dir = -dir;\n        }\n        setTimeout(nextFrame, 1000);\n    }\n    nextFrame();\n});\n````",
             "submodule": "animation",
             "is_constructor": 1,
             "params": [
@@ -6575,7 +6483,7 @@
             "namespace": "",
             "file": "examples/js/annotations/annotation.js",
             "line": 1,
-            "description": "An **Annotation** is a labeled {{#crossLink \"Pin\"}}{{/crossLink}} that's attached to the surface of an {{#crossLink \"Entity\"}}{{/crossLink}}.\n\n<a href=\"../../examples/#presentation_annotations_tronTank\"><img src=\"../../assets/images/screenshots/annotationsTank.png\"></img></a>\n\n## Overview\n\n#### Position\n\nAn Annotation is positioned within one of the triangles of its {{#crossLink \"Entity\"}}Entity's{{/crossLink}} {{#crossLink \"Geometry\"}}{{/crossLink}}. Wherever that triangle goes within the 3D view, the Annotation will automatically follow. An Annotation specifies its position with two properties:\n\n* {{#crossLink \"Pin/primIndex:property\"}}{{/crossLink}}, which indicates the index of the triangle within the {{#crossLink \"Geometry\"}}{{/crossLink}} {{#crossLink \"Geometry/indices:property\"}}{{/crossLink}}, and\n* {{#crossLink \"Pin/bary:property\"}}{{/crossLink}}, the barycentric coordinates of the position within the triangle.\n\nFrom these, an Annotation dynamically calculates its Cartesian coordinates, which it provides in each xeogl coordinate space:\n\n* {{#crossLink \"Pin/localPos:property\"}}{{/crossLink}} - 3D position local to the coordinate space of the {{#crossLink \"Geometry\"}}{{/crossLink}},\n* {{#crossLink \"Pin/worldPos:property\"}}{{/crossLink}} - 3D World-space position,\n* {{#crossLink \"Pin/viewPos:property\"}}{{/crossLink}} - 3D View-space position, and\n* {{#crossLink \"Pin/canvasPos:property\"}}{{/crossLink}} - 2D Canvas-space position.\n\nAn Annotation automatically recalculates these coordinates whenever its {{#crossLink \"Entity\"}}{{/crossLink}} is replaced or transformed, the {{#crossLink \"Geometry\"}}{{/crossLink}} is replaced or modified, or the {{#crossLink \"Camera\"}}{{/crossLink}} is moved.\n\n#### Appearance\n\nAs shown in the screen shot above, an Annotation is rendered as a dot with a label attached to it, using HTML elements.\n\n* {{#crossLink \"Annotation/glyph:property\"}}{{/crossLink}} specifies a character to appear in the dot,\n* {{#crossLink \"Annotation/title:property\"}}{{/crossLink}} and {{#crossLink \"Annotation/desc:property\"}}{{/crossLink}} specify a title and description to appear in the label, and\n* {{#crossLink \"Annotation/pinShown:property\"}}{{/crossLink}} and {{#crossLink \"Annotation/labelShown:property\"}}{{/crossLink}} specify whether the pin and label are shown.\n\nUse the stylesheet in <a href=\"/examples/js/annotations/annotation-style.css\">annotation-style.css</a> to set the default appearance for Annotations. Use that stylesheet as a guide for your own custom styles.\n\n#### Visibility\n\n* {{#crossLink \"Pin/occludable:property\"}}{{/crossLink}} specifies whether the Annotation becomes invisible whenever its occluded by other objects in the 3D view, and\n* {{#crossLink \"Pin/visible:property\"}}{{/crossLink}} indicates if the Annotations is currently visible.\n\n#### Vantage points\n\nEach Annotation may be configured with a vantage point from which to view it, given as {{#crossLink \"Annotation/eye:property\"}}{{/crossLink}}, {{#crossLink \"Annotation/look:property\"}}{{/crossLink}} and {{#crossLink \"Annotation/up:property\"}}{{/crossLink}} properties.  To focus attention on an Annotation, you could set the {{#crossLink \"Camera\"}}Camera's{{/crossLink}} {{#crossLink \"Lookat\"}}{{/crossLink}} to that\nvantage point, or even fly to the vantage point using a {{#crossLink \"CameraFlightAnimation\"}}{{/crossLink}} (which we'll demonstrate in the usage example below).\n\n#### Interaction\n\nAn Annotation fires a {{#crossLink \"Annotation/pinClicked:event\"}}\"pinClicked\"{{/crossLink}} event whenever you click its dot. In the usage example, we make that event show the Annotation's label and set the {{#crossLink \"Camera\"}}{{/crossLink}} to the vantage point.\n\n## Examples\n\n* [Annotation demo](../../examples/#presentation_annotations_tronTank)\n* [AnnotationStory demo](../../examples/#presentation_annotationStory_tronTank)\n\n## Usage\n\nIn the example below, we use a {{#crossLink \"GLTFModel\"}}{{/crossLink}} to load a glTF model of a\nreciprocating saw. Once the {{#crossLink \"GLTFModel\"}}{{/crossLink}} has loaded, we'll then create Annotations on three of its {{#crossLink \"Entity\"}}Entities{{/crossLink}}. Finally, we wire\na callback to the {{#crossLink \"Annotation/pinClicked:event\"}}\"pinClicked\"{{/crossLink}} event from\neach Annotation, so that when you click its {{#crossLink \"Pin\"}}{{/crossLink}}, its label is shown and the {{#crossLink \"Camera\"}}{{/crossLink}} is positioned at its vantage point.\n\n````javascript\n<script src=\"../build/xeogl.min.js\"></script>\n<script src=\"js/annotations/pin.js\"></script>\n<script src=\"js/annotations/annotation.js\"></script>\n\n<link href=\"js/annotations/annotation-style.css\" rel=\"stylesheet\"/>\n\n<script>\n\nvar model = new xeogl.GLTFModel({\n   src: \"models/gltf/2.0/Reciprocating_Saw/PBR-SpecGloss/Reciprocating_Saw.gltf\",\n   transform: new xeogl.Rotate({\n       xyz: [1, 0, 0],\n       angle: 90\n   })\n});\n\nmodel.on(\"loaded\", function () {\n\n   // Position the camera to look at the model\n\n   var view = model.scene.camera.view;\n   view.eye = [-110.89, -44.85, 276.65];\n   view.look = [-110.89, -44.85, -0.46];\n   view.up = [0, 1, 0];\n   view.zoom(20);\n\n   // Create three annotations on entities\n   // within the model\n\n   var a1 = new xeogl.Annotation({\n       entity: model.entities[156], // Red handle\n       primIndex: 125,\n       bary: [0.3, 0.3, 0.3],\n       occludable: true,\n       glyph: \"1\",\n       title: \"Handle\",\n       desc: \"This is the handle. It allows us to grab onto the saw so we can hold it and make things with it.\",\n       eye: [-355.481, -0.871, 116.711],\n       look: [-227.456, -57.628, 5.428],\n       up: [0.239, 0.948, -0.208],\n       pinShown: true,\n       labelShown: false\n   });\n\n   var a2 = new xeogl.Annotation({\n       entity: model.entities[156], // Red handle and cover\n       primIndex: 10260,\n       bary: [0.333, 0.333, 0.333],\n       occludable: true,\n       glyph: \"2\",\n       title: \"Handle and cover\",\n       desc: \"This is the handle and cover. It provides something grab the saw with, and covers the things inside.\",\n       eye: [-123.206, -4.094, 169.849],\n       look: [-161.838, -37.875, 37.313],\n       up: [-0.066, 0.971, -0.228],\n       pinShown: true,\n       labelShown: false\n   });\n\n   var a3 = new xeogl.Annotation({\n       entity: modelentities[796], // Barrel\n       primIndex: 3783,\n       bary: [0.3, 0.3, 0.3],\n       occludable: true,\n       glyph: \"3\",\n       title: \"Barrel\",\n       desc: \"This is the barrel\",\n       eye: [80.0345, 38.255, 60.457],\n       look: [35.023, -0.166, 8.679],\n       up: [-0.320, 0.872, -0.368],\n       pinShown: true,\n       labelShown: false\n   });\n\n   // When each annotation's pin is clicked, we'll show the\n   // annotation's label and fly the camera to the\n   // annotation's vantage point\n\n   var cameraFlight = new xeogl.CameraFlightAnimation();\n   var lastAnnotation;\n\n   function pinClicked(annotation) {\n       if (lastAnnotation) {\n           annotation.labelShown = false;\n       }\n       annotation.labelShown = true;\n       cameraFlight.flyTo(annotation);\n       lastAnnotation = annotation;\n   }\n\n   a1.on(\"pinClicked\", pinClicked);\n   a2.on(\"pinClicked\", pinClicked);\n   a3.on(\"pinClicked\", pinClicked);\n\n   // If desired, we can also dynamically track the Cartesian coordinates\n   // of each annotation in Local and World coordinate spaces\n\n   a1.on(\"localPos\", function(localPos) {\n       console.log(\"Local pos changed: \" + JSON.stringify(localPos, null, \"\\t\"));\n   });\n\n   a1.on(\"worldPos\", function(worldPos) {\n       console.log(\"World pos changed: \" + JSON.stringify(worldPos, null, \"\\t\"));\n   });\n});\n</script>\n````",
+            "description": "An **Annotation** is a labeled {{#crossLink \"Pin\"}}{{/crossLink}} that's attached to the surface of an {{#crossLink \"Entity\"}}{{/crossLink}}.\n\n<a href=\"../../examples/#presentation_annotations_tronTank\"><img src=\"../../assets/images/screenshots/annotationsTank.png\"></img></a>\n\n## Overview\n\n#### Position\n\nAn Annotation is positioned within one of the triangles of its {{#crossLink \"Entity\"}}Entity's{{/crossLink}} {{#crossLink \"Geometry\"}}{{/crossLink}}. Wherever that triangle goes within the 3D view, the Annotation will automatically follow. An Annotation specifies its position with two properties:\n\n* {{#crossLink \"Pin/primIndex:property\"}}{{/crossLink}}, which indicates the index of the triangle within the {{#crossLink \"Geometry\"}}{{/crossLink}} {{#crossLink \"Geometry/indices:property\"}}{{/crossLink}}, and\n* {{#crossLink \"Pin/bary:property\"}}{{/crossLink}}, the barycentric coordinates of the position within the triangle.\n\nFrom these, an Annotation dynamically calculates its Cartesian coordinates, which it provides in each xeogl coordinate space:\n\n* {{#crossLink \"Pin/localPos:property\"}}{{/crossLink}} - 3D position local to the coordinate space of the {{#crossLink \"Geometry\"}}{{/crossLink}},\n* {{#crossLink \"Pin/worldPos:property\"}}{{/crossLink}} - 3D World-space position,\n* {{#crossLink \"Pin/viewPos:property\"}}{{/crossLink}} - 3D View-space position, and\n* {{#crossLink \"Pin/canvasPos:property\"}}{{/crossLink}} - 2D Canvas-space position.\n\nAn Annotation automatically recalculates these coordinates whenever its {{#crossLink \"Entity\"}}{{/crossLink}} is replaced or transformed, the {{#crossLink \"Geometry\"}}{{/crossLink}} is replaced or modified, or the {{#crossLink \"Camera\"}}{{/crossLink}} is moved.\n\n#### Appearance\n\nAs shown in the screen shot above, an Annotation is rendered as a dot with a label attached to it, using HTML elements.\n\n* {{#crossLink \"Annotation/glyph:property\"}}{{/crossLink}} specifies a character to appear in the dot,\n* {{#crossLink \"Annotation/title:property\"}}{{/crossLink}} and {{#crossLink \"Annotation/desc:property\"}}{{/crossLink}} specify a title and description to appear in the label, and\n* {{#crossLink \"Annotation/pinShown:property\"}}{{/crossLink}} and {{#crossLink \"Annotation/labelShown:property\"}}{{/crossLink}} specify whether the pin and label are shown.\n\nUse the stylesheet in <a href=\"/examples/js/annotations/annotation-style.css\">annotation-style.css</a> to set the default appearance for Annotations. Use that stylesheet as a guide for your own custom styles.\n\n#### Visibility\n\n* {{#crossLink \"Pin/occludable:property\"}}{{/crossLink}} specifies whether the Annotation becomes invisible whenever its occluded by other objects in the 3D view, and\n* {{#crossLink \"Pin/visible:property\"}}{{/crossLink}} indicates if the Annotations is currently visible.\n\n#### Vantage points\n\nEach Annotation may be configured with a vantage point from which to view it, given as {{#crossLink \"Annotation/eye:property\"}}{{/crossLink}}, {{#crossLink \"Annotation/look:property\"}}{{/crossLink}} and {{#crossLink \"Annotation/up:property\"}}{{/crossLink}} properties.  To focus attention on an Annotation, you could set the {{#crossLink \"Camera\"}}Camera's{{/crossLink}} {{#crossLink \"Lookat\"}}{{/crossLink}} to that\nvantage point, or even fly to the vantage point using a {{#crossLink \"CameraFlightAnimation\"}}{{/crossLink}} (which we'll demonstrate in the usage example below).\n\n#### Interaction\n\nAn Annotation fires a {{#crossLink \"Annotation/pinClicked:event\"}}\"pinClicked\"{{/crossLink}} event whenever you click its dot. In the usage example, we make that event show the Annotation's label and set the {{#crossLink \"Camera\"}}{{/crossLink}} to the vantage point.\n\n## Examples\n\n* [Annotation demo](../../examples/#presentation_annotations_tronTank)\n* [AnnotationStory demo](../../examples/#presentation_annotationStory_tronTank)\n\n## Usage\n\nIn the example below, we use a {{#crossLink \"GLTFModel\"}}{{/crossLink}} to load a glTF model of a\nreciprocating saw. Once the {{#crossLink \"GLTFModel\"}}{{/crossLink}} has loaded, we'll then create Annotations on three of its {{#crossLink \"Entity\"}}Entities{{/crossLink}}. Finally, we wire\na callback to the {{#crossLink \"Annotation/pinClicked:event\"}}\"pinClicked\"{{/crossLink}} event from\neach Annotation, so that when you click its {{#crossLink \"Pin\"}}{{/crossLink}}, its label is shown and the {{#crossLink \"Camera\"}}{{/crossLink}} is positioned at its vantage point.\n\n````javascript\n<script src=\"../build/xeogl.min.js\"></script>\n<script src=\"js/annotations/pin.js\"></script>\n<script src=\"js/annotations/annotation.js\"></script>\n\n<link href=\"js/annotations/annotation-style.css\" rel=\"stylesheet\"/>\n\n<script>\n\nvar model = new xeogl.GLTFModel({\n   src: \"models/gltf/ReciprocatingSaw/PBR-SpecGloss/Reciprocating_Saw.gltf\",\n   transform: new xeogl.Rotate({\n       xyz: [1, 0, 0],\n       angle: 90\n   })\n});\n\nmodel.on(\"loaded\", function () {\n\n   // Position the camera to look at the model\n\n   var view = model.scene.camera.view;\n   view.eye = [-110.89, -44.85, 276.65];\n   view.look = [-110.89, -44.85, -0.46];\n   view.up = [0, 1, 0];\n   view.zoom(20);\n\n   // Create three annotations on entities\n   // within the model\n\n   var a1 = new xeogl.Annotation({\n       entity: model.entities[156], // Red handle\n       primIndex: 125,\n       bary: [0.3, 0.3, 0.3],\n       occludable: true,\n       glyph: \"1\",\n       title: \"Handle\",\n       desc: \"This is the handle. It allows us to grab onto the saw so we can hold it and make things with it.\",\n       eye: [-355.481, -0.871, 116.711],\n       look: [-227.456, -57.628, 5.428],\n       up: [0.239, 0.948, -0.208],\n       pinShown: true,\n       labelShown: false\n   });\n\n   var a2 = new xeogl.Annotation({\n       entity: model.entities[156], // Red handle and cover\n       primIndex: 10260,\n       bary: [0.333, 0.333, 0.333],\n       occludable: true,\n       glyph: \"2\",\n       title: \"Handle and cover\",\n       desc: \"This is the handle and cover. It provides something grab the saw with, and covers the things inside.\",\n       eye: [-123.206, -4.094, 169.849],\n       look: [-161.838, -37.875, 37.313],\n       up: [-0.066, 0.971, -0.228],\n       pinShown: true,\n       labelShown: false\n   });\n\n   var a3 = new xeogl.Annotation({\n       entity: modelentities[796], // Barrel\n       primIndex: 3783,\n       bary: [0.3, 0.3, 0.3],\n       occludable: true,\n       glyph: \"3\",\n       title: \"Barrel\",\n       desc: \"This is the barrel\",\n       eye: [80.0345, 38.255, 60.457],\n       look: [35.023, -0.166, 8.679],\n       up: [-0.320, 0.872, -0.368],\n       pinShown: true,\n       labelShown: false\n   });\n\n   // When each annotation's pin is clicked, we'll show the\n   // annotation's label and fly the camera to the\n   // annotation's vantage point\n\n   var cameraFlight = new xeogl.CameraFlightAnimation();\n   var lastAnnotation;\n\n   function pinClicked(annotation) {\n       if (lastAnnotation) {\n           annotation.labelShown = false;\n       }\n       annotation.labelShown = true;\n       cameraFlight.flyTo(annotation);\n       lastAnnotation = annotation;\n   }\n\n   a1.on(\"pinClicked\", pinClicked);\n   a2.on(\"pinClicked\", pinClicked);\n   a3.on(\"pinClicked\", pinClicked);\n\n   // If desired, we can also dynamically track the Cartesian coordinates\n   // of each annotation in Local and World coordinate spaces\n\n   a1.on(\"localPos\", function(localPos) {\n       console.log(\"Local pos changed: \" + JSON.stringify(localPos, null, \"\\t\"));\n   });\n\n   a1.on(\"worldPos\", function(worldPos) {\n       console.log(\"World pos changed: \" + JSON.stringify(worldPos, null, \"\\t\"));\n   });\n});\n</script>\n````",
             "submodule": "annotations",
             "is_constructor": 1,
             "params": [
@@ -7757,7 +7665,7 @@
             "namespace": "",
             "file": "examples/js/marking/pointMarkings.js",
             "line": 1,
-            "description": "A **PointMarkings** is used to draw persistable markings on Entities.\n\n## Examples\n\nTODO\n\n## Usage\n\n````javascript\n// Load a gearbox model to draw marks on\nvar gearbox = new xeogl.GLTFModel({\n        src: \"models/gltf/1.0/GearboxAssy/glTF/GearboxAssy.gltf\"\n});\n\n// Set initial camera position\nvar view = gearbox.scene.camera.view;\nview.eye = [184.21, 10.54, -7.03];\nview.look = [159.20, 17.02, 3.21];\nview.up = [-0.15, 0.97, 0.13];\n\n// Create marks wherever we draw on the surface of our gearbox\n\nvar scene = gearbox.scene; // Using default scene for this example\nvar input = scene.input;\nvar pointMarkings = new xeogl.PointMarkings();\n\ninput.on(\"mousemove\", function (coords) {\n\n    var hit = scene.pick({\n        canvasPos: coords,\n        pickSurface: true\n    });\n\n    if (hit) {\n        pointMarkings.draw(hit);\n    }\n});\n\n// Allow user camera control\nnew xeogl.CameraControl();\n````\n\n````javascript\nvar data = pointMarkings.save();\n\npointMarkings.clear();\n\npointMarkings.load(data);\n````",
+            "description": "A **PointMarkings** is used to draw persistable markings on Entities.\n\n## Examples\n\nTODO\n\n## Usage\n\n````javascript\n// Load a gearbox model to draw marks on\nvar gearbox = new xeogl.GLTFModel({\n        src: \"models/gltf/GearboxAssy/glTF/GearboxAssy.gltf\"\n});\n\n// Set initial camera position\nvar view = gearbox.scene.camera.view;\nview.eye = [184.21, 10.54, -7.03];\nview.look = [159.20, 17.02, 3.21];\nview.up = [-0.15, 0.97, 0.13];\n\n// Create marks wherever we draw on the surface of our gearbox\n\nvar scene = gearbox.scene; // Using default scene for this example\nvar input = scene.input;\nvar pointMarkings = new xeogl.PointMarkings();\n\ninput.on(\"mousemove\", function (coords) {\n\n    var hit = scene.pick({\n        canvasPos: coords,\n        pickSurface: true\n    });\n\n    if (hit) {\n        pointMarkings.draw(hit);\n    }\n});\n\n// Allow user camera control\nnew xeogl.CameraControl();\n````\n\n````javascript\nvar data = pointMarkings.save();\n\npointMarkings.clear();\n\npointMarkings.load(data);\n````",
             "submodule": "marking",
             "is_constructor": 1,
             "params": [
@@ -7903,6 +7811,63 @@
                         {
                             "name": "transform",
                             "description": "A Local-to-World-space (modelling) {{#crossLink \"Transform\"}}{{/crossLink}} to attach to this BuildableModel.\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this BuildableModel. Internally, the given\n{{#crossLink \"Transform\"}}{{/crossLink}} will be inserted above each top-most {{#crossLink \"Transform\"}}Transform{{/crossLink}}\nthat the BuildableModel attaches to its {{#crossLink \"Entity\"}}Entities{{/crossLink}}.",
+                            "type": "Number|String|Transform",
+                            "optional": true
+                        }
+                    ]
+                }
+            ],
+            "extends": "Model"
+        },
+        "GLTFModel": {
+            "name": "GLTFModel",
+            "shortname": "GLTFModel",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "xeogl",
+            "namespace": "",
+            "file": "examples/js/models/glTFModel.js",
+            "line": 1,
+            "description": "A **GLTFModel** is a {{#crossLink \"Model\"}}{{/crossLink}} loaded from a <a href=\"https://github.com/KhronosGroup/glTF\" target = \"_other\">glTF</a> file.\n\n<a href=\"../../examples/#importing_gltf_gearbox\"><img src=\"../../../assets/images/gltf/glTF_gearbox_squashed.png\"></img></a>\n\n## Overview\n\n* A GLTFModel is a container of {{#crossLink \"Component\"}}Components{{/crossLink}} that loads itself from a glTF file.\n* It begins loading as soon as you set its {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}\nproperty to the location of a valid glTF file.\n* You can set {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}} to a new file path at any time, which causes\nthe GLTFModel to clear itself and load components from the new file.\n\nIt inherits these capabilities from its {{#crossLink \"Model\"}}{{/crossLink}} base class:\n\n* Allows you to access and manipulate the components within it.\n* Can be transformed within World-space by attaching it to a {{#crossLink \"Transform\"}}{{/crossLink}}.\n* Provides its World-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}}.\n\n<img src=\"../../../assets/images/GLTFModel.png\"></img>\n\n## Supported glTF 2.0 features\n\nSo far, GLTFModel loads only geometry, materials and modeling transform hierarchies, without animations. It does not\nload cameras or lights because its purpose is to import models into environments that have already been created using\nthe xeogl API.\n\nIn addition to glTF's core metal-roughness material workflow, GLTFModel also supports two material extensions:\n\n* [KHR_materials_pbrSpecularGlossiness](https://github.com/KhronosGroup/glTF/blob/master/extensions/Khronos/KHR_materials_pbrSpecularGlossiness/README.md)\n* [KHR_materials_common](https://github.com/KhronosGroup/glTF/blob/master/extensions/Khronos/KHR_materials_common/README.md)\n\n## Usage\n\n### Loading glTF\n\nLoad a glTF file by creating a GLTFModel:\n\n````javascript\nvar gearbox = new xeogl.GLTFModel({\n  id: \"gearbox\",\n  src: \"models/gltf/gearbox/gearbox_assy.gltf\"\n});\n````\n\nA GLTFModel prefixes its own ID to those of its components. Its ID is optional and defaults to\nthe value of {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}. In this example we're providing our own short ID,\nhowever, in order to keep the component IDs short and easy to use.\n\nThe GLTFModel begins loading the glTF file immediately. Bind a callback to be notified when the file has loaded (which\nfires immediately if already loaded):\n\n````javascript\ngearbox.on(\"loaded\", function() {\n       // GLTFModel has loaded!\n   });\n````\n\nYou can also bind a callback to fire if loading fails:\n\n````javascript\ngearbox.on(\"error\", function(msg) {\n       // Error occurred\n   });\n````\n\nTo switch to a different glTF file, simply update {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}:\n\n````javascript\ngearbox.src = \"models/gltf/Buggy/glTF/Buggy.gltf\"\n````\n\n### Accessing components\n\nOnce the GLTFModel has loaded, its {{#crossLink \"Scene\"}}{{/crossLink}} will contain various components that represent the elements of the glTF file.\nWe'll now access some of those components by ID, to query and update them programmatically.\n\n**Transforms**\n\nLet's reposition one of the {{#crossLink \"Entity\"}}Entities{{/crossLink}} in our GLTFModel. We'll get the {{#crossLink \"Transform\"}}{{/crossLink}} that\npositions our target {{#crossLink \"Entity\"}}{{/crossLink}}, in this case a gear. Then we'll update its matrix to translate it ten units along the negative Z-axis.\n\n````javascript\nvar transform = gearbox.scene.components[\"gearbox#n274017_gear_53t-node.transform\"];\n\ntransform.matrix = xeogl.math.translationMat4v([0,0,-10]);\n````\n\nNote the format of the {{#crossLink \"Transform\"}}{{/crossLink}}'s ID:\n\n````<GLTFModel ID>#<glTF node ID>.transform````\n\nFrom left to right, the format contains the GLTFModel's ID, the ID of the glTF node that contains the transform, then\n\"transform\", to distinguish it from the IDs of any other components loaded from elements on the same glTF node.\n\n**Entities**\n\nLet's make our gear {{#crossLink \"Entity\"}}{{/crossLink}} invisible. This time we'll get the {{#crossLink \"Entity\"}}{{/crossLink}} itself, then update\nits {{#crossLink \"Visibility\"}}{{/crossLink}} component:\n\n````javascript\nvar gear53 = gearbox.scene.components[\"gearbox#n274017_gear_53.entity.0\"];\n\ngear53.visibility.visible = false;\n````\n\nNote the format of the {{#crossLink \"Entity\"}}{{/crossLink}}'s ID: ````<GLTFModel ID>#<glTF node ID>.entity.<glTF mesh index>````\n\nA glTF scene node may contain multiple meshes, and for each of those xeogl will create an individual {{#crossLink \"Entity\"}}{{/crossLink}}. As\nbefore, the part before the hash is the ID of the GLTFModel, which is then followed by the ID of the glTF node, then \"entity\"\nto signify that this is an Entity ID, then finally an index to differentiate the Entity from those loaded from other\nmeshes on the same glTF node.\n\nWhen we load multiple Entities from a glTF node, then they will share the same {{#crossLink \"Transform\"}}{{/crossLink}} and {{#crossLink \"Visibility\"}}{{/crossLink}} components. This\nlets us update their transformation and visibility as a group, as if they were a composite entity that represents\nthe glTF node.\n\n\n## Examples\n\n* [Damaged Helmet with metal/rough PBR materials](../../examples/#importing_gltf_pbr_metallic_helmet)\n* [Gearbox with entity explorer](../../examples/#importing_gltf_explorer)\n* [Ensuring individual materials on GLTFModel entities](../../examples/#models_filter_uniqueMaterials)\n* [Baking transform hierarchies in a GLTFModel](../../examples/#models_filter_bakeTransforms)",
+            "submodule": "models",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this GLTFModel in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}},\ngenerated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this GLTFModel.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "src",
+                            "description": "Path to a glTF file. You can set this to a new file path at any time, which will cause the\nGLTFModel to load components from the new file (after first destroying any components loaded from a previous file path).",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "transform",
+                            "description": "A Local-to-World-space (modelling) {{#crossLink \"Transform\"}}{{/crossLink}} to attach to this GLTFModel.\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this GLTFModel. Internally, the given\n{{#crossLink \"Transform\"}}{{/crossLink}} will be inserted above each top-most {{#crossLink \"Transform\"}}Transform{{/crossLink}}\nthat the GLTFModel attaches to its {{#crossLink \"Entity\"}}Entities{{/crossLink}}.",
                             "type": "Number|String|Transform",
                             "optional": true
                         }
@@ -9124,1037 +9089,14 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 686,
+            "line": 685,
             "description": "Attempts to pick an object.",
             "class": "CameraFlightAnimation"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 888,
+            "line": 887,
             "description": "Reads the colors of some pixels in the current image.",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.new.js",
-            "line": 7,
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.new.js",
-            "line": 25,
-            "description": "Indicates if the canvas is transparent",
-            "type": "{boolean}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.new.js",
-            "line": 31,
-            "description": "Optional callback to fire when renderer wants to\nbind an output framebuffer. This is useful when we need to bind a stereo output buffer for WebVR.\n\nWhen this is missing, the renderer will implicitly bind\nWebGL's default framebuffer.\n\nThe callback takes one parameter, which is the index of the current\nrendering pass in which the buffer is to be bound.\n\nUse like this: myRenderer.bindOutputFramebuffer = function(pass) { .. });",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.new.js",
-            "line": 45,
-            "description": "Optional callback to fire when renderer wants to\nunbind any output drawing framebuffer that was\npreviously bound with #bindOutputFramebuffer.\n\nThe callback takes one parameter, which is the index of the current\nrendering pass in which the buffer is to be bound.\n\nUse like this: myRenderer.unbindOutputFramebuffer = function(pass) { .. });\n\nCallback takes no parameters.",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.new.js",
-            "line": 65,
-            "description": "The current ambient color.",
-            "type": "Float32Array",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.new.js",
-            "line": 113,
-            "description": "Visibility render state.",
-            "itemtype": "property",
-            "name": "visibility",
-            "type": "{renderer.Visibility}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.new.js",
-            "line": 120,
-            "description": "Culling render state.",
-            "itemtype": "property",
-            "name": "cull",
-            "type": "{renderer.Cull}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.new.js",
-            "line": 127,
-            "description": "Modes render state.",
-            "itemtype": "property",
-            "name": "modes",
-            "type": "{renderer.Modes}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.new.js",
-            "line": 134,
-            "description": "Render state for an effects layer.",
-            "itemtype": "property",
-            "name": "layer",
-            "type": "{renderer.Layer}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.new.js",
-            "line": 141,
-            "description": "Render state for an effects pipeline stage.",
-            "itemtype": "property",
-            "name": "stage",
-            "type": "{renderer.Layer}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.new.js",
-            "line": 148,
-            "description": "Depth buffer render state.",
-            "itemtype": "property",
-            "name": "depthBuf",
-            "type": "{renderer.DepthBuf}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.new.js",
-            "line": 155,
-            "description": "Color buffer render state.",
-            "itemtype": "property",
-            "name": "colorBuf",
-            "type": "{renderer.ColorBuf}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.new.js",
-            "line": 162,
-            "description": "Lights render state.",
-            "itemtype": "property",
-            "name": "lights",
-            "type": "{renderer.Lights}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.new.js",
-            "line": 169,
-            "description": "Material render state.",
-            "itemtype": "property",
-            "name": "material",
-            "type": "{renderer.Material}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.new.js",
-            "line": 176,
-            "description": "Modelling transform render state.",
-            "itemtype": "property",
-            "name": "modelTransform",
-            "type": "{renderer.Transform}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.new.js",
-            "line": 183,
-            "description": "View transform render state.",
-            "itemtype": "property",
-            "name": "viewTransform",
-            "type": "{renderer.Transform}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.new.js",
-            "line": 190,
-            "description": "Projection transform render state.",
-            "itemtype": "property",
-            "name": "projTransform",
-            "type": "{renderer.Transform}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.new.js",
-            "line": 197,
-            "description": "Billboard render state.",
-            "itemtype": "property",
-            "name": "billboard",
-            "type": "{renderer.Billboard}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.new.js",
-            "line": 204,
-            "description": "Stationary render state.",
-            "itemtype": "property",
-            "name": "stationary",
-            "type": "{renderer.Stationary}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.new.js",
-            "line": 211,
-            "description": "Color target render state.",
-            "itemtype": "property",
-            "name": "colorTarget",
-            "type": "{renderer.RenderTarget}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.new.js",
-            "line": 218,
-            "description": "Depth target render state.",
-            "itemtype": "property",
-            "name": "depthTarget",
-            "type": "{renderer.RenderTarget}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.new.js",
-            "line": 225,
-            "description": "Cross-section planes render state.",
-            "itemtype": "property",
-            "name": "clips",
-            "type": "{renderer.Clips}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.new.js",
-            "line": 232,
-            "description": "Custom shader render state.",
-            "itemtype": "property",
-            "name": "shader",
-            "type": "{renderer.Shader}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.new.js",
-            "line": 239,
-            "description": "Render state providing custom shader params.",
-            "itemtype": "property",
-            "name": "shaderParams",
-            "type": "{renderer.Shader}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.new.js",
-            "line": 246,
-            "description": "Geometry render state.",
-            "itemtype": "property",
-            "name": "geometry",
-            "type": "{renderer.Geometry}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.new.js",
-            "line": 253,
-            "description": "Viewport render state.",
-            "itemtype": "property",
-            "name": "viewport",
-            "type": "{renderer.Viewport}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.new.js",
-            "line": 260,
-            "description": "Outline state.",
-            "itemtype": "property",
-            "name": "outline",
-            "type": "{renderer.Outline}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.new.js",
-            "line": 270,
-            "description": "Flags the object list as needing to be rebuilt from the object map.",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.new.js",
-            "line": 275,
-            "description": "Flags the object list as needing state orders to be recomputed.",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.new.js",
-            "line": 280,
-            "description": "Flags the object list as needing to be state-sorted.",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.new.js",
-            "line": 285,
-            "description": "Flags the image as needing to be redrawn from the object list.",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.new.js",
-            "line": 291,
-            "description": "Reallocates WebGL resources for objects within this renderer.",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.new.js",
-            "line": 314,
-            "description": "Internally creates (or updates) a {@link xeogl.renderer.Object} of the given\nID from whatever component state cores are currently set on this {@link xeogl.Renderer}.\nThe object is created if it does not already exist in the display, otherwise\nit is updated with the current states, possibly replacing states already\nreferenced by the object.",
-            "params": [
-                {
-                    "name": "objectId",
-                    "description": "ID of object to create or update",
-                    "type": "String"
-                }
-            ],
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.new.js",
-            "line": 459,
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.new.js",
-            "line": 515,
-            "description": "Removes an object from this Renderer",
-            "params": [
-                {
-                    "name": "objectId",
-                    "description": "ID of object to remove",
-                    "type": "String"
-                }
-            ],
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.new.js",
-            "line": 551,
-            "description": "Renders a new frame, if neccessary.",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.new.js",
-            "line": 1015,
-            "description": "Attempts to pick an object.",
-            "params": [
-                {
-                    "name": "params",
-                    "description": "Picking params.",
-                    "type": "*"
-                }
-            ],
-            "return": {
-                "description": "Hit result, if any.",
-                "type": "*"
-            },
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.new.js",
-            "line": 1234,
-            "description": "Reads the colors of some pixels in the last rendered frame.",
-            "params": [
-                {
-                    "name": "pixels",
-                    "description": "",
-                    "type": "Float32Array"
-                },
-                {
-                    "name": "colors",
-                    "description": "",
-                    "type": "Float32Array"
-                },
-                {
-                    "name": "len",
-                    "description": "",
-                    "type": "Number"
-                },
-                {
-                    "name": "opaqueOnly",
-                    "description": "",
-                    "type": "Boolean"
-                }
-            ],
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.new.js",
-            "line": 1280,
-            "description": "Destroys this Renderer.",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.old.js",
-            "line": 7,
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.old.js",
-            "line": 25,
-            "description": "Indicates if the canvas is transparent",
-            "type": "{boolean}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.old.js",
-            "line": 31,
-            "description": "Optional callback to fire when renderer wants to\nbind an output framebuffer. This is useful when we need to bind a stereo output buffer for WebVR.\n\nWhen this is missing, the renderer will implicitly bind\nWebGL's default framebuffer.\n\nThe callback takes one parameter, which is the index of the current\nrendering pass in which the buffer is to be bound.\n\nUse like this: myRenderer.bindOutputFramebuffer = function(pass) { .. });",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.old.js",
-            "line": 45,
-            "description": "Optional callback to fire when renderer wants to\nunbind any output drawing framebuffer that was\npreviously bound with #bindOutputFramebuffer.\n\nThe callback takes one parameter, which is the index of the current\nrendering pass in which the buffer is to be bound.\n\nUse like this: myRenderer.unbindOutputFramebuffer = function(pass) { .. });\n\nCallback takes no parameters.",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.old.js",
-            "line": 65,
-            "description": "The current ambient color.",
-            "type": "Float32Array",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.old.js",
-            "line": 113,
-            "description": "Visibility render state.",
-            "itemtype": "property",
-            "name": "visibility",
-            "type": "{renderer.Visibility}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.old.js",
-            "line": 120,
-            "description": "Culling render state.",
-            "itemtype": "property",
-            "name": "cull",
-            "type": "{renderer.Cull}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.old.js",
-            "line": 127,
-            "description": "Modes render state.",
-            "itemtype": "property",
-            "name": "modes",
-            "type": "{renderer.Modes}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.old.js",
-            "line": 134,
-            "description": "Render state for an effects layer.",
-            "itemtype": "property",
-            "name": "layer",
-            "type": "{renderer.Layer}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.old.js",
-            "line": 141,
-            "description": "Render state for an effects pipeline stage.",
-            "itemtype": "property",
-            "name": "stage",
-            "type": "{renderer.Layer}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.old.js",
-            "line": 148,
-            "description": "Depth buffer render state.",
-            "itemtype": "property",
-            "name": "depthBuf",
-            "type": "{renderer.DepthBuf}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.old.js",
-            "line": 155,
-            "description": "Color buffer render state.",
-            "itemtype": "property",
-            "name": "colorBuf",
-            "type": "{renderer.ColorBuf}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.old.js",
-            "line": 162,
-            "description": "Lights render state.",
-            "itemtype": "property",
-            "name": "lights",
-            "type": "{renderer.Lights}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.old.js",
-            "line": 169,
-            "description": "Material render state.",
-            "itemtype": "property",
-            "name": "material",
-            "type": "{renderer.Material}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.old.js",
-            "line": 176,
-            "description": "Modelling transform render state.",
-            "itemtype": "property",
-            "name": "modelTransform",
-            "type": "{renderer.Transform}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.old.js",
-            "line": 183,
-            "description": "View transform render state.",
-            "itemtype": "property",
-            "name": "viewTransform",
-            "type": "{renderer.Transform}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.old.js",
-            "line": 190,
-            "description": "Projection transform render state.",
-            "itemtype": "property",
-            "name": "projTransform",
-            "type": "{renderer.Transform}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.old.js",
-            "line": 197,
-            "description": "Billboard render state.",
-            "itemtype": "property",
-            "name": "billboard",
-            "type": "{renderer.Billboard}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.old.js",
-            "line": 204,
-            "description": "Stationary render state.",
-            "itemtype": "property",
-            "name": "stationary",
-            "type": "{renderer.Stationary}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.old.js",
-            "line": 211,
-            "description": "Color target render state.",
-            "itemtype": "property",
-            "name": "colorTarget",
-            "type": "{renderer.RenderTarget}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.old.js",
-            "line": 218,
-            "description": "Depth target render state.",
-            "itemtype": "property",
-            "name": "depthTarget",
-            "type": "{renderer.RenderTarget}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.old.js",
-            "line": 225,
-            "description": "Cross-section planes render state.",
-            "itemtype": "property",
-            "name": "clips",
-            "type": "{renderer.Clips}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.old.js",
-            "line": 232,
-            "description": "Custom shader render state.",
-            "itemtype": "property",
-            "name": "shader",
-            "type": "{renderer.Shader}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.old.js",
-            "line": 239,
-            "description": "Render state providing custom shader params.",
-            "itemtype": "property",
-            "name": "shaderParams",
-            "type": "{renderer.Shader}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.old.js",
-            "line": 246,
-            "description": "Geometry render state.",
-            "itemtype": "property",
-            "name": "geometry",
-            "type": "{renderer.Geometry}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.old.js",
-            "line": 253,
-            "description": "Viewport render state.",
-            "itemtype": "property",
-            "name": "viewport",
-            "type": "{renderer.Viewport}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.old.js",
-            "line": 262,
-            "description": "Flags the object list as needing to be rebuilt from the object map.",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.old.js",
-            "line": 267,
-            "description": "Flags the object list as needing state orders to be recomputed.",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.old.js",
-            "line": 272,
-            "description": "Flags the object list as needing to be state-sorted.",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.old.js",
-            "line": 277,
-            "description": "Flags the image as needing to be redrawn from the object list.",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.old.js",
-            "line": 283,
-            "description": "Reallocates WebGL resources for objects within this renderer.",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.old.js",
-            "line": 306,
-            "description": "Internally creates (or updates) a {@link xeogl.renderer.Object} of the given\nID from whatever component state cores are currently set on this {@link xeogl.Renderer}.\nThe object is created if it does not already exist in the display, otherwise\nit is updated with the current states, possibly replacing states already\nreferenced by the object.",
-            "params": [
-                {
-                    "name": "objectId",
-                    "description": "ID of object to create or update",
-                    "type": "String"
-                }
-            ],
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.old.js",
-            "line": 449,
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.old.js",
-            "line": 505,
-            "description": "Removes an object from this Renderer",
-            "params": [
-                {
-                    "name": "objectId",
-                    "description": "ID of object to remove",
-                    "type": "String"
-                }
-            ],
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.old.js",
-            "line": 541,
-            "description": "Renders a new frame, if neccessary.",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.old.js",
-            "line": 878,
-            "description": "Attempts to pick an object.",
-            "params": [
-                {
-                    "name": "params",
-                    "description": "Picking params.",
-                    "type": "*"
-                }
-            ],
-            "return": {
-                "description": "Hit result, if any.",
-                "type": "*"
-            },
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.old.js",
-            "line": 1097,
-            "description": "Reads the colors of some pixels in the last rendered frame.",
-            "params": [
-                {
-                    "name": "pixels",
-                    "description": "",
-                    "type": "Float32Array"
-                },
-                {
-                    "name": "colors",
-                    "description": "",
-                    "type": "Float32Array"
-                },
-                {
-                    "name": "len",
-                    "description": "",
-                    "type": "Number"
-                },
-                {
-                    "name": "opaqueOnly",
-                    "description": "",
-                    "type": "Boolean"
-                }
-            ],
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.old.js",
-            "line": 1143,
-            "description": "Destroys this Renderer.",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.opt.js",
-            "line": 7,
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.opt.js",
-            "line": 25,
-            "description": "Indicates if the canvas is transparent",
-            "type": "{boolean}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.opt.js",
-            "line": 31,
-            "description": "Optional callback to fire when renderer wants to\nbind an output framebuffer. This is useful when we need to bind a stereo output buffer for WebVR.\n\nWhen this is missing, the renderer will implicitly bind\nWebGL's default framebuffer.\n\nThe callback takes one parameter, which is the index of the current\nrendering pass in which the buffer is to be bound.\n\nUse like this: myRenderer.bindOutputFramebuffer = function(pass) { .. });",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.opt.js",
-            "line": 45,
-            "description": "Optional callback to fire when renderer wants to\nunbind any output drawing framebuffer that was\npreviously bound with #bindOutputFramebuffer.\n\nThe callback takes one parameter, which is the index of the current\nrendering pass in which the buffer is to be bound.\n\nUse like this: myRenderer.unbindOutputFramebuffer = function(pass) { .. });\n\nCallback takes no parameters.",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.opt.js",
-            "line": 65,
-            "description": "The current ambient color.",
-            "type": "Float32Array",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.opt.js",
-            "line": 113,
-            "description": "Visibility render state.",
-            "itemtype": "property",
-            "name": "visibility",
-            "type": "{renderer.Visibility}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.opt.js",
-            "line": 120,
-            "description": "Culling render state.",
-            "itemtype": "property",
-            "name": "cull",
-            "type": "{renderer.Cull}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.opt.js",
-            "line": 127,
-            "description": "Modes render state.",
-            "itemtype": "property",
-            "name": "modes",
-            "type": "{renderer.Modes}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.opt.js",
-            "line": 134,
-            "description": "Render state for an effects layer.",
-            "itemtype": "property",
-            "name": "layer",
-            "type": "{renderer.Layer}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.opt.js",
-            "line": 141,
-            "description": "Render state for an effects pipeline stage.",
-            "itemtype": "property",
-            "name": "stage",
-            "type": "{renderer.Layer}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.opt.js",
-            "line": 148,
-            "description": "Depth buffer render state.",
-            "itemtype": "property",
-            "name": "depthBuf",
-            "type": "{renderer.DepthBuf}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.opt.js",
-            "line": 155,
-            "description": "Color buffer render state.",
-            "itemtype": "property",
-            "name": "colorBuf",
-            "type": "{renderer.ColorBuf}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.opt.js",
-            "line": 162,
-            "description": "Lights render state.",
-            "itemtype": "property",
-            "name": "lights",
-            "type": "{renderer.Lights}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.opt.js",
-            "line": 169,
-            "description": "Material render state.",
-            "itemtype": "property",
-            "name": "material",
-            "type": "{renderer.Material}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.opt.js",
-            "line": 176,
-            "description": "Modelling transform render state.",
-            "itemtype": "property",
-            "name": "modelTransform",
-            "type": "{renderer.Transform}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.opt.js",
-            "line": 183,
-            "description": "View transform render state.",
-            "itemtype": "property",
-            "name": "viewTransform",
-            "type": "{renderer.Transform}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.opt.js",
-            "line": 190,
-            "description": "Projection transform render state.",
-            "itemtype": "property",
-            "name": "projTransform",
-            "type": "{renderer.Transform}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.opt.js",
-            "line": 197,
-            "description": "Billboard render state.",
-            "itemtype": "property",
-            "name": "billboard",
-            "type": "{renderer.Billboard}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.opt.js",
-            "line": 204,
-            "description": "Stationary render state.",
-            "itemtype": "property",
-            "name": "stationary",
-            "type": "{renderer.Stationary}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.opt.js",
-            "line": 211,
-            "description": "Color target render state.",
-            "itemtype": "property",
-            "name": "colorTarget",
-            "type": "{renderer.RenderTarget}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.opt.js",
-            "line": 218,
-            "description": "Depth target render state.",
-            "itemtype": "property",
-            "name": "depthTarget",
-            "type": "{renderer.RenderTarget}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.opt.js",
-            "line": 225,
-            "description": "Cross-section planes render state.",
-            "itemtype": "property",
-            "name": "clips",
-            "type": "{renderer.Clips}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.opt.js",
-            "line": 232,
-            "description": "Custom shader render state.",
-            "itemtype": "property",
-            "name": "shader",
-            "type": "{renderer.Shader}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.opt.js",
-            "line": 239,
-            "description": "Render state providing custom shader params.",
-            "itemtype": "property",
-            "name": "shaderParams",
-            "type": "{renderer.Shader}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.opt.js",
-            "line": 246,
-            "description": "Geometry render state.",
-            "itemtype": "property",
-            "name": "geometry",
-            "type": "{renderer.Geometry}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.opt.js",
-            "line": 253,
-            "description": "Viewport render state.",
-            "itemtype": "property",
-            "name": "viewport",
-            "type": "{renderer.Viewport}",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.opt.js",
-            "line": 262,
-            "description": "Flags the object list as needing to be rebuilt from the object map.",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.opt.js",
-            "line": 267,
-            "description": "Flags the object list as needing state orders to be recomputed.",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.opt.js",
-            "line": 272,
-            "description": "Flags the object list as needing to be state-sorted.",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.opt.js",
-            "line": 277,
-            "description": "Flags the image as needing to be redrawn from the object list.",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.opt.js",
-            "line": 283,
-            "description": "Reallocates WebGL resources for objects within this renderer.",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.opt.js",
-            "line": 306,
-            "description": "Internally creates (or updates) a {@link xeogl.renderer.Object} of the given\nID from whatever component state cores are currently set on this {@link xeogl.Renderer}.\nThe object is created if it does not already exist in the display, otherwise\nit is updated with the current states, possibly replacing states already\nreferenced by the object.",
-            "params": [
-                {
-                    "name": "objectId",
-                    "description": "ID of object to create or update",
-                    "type": "String"
-                }
-            ],
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.opt.js",
-            "line": 449,
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.opt.js",
-            "line": 505,
-            "description": "Removes an object from this Renderer",
-            "params": [
-                {
-                    "name": "objectId",
-                    "description": "ID of object to remove",
-                    "type": "String"
-                }
-            ],
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.opt.js",
-            "line": 541,
-            "description": "Renders a new frame, if neccessary.",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.opt.js",
-            "line": 878,
-            "description": "Attempts to pick an object.",
-            "params": [
-                {
-                    "name": "params",
-                    "description": "Picking params.",
-                    "type": "*"
-                }
-            ],
-            "return": {
-                "description": "Hit result, if any.",
-                "type": "*"
-            },
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.opt.js",
-            "line": 1097,
-            "description": "Reads the colors of some pixels in the last rendered frame.",
-            "params": [
-                {
-                    "name": "pixels",
-                    "description": "",
-                    "type": "Float32Array"
-                },
-                {
-                    "name": "colors",
-                    "description": "",
-                    "type": "Float32Array"
-                },
-                {
-                    "name": "len",
-                    "description": "",
-                    "type": "Number"
-                },
-                {
-                    "name": "opaqueOnly",
-                    "description": "",
-                    "type": "Boolean"
-                }
-            ],
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/renderer.opt.js",
-            "line": 1146,
-            "description": "Destroys this Renderer.",
             "class": "CameraFlightAnimation"
         },
         {
@@ -10165,7 +9107,7 @@
         },
         {
             "file": "src/_utils/inheritance.js",
-            "line": 116,
+            "line": 114,
             "description": "Returns a new UUID.",
             "itemtype": "method",
             "name": "createUUID",
@@ -17509,7 +16451,7 @@
         {
             "file": "src/materials/metallicMaterial.js",
             "line": 562,
-            "description": "RGB {{#crossLink \"Texture\"}}{{/crossLink}} containing this MetallicMaterial's metalness in its *R* component and roughness in its *G* component.\n\nIts *R* component multiplies by the {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}} property, while\nits *G* component multiplies by the {{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}} property.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this MetallicMaterial.\n\nFires a {{#crossLink \"MetallicMaterial/metallicRoughnessMap:event\"}}{{/crossLink}} event on change.",
+            "description": "RGB {{#crossLink \"Texture\"}}{{/crossLink}} containing this MetallicMaterial's metalness in its *R* component and roughness in its *G* component.\n\nIts *B* component multiplies by the {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}} property, while\nits *G* component multiplies by the {{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}} property.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this MetallicMaterial.\n\nFires a {{#crossLink \"MetallicMaterial/metallicRoughnessMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "metallicRoughnessMap",
             "default": "undefined",
@@ -18785,7 +17727,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 295,
+            "line": 296,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/image:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "image",
@@ -18802,7 +17744,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 302,
+            "line": 303,
             "description": "Fired whenever this Texture has loaded the\nimage file that its {{#crossLink \"Texture/src:property\"}}{{/crossLink}} property currently points to.",
             "itemtype": "event",
             "name": "loaded",
@@ -18819,7 +17761,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 340,
+            "line": 341,
             "description": "Indicates an HTML DOM Image object to source this Texture from.\n\nFires an {{#crossLink \"Texture/image:event\"}}{{/crossLink}} event on change.\n\nSets the {{#crossLink \"Texture/src:property\"}}{{/crossLink}} property to null.",
             "itemtype": "property",
             "name": "image",
@@ -18831,7 +17773,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 363,
+            "line": 364,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/image:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "image",
@@ -18848,7 +17790,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 376,
+            "line": 377,
             "description": "Indicates a path to an image file to source this Texture from.\n\nFires a {{#crossLink \"Texture/src:event\"}}{{/crossLink}} event on change.\n\nSets the {{#crossLink \"Texture/image:property\"}}{{/crossLink}} property to null.",
             "itemtype": "property",
             "name": "src",
@@ -18860,7 +17802,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 399,
+            "line": 400,
             "description": "Fired whenever this Texture's {{#crossLink \"Texture/src:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "src",
@@ -18877,7 +17819,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 413,
+            "line": 414,
             "description": "2D translation vector that will be added to this Texture's *S* and *T* coordinates.\n\nFires a {{#crossLink \"Texture/translate:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "translate",
@@ -18889,7 +17831,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 431,
+            "line": 432,
             "description": "Fired whenever this Texture's   {{#crossLink \"Texture/translate:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "translate",
@@ -18906,7 +17848,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 444,
+            "line": 445,
             "description": "2D scaling vector that will be applied to this Texture's *S* and *T* coordinates.\n\nFires a {{#crossLink \"Texture/scale:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "scale",
@@ -18918,7 +17860,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 462,
+            "line": 463,
             "description": "Fired whenever this Texture's   {{#crossLink \"Texture/scale:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "scale",
@@ -18935,7 +17877,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 475,
+            "line": 476,
             "description": "Rotation, in degrees, that will be applied to this Texture's *S* and *T* coordinates.\n\nFires a {{#crossLink \"Texture/rotate:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "rotate",
@@ -18947,7 +17889,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 499,
+            "line": 500,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/rotate:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "rotate",
@@ -18964,7 +17906,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 512,
+            "line": 513,
             "description": "How this Texture is sampled when a texel covers less than one pixel.\n\nOptions are:\n\n\n    * **\"nearest\"** - Uses the value of the texture element that is nearest\n    (in Manhattan distance) to the center of the pixel being textured.\n\n    * **\"linear\"** - Uses the weighted average of the four texture elements that are\n    closest to the center of the pixel being textured.\n\n    * **\"nearestMipmapNearest\"** - Chooses the mipmap that most closely matches the\n    size of the pixel being textured and uses the \"nearest\" criterion (the texture\n    element nearest to the center of the pixel) to produce a texture value.\n\n    * **\"linearMipmapNearest\"** - Chooses the mipmap that most closely matches the size of\n    the pixel being textured and uses the \"linear\" criterion (a weighted average of the\n    four texture elements that are closest to the center of the pixel) to produce a\n    texture value.\n\n    * **\"nearestMipmapLinear\"** - Chooses the two mipmaps that most closely\n    match the size of the pixel being textured and uses the \"nearest\" criterion\n    (the texture element nearest to the center of the pixel) to produce a texture\n    value from each mipmap. The final texture value is a weighted average of those two\n    values.\n\n    * **\"linearMipmapLinear\"** - **(default)** - Chooses the two mipmaps that most closely match the size\n    of the pixel being textured and uses the \"linear\" criterion (a weighted average\n    of the four texture elements that are closest to the center of the pixel) to\n    produce a texture value from each mipmap. The final texture value is a weighted\n    average of those two values.\n\n\nFires a {{#crossLink \"Texture/minFilter:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "minFilter",
@@ -18976,7 +17918,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 576,
+            "line": 577,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/minFilter:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "minFilter",
@@ -18993,7 +17935,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 589,
+            "line": 590,
             "description": "How this Texture is sampled when a texel covers more than one pixel.\n\nOptions are:\n\n\n    * **\"nearest\"** - Uses the value of the texture element that is nearest\n    (in Manhattan distance) to the center of the pixel being textured.\n    * **\"linear\"** - **(default)** - Uses the weighted average of the four texture elements that are\n    closest to the center of the pixel being textured.\n\n\nFires a {{#crossLink \"Texture/magFilter:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "magFilter",
@@ -19005,7 +17947,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 626,
+            "line": 627,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/magFilter:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "magFilter",
@@ -19022,7 +17964,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 639,
+            "line": 640,
             "description": "Wrap parameter for this Texture's *S* coordinate.\n\nOptions are:\n\n\n    * **\"clampToEdge\"** -  causes *S* coordinates to be clamped to the size of the texture.\n    * **\"mirroredRepeat\"** - causes the *S* coordinate to be set to the fractional part of the texture coordinate\n    if the integer part of *S* is even; if the integer part of *S* is odd, then the *S* texture coordinate is\n    set to *1 - frac ⁡ S* , where *frac ⁡ S* represents the fractional part of *S*.\n    * **\"repeat\"** - **(default)** - causes the integer part of the *S* coordinate to be ignored; xeogl uses only the\n    fractional part, thereby creating a repeating pattern.\n\n\nFires a {{#crossLink \"Texture/wrapS:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "wrapS",
@@ -19034,7 +17976,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 678,
+            "line": 679,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/wrapS:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "wrapS",
@@ -19051,7 +17993,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 691,
+            "line": 692,
             "description": "Wrap parameter for this Texture's *T* coordinate.\n\nOptions are:\n\n\n    * **\"clampToEdge\"** -  Causes *T* coordinates to be clamped to the size of the texture.\n    * **\"mirroredRepeat\"** - Causes the *T* coordinate to be set to the fractional part of the texture coordinate\n    if the integer part of *T* is even; if the integer part of *T* is odd, then the *T* texture coordinate is\n    set to *1 - frac ⁡ S* , where *frac ⁡ S* represents the fractional part of *T*.\n    * **\"repeat\"** - **(default)** - Causes the integer part of the *T* coordinate to be ignored; xeogl uses only the\n    fractional part, thereby creating a repeating pattern.\n\n\nFires a {{#crossLink \"Texture/wrapT:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "wrapT",
@@ -19063,7 +18005,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 730,
+            "line": 731,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/wrapT:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "wrapT",
@@ -19080,7 +18022,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 743,
+            "line": 744,
             "description": "Flips this Texture's source data along its vertical axis when true.\n\nFires a {{#crossLink \"Texture/flipY:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "flipY",
@@ -19092,7 +18034,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 767,
+            "line": 768,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/flipY:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "flipY",
@@ -21233,7 +20175,7 @@
             "file": "src/math/mathBoundaries.js",
             "line": 1,
             "description": "Boundary math functions.",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -21243,7 +20185,7 @@
             "description": "Returns a new, uninitialized 3D axis-aligned bounding box.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -21253,7 +20195,7 @@
             "description": "Returns a new, uninitialized 2D axis-aligned bounding box.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -21263,7 +20205,7 @@
             "description": "Returns a new, uninitialized 3D oriented bounding box (OBB).",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -21273,7 +20215,7 @@
             "description": "Returns a new, uninitialized 2D oriented bounding box (OBB).",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -21283,7 +20225,7 @@
             "description": "Transforms an OBB3 by a 4x4 matrix.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -21293,7 +20235,7 @@
             "description": "Gets the diagonal size of an AABB3 given as minima and maxima.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -21303,7 +20245,7 @@
             "description": "Get a diagonal boundary size that is symmetrical about the given point.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -21313,7 +20255,7 @@
             "description": "Gets the center of an AABB.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -21323,7 +20265,7 @@
             "description": "Gets the center of a 2D AABB.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -21333,7 +20275,7 @@
             "description": "Collapses a 3D axis-aligned boundary, ready to expand to fit 3D points.\nCreates new AABB if none supplied.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -21343,7 +20285,7 @@
             "description": "Converts an axis-aligned 3D boundary into an oriented boundary consisting of\nan array of eight 3D positions, one for each corner of the boundary.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -21353,7 +20295,7 @@
             "description": "Finds the minimum axis-aligned 3D boundary enclosing the homogeneous 3D points (x,y,z,w) given in a flattened array.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -21363,7 +20305,7 @@
             "description": "Finds the minimum axis-aligned 3D boundary enclosing the homogeneous 3D points (x,y,z,w) given in a flattened array.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -21373,7 +20315,7 @@
             "description": "Finds the minimum axis-aligned 3D boundary enclosing the given 3D points.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -21383,7 +20325,7 @@
             "description": "Finds the minimum boundary sphere enclosing the given 3D points.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -21393,7 +20335,7 @@
             "description": "Finds the minimum boundary sphere enclosing the given 3D points.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -21403,7 +20345,7 @@
             "description": "Gets the center of a bounding sphere.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -21413,7 +20355,7 @@
             "description": "Expands the first axis-aligned 3D boundary to enclose the second, if required.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -21423,7 +20365,7 @@
             "description": "Expands an axis-aligned 3D boundary to enclose the given point, if needed.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -21433,7 +20375,7 @@
             "description": "Collapses a 2D axis-aligned boundary, ready to expand to fit 2D points.\nCreates new AABB if none supplied.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -21443,7 +20385,7 @@
             "description": "Finds the minimum 2D projected axis-aligned boundary enclosing the given 3D points.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -21453,7 +20395,7 @@
             "description": "Expands the first axis-aligned 2D boundary to enclose the second, if required.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -21463,7 +20405,7 @@
             "description": "Expands an axis-aligned 2D boundary to enclose the given point, if required.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -21471,7 +20413,7 @@
             "file": "src/math/mathCurves.js",
             "line": 1,
             "description": "Curve math functions.",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -21479,7 +20421,7 @@
             "file": "src/math/mathGeometry.js",
             "line": 1,
             "description": "Geometry math functions.",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -21489,7 +20431,7 @@
             "description": "Calculates the normal vector of a triangle.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -21499,7 +20441,7 @@
             "description": "Finds the intersection of a 3D ray with a 3D triangle.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -21509,7 +20451,7 @@
             "description": "Finds the intersection of a 3D ray with a plane defined by 3 points.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -21519,7 +20461,7 @@
             "description": "Gets barycentric coordinates from cartesian coordinates within a triangle.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -21529,7 +20471,7 @@
             "description": "Returns true if the given barycentric coordinates are within their triangle.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -21539,7 +20481,7 @@
             "description": "Gets cartesian coordinates from barycentric coordinates within a triangle.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -21547,7 +20489,7 @@
             "file": "src/math/mathGeometryBuild.js",
             "line": 1,
             "description": "Boundary math functions.",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -21557,7 +20499,7 @@
             "description": "Builds normal vectors from positions and indices.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -21567,7 +20509,7 @@
             "description": "Builds vertex tangent vectors from positions, UVs and indices.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -21577,7 +20519,7 @@
             "description": "Builds vertex and index arrays needed by color-indexed triangle picking.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -21585,7 +20527,7 @@
             "file": "src/math/mathRays.js",
             "line": 1,
             "description": "Ray casting support functions.",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -21618,7 +20560,7 @@
                     "type": "Float32Array"
                 }
             ],
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -21656,7 +20598,7 @@
                     "type": "Float32Array"
                 }
             ],
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -21694,7 +20636,7 @@
                     "type": "Float32Array"
                 }
             ],
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -21702,7 +20644,7 @@
             "file": "src/models/gltf/glTFLoader.js",
             "line": 1,
             "description": "Private xeogl glTF loader core.\n\nAdapted from the THREE loader by Tony Parisi (http://www.tonyparisi.com)\nhttps://github.com/KhronosGroup/glTF/blob/master/loaders/threejs/glTFLoaderUtils.js",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -21710,100 +20652,9 @@
             "file": "src/models/gltf/glTFLoaderUtils.js",
             "line": 1,
             "description": "Private xeogl glTF loading utilities.\n\nAdapted from the THREE loader by Tony Parisi (http://www.tonyparisi.com)\nhttps://github.com/KhronosGroup/glTF/blob/master/loaders/threejs/glTFLoaderUtils.js",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
-        },
-        {
-            "file": "src/models/gltfModel.js",
-            "line": 144,
-            "description": "Path to a glTF file.\n\nYou can set this to a new file path at any time, which will cause the GLTFModel to load components from\nthe new file (after first destroying any components loaded from a previous file path).\n\nFires a {{#crossLink \"GLTFModel/src:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "src",
-            "type": "String",
-            "class": "GLTFModel",
-            "module": "xeogl",
-            "submodule": "models"
-        },
-        {
-            "file": "src/models/gltfModel.js",
-            "line": 170,
-            "description": "Fired whenever this GLTFModel has finished loading components from the glTF file\nspecified by {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}.",
-            "itemtype": "event",
-            "name": "loaded",
-            "class": "GLTFModel",
-            "module": "xeogl",
-            "submodule": "models"
-        },
-        {
-            "file": "src/models/gltfModel.js",
-            "line": 210,
-            "description": "Fired whenever this GLTFModel's {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "src",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "GLTFModel",
-            "module": "xeogl",
-            "submodule": "models"
-        },
-        {
-            "file": "src/models/gltfModel_v2.js",
-            "line": 159,
-            "description": "Path to a glTF file.\n\nYou can set this to a new file path at any time (except while loading), which will cause the GLTFModel to load components from\nthe new file (after first destroying any components loaded from a previous file path).\n\nFires a {{#crossLink \"GLTFModel/src:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "src",
-            "type": "String",
-            "class": "GLTFModel",
-            "module": "xeogl",
-            "submodule": "models"
-        },
-        {
-            "file": "src/models/gltfModel_v2.js",
-            "line": 185,
-            "description": "Fired whenever this GLTFModel has finished loading components from the glTF file\nspecified by {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}.",
-            "itemtype": "event",
-            "name": "loaded",
-            "class": "GLTFModel",
-            "module": "xeogl",
-            "submodule": "models"
-        },
-        {
-            "file": "src/models/gltfModel_v2.js",
-            "line": 208,
-            "description": "Fired whenever this GLTFModel fails to load the glTF file\nspecified by {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}.",
-            "itemtype": "event",
-            "name": "error",
-            "params": [
-                {
-                    "name": "msg",
-                    "description": "Description of the error",
-                    "type": "String"
-                }
-            ],
-            "class": "GLTFModel",
-            "module": "xeogl",
-            "submodule": "models"
-        },
-        {
-            "file": "src/models/gltfModel_v2.js",
-            "line": 217,
-            "description": "Fired whenever this GLTFModel's {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "src",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "GLTFModel",
-            "module": "xeogl",
-            "submodule": "models"
         },
         {
             "file": "src/models/model.js",
@@ -21917,7 +20768,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 604,
+            "line": 599,
             "description": "Fired whenever an individual {{#crossLink \"Component\"}}{{/crossLink}} is removed from this {{#crossLink \"Model\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "removed",
@@ -21934,7 +20785,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 616,
+            "line": 611,
             "description": "Iterates with a callback over the {{#crossLink \"Component\"}}Components{{/crossLink}} in this Model.",
             "itemtype": "method",
             "name": "iterate",
@@ -21958,7 +20809,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 635,
+            "line": 630,
             "description": "The Local-to-World-space (modelling) {{#crossLink \"Transform\"}}{{/crossLink}} attached to this Model.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this Model.\n\nInternally, the given {{#crossLink \"Transform\"}}{{/crossLink}} will be inserted above each top-most\n{{#crossLink \"Transform\"}}Transform{{/crossLink}} that the Model attaches to\nits {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nFires an {{#crossLink \"Model/transform:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "transform",
@@ -21969,7 +20820,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 653,
+            "line": 648,
             "description": "Fired whenever this Model's {{#crossLink \"Model/transform:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "transform",
@@ -21985,7 +20836,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 676,
+            "line": 671,
             "description": "World-space 3D boundary enclosing all the components in this Model.\n\nIf you call {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} on this boundary, then\nthis property will be assigned to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance next\ntime you reference it.",
             "itemtype": "property",
             "name": "worldBoundary",
@@ -24299,7 +23150,7 @@
         {
             "file": "src/scene.js",
             "line": 1248,
-            "description": "Attempts to pick an {{#crossLink \"Entity\"}}Entity{{/crossLink}} in this Scene.\n\nIgnores {{#crossLink \"Entity\"}}Entities{{/crossLink}} that are attached\nto either a {{#crossLink \"Stage\"}}Stage{{/crossLink}} with {{#crossLink \"Stage/pickable:property\"}}pickable{{/crossLink}}\nset *false* or a {{#crossLink \"Modes\"}}Modes{{/crossLink}} with {{#crossLink \"Modes/pickable:property\"}}pickable{{/crossLink}} set *false*.\n\nPicking the {{#crossLink \"Entity\"}}{{/crossLink}} at the given canvas coordinates:\n\n````javascript\nvar hit = scene.pick({\n    canvasPos: [23, 131]\n });\n\nif (hit) { // Picked an Entity\n    var entity = hit.entity;\n}\n````\n\n**Usage:**\n\nPicking the {{#crossLink \"Entity\"}}{{/crossLink}} that intersects a ray cast through the canvas:\n\n````javascript\nvar hit = scene.pick({\n    pickSurface: true,\n    canvasPos: [23, 131]\n });\n\nif (hit) { // Picked an Entity\n\n    var entity = hit.entity;\n\n    // These properties are only on the hit result when we do a ray-pick:\n\n    var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n    var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n    var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n    var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle\n    var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle\n    var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle\n    var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n    var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n    var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n}\n````\n\nPicking the {{#crossLink \"Entity\"}}{{/crossLink}} that intersects an arbitrarily-aligned World-space ray:\n\n````javascript\nvar hit = scene.pick({\n    pickSurface: true,       // Picking with arbitrarily-positioned ray\n    origin: [0,0,-5],    // Ray origin\n    direction: [0,0,1]   // Ray direction\n});\n\nif (hit) { // Picked an Entity with the ray\n\n    var entity = hit.entity;\n\n    var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n    var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n    var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n    var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle\n    var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle\n    var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle\n    var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n    var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n    var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n    var origin = hit.origin; // Float32Array containing the World-space ray origin\n    var direction = hit.direction; // Float32Array containing the World-space ray direction\n}\n````",
+            "description": "Attempts to pick an {{#crossLink \"Entity\"}}Entity{{/crossLink}} in this Scene.\n\nIgnores {{#crossLink \"Entity\"}}Entities{{/crossLink}} that are attached\nto {{#crossLink \"Modes\"}}Modes{{/crossLink}} with {{#crossLink \"Modes/pickable:property\"}}pickable{{/crossLink}}\nset *false*.\n\nPicking the {{#crossLink \"Entity\"}}{{/crossLink}} at the given canvas coordinates:\n\n````javascript\nvar hit = scene.pick({\n    canvasPos: [23, 131]\n });\n\nif (hit) { // Picked an Entity\n    var entity = hit.entity;\n}\n````\n\n**Usage:**\n\nPicking the {{#crossLink \"Entity\"}}{{/crossLink}} that intersects a ray cast through the canvas:\n\n````javascript\nvar hit = scene.pick({\n    pickSurface: true,\n    canvasPos: [23, 131]\n });\n\nif (hit) { // Picked an Entity\n\n    var entity = hit.entity;\n\n    // These properties are only on the hit result when we do a ray-pick:\n\n    var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n    var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n    var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n    var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle\n    var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle\n    var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle\n    var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n    var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n    var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n}\n````\n\nPicking the {{#crossLink \"Entity\"}}{{/crossLink}} that intersects an arbitrarily-aligned World-space ray:\n\n````javascript\nvar hit = scene.pick({\n    pickSurface: true,       // Picking with arbitrarily-positioned ray\n    origin: [0,0,-5],    // Ray origin\n    direction: [0,0,1]   // Ray direction\n});\n\nif (hit) { // Picked an Entity with the ray\n\n    var entity = hit.entity;\n\n    var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n    var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n    var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n    var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle\n    var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle\n    var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle\n    var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n    var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n    var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n    var origin = hit.origin; // Float32Array containing the World-space ray origin\n    var direction = hit.direction; // Float32Array containing the World-space ray direction\n}\n````",
             "itemtype": "method",
             "name": "pick",
             "params": [
@@ -26892,7 +25743,7 @@
         },
         {
             "file": "examples/js/skyboxes/skybox.js",
-            "line": 185,
+            "line": 193,
             "description": "Size of this Skybox, given as the distance from the center at [0,0,0] to each face.\n\nFires an {{#crossLink \"Skybox/size:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "size",
@@ -26904,7 +25755,7 @@
         },
         {
             "file": "examples/js/skyboxes/skybox.js",
-            "line": 202,
+            "line": 210,
             "description": "Fired whenever this Skybox's {{#crossLink \"Skybox/size:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "size",
@@ -26921,7 +25772,7 @@
         },
         {
             "file": "examples/js/skyboxes/skybox.js",
-            "line": 216,
+            "line": 224,
             "description": "Indicates whether this Skybox is visible or not.\n\nFires a {{#crossLink \"Skybox/active:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "active",
@@ -26933,7 +25784,7 @@
         },
         {
             "file": "examples/js/skyboxes/skybox.js",
-            "line": 231,
+            "line": 239,
             "description": "Fired whenever this Skybox's {{#crossLink \"Skybox/active:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "active",
@@ -27753,7 +26604,7 @@
         },
         {
             "file": "examples/js/models/glTFModel.js",
-            "line": 159,
+            "line": 160,
             "description": "Path to a glTF file.\n\nYou can set this to a new file path at any time (except while loading), which will cause the GLTFModel to load components from\nthe new file (after first destroying any components loaded from a previous file path).\n\nFires a {{#crossLink \"GLTFModel/src:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "src",
@@ -27764,7 +26615,7 @@
         },
         {
             "file": "examples/js/models/glTFModel.js",
-            "line": 185,
+            "line": 186,
             "description": "Fired whenever this GLTFModel has finished loading components from the glTF file\nspecified by {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "loaded",
@@ -27774,7 +26625,7 @@
         },
         {
             "file": "examples/js/models/glTFModel.js",
-            "line": 200,
+            "line": 201,
             "description": "Fired whenever this GLTFModel's {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "src",
@@ -27790,7 +26641,7 @@
         },
         {
             "file": "examples/js/models/glTFModel.js",
-            "line": 227,
+            "line": 228,
             "description": "Loads glTF from a URL into a {{#crossLink \"Model\"}}{{/crossLink}}.",
             "params": [
                 {
@@ -27816,7 +26667,7 @@
         },
         {
             "file": "examples/js/models/glTFModel.js",
-            "line": 257,
+            "line": 258,
             "description": "Fired whenever this GLTFModel fails to load the glTF file\nspecified by {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "error",
@@ -27833,7 +26684,7 @@
         },
         {
             "file": "examples/js/models/glTFModel.js",
-            "line": 268,
+            "line": 269,
             "description": "Parses glTF JSON into a {{#crossLink \"Model\"}}{{/crossLink}}.",
             "params": [
                 {
@@ -28868,18 +27719,6 @@
     "warnings": [
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/_renderer/renderer.new.js:1015"
-        },
-        {
-            "message": "replacing incorrect tag: returns with return",
-            "line": " src/_renderer/renderer.old.js:878"
-        },
-        {
-            "message": "replacing incorrect tag: returns with return",
-            "line": " src/_renderer/renderer.opt.js:878"
-        },
-        {
-            "message": "replacing incorrect tag: returns with return",
             "line": " src/canvas/canvas-v2.js:566"
         },
         {
@@ -29468,215 +28307,11 @@
         },
         {
             "message": "Missing item type\nAttempts to pick an object.",
-            "line": " src/_renderer/renderer.js:686"
+            "line": " src/_renderer/renderer.js:685"
         },
         {
             "message": "Missing item type\nReads the colors of some pixels in the current image.",
-            "line": " src/_renderer/renderer.js:888"
-        },
-        {
-            "message": "Missing item type",
-            "line": " src/_renderer/renderer.new.js:7"
-        },
-        {
-            "message": "Missing item type\nIndicates if the canvas is transparent",
-            "line": " src/_renderer/renderer.new.js:25"
-        },
-        {
-            "message": "Missing item type\nOptional callback to fire when renderer wants to\nbind an output framebuffer. This is useful when we need to bind a stereo output buffer for WebVR.\n\nWhen this is missing, the renderer will implicitly bind\nWebGL's default framebuffer.\n\nThe callback takes one parameter, which is the index of the current\nrendering pass in which the buffer is to be bound.\n\nUse like this: myRenderer.bindOutputFramebuffer = function(pass) { .. });",
-            "line": " src/_renderer/renderer.new.js:31"
-        },
-        {
-            "message": "Missing item type\nOptional callback to fire when renderer wants to\nunbind any output drawing framebuffer that was\npreviously bound with #bindOutputFramebuffer.\n\nThe callback takes one parameter, which is the index of the current\nrendering pass in which the buffer is to be bound.\n\nUse like this: myRenderer.unbindOutputFramebuffer = function(pass) { .. });\n\nCallback takes no parameters.",
-            "line": " src/_renderer/renderer.new.js:45"
-        },
-        {
-            "message": "Missing item type\nThe current ambient color.",
-            "line": " src/_renderer/renderer.new.js:65"
-        },
-        {
-            "message": "Missing item type\nFlags the object list as needing to be rebuilt from the object map.",
-            "line": " src/_renderer/renderer.new.js:270"
-        },
-        {
-            "message": "Missing item type\nFlags the object list as needing state orders to be recomputed.",
-            "line": " src/_renderer/renderer.new.js:275"
-        },
-        {
-            "message": "Missing item type\nFlags the object list as needing to be state-sorted.",
-            "line": " src/_renderer/renderer.new.js:280"
-        },
-        {
-            "message": "Missing item type\nFlags the image as needing to be redrawn from the object list.",
-            "line": " src/_renderer/renderer.new.js:285"
-        },
-        {
-            "message": "Missing item type\nReallocates WebGL resources for objects within this renderer.",
-            "line": " src/_renderer/renderer.new.js:291"
-        },
-        {
-            "message": "Missing item type\nInternally creates (or updates) a {@link xeogl.renderer.Object} of the given\nID from whatever component state cores are currently set on this {@link xeogl.Renderer}.\nThe object is created if it does not already exist in the display, otherwise\nit is updated with the current states, possibly replacing states already\nreferenced by the object.",
-            "line": " src/_renderer/renderer.new.js:314"
-        },
-        {
-            "message": "Missing item type",
-            "line": " src/_renderer/renderer.new.js:459"
-        },
-        {
-            "message": "Missing item type\nRemoves an object from this Renderer",
-            "line": " src/_renderer/renderer.new.js:515"
-        },
-        {
-            "message": "Missing item type\nRenders a new frame, if neccessary.",
-            "line": " src/_renderer/renderer.new.js:551"
-        },
-        {
-            "message": "Missing item type\nAttempts to pick an object.",
-            "line": " src/_renderer/renderer.new.js:1015"
-        },
-        {
-            "message": "Missing item type\nReads the colors of some pixels in the last rendered frame.",
-            "line": " src/_renderer/renderer.new.js:1234"
-        },
-        {
-            "message": "Missing item type\nDestroys this Renderer.",
-            "line": " src/_renderer/renderer.new.js:1280"
-        },
-        {
-            "message": "Missing item type",
-            "line": " src/_renderer/renderer.old.js:7"
-        },
-        {
-            "message": "Missing item type\nIndicates if the canvas is transparent",
-            "line": " src/_renderer/renderer.old.js:25"
-        },
-        {
-            "message": "Missing item type\nOptional callback to fire when renderer wants to\nbind an output framebuffer. This is useful when we need to bind a stereo output buffer for WebVR.\n\nWhen this is missing, the renderer will implicitly bind\nWebGL's default framebuffer.\n\nThe callback takes one parameter, which is the index of the current\nrendering pass in which the buffer is to be bound.\n\nUse like this: myRenderer.bindOutputFramebuffer = function(pass) { .. });",
-            "line": " src/_renderer/renderer.old.js:31"
-        },
-        {
-            "message": "Missing item type\nOptional callback to fire when renderer wants to\nunbind any output drawing framebuffer that was\npreviously bound with #bindOutputFramebuffer.\n\nThe callback takes one parameter, which is the index of the current\nrendering pass in which the buffer is to be bound.\n\nUse like this: myRenderer.unbindOutputFramebuffer = function(pass) { .. });\n\nCallback takes no parameters.",
-            "line": " src/_renderer/renderer.old.js:45"
-        },
-        {
-            "message": "Missing item type\nThe current ambient color.",
-            "line": " src/_renderer/renderer.old.js:65"
-        },
-        {
-            "message": "Missing item type\nFlags the object list as needing to be rebuilt from the object map.",
-            "line": " src/_renderer/renderer.old.js:262"
-        },
-        {
-            "message": "Missing item type\nFlags the object list as needing state orders to be recomputed.",
-            "line": " src/_renderer/renderer.old.js:267"
-        },
-        {
-            "message": "Missing item type\nFlags the object list as needing to be state-sorted.",
-            "line": " src/_renderer/renderer.old.js:272"
-        },
-        {
-            "message": "Missing item type\nFlags the image as needing to be redrawn from the object list.",
-            "line": " src/_renderer/renderer.old.js:277"
-        },
-        {
-            "message": "Missing item type\nReallocates WebGL resources for objects within this renderer.",
-            "line": " src/_renderer/renderer.old.js:283"
-        },
-        {
-            "message": "Missing item type\nInternally creates (or updates) a {@link xeogl.renderer.Object} of the given\nID from whatever component state cores are currently set on this {@link xeogl.Renderer}.\nThe object is created if it does not already exist in the display, otherwise\nit is updated with the current states, possibly replacing states already\nreferenced by the object.",
-            "line": " src/_renderer/renderer.old.js:306"
-        },
-        {
-            "message": "Missing item type",
-            "line": " src/_renderer/renderer.old.js:449"
-        },
-        {
-            "message": "Missing item type\nRemoves an object from this Renderer",
-            "line": " src/_renderer/renderer.old.js:505"
-        },
-        {
-            "message": "Missing item type\nRenders a new frame, if neccessary.",
-            "line": " src/_renderer/renderer.old.js:541"
-        },
-        {
-            "message": "Missing item type\nAttempts to pick an object.",
-            "line": " src/_renderer/renderer.old.js:878"
-        },
-        {
-            "message": "Missing item type\nReads the colors of some pixels in the last rendered frame.",
-            "line": " src/_renderer/renderer.old.js:1097"
-        },
-        {
-            "message": "Missing item type\nDestroys this Renderer.",
-            "line": " src/_renderer/renderer.old.js:1143"
-        },
-        {
-            "message": "Missing item type",
-            "line": " src/_renderer/renderer.opt.js:7"
-        },
-        {
-            "message": "Missing item type\nIndicates if the canvas is transparent",
-            "line": " src/_renderer/renderer.opt.js:25"
-        },
-        {
-            "message": "Missing item type\nOptional callback to fire when renderer wants to\nbind an output framebuffer. This is useful when we need to bind a stereo output buffer for WebVR.\n\nWhen this is missing, the renderer will implicitly bind\nWebGL's default framebuffer.\n\nThe callback takes one parameter, which is the index of the current\nrendering pass in which the buffer is to be bound.\n\nUse like this: myRenderer.bindOutputFramebuffer = function(pass) { .. });",
-            "line": " src/_renderer/renderer.opt.js:31"
-        },
-        {
-            "message": "Missing item type\nOptional callback to fire when renderer wants to\nunbind any output drawing framebuffer that was\npreviously bound with #bindOutputFramebuffer.\n\nThe callback takes one parameter, which is the index of the current\nrendering pass in which the buffer is to be bound.\n\nUse like this: myRenderer.unbindOutputFramebuffer = function(pass) { .. });\n\nCallback takes no parameters.",
-            "line": " src/_renderer/renderer.opt.js:45"
-        },
-        {
-            "message": "Missing item type\nThe current ambient color.",
-            "line": " src/_renderer/renderer.opt.js:65"
-        },
-        {
-            "message": "Missing item type\nFlags the object list as needing to be rebuilt from the object map.",
-            "line": " src/_renderer/renderer.opt.js:262"
-        },
-        {
-            "message": "Missing item type\nFlags the object list as needing state orders to be recomputed.",
-            "line": " src/_renderer/renderer.opt.js:267"
-        },
-        {
-            "message": "Missing item type\nFlags the object list as needing to be state-sorted.",
-            "line": " src/_renderer/renderer.opt.js:272"
-        },
-        {
-            "message": "Missing item type\nFlags the image as needing to be redrawn from the object list.",
-            "line": " src/_renderer/renderer.opt.js:277"
-        },
-        {
-            "message": "Missing item type\nReallocates WebGL resources for objects within this renderer.",
-            "line": " src/_renderer/renderer.opt.js:283"
-        },
-        {
-            "message": "Missing item type\nInternally creates (or updates) a {@link xeogl.renderer.Object} of the given\nID from whatever component state cores are currently set on this {@link xeogl.Renderer}.\nThe object is created if it does not already exist in the display, otherwise\nit is updated with the current states, possibly replacing states already\nreferenced by the object.",
-            "line": " src/_renderer/renderer.opt.js:306"
-        },
-        {
-            "message": "Missing item type",
-            "line": " src/_renderer/renderer.opt.js:449"
-        },
-        {
-            "message": "Missing item type\nRemoves an object from this Renderer",
-            "line": " src/_renderer/renderer.opt.js:505"
-        },
-        {
-            "message": "Missing item type\nRenders a new frame, if neccessary.",
-            "line": " src/_renderer/renderer.opt.js:541"
-        },
-        {
-            "message": "Missing item type\nAttempts to pick an object.",
-            "line": " src/_renderer/renderer.opt.js:878"
-        },
-        {
-            "message": "Missing item type\nReads the colors of some pixels in the last rendered frame.",
-            "line": " src/_renderer/renderer.opt.js:1097"
-        },
-        {
-            "message": "Missing item type\nDestroys this Renderer.",
-            "line": " src/_renderer/renderer.opt.js:1146"
+            "line": " src/_renderer/renderer.js:887"
         },
         {
             "message": "Missing item type\nRenderer states",
@@ -30228,11 +28863,11 @@
         },
         {
             "message": "Missing item type\nLoads glTF from a URL into a {{#crossLink \"Model\"}}{{/crossLink}}.",
-            "line": " examples/js/models/glTFModel.js:227"
+            "line": " examples/js/models/glTFModel.js:228"
         },
         {
             "message": "Missing item type\nParses glTF JSON into a {{#crossLink \"Model\"}}{{/crossLink}}.",
-            "line": " examples/js/models/glTFModel.js:268"
+            "line": " examples/js/models/glTFModel.js:269"
         },
         {
             "message": "Missing item type",

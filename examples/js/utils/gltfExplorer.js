@@ -12,40 +12,40 @@ var gltfExplorer = function (menuId, files) {
     var file = files[0];
 
     var outline = xeogl.scene.outline;
-    outline.color = [1.0,1.0,0.0];
+    outline.color = [1.0, 1.0, 0.0];
     outline.thickness = 8;
 
-    xeogl.scene.lights.lightMap = new xeogl.CubeTexture({
-        src: [
-            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
-            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png",
-            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png",
-            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png",
-            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png",
-            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png"
-        ]
-    });
+    //xeogl.scene.lights.lightMap = new xeogl.CubeTexture({
+    //    src: [
+    //        "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
+    //        "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png",
+    //        "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png",
+    //        "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png",
+    //        "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png",
+    //        "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png"
+    //    ]
+    //});
 
-    xeogl.scene.lights.lights = [
-        new xeogl.AmbientLight({
-            color: [0.7, 0.7, 0.8]
-        }),
-        new xeogl.PointLight({
-            pos: [-80, 60, 80],
-            color: [1.0, 1.0, 1.0],
-            space: "view"
-        }),
-        new xeogl.PointLight({
-            pos: [80, 40, 40],
-            color: [1.0, 1.0, 1.0],
-            space: "view"
-        }),
-        new xeogl.PointLight({
-            pos: [-20, 80, -80],
-            color: [1.0, 1.0, 1.0],
-            space: "view"
-        })
-    ];
+    //xeogl.scene.lights.lights = [
+    //    new xeogl.AmbientLight({
+    //        color: [0.7, 0.7, 0.8]
+    //    }),
+    //    new xeogl.PointLight({
+    //        pos: [-80, 60, 80],
+    //        color: [1.0, 1.0, 1.0],
+    //        space: "view"
+    //    }),
+    //    new xeogl.PointLight({
+    //        pos: [80, 40, 40],
+    //        color: [1.0, 1.0, 1.0],
+    //        space: "view"
+    //    }),
+    //    new xeogl.PointLight({
+    //        pos: [-20, 80, -80],
+    //        color: [1.0, 1.0, 1.0],
+    //        space: "view"
+    //    })
+    //];
 
     var model = new xeogl.GLTFModel({
         src: file.src
@@ -117,25 +117,31 @@ var gltfExplorer = function (menuId, files) {
 
         var entities = model.types["xeogl.Entity"];
         var entity;
+        var material;
 
         var html = [""];
+        var i = 0;
 
         for (var entityId in entities) {
             if (entities.hasOwnProperty(entityId)) {
 
                 entity = entities[entityId];
 
-                if (entity.material.type === "xeogl.PhongMaterial") {
-                    entity.material = new xeogl.SpecularMaterial({ // For fun, convert Phong to Specular PBR
-                        diffuse: entity.material.diffuse,
-                        specular: entity.material.specular,
-                        glossiness: 0.5,
-                        opacity: 0.3
-                    });
-                } else {
-                    entity.material = entity.material.clone();
-                    entity.material.opacity = 0.3;
-                }
+                entity.material = entity.material.clone();
+
+                //switch (entity.material.type) {
+                //    case "xeogl.PhongMaterial":
+                //        entity.material.diffuse = [0.5, 0.5, 0.5];
+                //        break;
+                //
+                //    case "xeogl.SpecularMaterial":
+                //        break;
+                //
+                //    case "xeogl.MetallicMaterial":
+                //        entity.material.baseColor = [0.5, 0.5, 0.5];
+                //        break;
+                //}
+                entity.material.opacity = 0.5;
 
                 entity.modes = entity.modes.clone();
                 entity.modes.transparent = true;
@@ -146,7 +152,7 @@ var gltfExplorer = function (menuId, files) {
                 model.add(entity.material);
                 model.add(entity.modes);
 
-                html.push("<a href='javascript:flyTo(\"" + entity.id + "\")'>" + ( entity.meta.name || "unnamed") + "</a><br>")
+                html.push("<a href='javascript:flyTo(\"" + entity.id + "\")'>" + (entity.meta.name || ("entity." + i++)) + "</a><br>")
             }
         }
 

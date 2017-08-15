@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.js"></script>
+    <script src="js/models/glTFModel.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - loading glTF 2.0</h1>
+    <pre id="log">model:  adam head - [<a
+            href='https://github.com/xeolabs/xeogl/tree/master/examples/models/gltf/adamHead/README.md' target="_parent">model info</a>]</pre>
+</div>
+
+<script>
+
+    //---------------------------------------------------
+    // Load the model
+    //---------------------------------------------------
+
+    var model = new xeogl.GLTFModel({
+        src: "models/gltf/ReciprocatingSaw/glTF-pbrSpecularGlossiness/ReciprocatingSaw.gltf",
+        transform: new xeogl.Rotate({
+            xyz: [1, 0, 0],
+            angle: 90
+        })
+    });
+
+    //-----------------------------------------------------------------------------------------------------
+    // Camera animation and user control
+    //-----------------------------------------------------------------------------------------------------
+
+    var view = xeogl.scene.camera.view;
+
+    view.eye = [-110.8940200805664, -44.85665512084961, 276.6570739746094];
+    view.look = [-110.8940200805664, -44.85665512084961, -0.46092796325683594];
+    view.up = [0, 1, 0];
+
+    view.zoom(20);
+
+    var spinning = false;
+
+    xeogl.scene.on("tick", function () { // Slowly orbit the camera
+        if (spinning) {
+            view.rotateEyeY(-0.1);
+        }
+    });
+
+    var cameraControl = new xeogl.CameraControl(); // User camera control
+    cameraControl.zoomSensitivity = 0.3;
+
+    var dirLights = [
+
+        new xeogl.DirLight({
+            id: "keyLight",
+            dir: [0.8, -0.6, -0.8],
+            color: [0.8, 0.8, 0.8],
+            intensity: 1.0,
+            space: "world"
+        }),
+
+        new xeogl.DirLight({
+            id: "fillLight",
+            dir: [-0.8, -0.4, -0.4],
+            color: [0.4, 0.4, 0.5],
+            intensity: 1.0,
+            space: "world"
+        }),
+
+        new xeogl.DirLight({
+            id: "rimLight",
+            dir: [0.2, -0.8, 0.8],
+            color: [0.8, 0.8, 0.8],
+            intensity: 1.0,
+            space: "world"
+        })
+    ];
+
+    var lightMap = new xeogl.CubeTexture({
+        src: [
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png"
+        ]
+    });
+
+    var reflectionMap = new xeogl.CubeTexture({
+        src: [
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
+        ]
+    });
+
+    var lights = xeogl.scene.lights;
+    lights.lights = dirLights;
+    //lights.lightMap = lightMap;
+    lights.reflectionMap = reflectionMap;
+
+
+</script>
+</body>
+</html>

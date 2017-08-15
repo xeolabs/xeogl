@@ -1,8 +1,6 @@
 function glTFGallery(models) {
 
-    // Create the default scene ourselves so we can
-    // have a transparent canvas on it
-    xeogl.scene = new xeogl.Scene();
+
 
     //--------------------------------------------------
     // Environment
@@ -72,19 +70,17 @@ function glTFGallery(models) {
     // Camera control
     //---------------------------------------------------
 
-    new xeogl.CameraControl();
-
-    var spinning = false;
+    var spinning = true;
 
     var view = xeogl.scene.camera.view;
-
-    view.rotateEyeY(230);
 
     xeogl.scene.on("tick", function () { // Slowly orbit the camera
         if (spinning) {
             view.rotateEyeY(-0.1);
         }
     });
+
+    new xeogl.CameraControl();
 
     //---------------------------------------------------
     // glTF model
@@ -94,7 +90,7 @@ function glTFGallery(models) {
 
     var cameraFlight = new xeogl.CameraFlightAnimation();
 
-    model.worldBoundary.on("updated", function () { // Auto-fit model to view
+    model.on("loaded", function () { // Auto-fit model to view
         cameraFlight.jumpTo({
             worldBoundary: model.worldBoundary,
             fit: true,
@@ -137,10 +133,6 @@ function glTFGallery(models) {
         window.loadModel = function (id) {
             var modelInfo = models[id];
             var src = modelInfo.src;
-            if (model) {
-                model.destroy();
-                model = new xeogl.GLTFModel();
-            }
             model.log("loading: " + src);
             model.src = src;
             var name = modelInfo.src;

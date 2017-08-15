@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.js"></script>
+    <script src="js/models/glTFModel.js"></script>
+
+    <script src="js/skyboxes/skybox.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+
+<body>
+
+<div id="info-bottom">
+    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - loading glTF 2.0</h1>
+    <pre id="log">model: <a
+            href='https://sketchfab.com/distance880' target="_parent">https://sketchfab.com/distance880</a></pre>
+</div>
+
+<script>
+
+    //---------------------------------------------------
+    // Load the model
+    //---------------------------------------------------
+
+    var model = new xeogl.GLTFModel({
+        src: "models/gltf/016mabc_sky_corridor/scene.gltf"
+    });
+
+    //-----------------------------------------------------------------------------------------------------
+    // Camera animation
+    //-----------------------------------------------------------------------------------------------------
+
+    var view = xeogl.scene.camera.view;
+
+    view.eye = [1.2372159957885742, -1.3792999982833862, 4.80970573425293];
+    view.look = [1.6894912719726562, -1.8132728338241577, 4.491430759429932];
+    view.up = [0.48519161343574524, 0.7960055470466614, -0.36262091994285583];
+
+    model.on("loaded", function () {
+        xeogl.scene.on("tick", function () { // Slowly orbit the camera
+                view.rotateEyeY(0.1);
+        });
+    });
+
+    //-----------------------------------------------------------------------------------------------------
+    // Lights
+    //-----------------------------------------------------------------------------------------------------
+
+    var lights = xeogl.scene.lights;
+
+    lights.lights = [
+        new xeogl.DirLight({
+            dir: [0.8, -0.6, -0.8],
+            color: [0.8, 0.8, 0.8],
+            intensity: 1.0,
+            space: "world"
+        }),
+
+        new xeogl.DirLight({
+            dir: [-0.8, -0.4, -0.4],
+            color: [0.4, 0.4, 0.5],
+            intensity: 1.0,
+            space: "world"
+        }),
+
+        new xeogl.DirLight({
+            dir: [0.2, -0.8, 0.8],
+            color: [0.8, 0.8, 0.8],
+            intensity: 1.0,
+            space: "world"
+        })
+    ];
+
+    lights.reflectionMap = new xeogl.CubeTexture({
+        src: [
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
+        ]
+    });
+
+</script>
+</body>
+</html>

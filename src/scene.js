@@ -1249,8 +1249,8 @@
          * Attempts to pick an {{#crossLink "Entity"}}Entity{{/crossLink}} in this Scene.
          *
          * Ignores {{#crossLink "Entity"}}Entities{{/crossLink}} that are attached
-         * to either a {{#crossLink "Stage"}}Stage{{/crossLink}} with {{#crossLink "Stage/pickable:property"}}pickable{{/crossLink}}
-         * set *false* or a {{#crossLink "Modes"}}Modes{{/crossLink}} with {{#crossLink "Modes/pickable:property"}}pickable{{/crossLink}} set *false*.
+         * to {{#crossLink "Modes"}}Modes{{/crossLink}} with {{#crossLink "Modes/pickable:property"}}pickable{{/crossLink}}
+         * set *false*.
          *
          * Picking the {{#crossLink "Entity"}}{{/crossLink}} at the given canvas coordinates:
          *

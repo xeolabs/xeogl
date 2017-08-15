@@ -1232,7 +1232,9 @@
                 } else {
                     add("textureCoord = texturePos.xy;");
                 }
-                add("diffuseColor *= texture2D(baseColorMap, textureCoord).rgb;");
+                add("vec4 baseColorTexel = texture2D(baseColorMap, textureCoord);");
+                add("diffuseColor *= baseColorTexel.rgb;");
+             //   add("opacity *= baseColorTexel.a;");
             }
 
             if (geometry.uv && material.emissiveMap) {
@@ -1333,7 +1335,7 @@
                         add("textureCoord = texturePos.xy;");
                     }
                     add("vec3 metalRoughRGB = texture2D(metallicRoughnessMap, textureCoord).rgb;");
-                    add("metallic *= metalRoughRGB.r;");
+                    add("metallic *= metalRoughRGB.b;");
                     add("roughness *= metalRoughRGB.g;");
                 }
 
@@ -1487,7 +1489,7 @@
 
 
             add("gl_FragColor = vec4(outgoingLight, opacity);");
-            //     add("gl_FragColor = LinearTosRGB(gl_FragColor);");  // Gamma correction
+             //    add("gl_FragColor = LinearTosRGB(gl_FragColor);");  // Gamma correction
 
             add("}");
 

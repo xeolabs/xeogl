@@ -322,7 +322,7 @@
                          specified by {{#crossLink "SceneJSModel/src:property"}}{{/crossLink}}.
                          @event loaded
                          */
-                        this.fire("loaded");
+                        this.fire("loaded", true, true);
 
                         return;
                     }

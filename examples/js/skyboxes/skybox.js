@@ -148,7 +148,15 @@
                     ]
                 }),
                 transform: new xeogl.Scale(this, {
-                    xyz: [2000, 2000, 2000] // Overridden when we initialize the 'size' property, below
+                    xyz: [2000, 2000, 2000], // Overridden when we initialize the 'size' property, below
+                    Xparent: new xeogl.Rotate(this, {
+                        xyz: [0, 0,1 ],
+                        angle: -90,
+                        parent: new xeogl.Rotate(this, {
+                            xyz: [0, 1, 0],
+                            angle: -90
+                        })
+                    })
                 }),
                 material: new xeogl.PhongMaterial(this, {
                     ambient: [0, 0, 0],
