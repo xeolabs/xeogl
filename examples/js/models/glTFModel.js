@@ -17,17 +17,18 @@
  * Can be transformed within World-space by attaching it to a {{#crossLink "Transform"}}{{/crossLink}}.
  * Provides its World-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}}.
 
- ## Supported glTF features
-
- TODO
-
- | Property | Type | Range | Default Value | Space | Description |
- |:--------:|:----:|:-----:|:-------------:|:-----:|:-----------:|
- |  {{#crossLink "MetallicMaterial/baseColor:property"}}{{/crossLink}} | Array | [0, 1] for all components | [1,1,1,1] | linear | The RGB components of the base color of the material. |
- | {{#crossLink "MetallicMaterial/metallic:property"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The metallic-ness the material (1 for metals, 0 for non-metals). |
- | {{#crossLink "MetallicMaterial/roughness:property"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The roughness of the material surface. |
-
  <img src="../../../assets/images/GLTFModel.png"></img>
+
+ ## Supported glTF 2.0 features
+
+ So far, GLTFModel loads only geometry, materials and modeling transform hierarchies, without animations. It does not
+ load cameras or lights because its purpose is to import models into environments that have already been created using
+ the xeogl API.
+
+ In addition to glTF's core metal-roughness material workflow, GLTFModel also supports two material extensions:
+
+ * [KHR_materials_pbrSpecularGlossiness](https://github.com/KhronosGroup/glTF/blob/master/extensions/Khronos/KHR_materials_pbrSpecularGlossiness/README.md)
+ * [KHR_materials_common](https://github.com/KhronosGroup/glTF/blob/master/extensions/Khronos/KHR_materials_common/README.md)
 
  ## Usage
 
