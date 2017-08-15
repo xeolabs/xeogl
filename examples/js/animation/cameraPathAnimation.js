@@ -30,7 +30,7 @@
  // Load a model from glTF
 
  var gearbox = new xeogl.GLTFModel({
-         src: "models/gltf/1.0/GearboxAssy/glTF/GearboxAssy.gltf"
+         src: "models/gltf/GearboxAssy/glTF/GearboxAssy.gltf"
  });
 
  // Define a CameraPath

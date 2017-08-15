@@ -10,7 +10,7 @@ TODO
  ````javascript
  // Load a gearbox model to draw marks on
  var gearbox = new xeogl.GLTFModel({
-         src: "models/gltf/1.0/GearboxAssy/glTF/GearboxAssy.gltf"
+         src: "models/gltf/GearboxAssy/glTF/GearboxAssy.gltf"
  });
 
  // Set initial camera position
