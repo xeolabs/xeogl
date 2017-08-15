@@ -8,9 +8,7 @@
 
     var initializing = false;
 
-    var fnTest = /xyz/.test(function () {
-        xyz;
-    }) ? /\b_super\b/ : /.*/;
+    var fnTest = /xyz/.test(function () {xyz;}) ? /\b_super\b/ : /.*/;
 
     // The base Class implementation (does nothing)
     this.Class = function () {

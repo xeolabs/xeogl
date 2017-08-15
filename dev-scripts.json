@@ -118,10 +118,6 @@
 
     "src/models/_module.js",
     "src/models/model.js",
-    "src/models/gltf/glTFParser.js",
-    "src/models/gltf/glTFLoaderUtils.js",
-    "src/models/gltf/glTFLoader.js",
-    "src/models/gltfModel.js",
 
     "src/outline/_module.js",
     "src/outline/outline.js",
