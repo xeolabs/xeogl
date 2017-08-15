@@ -48,7 +48,7 @@
     model.on("loaded", function () {
         xeogl.scene.on("tick", function () { // Slowly orbit the camera
             if (spinning) {
-                view.rotateEyeY(0.1);
+                view.rotateEyeY(0.05);
             }
         });
     });
