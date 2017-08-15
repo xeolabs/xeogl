@@ -67,7 +67,7 @@
  <script>
 
  var model = new xeogl.GLTFModel({
-    src: "models/gltf/Reciprocating_Saw/PBR-SpecGloss/Reciprocating_Saw.gltf",
+    src: "models/gltf/ReciprocatingSaw/PBR-SpecGloss/Reciprocating_Saw.gltf",
     transform: new xeogl.Rotate({
         xyz: [1, 0, 0],
         angle: 90

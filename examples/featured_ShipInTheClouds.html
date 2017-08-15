@@ -6,12 +6,9 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
     <script src="../build/xeogl.js"></script>
+    <script src="js/models/glTFModel.js"></script>
 
     <script src="js/skyboxes/skybox.js"></script>
-
-    <script src="libs/gl-matrix-min.js"></script>
-    <script src="js/zspace/zSpaceEffect_complete.js"></script>
-    <script src="js/zspace/zSpaceStylusControl.js"></script>
 
     <link href="css/styles.css" rel="stylesheet"/>
 
@@ -19,11 +16,9 @@
 
 <body>
 
-<div id="info">
-    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - loading glFT model with
-        physically-based materials</h1>
-    <pre id="log">model:  damaged helmet with metal/rough PBR materials - [<a
-            href='https://github.com/xeolabs/xeogl/tree/master/examples/models/gltf/2.0/DamagedHelmetModified/PBR-MetalRoughness/README.md' target="_parent">model info</a>]</pre>
+<div id="info-bottom">
+    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - loading glTF 2.0</h1>
+    <pre id="log">model: <a href='https://sketchfab.com/bastienBGR' target="_parent">sketchfab.com/bastienBGR</a></pre>
 </div>
 
 <div id="dat-gui-container">
@@ -32,11 +27,15 @@
 <script>
 
     //---------------------------------------------------
-    // Load the helmet model
+    // Load the model
     //---------------------------------------------------
 
     var model = new xeogl.GLTFModel({
-        src: "models/gltf/2.0/Lantern/glTF/Lantern.gltf"
+      // src: "models/gltf/terrain_alpine/scene.gltf"
+        src:"models/gltf/ship_in_clouds/scene.gltf",
+
+
+        transform: new xeogl.Scale({xyz: [0.01,0.01,0.01]})
     });
 
     xeogl.scene.lights.lights = [
@@ -50,20 +49,22 @@
 
     var view = xeogl.scene.camera.view;
 
-//    view.eye = [184.21, 10.54, -7.03];
-//    view.look = [159.20, 17.02, 3.21];
-//    view.up = [-0.15, 0.97, 0.13];
+    view.eye = [0.23802879452705383, 0.36215975880622864, -5.6078643798828125];
+    view.look =  [0.1910538673400879, -0.2249201238155365, -7.0243988037109375];
+    view.up = [-0.012683265842497349, 0.9238647222518921, -0.3824708163738251];
 
     var spinning = true;
 
-    xeogl.scene.on("tick", function () { // Slowly orbit the camera
-        if (spinning) {
-            view.rotateEyeY(-0.05);
-        }
+    model.on("loaded", function() {
+        xeogl.scene.on("tick", function () { // Slowly orbit the camera
+            if (spinning) {
+                view.rotateEyeY(-0.1);
+            }
+        });
     });
 
     var cameraControl = new xeogl.CameraControl(); // User camera control
-    cameraControl.mouseZoom.sensitivity = 0.1;
+    cameraControl.mouseZoom.sensitivity = .1;
 
     //-----------------------------------------------------------------------------------------------------
     // Environment
@@ -80,15 +81,15 @@
             dir: [0.8, -0.6, -0.8],
             color: [0.8, 0.8, 0.8],
             intensity: 1.0,
-            space: "view"
+            space: "world"
         }),
 
         new xeogl.DirLight({
             id: "fillLight",
             dir: [-0.8, -0.4, -0.4],
-            color: [0.4, 0.4, 0.5],
+            color: [0.4, 0.4, 0.4],
             intensity: 1.0,
-            space: "view"
+            space: "world"
         }),
 
         new xeogl.DirLight({
@@ -96,7 +97,7 @@
             dir: [0.2, -0.8, 0.8],
             color: [0.8, 0.8, 0.8],
             intensity: 1.0,
-            space: "view"
+            space: "world"
         })
     ];
 

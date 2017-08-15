@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
     <script src="../build/xeogl.js"></script>
+
+    <script src="js/models/glTFModel.js"></script>
     <script src="js/skyboxes/skybox.js"></script>
 
     <link href="libs/perfect-scrollbar.css" rel="stylesheet"/>
@@ -93,57 +95,57 @@
 
     glTFGallery([
         {
-            "src": "models/gltf/2.0/TriangleWithoutIndices/glTF/TriangleWithoutIndices.gltf",
-            "readme": "models/gltf/2.0/TriangleWithoutIndices/README.md",
-            "screenshot": "models/gltf/2.0/TriangleWithoutIndices/screenshot/screenshot.png",
-            "desc": "The simplest possible glTF asset: A single `scene` with a single `node` and a single `mesh` with a single `mesh.primitive` with a single triangle with a single attribute, without indices and without a `material`"
+            "src": "models/gltf/DamagedHelmet/glTF/DamagedHelmet.gltf",
+            "readme": "models/gltf/DamagedHelmet/README.md",
+            "screenshot": "models/gltf/DamagedHelmet/screenshot/screenshot.png",
+            "desc": "Damaged Helmet model"
         },
         {
-            "src": "models/gltf/2.0/Triangle/glTF/Triangle.gltf",
-            "readme": "models/gltf/2.0/Triangle/README.md",
-            "screenshot": "models/gltf/2.0/Triangle/screenshot/screenshot.png",
-            "desc": "A very simple glTF asset: The basic structure is the same as in Triangle Without Indices, but here, the `mesh.primitive` describes an *indexed* geometry"
+            "src": "models/gltf/BoomBox/glTF/BoomBox.gltf",
+            "readme": "models/gltf/BoomBox/README.md",
+            "screenshot": "models/gltf/BoomBox/screenshot/screenshot.jpg",
+            "desc": "Boombox model"
         },
         {
-            "src": "models/gltf/2.0/AnimatedTriangle/glTF/AnimatedTriangle.gltf",
-            "readme": "models/gltf/2.0/AnimatedTriangle/README.md",
-            "screenshot": "models/gltf/2.0/AnimatedTriangle/screenshot/screenshot.gif",
-            "desc": "This sample is similar to the Triangle, but the `node` has a `rotation` property that is modified with a simple `animation`"
+            "src": "models/gltf/SciFiHelmet/glTF/SciFiHelmet.gltf",
+            "readme": "models/gltf/SciFiHelmet/README.md",
+            "screenshot": "models/gltf/SciFiHelmet/screenshot/screenshot.jpg",
+            "desc": "Sci fi helmet"
         },
         {
-            "src": "models/gltf/2.0/SimpleMaterial/glTF/SimpleMaterial.gltf",
-            "readme": "models/gltf/2.0/SimpleMaterial/README.md",
-            "screenshot": "models/gltf/2.0/SimpleMaterial/screenshot/screenshot.png",
-            "desc": "This sample is similar to the [Triangle](Triangle), but additonally defines a `material` that consists of an emissive color"
+            "src": "models/gltf/Corset/glTF-pbrSpecularGlossiness/Corset.gltf",
+            "readme": "models/gltf/Corset/README.md",
+            "screenshot": "models/gltf/Corset/screenshot/screenshot.jpg",
+            "desc": "Corset"
         },
         {
-            "src": "models/gltf/2.0/SimpleMeshes/glTF/SimpleMeshes.gltf",
-            "readme": "models/gltf/2.0/SimpleMeshes/README.md",
-            "screenshot": "models/gltf/2.0/SimpleMeshes/screenshot/screenshot.png",
+            "src": "models/gltf/SimpleMeshes/glTF/SimpleMeshes.gltf",
+            "readme": "models/gltf/SimpleMeshes/README.md",
+            "screenshot": "models/gltf/SimpleMeshes/screenshot/screenshot.png",
             "desc": "A simple `scene` with two `nodes`, both containing the same `mesh`, namely a `mesh` with a single `mesh.primitive` with a single indexed triangle with *multiple* attributes (positions, normals and texture coordinates), but without a `material`"
         },
         {
-            "src": "models/gltf/2.0/AdvancedMaterial/glTF/AdvancedMaterial.gltf",
-            "readme": "models/gltf/2.0/AdvancedMaterial/README.md",
-            "screenshot": "models/gltf/2.0/AdvancedMaterial/screenshot/screenshot.png",
+            "src": "models/gltf/AdvancedMaterial/glTF/AdvancedMaterial.gltf",
+            "readme": "models/gltf/AdvancedMaterial/README.md",
+            "screenshot": "models/gltf/AdvancedMaterial/screenshot/screenshot.png",
             "desc": "This sample is similar to the [Simple Meshes](SimpleMeshes), but defines a `material` that includes a light, and thus shows the effect of the normals attribute"
         },
         {
-            "src": "models/gltf/2.0/SimpleOpacity/glTF/SimpleOpacity.gltf",
-            "readme": "models/gltf/2.0/SimpleOpacity/README.md",
-            "screenshot": "models/gltf/2.0/SimpleOpacity/screenshot/screenshot.png",
+            "src": "models/gltf/SimpleOpacity/glTF/SimpleOpacity.gltf",
+            "readme": "models/gltf/SimpleOpacity/README.md",
+            "screenshot": "models/gltf/SimpleOpacity/screenshot/screenshot.png",
             "desc": "A simple `scene` with multiple `nodes`, `meshes` and `materials`, where each `material` has different opacity values, ranging from fully transparent to fully opaque "
         },
         {
-            "src": "models/gltf/2.0/SimpleTexture/glTF/SimpleTexture.gltf",
-            "readme": "models/gltf/2.0/SimpleTexture/README.md",
-            "screenshot": "models/gltf/2.0/SimpleTexture/screenshot/screenshot.png",
+            "src": "models/gltf/SimpleTexture/glTF/SimpleTexture.gltf",
+            "readme": "models/gltf/SimpleTexture/README.md",
+            "screenshot": "models/gltf/SimpleTexture/screenshot/screenshot.png",
             "desc": "A sample with a `material` that uses a single `texture`"
         },
         {
-            "src": "models/gltf/2.0/SimpleSkin/glTF/SimpleSkin.gltf",
-            "readme": "models/gltf/2.0/SimpleSkin/README.md",
-            "screenshot": "models/gltf/2.0/SimpleSkin/screenshot/screenshot.gif",
+            "src": "models/gltf/SimpleSkin/glTF/SimpleSkin.gltf",
+            "readme": "models/gltf/SimpleSkin/README.md",
+            "screenshot": "models/gltf/SimpleSkin/screenshot/screenshot.gif",
             "desc": "A sample with a `skin`, showing very basic vertex skinning."
         }
     ]);

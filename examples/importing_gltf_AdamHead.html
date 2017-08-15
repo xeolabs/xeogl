@@ -5,13 +5,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
+    <script src="js/models/glTFModel.js"></script>
 
     <script src="js/skyboxes/skybox.js"></script>
-
-    <script src="libs/gl-matrix-min.js"></script>
-    <script src="js/zspace/zSpaceEffect_complete.js"></script>
-    <script src="js/zspace/zSpaceStylusControl.js"></script>
 
     <link href="css/styles.css" rel="stylesheet"/>
 
@@ -20,10 +17,10 @@
 <body>
 
 <div id="info">
-    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - loading glFT model with
-        physically-based materials</h1>
-    <pre id="log">model: telephone with specular/glossiness PBR materials - [<a
-            href='https://github.com/xeolabs/xeogl/tree/master/examples/models/gltf/2.0/Telephone/PBR-SpecGloss/README.md' target="_parent">model info</a>]</pre>
+    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - loading glTF 2.0</h1>
+    <pre id="log">model:  adam head - [<a
+            href='https://github.com/xeolabs/xeogl/tree/master/examples/models/gltf/adamHead/README.md'
+            target="_parent">model info</a>]</pre>
 </div>
 
 <div id="dat-gui-container">
@@ -36,28 +33,48 @@
     //---------------------------------------------------
 
     var model = new xeogl.GLTFModel({
-        src: "models/gltf/2.0/Telephone/PBR-SpecGloss/Telephone.gltf"
+        id: "adamHead",
+        src: "models/gltf/adamHead/adamHead.gltf"
     });
 
+    xeogl.scene.lights.lights = [
+        new xeogl.AmbientLight({
+            color: [1.0, 0.7, 0.7]
+        })
+    ];
     //-----------------------------------------------------------------------------------------------------
     // Camera animation and user control
     //-----------------------------------------------------------------------------------------------------
 
     var view = xeogl.scene.camera.view;
-    view.eye = [0.048415977507829666, 0.5941973328590393, -2.2399446964263916];
-    view.look = [0.020368551835417747, 0.09737318754196167, 0.23251037299633026];
-    view.up = [-0.0016276948153972626, 0.9896502494812012, 0.1434832215309143];
 
-    var spinning = false;
+    view.eye = [2.44, 0, 4.24];
+    view.look = [0, 0, 0];
+    view.up = [0, 1, 0];
 
-    xeogl.scene.on("tick", function () { // Slowly orbit the camera
-        if (spinning) {
-            view.rotateEyeY(-0.05);
-        }
+    var spinning = true;
+
+    model.on("loaded", function () {
+        xeogl.scene.on("tick", function () { // Slowly orbit the camera
+            if (spinning) {
+                view.rotateEyeY(-0.1);
+            }
+        });
+
+//        var face = model.entities["adamHead#0entity.0.72"];
+//        face.material = face.material.clone();
+//        face.material.opacity = 0.3;
+//        face.modes.transparent = true;
+
+//        var neck = model.entities["adamHead#0entity.0.74"];
+//        neck.material = neck.material.clone();
+//        neck.material.opacity = 0.3;
+//        neck.modes.transparent = true;
+
     });
 
     var cameraControl = new xeogl.CameraControl(); // User camera control
-    cameraControl.mouseZoom.sensitivity = 0.1;
+    cameraControl.zoomSensitivity = 0.3;
 
     //-----------------------------------------------------------------------------------------------------
     // Environment
@@ -74,7 +91,7 @@
             dir: [0.8, -0.6, -0.8],
             color: [0.8, 0.8, 0.8],
             intensity: 1.0,
-            space: "view"
+            space: "world"
         }),
 
         new xeogl.DirLight({
@@ -82,7 +99,7 @@
             dir: [-0.8, -0.4, -0.4],
             color: [0.4, 0.4, 0.5],
             intensity: 1.0,
-            space: "view"
+            space: "world"
         }),
 
         new xeogl.DirLight({
@@ -90,7 +107,7 @@
             dir: [0.2, -0.8, 0.8],
             color: [0.8, 0.8, 0.8],
             intensity: 1.0,
-            space: "view"
+            space: "world"
         })
     ];
 
@@ -135,7 +152,7 @@
             this["reflectionMap"] = !!lights.reflectionMap;
             this["dirLights"] = !!(lights.lights && lights.lights.length > 0);
             this["skybox"] = !!skybox.active;
-            this["spinning"] = false;
+            this["spinning"] = true;
 
             var self = this;
 
@@ -172,7 +189,7 @@
         lightsFolder.add(menu, 'reflectionMap', true);
         lightsFolder.add(menu, 'dirLights', false);
         lightsFolder.add(menu, 'skybox', true);
-        lightsFolder.add(menu, 'spinning', false);
+        lightsFolder.add(menu, 'spinning', true);
         lightsFolder.open();
     })();
 

@@ -66,7 +66,7 @@
  To switch to a different glTF file, simply update {{#crossLink "GLTFModel/src:property"}}{{/crossLink}}:
 
  ````javascript
- gearbox.src = "models/gltf/buggy/buggy.gltf"
+ gearbox.src = "models/gltf/Buggy/glTF/Buggy.gltf"
  ````
 
  ### Accessing components

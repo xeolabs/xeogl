@@ -5,13 +5,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
+    <script src="js/models/glTFModel.js"></script>
 
     <script src="js/skyboxes/skybox.js"></script>
-
-    <script src="libs/gl-matrix-min.js"></script>
-    <script src="js/zspace/zSpaceEffect_complete.js"></script>
-    <script src="js/zspace/zSpaceStylusControl.js"></script>
 
     <link href="css/styles.css" rel="stylesheet"/>
 
@@ -20,16 +17,50 @@
 <body>
 
 <div id="info">
-    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - loading glFT model with
-        physically-based materials</h1>
-    <pre id="log">model:  damaged helmet with metal/rough PBR materials - [<a
-            href='https://github.com/xeolabs/xeogl/tree/master/examples/models/gltf/2.0/DamagedHelmetModified/PBR-MetalRoughness/README.md' target="_parent">model info</a>]</pre>
+    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - loading glTF 2.0</h1>
+    <pre id="log">model:  damaged helmet - [<a
+            href='https://github.com/xeolabs/xeogl/tree/master/examples/models/gltf/DamagedHelmet/README.md' target="_parent">model info</a>]</pre>
 </div>
 
 <div id="dat-gui-container">
 </div>
 
 <script>
+
+    //---------------------------------------------------
+    // Load the model
+    //---------------------------------------------------
+
+    var model = new xeogl.GLTFModel({
+        src: "models/gltf/DamagedHelmet/glTF/DamagedHelmet.gltf"
+    });
+
+    xeogl.scene.lights.lights = [
+        new xeogl.AmbientLight({
+            color: [1.0, 0.7, 0.7]
+        })
+    ];
+    //-----------------------------------------------------------------------------------------------------
+    // Camera animation and user control
+    //-----------------------------------------------------------------------------------------------------
+
+    var view = xeogl.scene.camera.view;
+
+    view.eye = [0,0,-3.0];
+    view.look = [0,0,0];
+    view.up = [0,1,0];
+
+    var spinning = true;
+
+    model.on("loaded", function() {
+        xeogl.scene.on("tick", function () { // Slowly orbit the camera
+            if (spinning) {
+                view.rotateEyeY(-0.1);
+            }
+        });
+    });
+
+    var cameraControl = new xeogl.CameraControl(); // User camera control
 
     //-----------------------------------------------------------------------------------------------------
     // Environment
@@ -46,7 +77,7 @@
             dir: [0.8, -0.6, -0.8],
             color: [0.8, 0.8, 0.8],
             intensity: 1.0,
-            space: "view"
+            space: "world"
         }),
 
         new xeogl.DirLight({
@@ -54,7 +85,7 @@
             dir: [-0.8, -0.4, -0.4],
             color: [0.4, 0.4, 0.5],
             intensity: 1.0,
-            space: "view"
+            space: "world"
         }),
 
         new xeogl.DirLight({
@@ -62,7 +93,7 @@
             dir: [0.2, -0.8, 0.8],
             color: [0.8, 0.8, 0.8],
             intensity: 1.0,
-            space: "view"
+            space: "world"
         })
     ];
 
@@ -88,80 +119,10 @@
         ]
     });
 
-
     var lights = xeogl.scene.lights;
-    lights.lights = [];
+    lights.lights = dirLights;
     lights.lightMap = lightMap;
     lights.reflectionMap = reflectionMap;
-
-    //---------------------------------------------------
-    // Load the helmet model
-    //---------------------------------------------------
-
-    var helmet = new xeogl.GLTFModel({
-        src: "models/gltf/2.0/DamagedHelmetModified/PBR-MetalRoughness/DamagedHelmetModified.gltf"
-    });
-
-    var spinning = true;
-
-    helmet.on("loaded", function () {
-
-        //--------------------------------------------------------------------
-        // This particular model has only one entity, which is the the helmet.
-        // Get the entity and animate it's material's emissivity factor,
-        // which makes the helmet's glowing HUD display appear to flicker.
-        //--------------------------------------------------------------------
-
-        for (var id in helmet.entities) {
-            if (helmet.entities.hasOwnProperty(id)) {
-                var entity = helmet.entities[id];
-                xeogl.scene.on("tick", function () {
-                    entity.material.emissive = (Math.random() < 0.02) ? [0, 0, 0] : [1, 1, 1];
-                });
-                break; // Only one entity
-            }
-        }
-
-        //-----------------------------------------------------------------------------------------------------
-        // Camera animation and user control
-        //-----------------------------------------------------------------------------------------------------
-
-        var view = xeogl.scene.camera.view;
-
-        view.eye = [-2.0412752628326416, 0.000010520219802856445, -1.8574140071868896];
-        view.look = [0, -.15, 0];
-        view.up = [0, 1, 0];
-        view.rotateEyeY(340);
-
-        xeogl.scene.on("tick", function () { // Slowly orbit the camera
-            if (spinning) {
-                view.rotateEyeY(-0.05);
-            }
-        });
-
-        var cameraControl = new xeogl.CameraControl(); // User camera control
-        cameraControl.mouseZoom.sensitivity = 0.1;
-
-        //---------------------------------------------------
-        // Create a zSpace effect and stylus control
-        //---------------------------------------------------
-
-        var zspaceEffect = new xeogl.ZSpaceEffect({canvasOffset: [0, 0]}); // Assuming always fullscreen
-        new xeogl.ZSpaceStylusControl();
-
-        zspaceEffect.on("supported", function (supported) {
-            if (supported) {
-                // We're running on a zSpace display! Adjust the camera
-                // a little bit to account for display's special projection transform.
-                view.zoom(2);
-                view.rotateEyeX(30);
-            } else {
-                view.zoom(-.5);
-            }
-        });
-
-    });
-
 
     //------------------------------------------------------------------------------------------------------------------
     //  GUI
@@ -171,7 +132,7 @@
 
         var Menu = function () {
 
-            this.message = "xeogl.MetallicMaterial";
+            this.message = "xeogl.Environment";
 
             this["lightMap"] = !!lights.lightMap;
             this["reflectionMap"] = !!lights.reflectionMap;
@@ -182,27 +143,21 @@
             var self = this;
 
             var update = function () {
-
                 if (self["lightMap"] !== !!lights.lightMap) {
                     lights.lightMap = self["lightMap"] ? lightMap : null;
                 }
-
                 if (self["reflectionMap"] !== !!lights.reflectionMap) {
                     lights.reflectionMap = self["reflectionMap"] ? reflectionMap : null;
                 }
-
                 if (self["dirLights"] !== !!(lights.lights && lights.lights.length > 0)) {
                     lights.lights = self["dirLights"] ? dirLights : [];
                 }
-
                 if (self["skybox"] !== skybox.active) {
                     skybox.active = self["skybox"];
                 }
-
                 if (self["spinning"] !== spinning) {
                     spinning = self["spinning"];
                 }
-
                 requestAnimationFrame(update);
             };
 
@@ -222,15 +177,6 @@
         lightsFolder.add(menu, 'skybox', true);
         lightsFolder.add(menu, 'spinning', true);
         lightsFolder.open();
-
-        function typedToJS(arry) {
-            return [arry[0] * 255, arry[1] * 255, arry[2] * 255];
-        }
-
-        function JSToTyped(arry) {
-            return [arry[0] / 255, arry[1] / 255, arry[2] / 255];
-        }
-
     })();
 
 

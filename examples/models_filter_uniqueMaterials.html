@@ -8,6 +8,7 @@
     <link href="css/styles.css" rel="stylesheet"/>
 
     <script src="../build/xeogl.min.js"></script>
+    <script src="js/models/glTFModel.js"></script>
 
 <body>
 
@@ -33,7 +34,7 @@
     // Load glTF gearbox model
     var gearbox = new xeogl.GLTFModel({
         id: "gearbox",
-        src: "models/gltf/1.0/GearboxAssy/glTF/GearboxAssy.gltf"
+        src: "models/gltf/GearboxAssy/glTF/GearboxAssy.gltf"
     });
 
     // Once the GLTFModel is loaded, iterate over its Entity's
@@ -54,7 +55,7 @@
 
                 c.material = material;
 
-                c.material.diffuse = [Math.random(), Math.random(), Math.random()];
+                c.material.baseColor = [Math.random(), Math.random(), Math.random()];
 
                 gearbox.add(material);
             }
