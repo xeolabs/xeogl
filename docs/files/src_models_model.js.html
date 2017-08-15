@@ -799,11 +799,6 @@
                 delete this._onWorldBoundaryUpdated[component.id];
             }
 
-            if (!this._aabbDirty) {
-                this._setAABBDirty();
-            }
-
-
             /**
              * Fired whenever an individual {{#crossLink &quot;Component&quot;}}{{/crossLink}} is removed from this {{#crossLink &quot;Model&quot;}}{{/crossLink}}.
              * @event removed

@@ -1489,7 +1489,7 @@
 
 
             add("gl_FragColor = vec4(outgoingLight, opacity);");
-            //     add("gl_FragColor = LinearTosRGB(gl_FragColor);");  // Gamma correction
+             //    add("gl_FragColor = LinearTosRGB(gl_FragColor);");  // Gamma correction
 
             add("}");
 

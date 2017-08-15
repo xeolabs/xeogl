@@ -536,6 +536,16 @@ currently has one.</p>
                                 <a href="#method_add">add</a>
 
                             </li>
+                            <li class="index-item method">
+                                <a href="#method_canvasPosToLocalRay">canvasPosToLocalRay</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_canvasPosToWorldRay">canvasPosToWorldRay</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
                             <li class="index-item method inherited">
                                 <a href="#method_create">create</a>
 
@@ -587,6 +597,11 @@ currently has one.</p>
                             <li class="index-item method inherited">
                                 <a href="#method_warn">warn</a>
 
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_worldRayToLocalRay">worldRayToLocalRay</a>
+
+                                    <span class="flag static">static</span>
                             </li>
                     </ul>
                 </div>
@@ -735,6 +750,218 @@ currently has one.</p>
 
                     <div class="param-description">
                         <p>ID, definition or instance of a <a href="../classes/Component.html" class="crosslink">Component</a> type or subtype.</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_canvasPosToLocalRay" class="method item">
+    <h3 class="name"><code>canvasPosToLocalRay</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>camera</code>
+                </li>
+                <li class="arg">
+                        <code>entity</code>
+                </li>
+                <li class="arg">
+                        <code>canvasPos</code>
+                </li>
+                <li class="arg">
+                        <code>localRayOrigin</code>
+                </li>
+                <li class="arg">
+                        <code>localRayDir</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+        <span class="flag static">static</span>
+
+
+
+
+    <div class="meta">
+                    <p>Provided by the <a href="../modules/xeogl.html">xeogl</a> module.</p>
+                <p>
+                Defined in
+        <a href="../files/src_math_mathRays.js.html#l73"><code>src&#x2F;math&#x2F;mathRays.js:73</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Transforms a Canvas-space position to an Entity&#39;s Local-space coordinate system, in the context of a Camera.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">camera</code>
+                        <span class="type"><a href="../classes/Camera.html" class="crosslink">Camera</a></span>
+
+
+                    <div class="param-description">
+                        <p>The Camera.</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">entity</code>
+                        <span class="type"><a href="../classes/Entity.html" class="crosslink">Entity</a></span>
+
+
+                    <div class="param-description">
+                        <p>The Entity.</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">canvasPos</code>
+                        <span class="type">Float32Array</span>
+
+
+                    <div class="param-description">
+                        <p>The Canvas-space position.</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">localRayOrigin</code>
+                        <span class="type">Float32Array</span>
+
+
+                    <div class="param-description">
+                        <p>The Local-space ray origin.</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">localRayDir</code>
+                        <span class="type">Float32Array</span>
+
+
+                    <div class="param-description">
+                        <p>The Local-space ray direction.</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_canvasPosToWorldRay" class="method item">
+    <h3 class="name"><code>canvasPosToWorldRay</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>camera</code>
+                </li>
+                <li class="arg">
+                        <code>canvasPos</code>
+                </li>
+                <li class="arg">
+                        <code>worldRayOrigin</code>
+                </li>
+                <li class="arg">
+                        <code>worldRayDir</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+        <span class="flag static">static</span>
+
+
+
+
+    <div class="meta">
+                    <p>Provided by the <a href="../modules/xeogl.html">xeogl</a> module.</p>
+                <p>
+                Defined in
+        <a href="../files/src_math_mathRays.js.html#l10"><code>src&#x2F;math&#x2F;mathRays.js:10</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Transforms a Canvas-space position into a World-space ray, in the context of a Camera.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">camera</code>
+                        <span class="type"><a href="../classes/Camera.html" class="crosslink">Camera</a></span>
+
+
+                    <div class="param-description">
+                        <p>The Camera.</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">canvasPos</code>
+                        <span class="type">Float32Array</span>
+
+
+                    <div class="param-description">
+                        <p>The Canvas-space position.</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">worldRayOrigin</code>
+                        <span class="type">Float32Array</span>
+
+
+                    <div class="param-description">
+                        <p>The World-space ray origin.</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">worldRayDir</code>
+                        <span class="type">Float32Array</span>
+
+
+                    <div class="param-description">
+                        <p>The World-space ray direction.</p>
 
                     </div>
 
@@ -1166,7 +1393,7 @@ myRotate.isType(xeogl.Entity); // Returns false, because xeogl.Rotate does not (
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_models_model.js.html#l616"><code>src&#x2F;models&#x2F;model.js:616</code></a>
+        <a href="../files/src_models_model.js.html#l611"><code>src&#x2F;models&#x2F;model.js:611</code></a>
         </p>
 
 
@@ -1598,6 +1825,119 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
 </div>
+<div id="method_worldRayToLocalRay" class="method item">
+    <h3 class="name"><code>worldRayToLocalRay</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>entity</code>
+                </li>
+                <li class="arg">
+                        <code>worldRayOrigin</code>
+                </li>
+                <li class="arg">
+                        <code>worldRayDir</code>
+                </li>
+                <li class="arg">
+                        <code>localRayOrigin</code>
+                </li>
+                <li class="arg">
+                        <code>localRayDir</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+        <span class="flag static">static</span>
+
+
+
+
+    <div class="meta">
+                    <p>Provided by the <a href="../modules/xeogl.html">xeogl</a> module.</p>
+                <p>
+                Defined in
+        <a href="../files/src_math_mathRays.js.html#l94"><code>src&#x2F;math&#x2F;mathRays.js:94</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Transforms a ray from World-space to an Entity&#39;s Local-space coordinate system.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">entity</code>
+                        <span class="type"><a href="../classes/Entity.html" class="crosslink">Entity</a></span>
+
+
+                    <div class="param-description">
+                        <p>The Entity.</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">worldRayOrigin</code>
+                        <span class="type">Float32Array</span>
+
+
+                    <div class="param-description">
+                        <p>The World-space ray origin.</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">worldRayDir</code>
+                        <span class="type">Float32Array</span>
+
+
+                    <div class="param-description">
+                        <p>The World-space ray direction.</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">localRayOrigin</code>
+                        <span class="type">Float32Array</span>
+
+
+                    <div class="param-description">
+                        <p>The Local-space ray origin.</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">localRayDir</code>
+                        <span class="type">Float32Array</span>
+
+
+                    <div class="param-description">
+                        <p>The Local-space ray direction.</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
             </div>
 
             <div id="properties" class="api-class-tabpanel">
@@ -1904,7 +2244,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_model.js.html#l635"><code>src&#x2F;models&#x2F;model.js:635</code></a>
+                            <a href="../files/src_models_model.js.html#l630"><code>src&#x2F;models&#x2F;model.js:630</code></a>
                             </p>
                     
                     
@@ -2000,7 +2340,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_model.js.html#l676"><code>src&#x2F;models&#x2F;model.js:676</code></a>
+                            <a href="../files/src_models_model.js.html#l671"><code>src&#x2F;models&#x2F;model.js:671</code></a>
                             </p>
                     
                     
@@ -2101,7 +2441,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_model.js.html#l604"><code>src&#x2F;models&#x2F;model.js:604</code></a>
+                            <a href="../files/src_models_model.js.html#l599"><code>src&#x2F;models&#x2F;model.js:599</code></a>
                             </p>
                     
                     
@@ -2143,7 +2483,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_model.js.html#l653"><code>src&#x2F;models&#x2F;model.js:653</code></a>
+                            <a href="../files/src_models_model.js.html#l648"><code>src&#x2F;models&#x2F;model.js:648</code></a>
                             </p>
                     
                     
