@@ -314,7 +314,7 @@ xeogl.Annotation = xeogl.Pin.extend({
                 this._titleElement.innerHTML = this._title;
 
                 /**
-                 Fired whenever this Annotation's {{#crossLink "Annotation/look:property"}}{{/crossLink}} property changes.
+                 Fired whenever this Annotation's {{#crossLink "Annotation/title:property"}}{{/crossLink}} property changes.
 
                  @event title
                  @param value {Number} The property's new value
