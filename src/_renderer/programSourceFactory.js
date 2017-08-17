@@ -1223,7 +1223,9 @@
                 } else {
                     add("textureCoord = texturePos.xy;");
                 }
-                add("diffuseColor *= texture2D(diffuseMap, textureCoord).rgb;");
+                add("vec4 diffuseTexel = texture2D(diffuseMap, textureCoord);");
+                add("diffuseColor *= diffuseTexel.rgb;");
+                add("opacity *= diffuseTexel.a;");
             }
 
             if (geometry.uv && material.baseColorMap) {
@@ -1234,7 +1236,7 @@
                 }
                 add("vec4 baseColorTexel = texture2D(baseColorMap, textureCoord);");
                 add("diffuseColor *= baseColorTexel.rgb;");
-             //   add("opacity *= baseColorTexel.a;");
+                add("opacity *= baseColorTexel.a;");
             }
 
             if (geometry.uv && material.emissiveMap) {
