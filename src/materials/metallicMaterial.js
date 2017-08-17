@@ -250,7 +250,7 @@
  @param [cfg.normalMap=undefined] {Texture} RGB tangent-space normal {{#crossLink "Texture"}}{{/crossLink}}. Must be
  within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MetallicMaterial.
 
- @param [cfg.alphaMode="blend"] {String} The alpha blend mode - accepted values are "opaque", "blend" and "mask".
+ @param [cfg.alphaMode="opaque"] {String} The alpha blend mode - accepted values are "opaque", "blend" and "mask".
  See the {{#crossLink "MetallicMaterial/alphaMode:property"}}{{/crossLink}} property for more info.
 
  @param [cfg.alphaCutoff=0.5] {Number} The alpha cutoff value.
@@ -284,7 +284,7 @@
                 emissiveMap: null,
                 occlusionMap: null,
                 normalMap: null,
-                alphaMode: 2,
+                alphaMode: 0, // "opaque"
                 alphaCutoff: 0.5,
                 hash: null
             });
@@ -879,7 +879,7 @@
              Fires an {{#crossLink "MetallicMaterial/alphaMode:event"}}{{/crossLink}} event on change.
 
              @property alphaMode
-             @default "blend"
+             @default "opaque"
              @type {String}
              */
             alphaMode: (function () {
@@ -891,7 +891,7 @@
                 return {
                     set: function (alphaMode) {
 
-                        alphaMode = alphaMode || "blend";
+                        alphaMode = alphaMode || "opaque";
 
                         var value = modes[alphaMode];
 
@@ -899,7 +899,7 @@
                             this.error("Unsupported value for 'alphaMode': " + alphaMode);
                         }
 
-                        if (this._state.alphaMode == value) {
+                        if (this._state.alphaMode === value) {
                             return;
                         }
 

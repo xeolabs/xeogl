@@ -583,7 +583,7 @@
                 if (!object.compiled || object.cull.culled === true || object.visibility.visible === false) {
                     continue;
                 }
-                if (object.modes.transparent) {
+                if (object.material.alphaMode !== 0) { // Treat "blend" and "mask" the same for now
                     transparentObjects[numTransparentObjects++] = object;
                     continue;
                 }

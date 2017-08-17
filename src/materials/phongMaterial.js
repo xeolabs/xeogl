@@ -124,7 +124,7 @@
  @param [cfg.emissiveFresnel=undefined] {Fresnel} An emissive {{#crossLink "Fresnel"}}Fresnel{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
  @param [cfg.alphaFresnel=undefined] {Fresnel} An alpha {{#crossLink "Fresnel"}}Fresnel{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
  @param [cfg.reflectivityFresnel=undefined] {Fresnel} A reflectivity {{#crossLink "Fresnel"}}Fresnel{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
- @param [cfg.alphaMode="blend"] {String} The alpha blend mode - accepted values are "opaque", "blend" and "mask".
+ @param [cfg.alphaMode="opaque"] {String} The alpha blend mode - accepted values are "opaque", "blend" and "mask".
  See the {{#crossLink "PhongMaterial/alphaMode:property"}}{{/crossLink}} property for more info.
  @param [cfg.alphaCutoff=0.5] {Number} The alpha cutoff value.
  See the {{#crossLink "PhongMaterial/alphaCutoff:property"}}{{/crossLink}} property for more info.
@@ -152,7 +152,7 @@
                 shininess: 80.0,
                 reflectivity: 1.0,
 
-                alphaMode: 2,// "blend"
+                alphaMode: 0, // "opaque"
                 alphaCutoff: 0.5,
 
                 lineWidth: 1.0,
@@ -1064,7 +1064,7 @@
              Fires an {{#crossLink "PhongMaterial/alphaMode:event"}}{{/crossLink}} event on change.
 
              @property alphaMode
-             @default "blend"
+             @default "opaque"
              @type {String}
              */
             alphaMode: (function () {
@@ -1076,7 +1076,7 @@
                 return {
                     set: function (alphaMode) {
 
-                        alphaMode = alphaMode || "blend";
+                        alphaMode = alphaMode || "opaque";
 
                         var value = modes[alphaMode];
 
@@ -1084,7 +1084,7 @@
                             this.error("Unsupported value for 'alphaMode': " + alphaMode);
                         }
 
-                        if (this._state.alphaMode == value) {
+                        if (this._state.alphaMode === value) {
                             return;
                         }
 

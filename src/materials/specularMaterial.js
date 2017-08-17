@@ -241,7 +241,7 @@
  alpha in its *R* component. The *R* component multiplies by the {{#crossLink "SpecularMaterial/alpha:property"}}{{/crossLink}} property. Must
  be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this SpecularMaterial.
 
- @param [cfg.alphaMode="blend"] {String} The alpha blend mode - accepted values are "opaque", "blend" and "mask".
+ @param [cfg.alphaMode="opaque"] {String} The alpha blend mode - accepted values are "opaque", "blend" and "mask".
  See the {{#crossLink "SpecularMaterial/alphaMode:property"}}{{/crossLink}} property for more info.
 
  @param [cfg.alphaCutoff=0.5] {Number} The alpha cutoff value.
@@ -275,7 +275,7 @@
                 occlusionMap: null,
                 alphaMap: null,
                 normalMap: null,
-                alphaMode: 2, // "blend"
+                alphaMode: 0, // "opaque"
                 alphaCutoff: 0.5,
                 hash: null
             });
@@ -882,7 +882,7 @@
              Fires an {{#crossLink "SpecularMaterial/alphaMode:event"}}{{/crossLink}} event on change.
 
              @property alphaMode
-             @default "blend"
+             @default "opaque"
              @type {String}
              */
             alphaMode: (function () {
@@ -894,7 +894,7 @@
                 return {
                     set: function (alphaMode) {
 
-                        alphaMode = alphaMode || "blend";
+                        alphaMode = alphaMode || "opaque";
 
                         var value = modes[alphaMode];
 
@@ -902,7 +902,7 @@
                             this.error("Unsupported value for 'alphaMode': " + alphaMode);
                         }
 
-                        if (this._state.alphaMode == value) {
+                        if (this._state.alphaMode === value) {
                             return;
                         }
 
