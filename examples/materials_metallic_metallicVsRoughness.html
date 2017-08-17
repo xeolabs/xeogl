@@ -236,7 +236,7 @@
                     material.emissive = JSToTyped(self["emissive"]);
                     material.alpha = self["alpha"];
                     material.specularF0 = self["specularF0"];
-                    entity.modes.transparent = (material.alpha < 1);
+                    material.alphaMode = (material.alpha < 1) ? "blend" : "opaque";
 
                     if (self["lightMap"] !== !!lights.lightMap) {
                         lights.lightMap = self["lightMap"] ? lightMap : null;

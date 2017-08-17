@@ -68,7 +68,7 @@ var gltfExplorer = function (menuId, files) {
             if (!id) {
                 cameraFlight.flyTo();
                 if (lastEntity) {
-                    lastEntity.modes.transparent = true;
+                    lastEntity.material.alphaMode = "blend";
                     lastEntity.modes.outline = false;
                     lastEntity = null;
                 }
@@ -80,11 +80,11 @@ var gltfExplorer = function (menuId, files) {
             if (entity) {
 
                 if (lastEntity) {
-                    lastEntity.modes.transparent = true;
+                    lastEntity.material.alphaMode = "blend";
                     lastEntity.modes.outline = false;
                 }
 
-                entity.modes.transparent = false;
+                entity.material.alphaMode = "opaque";
                 entity.modes.outline = true;
 
                 cameraFlight.flyTo({
@@ -144,7 +144,7 @@ var gltfExplorer = function (menuId, files) {
                 entity.material.alpha = 0.5;
 
                 entity.modes = entity.modes.clone();
-                entity.modes.transparent = true;
+                entity.material.alphaMode = "blend";
 
                 // Add the Material and Modes to the GLTFModel
                 // so that they get destroyed automatically

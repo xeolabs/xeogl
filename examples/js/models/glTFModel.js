@@ -599,8 +599,6 @@
                 cfg.emissive = emissiveFactor;
             }
 
-            // TODO: Alpha handling - see https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/schema/material.schema.json
-
             var alphaMode = materialInfo.alphaMode;
             switch (alphaMode) {
                 case "OPAQUE":
@@ -616,13 +614,8 @@
             }
 
             var alphaCutoff = materialInfo.alphaCutoff;
-            if (alphaCutoff) {
+            if (alphaCutoff !== undefined) {
                 cfg.alphaCutoff = alphaCutoff;
-            }
-
-            var doubleSided = materialInfo.doubleSided;
-            if (doubleSided) {
-                //
             }
 
             var extensions = materialInfo.extensions;

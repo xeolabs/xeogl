@@ -45,7 +45,7 @@ var Transition = function () {
                 return function (t) {
                     var newAlpha = startAlpha + (t * (alpha - startAlpha));
                     entity.material.alpha =newAlpha;
-                    entity.modes.transparent = (newAlpha < 1.0);
+                    entity.material.alphaMode = (newAlpha < 1.0) ? "blend" : "opaque"; // Note: breaks alpha maps
 
                     //  entity.material.alphaFresnel = alphaFresnel;
                 };

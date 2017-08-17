@@ -68,10 +68,8 @@
                     var startAlpha = entity.material.alpha;
                     return function (t) {
                         var newAlpha = startAlpha + (t * (alpha - startAlpha));
-                        entity.material.alpha =newAlpha;
-                        entity.modes.transparent = (newAlpha < 1.0);
-
-                      //  entity.material.alphaFresnel = alphaFresnel;
+                        entity.material.alpha = newAlpha;
+                        entity.material.alphaMode = (newAlpha < 1.0) ? "blend" : "opaque"; // Note: breaks alpha maps
                     };
                 })());
             }
@@ -444,86 +442,86 @@
     //    });
 
 
-//    // Source code vector text
-//    (function () {
-//
-//        var size = 10;
-//        var textHeight = size / 2.0;
-//        var textSize = 0.35;
-//
-//        var code = document.getElementById("source").innerText;
-//
-//        var codeMaterial = new xeogl.PhongMaterial({
-//            emissive: [0.5, 0.5, 0.8],
-//            lineWidth: 2
-//        });
-//
-//        var codeModes = new xeogl.Modes({
-//            backfaces: false,
-//            collidable: false,
-//            pickable: false
-//        });
-//
-//        new xeogl.Entity({
-//            material: codeMaterial,
-//            modes: codeModes,
-//            geometry: new xeogl.VectorTextGeometry({
-//                text: code.substring(0, 800),
-//                size: textSize
-//            }),
-//            transform: new xeogl.Translate({
-//                xyz: [-size, textHeight, -size]
-//            })
-//        });
-//
-//        new xeogl.Entity({
-//            material: codeMaterial,
-//            modes: codeModes,
-//            geometry: new xeogl.VectorTextGeometry({
-//                text: code.substring(800, 1600),
-//                size: textSize
-//            }),
-//            transform: new xeogl.Rotate({
-//                xyz: [0, 1, 0],
-//                angle: -90,
-//                parent: new xeogl.Translate({
-//                    xyz: [size, textHeight, -size]
-//                })
-//            })
-//        });
-//
-//        new xeogl.Entity({
-//            material: codeMaterial,
-//            modes: codeModes,
-//            geometry: new xeogl.VectorTextGeometry({
-//                text: code.substring(1600, 2400),
-//                size: textSize
-//            }),
-//            transform: new xeogl.Rotate({
-//                xyz: [0, 1, 0],
-//                angle: -180,
-//                parent: new xeogl.Translate({
-//                    xyz: [size, textHeight, size]
-//                })
-//            })
-//        });
-//
-//        new xeogl.Entity({
-//            material: codeMaterial,
-//            modes: codeModes,
-//            geometry: new xeogl.VectorTextGeometry({
-//                text: code.substring(2400, 3200),
-//                size: textSize
-//            }),
-//            transform: new xeogl.Rotate({
-//                xyz: [0, 1, 0],
-//                angle: 90,
-//                parent: new xeogl.Translate({
-//                    xyz: [-size, textHeight, size]
-//                })
-//            })
-//        });
-//    })();
+    //    // Source code vector text
+    //    (function () {
+    //
+    //        var size = 10;
+    //        var textHeight = size / 2.0;
+    //        var textSize = 0.35;
+    //
+    //        var code = document.getElementById("source").innerText;
+    //
+    //        var codeMaterial = new xeogl.PhongMaterial({
+    //            emissive: [0.5, 0.5, 0.8],
+    //            lineWidth: 2
+    //        });
+    //
+    //        var codeModes = new xeogl.Modes({
+    //            backfaces: false,
+    //            collidable: false,
+    //            pickable: false
+    //        });
+    //
+    //        new xeogl.Entity({
+    //            material: codeMaterial,
+    //            modes: codeModes,
+    //            geometry: new xeogl.VectorTextGeometry({
+    //                text: code.substring(0, 800),
+    //                size: textSize
+    //            }),
+    //            transform: new xeogl.Translate({
+    //                xyz: [-size, textHeight, -size]
+    //            })
+    //        });
+    //
+    //        new xeogl.Entity({
+    //            material: codeMaterial,
+    //            modes: codeModes,
+    //            geometry: new xeogl.VectorTextGeometry({
+    //                text: code.substring(800, 1600),
+    //                size: textSize
+    //            }),
+    //            transform: new xeogl.Rotate({
+    //                xyz: [0, 1, 0],
+    //                angle: -90,
+    //                parent: new xeogl.Translate({
+    //                    xyz: [size, textHeight, -size]
+    //                })
+    //            })
+    //        });
+    //
+    //        new xeogl.Entity({
+    //            material: codeMaterial,
+    //            modes: codeModes,
+    //            geometry: new xeogl.VectorTextGeometry({
+    //                text: code.substring(1600, 2400),
+    //                size: textSize
+    //            }),
+    //            transform: new xeogl.Rotate({
+    //                xyz: [0, 1, 0],
+    //                angle: -180,
+    //                parent: new xeogl.Translate({
+    //                    xyz: [size, textHeight, size]
+    //                })
+    //            })
+    //        });
+    //
+    //        new xeogl.Entity({
+    //            material: codeMaterial,
+    //            modes: codeModes,
+    //            geometry: new xeogl.VectorTextGeometry({
+    //                text: code.substring(2400, 3200),
+    //                size: textSize
+    //            }),
+    //            transform: new xeogl.Rotate({
+    //                xyz: [0, 1, 0],
+    //                angle: 90,
+    //                parent: new xeogl.Translate({
+    //                    xyz: [-size, textHeight, size]
+    //                })
+    //            })
+    //        });
+    //    })();
 
 </script>
 </body>

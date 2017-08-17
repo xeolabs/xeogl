@@ -129,10 +129,7 @@ function materialGallery(menuId, cfg) {
             lights: lights,
             geometry: geometryCfg,
             material: materialCfg,
-            transform: transform,
-            modes: new xeogl.Modes({
-                transparent: (materialCfg.alpha && materialCfg.alpha < 1.0) || (materialCfg.alphaMap) || (materialCfg.alphaFresnel)
-            })
+            transform: transform
         });
 
         new xeogl.Entity({
