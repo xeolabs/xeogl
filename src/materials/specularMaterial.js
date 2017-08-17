@@ -275,7 +275,7 @@
                 occlusionMap: null,
                 alphaMap: null,
                 normalMap: null,
-                alphaMode: "blend",
+                alphaMode: 2, // "blend"
                 alphaCutoff: 0.5,
                 hash: null
             });
@@ -885,27 +885,44 @@
              @default "blend"
              @type {String}
              */
-            alphaMode: {
-                set: function (alphaMode) {
+            alphaMode: (function () {
+                var modes = {
+                    "opaque": 0,
+                    "mask": 1,
+                    "blend": 2
+                };
+                return {
+                    set: function (alphaMode) {
 
-                    if (this._state.alphaMode === alphaMode) {
-                        return;
+                        alphaMode = alphaMode || "blend";
+
+                        var value = modes[alphaMode];
+
+                        if (value === undefined) {
+                            this.error("Unsupported value for 'alphaMode': " + alphaMode);
+                        }
+
+                        if (this._state.alphaMode == value) {
+                            return;
+                        }
+
+                        this._state.alphaMode = value;
+
+                        this._renderer.imageDirty = true;
+
+                        /**
+                         Fired whenever this MetallicMaterial's {{#crossLink "SpecularMaterial/look:property"}}{{/crossLink}} property changes.
+
+                         @event alphaMode
+                         @param value {Number} The property's new value
+                         */
+                        this.fire("alphaMode", this._state.alphaMode);
+                    },
+                    get: function () {
+                        return modes[this._state.alphaMode];
                     }
-
-                    this._state.alphaMode = alphaMode || "blend";
-
-                    /**
-                     Fired whenever this SpecularMaterial's {{#crossLink "SpecularMaterial/look:property"}}{{/crossLink}} property changes.
-
-                     @event alphaMode
-                     @param value {Number} The property's new value
-                     */
-                    this.fire("alphaMode", this._state.alphaMode);
-                },
-                get: function () {
-                    return this._state.alphaMode;
-                }
-            },
+                };
+            })(),
 
             /**
              The alpha cutoff value.
@@ -1096,7 +1113,7 @@
                 json.normalMap = components.normalMap.id;
             }
 
-            json.alphaMode = this._state.alphaMode;
+            json.alphaMode = this.alphaMode;
             json.alphaCutoff = this._state.alphaCutoff;
 
             return json;
