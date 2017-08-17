@@ -129,7 +129,7 @@
                     roughness: roughness,
 
                     specularF0: 0.5,
-                    opacity: 1
+                    alpha: 1
                 }),
                 modes: new xeogl.Modes({
                     transparent: false
@@ -215,7 +215,7 @@
 
             this["baseColor"] = typedToJS(material.baseColor);
             this["emissive"] = typedToJS(material.emissive);
-            this["opacity"] = material.opacity;
+            this["alpha"] = material.alpha;
             this["specularF0"] = material.specularF0;
 
             this["lightMap"] = !!lights.lightMap;
@@ -234,9 +234,9 @@
 
                     material.baseColor = JSToTyped(self["baseColor"]);
                     material.emissive = JSToTyped(self["emissive"]);
-                    material.opacity = self["opacity"];
+                    material.alpha = self["alpha"];
                     material.specularF0 = self["specularF0"];
-                    entity.modes.transparent = (material.opacity < 1);
+                    entity.modes.transparent = (material.alpha < 1);
 
                     if (self["lightMap"] !== !!lights.lightMap) {
                         lights.lightMap = self["lightMap"] ? lightMap : null;
@@ -270,7 +270,7 @@
         var materialFolder = gui.addFolder('MetallicMaterial');
         materialFolder.addColor(menu, 'baseColor', [255, 255, 255]);
         materialFolder.addColor(menu, 'emissive', [0, 0, 0]);
-        materialFolder.add(menu, 'opacity', 0.0, 1.0);
+        materialFolder.add(menu, 'alpha', 0.0, 1.0);
         materialFolder.add(menu, 'specularF0', 0.0, 1.0);
 
         var lightsFolder = gui.addFolder('Environment');

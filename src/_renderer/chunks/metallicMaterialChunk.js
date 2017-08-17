@@ -17,7 +17,7 @@
             this._uRoughness = draw.getUniform("materialRoughness");
             this._uSpecularF0 = draw.getUniform("materialSpecularF0");
             this._uEmissive = draw.getUniform("materialEmissive");
-            this._uOpacity = draw.getUniform("materialOpacity");
+            this._uAlpha = draw.getUniform("materialAlpha");
 
             if (state.baseColorMap) {
                 this._uBaseColorMap = "baseColorMap";
@@ -49,9 +49,9 @@
                 this._uOcclusionMapMatrix = draw.getUniform("occlusionMapMatrix");
             }
 
-            if (state.opacityMap) {
-                this._uOpacityMap = "opacityMap";
-                this._uOpacityMapMatrix = draw.getUniform("opacityMapMatrix");
+            if (state.alphaMap) {
+                this._uAlphaMap = "alphaMap";
+                this._uAlphaMapMatrix = draw.getUniform("alphaMapMatrix");
             }
 
             if (state.normalMap) {
@@ -88,8 +88,8 @@
                 this._uEmissive.setValue(state.emissive);
             }
 
-            if (this._uOpacity) {
-                this._uOpacity.setValue(state.opacity);
+            if (this._uAlpha) {
+                this._uAlpha.setValue(state.alpha);
             }
 
             if (state.baseColorMap && state.baseColorMap.texture && this._uBaseColorMap) {
@@ -146,12 +146,12 @@
                 }
             }
 
-            if (state.opacityMap && state.opacityMap.texture && this._uOpacityMap) {
-                draw.bindTexture(this._uOpacityMap, state.opacityMap.texture, frameCtx.textureUnit);
+            if (state.alphaMap && state.alphaMap.texture && this._uAlphaMap) {
+                draw.bindTexture(this._uAlphaMap, state.alphaMap.texture, frameCtx.textureUnit);
                   frameCtx.textureUnit = (frameCtx.textureUnit + 1) % xeogl.WEBGL_INFO.MAX_TEXTURE_IMAGE_UNITS;
                 frameCtx.bindTexture++;
-                if (this._uOpacityMapMatrix) {
-                    this._uOpacityMapMatrix.setValue(state.opacityMap.matrix);
+                if (this._uAlphaMapMatrix) {
+                    this._uAlphaMapMatrix.setValue(state.alphaMap.matrix);
                 }
             }
 

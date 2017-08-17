@@ -205,7 +205,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_materials_metallicMaterial.js.html#l1"><code>src&#x2F;materials&#x2F;metallicMaterial.js:1</code></a>
+            Defined in: <a href="../files/src_materials_metallicMaterial.new.js.html#l1"><code>src&#x2F;materials&#x2F;metallicMaterial.new.js:1</code></a>
         </div>
 
             Module: <a href="../modules/materials.html">materials</a><br>
@@ -240,7 +240,7 @@
 <ul>
 <li>MetallicMaterial is usually used for conductive materials, such as metal.</li>
 <li><a href="../classes/SpecularMaterial.html" class="crosslink">SpecularMaterial</a> is usually used for insulators, such as wood, ceramics and plastic.</li>
-<li><a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a> is usually used for non-realistic objects.</li>
+<li><a href="../classes/MetallicMaterial.html" class="crosslink">MetallicMaterial</a> is usually used for non-realistic objects.</li>
 </ul>
 <p><img src="../../../assets/images/MetallicMaterial.png"></img></p>
 <p>For an introduction to PBR concepts, try these articles:</p>
@@ -303,7 +303,7 @@
 <td style="text-align:center">The RGB components of the emissive color of the material.</td>
 </tr>
 <tr>
-<td style="text-align:center"><a href="../classes/MetallicMaterial.html#property_opacity" class="crosslink">opacity</a></td>
+<td style="text-align:center"><a href="../classes/MetallicMaterial.html#property_alpha" class="crosslink">alpha</a></td>
 <td style="text-align:center">Number</td>
 <td style="text-align:center">[0, 1]</td>
 <td style="text-align:center">1</td>
@@ -316,7 +316,7 @@
 <td style="text-align:center"></td>
 <td style="text-align:center">null</td>
 <td style="text-align:center">sRGB</td>
-<td style="text-align:center">Texture RGB components multiplying by <a href="../classes/MetallicMaterial.html#property_baseColor" class="crosslink">baseColor</a>. If the fourth component (A) is present, it multiplies by <a href="../classes/MetallicMaterial.html#property_opacity" class="crosslink">opacity</a>.</td>
+<td style="text-align:center">Texture RGB components multiplying by <a href="../classes/MetallicMaterial.html#property_baseColor" class="crosslink">baseColor</a>. If the fourth component (A) is present, it multiplies by <a href="../classes/MetallicMaterial.html#property_alpha" class="crosslink">alpha</a>.</td>
 </tr>
 <tr>
 <td style="text-align:center"><a href="../classes/MetallicMaterial.html#property_metallicMap" class="crosslink">metallicMap</a></td>
@@ -351,12 +351,12 @@
 <td style="text-align:center">Texture with RGB components multiplying by <a href="../classes/MetallicMaterial.html#property_emissive" class="crosslink">emissive</a>.</td>
 </tr>
 <tr>
-<td style="text-align:center"><a href="../classes/MetallicMaterial.html#property_opacityMap" class="crosslink">opacityMap</a></td>
+<td style="text-align:center"><a href="../classes/MetallicMaterial.html#property_alphaMap" class="crosslink">alphaMap</a></td>
 <td style="text-align:center"><a href="../classes/Texture.html" class="crosslink">Texture</a></td>
 <td style="text-align:center"></td>
 <td style="text-align:center">null</td>
 <td style="text-align:center">linear</td>
-<td style="text-align:center">Texture with first component multiplying by <a href="../classes/MetallicMaterial.html#property_opacity" class="crosslink">opacity</a>.</td>
+<td style="text-align:center">Texture with first component multiplying by <a href="../classes/MetallicMaterial.html#property_alpha" class="crosslink">alpha</a>.</td>
 </tr>
 <tr>
 <td style="text-align:center"><a href="../classes/MetallicMaterial.html#property_occlusionMap" class="crosslink">occlusionMap</a></td>
@@ -367,12 +367,28 @@
 <td style="text-align:center">Ambient occlusion texture multiplying by surface&#39;s reflected diffuse and specular light.</td>
 </tr>
 <tr>
-<td style="text-align:center"><a href="../classes/SpecularMaterial.html#property_normalMap" class="crosslink">normalMap</a></td>
+<td style="text-align:center"><a href="../classes/MetallicMaterial.html#property_normalMap" class="crosslink">normalMap</a></td>
 <td style="text-align:center"><a href="../classes/Texture.html" class="crosslink">Texture</a></td>
 <td style="text-align:center"></td>
 <td style="text-align:center">null</td>
 <td style="text-align:center">linear</td>
 <td style="text-align:center">Tangent-space normal map.</td>
+</tr>
+<tr>
+<td style="text-align:center"><a href="../classes/MetallicMaterial.html#property_alphaMode" class="crosslink">alphaMode</a></td>
+<td style="text-align:center">String</td>
+<td style="text-align:center">"opaque", "blend", "mask"</td>
+<td style="text-align:center">"blend"</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">Alpha blend mode.</td>
+</tr>
+<tr>
+<td style="text-align:center"><a href="../classes/MetallicMaterial.html#property_alphaCutoff" class="crosslink">alphaCutoff</a></td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">[0..1]</td>
+<td style="text-align:center">0.5</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">Alpha cutoff value.</td>
 </tr>
 </tbody>
 </table>
@@ -440,7 +456,7 @@ within the same <a href="../classes/Texture.html" class="crosslink">Texture</a> 
        metallic: 1.0,
        roughness: 1.0,
        emissive: [0.0, 0.0, 0.0],
-       opacity: 1.0,
+       alpha: 1.0,
 
        // Textures to multiply by some of the channels
 
@@ -492,9 +508,11 @@ within the same <a href="../classes/Texture.html" class="crosslink">Texture</a> 
    })
 });
 </code></pre>
-<p>Although not shown in this example, we can also texture <a href="../classes/SpecularMaterial.html#property_opacity" class="crosslink">opacity</a> with
-the <em>A</em> component of <a href="../classes/SpecularMaterial.html#property_diffuseMap" class="crosslink">diffuseMap</a>&#39;s <a href="../classes/Texture.html" class="crosslink">Texture</a>,
+<p>Although not shown in this example, we can also texture <a href="../classes/MetallicMaterial.html#property_alpha" class="crosslink">alpha</a> with
+the <em>A</em> component of MetallicMaterial/diffuseMap:property&#39;s <a href="../classes/Texture.html" class="crosslink">Texture</a>,
 if required.</p>
+<h2 id="transparency">Transparency</h2>
+<p>TODO</p>
 
 </div>
 
@@ -525,7 +543,7 @@ if required.</p>
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_materials_metallicMaterial.js.html#l1"><code>src&#x2F;materials&#x2F;metallicMaterial.js:1</code></a>
+                <a href="../files/src_materials_metallicMaterial.new.js.html#l1"><code>src&#x2F;materials&#x2F;metallicMaterial.new.js:1</code></a>
                 </p>
         
         
@@ -648,14 +666,14 @@ if required.</p>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[opacity=1.0]</code>
+                                            <code class="param-name optional">[alpha=1.0]</code>
                                             <span class="type">Number</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
                                             <p>Factor in the range 0..1 indicating how transparent this MetallicMaterial is.
         A value of 0.0 indicates fully transparent, 1.0 is fully opaque. Multiplies by the <em>R</em> component of
-        <a href="../classes/MetallicMaterial.html#property_opacityMap" class="crosslink">opacityMap</a> and the <em>A</em> component, if present, of
+        <a href="../classes/MetallicMaterial.html#property_alphaMap" class="crosslink">alphaMap</a> and the <em>A</em> component, if present, of
         <a href="../classes/MetallicMaterial.html#property_baseColorMap" class="crosslink">baseColorMap</a>. Attached <a href="../classes/Entity.html" class="crosslink">Entities</a>
         will appear transparent only if they are also attached to <a href="../classes/Modes.html" class="crosslink">Modes</a> that
         have <a href="../classes/Modes.html#property_transparent" class="crosslink">transparent</a> set to <strong>true</strong>.</p>
@@ -670,21 +688,21 @@ if required.</p>
         
                                         <div class="param-description">
                                             <p>RGBA <a href="../classes/Texture.html" class="crosslink">Texture</a> containing the diffuse color
-        of this MetallicMaterial, with optional <em>A</em> component for opacity. The RGB components multiply by the
+        of this MetallicMaterial, with optional <em>A</em> component for alpha. The RGB components multiply by the
         <a href="../classes/MetallicMaterial.html#property_baseColor" class="crosslink">baseColor</a> property,
-        while the <em>A</em> component, if present, multiplies by the <a href="../classes/MetallicMaterial.html#property_opacity" class="crosslink">opacity</a> property.</p>
+        while the <em>A</em> component, if present, multiplies by the <a href="../classes/MetallicMaterial.html#property_alpha" class="crosslink">alpha</a> property.</p>
         
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[opacityMap=undefined]</code>
+                                            <code class="param-name optional">[alphaMap=undefined]</code>
                                             <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
                                             <p>RGB <a href="../classes/Texture.html" class="crosslink">Texture</a> containing this MetallicMaterial&#39;s
-        opacity in its <em>R</em> component. The <em>R</em> component multiplies by the <a href="../classes/MetallicMaterial.html#property_opacity" class="crosslink">opacity</a> property. Must
+        alpha in its <em>R</em> component. The <em>R</em> component multiplies by the <a href="../classes/MetallicMaterial.html#property_alpha" class="crosslink">alpha</a> property. Must
         be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this MetallicMaterial.</p>
         
                                         </div>
@@ -846,7 +864,39 @@ if required.</p>
 
                     <ul class="index-list properties extends">
                             <li class="index-item property">
+                                <a href="#property_alpha">alpha</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_alpha">alpha</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_alphaCutoff">alphaCutoff</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_alphaMap">alphaMap</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_alphaMap">alphaMap</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_alphaMode">alphaMode</a>
+
+                            </li>
+                            <li class="index-item property">
                                 <a href="#property_baseColor">baseColor</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_baseColor">baseColor</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_baseColorMap">baseColorMap</a>
 
                             </li>
                             <li class="index-item property">
@@ -859,6 +909,14 @@ if required.</p>
                             </li>
                             <li class="index-item property">
                                 <a href="#property_emissive">emissive</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_emissive">emissive</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_emissiveMap">emissiveMap</a>
 
                             </li>
                             <li class="index-item property">
@@ -886,7 +944,19 @@ if required.</p>
 
                             </li>
                             <li class="index-item property">
+                                <a href="#property_metallic">metallic</a>
+
+                            </li>
+                            <li class="index-item property">
                                 <a href="#property_metallicMap">metallicMap</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_metallicMap">metallicMap</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_metallicRoughnessMap">metallicRoughnessMap</a>
 
                             </li>
                             <li class="index-item property">
@@ -898,15 +968,19 @@ if required.</p>
 
                             </li>
                             <li class="index-item property">
+                                <a href="#property_normalMap">normalMap</a>
+
+                            </li>
+                            <li class="index-item property">
                                 <a href="#property_occlusionMap">occlusionMap</a>
 
                             </li>
                             <li class="index-item property">
-                                <a href="#property_opacity">opacity</a>
+                                <a href="#property_occlusionMap">occlusionMap</a>
 
                             </li>
                             <li class="index-item property">
-                                <a href="#property_opacityMap">opacityMap</a>
+                                <a href="#property_roughness">roughness</a>
 
                             </li>
                             <li class="index-item property">
@@ -917,8 +991,16 @@ if required.</p>
                                 <a href="#property_roughnessMap">roughnessMap</a>
 
                             </li>
+                            <li class="index-item property">
+                                <a href="#property_roughnessMap">roughnessMap</a>
+
+                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_scene">scene</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_specularF0">specularF0</a>
 
                             </li>
                             <li class="index-item property">
@@ -946,7 +1028,39 @@ if required.</p>
 
                     <ul class="index-list events extends">
                             <li class="index-item event">
+                                <a href="#event_alpha">alpha</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_alpha">alpha</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_alphaCutoff">alphaCutoff</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_alphaMap">alphaMap</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_alphaMap">alphaMap</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_alphaMode">alphaMode</a>
+
+                            </li>
+                            <li class="index-item event">
                                 <a href="#event_baseColor">baseColor</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_baseColor">baseColor</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_baseColorMap">baseColorMap</a>
 
                             </li>
                             <li class="index-item event">
@@ -962,7 +1076,19 @@ if required.</p>
 
                             </li>
                             <li class="index-item event">
+                                <a href="#event_emissive">emissive</a>
+
+                            </li>
+                            <li class="index-item event">
                                 <a href="#event_emissiveMap">emissiveMap</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_emissiveMap">emissiveMap</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_metallic">metallic</a>
 
                             </li>
                             <li class="index-item event">
@@ -974,7 +1100,19 @@ if required.</p>
 
                             </li>
                             <li class="index-item event">
+                                <a href="#event_metallicMap">metallicMap</a>
+
+                            </li>
+                            <li class="index-item event">
                                 <a href="#event_metallicRoughnessMap">metallicRoughnessMap</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_metallicRoughnessMap">metallicRoughnessMap</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_normalMap">normalMap</a>
 
                             </li>
                             <li class="index-item event">
@@ -986,11 +1124,11 @@ if required.</p>
 
                             </li>
                             <li class="index-item event">
-                                <a href="#event_opacity">opacity</a>
+                                <a href="#event_occlusionMap">occlusionMap</a>
 
                             </li>
                             <li class="index-item event">
-                                <a href="#event_opacityMap">opacityMap</a>
+                                <a href="#event_roughness">roughness</a>
 
                             </li>
                             <li class="index-item event">
@@ -999,6 +1137,14 @@ if required.</p>
                             </li>
                             <li class="index-item event">
                                 <a href="#event_roughnessMap">roughnessMap</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_roughnessMap">roughnessMap</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_specularF0">specularF0</a>
 
                             </li>
                             <li class="index-item event">
@@ -1736,6 +1882,199 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
+                    <div id="property_alpha" class="property item">
+                        <h3 class="name"><code>alpha</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_materials_metallicMaterial.js.html#l744"><code>src&#x2F;materials&#x2F;metallicMaterial.js:744</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Factor in the range [0..1] indicating how transparent this MetallicMaterial is.</p>
+                    <p>A value of 0.0 indicates fully transparent, 1.0 is fully opaque.</p>
+                    <p>Multiplies by the <em>R</em> component of <a href="../classes/MetallicMaterial.html#property_alphaMap" class="crosslink">alphaMap</a> and
+                    the <em>A</em> component, if present, of <a href="../classes/MetallicMaterial.html#property_baseColorMap" class="crosslink">baseColorMap</a>.</p>
+                    <p>Attached <a href="../classes/Entity.html" class="crosslink">Entities</a> will appear transparent only if they are also attached
+                    to <a href="../classes/Modes.html" class="crosslink">Modes</a> that have <a href="../classes/Modes.html#property_transparent" class="crosslink">transparent</a>
+                    set to <strong>true</strong>.</p>
+                    <p>Fires an <a href="../classes/MetallicMaterial.html#event_alpha" class="crosslink">alpha</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> 1.0</p>
+                    
+                    
+                    </div>
+                    <div id="property_alpha" class="property item">
+                        <h3 class="name"><code>alpha</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_materials_metallicMaterial.new.js.html#l762"><code>src&#x2F;materials&#x2F;metallicMaterial.new.js:762</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Factor in the range [0..1] indicating how transparent this MetallicMaterial is.</p>
+                    <p>A value of 0.0 indicates fully transparent, 1.0 is fully opaque.</p>
+                    <p>Multiplies by the <em>R</em> component of <a href="../classes/MetallicMaterial.html#property_alphaMap" class="crosslink">alphaMap</a> and
+                    the <em>A</em> component, if present, of <a href="../classes/MetallicMaterial.html#property_baseColorMap" class="crosslink">baseColorMap</a>.</p>
+                    <p>Attached <a href="../classes/Entity.html" class="crosslink">Entities</a> will appear transparent only if they are also attached
+                    to <a href="../classes/Modes.html" class="crosslink">Modes</a> that have <a href="../classes/Modes.html#property_transparent" class="crosslink">transparent</a>
+                    set to <strong>true</strong>.</p>
+                    <p>Fires an <a href="../classes/MetallicMaterial.html#event_alpha" class="crosslink">alpha</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> 1.0</p>
+                    
+                    
+                    </div>
+                    <div id="property_alphaCutoff" class="property item">
+                        <h3 class="name"><code>alphaCutoff</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_materials_metallicMaterial.new.js.html#l907"><code>src&#x2F;materials&#x2F;metallicMaterial.new.js:907</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The alpha cutoff value.</p>
+                    <p>Specifies the cutoff threshold when <a href="../classes/MetallicMaterial.html#property_alphaMode" class="crosslink">alphaMode</a>
+                    equals "mask". If the alpha is greater than or equal to this value then it is rendered as fully
+                    opaque, otherwise, it is rendered as fully transparent. A value greater than 1.0 will render the entire
+                    material as fully transparent. This value is ignored for other modes.</p>
+                    <p>Alpha is the combined result of the
+                    <a href="../classes/MetallicMaterial.html#property_alpha" class="crosslink">alpha</a> and
+                    <a href="../classes/MetallicMaterial.html#property_alphaMap" class="crosslink">alphaMap</a> properties.</p>
+                    <p>Fires an <a href="../classes/MetallicMaterial.html#event_alphaCutoff" class="crosslink">alphaCutoff</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> 0.5</p>
+                    
+                    
+                    </div>
+                    <div id="property_alphaMap" class="property item">
+                        <h3 class="name"><code>alphaMap</code></h3>
+                        <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_materials_metallicMaterial.new.js.html#l808"><code>src&#x2F;materials&#x2F;metallicMaterial.new.js:808</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>RGB <a href="../classes/Texture.html" class="crosslink">Texture</a> containing this MetallicMaterial&#39;s alpha in its <em>R</em> component.</p>
+                    <p>The <em>R</em> component multiplies by the <a href="../classes/MetallicMaterial.html#property_alpha" class="crosslink">alpha</a> property.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this MetallicMaterial.</p>
+                    <p>Fires an <a href="../classes/MetallicMaterial.html#event_alphaMap" class="crosslink">alphaMap</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> undefined</p>
+                    
+                    
+                    </div>
+                    <div id="property_alphaMap" class="property item">
+                        <h3 class="name"><code>alphaMap</code></h3>
+                        <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_materials_metallicMaterial.js.html#l790"><code>src&#x2F;materials&#x2F;metallicMaterial.js:790</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>RGB <a href="../classes/Texture.html" class="crosslink">Texture</a> containing this MetallicMaterial&#39;s alpha in its <em>R</em> component.</p>
+                    <p>The <em>R</em> component multiplies by the <a href="../classes/MetallicMaterial.html#property_alpha" class="crosslink">alpha</a> property.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this MetallicMaterial.</p>
+                    <p>Fires an <a href="../classes/MetallicMaterial.html#event_alphaMap" class="crosslink">alphaMap</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> undefined</p>
+                    
+                    
+                    </div>
+                    <div id="property_alphaMode" class="property item">
+                        <h3 class="name"><code>alphaMode</code></h3>
+                        <span class="type">String</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_materials_metallicMaterial.new.js.html#l868"><code>src&#x2F;materials&#x2F;metallicMaterial.new.js:868</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The alpha rendering mode.</p>
+                    <p>This governs how alpha is treated. Alpha is the combined result of the
+                    <a href="../classes/MetallicMaterial.html#property_alpha" class="crosslink">alpha</a> and
+                    <a href="../classes/MetallicMaterial.html#property_alphaMap" class="crosslink">alphaMap</a> properties.</p>
+                    <ul>
+                    <li>"opaque" - The alpha value is ignored and the rendered output is fully opaque.</li>
+                    <li>"mask" - The rendered output is either fully opaque or fully transparent depending on the alpha value and the specified alpha cutoff value.</li>
+                    <li>"blend" - The alpha value is used to composite the source and destination areas. The rendered output is combined with the background using the normal painting operation (i.e. the Porter and Duff over operator).</li>
+                    </ul>
+                    <p>Fires an <a href="../classes/MetallicMaterial.html#event_alphaMode" class="crosslink">alphaMode</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> &quot;blend&quot;</p>
+                    
+                    
+                    </div>
                     <div id="property_baseColor" class="property item">
                         <h3 class="name"><code>baseColor</code></h3>
                         <span class="type">Float32Array</span>
@@ -1764,6 +2103,67 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_baseColor" class="property item">
+                        <h3 class="name"><code>baseColor</code></h3>
+                        <span class="type">Float32Array</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_materials_metallicMaterial.new.js.html#l348"><code>src&#x2F;materials&#x2F;metallicMaterial.new.js:348</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>RGB diffuse color of this MetallicMaterial.</p>
+                    <p>Multiplies by the RGB components of <a href="../classes/MetallicMaterial.html#property_baseColorMap" class="crosslink">baseColorMap</a>.</p>
+                    <p>Fires a <a href="../classes/MetallicMaterial.html#event_baseColor" class="crosslink">baseColor</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> [1.0, 1.0, 1.0]</p>
+                    
+                    
+                    </div>
+                    <div id="property_baseColorMap" class="property item">
+                        <h3 class="name"><code>baseColorMap</code></h3>
+                        <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_materials_metallicMaterial.new.js.html#l399"><code>src&#x2F;materials&#x2F;metallicMaterial.new.js:399</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>RGB <a href="../classes/Texture.html" class="crosslink">Texture</a> containing the diffuse color of this MetallicMaterial, with optional <em>A</em> component for alpha.</p>
+                    <p>The RGB components multiply by the <a href="../classes/MetallicMaterial.html#property_baseColor" class="crosslink">baseColor</a> property,
+                    while the <em>A</em> component, if present, multiplies by the <a href="../classes/MetallicMaterial.html#property_alpha" class="crosslink">alpha</a> property.</p>
+                    <p>Attached <a href="../classes/Entity.html" class="crosslink">Entities</a> will appear transparent only if they are also attached
+                    to <a href="../classes/Modes.html" class="crosslink">Modes</a> that have <a href="../classes/Modes.html#property_transparent" class="crosslink">transparent</a>
+                    set to <strong>true</strong>.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this MetallicMaterial.</p>
+                    <p>Fires a <a href="../classes/MetallicMaterial.html#event_baseColorMap" class="crosslink">baseColorMap</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> undefined</p>
+                    
+                    
+                    </div>
                     <div id="property_baseColorMap" class="property item">
                         <h3 class="name"><code>baseColorMap</code></h3>
                         <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
@@ -1782,9 +2182,9 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         </div>
                     
                         <div class="description">
-                            <p>RGB <a href="../classes/Texture.html" class="crosslink">Texture</a> containing the diffuse color of this MetallicMaterial, with optional <em>A</em> component for opacity.</p>
+                            <p>RGB <a href="../classes/Texture.html" class="crosslink">Texture</a> containing the diffuse color of this MetallicMaterial, with optional <em>A</em> component for alpha.</p>
                     <p>The RGB components multiply by the <a href="../classes/MetallicMaterial.html#property_baseColor" class="crosslink">baseColor</a> property,
-                    while the <em>A</em> component, if present, multiplies by the <a href="../classes/MetallicMaterial.html#property_opacity" class="crosslink">opacity</a> property.</p>
+                    while the <em>A</em> component, if present, multiplies by the <a href="../classes/MetallicMaterial.html#property_alpha" class="crosslink">alpha</a> property.</p>
                     <p>Attached <a href="../classes/Entity.html" class="crosslink">Entities</a> will appear transparent only if they are also attached
                     to <a href="../classes/Modes.html" class="crosslink">Modes</a> that have <a href="../classes/Modes.html#property_transparent" class="crosslink">transparent</a>
                     set to <strong>true</strong>.</p>
@@ -1850,6 +2250,34 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_emissive" class="property item">
+                        <h3 class="name"><code>emissive</code></h3>
+                        <span class="type">Float32Array</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_materials_metallicMaterial.new.js.html#l649"><code>src&#x2F;materials&#x2F;metallicMaterial.new.js:649</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>RGB emissive color of this MetallicMaterial.</p>
+                    <p>Multiplies by <a href="../classes/MetallicMaterial.html#property_emissiveMap" class="crosslink">emissiveMap</a>.</p>
+                    <p>Fires a <a href="../classes/MetallicMaterial.html#event_emissive" class="crosslink">emissive</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> [0.0, 0.0, 0.0]</p>
+                    
+                    
+                    </div>
                     <div id="property_emissiveMap" class="property item">
                         <h3 class="name"><code>emissiveMap</code></h3>
                         <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
@@ -1862,6 +2290,35 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     <p>
                                     Defined in
                             <a href="../files/src_materials_metallicMaterial.js.html#l682"><code>src&#x2F;materials&#x2F;metallicMaterial.js:682</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>RGB <a href="../classes/Texture.html" class="crosslink">Texture</a> containing the emissive color of this MetallicMaterial.</p>
+                    <p>Multiplies by the <a href="../classes/MetallicMaterial.html#property_emissive" class="crosslink">emissive</a> property.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this MetallicMaterial.</p>
+                    <p>Fires a <a href="../classes/MetallicMaterial.html#event_emissiveMap" class="crosslink">emissiveMap</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> undefined</p>
+                    
+                    
+                    </div>
+                    <div id="property_emissiveMap" class="property item">
+                        <h3 class="name"><code>emissiveMap</code></h3>
+                        <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_materials_metallicMaterial.new.js.html#l700"><code>src&#x2F;materials&#x2F;metallicMaterial.new.js:700</code></a>
                             </p>
                     
                     
@@ -2011,6 +2468,65 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_metallic" class="property item">
+                        <h3 class="name"><code>metallic</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_materials_metallicMaterial.new.js.html#l435"><code>src&#x2F;materials&#x2F;metallicMaterial.new.js:435</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Factor in the range [0..1] indicating how metallic this MetallicMaterial is.</p>
+                    <p>1 is metal, 0 is non-metal.</p>
+                    <p>Multiplies by the <em>R</em> component of <a href="../classes/MetallicMaterial.html#property_metallicMap" class="crosslink">metallicMap</a>
+                    and the <em>A</em> component of MetallicMaterial/metalRoughnessMap:property.</p>
+                    <p>Fires a <a href="../classes/MetallicMaterial.html#event_metallic" class="crosslink">metallic</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> 1.0</p>
+                    
+                    
+                    </div>
+                    <div id="property_metallicMap" class="property item">
+                        <h3 class="name"><code>metallicMap</code></h3>
+                        <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_materials_metallicMaterial.new.js.html#l477"><code>src&#x2F;materials&#x2F;metallicMaterial.new.js:477</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>RGB <a href="../classes/Texture.html" class="crosslink">Texture</a> containing this MetallicMaterial&#39;s metallic factor in its <em>R</em> component.</p>
+                    <p>The <em>R</em> component multiplies by the <a href="../classes/MetallicMaterial.html#property_metallic" class="crosslink">metallic</a> property.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this MetallicMaterial.</p>
+                    <p>Fires a <a href="../classes/MetallicMaterial.html#event_metallicMap" class="crosslink">metallicMap</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> undefined</p>
+                    
+                    
+                    </div>
                     <div id="property_metallicMap" class="property item">
                         <h3 class="name"><code>metallicMap</code></h3>
                         <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
@@ -2051,6 +2567,36 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
+                            <a href="../files/src_materials_metallicMaterial.new.js.html#l580"><code>src&#x2F;materials&#x2F;metallicMaterial.new.js:580</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>RGB <a href="../classes/Texture.html" class="crosslink">Texture</a> containing this MetallicMaterial&#39;s metalness in its <em>R</em> component and roughness in its <em>G</em> component.</p>
+                    <p>Its <em>B</em> component multiplies by the <a href="../classes/MetallicMaterial.html#property_metallic" class="crosslink">metallic</a> property, while
+                    its <em>G</em> component multiplies by the <a href="../classes/MetallicMaterial.html#property_roughness" class="crosslink">roughness</a> property.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this MetallicMaterial.</p>
+                    <p>Fires a <a href="../classes/MetallicMaterial.html#event_metallicRoughnessMap" class="crosslink">metallicRoughnessMap</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> undefined</p>
+                    
+                    
+                    </div>
+                    <div id="property_metallicRoughnessMap" class="property item">
+                        <h3 class="name"><code>metallicRoughnessMap</code></h3>
+                        <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
                             <a href="../files/src_materials_metallicMaterial.js.html#l562"><code>src&#x2F;materials&#x2F;metallicMaterial.js:562</code></a>
                             </p>
                     
@@ -2063,6 +2609,34 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     its <em>G</em> component multiplies by the <a href="../classes/MetallicMaterial.html#property_roughness" class="crosslink">roughness</a> property.</p>
                     <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this MetallicMaterial.</p>
                     <p>Fires a <a href="../classes/MetallicMaterial.html#event_metallicRoughnessMap" class="crosslink">metallicRoughnessMap</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> undefined</p>
+                    
+                    
+                    </div>
+                    <div id="property_normalMap" class="property item">
+                        <h3 class="name"><code>normalMap</code></h3>
+                        <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_materials_metallicMaterial.new.js.html#l839"><code>src&#x2F;materials&#x2F;metallicMaterial.new.js:839</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>RGB tangent-space normal map <a href="../classes/Texture.html" class="crosslink">Texture</a>.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this MetallicMaterial.</p>
+                    <p>Fires a <a href="../classes/MetallicMaterial.html#event_normalMap" class="crosslink">normalMap</a> event on change.</p>
                     
                         </div>
                     
@@ -2127,41 +2701,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_opacity" class="property item">
-                        <h3 class="name"><code>opacity</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_metallicMaterial.js.html#l744"><code>src&#x2F;materials&#x2F;metallicMaterial.js:744</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Factor in the range [0..1] indicating how transparent this MetallicMaterial is.</p>
-                    <p>A value of 0.0 indicates fully transparent, 1.0 is fully opaque.</p>
-                    <p>Multiplies by the <em>R</em> component of <a href="../classes/MetallicMaterial.html#property_opacityMap" class="crosslink">opacityMap</a> and
-                    the <em>A</em> component, if present, of <a href="../classes/MetallicMaterial.html#property_baseColorMap" class="crosslink">baseColorMap</a>.</p>
-                    <p>Attached <a href="../classes/Entity.html" class="crosslink">Entities</a> will appear transparent only if they are also attached
-                    to <a href="../classes/Modes.html" class="crosslink">Modes</a> that have <a href="../classes/Modes.html#property_transparent" class="crosslink">transparent</a>
-                    set to <strong>true</strong>.</p>
-                    <p>Fires an <a href="../classes/MetallicMaterial.html#event_opacity" class="crosslink">opacity</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> 1.0</p>
-                    
-                    
-                    </div>
-                    <div id="property_opacityMap" class="property item">
-                        <h3 class="name"><code>opacityMap</code></h3>
+                    <div id="property_occlusionMap" class="property item">
+                        <h3 class="name"><code>occlusionMap</code></h3>
                         <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
                     
                     
@@ -2171,17 +2712,17 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_metallicMaterial.js.html#l790"><code>src&#x2F;materials&#x2F;metallicMaterial.js:790</code></a>
+                            <a href="../files/src_materials_metallicMaterial.new.js.html#l731"><code>src&#x2F;materials&#x2F;metallicMaterial.new.js:731</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>RGB <a href="../classes/Texture.html" class="crosslink">Texture</a> containing this MetallicMaterial&#39;s opacity in its <em>R</em> component.</p>
-                    <p>The <em>R</em> component multiplies by the <a href="../classes/MetallicMaterial.html#property_opacity" class="crosslink">opacity</a> property.</p>
+                            <p>RGB ambient occlusion <a href="../classes/Texture.html" class="crosslink">Texture</a> attached to this MetallicMaterial.</p>
+                    <p>Within shaders, multiplies by the specular and diffuse light reflected by surfaces.</p>
                     <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this MetallicMaterial.</p>
-                    <p>Fires an <a href="../classes/MetallicMaterial.html#event_opacityMap" class="crosslink">opacityMap</a> event on change.</p>
+                    <p>Fires a <a href="../classes/MetallicMaterial.html#event_occlusionMap" class="crosslink">occlusionMap</a> event on change.</p>
                     
                         </div>
                     
@@ -2201,6 +2742,35 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     <p>
                                     Defined in
                             <a href="../files/src_materials_metallicMaterial.js.html#l490"><code>src&#x2F;materials&#x2F;metallicMaterial.js:490</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Factor in the range [0..1] indicating the roughness of this MetallicMaterial.</p>
+                    <p>0 is fully smooth, 1 is fully rough.</p>
+                    <p>Multiplies by the <em>R</em> component of <a href="../classes/MetallicMaterial.html#property_roughnessMap" class="crosslink">roughnessMap</a>.</p>
+                    <p>Fires a <a href="../classes/MetallicMaterial.html#event_roughness" class="crosslink">roughness</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> 1.0</p>
+                    
+                    
+                    </div>
+                    <div id="property_roughness" class="property item">
+                        <h3 class="name"><code>roughness</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_materials_metallicMaterial.new.js.html#l508"><code>src&#x2F;materials&#x2F;metallicMaterial.new.js:508</code></a>
                             </p>
                     
                     
@@ -2247,6 +2817,35 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_roughnessMap" class="property item">
+                        <h3 class="name"><code>roughnessMap</code></h3>
+                        <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_materials_metallicMaterial.new.js.html#l549"><code>src&#x2F;materials&#x2F;metallicMaterial.new.js:549</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>RGB <a href="../classes/Texture.html" class="crosslink">Texture</a> containing this MetallicMaterial&#39;s roughness factor in its <em>R</em> component.</p>
+                    <p>The <em>R</em> component multiplies by the <a href="../classes/MetallicMaterial.html#property_roughness" class="crosslink">roughness</a> property.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this MetallicMaterial.</p>
+                    <p>Fires a <a href="../classes/MetallicMaterial.html#event_roughnessMap" class="crosslink">roughnessMap</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> undefined</p>
+                    
+                    
+                    </div>
                     <div id="property_scene" class="property item inherited">
                         <h3 class="name"><code>scene</code></h3>
                         <span class="type"><a href="../classes/Scene.html" class="crosslink">Scene</a></span>
@@ -2270,6 +2869,33 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         </div>
                     
+                    
+                    
+                    </div>
+                    <div id="property_specularF0" class="property item">
+                        <h3 class="name"><code>specularF0</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_materials_metallicMaterial.new.js.html#l612"><code>src&#x2F;materials&#x2F;metallicMaterial.new.js:612</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Factor in the range [0..1] indicating specular Fresnel value.</p>
+                    <p>Fires a <a href="../classes/MetallicMaterial.html#event_specularF0" class="crosslink">specularF0</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> 0.0</p>
                     
                     
                     </div>
@@ -2396,6 +3022,258 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="events" class="api-class-tabpanel">
                 <h2 class="off-left">Events</h2>
 
+                    <div id="event_alpha" class="events item">
+                        <h3 class="name"><code>alpha</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_materials_metallicMaterial.new.js.html#l794"><code>src&#x2F;materials&#x2F;metallicMaterial.new.js:794</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this MetallicMaterial&#39;s <a href="../classes/MetallicMaterial.html#property_alpha" class="crosslink">alpha</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Number</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_alpha" class="events item">
+                        <h3 class="name"><code>alpha</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_materials_metallicMaterial.js.html#l776"><code>src&#x2F;materials&#x2F;metallicMaterial.js:776</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this MetallicMaterial&#39;s <a href="../classes/MetallicMaterial.html#property_alpha" class="crosslink">alpha</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Number</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_alphaCutoff" class="events item">
+                        <h3 class="name"><code>alphaCutoff</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_materials_metallicMaterial.new.js.html#l938"><code>src&#x2F;materials&#x2F;metallicMaterial.new.js:938</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this MetallicMaterial&#39;s MetallicMaterial/look:property property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Number</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_alphaMap" class="events item">
+                        <h3 class="name"><code>alphaMap</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_materials_metallicMaterial.new.js.html#l825"><code>src&#x2F;materials&#x2F;metallicMaterial.new.js:825</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this MetallicMaterial&#39;s <a href="../classes/MetallicMaterial.html#property_alphaMap" class="crosslink">alphaMap</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Number The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_alphaMap" class="events item">
+                        <h3 class="name"><code>alphaMap</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_materials_metallicMaterial.js.html#l807"><code>src&#x2F;materials&#x2F;metallicMaterial.js:807</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this MetallicMaterial&#39;s <a href="../classes/MetallicMaterial.html#property_alphaMap" class="crosslink">alphaMap</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Number The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_alphaMode" class="events item">
+                        <h3 class="name"><code>alphaMode</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_materials_metallicMaterial.new.js.html#l894"><code>src&#x2F;materials&#x2F;metallicMaterial.new.js:894</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this MetallicMaterial&#39;s MetallicMaterial/look:property property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Number</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
                     <div id="event_baseColor" class="events item">
                         <h3 class="name"><code>baseColor</code></h3>
                         <span class="type"></span>
@@ -2438,6 +3316,48 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="event_baseColor" class="events item">
+                        <h3 class="name"><code>baseColor</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_materials_metallicMaterial.new.js.html#l385"><code>src&#x2F;materials&#x2F;metallicMaterial.new.js:385</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this MetallicMaterial&#39;s <a href="../classes/MetallicMaterial.html#property_baseColor" class="crosslink">baseColor</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Float32Array</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
                     <div id="event_baseColorMap" class="events item">
                         <h3 class="name"><code>baseColorMap</code></h3>
                         <span class="type"></span>
@@ -2450,6 +3370,48 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     <p>
                                     Defined in
                             <a href="../files/src_materials_metallicMaterial.js.html#l403"><code>src&#x2F;materials&#x2F;metallicMaterial.js:403</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this MetallicMaterial&#39;s <a href="../classes/MetallicMaterial.html#property_baseColorMap" class="crosslink">baseColorMap</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Number The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_baseColorMap" class="events item">
+                        <h3 class="name"><code>baseColorMap</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_materials_metallicMaterial.new.js.html#l421"><code>src&#x2F;materials&#x2F;metallicMaterial.new.js:421</code></a>
                             </p>
                     
                     
@@ -2547,6 +3509,90 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="event_emissive" class="events item">
+                        <h3 class="name"><code>emissive</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_materials_metallicMaterial.new.js.html#l686"><code>src&#x2F;materials&#x2F;metallicMaterial.new.js:686</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this MetallicMaterial&#39;s <a href="../classes/MetallicMaterial.html#property_emissive" class="crosslink">emissive</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Float32Array</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_emissiveMap" class="events item">
+                        <h3 class="name"><code>emissiveMap</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_materials_metallicMaterial.new.js.html#l717"><code>src&#x2F;materials&#x2F;metallicMaterial.new.js:717</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this MetallicMaterial&#39;s <a href="../classes/MetallicMaterial.html#property_emissiveMap" class="crosslink">emissiveMap</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Number The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
                     <div id="event_emissiveMap" class="events item">
                         <h3 class="name"><code>emissiveMap</code></h3>
                         <span class="type"></span>
@@ -2631,6 +3677,48 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="event_metallic" class="events item">
+                        <h3 class="name"><code>metallic</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_materials_metallicMaterial.new.js.html#l463"><code>src&#x2F;materials&#x2F;metallicMaterial.new.js:463</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this MetallicMaterial&#39;s <a href="../classes/MetallicMaterial.html#property_metallic" class="crosslink">metallic</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Float32Array</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
                     <div id="event_metallicMap" class="events item">
                         <h3 class="name"><code>metallicMap</code></h3>
                         <span class="type"></span>
@@ -2643,6 +3731,48 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     <p>
                                     Defined in
                             <a href="../files/src_materials_metallicMaterial.js.html#l476"><code>src&#x2F;materials&#x2F;metallicMaterial.js:476</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this MetallicMaterial&#39;s <a href="../classes/MetallicMaterial.html#property_metallicMap" class="crosslink">metallicMap</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Number The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_metallicMap" class="events item">
+                        <h3 class="name"><code>metallicMap</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_materials_metallicMaterial.new.js.html#l494"><code>src&#x2F;materials&#x2F;metallicMaterial.new.js:494</code></a>
                             </p>
                     
                     
@@ -2692,6 +3822,90 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Fired whenever this MetallicMaterial&#39;s <a href="../classes/MetallicMaterial.html#property_metallicRoughnessMap" class="crosslink">metallicRoughnessMap</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Number The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_metallicRoughnessMap" class="events item">
+                        <h3 class="name"><code>metallicRoughnessMap</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_materials_metallicMaterial.new.js.html#l598"><code>src&#x2F;materials&#x2F;metallicMaterial.new.js:598</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this MetallicMaterial&#39;s <a href="../classes/MetallicMaterial.html#property_metallicRoughnessMap" class="crosslink">metallicRoughnessMap</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Number The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_normalMap" class="events item">
+                        <h3 class="name"><code>normalMap</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_materials_metallicMaterial.new.js.html#l854"><code>src&#x2F;materials&#x2F;metallicMaterial.new.js:854</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this MetallicMaterial&#39;s <a href="../classes/MetallicMaterial.html#property_normalMap" class="crosslink">normalMap</a> property changes.</p>
                     
                         </div>
                     
@@ -2768,6 +3982,48 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
+                            <a href="../files/src_materials_metallicMaterial.new.js.html#l748"><code>src&#x2F;materials&#x2F;metallicMaterial.new.js:748</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this MetallicMaterial&#39;s <a href="../classes/MetallicMaterial.html#property_occlusionMap" class="crosslink">occlusionMap</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Number The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_occlusionMap" class="events item">
+                        <h3 class="name"><code>occlusionMap</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
                             <a href="../files/src_materials_metallicMaterial.js.html#l730"><code>src&#x2F;materials&#x2F;metallicMaterial.js:730</code></a>
                             </p>
                     
@@ -2799,8 +4055,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_opacity" class="events item">
-                        <h3 class="name"><code>opacity</code></h3>
+                    <div id="event_roughness" class="events item">
+                        <h3 class="name"><code>roughness</code></h3>
                         <span class="type"></span>
                     
                     
@@ -2810,14 +4066,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_metallicMaterial.js.html#l776"><code>src&#x2F;materials&#x2F;metallicMaterial.js:776</code></a>
+                            <a href="../files/src_materials_metallicMaterial.new.js.html#l535"><code>src&#x2F;materials&#x2F;metallicMaterial.new.js:535</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this MetallicMaterial&#39;s <a href="../classes/MetallicMaterial.html#property_opacity" class="crosslink">opacity</a> property changes.</p>
+                            <p>Fired whenever this MetallicMaterial&#39;s <a href="../classes/MetallicMaterial.html#property_roughness" class="crosslink">roughness</a> property changes.</p>
                     
                         </div>
                     
@@ -2832,48 +4088,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                                         <div class="param-description">
                                             <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_opacityMap" class="events item">
-                        <h3 class="name"><code>opacityMap</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_metallicMaterial.js.html#l807"><code>src&#x2F;materials&#x2F;metallicMaterial.js:807</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this MetallicMaterial&#39;s <a href="../classes/MetallicMaterial.html#property_opacityMap" class="crosslink">opacityMap</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>Number The property&#39;s new value</p>
                     
                                         </div>
                     
@@ -2936,6 +4150,48 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
+                            <a href="../files/src_materials_metallicMaterial.new.js.html#l566"><code>src&#x2F;materials&#x2F;metallicMaterial.new.js:566</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this MetallicMaterial&#39;s <a href="../classes/MetallicMaterial.html#property_roughnessMap" class="crosslink">roughnessMap</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Number The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_roughnessMap" class="events item">
+                        <h3 class="name"><code>roughnessMap</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
                             <a href="../files/src_materials_metallicMaterial.js.html#l548"><code>src&#x2F;materials&#x2F;metallicMaterial.js:548</code></a>
                             </p>
                     
@@ -2958,6 +4214,48 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                                         <div class="param-description">
                                             <p>Number The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_specularF0" class="events item">
+                        <h3 class="name"><code>specularF0</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_materials_metallicMaterial.new.js.html#l635"><code>src&#x2F;materials&#x2F;metallicMaterial.new.js:635</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this MetallicMaterial&#39;s <a href="../classes/MetallicMaterial.html#property_specularF0" class="crosslink">specularF0</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Float32Array</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
                     
                                         </div>
                     

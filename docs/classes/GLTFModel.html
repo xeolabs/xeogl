@@ -205,7 +205,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/examples_js_models_glTFModel.js.html#l1"><code>examples&#x2F;js&#x2F;models&#x2F;glTFModel.js:1</code></a>
+            Defined in: <a href="../files/examples_js_models_glTFModel.new.js.html#l1"><code>examples&#x2F;js&#x2F;models&#x2F;glTFModel.new.js:1</code></a>
         </div>
 
             Module: <a href="../modules/models.html">models</a><br>
@@ -332,7 +332,7 @@ the glTF node.</p>
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/examples_js_models_glTFModel.js.html#l1"><code>examples&#x2F;js&#x2F;models&#x2F;glTFModel.js:1</code></a>
+                <a href="../files/examples_js_models_glTFModel.new.js.html#l1"><code>examples&#x2F;js&#x2F;models&#x2F;glTFModel.new.js:1</code></a>
                 </p>
         
         
@@ -551,6 +551,10 @@ the glTF node.</p>
                                 <a href="#property_src">src</a>
 
                             </li>
+                            <li class="index-item property">
+                                <a href="#property_src">src</a>
+
+                            </li>
                             <li class="index-item property inherited inherited">
                                 <a href="#property_string">string</a>
 
@@ -596,11 +600,23 @@ the glTF node.</p>
 
                             </li>
                             <li class="index-item event">
+                                <a href="#event_error">error</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_loaded">loaded</a>
+
+                            </li>
+                            <li class="index-item event">
                                 <a href="#event_loaded">loaded</a>
 
                             </li>
                             <li class="index-item event inherited">
                                 <a href="#event_removed">removed</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_src">src</a>
 
                             </li>
                             <li class="index-item event">
@@ -1775,6 +1791,34 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
+                            <a href="../files/examples_js_models_glTFModel.new.js.html#l160"><code>examples&#x2F;js&#x2F;models&#x2F;glTFModel.new.js:160</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Path to a glTF file.</p>
+                    <p>You can set this to a new file path at any time (except while loading), which will cause the GLTFModel to load components from
+                    the new file (after first destroying any components loaded from a previous file path).</p>
+                    <p>Fires a <a href="../classes/GLTFModel.html#event_src" class="crosslink">src</a> event on change.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_src" class="property item">
+                        <h3 class="name"><code>src</code></h3>
+                        <span class="type">String</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
                             <a href="../files/examples_js_models_glTFModel.js.html#l160"><code>examples&#x2F;js&#x2F;models&#x2F;glTFModel.js:160</code></a>
                             </p>
                     
@@ -2093,6 +2137,49 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="event_error" class="events item">
+                        <h3 class="name"><code>error</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_models_glTFModel.new.js.html#l258"><code>examples&#x2F;js&#x2F;models&#x2F;glTFModel.new.js:258</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this GLTFModel fails to load the glTF file
+                    specified by <a href="../classes/GLTFModel.html#property_src" class="crosslink">src</a>.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">msg</code>
+                                            <span class="type">String</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Description of the error</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
                     <div id="event_loaded" class="events item">
                         <h3 class="name"><code>loaded</code></h3>
                         <span class="type"></span>
@@ -2105,6 +2192,32 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     <p>
                                     Defined in
                             <a href="../files/examples_js_models_glTFModel.js.html#l186"><code>examples&#x2F;js&#x2F;models&#x2F;glTFModel.js:186</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this GLTFModel has finished loading components from the glTF file
+                    specified by <a href="../classes/GLTFModel.html#property_src" class="crosslink">src</a>.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="event_loaded" class="events item">
+                        <h3 class="name"><code>loaded</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_models_glTFModel.new.js.html#l186"><code>examples&#x2F;js&#x2F;models&#x2F;glTFModel.new.js:186</code></a>
                             </p>
                     
                     
@@ -2173,6 +2286,48 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     <p>
                                     Defined in
                             <a href="../files/examples_js_models_glTFModel.js.html#l201"><code>examples&#x2F;js&#x2F;models&#x2F;glTFModel.js:201</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this GLTFModel&#39;s <a href="../classes/GLTFModel.html#property_src" class="crosslink">src</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_src" class="events item">
+                        <h3 class="name"><code>src</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_models_glTFModel.new.js.html#l201"><code>examples&#x2F;js&#x2F;models&#x2F;glTFModel.new.js:201</code></a>
                             </p>
                     
                     

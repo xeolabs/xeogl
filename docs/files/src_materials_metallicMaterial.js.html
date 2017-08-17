@@ -234,13 +234,13 @@
  | {{#crossLink &quot;MetallicMaterial/roughness:property&quot;}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The roughness of the material surface. |
  | {{#crossLink &quot;MetallicMaterial/specularF0:property&quot;}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The specular Fresnel of the material surface. |
  |  {{#crossLink &quot;MetallicMaterial/emissive:property&quot;}}{{/crossLink}} | Array | [0, 1] for all components | [0,0,0] | linear | The RGB components of the emissive color of the material. |
- | {{#crossLink &quot;MetallicMaterial/opacity:property&quot;}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The transparency of the material surface (0 fully transparent, 1 fully opaque). |
- | {{#crossLink &quot;MetallicMaterial/baseColorMap:property&quot;}}{{/crossLink}} | {{#crossLink &quot;Texture&quot;}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink &quot;MetallicMaterial/baseColor:property&quot;}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink &quot;MetallicMaterial/opacity:property&quot;}}{{/crossLink}}. |
+ | {{#crossLink &quot;MetallicMaterial/alpha:property&quot;}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The transparency of the material surface (0 fully transparent, 1 fully opaque). |
+ | {{#crossLink &quot;MetallicMaterial/baseColorMap:property&quot;}}{{/crossLink}} | {{#crossLink &quot;Texture&quot;}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink &quot;MetallicMaterial/baseColor:property&quot;}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink &quot;MetallicMaterial/alpha:property&quot;}}{{/crossLink}}. |
  | {{#crossLink &quot;MetallicMaterial/metallicMap:property&quot;}}{{/crossLink}} | {{#crossLink &quot;Texture&quot;}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink &quot;MetallicMaterial/metallic:property&quot;}}{{/crossLink}}. |
  | {{#crossLink &quot;MetallicMaterial/roughnessMap:property&quot;}}{{/crossLink}} | {{#crossLink &quot;Texture&quot;}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink &quot;MetallicMaterial/roughness:property&quot;}}{{/crossLink}}. |
  | {{#crossLink &quot;MetallicMaterial/metallicRoughnessMap:property&quot;}}{{/crossLink}} | {{#crossLink &quot;Texture&quot;}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink &quot;MetallicMaterial/metallic:property&quot;}}{{/crossLink}} and second component multiplying by {{#crossLink &quot;MetallicMaterial/roughness:property&quot;}}{{/crossLink}}. |
  | {{#crossLink &quot;MetallicMaterial/emissiveMap:property&quot;}}{{/crossLink}} | {{#crossLink &quot;Texture&quot;}}{{/crossLink}} |  | null | linear | Texture with RGB components multiplying by {{#crossLink &quot;MetallicMaterial/emissive:property&quot;}}{{/crossLink}}. |
- | {{#crossLink &quot;MetallicMaterial/opacityMap:property&quot;}}{{/crossLink}} | {{#crossLink &quot;Texture&quot;}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink &quot;MetallicMaterial/opacity:property&quot;}}{{/crossLink}}. |
+ | {{#crossLink &quot;MetallicMaterial/alphaMap:property&quot;}}{{/crossLink}} | {{#crossLink &quot;Texture&quot;}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink &quot;MetallicMaterial/alpha:property&quot;}}{{/crossLink}}. |
  | {{#crossLink &quot;MetallicMaterial/occlusionMap:property&quot;}}{{/crossLink}} | {{#crossLink &quot;Texture&quot;}}{{/crossLink}} |  | null | linear | Ambient occlusion texture multiplying by surface&#x27;s reflected diffuse and specular light. |
  | {{#crossLink &quot;SpecularMaterial/normalMap:property&quot;}}{{/crossLink}} | {{#crossLink &quot;Texture&quot;}}{{/crossLink}} |  | null | linear | Tangent-space normal map. |
 
@@ -312,7 +312,7 @@
         metallic: 1.0,
         roughness: 1.0,
         emissive: [0.0, 0.0, 0.0],
-        opacity: 1.0,
+        alpha: 1.0,
 
         // Textures to multiply by some of the channels
 
@@ -370,7 +370,7 @@
  });
  &#x60;&#x60;&#x60;&#x60;
 
- Although not shown in this example, we can also texture {{#crossLink &quot;SpecularMaterial/opacity:property&quot;}}{{/crossLink}} with
+ Although not shown in this example, we can also texture {{#crossLink &quot;SpecularMaterial/alpha:property&quot;}}{{/crossLink}} with
  the *A* component of {{#crossLink &quot;SpecularMaterial/diffuseMap:property&quot;}}{{/crossLink}}&#x27;s {{#crossLink &quot;Texture&quot;}}{{/crossLink}},
  if required.
 
@@ -404,20 +404,20 @@
  @param [cfg.emissive=[0,0,0]] {Float32Array}  RGB emissive color of this MetallicMaterial. Multiplies by the RGB
  components of {{#crossLink &quot;MetallicMaterial/emissiveMap:property&quot;}}{{/crossLink}}.
 
- @param [cfg.opacity=1.0] {Number} Factor in the range 0..1 indicating how transparent this MetallicMaterial is.
+ @param [cfg.alpha=1.0] {Number} Factor in the range 0..1 indicating how transparent this MetallicMaterial is.
  A value of 0.0 indicates fully transparent, 1.0 is fully opaque. Multiplies by the *R* component of
- {{#crossLink &quot;MetallicMaterial/opacityMap:property&quot;}}{{/crossLink}} and the *A* component, if present, of
+ {{#crossLink &quot;MetallicMaterial/alphaMap:property&quot;}}{{/crossLink}} and the *A* component, if present, of
  {{#crossLink &quot;MetallicMaterial/baseColorMap:property&quot;}}{{/crossLink}}. Attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}
  will appear transparent only if they are also attached to {{#crossLink &quot;Modes&quot;}}Modes{{/crossLink}} that
  have {{#crossLink &quot;Modes/transparent:property&quot;}}transparent{{/crossLink}} set to **true**.
 
  @param [cfg.baseColorMap=undefined] {Texture} RGBA {{#crossLink &quot;Texture&quot;}}{{/crossLink}} containing the diffuse color
- of this MetallicMaterial, with optional *A* component for opacity. The RGB components multiply by the
+ of this MetallicMaterial, with optional *A* component for alpha. The RGB components multiply by the
  {{#crossLink &quot;MetallicMaterial/baseColor:property&quot;}}{{/crossLink}} property,
- while the *A* component, if present, multiplies by the {{#crossLink &quot;MetallicMaterial/opacity:property&quot;}}{{/crossLink}} property.
+ while the *A* component, if present, multiplies by the {{#crossLink &quot;MetallicMaterial/alpha:property&quot;}}{{/crossLink}} property.
 
- @param [cfg.opacityMap=undefined] {Texture} RGB {{#crossLink &quot;Texture&quot;}}{{/crossLink}} containing this MetallicMaterial&#x27;s
- opacity in its *R* component. The *R* component multiplies by the {{#crossLink &quot;MetallicMaterial/opacity:property&quot;}}{{/crossLink}} property. Must
+ @param [cfg.alphaMap=undefined] {Texture} RGB {{#crossLink &quot;Texture&quot;}}{{/crossLink}} containing this MetallicMaterial&#x27;s
+ alpha in its *R* component. The *R* component multiplies by the {{#crossLink &quot;MetallicMaterial/alpha:property&quot;}}{{/crossLink}} property. Must
  be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this MetallicMaterial.
 
  @param [cfg.metallicMap=undefined] {Texture} RGB {{#crossLink &quot;Texture&quot;}}{{/crossLink}} containing this MetallicMaterial&#x27;s
@@ -465,9 +465,9 @@
                 metallic: 1.0,
                 roughness: 1.0,
                 specularF0: 0.0,
-                opacity: 1.0,
+                alpha: 1.0,
                 baseColorMap: null,
-                opacityMap: null,
+                alphaMap: null,
                 metallicMap: null,
                 roughnessMap: null,
                 metallicRoughnessMap: null,
@@ -493,7 +493,7 @@
             this.roughness = cfg.roughness;
             this.specularF0 = cfg.specularF0;
             this.emissive = cfg.emissive;
-            this.opacity = cfg.opacity;
+            this.alpha = cfg.alpha;
 
             if (cfg.baseColorMap) {
                 this.baseColorMap = cfg.baseColorMap;
@@ -519,8 +519,8 @@
                 this.occlusionMap = cfg.occlusionMap;
             }
 
-            if (cfg.opacityMap) {
-                this.opacityMap = cfg.opacityMap;
+            if (cfg.alphaMap) {
+                this.alphaMap = cfg.alphaMap;
             }
 
             if (cfg.normalMap) {
@@ -582,10 +582,10 @@
             },
 
             /**
-             RGB {{#crossLink &quot;Texture&quot;}}{{/crossLink}} containing the diffuse color of this MetallicMaterial, with optional *A* component for opacity.
+             RGB {{#crossLink &quot;Texture&quot;}}{{/crossLink}} containing the diffuse color of this MetallicMaterial, with optional *A* component for alpha.
 
              The RGB components multiply by the {{#crossLink &quot;MetallicMaterial/baseColor:property&quot;}}{{/crossLink}} property,
-             while the *A* component, if present, multiplies by the {{#crossLink &quot;MetallicMaterial/opacity:property&quot;}}{{/crossLink}} property.
+             while the *A* component, if present, multiplies by the {{#crossLink &quot;MetallicMaterial/alpha:property&quot;}}{{/crossLink}} property.
 
              Attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} will appear transparent only if they are also attached
              to {{#crossLink &quot;Modes&quot;}}Modes{{/crossLink}} that have {{#crossLink &quot;Modes/transparent:property&quot;}}transparent{{/crossLink}}
@@ -949,75 +949,75 @@
 
              A value of 0.0 indicates fully transparent, 1.0 is fully opaque.
 
-             Multiplies by the *R* component of {{#crossLink &quot;MetallicMaterial/opacityMap:property&quot;}}{{/crossLink}} and
+             Multiplies by the *R* component of {{#crossLink &quot;MetallicMaterial/alphaMap:property&quot;}}{{/crossLink}} and
              the *A* component, if present, of {{#crossLink &quot;MetallicMaterial/baseColorMap:property&quot;}}{{/crossLink}}.
 
              Attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} will appear transparent only if they are also attached
              to {{#crossLink &quot;Modes&quot;}}Modes{{/crossLink}} that have {{#crossLink &quot;Modes/transparent:property&quot;}}transparent{{/crossLink}}
              set to **true**.
 
-             Fires an {{#crossLink &quot;MetallicMaterial/opacity:event&quot;}}{{/crossLink}} event on change.
+             Fires an {{#crossLink &quot;MetallicMaterial/alpha:event&quot;}}{{/crossLink}} event on change.
 
-             @property opacity
+             @property alpha
              @default 1.0
              @type Number
              */
-            opacity: {
+            alpha: {
 
                 set: function (value) {
 
                     value = (value !== undefined &amp;&amp; value !== null) ? value : 1.0;
 
-                    if (this._state.opacity === value) {
+                    if (this._state.alpha === value) {
                         return;
                     }
 
-                    this._state.opacity = value;
+                    this._state.alpha = value;
 
                     this._renderer.imageDirty = true;
 
                     /**
-                     * Fired whenever this MetallicMaterial&#x27;s {{#crossLink &quot;MetallicMaterial/opacity:property&quot;}}{{/crossLink}} property changes.
+                     * Fired whenever this MetallicMaterial&#x27;s {{#crossLink &quot;MetallicMaterial/alpha:property&quot;}}{{/crossLink}} property changes.
                      *
-                     * @event opacity
+                     * @event alpha
                      * @param value {Number} The property&#x27;s new value
                      */
-                    this.fire(&quot;opacity&quot;, this._state.opacity);
+                    this.fire(&quot;alpha&quot;, this._state.alpha);
                 },
 
                 get: function () {
-                    return this._state.opacity;
+                    return this._state.alpha;
                 }
             },
 
             /**
-             RGB {{#crossLink &quot;Texture&quot;}}{{/crossLink}} containing this MetallicMaterial&#x27;s opacity in its *R* component.
+             RGB {{#crossLink &quot;Texture&quot;}}{{/crossLink}} containing this MetallicMaterial&#x27;s alpha in its *R* component.
 
-             The *R* component multiplies by the {{#crossLink &quot;MetallicMaterial/opacity:property&quot;}}{{/crossLink}} property.
+             The *R* component multiplies by the {{#crossLink &quot;MetallicMaterial/alpha:property&quot;}}{{/crossLink}} property.
 
              Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this MetallicMaterial.
 
-             Fires an {{#crossLink &quot;MetallicMaterial/opacityMap:event&quot;}}{{/crossLink}} event on change.
+             Fires an {{#crossLink &quot;MetallicMaterial/alphaMap:event&quot;}}{{/crossLink}} event on change.
 
-             @property opacityMap
+             @property alphaMap
              @default undefined
              @type {Texture}
              */
-            opacityMap: {
+            alphaMap: {
 
                 set: function (texture) {
 
                     /**
-                     Fired whenever this MetallicMaterial&#x27;s {{#crossLink &quot;MetallicMaterial/opacityMap:property&quot;}}{{/crossLink}} property changes.
+                     Fired whenever this MetallicMaterial&#x27;s {{#crossLink &quot;MetallicMaterial/alphaMap:property&quot;}}{{/crossLink}} property changes.
 
-                     @event opacityMap
+                     @event alphaMap
                      @param value Number The property&#x27;s new value
                      */
-                    this._attachComponent(&quot;xeogl.Texture&quot;, &quot;opacityMap&quot;, texture);
+                    this._attachComponent(&quot;xeogl.Texture&quot;, &quot;alphaMap&quot;, texture);
                 },
 
                 get: function () {
-                    return this._attached.opacityMap;
+                    return this._attached.alphaMap;
                 }
             },
 
@@ -1129,9 +1129,9 @@
                 }
             }
 
-            if (state.opacityMap) {
+            if (state.alphaMap) {
                 hash.push(&quot;/opm&quot;);
-                if (state.opacityMap.matrix) {
+                if (state.alphaMap.matrix) {
                     hash.push(&quot;/mat&quot;);
                 }
             }
@@ -1158,7 +1158,7 @@
                 roughness: this._state.roughness,
                 specularF0: this._state.specularF0,
                 emissive: vecToArray(this._state.emissive),
-                opacity: this._state.opacity
+                alpha: this._state.alpha
             };
 
             var components = this._attached;

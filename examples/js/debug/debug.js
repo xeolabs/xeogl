@@ -65,7 +65,7 @@
         var id;
         var color;
         var fillColor;
-        var opacity;
+        var alpha;
         var lineWidth;
         var diffuse;
         var pos;
@@ -99,8 +99,8 @@
             return this;
         };
 
-        this.opacity = function (value) {
-            opacity = value;
+        this.alpha = function (value) {
+            alpha = value;
             return this;
         };
 
@@ -155,7 +155,7 @@
             color = [1, 0.4, 0.4];
             fillColor = [0, 0, 0];
             diffuse = [1, 0.4, 0.4];
-            opacity = 1.0;
+            alpha = 1.0;
             lineWidth = 2.0;
             id = undefined;
             pos = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -203,12 +203,12 @@
                     }),
                     material: new xeogl.PhongMaterial({
                         emissive: color,
-                        opacity: opacity,
+                        alpha: alpha,
                         lineWidth: lineWidth
                     }),
                     modes: new xeogl.Modes({  // This Entity should not be pickable
                         pickable: false,
-                        transparent: opacity < 1.0
+                        transparent: alpha < 1.0
                     }),
                     visibility: new xeogl.Visibility({  // This Entity should not be pickable
                         visible: true
@@ -222,8 +222,8 @@
                 object.geometry.positions = positions;
                 object.geometry.indices = indices;
                 object.material.emissive = color;
-                object.material.opacity = opacity;
-                object.modes.transparency = opacity < 1.0;
+                object.material.alpha = alpha;
+                object.modes.transparency = alpha < 1.0;
                 object.material.lineWidth = lineWidth;
                 object.visibility.visible = true;
                 //           object.transform.matrix = matrix;
@@ -256,7 +256,7 @@
                         collidable: false
                     }),
                     material: new xeogl.PhongMaterial({ // Hides the sphere while still rendering it
-                        opacity: 0
+                        alpha: 0
                     }),
                     visibility: new xeogl.Visibility({  // This Entity should not be pickable
                         visible: true
@@ -362,14 +362,14 @@
                     }),
                     modes: new xeogl.Modes({  // This Entity should not be pickable
                         pickable: false,
-                        transparent: opacity < 1.0,
+                        transparent: alpha < 1.0,
                         backfaces: false,
                         collidable: false
                     }),
                     material: new xeogl.PhongMaterial({ // Hides the sphere while still rendering it
                         diffuse: color,
                         emissive: color,
-                        opacity: opacity,
+                        alpha: alpha,
                         specular: [1, 1, 1]
                     }),
                     visibility: new xeogl.Visibility({  // This Entity should not be pickable
@@ -382,8 +382,8 @@
                 object.geometry.radius = radius;
                 object.material.color = color;
                 object.material.emissive = color;
-                object.material.opacity = opacity;
-                object.modes.transparency = opacity < 1.0;
+                object.material.alpha = alpha;
+                object.modes.transparency = alpha < 1.0;
                 object.visibility.visible = true;
             }
 
@@ -474,7 +474,7 @@
                     }),
                     material: new xeogl.PhongMaterial({ // Hides the sphere while still rendering it
                         emissive: color,
-                        opacity: opacity,
+                        alpha: alpha,
                         lineWidth: lineWidth
                     }),
                     billboard: new xeogl.Billboard({
@@ -489,8 +489,8 @@
                 object.transform.xyz = pos[0];
                 object.geometry.text = text;
                 object.material.emissive = color;
-                object.material.opacity = opacity;
-                object.modes.transparency = opacity < 1.0;
+                object.material.alpha = alpha;
+                object.modes.transparency = alpha < 1.0;
                 object.material.lineWidth = lineWidth;
                 object.visibility.visible = true;
             }

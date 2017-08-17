@@ -131,7 +131,7 @@ function materialGallery(menuId, cfg) {
             material: materialCfg,
             transform: transform,
             modes: new xeogl.Modes({
-                transparent: (materialCfg.opacity && materialCfg.opacity < 1.0) || (materialCfg.opacityMap) || (materialCfg.opacityFresnel)
+                transparent: (materialCfg.alpha && materialCfg.alpha < 1.0) || (materialCfg.alphaMap) || (materialCfg.alphaFresnel)
             })
         });
 

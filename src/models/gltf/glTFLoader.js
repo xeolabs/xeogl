@@ -304,7 +304,7 @@
                 var baseColorFactor = values.baseColorFactor;
                 if (baseColorFactor) {
                     cfg.baseColor = baseColorFactor.slice(0, 3);
-                    cfg.opacity = baseColorFactor[3];
+                    cfg.alpha = baseColorFactor[3];
                 }
 
                 if (values.baseColorTexture) {
@@ -376,7 +376,7 @@
                 var diffuseFactor = values.diffuseFactor;
                 if (diffuseFactor) {
                     cfg.diffuse = diffuseFactor.slice(0, 3);
-                    cfg.opacity = diffuseFactor[3];
+                    cfg.alpha = diffuseFactor[3];
                 }
 
                 if (values.diffuseTexture) {

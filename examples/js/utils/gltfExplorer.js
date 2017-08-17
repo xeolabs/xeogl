@@ -141,7 +141,7 @@ var gltfExplorer = function (menuId, files) {
                 //        entity.material.baseColor = [0.5, 0.5, 0.5];
                 //        break;
                 //}
-                entity.material.opacity = 0.5;
+                entity.material.alpha = 0.5;
 
                 entity.modes = entity.modes.clone();
                 entity.modes.transparent = true;

@@ -19,7 +19,7 @@
 
 <script id="source">
 
-    // A simple animation system that supports animation of opacity and translation
+    // A simple animation system that supports animation of alpha and translation
     // of Entities within a single interpolation frame
 
     var Animation = function () {
@@ -53,8 +53,8 @@
             }
         });
 
-        this.xray = function (ids, opacity) {
-            var opacityFresnel = new xeogl.Fresnel({
+        this.xray = function (ids, alpha) {
+            var alphaFresnel = new xeogl.Fresnel({
                 edgeBias: 0.2,
                 centerBias: 0.8,
                 edgeColor: [1.0, 1.0, 1.0],
@@ -65,13 +65,13 @@
                 var id = ids [i];
                 tasks.push((function () {
                     var entity = model.entities[id];
-                    var startOpacity = entity.material.opacity;
+                    var startAlpha = entity.material.alpha;
                     return function (t) {
-                        var newOpacity = startOpacity + (t * (opacity - startOpacity));
-                        entity.material.opacity =newOpacity;
-                        entity.modes.transparent = (newOpacity < 1.0);
+                        var newAlpha = startAlpha + (t * (alpha - startAlpha));
+                        entity.material.alpha =newAlpha;
+                        entity.modes.transparent = (newAlpha < 1.0);
 
-                      //  entity.material.opacityFresnel = opacityFresnel;
+                      //  entity.material.alphaFresnel = alphaFresnel;
                     };
                 })());
             }
@@ -381,7 +381,7 @@
                 src: "textures/diffuse/UVCheckerMap11-1024.png",
                 scale: [-5.0, 5.0]
             }),
-            xopacity: 0.99
+            xalpha: 0.99
         }),
         transform: new xeogl.Translate({
             xyz: [0, -1.1, 0]
@@ -410,7 +410,7 @@
     //                src: "textures/diffuse/gridBlueOnWhite.png",
     //                scale: [-4, 4]
     //            }),
-    //            opacity: 1
+    //            alpha: 1
     //        }),
     //        modes: new xeogl.Modes({
     //            backfaces: true,

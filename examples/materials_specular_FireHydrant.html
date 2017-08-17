@@ -171,7 +171,7 @@
         this["specular"] = material.specular;
         this["glossiness"] = material.glossiness;
         this["reflectivity"] = material.reflectivity;
-        this["opacity"] = material.opacity;
+        this["alpha"] = material.alpha;
 
 
         this["diffuseMap"] = !!material.diffuseMap;
@@ -201,9 +201,9 @@
             material.specular = self["specular"];
             material.glossiness = self["glossiness"];
             material.reflectivity = self["reflectivity"];
-            material.opacity = self["opacity"];
+            material.alpha = self["alpha"];
 
-            entity.modes.transparent = (material.opacity < 1);
+            entity.modes.transparent = (material.alpha < 1);
 
             if (self["diffuseMap"] !== !!material.diffuseMap) {
                 material.diffuseMap = self["diffuseMap"] ? diffuseMap : null;
@@ -263,7 +263,7 @@
     materialFolder.add(menu, 'specular', 0.0, 1.0);
     materialFolder.add(menu, 'glossiness', 0.0, 1.0);
     materialFolder.add(menu, 'reflectivity', 0.0, 1.0);
-    materialFolder.add(menu, 'opacity', 0.0, 1.0);
+    materialFolder.add(menu, 'alpha', 0.0, 1.0);
     materialFolder.add(menu, 'diffuseMap', true);
     materialFolder.add(menu, 'specularMap', true);
     materialFolder.add(menu, 'glossinessMap', true);

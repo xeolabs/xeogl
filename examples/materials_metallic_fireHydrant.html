@@ -176,7 +176,7 @@
         this["metallic"] = material.metallic;
         this["roughness"] = material.roughness;
         this["specularF0"] = material.specularF0;
-        this["opacity"] = material.opacity;
+        this["alpha"] = material.alpha;
 
 
         this["baseColorMap"] = !!material.baseColorMap;
@@ -206,9 +206,9 @@
             material.metallic = self["metallic"];
             material.roughness = self["roughness"];
             material.specularF0 = self["specularF0"];
-            material.opacity = self["opacity"];
+            material.alpha = self["alpha"];
 
-            hydrant.modes.transparent = (material.opacity < 1);
+            hydrant.modes.transparent = (material.alpha < 1);
 
             if (self["baseColorMap"] !== !!material.baseColorMap) {
                 material.baseColorMap = self["baseColorMap"] ? baseColorMap : null;
@@ -268,7 +268,7 @@
     materialFolder.add(menu, 'metallic', 0.0, 1.0);
     materialFolder.add(menu, 'roughness', 0.0, 1.0);
     materialFolder.add(menu, 'specularF0', 0.0, 1.0);
-    materialFolder.add(menu, 'opacity', 0.0, 1.0);
+    materialFolder.add(menu, 'alpha', 0.0, 1.0);
     materialFolder.add(menu, 'baseColorMap', true);
     materialFolder.add(menu, 'metallicMap', true);
     materialFolder.add(menu, 'roughnessMap', true);

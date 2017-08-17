@@ -60,7 +60,7 @@
             src: "diffuseMap.jpg"
         }),
         shininess: 80, // Default
-        opacity: 1.0 // Default
+        alpha: 1.0 // Default
     }),
 
     geometry: new xeogl.TorusGeometry()

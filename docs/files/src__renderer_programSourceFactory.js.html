@@ -224,7 +224,7 @@
         var reflection; // True when rendering state contains reflections
         var diffuseFresnel;
         var specularFresnel;
-        var opacityFresnel;
+        var alphaFresnel;
         var reflectivityFresnel;
         var emissiveFresnel;
         var receiveShadow;
@@ -262,7 +262,7 @@
             reflection = hasReflection();
             diffuseFresnel = states.material.diffuseFresnel;
             specularFresnel = states.material.specularFresnel;
-            opacityFresnel = states.material.opacityFresnel;
+            alphaFresnel = states.material.alphaFresnel;
             reflectivityFresnel = states.material.reflectivityFresnel;
             emissiveFresnel = states.material.emissiveFresnel;
             receiveShadow = receivesShadow();
@@ -311,7 +311,7 @@
                 material.occlusionMap ||
                 material.baseColorMap ||
                 material.diffuseMap ||
-                material.opacityMap ||
+                material.alphaMap ||
                 material.specularMap ||
                 material.glossinessMap ||
                 material.specularGlossinessMap ||
@@ -1050,7 +1050,7 @@
                 || material.glossinessMap
                 || material.specularGlossinessMap
                 || material.occlusionMap
-                || material.opacityMap)) {
+                || material.alphaMap)) {
                 add(&quot;varying vec2 vUV;&quot;);
             }
 
@@ -1073,8 +1073,8 @@
                 add(&quot;uniform vec3 materialBaseColor;&quot;);
             }
 
-            if (material.opacity !== undefined &amp;&amp; material.opacity !== null) {
-                add(&quot;uniform float materialOpacity;&quot;);
+            if (material.alpha !== undefined &amp;&amp; material.alpha !== null) {
+                add(&quot;uniform float materialAlpha;&quot;);
             }
 
             if (material.emissive) {
@@ -1177,10 +1177,10 @@
                 }
             }
 
-            if (geometry.uv &amp;&amp; material.opacityMap) {
-                add(&quot;uniform sampler2D opacityMap;&quot;);
-                if (material.opacityMap.matrix) {
-                    add(&quot;uniform mat4 opacityMapMatrix;&quot;);
+            if (geometry.uv &amp;&amp; material.alphaMap) {
+                add(&quot;uniform sampler2D alphaMap;&quot;);
+                if (material.alphaMap.matrix) {
+                    add(&quot;uniform mat4 alphaMapMatrix;&quot;);
                 }
             }
 
@@ -1211,7 +1211,7 @@
 
             if (geometry.normals &amp;&amp; (material.diffuseFresnel ||
                 material.specularFresnel ||
-                material.opacityFresnel ||
+                material.alphaFresnel ||
                 material.emissiveFresnel ||
                 material.reflectivityFresnel)) {
 
@@ -1237,12 +1237,12 @@
                     add(&quot;uniform vec3   specularFresnelEdgeColor;&quot;);
                 }
 
-                if (material.opacityFresnel) {
-                    add(&quot;uniform float  opacityFresnelCenterBias;&quot;);
-                    add(&quot;uniform float  opacityFresnelEdgeBias;&quot;);
-                    add(&quot;uniform float  opacityFresnelPower;&quot;);
-                    add(&quot;uniform vec3   opacityFresnelCenterColor;&quot;);
-                    add(&quot;uniform vec3   opacityFresnelEdgeColor;&quot;);
+                if (material.alphaFresnel) {
+                    add(&quot;uniform float  alphaFresnelCenterBias;&quot;);
+                    add(&quot;uniform float  alphaFresnelEdgeBias;&quot;);
+                    add(&quot;uniform float  alphaFresnelPower;&quot;);
+                    add(&quot;uniform vec3   alphaFresnelCenterColor;&quot;);
+                    add(&quot;uniform vec3   alphaFresnelEdgeColor;&quot;);
                 }
 
                 if (material.reflectivityFresnel) {
@@ -1355,14 +1355,14 @@
                 add(&quot;vec3 specular = vec3(1.0, 1.0, 1.0);&quot;);
             }
 
-            if (material.opacity !== undefined) {
-                add(&quot;float opacity = materialOpacity;&quot;);
+            if (material.alpha !== undefined) {
+                add(&quot;float alpha = materialAlpha;&quot;);
             } else {
-                add(&quot;float opacity = 1.0;&quot;);
+                add(&quot;float alpha = 1.0;&quot;);
             }
 
             if (geometry.colors) {
-                add(&quot;opacity *= vColor.a;&quot;);
+                add(&quot;alpha *= vColor.a;&quot;);
             }
 
             if (material.glossiness !== undefined) {
@@ -1406,7 +1406,7 @@
                 || material.specularMap
                 || material.glossinessMap
                 || material.specularGlossinessMap
-                || material.opacityMap)) {
+                || material.alphaMap)) {
                 add(&quot;vec4 texturePos = vec4(vUV.s, vUV.t, 1.0, 1.0);&quot;);
                 add(&quot;vec2 textureCoord;&quot;);
             }
@@ -1426,7 +1426,9 @@
                 } else {
                     add(&quot;textureCoord = texturePos.xy;&quot;);
                 }
-                add(&quot;diffuseColor *= texture2D(diffuseMap, textureCoord).rgb;&quot;);
+                add(&quot;vec4 diffuseTexel = texture2D(diffuseMap, textureCoord);&quot;);
+                add(&quot;diffuseColor *= diffuseTexel.rgb;&quot;);
+                add(&quot;alpha *= diffuseTexel.a;&quot;);
             }
 
             if (geometry.uv &amp;&amp; material.baseColorMap) {
@@ -1437,7 +1439,7 @@
                 }
                 add(&quot;vec4 baseColorTexel = texture2D(baseColorMap, textureCoord);&quot;);
                 add(&quot;diffuseColor *= baseColorTexel.rgb;&quot;);
-             //   add(&quot;opacity *= baseColorTexel.a;&quot;);
+                add(&quot;alpha *= baseColorTexel.a;&quot;);
             }
 
             if (geometry.uv &amp;&amp; material.emissiveMap) {
@@ -1449,13 +1451,13 @@
                 add(&quot;emissiveColor *= texture2D(emissiveMap, textureCoord).rgb;&quot;);
             }
 
-            if (geometry.uv &amp;&amp; material.opacityMap) {
-                if (material.opacityMap.matrix) {
-                    add(&quot;textureCoord = (opacityMapMatrix * texturePos).xy;&quot;);
+            if (geometry.uv &amp;&amp; material.alphaMap) {
+                if (material.alphaMap.matrix) {
+                    add(&quot;textureCoord = (alphaMapMatrix * texturePos).xy;&quot;);
                 } else {
                     add(&quot;textureCoord = texturePos.xy;&quot;);
                 }
-                add(&quot;opacity *= texture2D(opacityMap, textureCoord).r;&quot;);
+                add(&quot;alpha *= texture2D(alphaMap, textureCoord).r;&quot;);
             }
 
             if (geometry.uv &amp;&amp; material.occlusionMap) {
@@ -1544,7 +1546,7 @@
 
                 add(&quot;vec3 viewEyeDir = normalize(-vViewPosition);&quot;);
 
-                if (material.diffuseFresnel || material.specularFresnel || material.opacityFresnel || material.emissiveFresnel || material.reflectivityFresnel) {
+                if (material.diffuseFresnel || material.specularFresnel || material.alphaFresnel || material.emissiveFresnel || material.reflectivityFresnel) {
                     if (material.diffuseFresnel) {
                         add(&quot;float diffuseFresnel = fresnel(viewEyeDir, viewNormal, diffuseFresnelEdgeBias, diffuseFresnelCenterBias, diffuseFresnelPower);&quot;);
                         add(&quot;diffuseColor *= mix(diffuseFresnelEdgeColor, diffuseFresnelCenterColor, diffuseFresnel);&quot;);
@@ -1553,9 +1555,9 @@
                         add(&quot;float specularFresnel = fresnel(viewEyeDir, viewNormal, specularFresnelEdgeBias, specularFresnelCenterBias, specularFresnelPower);&quot;);
                         add(&quot;specular *= mix(specularFresnelEdgeColor, specularFresnelCenterColor, specularFresnel);&quot;);
                     }
-                    if (material.opacityFresnel) {
-                        add(&quot;float opacityFresnel = fresnel(viewEyeDir, viewNormal, opacityFresnelEdgeBias, opacityFresnelCenterBias, opacityFresnelPower);&quot;);
-                        add(&quot;opacity *= mix(opacityFresnelEdgeColor.r, opacityFresnelCenterColor.r, opacityFresnel);&quot;);
+                    if (material.alphaFresnel) {
+                        add(&quot;float alphaFresnel = fresnel(viewEyeDir, viewNormal, alphaFresnelEdgeBias, alphaFresnelCenterBias, alphaFresnelPower);&quot;);
+                        add(&quot;alpha *= mix(alphaFresnelEdgeColor.r, alphaFresnelCenterColor.r, alphaFresnel);&quot;);
                     }
                     if (material.emissiveFresnel) {
                         add(&quot;float emissiveFresnel = fresnel(viewEyeDir, viewNormal, emissiveFresnelEdgeBias, emissiveFresnelCenterBias, emissiveFresnelPower);&quot;);
@@ -1691,7 +1693,7 @@
             }
 
 
-            add(&quot;gl_FragColor = vec4(outgoingLight, opacity);&quot;);
+            add(&quot;gl_FragColor = vec4(outgoingLight, alpha);&quot;);
              //    add(&quot;gl_FragColor = LinearTosRGB(gl_FragColor);&quot;);  // Gamma correction
 
             add(&quot;}&quot;);

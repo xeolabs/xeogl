@@ -633,7 +633,7 @@
                     var diffuseFactor = specularPBR.diffuseFactor;
                     if (diffuseFactor !== null && diffuseFactor !== undefined) {
                         cfg.diffuse = diffuseFactor.slice(0, 3);
-                        cfg.opacity = diffuseFactor[3];
+                        cfg.alpha = diffuseFactor[3];
                     }
 
                     var diffuseTexture = specularPBR.diffuseTexture;
@@ -729,10 +729,10 @@
 
                     var transparency = values.transparency;
                     if (transparency !== null && transparency !== undefined) {
-                        cfg.opacity = transparency;
+                        cfg.alpha = transparency;
                         // TODO transparent mode
                     } else {
-                        cfg.opacity = 1.0;
+                        cfg.alpha = 1.0;
                     }
 
                     var transparent = values.transparent;
@@ -754,7 +754,7 @@
                 var baseColorFactor = metallicPBR.baseColorFactor;
                 if (baseColorFactor) {
                     cfg.baseColor = baseColorFactor.slice(0, 3);
-                    cfg.opacity = baseColorFactor[3];
+                    cfg.alpha = baseColorFactor[3];
                 }
 
                 var baseColorTexture = metallicPBR.baseColorTexture;

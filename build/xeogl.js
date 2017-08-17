@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2017-08-15
+ * Built on 2017-08-17
  *
  * MIT License
  * Copyright 2017, Lindsay Kay
@@ -8389,7 +8389,7 @@ var Canvas2Image = (function () {
         var reflection; // True when rendering state contains reflections
         var diffuseFresnel;
         var specularFresnel;
-        var opacityFresnel;
+        var alphaFresnel;
         var reflectivityFresnel;
         var emissiveFresnel;
         var receiveShadow;
@@ -8427,7 +8427,7 @@ var Canvas2Image = (function () {
             reflection = hasReflection();
             diffuseFresnel = states.material.diffuseFresnel;
             specularFresnel = states.material.specularFresnel;
-            opacityFresnel = states.material.opacityFresnel;
+            alphaFresnel = states.material.alphaFresnel;
             reflectivityFresnel = states.material.reflectivityFresnel;
             emissiveFresnel = states.material.emissiveFresnel;
             receiveShadow = receivesShadow();
@@ -8476,7 +8476,7 @@ var Canvas2Image = (function () {
                 material.occlusionMap ||
                 material.baseColorMap ||
                 material.diffuseMap ||
-                material.opacityMap ||
+                material.alphaMap ||
                 material.specularMap ||
                 material.glossinessMap ||
                 material.specularGlossinessMap ||
@@ -9215,7 +9215,7 @@ var Canvas2Image = (function () {
                 || material.glossinessMap
                 || material.specularGlossinessMap
                 || material.occlusionMap
-                || material.opacityMap)) {
+                || material.alphaMap)) {
                 add("varying vec2 vUV;");
             }
 
@@ -9238,8 +9238,8 @@ var Canvas2Image = (function () {
                 add("uniform vec3 materialBaseColor;");
             }
 
-            if (material.opacity !== undefined && material.opacity !== null) {
-                add("uniform float materialOpacity;");
+            if (material.alpha !== undefined && material.alpha !== null) {
+                add("uniform float materialAlpha;");
             }
 
             if (material.emissive) {
@@ -9342,10 +9342,10 @@ var Canvas2Image = (function () {
                 }
             }
 
-            if (geometry.uv && material.opacityMap) {
-                add("uniform sampler2D opacityMap;");
-                if (material.opacityMap.matrix) {
-                    add("uniform mat4 opacityMapMatrix;");
+            if (geometry.uv && material.alphaMap) {
+                add("uniform sampler2D alphaMap;");
+                if (material.alphaMap.matrix) {
+                    add("uniform mat4 alphaMapMatrix;");
                 }
             }
 
@@ -9376,7 +9376,7 @@ var Canvas2Image = (function () {
 
             if (geometry.normals && (material.diffuseFresnel ||
                 material.specularFresnel ||
-                material.opacityFresnel ||
+                material.alphaFresnel ||
                 material.emissiveFresnel ||
                 material.reflectivityFresnel)) {
 
@@ -9402,12 +9402,12 @@ var Canvas2Image = (function () {
                     add("uniform vec3   specularFresnelEdgeColor;");
                 }
 
-                if (material.opacityFresnel) {
-                    add("uniform float  opacityFresnelCenterBias;");
-                    add("uniform float  opacityFresnelEdgeBias;");
-                    add("uniform float  opacityFresnelPower;");
-                    add("uniform vec3   opacityFresnelCenterColor;");
-                    add("uniform vec3   opacityFresnelEdgeColor;");
+                if (material.alphaFresnel) {
+                    add("uniform float  alphaFresnelCenterBias;");
+                    add("uniform float  alphaFresnelEdgeBias;");
+                    add("uniform float  alphaFresnelPower;");
+                    add("uniform vec3   alphaFresnelCenterColor;");
+                    add("uniform vec3   alphaFresnelEdgeColor;");
                 }
 
                 if (material.reflectivityFresnel) {
@@ -9520,14 +9520,14 @@ var Canvas2Image = (function () {
                 add("vec3 specular = vec3(1.0, 1.0, 1.0);");
             }
 
-            if (material.opacity !== undefined) {
-                add("float opacity = materialOpacity;");
+            if (material.alpha !== undefined) {
+                add("float alpha = materialAlpha;");
             } else {
-                add("float opacity = 1.0;");
+                add("float alpha = 1.0;");
             }
 
             if (geometry.colors) {
-                add("opacity *= vColor.a;");
+                add("alpha *= vColor.a;");
             }
 
             if (material.glossiness !== undefined) {
@@ -9571,7 +9571,7 @@ var Canvas2Image = (function () {
                 || material.specularMap
                 || material.glossinessMap
                 || material.specularGlossinessMap
-                || material.opacityMap)) {
+                || material.alphaMap)) {
                 add("vec4 texturePos = vec4(vUV.s, vUV.t, 1.0, 1.0);");
                 add("vec2 textureCoord;");
             }
@@ -9591,7 +9591,9 @@ var Canvas2Image = (function () {
                 } else {
                     add("textureCoord = texturePos.xy;");
                 }
-                add("diffuseColor *= texture2D(diffuseMap, textureCoord).rgb;");
+                add("vec4 diffuseTexel = texture2D(diffuseMap, textureCoord);");
+                add("diffuseColor *= diffuseTexel.rgb;");
+                add("alpha *= diffuseTexel.a;");
             }
 
             if (geometry.uv && material.baseColorMap) {
@@ -9602,7 +9604,7 @@ var Canvas2Image = (function () {
                 }
                 add("vec4 baseColorTexel = texture2D(baseColorMap, textureCoord);");
                 add("diffuseColor *= baseColorTexel.rgb;");
-             //   add("opacity *= baseColorTexel.a;");
+                add("alpha *= baseColorTexel.a;");
             }
 
             if (geometry.uv && material.emissiveMap) {
@@ -9614,13 +9616,13 @@ var Canvas2Image = (function () {
                 add("emissiveColor *= texture2D(emissiveMap, textureCoord).rgb;");
             }
 
-            if (geometry.uv && material.opacityMap) {
-                if (material.opacityMap.matrix) {
-                    add("textureCoord = (opacityMapMatrix * texturePos).xy;");
+            if (geometry.uv && material.alphaMap) {
+                if (material.alphaMap.matrix) {
+                    add("textureCoord = (alphaMapMatrix * texturePos).xy;");
                 } else {
                     add("textureCoord = texturePos.xy;");
                 }
-                add("opacity *= texture2D(opacityMap, textureCoord).r;");
+                add("alpha *= texture2D(alphaMap, textureCoord).r;");
             }
 
             if (geometry.uv && material.occlusionMap) {
@@ -9709,7 +9711,7 @@ var Canvas2Image = (function () {
 
                 add("vec3 viewEyeDir = normalize(-vViewPosition);");
 
-                if (material.diffuseFresnel || material.specularFresnel || material.opacityFresnel || material.emissiveFresnel || material.reflectivityFresnel) {
+                if (material.diffuseFresnel || material.specularFresnel || material.alphaFresnel || material.emissiveFresnel || material.reflectivityFresnel) {
                     if (material.diffuseFresnel) {
                         add("float diffuseFresnel = fresnel(viewEyeDir, viewNormal, diffuseFresnelEdgeBias, diffuseFresnelCenterBias, diffuseFresnelPower);");
                         add("diffuseColor *= mix(diffuseFresnelEdgeColor, diffuseFresnelCenterColor, diffuseFresnel);");
@@ -9718,9 +9720,9 @@ var Canvas2Image = (function () {
                         add("float specularFresnel = fresnel(viewEyeDir, viewNormal, specularFresnelEdgeBias, specularFresnelCenterBias, specularFresnelPower);");
                         add("specular *= mix(specularFresnelEdgeColor, specularFresnelCenterColor, specularFresnel);");
                     }
-                    if (material.opacityFresnel) {
-                        add("float opacityFresnel = fresnel(viewEyeDir, viewNormal, opacityFresnelEdgeBias, opacityFresnelCenterBias, opacityFresnelPower);");
-                        add("opacity *= mix(opacityFresnelEdgeColor.r, opacityFresnelCenterColor.r, opacityFresnel);");
+                    if (material.alphaFresnel) {
+                        add("float alphaFresnel = fresnel(viewEyeDir, viewNormal, alphaFresnelEdgeBias, alphaFresnelCenterBias, alphaFresnelPower);");
+                        add("alpha *= mix(alphaFresnelEdgeColor.r, alphaFresnelCenterColor.r, alphaFresnel);");
                     }
                     if (material.emissiveFresnel) {
                         add("float emissiveFresnel = fresnel(viewEyeDir, viewNormal, emissiveFresnelEdgeBias, emissiveFresnelCenterBias, emissiveFresnelPower);");
@@ -9856,7 +9858,7 @@ var Canvas2Image = (function () {
             }
 
 
-            add("gl_FragColor = vec4(outgoingLight, opacity);");
+            add("gl_FragColor = vec4(outgoingLight, alpha);");
              //    add("gl_FragColor = LinearTosRGB(gl_FragColor);");  // Gamma correction
 
             add("}");
@@ -10792,7 +10794,7 @@ var Canvas2Image = (function () {
             this._uDiffuse = draw.getUniform("materialDiffuse");
             this._uSpecular = draw.getUniform("materialSpecular");
             this._uEmissive = draw.getUniform("materialEmissive");
-            this._uOpacity = draw.getUniform("materialOpacity");
+            this._uAlpha = draw.getUniform("materialAlpha");
             this._uShininess = draw.getUniform("materialShininess");
 
             this._uPointSize = draw.getUniform("pointSize");
@@ -10819,9 +10821,9 @@ var Canvas2Image = (function () {
                 this._uEmissiveMapMatrix = draw.getUniform("emissiveMapMatrix");
             }
 
-            if (state.opacityMap) {
-                this._uOpacityMap = "opacityMap";
-                this._uOpacityMapMatrix = draw.getUniform("opacityMapMatrix");
+            if (state.alphaMap) {
+                this._uAlphaMap = "alphaMap";
+                this._uAlphaMapMatrix = draw.getUniform("alphaMapMatrix");
             }
 
             if (state.reflectivityMap) {
@@ -10857,12 +10859,12 @@ var Canvas2Image = (function () {
                 this._uSpecularFresnelPower = draw.getUniform("specularFresnelPower");
             }
 
-            if (state.opacityFresnel) {
-                this._uOpacityFresnelEdgeBias = draw.getUniform("opacityFresnelEdgeBias");
-                this._uOpacityFresnelCenterBias = draw.getUniform("opacityFresnelCenterBias");
-                this._uOpacityFresnelEdgeColor = draw.getUniform("opacityFresnelEdgeColor");
-                this._uOpacityFresnelCenterColor = draw.getUniform("opacityFresnelCenterColor");
-                this._uOpacityFresnelPower = draw.getUniform("opacityFresnelPower");
+            if (state.alphaFresnel) {
+                this._uAlphaFresnelEdgeBias = draw.getUniform("alphaFresnelEdgeBias");
+                this._uAlphaFresnelCenterBias = draw.getUniform("alphaFresnelCenterBias");
+                this._uAlphaFresnelEdgeColor = draw.getUniform("alphaFresnelEdgeColor");
+                this._uAlphaFresnelCenterColor = draw.getUniform("alphaFresnelCenterColor");
+                this._uAlphaFresnelPower = draw.getUniform("alphaFresnelPower");
             }
 
             if (state.reflectivityFresnel) {
@@ -10919,8 +10921,8 @@ var Canvas2Image = (function () {
                 this._uEmissive.setValue(state.emissive);
             }
 
-            if (this._uOpacity) {
-                this._uOpacity.setValue(state.opacity);
+            if (this._uAlpha) {
+                this._uAlpha.setValue(state.alpha);
             }
 
             // Ambient map
@@ -10971,15 +10973,15 @@ var Canvas2Image = (function () {
                 }
             }
 
-            // Opacity map
+            // Alpha map
 
-            if (state.opacityMap && state.opacityMap.texture && this._uOpacityMap) {
-                draw.bindTexture(this._uOpacityMap, state.opacityMap.texture, frameCtx.textureUnit);
+            if (state.alphaMap && state.alphaMap.texture && this._uAlphaMap) {
+                draw.bindTexture(this._uAlphaMap, state.alphaMap.texture, frameCtx.textureUnit);
                 frameCtx.textureUnit = (frameCtx.textureUnit + 1) % xeogl.WEBGL_INFO.MAX_TEXTURE_IMAGE_UNITS;
                 frameCtx.bindTexture++;
 
-                if (this._uOpacityMapMatrix) {
-                    this._uOpacityMapMatrix.setValue(state.opacityMap.matrix);
+                if (this._uAlphaMapMatrix) {
+                    this._uAlphaMapMatrix.setValue(state.alphaMap.matrix);
                 }
             }
 
@@ -11066,26 +11068,26 @@ var Canvas2Image = (function () {
                 }
             }
 
-            if (state.opacityFresnel) {
+            if (state.alphaFresnel) {
 
-                if (this._uOpacityFresnelEdgeBias) {
-                    this._uOpacityFresnelEdgeBias.setValue(state.opacityFresnel.edgeBias);
+                if (this._uAlphaFresnelEdgeBias) {
+                    this._uAlphaFresnelEdgeBias.setValue(state.alphaFresnel.edgeBias);
                 }
 
-                if (this._uOpacityFresnelCenterBias) {
-                    this._uOpacityFresnelCenterBias.setValue(state.opacityFresnel.centerBias);
+                if (this._uAlphaFresnelCenterBias) {
+                    this._uAlphaFresnelCenterBias.setValue(state.alphaFresnel.centerBias);
                 }
 
-                if (this._uOpacityFresnelEdgeColor) {
-                    this._uOpacityFresnelEdgeColor.setValue(state.opacityFresnel.edgeColor);
+                if (this._uAlphaFresnelEdgeColor) {
+                    this._uAlphaFresnelEdgeColor.setValue(state.alphaFresnel.edgeColor);
                 }
 
-                if (this._uOpacityFresnelCenterColor) {
-                    this._uOpacityFresnelCenterColor.setValue(state.opacityFresnel.centerColor);
+                if (this._uAlphaFresnelCenterColor) {
+                    this._uAlphaFresnelCenterColor.setValue(state.alphaFresnel.centerColor);
                 }
 
-                if (this._uOpacityFresnelPower) {
-                    this._uOpacityFresnelPower.setValue(state.opacityFresnel.power);
+                if (this._uAlphaFresnelPower) {
+                    this._uAlphaFresnelPower.setValue(state.alphaFresnel.power);
                 }
             }
 
@@ -11157,7 +11159,7 @@ var Canvas2Image = (function () {
             this._uRoughness = draw.getUniform("materialRoughness");
             this._uSpecularF0 = draw.getUniform("materialSpecularF0");
             this._uEmissive = draw.getUniform("materialEmissive");
-            this._uOpacity = draw.getUniform("materialOpacity");
+            this._uAlpha = draw.getUniform("materialAlpha");
 
             if (state.baseColorMap) {
                 this._uBaseColorMap = "baseColorMap";
@@ -11189,9 +11191,9 @@ var Canvas2Image = (function () {
                 this._uOcclusionMapMatrix = draw.getUniform("occlusionMapMatrix");
             }
 
-            if (state.opacityMap) {
-                this._uOpacityMap = "opacityMap";
-                this._uOpacityMapMatrix = draw.getUniform("opacityMapMatrix");
+            if (state.alphaMap) {
+                this._uAlphaMap = "alphaMap";
+                this._uAlphaMapMatrix = draw.getUniform("alphaMapMatrix");
             }
 
             if (state.normalMap) {
@@ -11228,8 +11230,8 @@ var Canvas2Image = (function () {
                 this._uEmissive.setValue(state.emissive);
             }
 
-            if (this._uOpacity) {
-                this._uOpacity.setValue(state.opacity);
+            if (this._uAlpha) {
+                this._uAlpha.setValue(state.alpha);
             }
 
             if (state.baseColorMap && state.baseColorMap.texture && this._uBaseColorMap) {
@@ -11286,12 +11288,12 @@ var Canvas2Image = (function () {
                 }
             }
 
-            if (state.opacityMap && state.opacityMap.texture && this._uOpacityMap) {
-                draw.bindTexture(this._uOpacityMap, state.opacityMap.texture, frameCtx.textureUnit);
+            if (state.alphaMap && state.alphaMap.texture && this._uAlphaMap) {
+                draw.bindTexture(this._uAlphaMap, state.alphaMap.texture, frameCtx.textureUnit);
                   frameCtx.textureUnit = (frameCtx.textureUnit + 1) % xeogl.WEBGL_INFO.MAX_TEXTURE_IMAGE_UNITS;
                 frameCtx.bindTexture++;
-                if (this._uOpacityMapMatrix) {
-                    this._uOpacityMapMatrix.setValue(state.opacityMap.matrix);
+                if (this._uAlphaMapMatrix) {
+                    this._uAlphaMapMatrix.setValue(state.alphaMap.matrix);
                 }
             }
 
@@ -11326,7 +11328,7 @@ var Canvas2Image = (function () {
             this._uGlossiness = draw.getUniform("materialGlossiness");
             this._uReflectivity = draw.getUniform("reflectivityFresnel");
             this._uEmissive = draw.getUniform("materialEmissive");
-            this._uOpacity = draw.getUniform("materialOpacity");
+            this._uAlpha = draw.getUniform("materialAlpha");
 
             if (state.diffuseMap) {
                 this._uDiffuseMap = "diffuseMap";
@@ -11358,9 +11360,9 @@ var Canvas2Image = (function () {
                 this._uOcclusionMapMatrix = draw.getUniform("occlusionMapMatrix");
             }
 
-            if (state.opacityMap) {
-                this._uOpacityMap = "opacityMap";
-                this._uOpacityMapMatrix = draw.getUniform("opacityMapMatrix");
+            if (state.alphaMap) {
+                this._uAlphaMap = "alphaMap";
+                this._uAlphaMapMatrix = draw.getUniform("alphaMapMatrix");
             }
 
             if (state.normalMap) {
@@ -11397,8 +11399,8 @@ var Canvas2Image = (function () {
                 this._uEmissive.setValue(state.emissive);
             }
 
-            if (this._uOpacity) {
-                this._uOpacity.setValue(state.opacity);
+            if (this._uAlpha) {
+                this._uAlpha.setValue(state.alpha);
             }
 
             if (state.diffuseMap && state.diffuseMap.texture && this._uDiffuseMap) {
@@ -11455,12 +11457,12 @@ var Canvas2Image = (function () {
                 }
             }
 
-            if (state.opacityMap && state.opacityMap.texture && this._uOpacityMap) {
-                draw.bindTexture(this._uOpacityMap, state.opacityMap.texture, frameCtx.textureUnit);
+            if (state.alphaMap && state.alphaMap.texture && this._uAlphaMap) {
+                draw.bindTexture(this._uAlphaMap, state.alphaMap.texture, frameCtx.textureUnit);
                 frameCtx.textureUnit = (frameCtx.textureUnit + 1) % xeogl.WEBGL_INFO.MAX_TEXTURE_IMAGE_UNITS;
                 frameCtx.bindTexture++;
-                if (this._uOpacityMapMatrix) {
-                    this._uOpacityMapMatrix.setValue(state.opacityMap.matrix);
+                if (this._uAlphaMapMatrix) {
+                    this._uAlphaMapMatrix.setValue(state.alphaMap.matrix);
                 }
             }
 
@@ -30136,7 +30138,7 @@ TODO
                             // path, when that path is joins a path that belongs to an Entity that
                             // we processed earlier
 
-                            return;
+                            break;
                         }
 
                         rootTransform = rootTransform.parent;
@@ -30732,20 +30734,20 @@ TODO
  |  {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} | Array | [0, 1] for all components | [1,1,1,1] | linear | The RGB components of the diffuse light reflected by the material. |
  |  {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}} | Array | [0, 1] for all components | [1,1,1,1] | linear | The RGB components of the specular light reflected by the material. |
  |  {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}} | Array | [0, 1] for all components | [0,0,0] | linear | The RGB components of the light emitted by the material. |
- | {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The transparency of the material surface (0 fully transparent, 1 fully opaque). |
+ | {{#crossLink "PhongMaterial/alpha:property"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The transparency of the material surface (0 fully transparent, 1 fully opaque). |
  | {{#crossLink "PhongMaterial/shininess:property"}}{{/crossLink}} | Number | [0, 128] | 80 | linear | Determines the size and sharpness of specular highlights. |
  | {{#crossLink "PhongMaterial/reflectivity:property"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | Determines the amount of reflectivity. |
- | {{#crossLink "PhongMaterial/diffuseMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}}. |
- | {{#crossLink "PhongMaterial/specularMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}}. |
+ | {{#crossLink "PhongMaterial/diffuseMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink "PhongMaterial/alpha:property"}}{{/crossLink}}. |
+ | {{#crossLink "PhongMaterial/specularMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink "PhongMaterial/alpha:property"}}{{/crossLink}}. |
  | {{#crossLink "PhongMaterial/emissiveMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Texture with RGB components multiplying by {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}}. |
- | {{#crossLink "PhongMaterial/opacityMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}}. |
+ | {{#crossLink "PhongMaterial/alphaMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink "PhongMaterial/alpha:property"}}{{/crossLink}}. |
  | {{#crossLink "PhongMaterial/occlusionMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Ambient occlusion texture multiplying by {{#crossLink "PhongMaterial/ambient:property"}}{{/crossLink}}, {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} and {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}}. |
  | {{#crossLink "PhongMaterial/normalMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Tangent-space normal map. |
  | {{#crossLink "PhongMaterial/diffuseFresnel:property"}}{{/crossLink}} | {{#crossLink "Fresnel"}}{{/crossLink}} |  | null |  | Fresnel term applied to {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}}. |
  | {{#crossLink "PhongMaterial/specularFresnel:property"}}{{/crossLink}} | {{#crossLink "Fresnel"}}{{/crossLink}} |  | null |  | Fresnel term applied to {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}}. |
  | {{#crossLink "PhongMaterial/emissiveFresnel:property"}}{{/crossLink}} | {{#crossLink "Fresnel"}}{{/crossLink}} |  | null |  | Fresnel term applied to {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}}. |
  | {{#crossLink "PhongMaterial/reflectivityFresnel:property"}}{{/crossLink}} | {{#crossLink "Fresnel"}}{{/crossLink}} |  | null |  | Fresnel term applied to {{#crossLink "PhongMaterial/reflectivity:property"}}{{/crossLink}}. |
- | {{#crossLink "PhongMaterial/opacityFresnel:property"}}{{/crossLink}} | {{#crossLink "Fresnel"}}{{/crossLink}} |  | null |  | Fresnel term applied to {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}}. |
+ | {{#crossLink "PhongMaterial/alphaFresnel:property"}}{{/crossLink}} | {{#crossLink "Fresnel"}}{{/crossLink}} |  | null |  | Fresnel term applied to {{#crossLink "PhongMaterial/alpha:property"}}{{/crossLink}}. |
  | {{#crossLink "PhongMaterial/lineWidth:property"}}{{/crossLink}} | Number | [0..100] | 1 |  | Line width in pixels. |
  | {{#crossLink "PhongMaterial/pointSize:property"}}{{/crossLink}} | Number | [0..100] | 1 |  | Point size in pixels. |
 
@@ -30788,7 +30790,7 @@ TODO
             power: 4
         }),
         shininess: 80, // Default
-        opacity: 1.0 // Default
+        alpha: 1.0 // Default
     }),
 
     geometry: new xeogl.TorusGeometry()
@@ -30809,7 +30811,7 @@ TODO
  @param [cfg.diffuse=[ 1.0, 1.0, 1.0 ]] {Array of Number} PhongMaterial diffuse color.
  @param [cfg.specular=[ 1.0, 1.0, 1.0 ]] {Array of Number} PhongMaterial specular color.
  @param [cfg.emissive=[ 0.0, 0.0, 0.0 ]] {Array of Number} PhongMaterial emissive color.
- @param [cfg.opacity=1] {Number} Scalar in range 0-1 that controls opacity, where 0 is completely transparent and 1 is completely opaque.
+ @param [cfg.alpha=1] {Number} Scalar in range 0-1 that controls alpha, where 0 is completely transparent and 1 is completely opaque.
  Only applies while {{#crossLink "Modes"}}Modes{{/crossLink}} {{#crossLink "Modes/transparent:property"}}transparent{{/crossLink}} equals ````true````.
  @param [cfg.shininess=80] {Number} Scalar in range 0-128 that determines the size and sharpness of specular highlights.
  @param [cfg.reflectivity=1] {Number} Scalar in range 0-1 that controls how much {{#crossLink "CubeMap"}}CubeMap{{/crossLink}} is reflected.
@@ -30820,13 +30822,13 @@ TODO
  @param [cfg.specularMap=null] {Texture} A specular map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the specular property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
  @param [cfg.emissiveMap=undefined] {Texture} An emissive map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the emissive property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
  @param [cfg.normalMap=undefined] {Texture} A normal map {{#crossLink "Texture"}}Texture{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
- @param [cfg.opacityMap=undefined] {Texture} An opacity map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the opacity property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
+ @param [cfg.alphaMap=undefined] {Texture} An alpha map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the alpha property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
  @param [cfg.reflectivityMap=undefined] {Texture} A reflectivity control map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the reflectivity property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
  @param [cfg.occlusionMap=null] {Texture} An occlusion map {{#crossLink "Texture"}}Texture{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
  @param [cfg.diffuseFresnel=undefined] {Fresnel} A diffuse {{#crossLink "Fresnel"}}Fresnel{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
  @param [cfg.specularFresnel=undefined] {Fresnel} A specular {{#crossLink "Fresnel"}}Fresnel{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
  @param [cfg.emissiveFresnel=undefined] {Fresnel} An emissive {{#crossLink "Fresnel"}}Fresnel{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
- @param [cfg.opacityFresnel=undefined] {Fresnel} An opacity {{#crossLink "Fresnel"}}Fresnel{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
+ @param [cfg.alphaFresnel=undefined] {Fresnel} An alpha {{#crossLink "Fresnel"}}Fresnel{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
  @param [cfg.reflectivityFresnel=undefined] {Fresnel} A reflectivity {{#crossLink "Fresnel"}}Fresnel{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
  */
 (function () {
@@ -30848,7 +30850,7 @@ TODO
                 specular: xeogl.math.vec3([1.0, 1.0, 1.0]),
                 emissive: xeogl.math.vec3([0.0, 0.0, 0.0]),
 
-                opacity: 1.0,
+                alpha: 1.0,
                 shininess: 80.0,
                 reflectivity: 1.0,
 
@@ -30874,7 +30876,7 @@ TODO
             this.specular = cfg.specular;
             this.emissive = cfg.emissive;
 
-            this.opacity = cfg.opacity;
+            this.alpha = cfg.alpha;
             this.shininess = cfg.shininess;
             this.reflectivity = cfg.reflectivity;
 
@@ -30897,8 +30899,8 @@ TODO
                 this.emissiveMap = cfg.emissiveMap;
             }
 
-            if (cfg.opacityMap) {
-                this.opacityMap = cfg.opacityMap;
+            if (cfg.alphaMap) {
+                this.alphaMap = cfg.alphaMap;
             }
 
             if (cfg.reflectivityMap) {
@@ -30925,8 +30927,8 @@ TODO
                 this.emissiveFresnel = cfg.emissiveFresnel;
             }
 
-            if (cfg.opacityFresnel) {
-                this.opacityFresnel = cfg.opacityFresnel;
+            if (cfg.alphaFresnel) {
+                this.alphaFresnel = cfg.alphaFresnel;
             }
 
             if (cfg.reflectivityFresnel) {
@@ -31147,39 +31149,39 @@ TODO
              to {{#crossLink "Modes"}}Modes{{/crossLink}} that have {{#crossLink "Modes/transparent:property"}}transparent{{/crossLink}}
              set to **true**.
 
-             Multiplies by {{#crossLink "PhongMaterial/opacityMap:property"}}{{/crossLink}}.
+             Multiplies by {{#crossLink "PhongMaterial/alphaMap:property"}}{{/crossLink}}.
 
-             Fires an {{#crossLink "PhongMaterial/opacity:event"}}{{/crossLink}} event on change.
+             Fires an {{#crossLink "PhongMaterial/alpha:event"}}{{/crossLink}} event on change.
 
-             @property opacity
+             @property alpha
              @default 1.0
              @type Number
              */
-            opacity: {
+            alpha: {
 
                 set: function (value) {
 
                     value = (value !== undefined && value !== null) ? value : 1.0;
 
-                    if (this._state.opacity === value) {
+                    if (this._state.alpha === value) {
                         return;
                     }
 
-                    this._state.opacity = value;
+                    this._state.alpha = value;
 
                     this._renderer.imageDirty = true;
 
                     /**
-                     * Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/alpha:property"}}{{/crossLink}} property changes.
                      *
-                     * @event opacity
+                     * @event alpha
                      * @param value {Number} The property's new value
                      */
-                    this.fire("opacity", this._state.opacity);
+                    this.fire("alpha", this._state.alpha);
                 },
 
                 get: function () {
-                    return this._state.opacity;
+                    return this._state.alpha;
                 }
             },
 
@@ -31469,33 +31471,33 @@ TODO
             },
 
             /**
-             An opacity {{#crossLink "Texture"}}{{/crossLink}} attached to this PhongMaterial.
+             An alpha {{#crossLink "Texture"}}{{/crossLink}} attached to this PhongMaterial.
 
-             This property multiplies by {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} when not null or undefined.
+             This property multiplies by {{#crossLink "PhongMaterial/alpha:property"}}{{/crossLink}} when not null or undefined.
 
              Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
 
-             Fires an {{#crossLink "PhongMaterial/opacityMap:event"}}{{/crossLink}} event on change.
+             Fires an {{#crossLink "PhongMaterial/alphaMap:event"}}{{/crossLink}} event on change.
 
-             @property opacityMap
+             @property alphaMap
              @default undefined
              @type {Texture}
              */
-            opacityMap: {
+            alphaMap: {
 
                 set: function (texture) {
 
                     /**
-                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/opacityMap:property"}}{{/crossLink}} property changes.
+                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/alphaMap:property"}}{{/crossLink}} property changes.
 
-                     @event opacityMap
+                     @event alphaMap
                      @param value Number The property's new value
                      */
-                    this._attachComponent("xeogl.Texture", "opacityMap", texture);
+                    this._attachComponent("xeogl.Texture", "alphaMap", texture);
                 },
 
                 get: function () {
-                    return this._attached.opacityMap;
+                    return this._attached.alphaMap;
                 }
             },
 
@@ -31683,33 +31685,33 @@ TODO
             },
 
             /**
-             An opacity {{#crossLink "Fresnel"}}{{/crossLink}} attached to this PhongMaterial.
+             An alpha {{#crossLink "Fresnel"}}{{/crossLink}} attached to this PhongMaterial.
 
-             This property multiplies by {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} when not null or undefined.
+             This property multiplies by {{#crossLink "PhongMaterial/alpha:property"}}{{/crossLink}} when not null or undefined.
 
              Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
 
-             Fires an {{#crossLink "PhongMaterial/opacityFresnel:event"}}{{/crossLink}} event on change.
+             Fires an {{#crossLink "PhongMaterial/alphaFresnel:event"}}{{/crossLink}} event on change.
 
-             @property opacityFresnel
+             @property alphaFresnel
              @default undefined
              @type {Fresnel}
              */
-            opacityFresnel: {
+            alphaFresnel: {
 
                 set: function (fresnel) {
 
                     /**
-                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/opacityFresnel:property"}}{{/crossLink}} property changes.
+                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/alphaFresnel:property"}}{{/crossLink}} property changes.
 
-                     @event opacityFresnel
+                     @event alphaFresnel
                      @param value Number The property's new value
                      */
-                    this._attachComponent("xeogl.Fresnel", "opacityFresnel", fresnel);
+                    this._attachComponent("xeogl.Fresnel", "alphaFresnel", fresnel);
                 },
 
                 get: function () {
-                    return this._attached.opacityFresnel;
+                    return this._attached.alphaFresnel;
                 }
             },
 
@@ -31816,9 +31818,9 @@ TODO
                 }
             }
 
-            if (state.opacityMap) {
+            if (state.alphaMap) {
                 hash.push("/opm");
-                if (state.opacityMap.matrix) {
+                if (state.alphaMap.matrix) {
                     hash.push("/mat");
                 }
             }
@@ -31849,7 +31851,7 @@ TODO
                 hash.push("/ef");
             }
 
-            if (state.opacityFresnel) {
+            if (state.alphaFresnel) {
                 hash.push("/of");
             }
 
@@ -31876,8 +31878,8 @@ TODO
                 emissive: vecToArray(this._state.emissive)
             };
 
-            if (this._state.opacity !== 1.0) {
-                json.opacity = this._state.opacity;
+            if (this._state.alpha !== 1.0) {
+                json.alpha = this._state.alpha;
             }
 
             if (this._state.shininess !== 80.0) {
@@ -31922,8 +31924,8 @@ TODO
                 json.emissiveMap = components.emissiveMap.id;
             }
 
-            if (components.opacityMap) {
-                json.opacityMap = components.opacityMap.id;
+            if (components.alphaMap) {
+                json.alphaMap = components.alphaMap.id;
             }
 
             if (components.reflectivityMap) {
@@ -31946,8 +31948,8 @@ TODO
                 json.emissiveFresnel = components.emissiveFresnel.id;
             }
 
-            if (components.opacityFresnel) {
-                json.opacityFresnel = components.opacityFresnel.id;
+            if (components.alphaFresnel) {
+                json.alphaFresnel = components.alphaFresnel.id;
             }
 
             if (components.reflectivityFresnel) {
@@ -31995,13 +31997,13 @@ TODO
  | {{#crossLink "SpecularMaterial/glossiness:property"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The glossiness the material. |
  | {{#crossLink "SpecularMaterial/specularF0:property"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The specularF0 of the material surface. |
  |  {{#crossLink "SpecularMaterial/emissive:property"}}{{/crossLink}} | Array | [0, 1] for all components | [0,0,0] | linear | The RGB components of the emissive color of the material. |
- | {{#crossLink "SpecularMaterial/opacity:property"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The transparency of the material surface (0 fully transparent, 1 fully opaque). |
- | {{#crossLink "SpecularMaterial/diffuseMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink "SpecularMaterial/diffuse:property"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink "SpecularMaterial/opacity:property"}}{{/crossLink}}. |
- | {{#crossLink "SpecularMaterial/specularMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink "SpecularMaterial/specular:property"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink "SpecularMaterial/opacity:property"}}{{/crossLink}}. |
+ | {{#crossLink "SpecularMaterial/alpha:property"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The transparency of the material surface (0 fully transparent, 1 fully opaque). |
+ | {{#crossLink "SpecularMaterial/diffuseMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink "SpecularMaterial/diffuse:property"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink "SpecularMaterial/alpha:property"}}{{/crossLink}}. |
+ | {{#crossLink "SpecularMaterial/specularMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink "SpecularMaterial/specular:property"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink "SpecularMaterial/alpha:property"}}{{/crossLink}}. |
  | {{#crossLink "SpecularMaterial/glossinessMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink "SpecularMaterial/glossiness:property"}}{{/crossLink}}. |
  | {{#crossLink "SpecularMaterial/specularGlossinessMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Texture with first three components multiplying by {{#crossLink "SpecularMaterial/specular:property"}}{{/crossLink}} and fourth component multiplying by {{#crossLink "SpecularMaterial/glossiness:property"}}{{/crossLink}}. |
  | {{#crossLink "SpecularMaterial/emissiveMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Texture with RGB components multiplying by {{#crossLink "SpecularMaterial/emissive:property"}}{{/crossLink}}. |
- | {{#crossLink "SpecularMaterial/opacityMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink "SpecularMaterial/opacity:property"}}{{/crossLink}}. |
+ | {{#crossLink "SpecularMaterial/alphaMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink "SpecularMaterial/alpha:property"}}{{/crossLink}}. |
  | {{#crossLink "SpecularMaterial/occlusionMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Ambient occlusion texture multiplying by surface's reflected diffuse and specular light. |
  | {{#crossLink "SpecularMaterial/normalMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Tangent-space normal map. |
 
@@ -32079,7 +32081,7 @@ TODO
         specular: [1.0, 1.0, 1.0],
         glossiness: 1.0,
         emissive: [0.0, 0.0, 0.0]
-        opacity: 1.0,
+        alpha: 1.0,
 
         // Textures to multiply some of the channels
 
@@ -32116,7 +32118,7 @@ TODO
     specular: [1.0, 1.0, 1.0],
     glossiness: 1.0,
     emissive: [0.0, 0.0, 0.0]
-    opacity: 1.0,
+    alpha: 1.0,
 
     diffuseMap: {
         src: "textures/materials/poligon/Plaster07_1k/Plaster07_COL_VAR1_1K.jpg"
@@ -32130,7 +32132,7 @@ TODO
  });
  ````
 
- Although not shown in this example, we can also texture {{#crossLink "MetallicMaterial/opacity:property"}}{{/crossLink}} with
+ Although not shown in this example, we can also texture {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}} with
  the *A* component of {{#crossLink "MetallicMaterial/baseColorMap:property"}}{{/crossLink}}'s {{#crossLink "Texture"}}{{/crossLink}},
  if required.
 
@@ -32153,9 +32155,9 @@ TODO
  components of {{#crossLink "SpecularMaterial/diffuseMap:property"}}{{/crossLink}}.
 
  @param [cfg.diffuseMap=undefined] {Texture} RGBA {{#crossLink "Texture"}}{{/crossLink}} containing the diffuse color
- of this SpecularMaterial, with optional *A* component for opacity. The RGB components multiply by the
+ of this SpecularMaterial, with optional *A* component for alpha. The RGB components multiply by the
  {{#crossLink "SpecularMaterial/diffuse:property"}}{{/crossLink}} property,
- while the *A* component, if present, multiplies by the {{#crossLink "SpecularMaterial/opacity:property"}}{{/crossLink}} property.
+ while the *A* component, if present, multiplies by the {{#crossLink "SpecularMaterial/alpha:property"}}{{/crossLink}} property.
 
  @param [cfg.specular=[1,1,1]] {Number} RGB specular color of this SpecularMaterial. Multiplies by the
  {{#crossLink "SpecularMaterial/specularMap:property"}}{{/crossLink}} and the *RGB* components of
@@ -32190,15 +32192,15 @@ TODO
  @param [cfg.normalMap=undefined] {Texture} RGB tangent-space normal {{#crossLink "Texture"}}{{/crossLink}}. Must be
  within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this SpecularMaterial.
 
- @param [cfg.opacity=1.0] {Number} Factor in the range 0..1 indicating how transparent this SpecularMaterial is.
+ @param [cfg.alpha=1.0] {Number} Factor in the range 0..1 indicating how transparent this SpecularMaterial is.
  A value of 0.0 indicates fully transparent, 1.0 is fully opaque. Multiplies by the *R* component of
- {{#crossLink "SpecularMaterial/opacityMap:property"}}{{/crossLink}} and the *A* component, if present, of
+ {{#crossLink "SpecularMaterial/alphaMap:property"}}{{/crossLink}} and the *A* component, if present, of
  {{#crossLink "SpecularMaterial/diffuseMap:property"}}{{/crossLink}}. Attached {{#crossLink "Entity"}}Entities{{/crossLink}}
  will appear transparent only if they are also attached to {{#crossLink "Modes"}}Modes{{/crossLink}} that
  have {{#crossLink "Modes/transparent:property"}}transparent{{/crossLink}} set to **true**.
 
- @param [cfg.opacityMap=undefined] {Texture} RGB {{#crossLink "Texture"}}{{/crossLink}} containing this SpecularMaterial's
- opacity in its *R* component. The *R* component multiplies by the {{#crossLink "SpecularMaterial/opacity:property"}}{{/crossLink}} property. Must
+ @param [cfg.alphaMap=undefined] {Texture} RGB {{#crossLink "Texture"}}{{/crossLink}} containing this SpecularMaterial's
+ alpha in its *R* component. The *R* component multiplies by the {{#crossLink "SpecularMaterial/alpha:property"}}{{/crossLink}} property. Must
  be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this SpecularMaterial.
 
  */
@@ -32219,7 +32221,7 @@ TODO
                 specular: xeogl.math.vec4([1.0, 1.0, 1.0]),
                 glossiness: 1.0,
                 specularF0: 0.0,
-                opacity: 1.0,
+                alpha: 1.0,
 
                 diffuseMap: null,
                 emissiveMap: null,
@@ -32227,7 +32229,7 @@ TODO
                 glossinessMap: null,
                 specularGlossinessMap: null,
                 occlusionMap: null,
-                opacityMap: null,
+                alphaMap: null,
                 normalMap: null,
 
                 hash: null
@@ -32249,7 +32251,7 @@ TODO
             this.glossiness = cfg.glossiness;
             this.specularF0 = cfg.specularF0;
             this.emissive = cfg.emissive;
-            this.opacity = cfg.opacity;
+            this.alpha = cfg.alpha;
 
             if (cfg.diffuseMap) {
                 this.diffuseMap = cfg.diffuseMap;
@@ -32275,8 +32277,8 @@ TODO
                 this.occlusionMap = cfg.occlusionMap;
             }
 
-            if (cfg.opacityMap) {
-                this.opacityMap = cfg.opacityMap;
+            if (cfg.alphaMap) {
+                this.alphaMap = cfg.alphaMap;
             }
 
             if (cfg.normalMap) {
@@ -32339,10 +32341,10 @@ TODO
             },
 
             /**
-             RGB {{#crossLink "Texture"}}{{/crossLink}} containing the diffuse color of this SpecularMaterial, with optional *A* component for opacity.
+             RGB {{#crossLink "Texture"}}{{/crossLink}} containing the diffuse color of this SpecularMaterial, with optional *A* component for alpha.
 
              The *RGB* components multiply by the {{#crossLink "SpecularMaterial/diffuse:property"}}{{/crossLink}} property,
-             while the *A* component, if present, multiplies by the {{#crossLink "SpecularMaterial/opacity:property"}}{{/crossLink}} property.
+             while the *A* component, if present, multiplies by the {{#crossLink "SpecularMaterial/alpha:property"}}{{/crossLink}} property.
 
              Attached {{#crossLink "Entity"}}Entities{{/crossLink}} will appear transparent only if they are also attached
              to {{#crossLink "Modes"}}Modes{{/crossLink}} that have {{#crossLink "Modes/transparent:property"}}transparent{{/crossLink}}
@@ -32686,75 +32688,75 @@ TODO
 
              A value of 0.0 is fully transparent, while 1.0 is fully opaque.
 
-             Multiplies by the *R* component of {{#crossLink "SpecularMaterial/opacityMap:property"}}{{/crossLink}} and
+             Multiplies by the *R* component of {{#crossLink "SpecularMaterial/alphaMap:property"}}{{/crossLink}} and
              the *A* component, if present, of {{#crossLink "SpecularMaterial/diffuseMap:property"}}{{/crossLink}}.
 
              Attached {{#crossLink "Entity"}}Entities{{/crossLink}} will appear transparent only if they are also attached
              to {{#crossLink "Modes"}}Modes{{/crossLink}} that have {{#crossLink "Modes/transparent:property"}}transparent{{/crossLink}}
              set to **true**.
 
-             Fires an {{#crossLink "SpecularMaterial/opacity:event"}}{{/crossLink}} event on change.
+             Fires an {{#crossLink "SpecularMaterial/alpha:event"}}{{/crossLink}} event on change.
 
-             @property opacity
+             @property alpha
              @default 1.0
              @type Number
              */
-            opacity: {
+            alpha: {
 
                 set: function (value) {
 
                     value = (value !== undefined && value !== null) ? value : 1.0;
 
-                    if (this._state.opacity === value) {
+                    if (this._state.alpha === value) {
                         return;
                     }
 
-                    this._state.opacity = value;
+                    this._state.alpha = value;
 
                     this._renderer.imageDirty = true;
 
                     /**
-                     * Fired whenever this SpecularMaterial's {{#crossLink "SpecularMaterial/opacity:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this SpecularMaterial's {{#crossLink "SpecularMaterial/alpha:property"}}{{/crossLink}} property changes.
                      *
-                     * @event opacity
+                     * @event alpha
                      * @param value {Number} The property's new value
                      */
-                    this.fire("opacity", this._state.opacity);
+                    this.fire("alpha", this._state.alpha);
                 },
 
                 get: function () {
-                    return this._state.opacity;
+                    return this._state.alpha;
                 }
             },
 
             /**
-             RGB {{#crossLink "Texture"}}{{/crossLink}} with opacity in its *R* component.
+             RGB {{#crossLink "Texture"}}{{/crossLink}} with alpha in its *R* component.
 
-             The *R* component multiplies by the {{#crossLink "SpecularMaterial/opacity:property"}}{{/crossLink}} property.
+             The *R* component multiplies by the {{#crossLink "SpecularMaterial/alpha:property"}}{{/crossLink}} property.
 
              Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this SpecularMaterial.
 
-             Fires an {{#crossLink "SpecularMaterial/opacityMap:event"}}{{/crossLink}} event on change.
+             Fires an {{#crossLink "SpecularMaterial/alphaMap:event"}}{{/crossLink}} event on change.
 
-             @property opacityMap
+             @property alphaMap
              @default undefined
              @type {Texture}
              */
-            opacityMap: {
+            alphaMap: {
 
                 set: function (texture) {
 
                     /**
-                     Fired whenever this SpecularMaterial's {{#crossLink "SpecularMaterial/opacityMap:property"}}{{/crossLink}} property changes.
+                     Fired whenever this SpecularMaterial's {{#crossLink "SpecularMaterial/alphaMap:property"}}{{/crossLink}} property changes.
 
-                     @event opacityMap
+                     @event alphaMap
                      @param value Number The property's new value
                      */
-                    this._attachComponent("xeogl.Texture", "opacityMap", texture);
+                    this._attachComponent("xeogl.Texture", "alphaMap", texture);
                 },
 
                 get: function () {
-                    return this._attached.opacityMap;
+                    return this._attached.alphaMap;
                 }
             },
 
@@ -32904,9 +32906,9 @@ TODO
                 }
             }
 
-            if (state.opacityMap) {
+            if (state.alphaMap) {
                 hash.push("/opm");
-                if (state.opacityMap.matrix) {
+                if (state.alphaMap.matrix) {
                     hash.push("/mat");
                 }
             }
@@ -32926,7 +32928,7 @@ TODO
                 glossiness: this._state.glossiness,
                 specularF0: this._state.specularF0,
                 emissive: vecToArray(this._state.emissive),
-                opacity: this._state.opacity
+                alpha: this._state.alpha
             };
 
             var components = this._attached;
@@ -32955,8 +32957,8 @@ TODO
                 json.occlusionMap = components.occlusionMap.id;
             }
 
-            if (components.opacityMap) {
-                json.opacityMap = components.opacityMap.id;
+            if (components.alphaMap) {
+                json.alphaMap = components.alphaMap.id;
             }
 
             if (components.normalMap) {
@@ -33004,13 +33006,13 @@ TODO
  | {{#crossLink "MetallicMaterial/roughness:property"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The roughness of the material surface. |
  | {{#crossLink "MetallicMaterial/specularF0:property"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The specular Fresnel of the material surface. |
  |  {{#crossLink "MetallicMaterial/emissive:property"}}{{/crossLink}} | Array | [0, 1] for all components | [0,0,0] | linear | The RGB components of the emissive color of the material. |
- | {{#crossLink "MetallicMaterial/opacity:property"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The transparency of the material surface (0 fully transparent, 1 fully opaque). |
- | {{#crossLink "MetallicMaterial/baseColorMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink "MetallicMaterial/baseColor:property"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink "MetallicMaterial/opacity:property"}}{{/crossLink}}. |
+ | {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The transparency of the material surface (0 fully transparent, 1 fully opaque). |
+ | {{#crossLink "MetallicMaterial/baseColorMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink "MetallicMaterial/baseColor:property"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}}. |
  | {{#crossLink "MetallicMaterial/metallicMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink "MetallicMaterial/metallic:property"}}{{/crossLink}}. |
  | {{#crossLink "MetallicMaterial/roughnessMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink "MetallicMaterial/roughness:property"}}{{/crossLink}}. |
  | {{#crossLink "MetallicMaterial/metallicRoughnessMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink "MetallicMaterial/metallic:property"}}{{/crossLink}} and second component multiplying by {{#crossLink "MetallicMaterial/roughness:property"}}{{/crossLink}}. |
  | {{#crossLink "MetallicMaterial/emissiveMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Texture with RGB components multiplying by {{#crossLink "MetallicMaterial/emissive:property"}}{{/crossLink}}. |
- | {{#crossLink "MetallicMaterial/opacityMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink "MetallicMaterial/opacity:property"}}{{/crossLink}}. |
+ | {{#crossLink "MetallicMaterial/alphaMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}}. |
  | {{#crossLink "MetallicMaterial/occlusionMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Ambient occlusion texture multiplying by surface's reflected diffuse and specular light. |
  | {{#crossLink "SpecularMaterial/normalMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Tangent-space normal map. |
 
@@ -33082,7 +33084,7 @@ TODO
         metallic: 1.0,
         roughness: 1.0,
         emissive: [0.0, 0.0, 0.0],
-        opacity: 1.0,
+        alpha: 1.0,
 
         // Textures to multiply by some of the channels
 
@@ -33140,7 +33142,7 @@ TODO
  });
  ````
 
- Although not shown in this example, we can also texture {{#crossLink "SpecularMaterial/opacity:property"}}{{/crossLink}} with
+ Although not shown in this example, we can also texture {{#crossLink "SpecularMaterial/alpha:property"}}{{/crossLink}} with
  the *A* component of {{#crossLink "SpecularMaterial/diffuseMap:property"}}{{/crossLink}}'s {{#crossLink "Texture"}}{{/crossLink}},
  if required.
 
@@ -33174,20 +33176,20 @@ TODO
  @param [cfg.emissive=[0,0,0]] {Float32Array}  RGB emissive color of this MetallicMaterial. Multiplies by the RGB
  components of {{#crossLink "MetallicMaterial/emissiveMap:property"}}{{/crossLink}}.
 
- @param [cfg.opacity=1.0] {Number} Factor in the range 0..1 indicating how transparent this MetallicMaterial is.
+ @param [cfg.alpha=1.0] {Number} Factor in the range 0..1 indicating how transparent this MetallicMaterial is.
  A value of 0.0 indicates fully transparent, 1.0 is fully opaque. Multiplies by the *R* component of
- {{#crossLink "MetallicMaterial/opacityMap:property"}}{{/crossLink}} and the *A* component, if present, of
+ {{#crossLink "MetallicMaterial/alphaMap:property"}}{{/crossLink}} and the *A* component, if present, of
  {{#crossLink "MetallicMaterial/baseColorMap:property"}}{{/crossLink}}. Attached {{#crossLink "Entity"}}Entities{{/crossLink}}
  will appear transparent only if they are also attached to {{#crossLink "Modes"}}Modes{{/crossLink}} that
  have {{#crossLink "Modes/transparent:property"}}transparent{{/crossLink}} set to **true**.
 
  @param [cfg.baseColorMap=undefined] {Texture} RGBA {{#crossLink "Texture"}}{{/crossLink}} containing the diffuse color
- of this MetallicMaterial, with optional *A* component for opacity. The RGB components multiply by the
+ of this MetallicMaterial, with optional *A* component for alpha. The RGB components multiply by the
  {{#crossLink "MetallicMaterial/baseColor:property"}}{{/crossLink}} property,
- while the *A* component, if present, multiplies by the {{#crossLink "MetallicMaterial/opacity:property"}}{{/crossLink}} property.
+ while the *A* component, if present, multiplies by the {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}} property.
 
- @param [cfg.opacityMap=undefined] {Texture} RGB {{#crossLink "Texture"}}{{/crossLink}} containing this MetallicMaterial's
- opacity in its *R* component. The *R* component multiplies by the {{#crossLink "MetallicMaterial/opacity:property"}}{{/crossLink}} property. Must
+ @param [cfg.alphaMap=undefined] {Texture} RGB {{#crossLink "Texture"}}{{/crossLink}} containing this MetallicMaterial's
+ alpha in its *R* component. The *R* component multiplies by the {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}} property. Must
  be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MetallicMaterial.
 
  @param [cfg.metallicMap=undefined] {Texture} RGB {{#crossLink "Texture"}}{{/crossLink}} containing this MetallicMaterial's
@@ -33235,9 +33237,9 @@ TODO
                 metallic: 1.0,
                 roughness: 1.0,
                 specularF0: 0.0,
-                opacity: 1.0,
+                alpha: 1.0,
                 baseColorMap: null,
-                opacityMap: null,
+                alphaMap: null,
                 metallicMap: null,
                 roughnessMap: null,
                 metallicRoughnessMap: null,
@@ -33263,7 +33265,7 @@ TODO
             this.roughness = cfg.roughness;
             this.specularF0 = cfg.specularF0;
             this.emissive = cfg.emissive;
-            this.opacity = cfg.opacity;
+            this.alpha = cfg.alpha;
 
             if (cfg.baseColorMap) {
                 this.baseColorMap = cfg.baseColorMap;
@@ -33289,8 +33291,8 @@ TODO
                 this.occlusionMap = cfg.occlusionMap;
             }
 
-            if (cfg.opacityMap) {
-                this.opacityMap = cfg.opacityMap;
+            if (cfg.alphaMap) {
+                this.alphaMap = cfg.alphaMap;
             }
 
             if (cfg.normalMap) {
@@ -33352,10 +33354,10 @@ TODO
             },
 
             /**
-             RGB {{#crossLink "Texture"}}{{/crossLink}} containing the diffuse color of this MetallicMaterial, with optional *A* component for opacity.
+             RGB {{#crossLink "Texture"}}{{/crossLink}} containing the diffuse color of this MetallicMaterial, with optional *A* component for alpha.
 
              The RGB components multiply by the {{#crossLink "MetallicMaterial/baseColor:property"}}{{/crossLink}} property,
-             while the *A* component, if present, multiplies by the {{#crossLink "MetallicMaterial/opacity:property"}}{{/crossLink}} property.
+             while the *A* component, if present, multiplies by the {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}} property.
 
              Attached {{#crossLink "Entity"}}Entities{{/crossLink}} will appear transparent only if they are also attached
              to {{#crossLink "Modes"}}Modes{{/crossLink}} that have {{#crossLink "Modes/transparent:property"}}transparent{{/crossLink}}
@@ -33719,75 +33721,75 @@ TODO
 
              A value of 0.0 indicates fully transparent, 1.0 is fully opaque.
 
-             Multiplies by the *R* component of {{#crossLink "MetallicMaterial/opacityMap:property"}}{{/crossLink}} and
+             Multiplies by the *R* component of {{#crossLink "MetallicMaterial/alphaMap:property"}}{{/crossLink}} and
              the *A* component, if present, of {{#crossLink "MetallicMaterial/baseColorMap:property"}}{{/crossLink}}.
 
              Attached {{#crossLink "Entity"}}Entities{{/crossLink}} will appear transparent only if they are also attached
              to {{#crossLink "Modes"}}Modes{{/crossLink}} that have {{#crossLink "Modes/transparent:property"}}transparent{{/crossLink}}
              set to **true**.
 
-             Fires an {{#crossLink "MetallicMaterial/opacity:event"}}{{/crossLink}} event on change.
+             Fires an {{#crossLink "MetallicMaterial/alpha:event"}}{{/crossLink}} event on change.
 
-             @property opacity
+             @property alpha
              @default 1.0
              @type Number
              */
-            opacity: {
+            alpha: {
 
                 set: function (value) {
 
                     value = (value !== undefined && value !== null) ? value : 1.0;
 
-                    if (this._state.opacity === value) {
+                    if (this._state.alpha === value) {
                         return;
                     }
 
-                    this._state.opacity = value;
+                    this._state.alpha = value;
 
                     this._renderer.imageDirty = true;
 
                     /**
-                     * Fired whenever this MetallicMaterial's {{#crossLink "MetallicMaterial/opacity:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this MetallicMaterial's {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}} property changes.
                      *
-                     * @event opacity
+                     * @event alpha
                      * @param value {Number} The property's new value
                      */
-                    this.fire("opacity", this._state.opacity);
+                    this.fire("alpha", this._state.alpha);
                 },
 
                 get: function () {
-                    return this._state.opacity;
+                    return this._state.alpha;
                 }
             },
 
             /**
-             RGB {{#crossLink "Texture"}}{{/crossLink}} containing this MetallicMaterial's opacity in its *R* component.
+             RGB {{#crossLink "Texture"}}{{/crossLink}} containing this MetallicMaterial's alpha in its *R* component.
 
-             The *R* component multiplies by the {{#crossLink "MetallicMaterial/opacity:property"}}{{/crossLink}} property.
+             The *R* component multiplies by the {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}} property.
 
              Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MetallicMaterial.
 
-             Fires an {{#crossLink "MetallicMaterial/opacityMap:event"}}{{/crossLink}} event on change.
+             Fires an {{#crossLink "MetallicMaterial/alphaMap:event"}}{{/crossLink}} event on change.
 
-             @property opacityMap
+             @property alphaMap
              @default undefined
              @type {Texture}
              */
-            opacityMap: {
+            alphaMap: {
 
                 set: function (texture) {
 
                     /**
-                     Fired whenever this MetallicMaterial's {{#crossLink "MetallicMaterial/opacityMap:property"}}{{/crossLink}} property changes.
+                     Fired whenever this MetallicMaterial's {{#crossLink "MetallicMaterial/alphaMap:property"}}{{/crossLink}} property changes.
 
-                     @event opacityMap
+                     @event alphaMap
                      @param value Number The property's new value
                      */
-                    this._attachComponent("xeogl.Texture", "opacityMap", texture);
+                    this._attachComponent("xeogl.Texture", "alphaMap", texture);
                 },
 
                 get: function () {
-                    return this._attached.opacityMap;
+                    return this._attached.alphaMap;
                 }
             },
 
@@ -33899,9 +33901,9 @@ TODO
                 }
             }
 
-            if (state.opacityMap) {
+            if (state.alphaMap) {
                 hash.push("/opm");
-                if (state.opacityMap.matrix) {
+                if (state.alphaMap.matrix) {
                     hash.push("/mat");
                 }
             }
@@ -33928,7 +33930,7 @@ TODO
                 roughness: this._state.roughness,
                 specularF0: this._state.specularF0,
                 emissive: vecToArray(this._state.emissive),
-                opacity: this._state.opacity
+                alpha: this._state.alpha
             };
 
             var components = this._attached;
@@ -34031,7 +34033,7 @@ TODO
             src: "diffuseMap.jpg"
         }),
         shininess: 80, // Default
-        opacity: 1.0 // Default
+        alpha: 1.0 // Default
     }),
 
     geometry: new xeogl.TorusGeometry()
@@ -36308,6 +36310,7 @@ TODO
 
                 this.scene.canvas.spinner.processes--;
                 this._loading = false;
+                this.fire("loaded", true);
             }
 
             if (result && result.error) {
@@ -36415,7 +36418,7 @@ TODO
     }),
     material: new xeogl.PhongMaterial({
         diffuse: [0.2, 0.2, 1.0],
-        opacity: 1.0
+        alpha: 1.0
     })
  });
 
@@ -36447,7 +36450,7 @@ TODO
     }),
     material: new xeogl.PhongMaterial({
         diffuse: [0.2, 1, 0.2],
-        opacity: 0.2
+        alpha: 0.2
     }),
     scale: new xeogl.Scale({
         xyz: [9, 9, 9]
@@ -36609,10 +36612,10 @@ TODO
  @param [cfg.pickable=true] {Boolean}  Whether to enable picking.
  @param [cfg.clippable=true] {Boolean} Whether to enable clippable by {{#crossLink "Clips"}}{{/crossLink}}.
  @param [cfg.transparent=false] {Boolean} Whether to enable the transparency effect created by {{#crossLink "Material"}}Material{{/crossLink}}s when they have
- {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} < 1.0. This mode will set attached {{#crossLink "Entity"}}Entities{{/crossLink}} transparent (ie. to be rendered in a
+ {{#crossLink "PhongMaterial/alpha:property"}}{{/crossLink}} < 1.0. This mode will set attached {{#crossLink "Entity"}}Entities{{/crossLink}} transparent (ie. to be rendered in a
  transparency pass with blending enabled etc), while
- the {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} will indicate the **degree** of their transparency
- (ie. where opacity of 0.0 indicates maximum translucency and opacity of 1.0 indicates minimum translucency).
+ the {{#crossLink "PhongMaterial/alpha:property"}}{{/crossLink}} will indicate the **degree** of their transparency
+ (ie. where alpha of 0.0 indicates maximum translucency and alpha of 1.0 indicates minimum translucency).
  @param [cfg.backfaces=false] {Boolean} Whether to render {{#crossLink "Geometry"}}Geometry{{/crossLink}} backfaces.
  @param [cfg.frontface="ccw"] {Boolean} The winding order for {{#crossLink "Geometry"}}Geometry{{/crossLink}} front faces - "cw" for clockwise, or "ccw" for counter-clockwise.
  @param [cfg.collidable=true] {Boolean} Whether attached {{#crossLink "Entity"}}Entities{{/crossLink}} are included in boundary-related calculations. Set this false if the
@@ -36743,8 +36746,8 @@ TODO
 
              When true. this property will set attached {{#crossLink "Entity"}}Entities{{/crossLink}} transparent (ie. to be rendered in a
              transparency pass with blending enabled etc), while
-             the {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} will be used to indicate the **degree** of their transparency
-             (ie. where opacity of 0.0 indicates maximum translucency and opacity of 1.0 indicates minimum translucency).
+             the {{#crossLink "PhongMaterial/alpha:property"}}{{/crossLink}} will be used to indicate the **degree** of their transparency
+             (ie. where alpha of 0.0 indicates maximum translucency and alpha of 1.0 indicates minimum translucency).
 
              Fires a {{#crossLink "Modes/transparent:event"}}{{/crossLink}} event on change.
 

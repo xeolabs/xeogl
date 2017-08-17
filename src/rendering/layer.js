@@ -61,7 +61,7 @@
     }),
     material: new xeogl.PhongMaterial({
         diffuse: [0.2, 0.2, 1.0],
-        opacity: 1.0
+        alpha: 1.0
     })
  });
 
@@ -93,7 +93,7 @@
     }),
     material: new xeogl.PhongMaterial({
         diffuse: [0.2, 1, 0.2],
-        opacity: 0.2
+        alpha: 0.2
     }),
     scale: new xeogl.Scale({
         xyz: [9, 9, 9]

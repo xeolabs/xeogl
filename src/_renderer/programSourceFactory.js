@@ -21,7 +21,7 @@
         var reflection; // True when rendering state contains reflections
         var diffuseFresnel;
         var specularFresnel;
-        var opacityFresnel;
+        var alphaFresnel;
         var reflectivityFresnel;
         var emissiveFresnel;
         var receiveShadow;
@@ -59,7 +59,7 @@
             reflection = hasReflection();
             diffuseFresnel = states.material.diffuseFresnel;
             specularFresnel = states.material.specularFresnel;
-            opacityFresnel = states.material.opacityFresnel;
+            alphaFresnel = states.material.alphaFresnel;
             reflectivityFresnel = states.material.reflectivityFresnel;
             emissiveFresnel = states.material.emissiveFresnel;
             receiveShadow = receivesShadow();
@@ -108,7 +108,7 @@
                 material.occlusionMap ||
                 material.baseColorMap ||
                 material.diffuseMap ||
-                material.opacityMap ||
+                material.alphaMap ||
                 material.specularMap ||
                 material.glossinessMap ||
                 material.specularGlossinessMap ||
@@ -847,7 +847,7 @@
                 || material.glossinessMap
                 || material.specularGlossinessMap
                 || material.occlusionMap
-                || material.opacityMap)) {
+                || material.alphaMap)) {
                 add("varying vec2 vUV;");
             }
 
@@ -870,8 +870,8 @@
                 add("uniform vec3 materialBaseColor;");
             }
 
-            if (material.opacity !== undefined && material.opacity !== null) {
-                add("uniform float materialOpacity;");
+            if (material.alpha !== undefined && material.alpha !== null) {
+                add("uniform float materialAlpha;");
             }
 
             if (material.emissive) {
@@ -974,10 +974,10 @@
                 }
             }
 
-            if (geometry.uv && material.opacityMap) {
-                add("uniform sampler2D opacityMap;");
-                if (material.opacityMap.matrix) {
-                    add("uniform mat4 opacityMapMatrix;");
+            if (geometry.uv && material.alphaMap) {
+                add("uniform sampler2D alphaMap;");
+                if (material.alphaMap.matrix) {
+                    add("uniform mat4 alphaMapMatrix;");
                 }
             }
 
@@ -1008,7 +1008,7 @@
 
             if (geometry.normals && (material.diffuseFresnel ||
                 material.specularFresnel ||
-                material.opacityFresnel ||
+                material.alphaFresnel ||
                 material.emissiveFresnel ||
                 material.reflectivityFresnel)) {
 
@@ -1034,12 +1034,12 @@
                     add("uniform vec3   specularFresnelEdgeColor;");
                 }
 
-                if (material.opacityFresnel) {
-                    add("uniform float  opacityFresnelCenterBias;");
-                    add("uniform float  opacityFresnelEdgeBias;");
-                    add("uniform float  opacityFresnelPower;");
-                    add("uniform vec3   opacityFresnelCenterColor;");
-                    add("uniform vec3   opacityFresnelEdgeColor;");
+                if (material.alphaFresnel) {
+                    add("uniform float  alphaFresnelCenterBias;");
+                    add("uniform float  alphaFresnelEdgeBias;");
+                    add("uniform float  alphaFresnelPower;");
+                    add("uniform vec3   alphaFresnelCenterColor;");
+                    add("uniform vec3   alphaFresnelEdgeColor;");
                 }
 
                 if (material.reflectivityFresnel) {
@@ -1152,14 +1152,14 @@
                 add("vec3 specular = vec3(1.0, 1.0, 1.0);");
             }
 
-            if (material.opacity !== undefined) {
-                add("float opacity = materialOpacity;");
+            if (material.alpha !== undefined) {
+                add("float alpha = materialAlpha;");
             } else {
-                add("float opacity = 1.0;");
+                add("float alpha = 1.0;");
             }
 
             if (geometry.colors) {
-                add("opacity *= vColor.a;");
+                add("alpha *= vColor.a;");
             }
 
             if (material.glossiness !== undefined) {
@@ -1203,7 +1203,7 @@
                 || material.specularMap
                 || material.glossinessMap
                 || material.specularGlossinessMap
-                || material.opacityMap)) {
+                || material.alphaMap)) {
                 add("vec4 texturePos = vec4(vUV.s, vUV.t, 1.0, 1.0);");
                 add("vec2 textureCoord;");
             }
@@ -1225,7 +1225,7 @@
                 }
                 add("vec4 diffuseTexel = texture2D(diffuseMap, textureCoord);");
                 add("diffuseColor *= diffuseTexel.rgb;");
-                add("opacity *= diffuseTexel.a;");
+                add("alpha *= diffuseTexel.a;");
             }
 
             if (geometry.uv && material.baseColorMap) {
@@ -1236,7 +1236,7 @@
                 }
                 add("vec4 baseColorTexel = texture2D(baseColorMap, textureCoord);");
                 add("diffuseColor *= baseColorTexel.rgb;");
-                add("opacity *= baseColorTexel.a;");
+                add("alpha *= baseColorTexel.a;");
             }
 
             if (geometry.uv && material.emissiveMap) {
@@ -1248,13 +1248,13 @@
                 add("emissiveColor *= texture2D(emissiveMap, textureCoord).rgb;");
             }
 
-            if (geometry.uv && material.opacityMap) {
-                if (material.opacityMap.matrix) {
-                    add("textureCoord = (opacityMapMatrix * texturePos).xy;");
+            if (geometry.uv && material.alphaMap) {
+                if (material.alphaMap.matrix) {
+                    add("textureCoord = (alphaMapMatrix * texturePos).xy;");
                 } else {
                     add("textureCoord = texturePos.xy;");
                 }
-                add("opacity *= texture2D(opacityMap, textureCoord).r;");
+                add("alpha *= texture2D(alphaMap, textureCoord).r;");
             }
 
             if (geometry.uv && material.occlusionMap) {
@@ -1343,7 +1343,7 @@
 
                 add("vec3 viewEyeDir = normalize(-vViewPosition);");
 
-                if (material.diffuseFresnel || material.specularFresnel || material.opacityFresnel || material.emissiveFresnel || material.reflectivityFresnel) {
+                if (material.diffuseFresnel || material.specularFresnel || material.alphaFresnel || material.emissiveFresnel || material.reflectivityFresnel) {
                     if (material.diffuseFresnel) {
                         add("float diffuseFresnel = fresnel(viewEyeDir, viewNormal, diffuseFresnelEdgeBias, diffuseFresnelCenterBias, diffuseFresnelPower);");
                         add("diffuseColor *= mix(diffuseFresnelEdgeColor, diffuseFresnelCenterColor, diffuseFresnel);");
@@ -1352,9 +1352,9 @@
                         add("float specularFresnel = fresnel(viewEyeDir, viewNormal, specularFresnelEdgeBias, specularFresnelCenterBias, specularFresnelPower);");
                         add("specular *= mix(specularFresnelEdgeColor, specularFresnelCenterColor, specularFresnel);");
                     }
-                    if (material.opacityFresnel) {
-                        add("float opacityFresnel = fresnel(viewEyeDir, viewNormal, opacityFresnelEdgeBias, opacityFresnelCenterBias, opacityFresnelPower);");
-                        add("opacity *= mix(opacityFresnelEdgeColor.r, opacityFresnelCenterColor.r, opacityFresnel);");
+                    if (material.alphaFresnel) {
+                        add("float alphaFresnel = fresnel(viewEyeDir, viewNormal, alphaFresnelEdgeBias, alphaFresnelCenterBias, alphaFresnelPower);");
+                        add("alpha *= mix(alphaFresnelEdgeColor.r, alphaFresnelCenterColor.r, alphaFresnel);");
                     }
                     if (material.emissiveFresnel) {
                         add("float emissiveFresnel = fresnel(viewEyeDir, viewNormal, emissiveFresnelEdgeBias, emissiveFresnelCenterBias, emissiveFresnelPower);");
@@ -1490,7 +1490,7 @@
             }
 
 
-            add("gl_FragColor = vec4(outgoingLight, opacity);");
+            add("gl_FragColor = vec4(outgoingLight, alpha);");
              //    add("gl_FragColor = LinearTosRGB(gl_FragColor);");  // Gamma correction
 
             add("}");

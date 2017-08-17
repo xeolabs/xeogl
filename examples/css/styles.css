@@ -33,7 +33,7 @@ body {
     padding: 8px;
     color: #fff;
     background-color: #02550b;
-    opacity: 0.7;
+    alpha: 0.7;
 }
 
 #sourceButton:hover {

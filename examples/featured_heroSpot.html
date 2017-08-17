@@ -55,7 +55,7 @@
             emissive: [0.6, 0.8, 0.6],
             diffuse: [0, 0, 0],
             specular: [0, 0, 0],
-            opacity: 1,
+            alpha: 1,
             lineWidth: 1
         }),
         modes: new xeogl.Modes({
@@ -94,14 +94,14 @@
                 edgeColor: [1.0, 1.0, 1.0],
                 centerColor: [0.0, 0.0, 0.0]
             }),
-            XXXopacityFresnel: new xeogl.Fresnel({
+            XXXalphaFresnel: new xeogl.Fresnel({
                 edgeBias: 0.2,
                 centerBias: 1.2,
                 edgeColor: [1.0, 0.0, 0.0],
                 centerColor: [0.0, 0.0, 1.0],
                 power: 7.0
             }),
-            opacity: 0
+            alpha: 0
         }),
         modes: new xeogl.Modes({
             transparent: true
@@ -140,7 +140,7 @@
             emissive: [0.7, 1.0, 0.7],
             diffuse: [0, 0, 0],
             specular: [0, 0, 0],
-            opacity: 1,
+            alpha: 1,
             lineWidth: 3
         }),
         modes: new xeogl.Modes({
@@ -170,7 +170,7 @@
             diffuseMap: new xeogl.Texture({
                 src: "textures/diffuse/UVCheckerMap11-1024.png"
             }),
-            opacity: 0
+            alpha: 0
         }),
         modes: new xeogl.Modes({
             backfaces: true,
@@ -216,23 +216,23 @@
                 view.rotateEyeX(0.05);
 
                 if (wireframeBox) {
-                    if (wireframeBox.material.opacity > 0) {
-                        wireframeBox.material.opacity -= 0.005;
+                    if (wireframeBox.material.alpha > 0) {
+                        wireframeBox.material.alpha -= 0.005;
                     } else {
                         wireframeBox.destroy();
                         wireFrameBox = null;
                     }
                 }
 
-                if (solidBox.material.opacity < 1) {
-                    solidBox.material.opacity += 0.01;
+                if (solidBox.material.alpha < 1) {
+                    solidBox.material.alpha += 0.01;
                 } else {
                     solidBox.modes.transparent = false;
                 }
 
                 if (wireframeTorus) {
-                    if (wireframeTorus.material.opacity > 0.0) {
-                        wireframeTorus.material.opacity -= 0.005;
+                    if (wireframeTorus.material.alpha > 0.0) {
+                        wireframeTorus.material.alpha -= 0.005;
                     } else {
                         //  wireframeTorus.destroy();
                         // wireframeTorus = null
@@ -240,8 +240,8 @@
                 }
 
                 if (solidTorus) {
-                    if (solidTorus.material.opacity < 1.0) {
-                        solidTorus.material.opacity += 0.005;
+                    if (solidTorus.material.alpha < 1.0) {
+                        solidTorus.material.alpha += 0.005;
                     } else {
 //                    solidTorus.modes.transparent = false;
                         solidTorus = null;

@@ -69,7 +69,7 @@
             break;
         default: // Not a chair entity
             entity.modes.transparent = true;
-            entity.material.opacity = 0.5;
+            entity.material.alpha = 0.5;
     }
  }
  ````
@@ -802,14 +802,14 @@
                     case 'd':
                         alpha = parseFloat(value);
                         if (alpha < 1) {
-                            materialCfg.opacity = alpha;
+                            materialCfg.alpha = alpha;
                         }
                         break;
 
                     case 'tr':
                         alpha = parseFloat(value);
                         if (alpha > 0) {
-                            materialCfg.opacity = 1 - alpha;
+                            materialCfg.alpha = 1 - alpha;
                         }
                         break;
 
@@ -926,7 +926,7 @@
                     geometry: xeoGeometry,
                     material: material,
                     modes: {
-                        transparent: (material && material.opacity < 1),
+                        transparent: (material && material.alpha < 1),
                         backfaces: true,
                         pickable: true
                     }

@@ -171,7 +171,7 @@
                 emissive: [0.8, 0.8, 0.8],
                 ambient: [0.3, 0.3, 0.3],
                 specular: [1, 1, 1],
-                opacity: 0.4
+                alpha: 0.4
             }),
             modes: new xeogl.Modes(scene, {
                 pickable: false,
@@ -193,7 +193,7 @@
         //    }),
         //    material: axisMaterial.clone({
         //        diffuse: [0.3, 0.3, 1.0],
-        //        opacity: 0.4,
+        //        alpha: 0.4,
         //        diffuseMap: new xeogl.Texture(scene, {
         //            src: "bimsurfer/src/xeoViewer/helpers/UVCheckerMap11-1024.png"
         //        })
