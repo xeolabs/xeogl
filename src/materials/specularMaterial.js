@@ -166,9 +166,13 @@
  });
  ````
 
- Although not shown in this example, we can also texture {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}} with
- the *A* component of {{#crossLink "MetallicMaterial/baseColorMap:property"}}{{/crossLink}}'s {{#crossLink "Texture"}}{{/crossLink}},
+ Although not shown in this example, we can also texture {{#crossLink "SpecularMaterial/alpha:property"}}{{/crossLink}} with
+ the *A* component of {{#crossLink "SpecularMaterial/baseColorMap:property"}}{{/crossLink}}'s {{#crossLink "Texture"}}{{/crossLink}},
  if required.
+
+ ## Transparency
+
+ TODO
 
  @class SpecularMaterial
  @module xeogl
@@ -237,6 +241,12 @@
  alpha in its *R* component. The *R* component multiplies by the {{#crossLink "SpecularMaterial/alpha:property"}}{{/crossLink}} property. Must
  be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this SpecularMaterial.
 
+ @param [cfg.alphaMode="blend"] {String} The alpha blend mode - accepted values are "opaque", "blend" and "mask".
+ See the {{#crossLink "SpecularMaterial/alphaMode:property"}}{{/crossLink}} property for more info.
+
+ @param [cfg.alphaCutoff=0.5] {Number} The alpha cutoff value.
+ See the {{#crossLink "SpecularMaterial/alphaCutoff:property"}}{{/crossLink}} property for more info.
+
  */
 (function () {
 
@@ -265,7 +275,8 @@
                 occlusionMap: null,
                 alphaMap: null,
                 normalMap: null,
-
+                alphaMode: "blend",
+                alphaCutoff: 0.5,
                 hash: null
             });
 
@@ -318,6 +329,9 @@
             if (cfg.normalMap) {
                 this.normalMap = cfg.normalMap;
             }
+
+            this.alphaMode = cfg.alphaMode;
+            this.alphaCutoff = cfg.alphaCutoff;
         },
 
         _props: {
@@ -669,7 +683,7 @@
                         emissive[1] = 0;
                         emissive[2] = 0;
                     }
-                    
+
                     this._renderer.imageDirty = true;
 
                     /**
@@ -852,6 +866,89 @@
                 get: function () {
                     return this._attached.occlusionMap;
                 }
+            },
+
+            /**
+             The alpha rendering mode.
+
+             This governs how alpha is treated. Alpha is the combined result of the
+             {{#crossLink "SpecularMaterial/alpha:property"}}{{/crossLink}} and
+             {{#crossLink "SpecularMaterial/alphaMap:property"}}{{/crossLink}} properties.
+
+             * "opaque" - The alpha value is ignored and the rendered output is fully opaque.
+             * "mask" - The rendered output is either fully opaque or fully transparent depending on the alpha value and the specified alpha cutoff value.
+             * "blend" - The alpha value is used to composite the source and destination areas. The rendered output is combined with the background using the normal painting operation (i.e. the Porter and Duff over operator).
+
+             Fires an {{#crossLink "SpecularMaterial/alphaMode:event"}}{{/crossLink}} event on change.
+
+             @property alphaMode
+             @default "blend"
+             @type {String}
+             */
+            alphaMode: {
+                set: function (alphaMode) {
+
+                    if (this._state.alphaMode === alphaMode) {
+                        return;
+                    }
+
+                    this._state.alphaMode = alphaMode || "blend";
+
+                    /**
+                     Fired whenever this SpecularMaterial's {{#crossLink "SpecularMaterial/look:property"}}{{/crossLink}} property changes.
+
+                     @event alphaMode
+                     @param value {Number} The property's new value
+                     */
+                    this.fire("alphaMode", this._state.alphaMode);
+                },
+                get: function () {
+                    return this._state.alphaMode;
+                }
+            },
+
+            /**
+             The alpha cutoff value.
+
+             Specifies the cutoff threshold when {{#crossLink "SpecularMaterial/alphaMode:property"}}{{/crossLink}}
+             equals "mask". If the alpha is greater than or equal to this value then it is rendered as fully
+             opaque, otherwise, it is rendered as fully transparent. A value greater than 1.0 will render the entire
+             material as fully transparent. This value is ignored for other modes.
+
+             Alpha is the combined result of the
+             {{#crossLink "SpecularMaterial/alpha:property"}}{{/crossLink}} and
+             {{#crossLink "SpecularMaterial/alphaMap:property"}}{{/crossLink}} properties.
+
+             Fires an {{#crossLink "SpecularMaterial/alphaCutoff:event"}}{{/crossLink}} event on change.
+
+             @property alphaCutoff
+             @default 0.5
+             @type {Number}
+             */
+            alphaCutoff: {
+                set: function (alphaCutoff) {
+
+                    if (alphaCutoff === null || alphaCutoff === undefined) {
+                        alphaCutoff = 0.5;
+                    }
+
+                    if (this._state.alphaCutoff === alphaCutoff) {
+                        return;
+                    }
+
+                    this._state.alphaCutoff = alphaCutoff;
+
+                    /**
+                     Fired whenever this SpecularMaterial's {{#crossLink "SpecularMaterial/look:property"}}{{/crossLink}} property changes.
+
+                     @event alphaCutoff
+                     @param value {Number} The property's new value
+                     */
+                    this.fire("alphaCutoff", this._state.alphaCutoff);
+                },
+                get: function () {
+                    return this._state.alphaCutoff;
+                }
             }
         },
 
@@ -998,6 +1095,9 @@
             if (components.normalMap) {
                 json.normalMap = components.normalMap.id;
             }
+
+            json.alphaMode = this._state.alphaMode;
+            json.alphaCutoff = this._state.alphaCutoff;
 
             return json;
         },

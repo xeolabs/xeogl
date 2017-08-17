@@ -12,7 +12,7 @@
 
  * MetallicMaterial is usually used for conductive materials, such as metal.
  * {{#crossLink "SpecularMaterial"}}{{/crossLink}} is usually used for insulators, such as wood, ceramics and plastic.
- * {{#crossLink "PhongMaterial"}}{{/crossLink}} is usually used for non-realistic objects.
+ * {{#crossLink "MetallicMaterial"}}{{/crossLink}} is usually used for non-realistic objects.
 
  <img src="../../../assets/images/MetallicMaterial.png"></img>
 
@@ -39,7 +39,9 @@
  | {{#crossLink "MetallicMaterial/emissiveMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Texture with RGB components multiplying by {{#crossLink "MetallicMaterial/emissive:property"}}{{/crossLink}}. |
  | {{#crossLink "MetallicMaterial/alphaMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}}. |
  | {{#crossLink "MetallicMaterial/occlusionMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Ambient occlusion texture multiplying by surface's reflected diffuse and specular light. |
- | {{#crossLink "SpecularMaterial/normalMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Tangent-space normal map. |
+ | {{#crossLink "MetallicMaterial/normalMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Tangent-space normal map. |
+ | {{#crossLink "MetallicMaterial/alphaMode:property"}}{{/crossLink}} | String | "opaque", "blend", "mask" | "blend" |  | Alpha blend mode. |
+ | {{#crossLink "MetallicMaterial/alphaCutoff:property"}}{{/crossLink}} | Number | [0..1] | 0.5 |  | Alpha cutoff value. |
 
 
  ## Usage
@@ -167,9 +169,13 @@
  });
  ````
 
- Although not shown in this example, we can also texture {{#crossLink "SpecularMaterial/alpha:property"}}{{/crossLink}} with
- the *A* component of {{#crossLink "SpecularMaterial/diffuseMap:property"}}{{/crossLink}}'s {{#crossLink "Texture"}}{{/crossLink}},
+ Although not shown in this example, we can also texture {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}} with
+ the *A* component of {{#crossLink "MetallicMaterial/diffuseMap:property"}}{{/crossLink}}'s {{#crossLink "Texture"}}{{/crossLink}},
  if required.
+
+ ## Transparency
+
+ TODO
 
  @class MetallicMaterial
  @module xeogl
@@ -244,6 +250,13 @@
  @param [cfg.normalMap=undefined] {Texture} RGB tangent-space normal {{#crossLink "Texture"}}{{/crossLink}}. Must be
  within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MetallicMaterial.
 
+ @param [cfg.alphaMode="blend"] {String} The alpha blend mode - accepted values are "opaque", "blend" and "mask".
+ See the {{#crossLink "MetallicMaterial/alphaMode:property"}}{{/crossLink}} property for more info.
+
+ @param [cfg.alphaCutoff=0.5] {Number} The alpha cutoff value.
+ See the {{#crossLink "MetallicMaterial/alphaCutoff:property"}}{{/crossLink}} property for more info.
+
+
  */
 (function () {
 
@@ -271,6 +284,8 @@
                 emissiveMap: null,
                 occlusionMap: null,
                 normalMap: null,
+                alphaMode: "blend",
+                alphaCutoff: 0.5,
                 hash: null
             });
 
@@ -323,6 +338,9 @@
             if (cfg.normalMap) {
                 this.normalMap = cfg.normalMap;
             }
+
+            this.alphaMode = cfg.alphaMode;
+            this.alphaCutoff = cfg.alphaCutoff;
         },
 
         _props: {
@@ -823,7 +841,7 @@
 
              Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MetallicMaterial.
 
-             Fires a {{#crossLink "PhongMaterial/normalMap:event"}}{{/crossLink}} event on change.
+             Fires a {{#crossLink "MetallicMaterial/normalMap:event"}}{{/crossLink}} event on change.
 
              @property normalMap
              @default undefined
@@ -834,7 +852,7 @@
                 set: function (texture) {
 
                     /**
-                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/normalMap:property"}}{{/crossLink}} property changes.
+                     Fired whenever this MetallicMaterial's {{#crossLink "MetallicMaterial/normalMap:property"}}{{/crossLink}} property changes.
 
                      @event normalMap
                      @param value Number The property's new value
@@ -844,6 +862,89 @@
 
                 get: function () {
                     return this._attached.normalMap;
+                }
+            },
+
+            /**
+             The alpha rendering mode.
+
+             This governs how alpha is treated. Alpha is the combined result of the
+             {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}} and
+             {{#crossLink "MetallicMaterial/alphaMap:property"}}{{/crossLink}} properties.
+
+             * "opaque" - The alpha value is ignored and the rendered output is fully opaque.
+             * "mask" - The rendered output is either fully opaque or fully transparent depending on the alpha value and the specified alpha cutoff value.
+             * "blend" - The alpha value is used to composite the source and destination areas. The rendered output is combined with the background using the normal painting operation (i.e. the Porter and Duff over operator).
+
+             Fires an {{#crossLink "MetallicMaterial/alphaMode:event"}}{{/crossLink}} event on change.
+
+             @property alphaMode
+             @default "blend"
+             @type {String}
+             */
+            alphaMode: {
+                set: function (alphaMode) {
+
+                    if (this._state.alphaMode === alphaMode) {
+                        return;
+                    }
+
+                    this._state.alphaMode = alphaMode || "blend";
+
+                    /**
+                     Fired whenever this MetallicMaterial's {{#crossLink "MetallicMaterial/look:property"}}{{/crossLink}} property changes.
+
+                     @event alphaMode
+                     @param value {Number} The property's new value
+                     */
+                    this.fire("alphaMode", this._state.alphaMode);
+                },
+                get: function () {
+                    return this._state.alphaMode;
+                }
+            },
+
+            /**
+             The alpha cutoff value.
+
+             Specifies the cutoff threshold when {{#crossLink "MetallicMaterial/alphaMode:property"}}{{/crossLink}}
+             equals "mask". If the alpha is greater than or equal to this value then it is rendered as fully
+             opaque, otherwise, it is rendered as fully transparent. A value greater than 1.0 will render the entire
+             material as fully transparent. This value is ignored for other modes.
+
+             Alpha is the combined result of the
+             {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}} and
+             {{#crossLink "MetallicMaterial/alphaMap:property"}}{{/crossLink}} properties.
+
+             Fires an {{#crossLink "MetallicMaterial/alphaCutoff:event"}}{{/crossLink}} event on change.
+
+             @property alphaCutoff
+             @default 0.5
+             @type {Number}
+             */
+            alphaCutoff: {
+                set: function (alphaCutoff) {
+
+                    if (alphaCutoff === null || alphaCutoff === undefined) {
+                        alphaCutoff = 0.5;
+                    }
+
+                    if (this._state.alphaCutoff === alphaCutoff) {
+                        return;
+                    }
+
+                    this._state.alphaCutoff = alphaCutoff;
+
+                    /**
+                     Fired whenever this MetallicMaterial's {{#crossLink "MetallicMaterial/look:property"}}{{/crossLink}} property changes.
+
+                     @event alphaCutoff
+                     @param value {Number} The property's new value
+                     */
+                    this.fire("alphaCutoff", this._state.alphaCutoff);
+                },
+                get: function () {
+                    return this._state.alphaCutoff;
                 }
             }
         },
@@ -987,6 +1088,9 @@
             if (components.normalMap) {
                 json.normalMap = components.normalMap.id;
             }
+
+            json.alphaMode = this._state.alphaMode;
+            json.alphaCutoff = this._state.alphaCutoff;
 
             return json;
         },

@@ -521,7 +521,7 @@
 
                 //TODO
 
-                alert("interleaved buffer!");
+//                alert("interleaved buffer!");
 
             } else {
                 accessorInfo._typedArray = new TypedArray(arraybuffer._buffer, accessorInfo.byteOffset || 0, accessorInfo.count * itemSize);
@@ -604,17 +604,20 @@
             var alphaMode = materialInfo.alphaMode;
             switch (alphaMode) {
                 case "OPAQUE":
+                    cfg.alphaMode = "opaque";
                     break;
                 case "MASK":
+                    cfg.alphaMode = "mask";
                     break;
                 case "BLEND":
+                    cfg.alphaMode = "blend";
                     break;
                 default:
             }
 
             var alphaCutoff = materialInfo.alphaCutoff;
             if (alphaCutoff) {
-                //
+                cfg.alphaCutoff = alphaCutoff;
             }
 
             var doubleSided = materialInfo.doubleSided;
@@ -730,7 +733,6 @@
                     var transparency = values.transparency;
                     if (transparency !== null && transparency !== undefined) {
                         cfg.alpha = transparency;
-                        // TODO transparent mode
                     } else {
                         cfg.alpha = 1.0;
                     }
@@ -881,24 +883,6 @@
                         materialInfo = json.materials[materialIndex];
                         if (materialInfo) {
                             meshCfg.material = materialInfo._material;
-
-                            var alphaMode = materialInfo.alphaMode;
-                            switch (alphaMode) {
-                                case "OPAQUE":
-                                    break;
-                                case "MASK":
-                                    break;
-                                case "BLEND":
-                                    modes.transparent = true;
-                                    break;
-                                default:
-                            }
-
-                            var alphaCutoff = materialInfo.alphaCutoff;
-                            if (alphaCutoff) {
-                                // TODO
-                            }
-
                             modes.backfaces = !!materialInfo.doubleSided;
                         }
                     }
@@ -934,11 +918,11 @@
                     error(ctx, "Node not found: " + i);
                     continue;
                 }
-                loadNode(ctx, nodeInfo, null);
+                loadNode(ctx, i, nodeInfo, null);
             }
         }
 
-        function loadNode(ctx, nodeInfo, transform) {
+        function loadNode(ctx, nodeIdx, nodeInfo, transform) {
             var json = ctx.json;
             var model = ctx.model;
 
@@ -994,21 +978,14 @@
                     var mesh;
                     var entityId;
                     var entity;
-                    var entities;
-                    var scene = ctx.model.scene;
+                    var numMeshes = meshes.length;
+                    var manyMeshes = numMeshes > 1;
 
-                    for (var i = 0, len = meshes.length; i < len; i++) {
+                    for (var i = 0, len = numMeshes; i < len; i++) {
 
                         mesh = meshes[i];
 
-                        entityId = makeID(ctx, "entity." + i);
-
-                        entities = scene.types["xeogl.Entity"];
-                        if (entities) {
-                            for (var j = 0; entities[entityId]; j++) {
-                                entityId = makeID(ctx, i + "entity." + i + "." + j);
-                            }
-                        }
+                        entityId = makeEntityId(ctx, nodeInfo, nodeIdx, manyMeshes);
 
                         var meta = nodeInfo.extra || {};
                         meta.name = nodeInfo.name;
@@ -1029,6 +1006,10 @@
                             loading: true // TODO: track loading state explicitely
                         });
 
+                        entity.on("loaded", function () {
+                            //alert("done");
+                        });
+
                         model.add(entity);
                     }
                 }
@@ -1037,16 +1018,33 @@
             if (nodeInfo.children) {
                 var children = nodeInfo.children;
                 var childNodeInfo;
-                var nodeIdx;
+                var childNodeIdx;
                 for (var i = 0, len = children.length; i < len; i++) {
-                    nodeIdx = children[i];
-                    childNodeInfo = json.nodes[nodeIdx];
+                    childNodeIdx = children[i];
+                    childNodeInfo = json.nodes[childNodeIdx];
                     if (!childNodeInfo) {
                         error(ctx, "Node not found: " + i);
                         continue;
                     }
-                    loadNode(ctx, childNodeInfo, transform);
+                    loadNode(ctx, nodeIdx, childNodeInfo, transform);
                 }
+            }
+        }
+
+        function makeEntityId(ctx, nodeInfo, nodeIdx, manyMeshes) {
+            var prefix = nodeInfo.name || nodeIdx;
+            var id = makeID(ctx, prefix);
+            if (!manyMeshes && !ctx.model.entities[id]) {
+                return id;
+            }
+            var id2;
+            var i = 0;
+            while (true) {
+                id2 = id + "." + i;
+                if (!ctx.model.entities[id2]) {
+                    return id2;
+                }
+                i++;
             }
         }
 
