@@ -455,7 +455,7 @@
                             // path, when that path is joins a path that belongs to an Entity that
                             // we processed earlier
 
-                            return;
+                            break;
                         }
 
                         rootTransform = rootTransform.parent;
