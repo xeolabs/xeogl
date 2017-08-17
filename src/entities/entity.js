@@ -1231,6 +1231,7 @@
 
                 this.scene.canvas.spinner.processes--;
                 this._loading = false;
+                this.fire("loaded", true);
             }
 
             if (result && result.error) {
