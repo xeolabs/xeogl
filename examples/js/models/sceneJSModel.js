@@ -442,7 +442,8 @@
                           alphaFresnel,
                           layer,
                           stage,
-                          modes) {
+                          modes,
+                          transparent) {
 
             switch (node.type) {
 
@@ -619,6 +620,8 @@
                         frontface: node.frontface
                     });
 
+                    transparent = node.transparent;
+
                     break;
 
                 case "layer":
@@ -665,6 +668,8 @@
                         material.specularFresnel = specularFresnel;
                         material.emissiveFresnel = emissiveFresnel;
                         material.alphaFresnel = alphaFresnel;
+
+                        material.alphaMode = transparent ? "blend" : "opaque";
                     }
 
                     this.add({
@@ -699,7 +704,8 @@
                         alphaFresnel,
                         layer,
                         stage,
-                        modes);
+                        modes,
+                        transparent);
                 }
             }
         },
