@@ -153,14 +153,8 @@
                     type: "xeogl.Translate",
                     xyz: [0, 0, 0]
                 }),
-                visibility: this.create({
-                    type: "xeogl.Visibility",
-                    visible: false // Initially invisible
-                }),
-                modes: this.create({
-                    type: "xeogl.Modes",
-                    collidable: false // This helper has no collision boundary of its own
-                })
+                visible: false,
+                collidable: false
             });
 
             // Shows the rotation point indicator
@@ -173,7 +167,7 @@
                 return function (pos) {
 
                     pickHelper.transform.xyz = pos;
-                    pickHelper.visibility.visible = true;
+                    pickHelper.visible = true;
 
                     if (pickHelperHide) {
                         clearTimeout(pickHelperHide);
@@ -181,7 +175,7 @@
                     }
 
                     pickHelperHide = setTimeout(function () {
-                            pickHelper.visibility.visible = false;
+                            pickHelper.visible = false;
                             pickHelperHide = null;
                         },
                         1000)

@@ -308,12 +308,9 @@
                      */
                     self.fire("loaded", self._src);
                 }
-
-//                task.setCompleted();
             };
 
             image.onerror = function () {
-                //              task.setFailed();
                 if (spinnerTextures) {
                     spinner.processes--;
                 }

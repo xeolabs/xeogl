@@ -26,11 +26,11 @@
 
  | Property | Type | Range | Default Value | Space | Description |
  |:--------:|:----:|:-----:|:-------------:|:-----:|:-----------:|
- |  {{#crossLink "MetallicMaterial/baseColor:property"}}{{/crossLink}} | Array | [0, 1] for all components | [1,1,1,1] | linear | The RGB components of the base color of the material. |
+ | {{#crossLink "MetallicMaterial/baseColor:property"}}{{/crossLink}} | Array | [0, 1] for all components | [1,1,1,1] | linear | The RGB components of the base color of the material. |
  | {{#crossLink "MetallicMaterial/metallic:property"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The metallic-ness the material (1 for metals, 0 for non-metals). |
  | {{#crossLink "MetallicMaterial/roughness:property"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The roughness of the material surface. |
  | {{#crossLink "MetallicMaterial/specularF0:property"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The specular Fresnel of the material surface. |
- |  {{#crossLink "MetallicMaterial/emissive:property"}}{{/crossLink}} | Array | [0, 1] for all components | [0,0,0] | linear | The RGB components of the emissive color of the material. |
+ | {{#crossLink "MetallicMaterial/emissive:property"}}{{/crossLink}} | Array | [0, 1] for all components | [0,0,0] | linear | The RGB components of the emissive color of the material. |
  | {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The transparency of the material surface (0 fully transparent, 1 fully opaque). |
  | {{#crossLink "MetallicMaterial/baseColorMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink "MetallicMaterial/baseColor:property"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}}. |
  | {{#crossLink "MetallicMaterial/metallicMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink "MetallicMaterial/metallic:property"}}{{/crossLink}}. |
@@ -42,7 +42,8 @@
  | {{#crossLink "MetallicMaterial/normalMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Tangent-space normal map. |
  | {{#crossLink "MetallicMaterial/alphaMode:property"}}{{/crossLink}} | String | "opaque", "blend", "mask" | "blend" |  | Alpha blend mode. |
  | {{#crossLink "MetallicMaterial/alphaCutoff:property"}}{{/crossLink}} | Number | [0..1] | 0.5 |  | Alpha cutoff value. |
-
+ | {{#crossLink "MetallicMaterial/backfaces:property"}}{{/crossLink}} | Boolean |  | false |  | Whether to render {{#crossLink "Geometry"}}Geometry{{/crossLink}} backfaces. |
+ | {{#crossLink "MetallicMaterial/backfaces:property"}}{{/crossLink}} | String | "ccw", "cw" | "ccw" |  | The winding order for {{#crossLink "Geometry"}}Geometry{{/crossLink}} frontfaces - "cw" for clockwise, or "ccw" for counter-clockwise. |
 
  ## Usage
 
@@ -207,12 +208,10 @@
  @param [cfg.emissive=[0,0,0]] {Float32Array}  RGB emissive color of this MetallicMaterial. Multiplies by the RGB
  components of {{#crossLink "MetallicMaterial/emissiveMap:property"}}{{/crossLink}}.
 
- @param [cfg.alpha=1.0] {Number} Factor in the range 0..1 indicating how transparent this MetallicMaterial is.
- A value of 0.0 indicates fully transparent, 1.0 is fully opaque. Multiplies by the *R* component of
- {{#crossLink "MetallicMaterial/alphaMap:property"}}{{/crossLink}} and the *A* component, if present, of
- {{#crossLink "MetallicMaterial/baseColorMap:property"}}{{/crossLink}}. Attached {{#crossLink "Entity"}}Entities{{/crossLink}}
- will appear transparent only if they are also attached to {{#crossLink "Modes"}}Modes{{/crossLink}} that
- have {{#crossLink "Modes/transparent:property"}}transparent{{/crossLink}} set to **true**.
+ @param [cfg.alpha=1.0] {Number} Factor in the range 0..1 indicating the alpha of this MetallicMaterial.
+ Multiplies by the *R* component of {{#crossLink "MetallicMaterial/alphaMap:property"}}{{/crossLink}} and the *A* component,
+ if present, of {{#crossLink "MetallicMaterial/baseColorMap:property"}}{{/crossLink}}. The value of
+ {{#crossLink "MetallicMaterial/alphaMode:property"}}{{/crossLink}} indicates how alpha is interpreted when rendering.
 
  @param [cfg.baseColorMap=undefined] {Texture} RGBA {{#crossLink "Texture"}}{{/crossLink}} containing the diffuse color
  of this MetallicMaterial, with optional *A* component for alpha. The RGB components multiply by the
@@ -250,12 +249,14 @@
  @param [cfg.normalMap=undefined] {Texture} RGB tangent-space normal {{#crossLink "Texture"}}{{/crossLink}}. Must be
  within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MetallicMaterial.
 
- @param [cfg.alphaMode="opaque"] {String} The alpha blend mode - accepted values are "opaque", "blend" and "mask".
- See the {{#crossLink "MetallicMaterial/alphaMode:property"}}{{/crossLink}} property for more info.
+ @param [cfg.alphaMode="opaque"] {String} The alpha blend mode, which specifies how alpha is to be interpreted. Accepted
+ values are "opaque", "blend" and "mask". See the {{#crossLink "MetallicMaterial/alphaMode:property"}}{{/crossLink}} property for more info.
 
  @param [cfg.alphaCutoff=0.5] {Number} The alpha cutoff value.
  See the {{#crossLink "MetallicMaterial/alphaCutoff:property"}}{{/crossLink}} property for more info.
 
+ @param [cfg.backfaces=false] {Boolean} Whether to render {{#crossLink "Geometry"}}Geometry{{/crossLink}} backfaces.
+ @param [cfg.frontface="ccw"] {Boolean} The winding order for {{#crossLink "Geometry"}}Geometry{{/crossLink}} front faces - "cw" for clockwise, or "ccw" for counter-clockwise.
 
  */
 (function () {
@@ -286,6 +287,8 @@
                 normalMap: null,
                 alphaMode: 0, // "opaque"
                 alphaCutoff: 0.5,
+                backfaces: null,
+                frontface: null, // Boolean for speed; true == "ccw", false == "cw"
                 hash: null
             });
 
@@ -341,6 +344,8 @@
 
             this.alphaMode = cfg.alphaMode;
             this.alphaCutoff = cfg.alphaCutoff;
+            this.backfaces = cfg.backfaces;
+            this.frontface = cfg.frontface;
         },
 
         _props: {
@@ -401,10 +406,6 @@
 
              The RGB components multiply by the {{#crossLink "MetallicMaterial/baseColor:property"}}{{/crossLink}} property,
              while the *A* component, if present, multiplies by the {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}} property.
-
-             Attached {{#crossLink "Entity"}}Entities{{/crossLink}} will appear transparent only if they are also attached
-             to {{#crossLink "Modes"}}Modes{{/crossLink}} that have {{#crossLink "Modes/transparent:property"}}transparent{{/crossLink}}
-             set to **true**.
 
              Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MetallicMaterial.
 
@@ -760,16 +761,13 @@
             },
 
             /**
-             Factor in the range [0..1] indicating how transparent this MetallicMaterial is.
-
-             A value of 0.0 indicates fully transparent, 1.0 is fully opaque.
+             Factor in the range [0..1] indicating the alpha value.
 
              Multiplies by the *R* component of {{#crossLink "MetallicMaterial/alphaMap:property"}}{{/crossLink}} and
              the *A* component, if present, of {{#crossLink "MetallicMaterial/baseColorMap:property"}}{{/crossLink}}.
 
-             Attached {{#crossLink "Entity"}}Entities{{/crossLink}} will appear transparent only if they are also attached
-             to {{#crossLink "Modes"}}Modes{{/crossLink}} that have {{#crossLink "Modes/transparent:property"}}transparent{{/crossLink}}
-             set to **true**.
+             The value of {{#crossLink "MetallicMaterial/alphaMode:property"}}{{/crossLink}} indicates how alpha is
+             interpreted when rendering.
 
              Fires an {{#crossLink "MetallicMaterial/alpha:event"}}{{/crossLink}} event on change.
 
@@ -868,12 +866,12 @@
             /**
              The alpha rendering mode.
 
-             This governs how alpha is treated. Alpha is the combined result of the
+             This specifies how alpha is interpreted. Alpha is the combined result of the
              {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}} and
              {{#crossLink "MetallicMaterial/alphaMap:property"}}{{/crossLink}} properties.
 
              * "opaque" - The alpha value is ignored and the rendered output is fully opaque.
-             * "mask" - The rendered output is either fully opaque or fully transparent depending on the alpha value and the specified alpha cutoff value.
+             * "mask" - The rendered output is either fully opaque or fully transparent depending on the alpha and {{#crossLink "MetallicMaterial/alphaCutoff:property"}}{{/crossLink}}.
              * "blend" - The alpha value is used to composite the source and destination areas. The rendered output is combined with the background using the normal painting operation (i.e. the Porter and Duff over operator).
 
              Fires an {{#crossLink "MetallicMaterial/alphaMode:event"}}{{/crossLink}} event on change.
@@ -962,6 +960,86 @@
                 },
                 get: function () {
                     return this._state.alphaCutoff;
+                }
+            },
+
+            /**
+             Whether backfaces are visible on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+             The backfaces will belong to {{#crossLink "Geometry"}}{{/crossLink}} compoents that are also attached to
+             the {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+             Fires a {{#crossLink "MetallicMaterial/backfaces:event"}}{{/crossLink}} event on change.
+
+             @property backfaces
+             @default false
+             @type Boolean
+             */
+            backfaces: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    if (this._state.backfaces === value) {
+                        return;
+                    }
+
+                    this._state.backfaces = value;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this MetallicMaterial' {{#crossLink "MetallicMaterial/backfaces:property"}}{{/crossLink}} property changes.
+
+                     @event backfaces
+                     @param value The property's new value
+                     */
+                    this.fire("backfaces", this._state.backfaces);
+                },
+
+                get: function () {
+                    return this._state.backfaces;
+                }
+            },
+
+            /**
+             Indicates the winding direction of front faces on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+             The faces will belong to {{#crossLink "Geometry"}}{{/crossLink}} components that are also attached to
+             the {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+             Fires a {{#crossLink "MetallicMaterial/frontface:event"}}{{/crossLink}} event on change.
+
+             @property frontface
+             @default "ccw"
+             @type String
+             */
+            frontface: {
+
+                set: function (value) {
+
+                    value = value !== "cw";
+
+                    if (this._state.frontface === value) {
+                        return;
+                    }
+
+                    this._state.frontface = value;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this MetallicMaterial' {{#crossLink "MetallicMaterial/frontface:property"}}{{/crossLink}} property changes.
+
+                     @event frontface
+                     @param value The property's new value
+                     */
+                    this.fire("frontface", this._state.frontface ? "ccw" : "cw");
+                },
+
+                get: function () {
+                    return this._state.frontface ? "ccw" : "cw";
                 }
             }
         },
@@ -1073,7 +1151,11 @@
                 roughness: this._state.roughness,
                 specularF0: this._state.specularF0,
                 emissive: vecToArray(this._state.emissive),
-                alpha: this._state.alpha
+                alpha: this._state.alpha,
+                alphaMode: this.alphaMode,
+                alphaCutoff: this._state.alphaCutoff,
+                backfaces: this._state.backfaces,
+                frontface: this.frontface // Save string value
             };
 
             var components = this._attached;
@@ -1105,9 +1187,6 @@
             if (components.normalMap) {
                 json.normalMap = components.normalMap.id;
             }
-
-            json.alphaMode = this.alphaMode;
-            json.alphaCutoff = this._state.alphaCutoff;
 
             return json;
         },

@@ -89,7 +89,9 @@ function materialGallery(menuId, cfg) {
     var entityWidth = 2.5;
     var width = numSide * entityWidth;
     var halfWidth = width / 2;
-    var material = new xeogl.PhongMaterial();
+    var material = new xeogl.PhongMaterial({
+        backfaces: true
+    });
     var geometry = new xeogl.SphereGeometry({
         heightSegments: 60,
         widthSegments: 30

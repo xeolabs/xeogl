@@ -137,7 +137,7 @@
         this.show = function (id) {
             var object = getScene().entities[id];
             if (object) {
-                object.visibility.visible = true;
+                object.visible = true;
             }
             return this;
         };
@@ -145,7 +145,7 @@
         this.hide = function (id) {
             var object = getScene().entities[id];
             if (object) {
-                object.visibility.visible = false;
+                object.visible = false;
             }
             return this;
         };
@@ -206,13 +206,9 @@
                         alpha: alpha,
                         lineWidth: lineWidth
                     }),
-                    modes: new xeogl.Modes({  // This Entity should not be pickable
-                        pickable: false,
-                        transparent: alpha < 1.0
-                    }),
-                    visibility: new xeogl.Visibility({  // This Entity should not be pickable
-                        visible: true
-                    })
+                    pickable: false,
+                    transparent: alpha < 1.0,
+                    visible: true
                     //,
                     //transform: new xeogl.Matrix({
                     //    matrix: matrix
@@ -225,7 +221,7 @@
                 object.material.alpha = alpha;
                 object.modes.transparency = alpha < 1.0;
                 object.material.lineWidth = lineWidth;
-                object.visibility.visible = true;
+                object.visible = true;
                 //           object.transform.matrix = matrix;
             }
 
@@ -250,17 +246,13 @@
                     geometry: new xeogl.SphereGeometry({
                         radius: 0.1
                     }),
-                    modes: new xeogl.Modes({  // This Entity should not be pickable
-                        pickable: false,
-                        transparent: true,
-                        collidable: false
-                    }),
                     material: new xeogl.PhongMaterial({ // Hides the sphere while still rendering it
                         alpha: 0
                     }),
-                    visibility: new xeogl.Visibility({  // This Entity should not be pickable
-                        visible: true
-                    })
+                    visible: true,
+                    pickable: false,
+                    transparent: true,
+                    collidable: false
                 });
 
                 var body = document.getElementsByTagName("body")[0];
@@ -299,7 +291,7 @@
                 body.appendChild(pointDiv);
 
                 // Synch visibility of HTML elements with the Entity
-                object.visibility.on("visible",
+                object.on("visible",
                     function (visible) {
                         boxDiv.style.visibility = visible ? "visible" : "hidden";
                         pointDiv.style.visibility = visible ? "visible" : "hidden";
@@ -360,21 +352,17 @@
                     geometry: new xeogl.SphereGeometry({
                         radius: radius
                     }),
-                    modes: new xeogl.Modes({  // This Entity should not be pickable
-                        pickable: false,
-                        transparent: alpha < 1.0,
-                        backfaces: false,
-                        collidable: false
-                    }),
                     material: new xeogl.PhongMaterial({ // Hides the sphere while still rendering it
                         diffuse: color,
                         emissive: color,
                         alpha: alpha,
-                        specular: [1, 1, 1]
+                        specular: [1, 1, 1],
+                        backfaces: false
                     }),
-                    visibility: new xeogl.Visibility({  // This Entity should not be pickable
-                        visible: true
-                    })
+                    pickable: false,
+                    transparent: true,
+                    collidable: false,
+                    visible: true
                 });
 
             } else {
@@ -383,8 +371,8 @@
                 object.material.color = color;
                 object.material.emissive = color;
                 object.material.alpha = alpha;
-                object.modes.transparency = alpha < 1.0;
-                object.visibility.visible = true;
+                object.transparency = alpha < 1.0;
+                object.visible = true;
             }
 
             this._reset();
@@ -424,13 +412,9 @@
                         specular: [1, 1, 1],
                         shininess: 90
                     }),
-                    modes: new xeogl.Modes({
-                        pickable: false,
-                        collidable: false
-                    }),
-                    visibility: new xeogl.Visibility({  // This Entity should not be pickable
-                        visible: true
-                    })
+                    pickable: false,
+                    collidable: false,
+                    visible: true
                 });
 
             } else {
@@ -440,7 +424,7 @@
                 object.transform.parent.parent.xyz = pos[0];
                 object.transform.parent.matrix = xeogl.math.quaternionToMat4(
                     xeogl.math.vec3PairToQuaternion(dir, [0, -1, 0]));
-                object.visibility.visible = true;
+                object.visible = true;
             }
 
             this._reset();
@@ -467,11 +451,9 @@
                     geometry: new xeogl.VectorTextGeometry({
                         text: text
                     }),
-                    modes: new xeogl.Modes({  // This Entity should not be pickable
-                        pickable: false,
-                        transparent: true,
-                        collidable: false
-                    }),
+                    pickable: false,
+                    transparent: true,
+                    collidable: false,
                     material: new xeogl.PhongMaterial({ // Hides the sphere while still rendering it
                         emissive: color,
                         alpha: alpha,
@@ -480,9 +462,7 @@
                     billboard: new xeogl.Billboard({
                         spherical: true
                     }),
-                    visbility: new xeogl.Visibility({  // This Entity should not be pickable
-                        visible: true
-                    })
+                    visibility: true
                 });
 
             } else {

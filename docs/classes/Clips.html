@@ -66,7 +66,6 @@
                                 <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
-                                <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
                                 <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -80,14 +79,12 @@
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
-                                <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/LookatHelper.html">LookatHelper</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
-                                <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
@@ -127,9 +124,9 @@
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
-                                <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
                                 <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/XRay.html">XRay</a></li>
                                 <li><a href="../classes/ZSpaceEffect.html">ZSpaceEffect</a></li>
                                 <li><a href="../classes/ZSpaceStylusControl.html">ZSpaceStylusControl</a></li>
                             </ul>
@@ -143,9 +140,9 @@
                                 <li><a href="..//modules/clipping.html">clipping</a></li>
                                 <li><a href="..//modules/configs.html">configs</a></li>
                                 <li><a href="..//modules/controls.html">controls</a></li>
-                                <li><a href="..//modules/culling.html">culling</a></li>
                                 <li><a href="..//modules/curves.html">curves</a></li>
                                 <li><a href="..//modules/effects.html">effects</a></li>
+                                <li><a href="..//modules/emphasis.html">emphasis</a></li>
                                 <li><a href="..//modules/entities.html">entities</a></li>
                                 <li><a href="..//modules/generation.html">generation</a></li>
                                 <li><a href="..//modules/geometry.html">geometry</a></li>
@@ -229,9 +226,7 @@ its <a href="../classes/Clip.html#property_dir" class="crosslink">dir</a> vector
 <li>Each <a href="../classes/Clip.html" class="crosslink">Clip</a> is has a <a href="../classes/Clip.html#property_mode" class="crosslink">mode</a>, which indicates whether it is disabled ("disabled"), discarding fragments that fall on the origin-side of the plane ("inside"), or clipping fragments that fall on the other side of the plane from the origin ("outside").</li>
 <li>You can update each <a href="../classes/Clip.html" class="crosslink">Clip</a>&#39;s <a href="../classes/Clip.html#property_mode" class="crosslink">mode</a> to
 activate or deactivate it, or to switch which side it discards fragments from.</li>
-<li>Clipping may also be enabled or disabled for specific <a href="../classes/Entity.html" class="crosslink">Entities</a>
-via the Modes/clipping:property flag on <a href="../classes/Modes.html" class="crosslink">Modes</a> components
-attached to those <a href="../classes/Entity.html" class="crosslink">Entities</a>.
+<li>Clipping may also be enabled or disabled for specific <a href="../classes/Entity.html" class="crosslink">Entities</a> via their <a href="../classes/Entity.html#property_clippable" class="crosslink">clippable</a> properties.
 <img src="../../../assets/images/Clips.png"></img><h2 id="usage">Usage</h2>
 See <a href="../classes/Clip.html" class="crosslink">Clip</a> for an example.</li>
 </ul>
@@ -1214,7 +1209,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_clipping_clips.js.html#l78"><code>src&#x2F;clipping&#x2F;clips.js:78</code></a>
+                            <a href="../files/src_clipping_clips.js.html#l76"><code>src&#x2F;clipping&#x2F;clips.js:76</code></a>
                             </p>
                     
                     
@@ -1490,7 +1485,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_clipping_clips.js.html#l173"><code>src&#x2F;clipping&#x2F;clips.js:173</code></a>
+                            <a href="../files/src_clipping_clips.js.html#l171"><code>src&#x2F;clipping&#x2F;clips.js:171</code></a>
                             </p>
                     
                     

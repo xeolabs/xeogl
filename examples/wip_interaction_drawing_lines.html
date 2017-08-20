@@ -166,9 +166,7 @@
                 lineWidth: 4,
                 pointSize: 6
             }),
-            visibility: new xeogl.Visibility({ // Visible as soon as something is drawn
-                visible: false
-            })
+            visible: false
         });
 
         var addLine = (function () {
@@ -193,7 +191,7 @@
                 drawingHelper.geometry.positions = positions;
                 drawingHelper.geometry.indices = indices;
 
-                drawingHelper.visibility.visible = true; // Something to draw now
+                drawingHelper.visible = true; // Something to draw now
             }
         })();
 

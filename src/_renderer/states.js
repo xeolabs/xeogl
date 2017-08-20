@@ -85,7 +85,7 @@
      @param cfg {*} Configs
      @param cfg.pickable {Boolean} Flag which controls pickability of the associated render objects.
      @param cfg.clipping {Boolean} Flag which controls whether associated render objects are clippable.
-     @param cfg.transparent {Boolean} Flag which controls transparency of the associated render objects.
+     @param cfg.xray {Boolean} Flag which controls transparency of the associated render objects.
      @param cfg.frontFace {Boolean} Flag which determines winding order of backfaces on the associated render objects - true == "ccw", false == "cw".
      @extends renderer.State
      */
@@ -351,6 +351,21 @@
      @extends renderer.State
      */
     xeogl.renderer.Outline = xeogl.renderer.State.extend({
+        _ids: new xeogl.utils.Map({})
+    });
+
+    /**
+
+     XRay state.
+
+     renderer.XRay
+     @module xeogl
+
+     @constructor
+     @param cfg {*} Configs
+     @extends renderer.State
+     */
+    xeogl.renderer.XRay = xeogl.renderer.State.extend({
         _ids: new xeogl.utils.Map({})
     });
 })();

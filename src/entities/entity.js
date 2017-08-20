@@ -128,16 +128,8 @@
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
  @param [cfg.clips] {String|Clips} ID or instance of a {{#crossLink "Clips"}}Clips{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/clips:property"}}clips{{/crossLink}}.
- @param [cfg.visibility] {String|Visibility} ID or instance of a {{#crossLink "Visibility"}}Visibility{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
- parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/visibility:property"}}visibility{{/crossLink}}.
- @param [cfg.cull] {String|Cull} ID or instance of a {{#crossLink "Cull"}}{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
- parent {{#crossLink "Scene"}}{{/crossLink}}'s default instance, {{#crossLink "Scene/cull:property"}}cull{{/crossLink}}.
- @param [cfg.modes] {String|Modes} ID or instance of a {{#crossLink "Modes"}}Modes{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
- parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/modes:property"}}modes{{/crossLink}}.
  @param [cfg.geometry] {String|Geometry} ID or instance of a {{#crossLink "Geometry"}}Geometry{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/geometry:property"}}geometry{{/crossLink}}, which is a 2x2x2 box.
- @param [cfg.layer] {String|Layer} ID or instance of a {{#crossLink "Layer"}}Layer{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
- parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/layer:property"}}layer{{/crossLink}}.
  @param [cfg.lights] {String|Lights} ID or instance of a {{#crossLink "Lights"}}Lights{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/lights:property"}}lights{{/crossLink}}.
  @param [cfg.material] {String|Material} ID or instance of a {{#crossLink "Material"}}Material{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
@@ -150,6 +142,20 @@
  {{#crossLink "Scene/viewport:property"}}{{/crossLink}}, which is automatically resizes to the canvas.
  @param [cfg.outline] {String|Outline} ID or instance of a {{#crossLink "Outline"}}{{/crossLink}} attached to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
  {{#crossLink "Scene/outline:property"}}{{/crossLink}}.
+ @param [cfg.xray] {String|XRay} ID or instance of a {{#crossLink "XRay"}}{{/crossLink}} attached to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
+ {{#crossLink "Scene/xray:property"}}{{/crossLink}}.
+
+ @param [cfg.visible=true] {Boolean}  Indicates if this Entity is visible.
+ @param [cfg.culled=true] {Boolean}  Indicates if this Entity is culled from view.
+ @param [cfg.pickable=true] {Boolean}  Indicates if this Entity is pickable.
+ @param [cfg.clippable=true] {Boolean} Indicates if this Entity is clippable by {{#crossLink "Clips"}}{{/crossLink}}.
+ @param [cfg.xrayed=false] {Boolean} Whether to render this Entity as X-rayed, as configured by the Entity's {{#crossLink "XRay"}}{{/crossLink}} component.
+ @param [cfg.collidable=true] {Boolean} Whether this Entity is included in boundary calculations.
+ @param [cfg.castShadow=true] {Boolean} Whether this Entity casts shadows.
+ @param [cfg.receiveShadow=true] {Boolean} Whether this Entity receives shadows.
+ @param [cfg.outlined=false] {Boolean} Whether an outline is rendered around this entity, as configured by the Entity's {{#crossLink "Outline"}}{{/crossLink}} component
+ @param [cfg.layer=0] {Number} Indicates this Entity's rendering priority, typically used for transparency sorting,
+
  @param [cfg.loading] {Boolean} Flag which indicates that this Entity is freshly loaded. This will increment the
  {{#crossLink "Spinner/processes:property"}}Spinner processes{{/crossLink}} count, and then when this Entity is first
  rendered, will decrement the count again.
@@ -174,6 +180,20 @@
 
         _init: function (cfg) {
 
+            this._state = new xeogl.renderer.Modes({
+                visible: true,
+                culled: false,
+                pickable: null,
+                clippable: null,
+                xrayed: null,
+                collidable: null,
+                castShadow: null,
+                receiveShadow: null,
+                outlined: null,
+                layer: null,
+                hash: ""
+            });
+
             this._loading = cfg.loading;
 
             if (this._loading === true) {
@@ -182,11 +202,7 @@
 
             this.camera = cfg.camera;
             this.clips = cfg.clips;
-            this.visibility = cfg.visibility;
-            this.cull = cfg.cull;
-            this.modes = cfg.modes;
             this.geometry = cfg.geometry;
-            this.layer = cfg.layer;
             this.lights = cfg.lights;
             this.material = cfg.material;
             this.morphTargets = cfg.morphTargets;
@@ -195,6 +211,18 @@
             this.stationary = cfg.stationary;
             this.viewport = cfg.viewport;
             this.outline = cfg.outline;
+            this.xray = cfg.xray;
+
+            this.visible = cfg.visible;
+            this.culled = cfg.culled;
+            this.pickable = cfg.pickable;
+            this.clippable = cfg.clippable;
+            this.xrayed = cfg.xrayed;
+            this.collidable = cfg.collidable;
+            this.castShadow = cfg.castShadow;
+            this.receiveShadow = cfg.receiveShadow;
+            this.outlined = cfg.outlined;
+            this.layer = cfg.layer;
 
             // Cached boundary for each coordinate space
             // The Entity's Geometry component caches the Local-space boundary
@@ -294,112 +322,6 @@
             },
 
             /**
-             * The {{#crossLink "Visibility"}}Visibility{{/crossLink}} attached to this Entity.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/visibility:property"}}visibility{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * Fires an {{#crossLink "Entity/visibility:event"}}{{/crossLink}} event on change.
-             *
-             * @property visibility
-             * @type Visibility
-             */
-            visibility: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this Entity's  {{#crossLink "Entity/visibility:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event visibility
-                     * @param value The property's new value
-                     */
-                    this._attach({
-                        name: "visibility",
-                        type: "xeogl.Visibility",
-                        component: value,
-                        sceneDefault: true
-                    });
-                },
-
-                get: function () {
-                    return this._attached.visibility;
-                }
-            },
-
-            /**
-             * The {{#crossLink "Cull"}}{{/crossLink}} attached to this Entity.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/cull:property"}}cull{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * Fires an {{#crossLink "Entity/cull:event"}}{{/crossLink}} event on change.
-             *
-             * @property cull
-             * @type Cull
-             */
-            cull: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this Entity's  {{#crossLink "Entity/cull:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event cull
-                     * @param value The property's new value
-                     */
-
-                    this._attach({
-                        name: "cull",
-                        type: "xeogl.Cull",
-                        component: value,
-                        sceneDefault: true
-                    });
-                },
-
-                get: function () {
-                    return this._attached.cull;
-                }
-            },
-
-            /**
-             * The {{#crossLink "Modes"}}Modes{{/crossLink}} attached to this Entity.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/modes:property"}}modes{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * Fires an {{#crossLink "Entity/modes:event"}}{{/crossLink}} event on change.
-             *
-             * @property modes
-             * @type Modes
-             */
-            modes: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this Entity's {{#crossLink "Entity/modes:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event modes
-                     * @param value The property's new value
-                     */
-                    this._attach({
-                        name: "modes",
-                        type: "xeogl.Modes",
-                        component: value,
-                        sceneDefault: true
-                    });
-                },
-
-                get: function () {
-                    return this._attached.modes;
-                }
-            },
-
-            /**
              * The {{#crossLink "Geometry"}}Geometry{{/crossLink}} attached to this Entity.
              *
              * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
@@ -426,7 +348,7 @@
                     /**
                      * Fired whenever this Entity's {{#crossLink "Entity/geometry:property"}}{{/crossLink}} property changes.
                      *
-                     * @event modes
+                     * @event geometry
                      * @param value The property's new value
                      */
                     this._attach({
@@ -449,41 +371,6 @@
 
                 get: function () {
                     return this._attached.geometry;
-                }
-            },
-
-            /**
-             * The {{#crossLink "Layer"}}Layer{{/crossLink}} attached to this Entity.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/layer:property"}}layer{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * Fires an {{#crossLink "Entity/layer:event"}}{{/crossLink}} event on change.
-             *
-             * @property layer
-             * @type Layer
-             */
-            layer: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this Entity's  {{#crossLink "Entity/layer:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event layer
-                     * @param value The property's new value
-                     */
-                    this._attach({
-                        name: "layer",
-                        type: "xeogl.Layer",
-                        component: value,
-                        sceneDefault: true
-                    });
-                },
-
-                get: function () {
-                    return this._attached.layer;
                 }
             },
 
@@ -773,7 +660,7 @@
             },
 
             /**
-             * The {{#crossLink "Outline"}}Outline{{/crossLink}} attached to this Entity.
+             * The {{#crossLink "Outline"}}Outline{{/crossLink}} effect attached to this Entity.
              *
              * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
              * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/outline:property"}}Outline{{/crossLink}} when set to
@@ -807,6 +694,426 @@
                 }
             },
 
+            /**
+             * The {{#crossLink "XRay"}}XRay{{/crossLink}} effect attached to this Entity.
+             *
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
+             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/xray:property"}}XRay{{/crossLink}} when set to
+             * a null or undefined value.
+             *
+             * Fires an {{#crossLink "Entity/xray:event"}}{{/crossLink}} event on change.
+             *
+             * @property xray
+             * @type XRay
+             */
+            xray: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this Entity's  {{#crossLink "Entity/XRay:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event XRay
+                     * @param value The property's new value
+                     */
+                    this._attach({
+                        name: "xray",
+                        type: "xeogl.XRay",
+                        component: value,
+                        sceneDefault: true
+                    });
+                },
+
+                get: function () {
+                    return this._attached.xray;
+                }
+            },
+
+            /**
+             Indicates whether this Entity is visible or not.
+
+             The Entity is only rendered when {{#crossLink "Entity/visible:property"}}{{/crossLink}} is true and
+             {{#crossLink "Entity/culled:property"}}{{/crossLink}} is false.
+             
+             Fires a {{#crossLink "Entity/visible:event"}}{{/crossLink}} event on change.
+
+             @property visible
+             @default true
+             @type Boolean
+             */
+            visible: {
+
+                set: function (value) {
+
+                    this._state.visible =  value !== false;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this Entity's {{#crossLink "Entity/visible:property"}}{{/crossLink}} property changes.
+
+                     @event visible
+                     @param value {Boolean} The property's new value
+                     */
+                    this.fire("visible",  this._state.visible);
+                },
+
+                get: function () {
+                    return this._state.visible;
+                }
+            },
+
+            /**
+             Indicates whether or not this Entity is currently culled from view.
+
+             The Entity is only rendered when {{#crossLink "Entity/visible:property"}}{{/crossLink}} is true and
+             {{#crossLink "Entity/culled:property"}}{{/crossLink}} is false.
+
+             Fires a {{#crossLink "Entity/culled:event"}}{{/crossLink}} event on change.
+
+             @property culled
+             @default false
+             @type Boolean
+             */
+            culled: {
+
+                set: function (value) {
+                    
+                    this._state.culled =  !!value;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this Entity's {{#crossLink "Entity/culled:property"}}{{/crossLink}} property changes.
+
+                     @event culled
+                     @param value {Boolean} The property's new value
+                     */
+                    this.fire("culled",  this._state.culled);
+                },
+
+                get: function () {
+                    return this._state.culled;
+                }
+            },
+
+            /**
+             Indicates whether this entity is pickable or not.
+
+             Picking is done via calls to {{#crossLink "Canvas/pick:method"}}Canvas#pick{{/crossLink}}.
+
+             Fires a {{#crossLink "Entity/pickable:event"}}{{/crossLink}} event on change.
+
+             @property pickable
+             @default true
+             @type Boolean
+             */
+            pickable: {
+
+                set: function (value) {
+
+                    value = value !== false;
+
+                    if (this._state.pickable === value) {
+                        return;
+                    }
+
+                    this._state.pickable = value;
+
+                    // No need to trigger a render;
+                    // state is only used when picking
+
+                    /**
+                     * Fired whenever this Entity's {{#crossLink "Entity/pickable:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event pickable
+                     * @param value The property's new value
+                     */
+                    this.fire("pickable", this._state.pickable);
+                },
+
+                get: function () {
+                    return this._state.pickable;
+                }
+            },
+
+            /**
+             Indicates whether this Entity is clippable by {{#crossLink "Clips"}}{{/crossLink}} components.
+
+             Fires a {{#crossLink "Entity/clippable:event"}}{{/crossLink}} event on change.
+
+             @property clippable
+             @default true
+             @type Boolean
+             */
+            clippable: {
+
+                set: function (value) {
+
+                    value = value !== false;
+
+                    if (this._state.clippable === value) {
+                        return;
+                    }
+
+                    this._state.clippable = value;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this Entity's {{#crossLink "Entity/clippable:property"}}{{/crossLink}} property changes.
+
+                     @event clippable
+                     @param value The property's new value
+                     */
+                    this.fire("clippable", this._state.clippable);
+                },
+
+                get: function () {
+                    return this._state.clippable;
+                }
+            },
+
+            /**
+             Indicates whether this Entity is included in boundary calculations.
+
+             Set this false if the Entity is a helper or indicator that should not be included in boundary calculations.
+
+             For example, when set false, the {{#crossLink "Entity/worldBoundary:property"}}World-space boundary{{/crossLink}} of all attached {{#crossLink "Entity"}}Entities{{/crossLink}} would not be considered when calculating the {{#crossLink "Scene/worldBoundary:property"}}World-space boundary{{/crossLink}} of their
+             {{#crossLink "Scene"}}{{/crossLink}}.
+
+             Fires a {{#crossLink "Entity/collidable:event"}}{{/crossLink}} event on change.
+
+             @property collidable
+             @default true
+             @type Boolean
+             */
+            collidable: {
+
+                set: function (value) {
+
+                    value = value !== false;
+
+                    if (value === this._state.collidable) {
+                        return;
+                    }
+
+                    this._state.collidable = value;
+
+                    /**
+                     Fired whenever this Entity's {{#crossLink "Entity/collidable:property"}}{{/crossLink}} property changes.
+
+                     @event collidable
+                     @param value The property's new value
+                     */
+                    this.fire("collidable", this._state.collidable);
+                },
+
+                get: function () {
+                    return this._state.collidable;
+                }
+            },
+
+
+            /**
+             Indicates whether this Entity casts shadows.
+
+             Fires a {{#crossLink "Entity/castShadow:event"}}{{/crossLink}} event on change.
+
+             @property castShadow
+             @default true
+             @type Boolean
+             */
+            castShadow: {
+
+                set: function (value) {
+
+                    value = value !== false;
+
+                    if (value === this._state.castShadow) {
+                        return;
+                    }
+
+                    this._state.castShadow = value;
+
+                    this._renderer.imageDirty = true; // Re-render in next shadow map generation pass
+
+                    /**
+                     Fired whenever this Entity's {{#crossLink "Entity/castShadow:property"}}{{/crossLink}} property changes.
+
+                     @event castShadow
+                     @param value The property's new value
+                     */
+                    this.fire("castShadow", this._state.castShadow);
+                },
+
+                get: function () {
+                    return this._state.castShadow;
+                }
+            },
+
+            /**
+             Indicates whether this Entity receives shadows.
+
+             Fires a {{#crossLink "Entity/receiveShadow:event"}}{{/crossLink}} event on change.
+
+             @property receiveShadow
+             @default true
+             @type Boolean
+             */
+            receiveShadow: {
+
+                set: function (value) {
+
+                    value = value !== false;
+
+                    if (value === this._state.receiveShadow) {
+                        return;
+                    }
+
+                    this._state.receiveShadow = value;
+
+                    this._state.hash = value ? "/mod/rs;" : "/mod;";
+
+                    this.fire("dirty", this); // Now need to (re)compile shaders to include/exclude shadow mapping
+
+                    /**
+                     Fired whenever this Entity's {{#crossLink "Entity/receiveShadow:property"}}{{/crossLink}} property changes.
+
+                     @event receiveShadow
+                     @param value The property's new value
+                     */
+                    this.fire("receiveShadow", this._state.receiveShadow);
+                },
+
+                get: function () {
+                    return this._state.receiveShadow;
+                }
+            },
+
+            /**
+             Indicates whether this Entity is rendered with an outline.
+
+             The outline effect is configured via the Entity's {{#crossLink "Entity/outline:property"}}outline{{/crossLink}} component.
+
+             Fires a {{#crossLink "Entity/outlined:event"}}{{/crossLink}} event on change.
+
+             @property outlined
+             @default false
+             @type Boolean
+             */
+            outlined: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    if (value === this._state.outlined) {
+                        return;
+                    }
+
+                    this._state.outlined = value;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this Entity' {{#crossLink "Entity/outlined:property"}}{{/crossLink}} property changes.
+
+                     @event outlined
+                     @param value The property's new value
+                     */
+                    this.fire("outlined", this._state.outlined);
+                },
+
+                get: function () {
+                    return this._state.outlined;
+                }
+            },
+
+            /**
+             Indicates whether this Entity is rendered X-rayed (transparent).
+
+             The X-ray effect is configured via the Entity's {{#crossLink "Entity/xray:property"}}outline{{/crossLink}} component.
+
+             Fires a {{#crossLink "Entity/xrayed:event"}}{{/crossLink}} event on change.
+
+             @property xrayed
+             @default false
+             @type Boolean
+             */
+            xrayed: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    if (this._state.xrayed === value) {
+                        return;
+                    }
+
+                    this._state.xrayed = value;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this Entity's {{#crossLink "Entity/xrayed:property"}}{{/crossLink}} property changes.
+
+                     @event xrayed
+                     @param value The property's new value
+                     */
+                    this.fire("xrayed", this._state.xrayed);
+                },
+
+                get: function () {
+                    return this._state.xrayed;
+                }
+            },
+
+            /**
+             * Indicates this Entity's rendering order.
+             *
+             * This can be set on multiple transparent Entities, to make them render in a specific order   
+             * for correct alpha blending.
+             *
+             * Fires a {{#crossLink "Layer/layer:event"}}{{/crossLink}} event on change.
+             *
+             * @property layer
+             * @default 0
+             * @type Number
+             */
+            layer: {
+
+                set: function (value) {
+
+                    // TODO: Only accept rendering layer in range [0...MAX_layer]
+
+                    value = value || 0;
+
+                    value = Math.round(value);
+
+
+                    if (value === this._state.layer) {
+                        return;
+                    }
+
+                    this._state.layer = value;
+
+                    this._renderer.stateOrderDirty = true;
+
+                    /**
+                     * Fired whenever this Entity's  {{#crossLink "Layer/layer:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event layer
+                     * @param value The property's new value
+                     */
+                    this.fire("layer", this._state.layer);
+                },
+
+                get: function () {
+                    return this._state.layer;
+                }
+            },
+            
             /**
              * Local-space 3D boundary of this Entity.
              *
@@ -1202,11 +1509,7 @@
 
             attached.camera._compile();
             attached.clips._compile();
-            attached.visibility._compile();
-            attached.cull._compile();
-            attached.modes._compile();
             attached.geometry._compile();
-            attached.layer._compile();
             attached.lights._compile();
             attached.material._compile();
             this._renderer.modelTransform = attached.transform._state;
@@ -1214,6 +1517,9 @@
             attached.stationary._compile();
             attached.viewport._compile();
             attached.outline._compile();
+            attached.xray._compile();
+
+            this._renderer.modes = this._state;
 
             // (Re)build this Entity in the renderer; for each Entity in teh scene graph,
             // there is an "object" in the renderer, that has the same ID as the entity
@@ -1250,18 +1556,26 @@
             return {
                 camera: attached.camera.id,
                 clips: attached.clips.id,
-                visibility: attached.visibility.id,
-                cull: attached.cull.id,
-                modes: attached.modes.id,
                 geometry: attached.geometry.id,
-                layer: attached.layer.id,
                 lights: attached.lights.id,
                 material: attached.material.id,
                 transform: attached.transform.id,
                 billboard: attached.billboard.id,
                 stationary: attached.stationary.id,
                 viewport: attached.viewport.id,
-                outline: attached.outline.id
+                outline: attached.outline.id,
+                xray: attached.xray.id,
+
+                visible: this._state.visible,
+                culled: this._state.culled,
+                pickable: this._state.pickable,
+                clippable: this._state.clippable,
+                collidable: this._state.collidable,
+                castShadow: this._state.castShadow,
+                receiveShadow: this._state.receiveShadow,
+                outlined: this._state.outlined,
+                xrayed:  this._state.xrayed,
+                layer: this._state.layer
             };
         },
 

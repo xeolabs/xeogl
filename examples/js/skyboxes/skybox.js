@@ -166,22 +166,15 @@
                     emissiveMap: new xeogl.Texture(this, {
                         src: cfg.src,
                         flipY: true
-                    })
+                    }),
+                    backfaces: true // Show interior faces of our skybox geometry
                 }),
                 stationary: new xeogl.Stationary(this, {
                     active: true
                 }),
-                visibility: new xeogl.Visibility(this, {
-                    visible: false
-                }),
-                modes: new xeogl.Modes(this, {
-                    backfaces: true, // Show interior faces of our skybox geometry
-                    pickable: false, // Don't want to ba able to pick skybox
-
-                    // SkyBox does not contribute to the size of any enclosing boundaries
-                    // that might be calculated by xeogl, eg. like that returned by xeogl.Scene#worldBoundary
-                    collidable: false
-                })
+                visible: false,
+                pickable: false,
+                collidable: false
             });
 
             this.size = cfg.size; // Sets 'xyz' property on the Entity's Scale transform
@@ -234,7 +227,7 @@
 
                 set: function (value) {
 
-                    this._skyboxEntity.visibility.visible = value;
+                    this._skyboxEntity.visible = value;
 
                     /**
                      Fired whenever this Skybox's {{#crossLink "Skybox/active:property"}}{{/crossLink}} property changes.
@@ -242,11 +235,11 @@
                      @event active
                      @param value {Boolean} The property's new value
                      */
-                    this.fire("active", this._skyboxEntity.visibility.visible);
+                    this.fire("active", this._skyboxEntity.visible);
                 },
 
                 get: function () {
-                    return this._skyboxEntity.visibility.visible;
+                    return this._skyboxEntity.visible;
                 }
             }
         },

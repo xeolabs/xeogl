@@ -66,7 +66,6 @@
                                 <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
-                                <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
                                 <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -80,14 +79,12 @@
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
-                                <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/LookatHelper.html">LookatHelper</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
-                                <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
@@ -127,9 +124,9 @@
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
-                                <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
                                 <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/XRay.html">XRay</a></li>
                                 <li><a href="../classes/ZSpaceEffect.html">ZSpaceEffect</a></li>
                                 <li><a href="../classes/ZSpaceStylusControl.html">ZSpaceStylusControl</a></li>
                             </ul>
@@ -143,9 +140,9 @@
                                 <li><a href="..//modules/clipping.html">clipping</a></li>
                                 <li><a href="..//modules/configs.html">configs</a></li>
                                 <li><a href="..//modules/controls.html">controls</a></li>
-                                <li><a href="..//modules/culling.html">culling</a></li>
                                 <li><a href="..//modules/curves.html">curves</a></li>
                                 <li><a href="..//modules/effects.html">effects</a></li>
+                                <li><a href="..//modules/emphasis.html">emphasis</a></li>
                                 <li><a href="..//modules/entities.html">entities</a></li>
                                 <li><a href="..//modules/generation.html">generation</a></li>
                                 <li><a href="..//modules/geometry.html">geometry</a></li>
@@ -282,7 +279,7 @@ transform.matrix = xeogl.math.translationMat4v([0,0,-10]);
 "transform", to distinguish it from the IDs of any other components loaded from elements on the same glTF node.</p>
 <p><strong>Entities</strong></p>
 <p>Let&#39;s make our gear <a href="../classes/Entity.html" class="crosslink">Entity</a> invisible. This time we&#39;ll get the <a href="../classes/Entity.html" class="crosslink">Entity</a> itself, then update
-its <a href="../classes/Visibility.html" class="crosslink">Visibility</a> component:</p>
+its Visibility component:</p>
 <pre class="code prettyprint"><code class="lang-javascript">var gear53 = gearbox.scene.components["gearbox#n274017_gear_53.entity.0"];
 
 gear53.visibility.visible = false;
@@ -292,7 +289,7 @@ gear53.visibility.visible = false;
 before, the part before the hash is the ID of the GLTFModel, which is then followed by the ID of the glTF node, then "entity"
 to signify that this is an Entity ID, then finally an index to differentiate the Entity from those loaded from other
 meshes on the same glTF node.</p>
-<p>When we load multiple Entities from a glTF node, then they will share the same <a href="../classes/Transform.html" class="crosslink">Transform</a> and <a href="../classes/Visibility.html" class="crosslink">Visibility</a> components. This
+<p>When we load multiple Entities from a glTF node, then they will share the same <a href="../classes/Transform.html" class="crosslink">Transform</a> and Visibility components. This
 lets us update their transformation and visibility as a group, as if they were a composite entity that represents
 the glTF node.</p>
 <h2 id="examples">Examples</h2>
@@ -1819,7 +1816,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_models_glTFModel.js.html#l160"><code>examples&#x2F;js&#x2F;models&#x2F;glTFModel.js:160</code></a>
+                            <a href="../files/examples_js_models_glTFModel.js.html#l154"><code>examples&#x2F;js&#x2F;models&#x2F;glTFModel.js:154</code></a>
                             </p>
                     
                     
@@ -2105,7 +2102,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_models_glTFModel.js.html#l258"><code>examples&#x2F;js&#x2F;models&#x2F;glTFModel.js:258</code></a>
+                            <a href="../files/examples_js_models_glTFModel.js.html#l252"><code>examples&#x2F;js&#x2F;models&#x2F;glTFModel.js:252</code></a>
                             </p>
                     
                     
@@ -2191,7 +2188,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_models_glTFModel.js.html#l186"><code>examples&#x2F;js&#x2F;models&#x2F;glTFModel.js:186</code></a>
+                            <a href="../files/examples_js_models_glTFModel.js.html#l180"><code>examples&#x2F;js&#x2F;models&#x2F;glTFModel.js:180</code></a>
                             </p>
                     
                     
@@ -2285,7 +2282,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_models_glTFModel.js.html#l201"><code>examples&#x2F;js&#x2F;models&#x2F;glTFModel.js:201</code></a>
+                            <a href="../files/examples_js_models_glTFModel.js.html#l195"><code>examples&#x2F;js&#x2F;models&#x2F;glTFModel.js:195</code></a>
                             </p>
                     
                     

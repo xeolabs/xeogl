@@ -40,7 +40,10 @@
  | {{#crossLink "PhongMaterial/alphaFresnel:property"}}{{/crossLink}} | {{#crossLink "Fresnel"}}{{/crossLink}} |  | null |  | Fresnel term applied to {{#crossLink "PhongMaterial/alpha:property"}}{{/crossLink}}. |
  | {{#crossLink "PhongMaterial/lineWidth:property"}}{{/crossLink}} | Number | [0..100] | 1 |  | Line width in pixels. |
  | {{#crossLink "PhongMaterial/pointSize:property"}}{{/crossLink}} | Number | [0..100] | 1 |  | Point size in pixels. |
-
+ | {{#crossLink "PhongMaterial/alphaMode:property"}}{{/crossLink}} | String | "opaque", "blend", "mask" | "blend" |  | Alpha blend mode. |
+ | {{#crossLink "PhongMaterial/alphaCutoff:property"}}{{/crossLink}} | Number | [0..1] | 0.5 |  | Alpha cutoff value. |
+ | {{#crossLink "PhongMaterial/backfaces:property"}}{{/crossLink}} | Boolean |  | false |  | Whether to render {{#crossLink "Geometry"}}Geometry{{/crossLink}} backfaces. |
+ | {{#crossLink "PhongMaterial/backfaces:property"}}{{/crossLink}} | String | "ccw", "cw" | "ccw" |  | The winding order for {{#crossLink "Geometry"}}Geometry{{/crossLink}} frontfaces - "cw" for clockwise, or "ccw" for counter-clockwise. |
 
  ## Usage
 
@@ -126,8 +129,9 @@
  @param [cfg.reflectivityFresnel=undefined] {Fresnel} A reflectivity {{#crossLink "Fresnel"}}Fresnel{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
  @param [cfg.alphaMode="opaque"] {String} The alpha blend mode - accepted values are "opaque", "blend" and "mask".
  See the {{#crossLink "PhongMaterial/alphaMode:property"}}{{/crossLink}} property for more info.
- @param [cfg.alphaCutoff=0.5] {Number} The alpha cutoff value.
- See the {{#crossLink "PhongMaterial/alphaCutoff:property"}}{{/crossLink}} property for more info.
+ @param [cfg.alphaCutoff=0.5] {Number} The alpha cutoff value. See the {{#crossLink "PhongMaterial/alphaCutoff:property"}}{{/crossLink}} property for more info.
+ @param [cfg.backfaces=false] {Boolean} Whether to render {{#crossLink "Geometry"}}Geometry{{/crossLink}} backfaces.
+ @param [cfg.frontface="ccw"] {Boolean} The winding order for {{#crossLink "Geometry"}}Geometry{{/crossLink}} front faces - "cw" for clockwise, or "ccw" for counter-clockwise.
  */
 (function () {
 
@@ -157,6 +161,9 @@
 
                 lineWidth: 1.0,
                 pointSize: 1.0,
+
+                backfaces: null,
+                frontface: null, // Boolean for speed; true == "ccw", false == "cw"
 
                 hash: null
             });
@@ -238,6 +245,9 @@
 
             this.alphaMode = cfg.alphaMode;
             this.alphaCutoff = cfg.alphaCutoff;
+
+            this.backfaces = cfg.backfaces;
+            this.frontface = cfg.frontface;
         },
 
         _props: {
@@ -1148,6 +1158,86 @@
                 get: function () {
                     return this._state.alphaCutoff;
                 }
+            },
+
+            /**
+             Whether backfaces are visible on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+             The backfaces will belong to {{#crossLink "Geometry"}}{{/crossLink}} compoents that are also attached to
+             the {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+             Fires a {{#crossLink "SpecularMaterial/backfaces:event"}}{{/crossLink}} event on change.
+
+             @property backfaces
+             @default false
+             @type Boolean
+             */
+            backfaces: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    if (this._state.backfaces === value) {
+                        return;
+                    }
+
+                    this._state.backfaces = value;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/backfaces:property"}}{{/crossLink}} property changes.
+
+                     @event backfaces
+                     @param value The property's new value
+                     */
+                    this.fire("backfaces", this._state.backfaces);
+                },
+
+                get: function () {
+                    return this._state.backfaces;
+                }
+            },
+
+            /**
+             Indicates the winding direction of front faces on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+             The faces will belong to {{#crossLink "Geometry"}}{{/crossLink}} components that are also attached to
+             the {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+             Fires a {{#crossLink "SpecularMaterial/frontface:event"}}{{/crossLink}} event on change.
+
+             @property frontface
+             @default "ccw"
+             @type String
+             */
+            frontface: {
+
+                set: function (value) {
+
+                    value = value !== "cw";
+
+                    if (this._state.frontface === value) {
+                        return;
+                    }
+
+                    this._state.frontface = value;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/frontface:property"}}{{/crossLink}} property changes.
+
+                     @event frontface
+                     @param value The property's new value
+                     */
+                    this.fire("frontface", this._state.frontface ? "ccw" : "cw");
+                },
+
+                get: function () {
+                    return this._state.frontface ? "ccw" : "cw";
+                }
             }
         },
 
@@ -1279,7 +1369,11 @@
                 ambient: vecToArray(this._state.ambient),
                 diffuse: vecToArray(this._state.diffuse),
                 specular: vecToArray(this._state.specular),
-                emissive: vecToArray(this._state.emissive)
+                emissive: vecToArray(this._state.emissive),
+                alphaMode: this.alphaMode,
+                alphaCutoff: this._state.alphaCutoff,
+                backfaces: this._state.backfaces,
+                frontface: this.frontface // Save string value
             };
 
             if (this._state.alpha !== 1.0) {
@@ -1359,9 +1453,6 @@
             if (components.reflectivityFresnel) {
                 json.reflectivityFresnel = components.reflectivityFresnel.id;
             }
-
-            json.alphaMode = this.alphaMode;
-            json.alphaCutoff = this._state.alphaCutoff;
 
             return json;
         },

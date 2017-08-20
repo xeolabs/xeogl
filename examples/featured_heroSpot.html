@@ -106,9 +106,6 @@
         modes: new xeogl.Modes({
             transparent: true
         }),
-        XXvisibility: {
-            visible: false
-        },
         lights: lights,
         layer: new xeogl.Layer({
             priority: 2
@@ -150,9 +147,7 @@
         layer: new xeogl.Layer({
             priority: 1
         }),
-        visibility: new xeogl.Visibility({
-            visible: true
-        })
+        visible: true
     });
 
     var solidBox = new xeogl.Entity({
@@ -195,9 +190,7 @@
         layer: new xeogl.Layer({
             priority: 1
         }),
-        visibility: new xeogl.Visibility({
-            visible: true
-        })
+        visible: true
     });
 
     var view = xeogl.scene.camera.view;

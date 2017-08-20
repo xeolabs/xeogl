@@ -95,13 +95,12 @@
 
  **Entities**
 
- Let's make our gear {{#crossLink "Entity"}}{{/crossLink}} invisible. This time we'll get the {{#crossLink "Entity"}}{{/crossLink}} itself, then update
- its {{#crossLink "Visibility"}}{{/crossLink}} component:
+ Let's make our gear {{#crossLink "Entity"}}{{/crossLink}} invisible:
 
  ````javascript
  var gear53 = gearbox.scene.components["gearbox#n274017_gear_53.entity.0"];
 
- gear53.visibility.visible = false;
+ gear53.visible = false;
  ````
 
  Note the format of the {{#crossLink "Entity"}}{{/crossLink}}'s ID: ````<GLTFModel ID>#<glTF node ID>.entity.<glTF mesh index>````
@@ -110,11 +109,6 @@
  before, the part before the hash is the ID of the GLTFModel, which is then followed by the ID of the glTF node, then "entity"
  to signify that this is an Entity ID, then finally an index to differentiate the Entity from those loaded from other
  meshes on the same glTF node.
-
- When we load multiple Entities from a glTF node, then they will share the same {{#crossLink "Transform"}}{{/crossLink}} and {{#crossLink "Visibility"}}{{/crossLink}} components. This
- lets us update their transformation and visibility as a group, as if they were a composite entity that represents
- the glTF node.
-
 
  ## Examples
 
@@ -599,6 +593,8 @@
                 cfg.emissive = emissiveFactor;
             }
 
+            cfg.backfaces = !!materialInfo.doubleSided;
+
             var alphaMode = materialInfo.alphaMode;
             switch (alphaMode) {
                 case "OPAQUE":
@@ -815,7 +811,6 @@
                 var geometryCfg;
                 var meshCfg;
                 var geometry;
-                var modes;
 
                 for (var i = 0, len = primitivesInfo.length; i < len; i++) {
 
@@ -867,16 +862,11 @@
                     ctx.model.add(geometry);
                     meshCfg.geometry = geometry;
 
-                    modes = new xeogl.Modes(ctx.model);
-                    ctx.model.add(modes);
-                    meshCfg.modes = modes;
-
                     materialIndex = primitiveInfo.material;
                     if (materialIndex !== null && materialIndex !== undefined) {
                         materialInfo = json.materials[materialIndex];
                         if (materialInfo) {
                             meshCfg.material = materialInfo._material;
-                            modes.backfaces = !!materialInfo.doubleSided;
                         }
                     }
 
@@ -961,12 +951,6 @@
 
                 if (meshInfo) {
 
-                    var visibility = new xeogl.Visibility(model);
-                    model.add(visibility);
-
-                    var cull = new xeogl.Cull(model);
-                    model.add(cull);
-
                     var meshes = meshInfo._mesh;
                     var mesh;
                     var entityId;
@@ -989,9 +973,6 @@
                             material: mesh.material,
                             geometry: mesh.geometry,
                             transform: transform,
-                            visibility: visibility,
-                            cull: cull,
-                            modes: mesh.modes,
 
                             // Indicates that this Entity is freshly loaded -  increments the xeogl.Spinner#processes
                             // count on the Scene Canvas, which will decrement again as soon as Entity is compiled

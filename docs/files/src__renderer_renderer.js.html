@@ -66,7 +66,6 @@
                                 <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
-                                <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
                                 <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -80,14 +79,12 @@
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
-                                <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/LookatHelper.html">LookatHelper</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
-                                <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
@@ -127,9 +124,9 @@
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
-                                <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
                                 <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/XRay.html">XRay</a></li>
                                 <li><a href="../classes/ZSpaceEffect.html">ZSpaceEffect</a></li>
                                 <li><a href="../classes/ZSpaceStylusControl.html">ZSpaceStylusControl</a></li>
                             </ul>
@@ -143,9 +140,9 @@
                                 <li><a href="..//modules/clipping.html">clipping</a></li>
                                 <li><a href="..//modules/configs.html">configs</a></li>
                                 <li><a href="..//modules/controls.html">controls</a></li>
-                                <li><a href="..//modules/culling.html">culling</a></li>
                                 <li><a href="..//modules/curves.html">curves</a></li>
                                 <li><a href="..//modules/effects.html">effects</a></li>
+                                <li><a href="..//modules/emphasis.html">emphasis</a></li>
                                 <li><a href="..//modules/entities.html">entities</a></li>
                                 <li><a href="..//modules/generation.html">generation</a></li>
                                 <li><a href="..//modules/geometry.html">geometry</a></li>
@@ -277,10 +274,6 @@
 
         // Render states 
 
-        this.visibility = null;
-        this.cull = null;
-        this.modes = null;
-        this.layer = null;
         this.lights = null;
         this.material = null;
         this.modelTransform = null;
@@ -292,6 +285,8 @@
         this.geometry = null;
         this.viewport = null;
         this.outline = null;
+        this.xray = null;
+        this.modes = null;
 
         // Dirty flags 
 
@@ -332,17 +327,15 @@
             object.hash = &quot;&quot;;
         }
 
-        object.layer = this.layer;
         object.material = this.material;
         object.geometry = this.geometry;
-        object.visibility = this.visibility;
-        object.cull = this.cull;
-        object.modes = this.modes;
         object.billboard = this.billboard;
         object.stationary = this.stationary;
         object.viewport = this.viewport;
         object.lights = this.lights;
         object.outline = this.outline;
+        object.xray = this.xray;
+        object.modes = this.modes;
 
         // Build hash of the object&#x27;s state configuration. This is used
         // to hash the object&#x27;s shader so that it may be reused by other
@@ -353,7 +346,6 @@
             this.clips.hash,
             this.material.hash,
             this.lights.hash,
-            this.modes.hash,
             this.billboard.hash,
             this.stationary.hash
         ]).join(&quot;;&quot;);
@@ -390,12 +382,12 @@
         this._setChunk(object, 1, &quot;modelTransform&quot;, this.modelTransform);
         this._setChunk(object, 2, &quot;viewTransform&quot;, this.viewTransform);
         this._setChunk(object, 3, &quot;projTransform&quot;, this.projTransform);
-        this._setChunk(object, 4, &quot;modes&quot;, this.modes);
-        this._setChunk(object, 5, &quot;lights&quot;, this.lights);
-        this._setChunk(object, 6, this.material.type, this.material); // Supports different material systems
-        this._setChunk(object, 7, &quot;clips&quot;, this.clips);
-        this._setChunk(object, 8, &quot;viewport&quot;, this.viewport);
-        this._setChunk(object, 9, &quot;outline&quot;, this.outline);
+        this._setChunk(object, 4, &quot;lights&quot;, this.lights);
+        this._setChunk(object, 5, this.material.type, this.material); // Supports different material systems
+        this._setChunk(object, 6, &quot;clips&quot;, this.clips);
+        this._setChunk(object, 7, &quot;viewport&quot;, this.viewport);
+        this._setChunk(object, 8, &quot;outline&quot;, this.outline);
+        this._setChunk(object, 9, &quot;xray&quot;, this.xray);
         this._setChunk(object, 10, &quot;geometry&quot;, this.geometry);
         this._setChunk(object, 11, &quot;draw&quot;, this.geometry, true); // Must be last
 
@@ -533,7 +525,7 @@
                 object.sortKey = -1;
             } else {
                 object.sortKey =
-                    +((object.layer.priority + 1) * 10000000000000)
+                    +((object.modes.layer + 1) * 10000000000000)
                     + ((object.program.id + 1) * 100000000)
                     + ((object.material.id + 1) * 10000)
                     + object.geometry.id;
@@ -560,7 +552,7 @@
         this._shadowObjectLists = {}; // TODO: Optimize for GC
         for (i = 0, len = this._objectListLen; i &lt; len; i++) {
             object = this._objectList[i];
-            if (!object.compiled || !object.modes.castShadow || object.visibility.visible) {
+            if (!object.compiled || !object.modes.castShadow || object.modes.visible) {
                 continue;
             }
             lights = object.lights.lights;
@@ -661,7 +653,7 @@
 
             for (i = 0, len = objects.length; i &lt; len; i++) {
                 object = objects[i];
-                if (!object.compiled || !object.visibility.visible) {
+                if (!object.compiled || !object.modes.visible) {
                     continue; // For now, culled objects still cast shadows
                 }
                 drawObjectShadow(frameCtx, object);
@@ -783,14 +775,14 @@
 
             for (i = 0, len = this._objectListLen; i &lt; len; i++) {
                 object = this._objectList[i];
-                if (!object.compiled || object.cull.culled === true || object.visibility.visible === false) {
+                if (!object.compiled || object.modes.culled === true || object.modes.visible === false) {
                     continue;
                 }
-                if (object.modes.transparent) {
+                if (object.material.alphaMode === 2 /* blend */  || object.modes.xray) {
                     transparentObjects[numTransparentObjects++] = object;
                     continue;
                 }
-                if (object.modes.outline) {
+                if (object.modes.outlined) {
                     outlinedObjects[numOutlinedObjects++] = object;
                     continue;
                 }
@@ -840,6 +832,7 @@
                 gl.depthMask(false);
                 gl.blendEquation(gl.FUNC_ADD);
                 gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+                //gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
                 gl.colorMask(true, true, true, true);
 
@@ -849,7 +842,7 @@
 
                 for (i = 0; i &lt; numTransparentObjects; i++) {
                     object = transparentObjects[i];
-                    if (object.modes.outline) {
+                    if (object.modes.outlined) {
                         outlinedObjects[numOutlinedObjects++] = object; // Build outlined list
                         continue;
                     }
@@ -871,8 +864,7 @@
             frameStats.bindTexture = frameCtx.bindTexture;
             frameStats.bindArray = frameCtx.bindArray;
 
-            var numTextureUnits = gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
-
+            var numTextureUnits = xeogl.WEBGL_INFO.MAX_TEXTURE_IMAGE_UNITS;
             for (var ii = 0; ii &lt; numTextureUnits; ii++) {
                 gl.activeTexture(gl.TEXTURE0 + ii);
                 gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
@@ -1043,7 +1035,7 @@
 
             for (i = 0, len = this._objectListLen; i &lt; len; i++) {
                 object = this._objectList[i];
-                if (!object.compiled || object.cull.culled === true || object.visibility.visible === false || object.modes.pickable === false) {
+                if (!object.compiled || object.modes.culled === true || object.modes.visible === false || object.modes.pickable === false) {
                     continue;
                 }
                 this._objectPickList[this._objectPickListLen++] = object;

@@ -56,16 +56,16 @@
             material: new xeogl.PhongMaterial({emissive: [1, 0, 0], diffuse: [0, 0, 0]}),
             transform: new xeogl.Translate(),
             modes: new xeogl.Modes({pickable: false}),
-            visibility: new xeogl.Visibility({visible: false})
+            visible: false
         });
 
         this.show = function (hit) {
             entity.transform.xyz = hit.worldPos;
-            entity.visibility.visible = true;
+            entity.visible = true;
         };
 
         this.hide = function () {
-            entity.visibility.visible = false;
+            entity.visible = false;
         };
     })();
 

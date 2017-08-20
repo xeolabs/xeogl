@@ -203,9 +203,7 @@
             emissive: [0.4, 1, 0.4],
             lineWidth: 6
         },
-        visibility: {
-            visible: false
-        },
+        visible: false,
         modes: {
             pickable: false, // Can't be picked
             collidable: false // Does not contribute to overall scene boundary
@@ -284,10 +282,10 @@
                     wrapS: "repeat",
                     wrapT: "repeat",
                     scale: [1, 1]
-                }
+                },
+                backfaces: false // Don't show backfaces, so that if camera gets buried in a box we can still see out
             },
             modes: {
-                backfaces: false, // Don't show backfaces, so that if camera gets buried in a box we can still see out
                 pickable: false, // Can't be picked
                 collidable: false // Does not contribute to overall scene boundary
             }
@@ -314,10 +312,10 @@
                     wrapS: "repeat",
                     wrapT: "repeat",
                     scale: [30, 30]
-                }
+                },
+                backfaces: true // Show backfaces
             },
             modes: {
-                backfaces: true, // Show backfaces
                 pickable: false, // Can't be picked
                 collidable: false // Does not contribute to overall scene boundary
             }

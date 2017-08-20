@@ -231,7 +231,7 @@
                     material.diffuse = JSToTyped(self["diffuse"]);
                     material.emissive = JSToTyped(self["emissive"]);
                     material.alpha = self["alpha"];
-                    entity.modes.transparent = (material.alpha < 1);
+                    material.alphaMode = (material.alpha < 1) ? "blend" : "opaque";
 
                     if (self["lightMap"] !== !!lights.lightMap) {
                         lights.lightMap = self["lightMap"] ? lightMap : null;

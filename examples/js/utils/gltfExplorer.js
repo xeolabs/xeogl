@@ -69,6 +69,7 @@ var gltfExplorer = function (menuId, files) {
                 cameraFlight.flyTo();
                 if (lastEntity) {
                     lastEntity.material.alphaMode = "blend";
+                    lastEntity.material.alpha = 0.4;
                     lastEntity.modes.outline = false;
                     lastEntity = null;
                 }
@@ -81,10 +82,12 @@ var gltfExplorer = function (menuId, files) {
 
                 if (lastEntity) {
                     lastEntity.material.alphaMode = "blend";
+                    lastEntity.material.alpha = 0.4;
                     lastEntity.modes.outline = false;
                 }
 
                 entity.material.alphaMode = "opaque";
+                entity.material.alpha = 1.0;
                 entity.modes.outline = true;
 
                 cameraFlight.flyTo({
@@ -128,29 +131,10 @@ var gltfExplorer = function (menuId, files) {
                 entity = entities[entityId];
 
                 entity.material = entity.material.clone();
-
-                //switch (entity.material.type) {
-                //    case "xeogl.PhongMaterial":
-                //        entity.material.diffuse = [0.5, 0.5, 0.5];
-                //        break;
-                //
-                //    case "xeogl.SpecularMaterial":
-                //        break;
-                //
-                //    case "xeogl.MetallicMaterial":
-                //        entity.material.baseColor = [0.5, 0.5, 0.5];
-                //        break;
-                //}
                 entity.material.alpha = 0.5;
-
-                entity.modes = entity.modes.clone();
                 entity.material.alphaMode = "blend";
 
-                // Add the Material and Modes to the GLTFModel
-                // so that they get destroyed automatically
-
                 model.add(entity.material);
-                model.add(entity.modes);
 
                 html.push("<a href='javascript:flyTo(\"" + entity.id + "\")'>" + (entity.meta.name || ("entity." + i++)) + "</a><br>")
             }

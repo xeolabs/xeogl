@@ -1,5 +1,5 @@
 /**
- A **Outline** renders an outline around attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **XRay** renders attached an X-ray view of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Overview
 
@@ -9,52 +9,48 @@
 
  ````javascript
 
- var outline = new xeogl.Outline({
+ var xray = new xeogl.XRay({
     thickness: 15,      // Default
     color: [1,0,0]      // Default
  });
 
  new xeogl.Entity({
      geometry: new xeogl.TorusGeometry(),
-     outline: outline,
-     modes: new xeogl.Modes({
-        outline: false  // Hide the outline (default)
-     });
+     xray: xray,
+     xrayed: false
  });
 
  new xeogl.Entity({
      geometry: new xeogl.BoxGeometry(),
-     outline: outline,
-     modes: new xeogl.Modes({
-        outline: true  // Show the outline
-     });
+     xray: xray,
+     xrayed: true
  });
  ````
 
- @class Outline
+ @class XRay
  @module xeogl
- @submodule outline
+ @submodule emphasis
  @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this Outline within the
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this XRay within the
  default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} Outline configuration
+ @param [cfg] {*} XRay configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Outline.
- @param [cfg.thickness=15] {Number} Thickness of the outline in pixels.
- @param [cfg.color=[1,1,0]] {Float32Array} The RGB outline color.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this XRay.
+ @param [cfg.thickness=15] {Number} Thickness of the XRay in pixels.
+ @param [cfg.color=[1,1,0]] {Float32Array} The RGB XRay color.
  @extends Component
  */
 (function () {
 
     "use strict";
 
-    xeogl.Outline = xeogl.Component.extend({
+    xeogl.XRay = xeogl.Component.extend({
 
-        type: "xeogl.Outline",
+        type: "xeogl.XRay",
 
         _init: function (cfg) {
 
-            this._state = new xeogl.renderer.Outline({
+            this._state = new xeogl.renderer.XRay({
                 thickness: 15,
                 color: xeogl.math.vec3([1.0, 1.0, 0.0])
             });
@@ -66,9 +62,9 @@
         _props: {
 
             /**
-             * The Outline's thickness in pixels.
+             * The XRay's thickness in pixels.
              *
-             * Fires a {{#crossLink "Outline/thickness:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "XRay/thickness:event"}}{{/crossLink}} event on change.
              *
              * @property thickness
              * @default 15
@@ -94,7 +90,7 @@
                     this._renderer.imageDirty = true;
 
                     /**
-                     * Fired whenever this Outline's  {{#crossLink "Outline/thickness:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this XRay's  {{#crossLink "XRay/thickness:property"}}{{/crossLink}} property changes.
                      *
                      * @event thickness
                      * @param value The property's new value
@@ -108,9 +104,9 @@
             },
 
             /**
-             The Outline's RGB color.
+             The XRay's RGB color.
 
-             Fires a {{#crossLink "Outline/color:event"}}{{/crossLink}} event on change.
+             Fires a {{#crossLink "XRay/color:event"}}{{/crossLink}} event on change.
 
              @property color
              @default [1.0, 1.0, 0.0]
@@ -143,7 +139,7 @@
                     this._renderer.imageDirty = true;
 
                     /**
-                     * Fired whenever this Outline's {{#crossLink "Outline/color:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this XRay's {{#crossLink "XRay/color:property"}}{{/crossLink}} property changes.
                      *
                      * @event color
                      * @param value {Float32Array} The property's new value
@@ -158,7 +154,7 @@
         },
 
         _compile: function () {
-            this._renderer.outline = this._state;
+            this._renderer.xray = this._state;
         },
 
         _getJSON: function () {

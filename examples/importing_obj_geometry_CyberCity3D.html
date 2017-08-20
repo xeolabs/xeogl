@@ -67,11 +67,11 @@
             diffuse: [0, 0, 0],
             specular: [.3, .3, .3],
             shininess: 150,
-            alpha: 0.6
+            alpha: 0.6,
+            alphaMode: "blend",
+            backfaces: true
         }),
         modes: new xeogl.Modes({
-            backfaces: true,
-            transparent: true,
             collidable: false   // Don't include in scene boundary calculation
         }),
         transform: new xeogl.Translate({

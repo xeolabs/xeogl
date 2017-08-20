@@ -81,13 +81,11 @@
         material: new xeogl.PhongMaterial({
             diffuseMap: new xeogl.Texture({
                 src: "textures/diffuse/uvGrid2.jpg"
-            })
+            }),
+            backfaces: true
         }),
         transform: new xeogl.Translate({
             xyz: [0, -2.1, 0]
-        }),
-        modes: new xeogl.Modes({
-            backfaces: true
         }),
         lights: lights
     });

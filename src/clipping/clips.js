@@ -16,9 +16,7 @@
  * Each {{#crossLink "Clip"}}Clip{{/crossLink}} is has a {{#crossLink "Clip/mode:property"}}{{/crossLink}}, which indicates whether it is disabled ("disabled"), discarding fragments that fall on the origin-side of the plane ("inside"), or clipping fragments that fall on the other side of the plane from the origin ("outside").
  * You can update each {{#crossLink "Clip"}}Clip{{/crossLink}}'s {{#crossLink "Clip/mode:property"}}{{/crossLink}} to
  activate or deactivate it, or to switch which side it discards fragments from.
- * Clipping may also be enabled or disabled for specific {{#crossLink "Entity"}}Entities{{/crossLink}}
- via the {{#crossLink "Modes/clipping:property"}}{{/crossLink}} flag on {{#crossLink "Modes"}}Modes{{/crossLink}} components
- attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ * Clipping may also be enabled or disabled for specific {{#crossLink "Entity"}}Entities{{/crossLink}} via their {{#crossLink "Entity/clippable:property"}}{{/crossLink}} properties.
 
  <img src="../../../assets/images/Clips.png"></img>
 

@@ -26,7 +26,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "Configs",
         "CubeTexture",
         "CubicBezierCurve",
-        "Cull",
         "Curve",
         "CylinderGeometry",
         "DirLight",
@@ -40,14 +39,12 @@ YUI.add("yuidoc-meta", function(Y) {
         "HeightmapGeometry",
         "Input",
         "LabelHelper",
-        "Layer",
         "Lights",
         "Lookat",
         "LookatHelper",
         "Material",
         "MetallicMaterial",
         "Model",
-        "Modes",
         "Nintendo3DSGeometry",
         "OBBGeometry",
         "OBJGeometry",
@@ -87,7 +84,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "Translate",
         "VectorTextGeometry",
         "Viewport",
-        "Visibility",
+        "XRay",
         "ZSpaceEffect",
         "ZSpaceStylusControl",
         "xeogl",
@@ -102,9 +99,9 @@ YUI.add("yuidoc-meta", function(Y) {
         "clipping",
         "configs",
         "controls",
-        "culling",
         "curves",
         "effects",
+        "emphasis",
         "entities",
         "generation",
         "geometry",
@@ -166,11 +163,6 @@ YUI.add("yuidoc-meta", function(Y) {
             "description": "Components for controlling things with user input."
         },
         {
-            "displayName": "culling",
-            "name": "culling",
-            "description": "Components for controlling the visibility of Entities."
-        },
-        {
             "displayName": "curves",
             "name": "curves",
             "description": "Components for defining 3D curves."
@@ -179,6 +171,11 @@ YUI.add("yuidoc-meta", function(Y) {
             "displayName": "effects",
             "name": "effects",
             "description": "Components for viewing effects."
+        },
+        {
+            "displayName": "emphasis",
+            "name": "emphasis",
+            "description": "Emphasis effect components."
         },
         {
             "displayName": "entities",

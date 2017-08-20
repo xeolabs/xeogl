@@ -443,7 +443,8 @@
                           layer,
                           stage,
                           modes,
-                          transparent) {
+                          transparent,
+                          backfaces) {
 
             switch (node.type) {
 
@@ -613,14 +614,12 @@
                     modes = this.add({
                         type: "xeogl.Modes",
                         id: this._createID(node),
-                        transparent: node.transparent,
-                        backfaces: node.backfaces,
                         pickable: node.picking,
-                        clippable: node.clipping,
-                        frontface: node.frontface
+                        clippable: node.clipping
                     });
 
                     transparent = node.transparent;
+                    backfaces = node.backfaces;
 
                     break;
 
@@ -670,6 +669,8 @@
                         material.alphaFresnel = alphaFresnel;
 
                         material.alphaMode = transparent ? "blend" : "opaque";
+
+                        material.backfaces = !!backfaces;
                     }
 
                     this.add({
@@ -705,7 +706,8 @@
                         layer,
                         stage,
                         modes,
-                        transparent);
+                        transparent,
+                        backfaces);
                 }
             }
         },

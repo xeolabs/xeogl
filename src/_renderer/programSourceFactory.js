@@ -871,7 +871,7 @@
             }
 
             if (material.alpha !== undefined && material.alpha !== null) {
-                add("uniform float materialAlpha;");
+                add("uniform vec4 materialAlphaModeCutoff;"); // [alpha, alphaMode, alphaCutoff]
             }
 
             if (material.emissive) {
@@ -1153,7 +1153,7 @@
             }
 
             if (material.alpha !== undefined) {
-                add("float alpha = materialAlpha;");
+                add("float alpha = materialAlphaModeCutoff[0];");
             } else {
                 add("float alpha = 1.0;");
             }
@@ -1362,6 +1362,10 @@
                     }
                 }
 
+                add("if (materialAlphaModeCutoff[1] == 1.0 && alpha < materialAlphaModeCutoff[2]) {"); // ie. (alphaMode == "mask" && alpha < alphaCutoff)
+                add("   discard;"); // TODO: Discard earlier within this shader?
+                add("}");
+
                 // PREPARE INPUTS FOR SHADER FUNCTIONS
 
                 add("IncidentLight  light;");
@@ -1488,7 +1492,6 @@
 
                 add("vec3 outgoingLight = emissiveColor + ambientColor;");
             }
-
 
             add("gl_FragColor = vec4(outgoingLight, alpha);");
              //    add("gl_FragColor = LinearTosRGB(gl_FragColor);");  // Gamma correction

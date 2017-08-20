@@ -27,10 +27,8 @@
      material: new xeogl.PhongMaterial({
          diffuseMap: new xeogl.Texture({
              src: "textures/diffuse/UVCheckerMap11-1024.png"
-         })
-     }),
-     modes: new xeogl.Modes({
-         backfaces: true
+         }),
+           backfaces: true
      }),
      transform: new xeogl.Rotate({
          xyz: [0, 1, 0],

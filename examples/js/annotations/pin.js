@@ -216,7 +216,7 @@
                 pointSize: 5
             }),
             transform: {type: "xeogl.Translate"},
-            visibility: {type: "xeogl.Visibility"}
+            visible: true
         });
         this._testablePins[pinId] = pin;
     };
@@ -225,7 +225,7 @@
     VisibilityTester.prototype.setPinTestable = function (pinId, testable) {
         var pin = this._pins[pinId];
         if (pin) {
-            this._markers[pinId].visibility.visible = testable;
+            this._markers[pinId].visible = testable;
             testable ? this._testablePins[pinId] = pin : delete this._testablePins[pinId];
         }
     };

@@ -66,7 +66,6 @@
                                 <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
-                                <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
                                 <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -80,14 +79,12 @@
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
-                                <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/LookatHelper.html">LookatHelper</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
-                                <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
@@ -127,9 +124,9 @@
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
-                                <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
                                 <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/XRay.html">XRay</a></li>
                                 <li><a href="../classes/ZSpaceEffect.html">ZSpaceEffect</a></li>
                                 <li><a href="../classes/ZSpaceStylusControl.html">ZSpaceStylusControl</a></li>
                             </ul>
@@ -143,9 +140,9 @@
                                 <li><a href="..//modules/clipping.html">clipping</a></li>
                                 <li><a href="..//modules/configs.html">configs</a></li>
                                 <li><a href="..//modules/controls.html">controls</a></li>
-                                <li><a href="..//modules/culling.html">culling</a></li>
                                 <li><a href="..//modules/curves.html">curves</a></li>
                                 <li><a href="..//modules/effects.html">effects</a></li>
+                                <li><a href="..//modules/emphasis.html">emphasis</a></li>
                                 <li><a href="..//modules/entities.html">entities</a></li>
                                 <li><a href="..//modules/generation.html">generation</a></li>
                                 <li><a href="..//modules/geometry.html">geometry</a></li>
@@ -205,7 +202,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_materials_specularMaterial.new.js.html#l1"><code>src&#x2F;materials&#x2F;specularMaterial.new.js:1</code></a>
+            Defined in: <a href="../files/src_materials_specularMaterial.js.html#l1"><code>src&#x2F;materials&#x2F;specularMaterial.js:1</code></a>
         </div>
 
             Module: <a href="../modules/materials.html">materials</a><br>
@@ -374,6 +371,38 @@
 <td style="text-align:center">linear</td>
 <td style="text-align:center">Tangent-space normal map.</td>
 </tr>
+<tr>
+<td style="text-align:center"><a href="../classes/SpecularMaterial.html#property_alphaMode" class="crosslink">alphaMode</a></td>
+<td style="text-align:center">String</td>
+<td style="text-align:center">"opaque", "blend", "mask"</td>
+<td style="text-align:center">"blend"</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">Alpha blend mode.</td>
+</tr>
+<tr>
+<td style="text-align:center"><a href="../classes/SpecularMaterial.html#property_alphaCutoff" class="crosslink">alphaCutoff</a></td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">[0..1]</td>
+<td style="text-align:center">0.5</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">Alpha cutoff value.</td>
+</tr>
+<tr>
+<td style="text-align:center"><a href="../classes/SpecularMaterial.html#property_backfaces" class="crosslink">backfaces</a></td>
+<td style="text-align:center">Boolean</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">false</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">Whether to render <a href="../classes/Geometry.html" class="crosslink">Geometry</a> backfaces.</td>
+</tr>
+<tr>
+<td style="text-align:center"><a href="../classes/SpecularMaterial.html#property_backfaces" class="crosslink">backfaces</a></td>
+<td style="text-align:center">String</td>
+<td style="text-align:center">"ccw", "cw"</td>
+<td style="text-align:center">"ccw"</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">The winding order for <a href="../classes/Geometry.html" class="crosslink">Geometry</a> frontfaces - "cw" for clockwise, or "ccw" for counter-clockwise.</td>
+</tr>
 </tbody>
 </table>
 <h2 id="usage">Usage</h2>
@@ -523,7 +552,7 @@ if required.</p>
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_materials_specularMaterial.new.js.html#l1"><code>src&#x2F;materials&#x2F;specularMaterial.new.js:1</code></a>
+                <a href="../files/src_materials_specularMaterial.js.html#l1"><code>src&#x2F;materials&#x2F;specularMaterial.js:1</code></a>
                 </p>
         
         
@@ -735,8 +764,8 @@ if required.</p>
         A value of 0.0 indicates fully transparent, 1.0 is fully opaque. Multiplies by the <em>R</em> component of
         <a href="../classes/SpecularMaterial.html#property_alphaMap" class="crosslink">alphaMap</a> and the <em>A</em> component, if present, of
         <a href="../classes/SpecularMaterial.html#property_diffuseMap" class="crosslink">diffuseMap</a>. Attached <a href="../classes/Entity.html" class="crosslink">Entities</a>
-        will appear transparent only if they are also attached to <a href="../classes/Modes.html" class="crosslink">Modes</a> that
-        have <a href="../classes/Modes.html#property_transparent" class="crosslink">transparent</a> set to <strong>true</strong>.</p>
+        will appear transparent only if they are also attached to Modes that
+        have Modes/transparent:property set to <strong>true</strong>.</p>
         
                                         </div>
         
@@ -750,6 +779,52 @@ if required.</p>
                                             <p>RGB <a href="../classes/Texture.html" class="crosslink">Texture</a> containing this SpecularMaterial&#39;s
         alpha in its <em>R</em> component. The <em>R</em> component multiplies by the <a href="../classes/SpecularMaterial.html#property_alpha" class="crosslink">alpha</a> property. Must
         be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this SpecularMaterial.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[alphaMode=&quot;opaque&quot;]</code>
+                                            <span class="type">String</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>The alpha blend mode - accepted values are "opaque", "blend" and "mask".
+        See the <a href="../classes/SpecularMaterial.html#property_alphaMode" class="crosslink">alphaMode</a> property for more info.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[alphaCutoff=0.5]</code>
+                                            <span class="type">Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>The alpha cutoff value.
+        See the <a href="../classes/SpecularMaterial.html#property_alphaCutoff" class="crosslink">alphaCutoff</a> property for more info.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[backfaces=false]</code>
+                                            <span class="type">Boolean</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Whether to render <a href="../classes/Geometry.html" class="crosslink">Geometry</a> backfaces.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[frontface=&quot;ccw&quot;]</code>
+                                            <span class="type">Boolean</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>The winding order for <a href="../classes/Geometry.html" class="crosslink">Geometry</a> front faces - "cw" for clockwise, or "ccw" for counter-clockwise.</p>
         
                                         </div>
         
@@ -833,10 +908,6 @@ if required.</p>
 
                             </li>
                             <li class="index-item property">
-                                <a href="#property_alpha">alpha</a>
-
-                            </li>
-                            <li class="index-item property">
                                 <a href="#property_alphaCutoff">alphaCutoff</a>
 
                             </li>
@@ -845,11 +916,11 @@ if required.</p>
 
                             </li>
                             <li class="index-item property">
-                                <a href="#property_alphaMap">alphaMap</a>
+                                <a href="#property_alphaMode">alphaMode</a>
 
                             </li>
                             <li class="index-item property">
-                                <a href="#property_alphaMode">alphaMode</a>
+                                <a href="#property_backfaces">backfaces</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -861,19 +932,7 @@ if required.</p>
 
                             </li>
                             <li class="index-item property">
-                                <a href="#property_diffuse">diffuse</a>
-
-                            </li>
-                            <li class="index-item property">
                                 <a href="#property_diffuseMap">diffuseMap</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_diffuseMap">diffuseMap</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_emissive">emissive</a>
 
                             </li>
                             <li class="index-item property">
@@ -885,19 +944,11 @@ if required.</p>
 
                             </li>
                             <li class="index-item property">
-                                <a href="#property_emissiveMap">emissiveMap</a>
+                                <a href="#property_frontface">frontface</a>
 
                             </li>
                             <li class="index-item property">
                                 <a href="#property_glossiness">glossiness</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_glossiness">glossiness</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_glossinessMap">glossinessMap</a>
 
                             </li>
                             <li class="index-item property">
@@ -925,14 +976,6 @@ if required.</p>
 
                             </li>
                             <li class="index-item property">
-                                <a href="#property_normalMap">normalMap</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_occlusionMap">occlusionMap</a>
-
-                            </li>
-                            <li class="index-item property">
                                 <a href="#property_occlusionMap">occlusionMap</a>
 
                             </li>
@@ -945,27 +988,11 @@ if required.</p>
 
                             </li>
                             <li class="index-item property">
-                                <a href="#property_specular">specular</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_specularF0">specularF0</a>
-
-                            </li>
-                            <li class="index-item property">
                                 <a href="#property_specularF0">specularF0</a>
 
                             </li>
                             <li class="index-item property">
                                 <a href="#property_specularGlossinessMap">specularGlossinessMap</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_specularGlossinessMap">specularGlossinessMap</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_specularMap">specularMap</a>
 
                             </li>
                             <li class="index-item property">
@@ -997,10 +1024,6 @@ if required.</p>
 
                             </li>
                             <li class="index-item event">
-                                <a href="#event_alpha">alpha</a>
-
-                            </li>
-                            <li class="index-item event">
                                 <a href="#event_alphaCutoff">alphaCutoff</a>
 
                             </li>
@@ -1009,11 +1032,11 @@ if required.</p>
 
                             </li>
                             <li class="index-item event">
-                                <a href="#event_alphaMap">alphaMap</a>
+                                <a href="#event_alphaMode">alphaMode</a>
 
                             </li>
                             <li class="index-item event">
-                                <a href="#event_alphaMode">alphaMode</a>
+                                <a href="#event_backfaces">backfaces</a>
 
                             </li>
                             <li class="index-item event inherited">
@@ -1025,19 +1048,7 @@ if required.</p>
 
                             </li>
                             <li class="index-item event">
-                                <a href="#event_diffuse">diffuse</a>
-
-                            </li>
-                            <li class="index-item event">
                                 <a href="#event_diffuseMap">diffuseMap</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_diffuseMap">diffuseMap</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_emissive">emissive</a>
 
                             </li>
                             <li class="index-item event">
@@ -1049,11 +1060,7 @@ if required.</p>
 
                             </li>
                             <li class="index-item event">
-                                <a href="#event_emissiveMap">emissiveMap</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_glossiness">glossiness</a>
+                                <a href="#event_frontface">frontface</a>
 
                             </li>
                             <li class="index-item event">
@@ -1065,19 +1072,7 @@ if required.</p>
 
                             </li>
                             <li class="index-item event">
-                                <a href="#event_glossinessMap">glossinessMap</a>
-
-                            </li>
-                            <li class="index-item event">
                                 <a href="#event_normalMap">normalMap</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_normalMap">normalMap</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_occlusionMap">occlusionMap</a>
 
                             </li>
                             <li class="index-item event">
@@ -1089,27 +1084,11 @@ if required.</p>
 
                             </li>
                             <li class="index-item event">
-                                <a href="#event_specular">specular</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_specularF0">specularF0</a>
-
-                            </li>
-                            <li class="index-item event">
                                 <a href="#event_specularF0">specularF0</a>
 
                             </li>
                             <li class="index-item event">
                                 <a href="#event_specularGlossinessMap">specularGlossinessMap</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_specularGlossinessMap">specularGlossinessMap</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_specularMap">specularMap</a>
 
                             </li>
                             <li class="index-item event">
@@ -1858,7 +1837,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.new.js.html#l734"><code>src&#x2F;materials&#x2F;specularMaterial.new.js:734</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l741"><code>src&#x2F;materials&#x2F;specularMaterial.js:741</code></a>
                             </p>
                     
                     
@@ -1870,40 +1849,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     <p>Multiplies by the <em>R</em> component of <a href="../classes/SpecularMaterial.html#property_alphaMap" class="crosslink">alphaMap</a> and
                     the <em>A</em> component, if present, of <a href="../classes/SpecularMaterial.html#property_diffuseMap" class="crosslink">diffuseMap</a>.</p>
                     <p>Attached <a href="../classes/Entity.html" class="crosslink">Entities</a> will appear transparent only if they are also attached
-                    to <a href="../classes/Modes.html" class="crosslink">Modes</a> that have <a href="../classes/Modes.html#property_transparent" class="crosslink">transparent</a>
-                    set to <strong>true</strong>.</p>
-                    <p>Fires an <a href="../classes/SpecularMaterial.html#event_alpha" class="crosslink">alpha</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> 1.0</p>
-                    
-                    
-                    </div>
-                    <div id="property_alpha" class="property item">
-                        <h3 class="name"><code>alpha</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l720"><code>src&#x2F;materials&#x2F;specularMaterial.js:720</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Factor in the range [0..1] indicating how transparent this SpecularMaterial is.</p>
-                    <p>A value of 0.0 is fully transparent, while 1.0 is fully opaque.</p>
-                    <p>Multiplies by the <em>R</em> component of <a href="../classes/SpecularMaterial.html#property_alphaMap" class="crosslink">alphaMap</a> and
-                    the <em>A</em> component, if present, of <a href="../classes/SpecularMaterial.html#property_diffuseMap" class="crosslink">diffuseMap</a>.</p>
-                    <p>Attached <a href="../classes/Entity.html" class="crosslink">Entities</a> will appear transparent only if they are also attached
-                    to <a href="../classes/Modes.html" class="crosslink">Modes</a> that have <a href="../classes/Modes.html#property_transparent" class="crosslink">transparent</a>
+                    to Modes that have Modes/transparent:property
                     set to <strong>true</strong>.</p>
                     <p>Fires an <a href="../classes/SpecularMaterial.html#event_alpha" class="crosslink">alpha</a> event on change.</p>
                     
@@ -1924,7 +1870,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.new.js.html#l910"><code>src&#x2F;materials&#x2F;specularMaterial.new.js:910</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l934"><code>src&#x2F;materials&#x2F;specularMaterial.js:934</code></a>
                             </p>
                     
                     
@@ -1958,36 +1904,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.new.js.html#l780"><code>src&#x2F;materials&#x2F;specularMaterial.new.js:780</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>RGB <a href="../classes/Texture.html" class="crosslink">Texture</a> with alpha in its <em>R</em> component.</p>
-                    <p>The <em>R</em> component multiplies by the <a href="../classes/SpecularMaterial.html#property_alpha" class="crosslink">alpha</a> property.</p>
-                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this SpecularMaterial.</p>
-                    <p>Fires an <a href="../classes/SpecularMaterial.html#event_alphaMap" class="crosslink">alphaMap</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> undefined</p>
-                    
-                    
-                    </div>
-                    <div id="property_alphaMap" class="property item">
-                        <h3 class="name"><code>alphaMap</code></h3>
-                        <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l766"><code>src&#x2F;materials&#x2F;specularMaterial.js:766</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l787"><code>src&#x2F;materials&#x2F;specularMaterial.js:787</code></a>
                             </p>
                     
                     
@@ -2016,7 +1933,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.new.js.html#l871"><code>src&#x2F;materials&#x2F;specularMaterial.new.js:871</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l878"><code>src&#x2F;materials&#x2F;specularMaterial.js:878</code></a>
                             </p>
                     
                     
@@ -2036,7 +1953,36 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         </div>
                     
-                            <p><strong>Default:</strong> &quot;blend&quot;</p>
+                            <p><strong>Default:</strong> &quot;opaque&quot;</p>
+                    
+                    
+                    </div>
+                    <div id="property_backfaces" class="property item">
+                        <h3 class="name"><code>backfaces</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_materials_specularMaterial.js.html#l979"><code>src&#x2F;materials&#x2F;specularMaterial.js:979</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Whether backfaces are visible on attached <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
+                    <p>The backfaces will belong to <a href="../classes/Geometry.html" class="crosslink">Geometry</a> compoents that are also attached to
+                    the <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
+                    <p>Fires a <a href="../classes/PhongMaterial.html#event_backfaces" class="crosslink">backfaces</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> false</p>
                     
                     
                     </div>
@@ -2076,35 +2022,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l326"><code>src&#x2F;materials&#x2F;specularMaterial.js:326</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>RGB diffuse color of this SpecularMaterial.</p>
-                    <p>Multiplies by the <em>RGB</em> components of <a href="../classes/SpecularMaterial.html#property_diffuseMap" class="crosslink">diffuseMap</a>.</p>
-                    <p>Fires a <a href="../classes/SpecularMaterial.html#event_diffuse" class="crosslink">diffuse</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> [1.0, 1.0, 1.0]</p>
-                    
-                    
-                    </div>
-                    <div id="property_diffuse" class="property item">
-                        <h3 class="name"><code>diffuse</code></h3>
-                        <span class="type">Float32Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_specularMaterial.new.js.html#l340"><code>src&#x2F;materials&#x2F;specularMaterial.new.js:340</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l347"><code>src&#x2F;materials&#x2F;specularMaterial.js:347</code></a>
                             </p>
                     
                     
@@ -2132,7 +2050,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l377"><code>src&#x2F;materials&#x2F;specularMaterial.js:377</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l398"><code>src&#x2F;materials&#x2F;specularMaterial.js:398</code></a>
                             </p>
                     
                     
@@ -2143,40 +2061,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     <p>The <em>RGB</em> components multiply by the <a href="../classes/SpecularMaterial.html#property_diffuse" class="crosslink">diffuse</a> property,
                     while the <em>A</em> component, if present, multiplies by the <a href="../classes/SpecularMaterial.html#property_alpha" class="crosslink">alpha</a> property.</p>
                     <p>Attached <a href="../classes/Entity.html" class="crosslink">Entities</a> will appear transparent only if they are also attached
-                    to <a href="../classes/Modes.html" class="crosslink">Modes</a> that have <a href="../classes/Modes.html#property_transparent" class="crosslink">transparent</a>
-                    set to <strong>true</strong>.</p>
-                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this SpecularMaterial.</p>
-                    <p>Fires a <a href="../classes/SpecularMaterial.html#event_diffuseMap" class="crosslink">diffuseMap</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> undefined</p>
-                    
-                    
-                    </div>
-                    <div id="property_diffuseMap" class="property item">
-                        <h3 class="name"><code>diffuseMap</code></h3>
-                        <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_specularMaterial.new.js.html#l391"><code>src&#x2F;materials&#x2F;specularMaterial.new.js:391</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>RGB <a href="../classes/Texture.html" class="crosslink">Texture</a> containing the diffuse color of this SpecularMaterial, with optional <em>A</em> component for alpha.</p>
-                    <p>The <em>RGB</em> components multiply by the <a href="../classes/SpecularMaterial.html#property_diffuse" class="crosslink">diffuse</a> property,
-                    while the <em>A</em> component, if present, multiplies by the <a href="../classes/SpecularMaterial.html#property_alpha" class="crosslink">alpha</a> property.</p>
-                    <p>Attached <a href="../classes/Entity.html" class="crosslink">Entities</a> will appear transparent only if they are also attached
-                    to <a href="../classes/Modes.html" class="crosslink">Modes</a> that have <a href="../classes/Modes.html#property_transparent" class="crosslink">transparent</a>
+                    to Modes that have Modes/transparent:property
                     set to <strong>true</strong>.</p>
                     <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this SpecularMaterial.</p>
                     <p>Fires a <a href="../classes/SpecularMaterial.html#event_diffuseMap" class="crosslink">diffuseMap</a> event on change.</p>
@@ -2198,35 +2083,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.new.js.html#l652"><code>src&#x2F;materials&#x2F;specularMaterial.new.js:652</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>RGB emissive color of this SpecularMaterial.</p>
-                    <p>Multiplies by <a href="../classes/SpecularMaterial.html#property_emissiveMap" class="crosslink">emissiveMap</a>.</p>
-                    <p>Fires a <a href="../classes/SpecularMaterial.html#event_emissive" class="crosslink">emissive</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> [0.0, 0.0, 0.0]</p>
-                    
-                    
-                    </div>
-                    <div id="property_emissive" class="property item">
-                        <h3 class="name"><code>emissive</code></h3>
-                        <span class="type">Float32Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l638"><code>src&#x2F;materials&#x2F;specularMaterial.js:638</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l659"><code>src&#x2F;materials&#x2F;specularMaterial.js:659</code></a>
                             </p>
                     
                     
@@ -2254,7 +2111,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.new.js.html#l703"><code>src&#x2F;materials&#x2F;specularMaterial.new.js:703</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l710"><code>src&#x2F;materials&#x2F;specularMaterial.js:710</code></a>
                             </p>
                     
                     
@@ -2272,9 +2129,9 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_emissiveMap" class="property item">
-                        <h3 class="name"><code>emissiveMap</code></h3>
-                        <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
+                    <div id="property_frontface" class="property item">
+                        <h3 class="name"><code>frontface</code></h3>
+                        <span class="type">String</span>
                     
                     
                     
@@ -2283,21 +2140,21 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l689"><code>src&#x2F;materials&#x2F;specularMaterial.js:689</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l1019"><code>src&#x2F;materials&#x2F;specularMaterial.js:1019</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>RGB texture containing the emissive color of this SpecularMaterial.</p>
-                    <p>Multiplies by the <a href="../classes/SpecularMaterial.html#property_emissive" class="crosslink">emissive</a> property.</p>
-                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this SpecularMaterial.</p>
-                    <p>Fires a <a href="../classes/SpecularMaterial.html#event_emissiveMap" class="crosslink">emissiveMap</a> event on change.</p>
+                            <p>Indicates the winding direction of front faces on attached <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
+                    <p>The faces will belong to <a href="../classes/Geometry.html" class="crosslink">Geometry</a> components that are also attached to
+                    the <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
+                    <p>Fires a <a href="../classes/SpecularMaterial.html#event_frontface" class="crosslink">frontface</a> event on change.</p>
                     
                         </div>
                     
-                            <p><strong>Default:</strong> undefined</p>
+                            <p><strong>Default:</strong> &quot;ccw&quot;</p>
                     
                     
                     </div>
@@ -2312,37 +2169,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l528"><code>src&#x2F;materials&#x2F;specularMaterial.js:528</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Factor in the range [0..1] indicating how glossy this SpecularMaterial is.</p>
-                    <p>0 is no glossiness, 1 is full glossiness.</p>
-                    <p>Multiplies by the <em>R</em> component of <a href="../classes/SpecularMaterial.html#property_glossinessMap" class="crosslink">glossinessMap</a>
-                    and the <em>A</em> component of <a href="../classes/SpecularMaterial.html#property_specularGlossinessMap" class="crosslink">specularGlossinessMap</a>.</p>
-                    <p>Fires a <a href="../classes/SpecularMaterial.html#event_glossiness" class="crosslink">glossiness</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> 1.0</p>
-                    
-                    
-                    </div>
-                    <div id="property_glossiness" class="property item">
-                        <h3 class="name"><code>glossiness</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_specularMaterial.new.js.html#l542"><code>src&#x2F;materials&#x2F;specularMaterial.new.js:542</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l549"><code>src&#x2F;materials&#x2F;specularMaterial.js:549</code></a>
                             </p>
                     
                     
@@ -2372,36 +2199,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.new.js.html#l584"><code>src&#x2F;materials&#x2F;specularMaterial.new.js:584</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>RGB texture containing this SpecularMaterial&#39;s glossiness in its <em>R</em> component.</p>
-                    <p>The <em>R</em> component multiplies by the <a href="../classes/SpecularMaterial.html#property_glossiness" class="crosslink">glossiness</a> property.</p>
-                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this SpecularMaterial.</p>
-                    <p>Fires a <a href="../classes/SpecularMaterial.html#event_glossinessMap" class="crosslink">glossinessMap</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> undefined</p>
-                    
-                    
-                    </div>
-                    <div id="property_glossinessMap" class="property item">
-                        <h3 class="name"><code>glossinessMap</code></h3>
-                        <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l570"><code>src&#x2F;materials&#x2F;specularMaterial.js:570</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l591"><code>src&#x2F;materials&#x2F;specularMaterial.js:591</code></a>
                             </p>
                     
                     
@@ -2532,35 +2330,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.new.js.html#l811"><code>src&#x2F;materials&#x2F;specularMaterial.new.js:811</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>RGB tangent-space normal <a href="../classes/Texture.html" class="crosslink">Texture</a> attached to this SpecularMaterial.</p>
-                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this SpecularMaterial.</p>
-                    <p>Fires a <a href="../classes/PhongMaterial.html#event_normalMap" class="crosslink">normalMap</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> undefined</p>
-                    
-                    
-                    </div>
-                    <div id="property_normalMap" class="property item">
-                        <h3 class="name"><code>normalMap</code></h3>
-                        <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l797"><code>src&#x2F;materials&#x2F;specularMaterial.js:797</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l818"><code>src&#x2F;materials&#x2F;specularMaterial.js:818</code></a>
                             </p>
                     
                     
@@ -2588,36 +2358,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.new.js.html#l840"><code>src&#x2F;materials&#x2F;specularMaterial.new.js:840</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>RGB ambient occlusion <a href="../classes/Texture.html" class="crosslink">Texture</a> attached to this SpecularMaterial.</p>
-                    <p>Within shaders, multiplies by the specular and diffuse light reflected by surfaces.</p>
-                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this SpecularMaterial.</p>
-                    <p>Fires a <a href="../classes/SpecularMaterial.html#event_occlusionMap" class="crosslink">occlusionMap</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> undefined</p>
-                    
-                    
-                    </div>
-                    <div id="property_occlusionMap" class="property item">
-                        <h3 class="name"><code>occlusionMap</code></h3>
-                        <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l826"><code>src&#x2F;materials&#x2F;specularMaterial.js:826</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l847"><code>src&#x2F;materials&#x2F;specularMaterial.js:847</code></a>
                             </p>
                     
                     
@@ -2672,36 +2413,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.new.js.html#l427"><code>src&#x2F;materials&#x2F;specularMaterial.new.js:427</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>RGB specular color of this SpecularMaterial.</p>
-                    <p>Multiplies by the <a href="../classes/SpecularMaterial.html#property_specularMap" class="crosslink">specularMap</a>
-                    and the <em>A</em> component of <a href="../classes/SpecularMaterial.html#property_specularGlossinessMap" class="crosslink">specularGlossinessMap</a>.</p>
-                    <p>Fires a <a href="../classes/SpecularMaterial.html#event_specular" class="crosslink">specular</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> [1.0, 1.0, 1.0]</p>
-                    
-                    
-                    </div>
-                    <div id="property_specular" class="property item">
-                        <h3 class="name"><code>specular</code></h3>
-                        <span class="type">Float32Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l413"><code>src&#x2F;materials&#x2F;specularMaterial.js:413</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l434"><code>src&#x2F;materials&#x2F;specularMaterial.js:434</code></a>
                             </p>
                     
                     
@@ -2730,34 +2442,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l601"><code>src&#x2F;materials&#x2F;specularMaterial.js:601</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Factor in the range [0..1] indicating amount of specular Fresnel.</p>
-                    <p>Fires a <a href="../classes/SpecularMaterial.html#event_specularF0" class="crosslink">specularF0</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> 0.0</p>
-                    
-                    
-                    </div>
-                    <div id="property_specularF0" class="property item">
-                        <h3 class="name"><code>specularF0</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_specularMaterial.new.js.html#l615"><code>src&#x2F;materials&#x2F;specularMaterial.new.js:615</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l622"><code>src&#x2F;materials&#x2F;specularMaterial.js:622</code></a>
                             </p>
                     
                     
@@ -2784,37 +2469,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.new.js.html#l510"><code>src&#x2F;materials&#x2F;specularMaterial.new.js:510</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>RGBA texture containing this SpecularMaterial&#39;s specular color in its <em>RGB</em> components and glossiness in its <em>A</em> component.</p>
-                    <p>The <em>RGB</em> components multiply by the <a href="../classes/SpecularMaterial.html#property_specular" class="crosslink">specular</a> property, while
-                    the <em>A</em> component multiplies by the <a href="../classes/SpecularMaterial.html#property_glossiness" class="crosslink">glossiness</a> property.</p>
-                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this SpecularMaterial.</p>
-                    <p>Fires a <a href="../classes/SpecularMaterial.html#event_specularGlossinessMap" class="crosslink">specularGlossinessMap</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> undefined</p>
-                    
-                    
-                    </div>
-                    <div id="property_specularGlossinessMap" class="property item">
-                        <h3 class="name"><code>specularGlossinessMap</code></h3>
-                        <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l496"><code>src&#x2F;materials&#x2F;specularMaterial.js:496</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l517"><code>src&#x2F;materials&#x2F;specularMaterial.js:517</code></a>
                             </p>
                     
                     
@@ -2844,36 +2499,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.new.js.html#l479"><code>src&#x2F;materials&#x2F;specularMaterial.new.js:479</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>RGB texture containing the specular color of this SpecularMaterial.</p>
-                    <p>Multiplies by the <a href="../classes/SpecularMaterial.html#property_specular" class="crosslink">specular</a> property.</p>
-                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this SpecularMaterial.</p>
-                    <p>Fires a <a href="../classes/SpecularMaterial.html#event_specularMap" class="crosslink">specularMap</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> undefined</p>
-                    
-                    
-                    </div>
-                    <div id="property_specularMap" class="property item">
-                        <h3 class="name"><code>specularMap</code></h3>
-                        <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l465"><code>src&#x2F;materials&#x2F;specularMaterial.js:465</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l486"><code>src&#x2F;materials&#x2F;specularMaterial.js:486</code></a>
                             </p>
                     
                     
@@ -2998,49 +2624,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.new.js.html#l766"><code>src&#x2F;materials&#x2F;specularMaterial.new.js:766</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this SpecularMaterial&#39;s <a href="../classes/SpecularMaterial.html#property_alpha" class="crosslink">alpha</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Number</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_alpha" class="events item">
-                        <h3 class="name"><code>alpha</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l752"><code>src&#x2F;materials&#x2F;specularMaterial.js:752</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l773"><code>src&#x2F;materials&#x2F;specularMaterial.js:773</code></a>
                             </p>
                     
                     
@@ -3082,7 +2666,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.new.js.html#l941"><code>src&#x2F;materials&#x2F;specularMaterial.new.js:941</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l965"><code>src&#x2F;materials&#x2F;specularMaterial.js:965</code></a>
                             </p>
                     
                     
@@ -3124,49 +2708,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.new.js.html#l797"><code>src&#x2F;materials&#x2F;specularMaterial.new.js:797</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this SpecularMaterial&#39;s <a href="../classes/SpecularMaterial.html#property_alphaMap" class="crosslink">alphaMap</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>Number The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_alphaMap" class="events item">
-                        <h3 class="name"><code>alphaMap</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l783"><code>src&#x2F;materials&#x2F;specularMaterial.js:783</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l804"><code>src&#x2F;materials&#x2F;specularMaterial.js:804</code></a>
                             </p>
                     
                     
@@ -3208,14 +2750,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.new.js.html#l897"><code>src&#x2F;materials&#x2F;specularMaterial.new.js:897</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l920"><code>src&#x2F;materials&#x2F;specularMaterial.js:920</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this SpecularMaterial&#39;s SpecularMaterial/look:property property changes.</p>
+                            <p>Fired whenever this MetallicMaterial&#39;s SpecularMaterial/look:property property changes.</p>
                     
                         </div>
                     
@@ -3226,6 +2768,48 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     <li class="param">
                                             <code class="param-name">value</code>
                                             <span class="type">Number</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_backfaces" class="events item">
+                        <h3 class="name"><code>backfaces</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_materials_specularMaterial.js.html#l1005"><code>src&#x2F;materials&#x2F;specularMaterial.js:1005</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this SpecularMaterial&#39;s <a href="../classes/SpecularMaterial.html#property_backfaces" class="crosslink">backfaces</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
                     
                     
                                         <div class="param-description">
@@ -3275,49 +2859,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l363"><code>src&#x2F;materials&#x2F;specularMaterial.js:363</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this SpecularMaterial&#39;s <a href="../classes/SpecularMaterial.html#property_diffuse" class="crosslink">diffuse</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Float32Array</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_diffuse" class="events item">
-                        <h3 class="name"><code>diffuse</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_specularMaterial.new.js.html#l377"><code>src&#x2F;materials&#x2F;specularMaterial.new.js:377</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l384"><code>src&#x2F;materials&#x2F;specularMaterial.js:384</code></a>
                             </p>
                     
                     
@@ -3359,49 +2901,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.new.js.html#l413"><code>src&#x2F;materials&#x2F;specularMaterial.new.js:413</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this SpecularMaterial&#39;s <a href="../classes/SpecularMaterial.html#property_diffuseMap" class="crosslink">diffuseMap</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>Number The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_diffuseMap" class="events item">
-                        <h3 class="name"><code>diffuseMap</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l399"><code>src&#x2F;materials&#x2F;specularMaterial.js:399</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l420"><code>src&#x2F;materials&#x2F;specularMaterial.js:420</code></a>
                             </p>
                     
                     
@@ -3443,49 +2943,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.new.js.html#l689"><code>src&#x2F;materials&#x2F;specularMaterial.new.js:689</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this SpecularMaterial&#39;s <a href="../classes/SpecularMaterial.html#property_emissive" class="crosslink">emissive</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Float32Array</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_emissive" class="events item">
-                        <h3 class="name"><code>emissive</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l675"><code>src&#x2F;materials&#x2F;specularMaterial.js:675</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l696"><code>src&#x2F;materials&#x2F;specularMaterial.js:696</code></a>
                             </p>
                     
                     
@@ -3527,7 +2985,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.new.js.html#l720"><code>src&#x2F;materials&#x2F;specularMaterial.new.js:720</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l727"><code>src&#x2F;materials&#x2F;specularMaterial.js:727</code></a>
                             </p>
                     
                     
@@ -3558,8 +3016,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_emissiveMap" class="events item">
-                        <h3 class="name"><code>emissiveMap</code></h3>
+                    <div id="event_frontface" class="events item">
+                        <h3 class="name"><code>frontface</code></h3>
                         <span class="type"></span>
                     
                     
@@ -3569,14 +3027,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l706"><code>src&#x2F;materials&#x2F;specularMaterial.js:706</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l1045"><code>src&#x2F;materials&#x2F;specularMaterial.js:1045</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this SpecularMaterial&#39;s <a href="../classes/SpecularMaterial.html#property_emissiveMap" class="crosslink">emissiveMap</a> property changes.</p>
+                            <p>Fired whenever this SpecularMaterial&#39;s <a href="../classes/SpecularMaterial.html#property_frontface" class="crosslink">frontface</a> property changes.</p>
                     
                         </div>
                     
@@ -3587,48 +3045,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     <li class="param">
                                             <code class="param-name">value</code>
                                             <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>Number The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_glossiness" class="events item">
-                        <h3 class="name"><code>glossiness</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l556"><code>src&#x2F;materials&#x2F;specularMaterial.js:556</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this SpecularMaterial&#39;s <a href="../classes/SpecularMaterial.html#property_glossiness" class="crosslink">glossiness</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Number</span>
                     
                     
                                         <div class="param-description">
@@ -3653,7 +3069,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.new.js.html#l570"><code>src&#x2F;materials&#x2F;specularMaterial.new.js:570</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l577"><code>src&#x2F;materials&#x2F;specularMaterial.js:577</code></a>
                             </p>
                     
                     
@@ -3695,49 +3111,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l587"><code>src&#x2F;materials&#x2F;specularMaterial.js:587</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this SpecularMaterial&#39;s <a href="../classes/SpecularMaterial.html#property_glossinessMap" class="crosslink">glossinessMap</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>Number The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_glossinessMap" class="events item">
-                        <h3 class="name"><code>glossinessMap</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_specularMaterial.new.js.html#l601"><code>src&#x2F;materials&#x2F;specularMaterial.new.js:601</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l608"><code>src&#x2F;materials&#x2F;specularMaterial.js:608</code></a>
                             </p>
                     
                     
@@ -3779,49 +3153,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l812"><code>src&#x2F;materials&#x2F;specularMaterial.js:812</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this PhongMaterial&#39;s <a href="../classes/PhongMaterial.html#property_normalMap" class="crosslink">normalMap</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>Number The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_normalMap" class="events item">
-                        <h3 class="name"><code>normalMap</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_specularMaterial.new.js.html#l826"><code>src&#x2F;materials&#x2F;specularMaterial.new.js:826</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l833"><code>src&#x2F;materials&#x2F;specularMaterial.js:833</code></a>
                             </p>
                     
                     
@@ -3863,49 +3195,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l843"><code>src&#x2F;materials&#x2F;specularMaterial.js:843</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this SpecularMaterial&#39;s <a href="../classes/SpecularMaterial.html#property_occlusionMap" class="crosslink">occlusionMap</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>Number The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_occlusionMap" class="events item">
-                        <h3 class="name"><code>occlusionMap</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_specularMaterial.new.js.html#l857"><code>src&#x2F;materials&#x2F;specularMaterial.new.js:857</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l864"><code>src&#x2F;materials&#x2F;specularMaterial.js:864</code></a>
                             </p>
                     
                     
@@ -3947,49 +3237,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.new.js.html#l465"><code>src&#x2F;materials&#x2F;specularMaterial.new.js:465</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this SpecularMaterial&#39;s <a href="../classes/SpecularMaterial.html#property_specular" class="crosslink">specular</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Float32Array</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_specular" class="events item">
-                        <h3 class="name"><code>specular</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l451"><code>src&#x2F;materials&#x2F;specularMaterial.js:451</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l472"><code>src&#x2F;materials&#x2F;specularMaterial.js:472</code></a>
                             </p>
                     
                     
@@ -4031,49 +3279,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l624"><code>src&#x2F;materials&#x2F;specularMaterial.js:624</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this SpecularMaterial&#39;s <a href="../classes/SpecularMaterial.html#property_specularF0" class="crosslink">specularF0</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Float32Array</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_specularF0" class="events item">
-                        <h3 class="name"><code>specularF0</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_specularMaterial.new.js.html#l638"><code>src&#x2F;materials&#x2F;specularMaterial.new.js:638</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l645"><code>src&#x2F;materials&#x2F;specularMaterial.js:645</code></a>
                             </p>
                     
                     
@@ -4115,49 +3321,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.new.js.html#l528"><code>src&#x2F;materials&#x2F;specularMaterial.new.js:528</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this SpecularMaterial&#39;s <a href="../classes/SpecularMaterial.html#property_specularGlossinessMap" class="crosslink">specularGlossinessMap</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>Number The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_specularGlossinessMap" class="events item">
-                        <h3 class="name"><code>specularGlossinessMap</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l514"><code>src&#x2F;materials&#x2F;specularMaterial.js:514</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l535"><code>src&#x2F;materials&#x2F;specularMaterial.js:535</code></a>
                             </p>
                     
                     
@@ -4199,49 +3363,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l482"><code>src&#x2F;materials&#x2F;specularMaterial.js:482</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this SpecularMaterial&#39;s <a href="../classes/SpecularMaterial.html#property_specularGlossinessMap" class="crosslink">specularGlossinessMap</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>Number The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_specularMap" class="events item">
-                        <h3 class="name"><code>specularMap</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_specularMaterial.new.js.html#l496"><code>src&#x2F;materials&#x2F;specularMaterial.new.js:496</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l503"><code>src&#x2F;materials&#x2F;specularMaterial.js:503</code></a>
                             </p>
                     
                     

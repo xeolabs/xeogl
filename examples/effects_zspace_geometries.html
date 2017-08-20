@@ -61,13 +61,11 @@
         new xeogl.Entity({
             geometry: geometry,
             material: new xeogl.PhongMaterial({
-                diffuseMap: diffuseMap
+                diffuseMap: diffuseMap,
+                backfaces: true
             }),
             transform: new xeogl.Transform({
                 matrix: matrix
-            }),
-            modes: new xeogl.Modes({
-                backfaces: true
             })
         });
     }

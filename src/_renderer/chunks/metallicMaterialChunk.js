@@ -17,7 +17,7 @@
             this._uRoughness = draw.getUniform("materialRoughness");
             this._uSpecularF0 = draw.getUniform("materialSpecularF0");
             this._uEmissive = draw.getUniform("materialEmissive");
-            this._uAlpha = draw.getUniform("materialAlpha");
+            this._uAlphaModeCutoff = draw.getUniform("materialAlphaModeCutoff");
 
             if (state.baseColorMap) {
                 this._uBaseColorMap = "baseColorMap";
@@ -88,8 +88,8 @@
                 this._uEmissive.setValue(state.emissive);
             }
 
-            if (this._uAlpha) {
-                this._uAlpha.setValue(state.alpha);
+            if (this._uAlphaModeCutoff) {
+                this._uAlphaModeCutoff.setValue([1.0 * state.alpha, state.alphaMode === 1 ? 1.0 : 0.0, state.alphaCutoff, 0]);
             }
 
             if (state.baseColorMap && state.baseColorMap.texture && this._uBaseColorMap) {
@@ -162,6 +162,83 @@
                 if (this._uNormalMapMatrix) {
                     this._uNormalMapMatrix.setValue(state.normalMap.matrix);
                 }
+            }
+        },
+
+        shadow: function (frameCtx) {
+
+            var state = this.state;
+            var gl = this.program.gl;
+
+            var backfaces = state.backfaces;
+            if (frameCtx.backfaces !== backfaces) {
+                if (backfaces) {
+                    gl.disable(gl.CULL_FACE);
+                } else {
+                    gl.enable(gl.CULL_FACE);
+                }
+                frameCtx.backfaces = backfaces;
+            }
+            var frontface = state.frontface;
+            if (frameCtx.frontface !== frontface) {
+                if (frontface) {
+                    gl.frontFace(gl.CCW);
+                } else {
+                    gl.frontFace(gl.CW);
+                }
+                frameCtx.frontface = frontface;
+            }
+        },
+
+        pickObject: function (frameCtx) {
+
+            var state = this.state;
+            var gl = this.program.gl;
+
+            var backfaces = state.backfaces;
+            if (frameCtx.backfaces !== backfaces) {
+                if (backfaces) {
+                    gl.disable(gl.CULL_FACE);
+                } else {
+                    gl.enable(gl.CULL_FACE);
+                }
+                frameCtx.backfaces = backfaces;
+            }
+
+            var frontface = state.frontface;
+            if (frameCtx.frontface !== frontface) {
+                if (frontface) {
+                    gl.frontFace(gl.CCW);
+                } else {
+                    gl.frontFace(gl.CW);
+                }
+                frameCtx.frontface = frontface;
+            }
+        },
+
+        pickPrimitive: function (frameCtx) {
+
+            var state = this.state;
+            var gl = this.program.gl;
+
+            var backfaces = state.backfaces;
+            if (frameCtx.backfaces !== backfaces) {
+                if (backfaces) {
+                    gl.disable(gl.CULL_FACE);
+                } else {
+                    gl.enable(gl.CULL_FACE);
+                }
+                frameCtx.backfaces = backfaces;
+            }
+
+            var frontface = state.frontface;
+            if (frameCtx.frontface !== frontface) {
+                if (frontface) {
+                    gl.frontFace(gl.CCW);
+                } else {
+                    gl.frontFace(gl.CW);
+                }
+                frameCtx.frontface = frontface;
             }
         }
     });

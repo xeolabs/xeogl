@@ -803,6 +803,7 @@
                         alpha = parseFloat(value);
                         if (alpha < 1) {
                             materialCfg.alpha = alpha;
+                            materialCfg.alphaMode = "blend";
                         }
                         break;
 
@@ -810,6 +811,7 @@
                         alpha = parseFloat(value);
                         if (alpha > 0) {
                             materialCfg.alpha = 1 - alpha;
+                            materialCfg.alphaMode = "blend";
                         }
                         break;
 
@@ -914,7 +916,8 @@
                 } else {
                     material = new xeogl.PhongMaterial(model, {
                         //emissive: [0.6, 0.6, 0.0],
-                        diffuse: [0.6, 0.6, 0.6]
+                        diffuse: [0.6, 0.6, 0.6],
+                        backfaces: true
                     });
                     model.add(material);
                 }
@@ -926,8 +929,6 @@
                     geometry: xeoGeometry,
                     material: material,
                     modes: {
-                        transparent: (material && material.alpha < 1),
-                        backfaces: true,
                         pickable: true
                     }
                 });

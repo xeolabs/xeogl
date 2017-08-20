@@ -701,7 +701,6 @@
     var tileGeometry = new xeogl.BoxGeometry();
 
     var tileModes = new xeogl.Modes({
-        backfaces: true,
         collidable: false,
         pickable: false
     });
@@ -763,7 +762,8 @@
     // Blinking lights
 
     var ledMaterial = new xeogl.PhongMaterial({
-        emissive: [0.2, 0.0, 1.2]
+        emissive: [0.2, 0.0, 1.2],
+        backfaces: false
     });
 
     var ledGeometry = new xeogl.PlaneGeometry({});
@@ -771,7 +771,6 @@
     var ledModes = new xeogl.Modes({
         collidable: false,
         pickable: false,
-        backfaces: false,
         frontface: "cw"
     });
 
@@ -788,8 +787,7 @@
                     xyz: [Math.random() * 35 - 15, Math.random() * 5, -19]
                 })
             }),
-            modes: ledModes,
-            visibility: new xeogl.Visibility()
+            modes: ledModes
         }));
 
     }
@@ -810,8 +808,7 @@
                 })
             }),
 
-            modes: ledModes,
-            visibility: new xeogl.Visibility()
+            modes: ledModes
         }));
 
     }
@@ -833,7 +830,6 @@
     var boxGeometry = new xeogl.BoxGeometry();
 
     var boxModes = new xeogl.Modes({
-        backfaces: true,
         collidable: false,
         pickable: false
     });
@@ -936,7 +932,7 @@
 
     setInterval(function () {
         for (var i = 0; i < leds.length; i++) {
-            leds[i].visibility.visible = (Math.random() < .5);
+            leds[i].visible = (Math.random() < .5);
         }
     }, 300)
 

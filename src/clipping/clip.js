@@ -16,10 +16,7 @@
  fall on the other side of the plane from the origin ("outside").
  * You can update the {{#crossLink "Clip/mode:property"}}{{/crossLink}} of a Clip to activate or deactivate it, or to
  switch which side it discards fragments from.
- * Clipping may also be enabled or disabled for specific {{#crossLink "Entity"}}Entities{{/crossLink}}
- via the {{#crossLink "Modes/clipping:property"}}{{/crossLink}} flag on {{#crossLink "Modes"}}Modes{{/crossLink}} components
- attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.
-
+ * Clipping may also be enabled or disabled for specific {{#crossLink "Entity"}}Entities{{/crossLink}} via their {{#crossLink "Entity/clippable:property"}}{{/crossLink}} properties.
 
  <img src="../../../assets/images/Clip.png"></img>
 
@@ -64,16 +61,14 @@
 
  ### Toggling clipping on and off
 
- Now we'll attach a {{#crossLink "Modes"}}{{/crossLink}} to the {{#crossLink "Entity"}}{{/crossLink}}, so that we can
- enable or disable clipping of it:
+ An {{#crossLink "Entity"}}{{/crossLink}}is clippable by default. We can toggle its clippability like so:
 
  ```` javascript
- entity.modes = new xeogl.Modes(scene, {
-    clipping: true
- });
-
  // Disable clipping for the Entity
- entity.modes.clipping = false;
+ entity.clippable = false;
+
+ // Enable clipping for the Entity
+ entity.clippable = false;
  ````
 
  @class Clip

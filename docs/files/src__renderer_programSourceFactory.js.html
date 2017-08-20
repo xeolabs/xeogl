@@ -66,7 +66,6 @@
                                 <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
-                                <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
                                 <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -80,14 +79,12 @@
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
-                                <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/LookatHelper.html">LookatHelper</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
-                                <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
@@ -127,9 +124,9 @@
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
-                                <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
                                 <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/XRay.html">XRay</a></li>
                                 <li><a href="../classes/ZSpaceEffect.html">ZSpaceEffect</a></li>
                                 <li><a href="../classes/ZSpaceStylusControl.html">ZSpaceStylusControl</a></li>
                             </ul>
@@ -143,9 +140,9 @@
                                 <li><a href="..//modules/clipping.html">clipping</a></li>
                                 <li><a href="..//modules/configs.html">configs</a></li>
                                 <li><a href="..//modules/controls.html">controls</a></li>
-                                <li><a href="..//modules/culling.html">culling</a></li>
                                 <li><a href="..//modules/curves.html">curves</a></li>
                                 <li><a href="..//modules/effects.html">effects</a></li>
+                                <li><a href="..//modules/emphasis.html">emphasis</a></li>
                                 <li><a href="..//modules/entities.html">entities</a></li>
                                 <li><a href="..//modules/generation.html">generation</a></li>
                                 <li><a href="..//modules/geometry.html">geometry</a></li>
@@ -1074,7 +1071,7 @@
             }
 
             if (material.alpha !== undefined &amp;&amp; material.alpha !== null) {
-                add(&quot;uniform float materialAlpha;&quot;);
+                add(&quot;uniform vec4 materialAlphaModeCutoff;&quot;); // [alpha, alphaMode, alphaCutoff]
             }
 
             if (material.emissive) {
@@ -1356,7 +1353,7 @@
             }
 
             if (material.alpha !== undefined) {
-                add(&quot;float alpha = materialAlpha;&quot;);
+                add(&quot;float alpha = materialAlphaModeCutoff[0];&quot;);
             } else {
                 add(&quot;float alpha = 1.0;&quot;);
             }
@@ -1565,6 +1562,10 @@
                     }
                 }
 
+                add(&quot;if (materialAlphaModeCutoff[1] == 1.0 &amp;&amp; alpha &lt; materialAlphaModeCutoff[2]) {&quot;); // ie. (alphaMode == &quot;mask&quot; &amp;&amp; alpha &lt; alphaCutoff)
+                add(&quot;   discard;&quot;); // TODO: Discard earlier within this shader?
+                add(&quot;}&quot;);
+
                 // PREPARE INPUTS FOR SHADER FUNCTIONS
 
                 add(&quot;IncidentLight  light;&quot;);
@@ -1691,7 +1692,6 @@
 
                 add(&quot;vec3 outgoingLight = emissiveColor + ambientColor;&quot;);
             }
-
 
             add(&quot;gl_FragColor = vec4(outgoingLight, alpha);&quot;);
              //    add(&quot;gl_FragColor = LinearTosRGB(gl_FragColor);&quot;);  // Gamma correction

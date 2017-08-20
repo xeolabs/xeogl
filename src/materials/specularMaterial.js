@@ -40,7 +40,10 @@
  | {{#crossLink "SpecularMaterial/alphaMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink "SpecularMaterial/alpha:property"}}{{/crossLink}}. |
  | {{#crossLink "SpecularMaterial/occlusionMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Ambient occlusion texture multiplying by surface's reflected diffuse and specular light. |
  | {{#crossLink "SpecularMaterial/normalMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Tangent-space normal map. |
-
+ | {{#crossLink "SpecularMaterial/alphaMode:property"}}{{/crossLink}} | String | "opaque", "blend", "mask" | "blend" |  | Alpha blend mode. |
+ | {{#crossLink "SpecularMaterial/alphaCutoff:property"}}{{/crossLink}} | Number | [0..1] | 0.5 |  | Alpha cutoff value. |
+ | {{#crossLink "SpecularMaterial/backfaces:property"}}{{/crossLink}} | Boolean |  | false |  | Whether to render {{#crossLink "Geometry"}}Geometry{{/crossLink}} backfaces. |
+ | {{#crossLink "SpecularMaterial/backfaces:property"}}{{/crossLink}} | String | "ccw", "cw" | "ccw" |  | The winding order for {{#crossLink "Geometry"}}Geometry{{/crossLink}} frontfaces - "cw" for clockwise, or "ccw" for counter-clockwise. |
 
  ## Usage
 
@@ -246,6 +249,10 @@
 
  @param [cfg.alphaCutoff=0.5] {Number} The alpha cutoff value.
  See the {{#crossLink "SpecularMaterial/alphaCutoff:property"}}{{/crossLink}} property for more info.
+
+ @param [cfg.backfaces=false] {Boolean} Whether to render {{#crossLink "Geometry"}}Geometry{{/crossLink}} backfaces.
+
+ @param [cfg.frontface="ccw"] {Boolean} The winding order for {{#crossLink "Geometry"}}Geometry{{/crossLink}} front faces - "cw" for clockwise, or "ccw" for counter-clockwise.
 
  */
 (function () {
@@ -966,6 +973,87 @@
                 get: function () {
                     return this._state.alphaCutoff;
                 }
+            },
+
+
+            /**
+             Whether backfaces are visible on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+             The backfaces will belong to {{#crossLink "Geometry"}}{{/crossLink}} compoents that are also attached to
+             the {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+             Fires a {{#crossLink "PhongMaterial/backfaces:event"}}{{/crossLink}} event on change.
+
+             @property backfaces
+             @default false
+             @type Boolean
+             */
+            backfaces: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    if (this._state.backfaces === value) {
+                        return;
+                    }
+
+                    this._state.backfaces = value;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this SpecularMaterial's {{#crossLink "SpecularMaterial/backfaces:property"}}{{/crossLink}} property changes.
+
+                     @event backfaces
+                     @param value The property's new value
+                     */
+                    this.fire("backfaces", this._state.backfaces);
+                },
+
+                get: function () {
+                    return this._state.backfaces;
+                }
+            },
+
+            /**
+             Indicates the winding direction of front faces on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+             The faces will belong to {{#crossLink "Geometry"}}{{/crossLink}} components that are also attached to
+             the {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+             Fires a {{#crossLink "SpecularMaterial/frontface:event"}}{{/crossLink}} event on change.
+
+             @property frontface
+             @default "ccw"
+             @type String
+             */
+            frontface: {
+
+                set: function (value) {
+
+                    value = value !== "cw";
+
+                    if (this._state.frontface === value) {
+                        return;
+                    }
+
+                    this._state.frontface = value;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this SpecularMaterial's {{#crossLink "SpecularMaterial/frontface:property"}}{{/crossLink}} property changes.
+
+                     @event frontface
+                     @param value The property's new value
+                     */
+                    this.fire("frontface", this._state.frontface ? "ccw" : "cw");
+                },
+
+                get: function () {
+                    return this._state.frontface ? "ccw" : "cw";
+                }
             }
         },
 
@@ -1076,7 +1164,11 @@
                 glossiness: this._state.glossiness,
                 specularF0: this._state.specularF0,
                 emissive: vecToArray(this._state.emissive),
-                alpha: this._state.alpha
+                alpha: this._state.alpha,
+                alphaMode: this.alphaMode,
+                alphaCutoff: this._state.alphaCutoff,
+                backfaces: this._state.backfaces,
+                frontface: this.frontface // Save string value
             };
 
             var components = this._attached;
@@ -1112,9 +1204,6 @@
             if (components.normalMap) {
                 json.normalMap = components.normalMap.id;
             }
-
-            json.alphaMode = this.alphaMode;
-            json.alphaCutoff = this._state.alphaCutoff;
 
             return json;
         },

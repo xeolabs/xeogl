@@ -66,7 +66,6 @@
                                 <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
-                                <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
                                 <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -80,14 +79,12 @@
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
-                                <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/LookatHelper.html">LookatHelper</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
-                                <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
@@ -127,9 +124,9 @@
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
-                                <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
                                 <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/XRay.html">XRay</a></li>
                                 <li><a href="../classes/ZSpaceEffect.html">ZSpaceEffect</a></li>
                                 <li><a href="../classes/ZSpaceStylusControl.html">ZSpaceStylusControl</a></li>
                             </ul>
@@ -143,9 +140,9 @@
                                 <li><a href="..//modules/clipping.html">clipping</a></li>
                                 <li><a href="..//modules/configs.html">configs</a></li>
                                 <li><a href="..//modules/controls.html">controls</a></li>
-                                <li><a href="..//modules/culling.html">culling</a></li>
                                 <li><a href="..//modules/curves.html">curves</a></li>
                                 <li><a href="..//modules/effects.html">effects</a></li>
+                                <li><a href="..//modules/emphasis.html">emphasis</a></li>
                                 <li><a href="..//modules/entities.html">entities</a></li>
                                 <li><a href="..//modules/generation.html">generation</a></li>
                                 <li><a href="..//modules/geometry.html">geometry</a></li>
@@ -243,7 +240,10 @@
  | {{#crossLink &quot;SpecularMaterial/alphaMap:property&quot;}}{{/crossLink}} | {{#crossLink &quot;Texture&quot;}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink &quot;SpecularMaterial/alpha:property&quot;}}{{/crossLink}}. |
  | {{#crossLink &quot;SpecularMaterial/occlusionMap:property&quot;}}{{/crossLink}} | {{#crossLink &quot;Texture&quot;}}{{/crossLink}} |  | null | linear | Ambient occlusion texture multiplying by surface&#x27;s reflected diffuse and specular light. |
  | {{#crossLink &quot;SpecularMaterial/normalMap:property&quot;}}{{/crossLink}} | {{#crossLink &quot;Texture&quot;}}{{/crossLink}} |  | null | linear | Tangent-space normal map. |
-
+ | {{#crossLink &quot;SpecularMaterial/alphaMode:property&quot;}}{{/crossLink}} | String | &quot;opaque&quot;, &quot;blend&quot;, &quot;mask&quot; | &quot;blend&quot; |  | Alpha blend mode. |
+ | {{#crossLink &quot;SpecularMaterial/alphaCutoff:property&quot;}}{{/crossLink}} | Number | [0..1] | 0.5 |  | Alpha cutoff value. |
+ | {{#crossLink &quot;SpecularMaterial/backfaces:property&quot;}}{{/crossLink}} | Boolean |  | false |  | Whether to render {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} backfaces. |
+ | {{#crossLink &quot;SpecularMaterial/backfaces:property&quot;}}{{/crossLink}} | String | &quot;ccw&quot;, &quot;cw&quot; | &quot;ccw&quot; |  | The winding order for {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} frontfaces - &quot;cw&quot; for clockwise, or &quot;ccw&quot; for counter-clockwise. |
 
  ## Usage
 
@@ -369,9 +369,13 @@
  });
  &#x60;&#x60;&#x60;&#x60;
 
- Although not shown in this example, we can also texture {{#crossLink &quot;MetallicMaterial/alpha:property&quot;}}{{/crossLink}} with
- the *A* component of {{#crossLink &quot;MetallicMaterial/baseColorMap:property&quot;}}{{/crossLink}}&#x27;s {{#crossLink &quot;Texture&quot;}}{{/crossLink}},
+ Although not shown in this example, we can also texture {{#crossLink &quot;SpecularMaterial/alpha:property&quot;}}{{/crossLink}} with
+ the *A* component of {{#crossLink &quot;SpecularMaterial/baseColorMap:property&quot;}}{{/crossLink}}&#x27;s {{#crossLink &quot;Texture&quot;}}{{/crossLink}},
  if required.
+
+ ## Transparency
+
+ TODO
 
  @class SpecularMaterial
  @module xeogl
@@ -440,6 +444,16 @@
  alpha in its *R* component. The *R* component multiplies by the {{#crossLink &quot;SpecularMaterial/alpha:property&quot;}}{{/crossLink}} property. Must
  be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this SpecularMaterial.
 
+ @param [cfg.alphaMode=&quot;opaque&quot;] {String} The alpha blend mode - accepted values are &quot;opaque&quot;, &quot;blend&quot; and &quot;mask&quot;.
+ See the {{#crossLink &quot;SpecularMaterial/alphaMode:property&quot;}}{{/crossLink}} property for more info.
+
+ @param [cfg.alphaCutoff=0.5] {Number} The alpha cutoff value.
+ See the {{#crossLink &quot;SpecularMaterial/alphaCutoff:property&quot;}}{{/crossLink}} property for more info.
+
+ @param [cfg.backfaces=false] {Boolean} Whether to render {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} backfaces.
+
+ @param [cfg.frontface=&quot;ccw&quot;] {Boolean} The winding order for {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} front faces - &quot;cw&quot; for clockwise, or &quot;ccw&quot; for counter-clockwise.
+
  */
 (function () {
 
@@ -468,7 +482,8 @@
                 occlusionMap: null,
                 alphaMap: null,
                 normalMap: null,
-
+                alphaMode: 0, // &quot;opaque&quot;
+                alphaCutoff: 0.5,
                 hash: null
             });
 
@@ -521,6 +536,9 @@
             if (cfg.normalMap) {
                 this.normalMap = cfg.normalMap;
             }
+
+            this.alphaMode = cfg.alphaMode;
+            this.alphaCutoff = cfg.alphaCutoff;
         },
 
         _props: {
@@ -872,7 +890,7 @@
                         emissive[1] = 0;
                         emissive[2] = 0;
                     }
-                    
+
                     this._renderer.imageDirty = true;
 
                     /**
@@ -1055,6 +1073,187 @@
                 get: function () {
                     return this._attached.occlusionMap;
                 }
+            },
+
+            /**
+             The alpha rendering mode.
+
+             This governs how alpha is treated. Alpha is the combined result of the
+             {{#crossLink &quot;SpecularMaterial/alpha:property&quot;}}{{/crossLink}} and
+             {{#crossLink &quot;SpecularMaterial/alphaMap:property&quot;}}{{/crossLink}} properties.
+
+             * &quot;opaque&quot; - The alpha value is ignored and the rendered output is fully opaque.
+             * &quot;mask&quot; - The rendered output is either fully opaque or fully transparent depending on the alpha value and the specified alpha cutoff value.
+             * &quot;blend&quot; - The alpha value is used to composite the source and destination areas. The rendered output is combined with the background using the normal painting operation (i.e. the Porter and Duff over operator).
+
+             Fires an {{#crossLink &quot;SpecularMaterial/alphaMode:event&quot;}}{{/crossLink}} event on change.
+
+             @property alphaMode
+             @default &quot;opaque&quot;
+             @type {String}
+             */
+            alphaMode: (function () {
+                var modes = {
+                    &quot;opaque&quot;: 0,
+                    &quot;mask&quot;: 1,
+                    &quot;blend&quot;: 2
+                };
+                return {
+                    set: function (alphaMode) {
+
+                        alphaMode = alphaMode || &quot;opaque&quot;;
+
+                        var value = modes[alphaMode];
+
+                        if (value === undefined) {
+                            this.error(&quot;Unsupported value for &#x27;alphaMode&#x27;: &quot; + alphaMode);
+                        }
+
+                        if (this._state.alphaMode === value) {
+                            return;
+                        }
+
+                        this._state.alphaMode = value;
+
+                        this._renderer.imageDirty = true;
+
+                        /**
+                         Fired whenever this MetallicMaterial&#x27;s {{#crossLink &quot;SpecularMaterial/look:property&quot;}}{{/crossLink}} property changes.
+
+                         @event alphaMode
+                         @param value {Number} The property&#x27;s new value
+                         */
+                        this.fire(&quot;alphaMode&quot;, this._state.alphaMode);
+                    },
+                    get: function () {
+                        return modes[this._state.alphaMode];
+                    }
+                };
+            })(),
+
+            /**
+             The alpha cutoff value.
+
+             Specifies the cutoff threshold when {{#crossLink &quot;SpecularMaterial/alphaMode:property&quot;}}{{/crossLink}}
+             equals &quot;mask&quot;. If the alpha is greater than or equal to this value then it is rendered as fully
+             opaque, otherwise, it is rendered as fully transparent. A value greater than 1.0 will render the entire
+             material as fully transparent. This value is ignored for other modes.
+
+             Alpha is the combined result of the
+             {{#crossLink &quot;SpecularMaterial/alpha:property&quot;}}{{/crossLink}} and
+             {{#crossLink &quot;SpecularMaterial/alphaMap:property&quot;}}{{/crossLink}} properties.
+
+             Fires an {{#crossLink &quot;SpecularMaterial/alphaCutoff:event&quot;}}{{/crossLink}} event on change.
+
+             @property alphaCutoff
+             @default 0.5
+             @type {Number}
+             */
+            alphaCutoff: {
+                set: function (alphaCutoff) {
+
+                    if (alphaCutoff === null || alphaCutoff === undefined) {
+                        alphaCutoff = 0.5;
+                    }
+
+                    if (this._state.alphaCutoff === alphaCutoff) {
+                        return;
+                    }
+
+                    this._state.alphaCutoff = alphaCutoff;
+
+                    /**
+                     Fired whenever this SpecularMaterial&#x27;s {{#crossLink &quot;SpecularMaterial/look:property&quot;}}{{/crossLink}} property changes.
+
+                     @event alphaCutoff
+                     @param value {Number} The property&#x27;s new value
+                     */
+                    this.fire(&quot;alphaCutoff&quot;, this._state.alphaCutoff);
+                },
+                get: function () {
+                    return this._state.alphaCutoff;
+                }
+            },
+
+
+            /**
+             Whether backfaces are visible on attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
+
+             The backfaces will belong to {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} compoents that are also attached to
+             the {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
+
+             Fires a {{#crossLink &quot;PhongMaterial/backfaces:event&quot;}}{{/crossLink}} event on change.
+
+             @property backfaces
+             @default false
+             @type Boolean
+             */
+            backfaces: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    if (this._state.backfaces === value) {
+                        return;
+                    }
+
+                    this._state.backfaces = value;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this SpecularMaterial&#x27;s {{#crossLink &quot;SpecularMaterial/backfaces:property&quot;}}{{/crossLink}} property changes.
+
+                     @event backfaces
+                     @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;backfaces&quot;, this._state.backfaces);
+                },
+
+                get: function () {
+                    return this._state.backfaces;
+                }
+            },
+
+            /**
+             Indicates the winding direction of front faces on attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
+
+             The faces will belong to {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} components that are also attached to
+             the {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
+
+             Fires a {{#crossLink &quot;SpecularMaterial/frontface:event&quot;}}{{/crossLink}} event on change.
+
+             @property frontface
+             @default &quot;ccw&quot;
+             @type String
+             */
+            frontface: {
+
+                set: function (value) {
+
+                    value = value !== &quot;cw&quot;;
+
+                    if (this._state.frontface === value) {
+                        return;
+                    }
+
+                    this._state.frontface = value;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this SpecularMaterial&#x27;s {{#crossLink &quot;SpecularMaterial/frontface:property&quot;}}{{/crossLink}} property changes.
+
+                     @event frontface
+                     @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;frontface&quot;, this._state.frontface ? &quot;ccw&quot; : &quot;cw&quot;);
+                },
+
+                get: function () {
+                    return this._state.frontface ? &quot;ccw&quot; : &quot;cw&quot;;
+                }
             }
         },
 
@@ -1165,7 +1364,11 @@
                 glossiness: this._state.glossiness,
                 specularF0: this._state.specularF0,
                 emissive: vecToArray(this._state.emissive),
-                alpha: this._state.alpha
+                alpha: this._state.alpha,
+                alphaMode: this.alphaMode,
+                alphaCutoff: this._state.alphaCutoff,
+                backfaces: this._state.backfaces,
+                frontface: this.frontface // Save string value
             };
 
             var components = this._attached;

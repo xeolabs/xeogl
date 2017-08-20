@@ -66,7 +66,6 @@
                                 <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
-                                <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
                                 <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -80,14 +79,12 @@
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
-                                <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/LookatHelper.html">LookatHelper</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
-                                <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
@@ -127,9 +124,9 @@
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
-                                <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
                                 <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/XRay.html">XRay</a></li>
                                 <li><a href="../classes/ZSpaceEffect.html">ZSpaceEffect</a></li>
                                 <li><a href="../classes/ZSpaceStylusControl.html">ZSpaceStylusControl</a></li>
                             </ul>
@@ -143,9 +140,9 @@
                                 <li><a href="..//modules/clipping.html">clipping</a></li>
                                 <li><a href="..//modules/configs.html">configs</a></li>
                                 <li><a href="..//modules/controls.html">controls</a></li>
-                                <li><a href="..//modules/culling.html">culling</a></li>
                                 <li><a href="..//modules/curves.html">curves</a></li>
                                 <li><a href="..//modules/effects.html">effects</a></li>
+                                <li><a href="..//modules/emphasis.html">emphasis</a></li>
                                 <li><a href="..//modules/entities.html">entities</a></li>
                                 <li><a href="..//modules/generation.html">generation</a></li>
                                 <li><a href="..//modules/geometry.html">geometry</a></li>
@@ -571,17 +568,14 @@
             dummy = this.project;
             dummy = this.camera;
             dummy = this.clips;
-            dummy = this.visibility;
-            dummy = this.cull;
-            dummy = this.modes;
             dummy = this.geometry;
-            dummy = this.layer;
             dummy = this.lights;
             dummy = this.material;
             dummy = this.morphTargets;
             dummy = this.transform;
             dummy = this.viewport;
             dummy = this.outline;
+            dummy = this.xray;
         },
 
         // Called by each component that is created with this Scene as parent.
@@ -1084,74 +1078,6 @@
             },
 
             /**
-             * The default {{#crossLink &quot;Visibility&quot;}}Visibility{{/crossLink}} provided by this Scene.
-             *
-             * This {{#crossLink &quot;Visibility&quot;}}Visibility{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.visibility&quot;,
-             * with all other properties initialised to their default values.
-             *
-             * {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink &quot;Visibility&quot;}}Visibility{{/crossLink}} by default.
-             * @property visibility
-             * @final
-             * @type Visibility
-             */
-            visibility: {
-                get: function () {
-                    return this.components[&quot;default.visibility&quot;] ||
-                        new xeogl.Visibility(this, {
-                            id: &quot;default.visibility&quot;,
-                            isDefault: true,
-                            visible: true
-                        });
-                }
-            },
-
-            /**
-             * The default {{#crossLink &quot;Cull&quot;}}{{/crossLink}} provided by this Scene.
-             *
-             * This {{#crossLink &quot;Cull&quot;}}cull{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.cull&quot;,
-             * with all other properties initialised to their default values.
-             *
-             * {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink &quot;Cull&quot;}}{{/crossLink}} by default.
-             * @property cull
-             * @final
-             * @type cull
-             */
-            cull: {
-                get: function () {
-                    return this.components[&quot;default.cull&quot;] ||
-                        new xeogl.Cull(this, {
-                            id: &quot;default.cull&quot;,
-                            isDefault: true,
-                            culled: false
-                        });
-                }
-            },
-
-            /**
-             * The default {{#crossLink &quot;Modes&quot;}}Modes{{/crossLink}} provided by this Scene.
-             *
-             * This {{#crossLink &quot;Modes&quot;}}Modes{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.modes&quot;,
-             * with all other properties initialised to their default values.
-             *
-             * {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink &quot;Modes&quot;}}Modes{{/crossLink}} by default.
-             * @property modes
-             * @final
-             * @type Modes
-             */
-            modes: {
-                get: function () {
-                    return this.components[&quot;default.modes&quot;] ||
-                        new xeogl.Modes(this, {
-                            id: &quot;default.modes&quot;,
-                            isDefault: true
-                        });
-                }
-            },
-
-            /**
              * The default geometry provided by this Scene, which is a {{#crossLink &quot;BoxGeometry&quot;}}BoxGeometry{{/crossLink}}.
              *
              * This {{#crossLink &quot;BoxGeometry&quot;}}BoxGeometry{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.geometry&quot;.
@@ -1168,29 +1094,6 @@
                         new xeogl.BoxGeometry(this, {
                             id: &quot;default.geometry&quot;,
                             isDefault: true
-                        });
-                }
-            },
-
-            /**
-             * The default {{#crossLink &quot;Layer&quot;}}Layer{{/crossLink}} provided by this Scene.
-             *
-             * This {{#crossLink &quot;Layer&quot;}}Layer{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.layer&quot;,
-             * with all other properties initialised to their default values.
-             *
-             * {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink &quot;Layer&quot;}}Layer{{/crossLink}} by default.
-             * @property layer
-             * @final
-             * @type Layer
-             */
-            layer: {
-                get: function () {
-                    return this.components[&quot;default.layer&quot;] ||
-                        new xeogl.Layer(this, {
-                            id: &quot;default.layer&quot;,
-                            isDefault: true,
-                            priority: 0
                         });
                 }
             },
@@ -1366,6 +1269,29 @@
             },
 
             /**
+             * The default {{#crossLink &quot;XRay&quot;}}{{/crossLink}} provided by this Scene.
+             *
+             * {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink &quot;XRay&quot;}}{{/crossLink}} by default.
+             *
+             * @property xray
+             * @final
+             * @type XRay
+             */
+            xray: {
+                get: function () {
+                    return this.components[&quot;default.xray&quot;] ||
+                        new xeogl.XRay(this, {
+                            id: &quot;default.xray&quot;,
+
+                            // TODO: defaults
+                            foo: 1,
+                            bar: 2
+                        });
+                }
+            },
+
+            /**
              * The World-space 3D boundary of this Scene.
              *
              * The {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}} will be lazy-initialized the first time
@@ -1410,7 +1336,7 @@
 
                                         entity = entities[entityId];
 
-                                        if (entity.modes.collidable) {
+                                        if (entity.collidable) {
 
                                             // Only include boundaries of entities that are allowed
                                             // to contribute to the size of an enclosing boundary
@@ -1451,8 +1377,7 @@
         /**
          * Attempts to pick an {{#crossLink &quot;Entity&quot;}}Entity{{/crossLink}} in this Scene.
          *
-         * Ignores {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} that are attached
-         * to {{#crossLink &quot;Modes&quot;}}Modes{{/crossLink}} with {{#crossLink &quot;Modes/pickable:property&quot;}}pickable{{/crossLink}}
+         * Ignores {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} with {{#crossLink &quot;Entity/pickable:property&quot;}}pickable{{/crossLink}}
          * set *false*.
          *
          * Picking the {{#crossLink &quot;Entity&quot;}}{{/crossLink}} at the given canvas coordinates:

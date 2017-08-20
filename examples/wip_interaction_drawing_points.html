@@ -79,9 +79,7 @@
                 ambient: [0,0,0],
                 pointSize: 8
             }),
-            visibility: new xeogl.Visibility({ // Visible as soon as something is drawn
-                visible: false
-            })
+            visible: false
         });
 
         var numPoints = 0;
@@ -99,7 +97,7 @@
                 tempVec3[2] = worldPos[2] + normal[2] * 0.05;
                 entity.geometry.setPositions(tempVec3, numPoints * 3);
                 numPoints++;
-                entity.visibility.visible = true;
+                entity.visible = true;
             }
         };
 
