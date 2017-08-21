@@ -831,30 +831,6 @@
             },
 
             /**
-             * The default {{#crossLink "Stationary"}}Stationary{{/crossLink}} provided by this Scene.
-             *
-             * This {{#crossLink "Stationary"}}Stationary{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.stationary"
-             * and an {{#crossLink "Stationary/active:property"}}{{/crossLink}} property set to false, to disable it.
-             *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "Stationary"}}Stationary{{/crossLink}} by default.
-             *
-             * @property stationary
-             * @final
-             * @type Stationary
-             */
-            stationary: {
-                get: function () {
-                    return this.components["default.stationary"] ||
-                        new xeogl.Stationary(this, {
-                            id: "default.stationary",
-                            active: false,
-                            isDefault: true
-                        });
-                }
-            },
-
-            /**
              * The default {{#crossLink "Clips"}}Clips{{/crossLink}} provided by this Scene.
              *
              * This {{#crossLink "Clips"}}Clips{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.clips",

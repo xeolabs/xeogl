@@ -81,7 +81,6 @@
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
-                                <li><a href="../classes/LookatHelper.html">LookatHelper</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
@@ -114,7 +113,6 @@
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/SpotLight.html">SpotLight</a></li>
-                                <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
                                 <li><a href="../classes/Story.html">Story</a></li>
                                 <li><a href="../classes/TeapotGeometry.html">TeapotGeometry</a></li>
@@ -778,7 +776,7 @@
         _entityAttached: function (entity) {
             this._onEntityLocalBoundary = entity.localBoundary.on(&quot;updated&quot;, this._setLocalPosDirty, this);
             this._onEntityWorldBoundary = entity.worldBoundary.on(&quot;updated&quot;, this._setWorldPosDirty, this);
-            this._onEntityVisible = entity.visibility.on(&quot;visible&quot;, this._entityVisible, this);
+            this._onEntityVisible = entity.on(&quot;visible&quot;, this._entityVisible, this);
             this._setLocalPosDirty();
         },
 
@@ -806,7 +804,7 @@
         _entityDetached: function (entity) {
             entity.localBoundary.off(this._onEntityLocalBoundary);
             entity.worldBoundary.off(this._onEntityWorldBoundary);
-            entity.visibility.off(this._onEntityVisible);
+            entity.off(this._onEntityVisible);
             this._entityVisible(false);
         },
 

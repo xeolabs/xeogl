@@ -81,7 +81,6 @@
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
-                                <li><a href="../classes/LookatHelper.html">LookatHelper</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
@@ -114,7 +113,6 @@
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/SpotLight.html">SpotLight</a></li>
-                                <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
                                 <li><a href="../classes/Story.html">Story</a></li>
                                 <li><a href="../classes/TeapotGeometry.html">TeapotGeometry</a></li>
@@ -1024,30 +1022,6 @@
                     return this.components[&quot;default.billboard&quot;] ||
                         new xeogl.Billboard(this, {
                             id: &quot;default.billboard&quot;,
-                            active: false,
-                            isDefault: true
-                        });
-                }
-            },
-
-            /**
-             * The default {{#crossLink &quot;Stationary&quot;}}Stationary{{/crossLink}} provided by this Scene.
-             *
-             * This {{#crossLink &quot;Stationary&quot;}}Stationary{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.stationary&quot;
-             * and an {{#crossLink &quot;Stationary/active:property&quot;}}{{/crossLink}} property set to false, to disable it.
-             *
-             * {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink &quot;Stationary&quot;}}Stationary{{/crossLink}} by default.
-             *
-             * @property stationary
-             * @final
-             * @type Stationary
-             */
-            stationary: {
-                get: function () {
-                    return this.components[&quot;default.stationary&quot;] ||
-                        new xeogl.Stationary(this, {
-                            id: &quot;default.stationary&quot;,
                             active: false,
                             isDefault: true
                         });

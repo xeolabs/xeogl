@@ -169,9 +169,7 @@
                     }),
                     backfaces: true // Show interior faces of our skybox geometry
                 }),
-                stationary: new xeogl.Stationary(this, {
-                    active: true
-                }),
+                stationary: true,
                 visible: false,
                 pickable: false,
                 collidable: false

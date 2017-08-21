@@ -80,7 +80,6 @@
         this.viewTransform = null;
         this.projTransform = null;
         this.billboard = null;
-        this.stationary = null;
         this.clips = null;
         this.geometry = null;
         this.viewport = null;
@@ -130,7 +129,6 @@
         object.material = this.material;
         object.geometry = this.geometry;
         object.billboard = this.billboard;
-        object.stationary = this.stationary;
         object.viewport = this.viewport;
         object.lights = this.lights;
         object.outline = this.outline;
@@ -147,7 +145,7 @@
             this.material.hash,
             this.lights.hash,
             this.billboard.hash,
-            this.stationary.hash
+            this.modes.hash
         ]).join(";");
 
         if (hash !== object.hash) {

@@ -15,9 +15,7 @@
 <body>
 
 <div id="info">
-    <h1>implementing a custom skybox using the <a
-            href="../docs/classes/Stationary.html"
-            target="_parent">Stationary</a> component</h1>
+    <h1>implementing a custom skybox</h1>
 </div>
 
 <script>
@@ -118,9 +116,7 @@
             }),
             backfaces: true // Show interior faces of our skybox geometry
         }),
-        stationary: new xeogl.Stationary({ // Locks position with respect to viewpoint
-            active: true
-        }),
+        stationary: true, // Locks position with respect to viewpoint
         pickable: false,
         collidable: false
     });
@@ -144,9 +140,7 @@
                 xyz: [50, 10, 50]
             })
         }),
-        stationary: new xeogl.Stationary({ // Locks position with respect to viewpoint
-            active: true
-        }),
+        stationary: true, // Locks position with respect to viewpoint
         pickable: false, // Don't want to ba able to pick the moon
         collidable: false // Moon will not contribute to the size of any enclosing boundaries
     });

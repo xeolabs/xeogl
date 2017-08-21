@@ -202,21 +202,6 @@
 
     /**
 
-     Stationary transform state.
-
-     renderer.Stationary
-     @module xeogl
-
-     @constructor
-     @param cfg {*} Configs
-     @extends renderer.State
-     */
-    xeogl.renderer.Stationary = xeogl.renderer.State.extend({
-        _ids: new xeogl.utils.Map({})
-    });
-
-    /**
-
      Clip planes state.
 
      renderer.Clips

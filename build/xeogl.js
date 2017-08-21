@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2017-08-20
+ * Built on 2017-08-21
  *
  * MIT License
  * Copyright 2017, Lindsay Kay
@@ -5252,7 +5252,6 @@ var Canvas2Image = (function () {
         this.viewTransform = null;
         this.projTransform = null;
         this.billboard = null;
-        this.stationary = null;
         this.clips = null;
         this.geometry = null;
         this.viewport = null;
@@ -5302,7 +5301,6 @@ var Canvas2Image = (function () {
         object.material = this.material;
         object.geometry = this.geometry;
         object.billboard = this.billboard;
-        object.stationary = this.stationary;
         object.viewport = this.viewport;
         object.lights = this.lights;
         object.outline = this.outline;
@@ -5319,7 +5317,7 @@ var Canvas2Image = (function () {
             this.material.hash,
             this.lights.hash,
             this.billboard.hash,
-            this.stationary.hash
+            this.modes.hash
         ]).join(";");
 
         if (hash !== object.hash) {
@@ -7671,21 +7669,6 @@ var Canvas2Image = (function () {
 
     /**
 
-     Stationary transform state.
-
-     renderer.Stationary
-     @module xeogl
-
-     @constructor
-     @param cfg {*} Configs
-     @extends renderer.State
-     */
-    xeogl.renderer.Stationary = xeogl.renderer.State.extend({
-        _ids: new xeogl.utils.Map({})
-    });
-
-    /**
-
      Clip planes state.
 
      renderer.Clips
@@ -8672,7 +8655,7 @@ var Canvas2Image = (function () {
             add("mat4 viewMatrix2 = viewMatrix;");
             add("mat4 modelMatrix2 = modelMatrix;");
 
-            if (states.stationary.active) {
+            if (states.modes.stationary) {
                 add("viewMatrix2[3][0] = viewMatrix2[3][1] = viewMatrix2[3][2] = 0.0;")
             }
 
@@ -8832,7 +8815,7 @@ var Canvas2Image = (function () {
             add("mat4 viewMatrix2           = viewMatrix;");
             add("mat4 modelMatrix2          = modelMatrix;");
 
-            if (states.stationary.active) {
+            if (states.modes.stationary) {
                 add("viewMatrix2[3][0] = viewMatrix2[3][1] = viewMatrix2[3][2] = 0.0;")
             }
 
@@ -13914,30 +13897,6 @@ var Canvas2Image = (function () {
                     return this.components["default.billboard"] ||
                         new xeogl.Billboard(this, {
                             id: "default.billboard",
-                            active: false,
-                            isDefault: true
-                        });
-                }
-            },
-
-            /**
-             * The default {{#crossLink "Stationary"}}Stationary{{/crossLink}} provided by this Scene.
-             *
-             * This {{#crossLink "Stationary"}}Stationary{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.stationary"
-             * and an {{#crossLink "Stationary/active:property"}}{{/crossLink}} property set to false, to disable it.
-             *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "Stationary"}}Stationary{{/crossLink}} by default.
-             *
-             * @property stationary
-             * @final
-             * @type Stationary
-             */
-            stationary: {
-                get: function () {
-                    return this.components["default.stationary"] ||
-                        new xeogl.Stationary(this, {
-                            id: "default.stationary",
                             active: false,
                             isDefault: true
                         });
@@ -35762,6 +35721,32 @@ TODO
  var center = canvasBoundary.center;
  ````
 
+ ## Skyboxes
+
+ An {{#crossLink "Entity"}}{{/crossLink}} has a {{#crossLink "Entity/stationary:property"}}{{/crossLink}} property
+ that will cause it to never translate with respect to the viewpoint, while still rotationg, as if always far away.
+
+ This is useful for using Entities as skyboxes, like so:
+
+ ````javascript
+ new xeogl.Entity({
+
+     geometry: new xeogl.BoxGeometry({
+         xSize: 1000,
+         ySize: 1000,
+         zSize: 1000
+     }),
+
+     material: new xeogl.PhongMaterial({
+         diffuseMap: new xeogl.Texture({
+            src: "textures/diffuse/uvGrid2.jpg"
+         })
+     }),
+
+     stationary: true // Locks position with respect to viewpoint
+ });
+ ````
+
  @class Entity
  @module xeogl
  @submodule entities
@@ -35801,7 +35786,8 @@ TODO
  @param [cfg.receiveShadow=true] {Boolean} Whether this Entity receives shadows.
  @param [cfg.outlined=false] {Boolean} Whether an outline is rendered around this entity, as configured by the Entity's {{#crossLink "Outline"}}{{/crossLink}} component
  @param [cfg.layer=0] {Number} Indicates this Entity's rendering priority, typically used for transparency sorting,
-
+ @param [cfg.stationary=false] {Boolean} Disables the effect of {{#crossLink "Lookat"}}view transform{{/crossLink}}
+ * translations for this Entity. This is useful for skybox Entities.
  @param [cfg.loading] {Boolean} Flag which indicates that this Entity is freshly loaded. This will increment the
  {{#crossLink "Spinner/processes:property"}}Spinner processes{{/crossLink}} count, and then when this Entity is first
  rendered, will decrement the count again.
@@ -35869,6 +35855,7 @@ TODO
             this.receiveShadow = cfg.receiveShadow;
             this.outlined = cfg.outlined;
             this.layer = cfg.layer;
+            this.stationary = cfg.stationary;
 
             // Cached boundary for each coordinate space
             // The Entity's Geometry component caches the Local-space boundary
@@ -36262,46 +36249,6 @@ TODO
 
                 get: function () {
                     return this._attached.viewport;
-                }
-            },
-
-            /**
-             * The {{#crossLink "Stationary"}}{{/crossLink}} attached to this Entity.
-             *
-             * When {{#crossLink "Stationary/property:active"}}{{/crossLink}}, the {{#crossLink "Stationary"}}{{/crossLink}}
-             * will prevent the translation component of the viewing transform from being applied to this Entity, yet
-             * still allowing it to rotate.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/stationary:property"}}stationary{{/crossLink}},
-             * which is disabled by default.
-             *
-             * Fires an {{#crossLink "Entity/stationary:event"}}{{/crossLink}} event on change.
-             *
-             * @property stationary
-             * @type Stationary
-             */
-            stationary: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this Entity's {{#crossLink "Entity/stationary:property"}}{{/crossLink}}
-                     * property changes.
-                     *
-                     * @event stationary
-                     * @param value The property's new value
-                     */
-                    this._attach({
-                        name: "stationary",
-                        type: "xeogl.Stationary",
-                        component: value,
-                        sceneDefault: true
-                    });
-                },
-
-                get: function () {
-                    return this._attached.stationary;
                 }
             },
 
@@ -36759,6 +36706,46 @@ TODO
                     return this._state.layer;
                 }
             },
+
+            /**
+             * Flag which indicates whether this Entity is stationary or not.
+             *
+             * Setting this true will disable the effect of {{#crossLink "Lookat"}}view transform{{/crossLink}}
+             * translations for this Entity, while still alowing it to rotate. This is useful for skybox Entities.
+
+             * Fires an {{#crossLink "Entity/stationary:event"}}{{/crossLink}} event on change.
+             *
+             * @property stationary
+             * @type Boolean
+             */
+            stationary: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    if (this._state.stationary === value) {
+                        return;
+                    }
+
+                    this._state.stationary = value;
+
+                    this._state.hash = (this._state.stationary ? "a;" : ";");
+
+                    this.fire("dirty", this);
+
+                    /**
+                     * Fired whenever this Entity's {{#crossLink "Entity/stationary:property"}}{{/crossLink}} property changes.
+                     * @event stationary
+                     * @param value The property's new value
+                     */
+                    this.fire('stationary', this._state.stationary);
+                },
+
+                get: function () {
+                    return this._state.stationary;
+                }
+            },
             
             /**
              * Local-space 3D boundary of this Entity.
@@ -37160,7 +37147,6 @@ TODO
             attached.material._compile();
             this._renderer.modelTransform = attached.transform._state;
             attached.billboard._compile();
-            attached.stationary._compile();
             attached.viewport._compile();
             attached.outline._compile();
             attached.xray._compile();
@@ -37207,7 +37193,6 @@ TODO
                 material: attached.material.id,
                 transform: attached.transform.id,
                 billboard: attached.billboard.id,
-                stationary: attached.stationary.id,
                 viewport: attached.viewport.id,
                 outline: attached.outline.id,
                 xray: attached.xray.id,
@@ -37221,7 +37206,8 @@ TODO
                 receiveShadow: this._state.receiveShadow,
                 outlined: this._state.outlined,
                 xrayed:  this._state.xrayed,
-                layer: this._state.layer
+                layer: this._state.layer,
+                stationary: this._state.stationary
             };
         },
 
@@ -39298,128 +39284,6 @@ TODO
 
         _compile: function () {
             this._renderer.billboard = this._state;
-        },
-
-
-        _getJSON: function () {
-            return {
-                active: this._state.active
-            };
-        }
-    });
-
-})();
-;/**
- A **Stationary** disables the effect of {{#crossLink "Lookat"}}view transform{{/crossLink}} translations for
- associated {{#crossLink "Entity"}}Entities{{/crossLink}} or {{#crossLink "Model"}}Models{{/crossLink}}.
-
- ## Overview
-
- <img src="../../../assets/images/Stationary.png"></img>
-
- ## Examples
-
- * [Custom Skybox using a Stationary component](../../examples/#skyboxes_skybox_custom)
-
- ## Usage
-
- An {{#crossLink "Entity"}}{{/crossLink}} with a Stationary that will cause it to never translate with respect to
- the viewpoint, as if far away.
-
- ````javascript
- new xeogl.Entity({
-
-     geometry: new xeogl.BoxGeometry({
-         xSize: 1,
-         ySize: 1,
-         zSize: 1
-     }),
-
-     material: new xeogl.PhongMaterial({
-         diffuseMap: new xeogl.Texture({
-            src: "textures/diffuse/uvGrid2.jpg"
-         })
-     }),
-
-     stationary: new xeogl.Stationary({ // Locks position with respect to viewpoint
-         active: true
-     })
- });
- ````
-
- @class Stationary
- @module xeogl
- @submodule transforms
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Stationary in the default
- {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Stationary.
- @param [cfg.active=true] {Boolean} Indicates if this Stationary is active or not.
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    xeogl.Stationary = xeogl.Component.extend({
-
-        type: "xeogl.Stationary",
-
-        _init: function (cfg) {
-
-            this._super(cfg);
-
-            this._state = new xeogl.renderer.Stationary({
-                active: true
-            });
-
-            this.active = cfg.active !== false;
-        },
-
-        _props: {
-
-            /**
-             * Flag which indicates whether this Stationary is active or not.
-             *
-             * Fires an {{#crossLink "Stationary/active:event"}}{{/crossLink}} event on change.
-             *
-             * @property active
-             * @type Boolean
-             */
-            active: {
-
-                set: function (value) {
-
-                    value = !!value;
-
-                    if (this._state.active === value) {
-                        return;
-                    }
-
-                    this._state.active = value;
-
-                    this._state.hash = (this._state.active ? "a;" : ";");
-
-                    this.fire("dirty", true);
-
-                    /**
-                     * Fired whenever this Stationary's {{#crossLink "Stationary/active:property"}}{{/crossLink}} property changes.
-                     * @event active
-                     * @param value The property's new value
-                     */
-                    this.fire('active', this._state.active);
-                },
-
-                get: function () {
-                    return this._state.active;
-                }
-            }
-        },
-
-        _compile: function () {
-            this._renderer.stationary = this._state;
         },
 
 

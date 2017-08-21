@@ -81,7 +81,6 @@
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
-                                <li><a href="../classes/LookatHelper.html">LookatHelper</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
@@ -114,7 +113,6 @@
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/SpotLight.html">SpotLight</a></li>
-                                <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
                                 <li><a href="../classes/Story.html">Story</a></li>
                                 <li><a href="../classes/TeapotGeometry.html">TeapotGeometry</a></li>
@@ -287,12 +285,6 @@ TODO
                 ambient: [0, 0, 0],
                 pointSize: 8
             });
-
-            this._modes = this.create({
-                type: &quot;xeogl.Modes&quot;,
-                pickable: false,
-                collidable: false
-            });
         },
 
         /**
@@ -318,7 +310,8 @@ TODO
                 drawing = new xeogl._EntityPointMarkings({ // Defined in this code module, after this component type
                     entity: entity,
                     material: this._material,
-                    modes: this._modes
+                    pickable: false,
+                    collidable: false
                 });
                 this._drawings[entity.id] = drawing;
                 var self = this;
@@ -425,7 +418,8 @@ TODO
                     usage: &quot;dynamic&quot;
                 },
                 material: cfg.material,
-                modes: cfg.modes,
+                pickable: false,
+                collidable: false,
                 visibility: entity.visibility,  // Visibility and transform in synch with target entity
                 XXXXtransform: entity.transform
             });

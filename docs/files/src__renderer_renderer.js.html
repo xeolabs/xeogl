@@ -81,7 +81,6 @@
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
-                                <li><a href="../classes/LookatHelper.html">LookatHelper</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
@@ -114,7 +113,6 @@
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/SpotLight.html">SpotLight</a></li>
-                                <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
                                 <li><a href="../classes/Story.html">Story</a></li>
                                 <li><a href="../classes/TeapotGeometry.html">TeapotGeometry</a></li>
@@ -280,7 +278,6 @@
         this.viewTransform = null;
         this.projTransform = null;
         this.billboard = null;
-        this.stationary = null;
         this.clips = null;
         this.geometry = null;
         this.viewport = null;
@@ -330,7 +327,6 @@
         object.material = this.material;
         object.geometry = this.geometry;
         object.billboard = this.billboard;
-        object.stationary = this.stationary;
         object.viewport = this.viewport;
         object.lights = this.lights;
         object.outline = this.outline;
@@ -347,7 +343,7 @@
             this.material.hash,
             this.lights.hash,
             this.billboard.hash,
-            this.stationary.hash
+            this.modes.hash
         ]).join(&quot;;&quot;);
 
         if (hash !== object.hash) {

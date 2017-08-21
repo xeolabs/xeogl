@@ -81,7 +81,6 @@
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
-                                <li><a href="../classes/LookatHelper.html">LookatHelper</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
@@ -114,7 +113,6 @@
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/SpotLight.html">SpotLight</a></li>
-                                <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
                                 <li><a href="../classes/Story.html">Story</a></li>
                                 <li><a href="../classes/TeapotGeometry.html">TeapotGeometry</a></li>
@@ -202,7 +200,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/examples_js_models_glTFModel.new.js.html#l1"><code>examples&#x2F;js&#x2F;models&#x2F;glTFModel.new.js:1</code></a>
+            Defined in: <a href="../files/examples_js_models_glTFModel.js.html#l1"><code>examples&#x2F;js&#x2F;models&#x2F;glTFModel.js:1</code></a>
         </div>
 
             Module: <a href="../modules/models.html">models</a><br>
@@ -278,20 +276,16 @@ transform.matrix = xeogl.math.translationMat4v([0,0,-10]);
 <p>From left to right, the format contains the GLTFModel&#39;s ID, the ID of the glTF node that contains the transform, then
 "transform", to distinguish it from the IDs of any other components loaded from elements on the same glTF node.</p>
 <p><strong>Entities</strong></p>
-<p>Let&#39;s make our gear <a href="../classes/Entity.html" class="crosslink">Entity</a> invisible. This time we&#39;ll get the <a href="../classes/Entity.html" class="crosslink">Entity</a> itself, then update
-its Visibility component:</p>
+<p>Let&#39;s make our gear <a href="../classes/Entity.html" class="crosslink">Entity</a> invisible:</p>
 <pre class="code prettyprint"><code class="lang-javascript">var gear53 = gearbox.scene.components["gearbox#n274017_gear_53.entity.0"];
 
-gear53.visibility.visible = false;
+gear53.visible = false;
 </code></pre>
 <p>Note the format of the <a href="../classes/Entity.html" class="crosslink">Entity</a>&#39;s ID: <code>&lt;GLTFModel ID&gt;#&lt;glTF node ID&gt;.entity.&lt;glTF mesh index&gt;</code></p>
 <p>A glTF scene node may contain multiple meshes, and for each of those xeogl will create an individual <a href="../classes/Entity.html" class="crosslink">Entity</a>. As
 before, the part before the hash is the ID of the GLTFModel, which is then followed by the ID of the glTF node, then "entity"
 to signify that this is an Entity ID, then finally an index to differentiate the Entity from those loaded from other
 meshes on the same glTF node.</p>
-<p>When we load multiple Entities from a glTF node, then they will share the same <a href="../classes/Transform.html" class="crosslink">Transform</a> and Visibility components. This
-lets us update their transformation and visibility as a group, as if they were a composite entity that represents
-the glTF node.</p>
 <h2 id="examples">Examples</h2>
 <ul>
 <li><a href="../../examples/#importing_gltf_pbr_metallic_helmet">Damaged Helmet with metal/rough PBR materials</a></li>
@@ -329,7 +323,7 @@ the glTF node.</p>
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/examples_js_models_glTFModel.new.js.html#l1"><code>examples&#x2F;js&#x2F;models&#x2F;glTFModel.new.js:1</code></a>
+                <a href="../files/examples_js_models_glTFModel.js.html#l1"><code>examples&#x2F;js&#x2F;models&#x2F;glTFModel.js:1</code></a>
                 </p>
         
         
@@ -548,10 +542,6 @@ the glTF node.</p>
                                 <a href="#property_src">src</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_src">src</a>
-
-                            </li>
                             <li class="index-item property inherited inherited">
                                 <a href="#property_string">string</a>
 
@@ -597,23 +587,11 @@ the glTF node.</p>
 
                             </li>
                             <li class="index-item event">
-                                <a href="#event_error">error</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_loaded">loaded</a>
-
-                            </li>
-                            <li class="index-item event">
                                 <a href="#event_loaded">loaded</a>
 
                             </li>
                             <li class="index-item event inherited">
                                 <a href="#event_removed">removed</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_src">src</a>
 
                             </li>
                             <li class="index-item event">
@@ -1788,34 +1766,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_models_glTFModel.new.js.html#l160"><code>examples&#x2F;js&#x2F;models&#x2F;glTFModel.new.js:160</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Path to a glTF file.</p>
-                    <p>You can set this to a new file path at any time (except while loading), which will cause the GLTFModel to load components from
-                    the new file (after first destroying any components loaded from a previous file path).</p>
-                    <p>Fires a <a href="../classes/GLTFModel.html#event_src" class="crosslink">src</a> event on change.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_src" class="property item">
-                        <h3 class="name"><code>src</code></h3>
-                        <span class="type">String</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
                             <a href="../files/examples_js_models_glTFModel.js.html#l154"><code>examples&#x2F;js&#x2F;models&#x2F;glTFModel.js:154</code></a>
                             </p>
                     
@@ -2134,49 +2084,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_error" class="events item">
-                        <h3 class="name"><code>error</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_models_glTFModel.new.js.html#l258"><code>examples&#x2F;js&#x2F;models&#x2F;glTFModel.new.js:258</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this GLTFModel fails to load the glTF file
-                    specified by <a href="../classes/GLTFModel.html#property_src" class="crosslink">src</a>.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">msg</code>
-                                            <span class="type">String</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>Description of the error</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
                     <div id="event_loaded" class="events item">
                         <h3 class="name"><code>loaded</code></h3>
                         <span class="type"></span>
@@ -2189,32 +2096,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     <p>
                                     Defined in
                             <a href="../files/examples_js_models_glTFModel.js.html#l180"><code>examples&#x2F;js&#x2F;models&#x2F;glTFModel.js:180</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this GLTFModel has finished loading components from the glTF file
-                    specified by <a href="../classes/GLTFModel.html#property_src" class="crosslink">src</a>.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="event_loaded" class="events item">
-                        <h3 class="name"><code>loaded</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_models_glTFModel.new.js.html#l186"><code>examples&#x2F;js&#x2F;models&#x2F;glTFModel.new.js:186</code></a>
                             </p>
                     
                     
@@ -2283,48 +2164,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     <p>
                                     Defined in
                             <a href="../files/examples_js_models_glTFModel.js.html#l195"><code>examples&#x2F;js&#x2F;models&#x2F;glTFModel.js:195</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this GLTFModel&#39;s <a href="../classes/GLTFModel.html#property_src" class="crosslink">src</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_src" class="events item">
-                        <h3 class="name"><code>src</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_models_glTFModel.new.js.html#l201"><code>examples&#x2F;js&#x2F;models&#x2F;glTFModel.new.js:201</code></a>
                             </p>
                     
                     

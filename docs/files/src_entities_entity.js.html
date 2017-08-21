@@ -81,7 +81,6 @@
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
-                                <li><a href="../classes/LookatHelper.html">LookatHelper</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
@@ -114,7 +113,6 @@
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/SpotLight.html">SpotLight</a></li>
-                                <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
                                 <li><a href="../classes/Story.html">Story</a></li>
                                 <li><a href="../classes/TeapotGeometry.html">TeapotGeometry</a></li>
@@ -316,6 +314,32 @@
  var center = canvasBoundary.center;
  &#x60;&#x60;&#x60;&#x60;
 
+ ## Skyboxes
+
+ An {{#crossLink &quot;Entity&quot;}}{{/crossLink}} has a {{#crossLink &quot;Entity/stationary:property&quot;}}{{/crossLink}} property
+ that will cause it to never translate with respect to the viewpoint, while still rotationg, as if always far away.
+
+ This is useful for using Entities as skyboxes, like so:
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ new xeogl.Entity({
+
+     geometry: new xeogl.BoxGeometry({
+         xSize: 1000,
+         ySize: 1000,
+         zSize: 1000
+     }),
+
+     material: new xeogl.PhongMaterial({
+         diffuseMap: new xeogl.Texture({
+            src: &quot;textures/diffuse/uvGrid2.jpg&quot;
+         })
+     }),
+
+     stationary: true // Locks position with respect to viewpoint
+ });
+ &#x60;&#x60;&#x60;&#x60;
+
  @class Entity
  @module xeogl
  @submodule entities
@@ -355,7 +379,8 @@
  @param [cfg.receiveShadow=true] {Boolean} Whether this Entity receives shadows.
  @param [cfg.outlined=false] {Boolean} Whether an outline is rendered around this entity, as configured by the Entity&#x27;s {{#crossLink &quot;Outline&quot;}}{{/crossLink}} component
  @param [cfg.layer=0] {Number} Indicates this Entity&#x27;s rendering priority, typically used for transparency sorting,
-
+ @param [cfg.stationary=false] {Boolean} Disables the effect of {{#crossLink &quot;Lookat&quot;}}view transform{{/crossLink}}
+ * translations for this Entity. This is useful for skybox Entities.
  @param [cfg.loading] {Boolean} Flag which indicates that this Entity is freshly loaded. This will increment the
  {{#crossLink &quot;Spinner/processes:property&quot;}}Spinner processes{{/crossLink}} count, and then when this Entity is first
  rendered, will decrement the count again.
@@ -423,6 +448,7 @@
             this.receiveShadow = cfg.receiveShadow;
             this.outlined = cfg.outlined;
             this.layer = cfg.layer;
+            this.stationary = cfg.stationary;
 
             // Cached boundary for each coordinate space
             // The Entity&#x27;s Geometry component caches the Local-space boundary
@@ -816,46 +842,6 @@
 
                 get: function () {
                     return this._attached.viewport;
-                }
-            },
-
-            /**
-             * The {{#crossLink &quot;Stationary&quot;}}{{/crossLink}} attached to this Entity.
-             *
-             * When {{#crossLink &quot;Stationary/property:active&quot;}}{{/crossLink}}, the {{#crossLink &quot;Stationary&quot;}}{{/crossLink}}
-             * will prevent the translation component of the viewing transform from being applied to this Entity, yet
-             * still allowing it to rotate.
-             *
-             * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this Entity. Defaults to the parent
-             * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/stationary:property&quot;}}stationary{{/crossLink}},
-             * which is disabled by default.
-             *
-             * Fires an {{#crossLink &quot;Entity/stationary:event&quot;}}{{/crossLink}} event on change.
-             *
-             * @property stationary
-             * @type Stationary
-             */
-            stationary: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this Entity&#x27;s {{#crossLink &quot;Entity/stationary:property&quot;}}{{/crossLink}}
-                     * property changes.
-                     *
-                     * @event stationary
-                     * @param value The property&#x27;s new value
-                     */
-                    this._attach({
-                        name: &quot;stationary&quot;,
-                        type: &quot;xeogl.Stationary&quot;,
-                        component: value,
-                        sceneDefault: true
-                    });
-                },
-
-                get: function () {
-                    return this._attached.stationary;
                 }
             },
 
@@ -1313,6 +1299,46 @@
                     return this._state.layer;
                 }
             },
+
+            /**
+             * Flag which indicates whether this Entity is stationary or not.
+             *
+             * Setting this true will disable the effect of {{#crossLink &quot;Lookat&quot;}}view transform{{/crossLink}}
+             * translations for this Entity, while still alowing it to rotate. This is useful for skybox Entities.
+
+             * Fires an {{#crossLink &quot;Entity/stationary:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property stationary
+             * @type Boolean
+             */
+            stationary: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    if (this._state.stationary === value) {
+                        return;
+                    }
+
+                    this._state.stationary = value;
+
+                    this._state.hash = (this._state.stationary ? &quot;a;&quot; : &quot;;&quot;);
+
+                    this.fire(&quot;dirty&quot;, this);
+
+                    /**
+                     * Fired whenever this Entity&#x27;s {{#crossLink &quot;Entity/stationary:property&quot;}}{{/crossLink}} property changes.
+                     * @event stationary
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&#x27;stationary&#x27;, this._state.stationary);
+                },
+
+                get: function () {
+                    return this._state.stationary;
+                }
+            },
             
             /**
              * Local-space 3D boundary of this Entity.
@@ -1714,7 +1740,6 @@
             attached.material._compile();
             this._renderer.modelTransform = attached.transform._state;
             attached.billboard._compile();
-            attached.stationary._compile();
             attached.viewport._compile();
             attached.outline._compile();
             attached.xray._compile();
@@ -1761,7 +1786,6 @@
                 material: attached.material.id,
                 transform: attached.transform.id,
                 billboard: attached.billboard.id,
-                stationary: attached.stationary.id,
                 viewport: attached.viewport.id,
                 outline: attached.outline.id,
                 xray: attached.xray.id,
@@ -1775,7 +1799,8 @@
                 receiveShadow: this._state.receiveShadow,
                 outlined: this._state.outlined,
                 xrayed:  this._state.xrayed,
-                layer: this._state.layer
+                layer: this._state.layer,
+                stationary: this._state.stationary
             };
         },
 

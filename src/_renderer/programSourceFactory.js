@@ -294,7 +294,7 @@
             add("mat4 viewMatrix2 = viewMatrix;");
             add("mat4 modelMatrix2 = modelMatrix;");
 
-            if (states.stationary.active) {
+            if (states.modes.stationary) {
                 add("viewMatrix2[3][0] = viewMatrix2[3][1] = viewMatrix2[3][2] = 0.0;")
             }
 
@@ -454,7 +454,7 @@
             add("mat4 viewMatrix2           = viewMatrix;");
             add("mat4 modelMatrix2          = modelMatrix;");
 
-            if (states.stationary.active) {
+            if (states.modes.stationary) {
                 add("viewMatrix2[3][0] = viewMatrix2[3][1] = viewMatrix2[3][2] = 0.0;")
             }
 
