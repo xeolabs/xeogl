@@ -33,7 +33,8 @@
         alphaMap: new xeogl.Texture({
             src: "textures/alpha/cloud10.png"
         }),
-        alpha: 1.0
+        alpha: 1.0,
+        alphaMode: "blend"
     });
 
     var lights = new xeogl.Lights({
@@ -42,11 +43,6 @@
 
     var billboard = new xeogl.Billboard({
         spherical: true
-    });
-
-    var modes = new xeogl.Modes({
-        transparent: true,
-        pickable: false
     });
 
     var numClouds = 200;
@@ -70,8 +66,8 @@
                     Math.random() * r - halfr
                 ]
             }),
-            modes: modes,
-            layer: new xeogl.Layer()
+            pickable: false,
+            layer: 0
         });
 
         clouds.push(entity);
@@ -85,7 +81,7 @@
 //
 //            entity.viewBoundary.on("updated", function () {
 //                var center = this.center;
-//                _object.layer.priority = 1000.0 + center[2];
+//                _object.layer = 1000.0 + center[2];
 //            });
 //        })();
     }
@@ -101,7 +97,7 @@
     scene.on("tick", function () {
 
         for (var i = 0; i < numClouds; i++) {
-            clouds[i].layer.priority = clouds[i].viewBoundary.center[2] * 100.0;
+            clouds[i].layer = clouds[i].viewBoundary.center[2] * 100.0;
         }
 
         var view = scene.camera.view;

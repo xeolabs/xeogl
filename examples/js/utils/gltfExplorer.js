@@ -70,7 +70,7 @@ var gltfExplorer = function (menuId, files) {
                 if (lastEntity) {
                     lastEntity.material.alphaMode = "blend";
                     lastEntity.material.alpha = 0.4;
-                    lastEntity.modes.outline = false;
+                    lastEntity.outlined = false;
                     lastEntity = null;
                 }
                 return;
@@ -83,12 +83,12 @@ var gltfExplorer = function (menuId, files) {
                 if (lastEntity) {
                     lastEntity.material.alphaMode = "blend";
                     lastEntity.material.alpha = 0.4;
-                    lastEntity.modes.outline = false;
+                    lastEntity.outlined = false;
                 }
 
                 entity.material.alphaMode = "opaque";
                 entity.material.alpha = 1.0;
-                entity.modes.outline = true;
+                entity.outlined = true;
 
                 cameraFlight.flyTo({
                     aabb: entity.worldBoundary.aabb,

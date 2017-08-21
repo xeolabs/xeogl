@@ -128,10 +128,6 @@
             occlusionMap: occlusionMap
         }),
 
-        modes: new xeogl.Modes({
-            transparent: false
-        }),
-
         transform: new xeogl.Scale({
             xyz: [40, 40, 40]
         })
@@ -208,7 +204,7 @@
             material.specularF0 = self["specularF0"];
             material.alpha = self["alpha"];
 
-            hydrant.modes.transparent = (material.alpha < 1);
+            hydrant.material.alphaMode = (material.alpha < 1) ? "blend" : "opaque";
 
             if (self["baseColorMap"] !== !!material.baseColorMap) {
                 material.baseColorMap = self["baseColorMap"] ? baseColorMap : null;

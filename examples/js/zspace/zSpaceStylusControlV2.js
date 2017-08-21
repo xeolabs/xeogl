@@ -195,10 +195,8 @@
                         ambient: [0, 0, 0],
                         lineWidth: 3
                     },
-                    modes: {
-                        pickable: false, // Can't pick the tylus helper
-                        collidable: false // Don't include stylus helper in boundary calculations
-                    }
+                    pickable: false, // Can't pick the tylus helper
+                    collidable: false // Don't include stylus helper in boundary calculations
                 });
 
                 this.setPosition = (function () {

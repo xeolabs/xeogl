@@ -129,9 +129,6 @@
                     glossiness: glossiness,
                     alpha: 1
                 }),
-                modes: new xeogl.Modes({
-                    transparent: false
-                }),
                 transform: new xeogl.Translate({
                     xyz: [x, y, 0]
                 }),
@@ -165,9 +162,7 @@
         transform: new xeogl.Translate({
             xyz: [min, min - inc, 0]
         }),
-        modes: {
-            collidable: false
-        }
+        collidable: false
     });
 
     new xeogl.Entity({
@@ -183,9 +178,7 @@
                 xyz: [min - inc, max, 0]
             })
         }),
-        modes: {
-            collidable: false
-        }
+        collidable: false
     });
 
     //--------------------------------------------------------------------------------------

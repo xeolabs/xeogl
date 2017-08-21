@@ -108,10 +108,8 @@
         material: new xeogl.PhongMaterial({
             diffuse: [0.5, 0.5, 0],
             lineWidth:7,
-            alpha: 0.3
-        }),
-        modes: new xeogl.Modes({
-            transparent: true
+            alpha: 0.3,
+            alphaMode: "blend"
         }),
         visible: true
     });

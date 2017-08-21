@@ -114,7 +114,7 @@
         for (var i = 0, len = ids.length; i < len; i++) {
             var id = ids [i];
             var entity = model.entities[id];
-            entity.modes.outline = true;
+            entity.outlined = true;
         }
     }
 
@@ -385,93 +385,89 @@
         transform: new xeogl.Translate({
             xyz: [0, -1.1, 0]
         }),
-        modes: new xeogl.Modes({
-            collidable: false,
-            pickable: false,
-            transparent: false
-        })
+        collidable: false,
+        pickable: false
     });
 
-    //    // Source code vector text
-    //    (function () {
-    //
-    //        var size = 10;
-    //        var textHeight = size / 2.0;
-    //        var textSize = 0.35;
-    //
-    //        var code = document.getElementById("source").innerText;
-    //
-    //        var codeMaterial = new xeogl.PhongMaterial({
-    //            emissive: [0.5, 0.5, 0.8],
-    //            lineWidth: 2
-    //        });
-    //
-    //        var codeModes = new xeogl.Modes({
-    //            backfaces: false,
-    //            collidable: false,
-    //            pickable: false
-    //        });
-    //
-    //        new xeogl.Entity({
-    //            material: codeMaterial,
-    //            modes: codeModes,
-    //            geometry: new xeogl.VectorTextGeometry({
-    //                text: code.substring(0, 800),
-    //                size: textSize
-    //            }),
-    //            transform: new xeogl.Translate({
-    //                xyz: [-size, textHeight, -size]
-    //            })
-    //        });
-    //
-    //        new xeogl.Entity({
-    //            material: codeMaterial,
-    //            modes: codeModes,
-    //            geometry: new xeogl.VectorTextGeometry({
-    //                text: code.substring(800, 1600),
-    //                size: textSize
-    //            }),
-    //            transform: new xeogl.Rotate({
-    //                xyz: [0, 1, 0],
-    //                angle: -90,
-    //                parent: new xeogl.Translate({
-    //                    xyz: [size, textHeight, -size]
-    //                })
-    //            })
-    //        });
-    //
-    //        new xeogl.Entity({
-    //            material: codeMaterial,
-    //            modes: codeModes,
-    //            geometry: new xeogl.VectorTextGeometry({
-    //                text: code.substring(1600, 2400),
-    //                size: textSize
-    //            }),
-    //            transform: new xeogl.Rotate({
-    //                xyz: [0, 1, 0],
-    //                angle: -180,
-    //                parent: new xeogl.Translate({
-    //                    xyz: [size, textHeight, size]
-    //                })
-    //            })
-    //        });
-    //
-    //        new xeogl.Entity({
-    //            material: codeMaterial,
-    //            modes: codeModes,
-    //            geometry: new xeogl.VectorTextGeometry({
-    //                text: code.substring(2400, 3200),
-    //                size: textSize
-    //            }),
-    //            transform: new xeogl.Rotate({
-    //                xyz: [0, 1, 0],
-    //                angle: 90,
-    //                parent: new xeogl.Translate({
-    //                    xyz: [-size, textHeight, size]
-    //                })
-    //            })
-    //        });
-    //    })();
+        // Source code vector text
+        (function () {
+
+            var size = 10;
+            var textHeight = size / 2.0;
+            var textSize = 0.35;
+
+            var code = document.getElementById("source").innerText;
+
+            var codeMaterial = new xeogl.PhongMaterial({
+                emissive: [0.5, 0.5, 0.8],
+                lineWidth: 2,
+                backfaces: false
+            });
+
+            new xeogl.Entity({
+                material: codeMaterial,
+                geometry: new xeogl.VectorTextGeometry({
+                    text: code.substring(0, 800),
+                    size: textSize
+                }),
+                transform: new xeogl.Translate({
+                    xyz: [-size, textHeight, -size]
+                }),
+                collidable: false,
+                pickable: false
+            });
+
+            new xeogl.Entity({
+                material: codeMaterial,
+                geometry: new xeogl.VectorTextGeometry({
+                    text: code.substring(800, 1600),
+                    size: textSize
+                }),
+                transform: new xeogl.Rotate({
+                    xyz: [0, 1, 0],
+                    angle: -90,
+                    parent: new xeogl.Translate({
+                        xyz: [size, textHeight, -size]
+                    })
+                }),
+                collidable: false,
+                pickable: false
+            });
+
+            new xeogl.Entity({
+                material: codeMaterial,
+                geometry: new xeogl.VectorTextGeometry({
+                    text: code.substring(1600, 2400),
+                    size: textSize
+                }),
+                transform: new xeogl.Rotate({
+                    xyz: [0, 1, 0],
+                    angle: -180,
+                    parent: new xeogl.Translate({
+                        xyz: [size, textHeight, size]
+                    })
+                }),
+                collidable: false,
+                pickable: false
+            });
+
+            new xeogl.Entity({
+                material: codeMaterial,
+                geometry: new xeogl.VectorTextGeometry({
+                    text: code.substring(2400, 3200),
+                    size: textSize
+                }),
+                transform: new xeogl.Rotate({
+                    xyz: [0, 1, 0],
+                    angle: 90,
+                    parent: new xeogl.Translate({
+                        xyz: [-size, textHeight, size]
+                    })
+                }),
+                collidable: false,
+                pickable: false
+            });
+        })();
 
 </script>
 </body>

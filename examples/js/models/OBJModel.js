@@ -68,8 +68,8 @@
         case "confRoom#mesh30":
             break;
         default: // Not a chair entity
-            entity.modes.transparent = true;
             entity.material.alpha = 0.5;
+            entity.material.blendMode = "blend"
     }
  }
  ````
@@ -928,9 +928,7 @@
                     id: model.id + "#" + object.id,
                     geometry: xeoGeometry,
                     material: material,
-                    modes: {
-                        pickable: true
-                    }
+                    pickable: true
                 });
 
                 model.add(entity);

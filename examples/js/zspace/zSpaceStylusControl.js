@@ -183,10 +183,8 @@
                         ambient: [0, 0, 0],
                         lineWidth: 3
                     },
-                    modes: {
-                        pickable: false, // Can't pick the tylus helper
-                        collidable: false // Don't include stylus helper in boundary calculations
-                    }
+                    pickable: false, // Can't pick the tylus helper
+                    collidable: false // Don't include stylus helper in boundary calculations
                 });
 
                 this.setPosition = (function () {
@@ -302,13 +300,13 @@
 
                         if (lastEntityHighlighted) {
                             if (!hit || (hit.entity.id !== lastEntityHighlighted.id)) {
-                           //     lastEntityHighlighted.material.emissive = [0, 0, 0];  // De-highlight the previous hit entity
+                                //     lastEntityHighlighted.material.emissive = [0, 0, 0];  // De-highlight the previous hit entity
                             }
                         }
 
                         if (hit) {
                             stylusHelper.setHighlighted(true);
-                         //   hit.entity.material.emissive = [0.25, 0.25, 0]; // highlight the new entity
+                            //   hit.entity.material.emissive = [0.25, 0.25, 0]; // highlight the new entity
                             lastEntityHighlighted = hit.entity;
 
                         } else {
@@ -326,8 +324,8 @@
 
                             draggingEntity = hit.entity;
 
-                             //Ensure that the entity has a single modelling transform
-                             //ZSPaceStylusControl cannot yet support articulation of hierarchies
+                            //Ensure that the entity has a single modelling transform
+                            //ZSPaceStylusControl cannot yet support articulation of hierarchies
 
                             if (draggingEntity.transform.parent) {
 
@@ -384,7 +382,7 @@
                             // Button 0 released - release entity
 
                             if (draggingEntity) {
-                            //    draggingEntity.material.emissive = [0.0, 0.0, 0.0];
+                                //    draggingEntity.material.emissive = [0.0, 0.0, 0.0];
                                 draggingEntity = null;
                             }
                         }

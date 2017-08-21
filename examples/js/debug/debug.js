@@ -219,7 +219,7 @@
                 object.geometry.indices = indices;
                 object.material.emissive = color;
                 object.material.alpha = alpha;
-                object.modes.transparency = alpha < 1.0;
+                object.material.blendMode = alpha < 1.0 ? "blend" : "opaque";
                 object.material.lineWidth = lineWidth;
                 object.visible = true;
                 //           object.transform.matrix = matrix;
@@ -462,7 +462,7 @@
                     billboard: new xeogl.Billboard({
                         spherical: true
                     }),
-                    visibility: true
+                    visible: true
                 });
 
             } else {
@@ -470,9 +470,9 @@
                 object.geometry.text = text;
                 object.material.emissive = color;
                 object.material.alpha = alpha;
-                object.modes.transparency = alpha < 1.0;
+                object.material.blendMode = alpha < 1.0 ? "blend" : "opaque"
                 object.material.lineWidth = lineWidth;
-                object.visibility.visible = true;
+                object.visible = true;
             }
 
             this._reset();

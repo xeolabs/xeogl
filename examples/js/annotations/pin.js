@@ -578,7 +578,7 @@
         _entityAttached: function (entity) {
             this._onEntityLocalBoundary = entity.localBoundary.on("updated", this._setLocalPosDirty, this);
             this._onEntityWorldBoundary = entity.worldBoundary.on("updated", this._setWorldPosDirty, this);
-            this._onEntityVisible = entity.visibility.on("visible", this._entityVisible, this);
+            this._onEntityVisible = entity.on("visible", this._entityVisible, this);
             this._setLocalPosDirty();
         },
 
@@ -606,7 +606,7 @@
         _entityDetached: function (entity) {
             entity.localBoundary.off(this._onEntityLocalBoundary);
             entity.worldBoundary.off(this._onEntityWorldBoundary);
-            entity.visibility.off(this._onEntityVisible);
+            entity.off(this._onEntityVisible);
             this._entityVisible(false);
         },
 

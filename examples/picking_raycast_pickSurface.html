@@ -55,7 +55,7 @@
                 ambient: [0, 0, 0],
                 lineWidth: 2
             }),
-            modes: new xeogl.Modes({pickable: false})
+            pickable: false
         });
 
         var positions = new Float32Array(6);
@@ -86,7 +86,7 @@
             geometry: new xeogl.SphereGeometry({radius: 0.35}),
             material: new xeogl.PhongMaterial({emissive: [1, 0, 0], diffuse: [0, 0, 0]}),
             transform: new xeogl.Translate(),
-            modes: new xeogl.Modes({pickable: false}),
+            pickable: false,
             visible: false
         });
 

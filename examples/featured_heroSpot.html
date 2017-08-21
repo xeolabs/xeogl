@@ -56,14 +56,10 @@
             diffuse: [0, 0, 0],
             specular: [0, 0, 0],
             alpha: 1,
-            lineWidth: 1
+            lineWidth: 1,
+            alphaMode: "blend"
         }),
-        modes: new xeogl.Modes({
-            transparent: true
-        }),
-        layer: new xeogl.Layer({
-            priority: 1.5
-        })
+        layer: 1.5
     });
 
     var solidTorus = new xeogl.Entity({
@@ -87,6 +83,7 @@
             diffuseMap: new xeogl.Texture({
                 src: "textures/diffuse/uvGrid2.jpg"
             }),
+            alphaMode: "blend",
             specularFresnel: new xeogl.Fresnel({
                 edgeBias: 0.0,
                 centerBias: 1.0,
@@ -103,13 +100,8 @@
             }),
             alpha: 0
         }),
-        modes: new xeogl.Modes({
-            transparent: true
-        }),
         lights: lights,
-        layer: new xeogl.Layer({
-            priority: 2
-        })
+        layer: 2
     });
 
 
@@ -138,15 +130,12 @@
             diffuse: [0, 0, 0],
             specular: [0, 0, 0],
             alpha: 1,
-            lineWidth: 3
-        }),
-        modes: new xeogl.Modes({
+            lineWidth: 3,
             backfaces: true,
-            transparent: true
+            alphaMode: "blend"
+
         }),
-        layer: new xeogl.Layer({
-            priority: 1
-        }),
+        layer: 1,
         visible: true
     });
 
@@ -157,19 +146,17 @@
             zSize: 10
         }),
         material: new xeogl.PhongMaterial({
-            emissive: [0.1,0.1,0.1],
+            emissive: [0.1, 0.1, 0.1],
 //            specular: [0.3, 0.3, 0.3],
 //            ambient: [0.5, 0.5, 0.6],
 //            diffuse: [1.0, 1.0, 1.0],
-           // shininess: 30,
+            // shininess: 30,
             diffuseMap: new xeogl.Texture({
                 src: "textures/diffuse/UVCheckerMap11-1024.png"
             }),
-            alpha: 0
-        }),
-        modes: new xeogl.Modes({
-            backfaces: true,
-            transparent: true
+            alpha: 0,
+            alphaMode: "blend",
+            backfaces: true
         }),
         lights: new xeogl.Lights({
             lights: [
@@ -187,9 +174,7 @@
                 })
             ]
         }),
-        layer: new xeogl.Layer({
-            priority: 1
-        }),
+        layer: 1,
         visible: true
     });
 
@@ -220,7 +205,7 @@
                 if (solidBox.material.alpha < 1) {
                     solidBox.material.alpha += 0.01;
                 } else {
-                    solidBox.modes.transparent = false;
+                    solidBox.material.alphaMode = "opaque";
                 }
 
                 if (wireframeTorus) {
@@ -236,7 +221,6 @@
                     if (solidTorus.material.alpha < 1.0) {
                         solidTorus.material.alpha += 0.005;
                     } else {
-//                    solidTorus.modes.transparent = false;
                         solidTorus = null;
                     }
                 }
@@ -244,9 +228,6 @@
             });
 
     new xeogl.MouseRotateCamera();
-
-
-
 
 
 </script>

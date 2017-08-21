@@ -116,9 +116,6 @@
             occlusionMap: occlusionMap,
             normalMap: normalMap
         }),
-        modes: new xeogl.Modes({
-            transparent: false
-        }),
         transform: new xeogl.Scale({
             xyz: [50, 50, 50]
         })
@@ -193,7 +190,7 @@
             material.reflectivity = self["reflectivity"];
             material.alpha = self["alpha"];
 
-            entity.modes.transparent = (material.alpha < 1);
+            entity.material.alphaMode = (material.alpha < 1) ? "blend" : "opaque";
 
             if (self["diffuseMap"] !== !!material.diffuseMap) {
                 material.diffuseMap = self["diffuseMap"] ? diffuseMap : null;

@@ -52,17 +52,7 @@
 
     // Create a 2x2x2 box centered at the World-space origin
     var towerSectionGeometry = new xeogl.Geometry({
-
-        // The primitive type - allowed values are
-        // "points", "lines", "line-loop", "line-strip",
-        // "triangles", "triangle-strip" and "triangle-fan".
-        //
-        // See the OpenGL/WebGL specification docs for
-        // how the coordinate arrays are supposed to be laid out.
         primitive: "triangles",
-
-        // The vertices - eight for our cube, each
-        // one spanning three array elements for X,Y and Z
         positions: [
 
             // v0-v1-v2-v3 front
@@ -182,20 +172,6 @@
             0, 6
         ],
 
-        // Indices - these organise the
-        // positions and uv texture coordinates
-        // into geometric primitives in accordance
-        // with the "primitive" parameter,
-        // in this case a set of three indices
-        // for each triangle.
-        //
-        // Note that each triangle is specified
-        // in counter-clockwise winding order.
-        //
-        // You can specify them in clockwise
-        // order if you configure the Modes
-        // node's frontFace flag as "cw", instead of
-        // the default "ccw".
         indices: [
             0, 1, 2,
             0, 2, 3,
@@ -323,8 +299,8 @@
         // in counter-clockwise winding order.
         //
         // You can specify them in clockwise
-        // order if you configure the Modes
-        // node's frontFace flag as "cw", instead of
+        // order if you configure the Material
+        // frontFace property as "cw", instead of
         // the default "ccw".
         indices: [
             0, 1, 2,
@@ -425,14 +401,6 @@
                     })
                 })
             });
-
-//            if (i === 3) {
-//                tower.modes = new xeogl.Modes({
-//                    transparent: true
-//                });
-//
-//                tower.material = (oddSection ? material1 : material2).clone({ alpha: 0.7})
-//            }
 
 
             // Seat
@@ -650,41 +618,7 @@
         })
     });
 
-    // Skybox
 
-
-    //    new xeogl.Entity({
-    //        geometry: new xeogl.BoxGeometry({
-    //            xSize: 25,
-    //            ySize: 7,
-    //            zSize: 25
-    //        }),
-    //        material: new xeogl.PhongMaterial({
-    //            specular: [0.3, 0.3, 0.3],
-    //            ambient: [0.0, 0.0, 0.0],
-    //            diffuse: [0.4, 0.4, 0.50],
-    //            shininess: 3,
-    //            XdiffuseMap: new xeogl.Texture({
-    ////                src: "textures/diffuse/UVCheckerMap11-1024.png"
-    //                src: "textures/diffuse/SeymourCray_retouched.jpg"
-    //            })
-    //        }),
-    //        transform: new xeogl.Translate({
-    //            xyz: [0, 0.0, 0]
-    //        }),
-    //        modes: new xeogl.Modes({
-    //            backfaces: false,
-    //            frontface: "cw",
-    //            collidable: false,
-    //            pickable: false
-    //        })
-    //
-    //    });
-
-    //    var skybox = new xeogl.Skybox({
-    //     //   src: "textures/skybox/miramarClouds.jpg",
-    //        size: 1000 // Default
-    //    });
 
     // Floor
 
@@ -700,11 +634,6 @@
 
     var tileGeometry = new xeogl.BoxGeometry();
 
-    var tileModes = new xeogl.Modes({
-        collidable: false,
-        pickable: false
-    });
-
     var numTiles = 0;
 
     for (var x = -40; x <= 40; x += 2.5) {
@@ -719,7 +648,8 @@
                         xyz: [x, -3.3, z]
                     })
                 }),
-                modes: tileModes
+                collidable: false,
+                pickable: false
             });
         }
     }
@@ -735,11 +665,6 @@
 
     var lightGeometry = new xeogl.BoxGeometry({});
 
-    var lightModes = new xeogl.Modes({
-        collidable: false,
-        pickable: false
-    });
-
     for (var x = -20; x <= 20; x += 10) {
         for (var z = -20; z <= 20; z += 10) {
 
@@ -753,7 +678,8 @@
                         xyz: [x, 6.7, z]
                     })
                 }),
-                modes: lightModes
+                collidable: false,
+                pickable: false
             });
         }
     }
@@ -763,16 +689,11 @@
 
     var ledMaterial = new xeogl.PhongMaterial({
         emissive: [0.2, 0.0, 1.2],
-        backfaces: false
+        backfaces: false,
+        frontface: "cw"
     });
 
     var ledGeometry = new xeogl.PlaneGeometry({});
-
-    var ledModes = new xeogl.Modes({
-        collidable: false,
-        pickable: false,
-        frontface: "cw"
-    });
 
     var leds = [];
 
@@ -787,7 +708,8 @@
                     xyz: [Math.random() * 35 - 15, Math.random() * 5, -19]
                 })
             }),
-            modes: ledModes
+            collidable: false,
+            pickable: false
         }));
 
     }
@@ -807,8 +729,8 @@
                     })
                 })
             }),
-
-            modes: ledModes
+            collidable: false,
+            pickable: false
         }));
 
     }
@@ -829,32 +751,12 @@
 
     var boxGeometry = new xeogl.BoxGeometry();
 
-    var boxModes = new xeogl.Modes({
-        collidable: false,
-        pickable: false
-    });
-
     var greenLED = new xeogl.PhongMaterial({
         emissive: [0.6, 1.0, 0.6]
     });
 
 
     for (var x = -16; x <= 16; x += 3.1) {
-
-// LED
-
-//            leds.push(new xeogl.Entity({
-//                geometry: ledGeometry,
-//                material: greenLED,
-//                transform: new xeogl.Scale({
-//                    xyz: [0.1, 0.1, 0.17],
-//                    parent: new xeogl.Translate({
-//                        xyz: [x + 2, 1.38, -13.9]
-//                    })
-//                }),
-//                modes: ledModes,
-//                visibility: new xeogl.Visibility()
-//            }));
 
         // Box
 
@@ -867,7 +769,8 @@
                     xyz: [x, -1.0, -16]
                 })
             }),
-            modes: boxModes
+            collidable: false,
+            pickable: false
         });
 
         // Diskpac
@@ -881,7 +784,8 @@
                     xyz: [x, 1.4, -16]
                 })
             }),
-            modes: boxModes
+            collidable: false,
+            pickable: false
         });
 
         new xeogl.Entity({
@@ -893,7 +797,8 @@
                     xyz: [16, -1.2, x]
                 })
             }),
-            modes: boxModes
+            collidable: false,
+            pickable: false
         });
 
         // Diskpac
@@ -907,7 +812,8 @@
                     xyz: [16, 1.2, x]
                 })
             }),
-            modes: boxModes
+            collidable: false,
+            pickable: false
         });
     }
 

@@ -14,7 +14,8 @@
 <body>
 
 <div id="info">
-    <h1>raycasting 1000 <a href="../docs/classes/Entity.html" target="_parent">Entities</a> to find intersection position, UV and normal</h1>
+    <h1>raycasting 1000 <a href="../docs/classes/Entity.html" target="_parent">Entities</a> to find intersection
+        position, UV and normal</h1>
     <br>
     <img id="diffuseTexture" src="textures/diffuse/uvGrid2.jpg" width="400px" height="400px">
 
@@ -37,9 +38,7 @@
             transform: new xeogl.Translate({
                 xyz: [0, 0, 0]
             }),
-            modes: new xeogl.Modes({
-                pickable: false
-            })
+            pickable: false
         });
         return function (worldPos, normal) { // TODO: show fragment normal vector
             pointHelper.transform.xyz = worldPos;

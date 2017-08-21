@@ -142,200 +142,203 @@
             diffuse: [0.5, 0.5, 0.5]
         });
 
-        var visibility = new xeogl.Visibility(scene, { // Shows or hides gnomon
-            visible: !!cfg.visible
-        });
-
-        var modes = new xeogl.Modes(scene, { // Ensures that gnomon is not pickable and has no collision boundary
-            pickable: false,
-            collidable: false
-        });
-
         var billboard = new xeogl.Billboard(scene, { // Keeps axis labels oriented towards eye
             spherical: true
         });
 
         // ----------------- Entities ------------------------------
 
-        // Sphere behind gnomon
+        var entities = [
 
-        new xeogl.Entity(scene, {
-            lights: new xeogl.Lights(scene),
-            geometry: new xeogl.SphereGeometry(scene, {
-                radius: 9,
-                heightSegments: 60,
-                widthSegments: 60
-            }),
-            material: new xeogl.PhongMaterial(scene, {
-                diffuse: [1.0, 1.0, 1.0],
-                emissive: [0.8, 0.8, 0.8],
-                ambient: [0.3, 0.3, 0.3],
-                specular: [1, 1, 1],
-                alpha: 0.4
-            }),
-            modes: new xeogl.Modes(scene, {
+            // Sphere behind gnomon
+
+            new xeogl.Entity(scene, {
+                lights: new xeogl.Lights(scene),
+                geometry: new xeogl.SphereGeometry(scene, {
+                    radius: 9,
+                    heightSegments: 60,
+                    widthSegments: 60
+                }),
+                material: new xeogl.PhongMaterial(scene, {
+                    diffuse: [1.0, 1.0, 1.0],
+                    emissive: [0.8, 0.8, 0.8],
+                    ambient: [0.3, 0.3, 0.3],
+                    specular: [1, 1, 1],
+                    alpha: 0.4,
+                    alphaMode: "blend",
+                    frontface: "cw"
+                }),
                 pickable: false,
                 collidable: false,
-                transparent: true,
-                frontface: "cw"
-
+                visible: !!cfg.visible
             }),
-            visibility: visibility
-        });
 
-        // Ground plane
+            // Ground plane
 
-        //new xeogl.Entity(scene, {
-        //    geometry: new xeogl.BoxGeometry(scene, {
-        //        xSize: 6,
-        //        ySize: 0.01,
-        //        zSize: 6
-        //    }),
-        //    material: axisMaterial.clone({
-        //        diffuse: [0.3, 0.3, 1.0],
-        //        alpha: 0.4,
-        //        diffuseMap: new xeogl.Texture(scene, {
-        //            src: "bimsurfer/src/xeoViewer/helpers/UVCheckerMap11-1024.png"
-        //        })
-        //    }),
-        //    visibility: visibility,
-        //    modes: modes.clone({transparent: true}),
-        //    transform: new xeogl.Rotate(scene, { xyz:[1,0,0], angle: 90})
-        //});
+            //new xeogl.Entity(scene, {
+            //    geometry: new xeogl.BoxGeometry(scene, {
+            //        xSize: 6,
+            //        ySize: 0.01,
+            //        zSize: 6
+            //    }),
+            //    material: axisMaterial.clone({
+            //        diffuse: [0.3, 0.3, 1.0],
+            //        alpha: 0.4,
+            //        diffuseMap: new xeogl.Texture(scene, {
+            //            src: "bimsurfer/src/xeoViewer/helpers/UVCheckerMap11-1024.png"
+            //        })
+            //    }),
+            //    pickable: false,
+            //    collidable: false,
+            //    visible: !!cfg.visible,
+            //    transform: new xeogl.Rotate(scene, { xyz:[1,0,0], angle: 90})
+            //}),
 
-        // Ball at center of axis
+            // Ball at center of axis
 
-        new xeogl.Entity(scene, {  // Arrow
-            geometry: new xeogl.SphereGeometry(scene, {
-                radius: 1.0
+            new xeogl.Entity(scene, {  // Arrow
+                geometry: new xeogl.SphereGeometry(scene, {
+                    radius: 1.0
+                }),
+                material: ballMaterial,
+                pickable: false,
+                collidable: false,
+                visible: !!cfg.visible
             }),
-            material: ballMaterial,
-            visibility: visibility,
-            modes: modes
-        });
 
-        // X-axis arrow, shaft and label
+            // X-axis arrow, shaft and label
 
-        new xeogl.Entity(scene, {  // Arrow
-            geometry: arrowHead,
-            material: xAxisMaterial,
-            visibility: visibility,
-            modes: modes,
-            transform: new xeogl.Translate(scene, {
-                xyz: [0, 5, 0],
-                parent: new xeogl.Rotate(scene, {
-                    xyz: [0, 0, 1],
-                    angle: 90
+            new xeogl.Entity(scene, {  // Arrow
+                geometry: arrowHead,
+                material: xAxisMaterial,
+                pickable: false,
+                collidable: false,
+                visible: !!cfg.visible,
+                transform: new xeogl.Translate(scene, {
+                    xyz: [0, 5, 0],
+                    parent: new xeogl.Rotate(scene, {
+                        xyz: [0, 0, 1],
+                        angle: 90
+                    })
                 })
-            })
-        });
-
-        new xeogl.Entity(scene, {  // Shaft
-            geometry: arrowShaft,
-            material: xAxisMaterial,
-            visibility: visibility,
-            modes: modes,
-            transform: new xeogl.Translate(scene, {
-                xyz: [0, 2, 0],
-                parent: new xeogl.Rotate(scene, {
-                    xyz: [0, 0, 1],
-                    angle: 90
-                })
-            })
-        });
-
-        new xeogl.Entity(scene, {  // Label
-            geometry: new xeogl.VectorTextGeometry(scene, {text: "X", size: 1.5}),
-            material: xAxisMaterial,
-            visibility: visibility,
-            modes: modes,
-            transform: new xeogl.Translate(scene, {
-                xyz: [-7, 0, 0]
             }),
-            billboard: billboard
-        });
 
-        // Y-axis arrow, shaft and label
-
-        new xeogl.Entity(scene, {  // Arrow
-            geometry: arrowHead,
-            material: yAxisMaterial,
-            visibility: visibility,
-            modes: modes,
-            transform: new xeogl.Translate(scene, {
-                xyz: [0, 5, 0]
-            })
-        });
-
-        new xeogl.Entity(scene, {  // Shaft
-            geometry: arrowShaft,
-            material: yAxisMaterial,
-            visibility: visibility,
-            modes: modes,
-            transform: new xeogl.Translate(scene, {
-                xyz: [0, 2, 0]
-            })
-        });
-
-        new xeogl.Entity(scene, {  // Label
-            geometry: new xeogl.VectorTextGeometry(scene, {text: "Y",size: 1.5}),
-            material: yAxisMaterial,
-            visibility: visibility,
-            modes: modes,
-            transform: new xeogl.Translate(scene, {
-                xyz: [0, 7, 0]
-            }),
-            billboard: billboard
-        });
-
-        // Z-axis arrow, shaft and label
-
-        new xeogl.Entity(scene, {  // Arrow
-            geometry: arrowHead,
-            material: zAxisMaterial,
-            visibility: visibility,
-            modes: modes,
-            transform: new xeogl.Translate(scene, {
-                xyz: [0, 5, 0],
-                parent: new xeogl.Rotate(scene, {
-                    xyz: [1, 0, 0],
-                    angle: 90
+            new xeogl.Entity(scene, {  // Shaft
+                geometry: arrowShaft,
+                material: xAxisMaterial,
+                pickable: false,
+                collidable: false,
+                visible: !!cfg.visible,
+                transform: new xeogl.Translate(scene, {
+                    xyz: [0, 2, 0],
+                    parent: new xeogl.Rotate(scene, {
+                        xyz: [0, 0, 1],
+                        angle: 90
+                    })
                 })
-            })
-        });
-
-        new xeogl.Entity(scene, {  // Shaft
-            geometry: arrowShaft,
-            material: zAxisMaterial,
-            visibility: visibility,
-            modes: modes,
-            transform: new xeogl.Translate(scene, {
-                xyz: [0, 2, 0],
-                parent: new xeogl.Rotate(scene, {
-                    xyz: [1, 0, 0],
-                    angle: 90
-                })
-            })
-        });
-
-
-        new xeogl.Entity(scene, {  // Label
-            geometry: new xeogl.VectorTextGeometry(scene, {text: "Z",size: 1.5}),
-            material: zAxisMaterial,
-            visibility: visibility,
-            modes: modes,
-            transform: new xeogl.Translate(scene, {
-                xyz: [0, 0, 7]
             }),
-            billboard: billboard
-        });
+
+            new xeogl.Entity(scene, {  // Label
+                geometry: new xeogl.VectorTextGeometry(scene, {text: "X", size: 1.5}),
+                material: xAxisMaterial,
+                pickable: false,
+                collidable: false,
+                visible: !!cfg.visible,
+                transform: new xeogl.Translate(scene, {
+                    xyz: [-7, 0, 0]
+                }),
+                billboard: billboard
+            }),
+
+            // Y-axis arrow, shaft and label
+
+            new xeogl.Entity(scene, {  // Arrow
+                geometry: arrowHead,
+                material: yAxisMaterial,
+                pickable: false,
+                collidable: false,
+                visible: !!cfg.visible,
+                transform: new xeogl.Translate(scene, {
+                    xyz: [0, 5, 0]
+                })
+            }),
+
+            new xeogl.Entity(scene, {  // Shaft
+                geometry: arrowShaft,
+                material: yAxisMaterial,
+                pickable: false,
+                collidable: false,
+                visible: !!cfg.visible,
+                transform: new xeogl.Translate(scene, {
+                    xyz: [0, 2, 0]
+                })
+            }),
+
+            new xeogl.Entity(scene, {  // Label
+                geometry: new xeogl.VectorTextGeometry(scene, {text: "Y", size: 1.5}),
+                material: yAxisMaterial,
+                pickable: false,
+                collidable: false,
+                visible: !!cfg.visible,
+                transform: new xeogl.Translate(scene, {
+                    xyz: [0, 7, 0]
+                }),
+                billboard: billboard
+            }),
+
+            // Z-axis arrow, shaft and label
+
+            new xeogl.Entity(scene, {  // Arrow
+                geometry: arrowHead,
+                material: zAxisMaterial,
+                pickable: false,
+                collidable: false,
+                visible: !!cfg.visible,
+                transform: new xeogl.Translate(scene, {
+                    xyz: [0, 5, 0],
+                    parent: new xeogl.Rotate(scene, {
+                        xyz: [1, 0, 0],
+                        angle: 90
+                    })
+                })
+            }),
+
+            new xeogl.Entity(scene, {  // Shaft
+                geometry: arrowShaft,
+                material: zAxisMaterial,
+                pickable: false,
+                collidable: false,
+                visible: !!cfg.visible,
+                transform: new xeogl.Translate(scene, {
+                    xyz: [0, 2, 0],
+                    parent: new xeogl.Rotate(scene, {
+                        xyz: [1, 0, 0],
+                        angle: 90
+                    })
+                })
+            }),
+
+            new xeogl.Entity(scene, {  // Label
+                geometry: new xeogl.VectorTextGeometry(scene, {text: "Z", size: 1.5}),
+                material: zAxisMaterial,
+                pickable: false,
+                collidable: false,
+                visible: !!cfg.visible,
+                transform: new xeogl.Translate(scene, {
+                    xyz: [0, 0, 7]
+                }),
+                billboard: billboard
+            })
+        ];
 
         /** Shows or hides this helper
          *
          * @param visible
          */
         this.setVisible = function (visible) {
-            visibility.visible = visible;
+            for (var i = 0; i < entities.length; i++) {
+                entities[i].visible = visible;
+            }
         }
     };
 })();

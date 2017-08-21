@@ -440,11 +440,9 @@
                           emissiveFresnel,
                           normalFresnel,
                           alphaFresnel,
-                          layer,
-                          stage,
-                          modes,
                           transparent,
-                          backfaces) {
+                          backfaces,
+                          layer) {
 
             switch (node.type) {
 
@@ -611,38 +609,19 @@
 
                 case "flags":
 
-                    modes = this.add({
-                        type: "xeogl.Modes",
-                        id: this._createID(node),
-                        pickable: node.picking,
-                        clippable: node.clipping
-                    });
-
                     transparent = node.transparent;
                     backfaces = node.backfaces;
+
+                    // TODO: pickable and clippable
 
                     break;
 
                 case "layer":
 
-                    layer = this.add({
-                        type: "xeogl.Layer",
-                        id: this._createID(node),
-                        priority: node.priority
-                    });
+                    layer = node.priority;
 
                     break;
 
-                case "stage":
-
-                    layer = this.add({
-                        type: "xeogl.Stage",
-                        id: this._createID(node),
-                        priority: node.priority,
-                        pickable: node.pickable
-                    });
-
-                    break;
 
                 case "geometry":
 
@@ -679,7 +658,7 @@
                         geometry: geometry,
                         transform: transform,
                         material: material,
-                        modes: modes
+                        layer: layer
                     });
 
                     break;
@@ -703,11 +682,9 @@
                         emissiveFresnel,
                         normalFresnel,
                         alphaFresnel,
-                        layer,
-                        stage,
-                        modes,
                         transparent,
-                        backfaces);
+                        backfaces,
+                        layer);
                 }
             }
         },
