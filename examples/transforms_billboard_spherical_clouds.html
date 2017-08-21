@@ -27,13 +27,14 @@
     });
 
     var material = new xeogl.PhongMaterial({
-        diffuse: [0, 0, 0],
-        specular: [0, 0, 0],
-        emissive: [1, 1, 1],
-        alphaMap: new xeogl.Texture({
-            src: "textures/alpha/cloud10.png"
-        }),
+        ambient: [0.3, 0.3, 0.3],
+        shininess: 30,
+        diffuse: [0.1, 0.1, 0.4],
+        emissive: [1.1,1],
         alpha: 1.0,
+        alphaMap: {
+            src: "textures/alpha/cloud10.png"
+        },
         alphaMode: "blend"
     });
 
@@ -57,7 +58,7 @@
         var entity = new xeogl.Entity({
             geometry: geometry,
             material: material,
-            lights: lights,
+           // lights: lights,
             billboard: billboard,
             transform: new xeogl.Translate({
                 xyz: [

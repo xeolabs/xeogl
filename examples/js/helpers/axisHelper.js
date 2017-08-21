@@ -130,12 +130,24 @@
             diffuse: [1, 0.3, 0.3]
         });
 
+        var xAxisLabelMaterial = axisMaterial.clone({
+            emissive: [1, 0.3, 0.3]
+        });
+
         var yAxisMaterial = axisMaterial.clone({ // Green by convention
             diffuse: [0.3, 1, 0.3]
         });
 
+        var yAxisLabelMaterial = axisMaterial.clone({
+            emissive: [0.3, 1, 0.3]
+        });
+
         var zAxisMaterial = axisMaterial.clone({ // Blue by convention
             diffuse: [0.3, 0.3, 1]
+        });
+
+        var zAxisLabelMaterial = axisMaterial.clone({
+            emissive: [0.3, 0.3, 1]
         });
 
         var ballMaterial = axisMaterial.clone({
@@ -160,9 +172,9 @@
                     widthSegments: 60
                 }),
                 material: new xeogl.PhongMaterial(scene, {
-                    diffuse: [1.0, 1.0, 1.0],
-                    emissive: [0.8, 0.8, 0.8],
-                    ambient: [0.3, 0.3, 0.3],
+                    diffuse: [0.0, 0.0, 0.0],
+                    emissive: [0.1, 0.1, 0.2],
+                    ambient: [0.1, 0.1, 0.2],
                     specular: [1, 1, 1],
                     alpha: 0.4,
                     alphaMode: "blend",
@@ -240,7 +252,7 @@
 
             new xeogl.Entity(scene, {  // Label
                 geometry: new xeogl.VectorTextGeometry(scene, {text: "X", size: 1.5}),
-                material: xAxisMaterial,
+                material: xAxisLabelMaterial,
                 pickable: false,
                 collidable: false,
                 visible: !!cfg.visible,
@@ -276,7 +288,7 @@
 
             new xeogl.Entity(scene, {  // Label
                 geometry: new xeogl.VectorTextGeometry(scene, {text: "Y", size: 1.5}),
-                material: yAxisMaterial,
+                material: yAxisLabelMaterial,
                 pickable: false,
                 collidable: false,
                 visible: !!cfg.visible,
@@ -320,7 +332,7 @@
 
             new xeogl.Entity(scene, {  // Label
                 geometry: new xeogl.VectorTextGeometry(scene, {text: "Z", size: 1.5}),
-                material: zAxisMaterial,
+                material: zAxisLabelMaterial,
                 pickable: false,
                 collidable: false,
                 visible: !!cfg.visible,
