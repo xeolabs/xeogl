@@ -424,19 +424,22 @@
         _parsePhongMaterial: {
             value: function (entryID, values, userInfo) {
 
-                var cfg = {
-                    // id: this._makeID(entryID),
-                    meta: {
-                        userInfo: userInfo
-                    }
-                };
-
                 var entry;
                 var diffuseVal = values.diffuse;
                 var specularVal = values.specular;
                 var shininessVal = values.shininess;
                 var emissiveVal = values.emission;
-
+                var transparencyVal = values.transparency;
+                
+                var cfg = {
+                    // id: this._makeID(entryID),
+                    meta: {
+                        userInfo: userInfo
+                    },
+                    opacity: transparencyVal,
+                    transparent: transparencyVal < 1.
+                };
+                
                 if (shininessVal !== null && shininessVal !== undefined) {
                     cfg.shininessVal = shininessVal;
                 }
