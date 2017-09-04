@@ -1,3 +1,7 @@
+const resolve = require('rollup-plugin-node-resolve');
+const babel = require('rollup-plugin-babel');
+const commonjs = require('rollup-plugin-commonjs');
+
 module.exports = function (grunt) {
 
     "use strict";
@@ -22,6 +26,29 @@ module.exports = function (grunt) {
             engine: {
                 src: devScripts.engine,
                 dest: 'build/<%= PROJECT_NAME %>.js'
+            }
+        },
+
+        rollup: {
+            options: {
+                format: 'iife',
+                moduleName :'xeogl',
+                plugins: function () {
+                    return [
+                        resolve({
+                            jsnext: true,
+                            main: true
+                        }),
+                        commonjs(),
+                        babel({
+                            exclude: './node_modules/**'
+                        })
+                    ];
+                }
+            },
+            files: {
+                'dest':'build/xeogl.rollup.js',
+                'src' : 'src/init.js',
             }
         },
 
@@ -104,13 +131,14 @@ module.exports = function (grunt) {
 
     grunt.loadNpmTasks("grunt-contrib-uglify");
     grunt.loadNpmTasks("grunt-contrib-concat");
+    grunt.loadNpmTasks('grunt-rollup');
     grunt.loadNpmTasks("grunt-contrib-clean");
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks("grunt-contrib-yuidoc");
 
     // Builds snapshot libs within api/latest
     // Run this when testing examples locally against your changes before committing them
-    grunt.registerTask("snapshot", ["concat", "yuidoc", "uglify"]);
+    grunt.registerTask("snapshot", ["concat", "yuidoc", "uglify",'rollup']);
 
     // Build a package within ./build
     // Assigns the package the current version number that's defined in package.json
