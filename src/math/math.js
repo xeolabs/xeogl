@@ -758,7 +758,7 @@
         })(),
 
         /**
-         * Converts a three-element vector to a JSON-serializable
+         * Converts an n-element vector to a JSON-serializable
          * array with values rounded to two decimal places.
          */
         vecToArray: (function () {
