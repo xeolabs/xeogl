@@ -42,10 +42,6 @@
         lights: []
     });
 
-    var billboard = new xeogl.Billboard({
-        spherical: true
-    });
-
     var numClouds = 200;
 
     var clouds = [];
@@ -59,7 +55,7 @@
             geometry: geometry,
             material: material,
            // lights: lights,
-            billboard: billboard,
+            billboard: "spherical",
             transform: new xeogl.Translate({
                 xyz: [
                     Math.random() * r - halfr,

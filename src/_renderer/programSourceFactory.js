@@ -273,12 +273,14 @@
                 add("attribute vec3 normal;");
             }
 
-            if (states.billboard.active) {
+            var billboard = states.modes.billboard;
+
+            if (billboard === "spherical" || billboard === "cylindrical") {
                 add("void billboard(inout mat4 mat) {");
                 add("   mat[0][0] = 1.0;");
                 add("   mat[0][1] = 0.0;");
                 add("   mat[0][2] = 0.0;");
-                if (states.billboard.spherical) {
+                if (billboard === "spherical") {
                     add("   mat[1][0] = 0.0;");
                     add("   mat[1][1] = 1.0;");
                     add("   mat[1][2] = 0.0;");
@@ -298,7 +300,7 @@
                 add("viewMatrix2[3][0] = viewMatrix2[3][1] = viewMatrix2[3][2] = 0.0;")
             }
 
-            if (states.billboard.active) {
+            if (billboard === "spherical" || billboard === "cylindrical") {
                 add("billboard(modelMatrix2);");
                 add("billboard(viewMatrix2);");
             }
@@ -410,14 +412,16 @@
                 add("uniform float pointSize;");
             }
 
-            if (states.billboard.active) {
+            var billboard = states.modes.billboard;
+
+            if (billboard === "spherical" || billboard === "cylindrical") {
 
                 add("void billboard(inout mat4 mat) {");
                 add("   mat[0][0] = 1.0;");
                 add("   mat[0][1] = 0.0;");
                 add("   mat[0][2] = 0.0;");
 
-                if (states.billboard.spherical) {
+                if (billboard === "spherical") {
                     add("   mat[1][0] = 0.0;");
                     add("   mat[1][1] = 1.0;");
                     add("   mat[1][2] = 0.0;");
@@ -458,7 +462,7 @@
                 add("viewMatrix2[3][0] = viewMatrix2[3][1] = viewMatrix2[3][2] = 0.0;")
             }
 
-            if (states.billboard.active) {
+            if (billboard === "spherical" || billboard === "cylindrical") {
 
                 add("mat4 modelViewMatrix = viewMatrix2 * modelMatrix2;");
 

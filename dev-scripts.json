@@ -144,8 +144,6 @@
     "src/transforms/quaternion.js",
     "src/transforms/scale.js",
     "src/transforms/translate.js",
-    "src/transforms/billboard.js",
-    "src/transforms/stationary.js",
     "src/transforms/frustum.js",
     "src/transforms/lookat.js",
     "src/transforms/ortho.js",

@@ -79,7 +79,6 @@
         this.modelTransform = null;
         this.viewTransform = null;
         this.projTransform = null;
-        this.billboard = null;
         this.clips = null;
         this.geometry = null;
         this.viewport = null;
@@ -128,7 +127,6 @@
 
         object.material = this.material;
         object.geometry = this.geometry;
-        object.billboard = this.billboard;
         object.viewport = this.viewport;
         object.lights = this.lights;
         object.outline = this.outline;
@@ -144,7 +142,6 @@
             this.clips.hash,
             this.material.hash,
             this.lights.hash,
-            this.billboard.hash,
             this.modes.hash
         ]).join(";");
 
