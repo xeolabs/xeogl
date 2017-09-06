@@ -10,6 +10,52 @@
 
     "use strict";
 
+    // Fast queue that avoids using potentially inefficient array .shift() calls
+    // Based on https://github.com/creationix/fastqueue
+    var Queue = function () {
+
+        var head = [];
+        var headLength = 0;
+        var tail = [];
+        var index = 0;
+        this.length = 0;
+
+        this.shift = function () {
+            if (index >= headLength) {
+                var t = head;
+                t.length = 0;
+                head = tail;
+                tail = t;
+                index = 0;
+                headLength = head.length;
+                if (!headLength) {
+                    return;
+                }
+            }
+            var value = head[index];
+            if (index < 0) {
+                delete head[index++];
+            }
+            else {
+                head[index++] = undefined;
+            }
+            this.length--;
+            return value;
+        };
+
+        this.push = function (item) {
+            this.length++;
+            tail.push(item);
+            return this;
+        };
+
+        this.unshift = function (item) {
+            head[--index] = item;
+            this.length++;
+            return this;
+        };
+    };
+
     var xeogl = function () {
 
         /**
@@ -158,7 +204,7 @@
         // Task queue, which is pumped on each frame;
         // tasks are pushed to it with calls to xeogl.schedule
 
-        this._taskQueue = [];
+        this._taskQueue = new Queue();
 
         //-----------------------------------------------------------------------
         // Game loop
@@ -399,7 +445,7 @@
          * for a certain period of time, popping tasks and running them. After each frame interval, tasks that did not
          * get a chance to run during the task are left in the queue to be run next time.
          *
-         * @method schedule
+         * @method scheduleTask
          * @param {Function} callback Callback that runs the task.
          * @param {Object} [scope] Scope for the callback.
          */
