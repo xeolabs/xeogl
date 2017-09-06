@@ -46,7 +46,6 @@
                                 <li><a href="../classes/Annotation.html">Annotation</a></li>
                                 <li><a href="../classes/AnnotationStory.html">AnnotationStory</a></li>
                                 <li><a href="../classes/AxisHelper.html">AxisHelper</a></li>
-                                <li><a href="../classes/Billboard.html">Billboard</a></li>
                                 <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
                                 <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
@@ -340,6 +339,42 @@
  });
  &#x60;&#x60;&#x60;&#x60;
 
+ ## Billboarding
+
+ An {{#crossLink &quot;Entity&quot;}}{{/crossLink}} has a {{#crossLink &quot;Entity/billboard:property&quot;}}{{/crossLink}} property
+ that can make it behave as a billboard.
+
+ Two billboard types are supported:
+
+ * **Spherical** billboards are free to rotate their {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} in any direction and always face the {{#crossLink &quot;Camera&quot;}}{{/crossLink}} perfectly.
+ * **Cylindrical** billboards rotate their {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} towards the {{#crossLink &quot;Camera&quot;}}{{/crossLink}}, but only about the Y-axis.
+
+ Note that {{#crossLink &quot;Scale&quot;}}{{/crossLink}} transformations to have no effect on billboarded {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
+
+ The example below shows a box that remains rotated directly towards the viewpoint, using spherical billboarding:
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ new xeogl.Entity({
+
+     geometry: new xeogl.BoxGeometry(),
+
+     material: new xeogl.PhongMaterial({
+         diffuseMap: new xeogl.Texture({
+            src: &quot;textures/diffuse/uvGrid2.jpg&quot;
+         })
+     }),
+
+     billboard: &quot;spherical&quot;
+ });
+ &#x60;&#x60;&#x60;&#x60;
+
+ #### Examples
+
+ * [Spherical billboards](../../examples/#transforms_billboard_spherical)
+ * [Cylindrical billboards](../../examples/#transforms_billboard_cylindrical)
+ * [Clouds using billboards](../../examples/#transforms_billboard_spherical_clouds)
+
+
  @class Entity
  @module xeogl
  @submodule entities
@@ -368,7 +403,6 @@
  {{#crossLink &quot;Scene/outline:property&quot;}}{{/crossLink}}.
  @param [cfg.xray] {String|XRay} ID or instance of a {{#crossLink &quot;XRay&quot;}}{{/crossLink}} attached to this Entity. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance,
  {{#crossLink &quot;Scene/xray:property&quot;}}{{/crossLink}}.
-
  @param [cfg.visible=true] {Boolean}  Indicates if this Entity is visible.
  @param [cfg.culled=true] {Boolean}  Indicates if this Entity is culled from view.
  @param [cfg.pickable=true] {Boolean}  Indicates if this Entity is pickable.
@@ -379,8 +413,8 @@
  @param [cfg.receiveShadow=true] {Boolean} Whether this Entity receives shadows.
  @param [cfg.outlined=false] {Boolean} Whether an outline is rendered around this entity, as configured by the Entity&#x27;s {{#crossLink &quot;Outline&quot;}}{{/crossLink}} component
  @param [cfg.layer=0] {Number} Indicates this Entity&#x27;s rendering priority, typically used for transparency sorting,
- @param [cfg.stationary=false] {Boolean} Disables the effect of {{#crossLink &quot;Lookat&quot;}}view transform{{/crossLink}}
- * translations for this Entity. This is useful for skybox Entities.
+ @param [cfg.stationary=false] {Boolean} Disables the effect of {{#crossLink &quot;Lookat&quot;}}view transform{{/crossLink}} translations for this Entity. This is useful for skybox Entities.
+ @param [cfg.billboard=&quot;none&quot;] {String} Specifies the billboarding behaviour for this Entity. Options are &quot;none&quot;, &quot;spherical&quot; and &quot;cylindrical&quot;.
  @param [cfg.loading] {Boolean} Flag which indicates that this Entity is freshly loaded. This will increment the
  {{#crossLink &quot;Spinner/processes:property&quot;}}Spinner processes{{/crossLink}} count, and then when this Entity is first
  rendered, will decrement the count again.
@@ -416,6 +450,7 @@
                 receiveShadow: null,
                 outlined: null,
                 layer: null,
+                billboard: null,
                 hash: &quot;&quot;
             });
 
@@ -432,7 +467,6 @@
             this.material = cfg.material;
             this.morphTargets = cfg.morphTargets;
             this.transform = cfg.transform;
-            this.billboard = cfg.billboard;
             this.stationary = cfg.stationary;
             this.viewport = cfg.viewport;
             this.outline = cfg.outline;
@@ -449,6 +483,7 @@
             this.outlined = cfg.outlined;
             this.layer = cfg.layer;
             this.stationary = cfg.stationary;
+            this.billboard = cfg.billboard;
 
             // Cached boundary for each coordinate space
             // The Entity&#x27;s Geometry component caches the Local-space boundary
@@ -456,8 +491,10 @@
             this._worldBoundary = null;
             this._viewBoundary = null;
             this._canvasBoundary = null;
+            this._worldPositions = null;
 
             this._worldBoundaryDirty = true;
+            this._worldPositionsDirty = true;
             this._viewBoundaryDirty = true;
             this._canvasBoundaryDirty = true;
         },
@@ -769,46 +806,7 @@
                     return this._attached.transform;
                 }
             },
-
-            /**
-             * The {{#crossLink &quot;Billboard&quot;}}{{/crossLink}} attached to this Entity.
-             *
-             * When {{#crossLink &quot;Billboard/property:active&quot;}}{{/crossLink}}, the {{#crossLink &quot;Billboard&quot;}}{{/crossLink}}
-             * will keep this Entity oriented towards the viewpoint.
-             *
-             * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this Entity. Defaults to the parent
-             * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/billboard:property&quot;}}billboard{{/crossLink}}
-             * (an identity matrix) when set to a null or undefined value.
-             *
-             * Fires an {{#crossLink &quot;Entity/billboard:event&quot;}}{{/crossLink}} event on change.
-             *
-             * @property billboard
-             * @type Billboard
-             */
-            billboard: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this Entity&#x27;s {{#crossLink &quot;Entity/billboard:property&quot;}}{{/crossLink}}
-                     * property changes.
-                     *
-                     * @event billboard
-                     * @param value The property&#x27;s new value
-                     */
-                    this._attach({
-                        name: &quot;billboard&quot;,
-                        type: &quot;xeogl.Billboard&quot;,
-                        component: value,
-                        sceneDefault: true
-                    });
-                },
-
-                get: function () {
-                    return this._attached.billboard;
-                }
-            },
-
+            
             /**
              * The {{#crossLink &quot;Viewport&quot;}}{{/crossLink}} attached to this Entity.
              *
@@ -1309,6 +1307,7 @@
              * Fires an {{#crossLink &quot;Entity/stationary:event&quot;}}{{/crossLink}} event on change.
              *
              * @property stationary
+             * @default false
              * @type Boolean
              */
             stationary: {
@@ -1323,7 +1322,7 @@
 
                     this._state.stationary = value;
 
-                    this._state.hash = (this._state.stationary ? &quot;a;&quot; : &quot;;&quot;);
+                  //  this._state.hash = (this._state.stationary ? &quot;a;&quot; : &quot;;&quot;);
 
                     this.fire(&quot;dirty&quot;, this);
 
@@ -1337,6 +1336,61 @@
 
                 get: function () {
                     return this._state.stationary;
+                }
+            },
+
+            /**
+             * Specifies the billboarding behaviour for this Entity.
+             *
+             * Options are:
+             *
+             *     * **&quot;none&quot;** -  **(default)** - No billboarding.
+             *     * **&quot;spherical&quot;** - Entity is billboarded to face the viewpoint, rotating both vertically and horizontally.
+             *     * **&quot;cylindrical&quot;** - Entity is billboarded to face the viewpoint, rotating only about its vertically
+             *     axis. Use this mode for things like trees on a landscape.
+             *
+             * Fires an {{#crossLink &quot;Entity/billboard:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property billboard
+             * @default &quot;none&quot;
+             * @type String
+             */
+            billboard: {
+
+                set: function (value) {
+
+                    value = value || &quot;none&quot;;
+
+                    if (value !== &quot;spherical&quot; &amp;&amp;
+                        value !== &quot;cylindrical&quot; &amp;&amp;
+                        value !== &quot;none&quot;) {
+
+                        this.error(&quot;Unsupported value for &#x27;billboard&#x27;: &quot; + value + &quot; - accepted values are &quot; +
+                            &quot;&#x27;spherical&#x27;, &#x27;cylindrical&#x27; and &#x27;none&#x27; - defaulting to &#x27;none&#x27;.&quot;);
+
+                        value = &quot;none&quot;;
+                    }
+
+                    if (this._state.billboard === value) {
+                        return;
+                    }
+
+                    this._state.billboard = value;
+
+                    this._state.hash = (this._state.active ? &quot;a;&quot; : &quot;;&quot;) + (this._state.billboard ? &quot;s;&quot; : &quot;;&quot;);
+
+                    this.fire(&quot;dirty&quot;, this);
+
+                    /**
+                     * Fired whenever this Entity&#x27;s {{#crossLink &quot;Entity/billboard:property&quot;}}{{/crossLink}} property changes.
+                     * @event billboard
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&#x27;billboard&#x27;, this._state.billboard);
+                },
+
+                get: function () {
+                    return this._state.billboard;
                 }
             },
             
@@ -1594,6 +1648,39 @@
             },
 
             /**
+             * World-space vertex positions of this Entity.
+             *
+             * @property worpdPositions
+             * @type Float32Array
+             * @final
+             */
+            worldPositions: {
+
+                get: function () {
+                    if (this._worldPositionsDirty) {
+                        var positions = this.geometry.positions;
+                        if (!this._worldPositions) {
+                            this._worldPositions = new Float32Array(positions.length);
+                        }
+                        if (!this._attached.transform) {
+                            this._worldPositions.set(positions);
+                        } else {
+                            xeogl.math.transformPositions3(this._attached.transform.leafMatrix, positions, this._worldPositions);
+                        }
+                        this._worldPositionsDirty = false;
+                    }
+                    return this._worldPositions;
+                },
+
+                set: function(value) {
+                    if (value = undefined || value === null) {
+                        this._worldPositions = null; // Release memory
+                        this._worldPositionsDirty = true;
+                    }
+                }
+            },
+
+            /**
              * JSON object containing the (GLSL) source code of the shaders for this Entity.
              *
              * This is sometimes useful to have as a reference
@@ -1667,6 +1754,7 @@
 
         _setWorldBoundaryDirty: function () {
             this._worldBoundaryDirty = true;
+            this._worldPositionsDirty = true;
             if (this._worldBoundary) {
                 this._worldBoundary.fire(&quot;updated&quot;, true);
             }
@@ -1739,10 +1827,11 @@
             attached.lights._compile();
             attached.material._compile();
             this._renderer.modelTransform = attached.transform._state;
-            attached.billboard._compile();
             attached.viewport._compile();
             attached.outline._compile();
             attached.xray._compile();
+
+            this._makeHash();
 
             this._renderer.modes = this._state;
 
@@ -1774,6 +1863,23 @@
             }
         },
 
+        _makeHash: function () {
+            var hash = [];
+            var state = this._state;
+            if (state.stationary) {
+                hash.push(&quot;/s&quot;);
+            }
+            if (state.billboard === &quot;none&quot;) {
+                hash.push(&quot;/n&quot;);
+            } else if (state.billboard === &quot;spherical&quot;) {
+                hash.push(&quot;/s&quot;);
+            } else if (state.billboard === &quot;cylindrical&quot;) {
+                hash.push(&quot;/c&quot;);
+            }
+            hash.push(&quot;;&quot;);
+            this._state.hash = hash.join(&quot;&quot;);
+        },
+
         _getJSON: function () {
 
             var attached = this._attached;
@@ -1785,7 +1891,6 @@
                 lights: attached.lights.id,
                 material: attached.material.id,
                 transform: attached.transform.id,
-                billboard: attached.billboard.id,
                 viewport: attached.viewport.id,
                 outline: attached.outline.id,
                 xray: attached.xray.id,
@@ -1800,7 +1905,8 @@
                 outlined: this._state.outlined,
                 xrayed:  this._state.xrayed,
                 layer: this._state.layer,
-                stationary: this._state.stationary
+                stationary: this._state.stationary,
+                billboard: this._state.billboard
             };
         },
 

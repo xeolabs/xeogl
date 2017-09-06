@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Billboard - xeogl</title>
+    <title>XRay - xeogl</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link href='https://fonts.googleapis.com/css?family=Exo+2:400,800,900,700,600,500|Roboto:100,300,400,500,700,900'  rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
@@ -46,7 +46,6 @@
                                 <li><a href="../classes/Annotation.html">Annotation</a></li>
                                 <li><a href="../classes/AnnotationStory.html">AnnotationStory</a></li>
                                 <li><a href="../classes/AxisHelper.html">AxisHelper</a></li>
-                                <li><a href="../classes/Billboard.html">Billboard</a></li>
                                 <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
                                 <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
@@ -192,7 +191,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>Billboard</h1>
+<h1>XRay</h1>
 <div class="box meta">
 
         <div class="extends">
@@ -200,86 +199,45 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_transforms_billboard.js.html#l1"><code>src&#x2F;transforms&#x2F;billboard.js:1</code></a>
+            Defined in: <a href="../files/src_emphasis_xray.js.html#l1"><code>src&#x2F;emphasis&#x2F;xray.js:1</code></a>
         </div>
 
-            Module: <a href="../modules/transforms.html">transforms</a><br>
+            Module: <a href="../modules/emphasis.html">emphasis</a><br>
             Parent Module: <a href="../modules/xeogl.html">xeogl</a>
 
 </div>
 
 
 <div class="box intro">
-    <p>A <strong>Billboard</strong> is a modelling <a href="../classes/Transform.html" class="crosslink">Transform</a> that causes associated <a href="../classes/Entity.html" class="crosslink">Entities</a> to be always oriented towards the Camera.</p>
-<p><a href="../../examples/#transforms_billboard_spherical"><img src="http://i.giphy.com/l3vR13LcnTuQGMInu.gif"></img></a></p>
+    <p>A <strong>XRay</strong> renders attached an X-ray view of attached <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
 <h2 id="overview">Overview</h2>
-<ul>
-<li><strong>Spherical</strong> billboards are free to rotate their <a href="../classes/Entity.html" class="crosslink">Entities</a> in any direction and always face the <a href="../classes/Camera.html" class="crosslink">Camera</a> perfectly.</li>
-<li><strong>Cylindrical</strong> billboards rotate their <a href="../classes/Entity.html" class="crosslink">Entities</a> towards the <a href="../classes/Camera.html" class="crosslink">Camera</a>, but only about the Y-axis.</li>
-<li>A Billboard will cause <a href="../classes/Scale.html" class="crosslink">Scale</a> transformations to have no effect on its <a href="../classes/Entity.html" class="crosslink">Entities</a></li>
-</ul>
-<p><img src="../../../assets/images/Billboard.png"></img></p>
-<h2 id="examples">Examples</h2>
-<ul>
-<li><a href="../../examples/#transforms_billboard_spherical">Spherical billboards</a></li>
-<li><a href="../../examples/#transforms_billboard_cylindrical">Cylindrical billboards</a></li>
-<li><a href="../../examples/#transforms_billboard_spherical_clouds">Clouds using billboards</a></li>
-</ul>
+<p>TODO</p>
 <h2 id="usage">Usage</h2>
-<p>Let&#39;s create 1000 randomly-positioned <a href="../classes/Entity.html" class="crosslink">Entities</a> that always face towards the
-viewpoint as we orbit the <a href="../classes/Camera.html" class="crosslink">Camera</a> about the X and Y axis:</p>
-<pre class="code prettyprint"><code class="lang-javascript">// Create 1000 Entities in default Scene with shared Geometry, PhongMaterial and Billboard
-
-var geometry = new xeogl.Geometry({
-    primitive: "triangles",
-    positions: [3, 3, 0, -3, 3, 0, -3, -3, 0, 3, -3, 0],
-    normals: [-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0],
-    uv: [1, 1, 0, 1, 0, 0, 1, 0],
-    indices: [2, 1, 0, 3, 2, 0] // Ensure these will be front-faces
+<pre class="code prettyprint"><code class="lang-javascript">
+var xray = new xeogl.XRay({
+   thickness: 15,      // Default
+   color: [1,0,0]      // Default
 });
 
-var material = new xeogl.PhongMaterial({
-    emissiveMap: new xeogl.Texture({
-        src: "textures/diffuse/teapot.jpg"
-    })
+new xeogl.Entity({
+    geometry: new xeogl.TorusGeometry(),
+    xray: xray,
+    xrayed: false
 });
 
-var billboard = new xeogl.Billboard({
-    spherical: true
+new xeogl.Entity({
+    geometry: new xeogl.BoxGeometry(),
+    xray: xray,
+    xrayed: true
 });
-
-for (var i = 0; i &lt; 1000; i++) {
-    new xeogl.Entity({
-        geometry: geometry,
-        material: material,
-        billboard: billboard,
-        transform: new xeogl.Translate({
-            xyz: [Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50]
-        })
-    });
-}
-
-// Move eye back to see everything, then orbit the Camera
-
-var scene = xeogl.scene;
-
-scene.camera.view.zoom(120);
-
-scene.on("tick", function () {
-
-         var view = scene.camera.view;
-
-         view.rotateEyeY(0.2);
-         view.rotateEyeX(0.1);
-    });
 </code></pre>
 
 </div>
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_Billboard" class="method item">
-            <h3 class="name"><code>Billboard</code></h3>
+        <div id="method_XRay" class="method item">
+            <h3 class="name"><code>XRay</code></h3>
         
                 <div class="args">
                     <span class="paren">(</span><ul class="args-list inline commas">
@@ -303,7 +261,7 @@ scene.on("tick", function () {
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_transforms_billboard.js.html#l1"><code>src&#x2F;transforms&#x2F;billboard.js:1</code></a>
+                <a href="../files/src_emphasis_xray.js.html#l1"><code>src&#x2F;emphasis&#x2F;xray.js:1</code></a>
                 </p>
         
         
@@ -325,8 +283,8 @@ scene.on("tick", function () {
         
         
                             <div class="param-description">
-                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a> - creates this Billboard in the default
-        <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted.</p>
+                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a>, creates this XRay within the
+        default <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted.</p>
         
                             </div>
         
@@ -338,7 +296,7 @@ scene.on("tick", function () {
         
         
                             <div class="param-description">
-                                <p>Configs</p>
+                                <p>XRay configuration</p>
         
                             </div>
         
@@ -349,7 +307,7 @@ scene.on("tick", function () {
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Optional ID, unique among all components in the parent scene, generated automatically when omitted.</p>
+                                            <p>Optional ID, unique among all components in the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>, generated automatically when omitted.</p>
         
                                         </div>
         
@@ -360,29 +318,29 @@ scene.on("tick", function () {
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Optional map of user-defined metadata to attach to this Billboard.</p>
+                                            <p>Optional map of user-defined metadata to attach to this XRay.</p>
         
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[active=true]</code>
-                                            <span class="type">Boolean</span>
+                                            <code class="param-name optional">[thickness=15]</code>
+                                            <span class="type">Number</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Indicates if this Billboard is active or not.</p>
+                                            <p>Thickness of the XRay in pixels.</p>
         
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[spherical=true]</code>
-                                            <span class="type">Boolean</span>
+                                            <code class="param-name optional">[color=[1,1,0]]</code>
+                                            <span class="type">Float32Array</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Indicates if this Billboard is spherical (true) or cylindrical (false).</p>
+                                            <p>The RGB XRay color.</p>
         
                                         </div>
         
@@ -462,7 +420,7 @@ scene.on("tick", function () {
 
                     <ul class="index-list properties extends">
                             <li class="index-item property">
-                                <a href="#property_active">active</a>
+                                <a href="#property_color">color</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -489,16 +447,16 @@ scene.on("tick", function () {
                                 <a href="#property_scene">scene</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_spherical">spherical</a>
-
-                            </li>
                             <li class="index-item property inherited inherited">
                                 <a href="#property_string">string</a>
 
                             </li>
                             <li class="index-item property inherited">
                                 <a href="#property_superTypes">superTypes</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_thickness">thickness</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -514,7 +472,7 @@ scene.on("tick", function () {
 
                     <ul class="index-list events extends">
                             <li class="index-item event">
-                                <a href="#event_active">active</a>
+                                <a href="#event_color">color</a>
 
                             </li>
                             <li class="index-item event inherited">
@@ -522,7 +480,7 @@ scene.on("tick", function () {
 
                             </li>
                             <li class="index-item event">
-                                <a href="#event_spherical">spherical</a>
+                                <a href="#event_thickness">thickness</a>
 
                             </li>
                     </ul>
@@ -1256,9 +1214,9 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property_active" class="property item">
-                        <h3 class="name"><code>active</code></h3>
-                        <span class="type">Boolean</span>
+                    <div id="property_color" class="property item">
+                        <h3 class="name"><code>color</code></h3>
+                        <span class="type">Float32Array</span>
                     
                     
                     
@@ -1267,18 +1225,19 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_transforms_billboard.js.html#l109"><code>src&#x2F;transforms&#x2F;billboard.js:109</code></a>
+                            <a href="../files/src_emphasis_xray.js.html#l106"><code>src&#x2F;emphasis&#x2F;xray.js:106</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Flag which indicates whether this Billboard is active or not.</p>
-                    <p>Fires an <a href="../classes/Billboard.html#event_active" class="crosslink">active</a> event on change.</p>
+                            <p>The XRay&#39;s RGB color.</p>
+                    <p>Fires a <a href="../classes/XRay.html#event_color" class="crosslink">color</a> event on change.</p>
                     
                         </div>
                     
+                            <p><strong>Default:</strong> [1.0, 1.0, 0.0]</p>
                     
                     
                     </div>
@@ -1435,32 +1394,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_spherical" class="property item">
-                        <h3 class="name"><code>spherical</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_transforms_billboard.js.html#l146"><code>src&#x2F;transforms&#x2F;billboard.js:146</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Flag which indicates whether this Billboard is spherical (true) or cylindrical (false).</p>
-                    <p>Fires an <a href="../classes/Billboard.html#event_spherical" class="crosslink">spherical</a> event on change.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
                     <div id="property_string" class="property item inherited">
                         <h3 class="name"><code>string</code></h3>
                         <span class="type">String</span>
@@ -1522,6 +1455,33 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_thickness" class="property item">
+                        <h3 class="name"><code>thickness</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_emphasis_xray.js.html#l64"><code>src&#x2F;emphasis&#x2F;xray.js:64</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The XRay&#39;s thickness in pixels.</p>
+                    <p>Fires a <a href="../classes/XRay.html#event_thickness" class="crosslink">thickness</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> 15</p>
+                    
+                    
+                    </div>
                     <div id="property_type" class="property item inherited">
                         <h3 class="name"><code>type</code></h3>
                         <span class="type">String</span>
@@ -1557,8 +1517,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="events" class="api-class-tabpanel">
                 <h2 class="off-left">Events</h2>
 
-                    <div id="event_active" class="events item">
-                        <h3 class="name"><code>active</code></h3>
+                    <div id="event_color" class="events item">
+                        <h3 class="name"><code>color</code></h3>
                         <span class="type"></span>
                     
                     
@@ -1568,14 +1528,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_transforms_billboard.js.html#l133"><code>src&#x2F;transforms&#x2F;billboard.js:133</code></a>
+                            <a href="../files/src_emphasis_xray.js.html#l141"><code>src&#x2F;emphasis&#x2F;xray.js:141</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this Billboard&#39;s <a href="../classes/Billboard.html#property_active" class="crosslink">active</a> property changes.</p>
+                            <p>Fired whenever this XRay&#39;s <a href="../classes/XRay.html#property_color" class="crosslink">color</a> property changes.</p>
                     
                         </div>
                     
@@ -1585,7 +1545,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                 <ul class="params-list">
                                     <li class="param">
                                             <code class="param-name">value</code>
-                                            <span class="type">Object</span>
+                                            <span class="type">Float32Array</span>
                     
                     
                                         <div class="param-description">
@@ -1624,8 +1584,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_spherical" class="events item">
-                        <h3 class="name"><code>spherical</code></h3>
+                    <div id="event_thickness" class="events item">
+                        <h3 class="name"><code>thickness</code></h3>
                         <span class="type"></span>
                     
                     
@@ -1635,14 +1595,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_transforms_billboard.js.html#l170"><code>src&#x2F;transforms&#x2F;billboard.js:170</code></a>
+                            <a href="../files/src_emphasis_xray.js.html#l92"><code>src&#x2F;emphasis&#x2F;xray.js:92</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this Billboard&#39;s <a href="../classes/Billboard.html#property_spherical" class="crosslink">spherical</a> property changes.</p>
+                            <p>Fired whenever this XRay&#39;s  <a href="../classes/XRay.html#property_thickness" class="crosslink">thickness</a> property changes.</p>
                     
                         </div>
                     

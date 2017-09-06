@@ -6,7 +6,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "Annotation",
         "AnnotationStory",
         "AxisHelper",
-        "Billboard",
         "Boundary2D",
         "Boundary3D",
         "BoxGeometry",

@@ -46,7 +46,6 @@
                                 <li><a href="../classes/Annotation.html">Annotation</a></li>
                                 <li><a href="../classes/AnnotationStory.html">AnnotationStory</a></li>
                                 <li><a href="../classes/AxisHelper.html">AxisHelper</a></li>
-                                <li><a href="../classes/Billboard.html">Billboard</a></li>
                                 <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
                                 <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
@@ -610,12 +609,12 @@ var stereoEffect = new xeogl.StereoEffect({
                                 <a href="#property_viewBoundary">viewBoundary</a>
 
                             </li>
-                            <li class="index-item property inherited">
-                                <a href="#property_viewport">viewport</a>
-
-                            </li>
                             <li class="index-item property">
                                 <a href="#property_Viewport">Viewport</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_viewport">viewport</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -624,6 +623,10 @@ var stereoEffect = new xeogl.StereoEffect({
                             </li>
                             <li class="index-item property inherited">
                                 <a href="#property_worldBoundary">worldBoundary</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_worpdPositions">worpdPositions</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -1510,7 +1513,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     </div>
                     <div id="property_billboard" class="property item inherited">
                         <h3 class="name"><code>billboard</code></h3>
-                        <span class="type"><a href="../classes/Billboard.html" class="crosslink">Billboard</a></span>
+                        <span class="type">String</span>
                     
                     
                     
@@ -1519,23 +1522,24 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_billboard">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l575"><code>src&#x2F;entities&#x2F;entity.js:575</code></a>
+                            <a href="../files/src_entities_entity.js.html#l1145"><code>src&#x2F;entities&#x2F;entity.js:1145</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The <a href="../classes/Billboard.html" class="crosslink">Billboard</a> attached to this Entity.</p>
-                    <p>When Billboard/property:active, the <a href="../classes/Billboard.html" class="crosslink">Billboard</a>
-                    will keep this Entity oriented towards the viewpoint.</p>
-                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Entity. Defaults to the parent
-                    <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_billboard" class="crosslink">billboard</a>
-                    (an identity matrix) when set to a null or undefined value.</p>
-                    <p>Fires an <a href="../classes/Entity.html#event_billboard" class="crosslink">billboard</a> event on change.</p>
+                            <p>Specifies the billboarding behaviour for this Entity.</p>
+                    <p>Options are:</p>
+                    <pre class="code prettyprint"><code><em> <strong>&quot;none&quot;</strong> -  <strong>(default)</strong> - No billboarding.
+                    </em> <strong>&quot;spherical&quot;</strong> - Entity is billboarded to face the viewpoint, rotating both vertically and horizontally.
+                    <em> <em>*&quot;cylindrical&quot;</em></em> - Entity is billboarded to face the viewpoint, rotating only about its vertically
+                    axis. Use this mode for things like trees on a landscape.
+                    </code></pre><p>Fires an <a href="../classes/Entity.html#event_billboard" class="crosslink">billboard</a> event on change.</p>
                     
                         </div>
                     
+                            <p><strong>Default:</strong> &quot;none&quot;</p>
                     
                     
                     </div>
@@ -1585,7 +1589,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_canvasBoundary">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l1329"><code>src&#x2F;entities&#x2F;entity.js:1329</code></a>
+                            <a href="../files/src_entities_entity.js.html#l1384"><code>src&#x2F;entities&#x2F;entity.js:1384</code></a>
                             </p>
                     
                     
@@ -1627,7 +1631,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_castShadow">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l906"><code>src&#x2F;entities&#x2F;entity.js:906</code></a>
+                            <a href="../files/src_entities_entity.js.html#l905"><code>src&#x2F;entities&#x2F;entity.js:905</code></a>
                             </p>
                     
                     
@@ -1654,7 +1658,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_clippable">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l828"><code>src&#x2F;entities&#x2F;entity.js:828</code></a>
+                            <a href="../files/src_entities_entity.js.html#l827"><code>src&#x2F;entities&#x2F;entity.js:827</code></a>
                             </p>
                     
                     
@@ -1681,7 +1685,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_clips">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l318"><code>src&#x2F;entities&#x2F;entity.js:318</code></a>
+                            <a href="../files/src_entities_entity.js.html#l356"><code>src&#x2F;entities&#x2F;entity.js:356</code></a>
                             </p>
                     
                     
@@ -1710,7 +1714,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_collidable">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l865"><code>src&#x2F;entities&#x2F;entity.js:865</code></a>
+                            <a href="../files/src_entities_entity.js.html#l864"><code>src&#x2F;entities&#x2F;entity.js:864</code></a>
                             </p>
                     
                     
@@ -1740,7 +1744,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_culled">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l754"><code>src&#x2F;entities&#x2F;entity.js:754</code></a>
+                            <a href="../files/src_entities_entity.js.html#l753"><code>src&#x2F;entities&#x2F;entity.js:753</code></a>
                             </p>
                     
                     
@@ -1821,7 +1825,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_geometry">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l352"><code>src&#x2F;entities&#x2F;entity.js:352</code></a>
+                            <a href="../files/src_entities_entity.js.html#l390"><code>src&#x2F;entities&#x2F;entity.js:390</code></a>
                             </p>
                     
                     
@@ -1854,7 +1858,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_glsl">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l1398"><code>src&#x2F;entities&#x2F;entity.js:1398</code></a>
+                            <a href="../files/src_entities_entity.js.html#l1486"><code>src&#x2F;entities&#x2F;entity.js:1486</code></a>
                             </p>
                     
                     
@@ -1883,7 +1887,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_glslString">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l1435"><code>src&#x2F;entities&#x2F;entity.js:1435</code></a>
+                            <a href="../files/src_entities_entity.js.html#l1523"><code>src&#x2F;entities&#x2F;entity.js:1523</code></a>
                             </p>
                     
                     
@@ -1988,7 +1992,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_layer">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l1060"><code>src&#x2F;entities&#x2F;entity.js:1060</code></a>
+                            <a href="../files/src_entities_entity.js.html#l1059"><code>src&#x2F;entities&#x2F;entity.js:1059</code></a>
                             </p>
                     
                     
@@ -2016,7 +2020,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_lights">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l405"><code>src&#x2F;entities&#x2F;entity.js:405</code></a>
+                            <a href="../files/src_entities_entity.js.html#l443"><code>src&#x2F;entities&#x2F;entity.js:443</code></a>
                             </p>
                     
                     
@@ -2046,7 +2050,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_localBoundary">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l1145"><code>src&#x2F;entities&#x2F;entity.js:1145</code></a>
+                            <a href="../files/src_entities_entity.js.html#l1200"><code>src&#x2F;entities&#x2F;entity.js:1200</code></a>
                             </p>
                     
                     
@@ -2081,7 +2085,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_material">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l440"><code>src&#x2F;entities&#x2F;entity.js:440</code></a>
+                            <a href="../files/src_entities_entity.js.html#l478"><code>src&#x2F;entities&#x2F;entity.js:478</code></a>
                             </p>
                     
                     
@@ -2136,7 +2140,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_morphTargets">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l475"><code>src&#x2F;entities&#x2F;entity.js:475</code></a>
+                            <a href="../files/src_entities_entity.js.html#l513"><code>src&#x2F;entities&#x2F;entity.js:513</code></a>
                             </p>
                     
                     
@@ -2165,7 +2169,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_outline">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l650"><code>src&#x2F;entities&#x2F;entity.js:650</code></a>
+                            <a href="../files/src_entities_entity.js.html#l649"><code>src&#x2F;entities&#x2F;entity.js:649</code></a>
                             </p>
                     
                     
@@ -2194,7 +2198,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_outlined">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l982"><code>src&#x2F;entities&#x2F;entity.js:982</code></a>
+                            <a href="../files/src_entities_entity.js.html#l981"><code>src&#x2F;entities&#x2F;entity.js:981</code></a>
                             </p>
                     
                     
@@ -2222,7 +2226,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_pickable">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l788"><code>src&#x2F;entities&#x2F;entity.js:788</code></a>
+                            <a href="../files/src_entities_entity.js.html#l787"><code>src&#x2F;entities&#x2F;entity.js:787</code></a>
                             </p>
                     
                     
@@ -2250,7 +2254,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_receiveShadow">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l943"><code>src&#x2F;entities&#x2F;entity.js:943</code></a>
+                            <a href="../files/src_entities_entity.js.html#l942"><code>src&#x2F;entities&#x2F;entity.js:942</code></a>
                             </p>
                     
                     
@@ -2303,7 +2307,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_stationary">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l1105"><code>src&#x2F;entities&#x2F;entity.js:1105</code></a>
+                            <a href="../files/src_entities_entity.js.html#l1104"><code>src&#x2F;entities&#x2F;entity.js:1104</code></a>
                             </p>
                     
                     
@@ -2317,6 +2321,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         </div>
                     
+                            <p><strong>Default:</strong> false</p>
                     
                     
                     </div>
@@ -2392,7 +2397,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_transform">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l510"><code>src&#x2F;entities&#x2F;entity.js:510</code></a>
+                            <a href="../files/src_entities_entity.js.html#l548"><code>src&#x2F;entities&#x2F;entity.js:548</code></a>
                             </p>
                     
                     
@@ -2454,7 +2459,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_viewBoundary">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l1261"><code>src&#x2F;entities&#x2F;entity.js:1261</code></a>
+                            <a href="../files/src_entities_entity.js.html#l1316"><code>src&#x2F;entities&#x2F;entity.js:1316</code></a>
                             </p>
                     
                     
@@ -2478,35 +2483,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     <p>To minimize performance overhead, only reference this property if you need it, and destroy
                     the <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> as soon as you don&#39;t need it anymore.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_viewport" class="property item inherited">
-                        <h3 class="name"><code>viewport</code></h3>
-                        <span class="type"><a href="../classes/Viewport.html" class="crosslink">Viewport</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Entity.html#property_viewport">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l614"><code>src&#x2F;entities&#x2F;entity.js:614</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The <a href="../classes/Viewport.html" class="crosslink">Viewport</a> attached to this Entity.</p>
-                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Entity. When set to a null or undefined value,
-                    defaults to the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_viewport" class="crosslink">viewport</a>,
-                    which automatically resizes to the canvas.</p>
-                    <p>Fires an <a href="../classes/Entity.html#event_viewport" class="crosslink">viewport</a> event on change.</p>
                     
                         </div>
                     
@@ -2541,6 +2517,35 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_viewport" class="property item inherited">
+                        <h3 class="name"><code>viewport</code></h3>
+                        <span class="type"><a href="../classes/Viewport.html" class="crosslink">Viewport</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Entity.html#property_viewport">Entity</a>:
+                            <a href="../files/src_entities_entity.js.html#l613"><code>src&#x2F;entities&#x2F;entity.js:613</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The <a href="../classes/Viewport.html" class="crosslink">Viewport</a> attached to this Entity.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Entity. When set to a null or undefined value,
+                    defaults to the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_viewport" class="crosslink">viewport</a>,
+                    which automatically resizes to the canvas.</p>
+                    <p>Fires an <a href="../classes/Entity.html#event_viewport" class="crosslink">viewport</a> event on change.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_visible" class="property item inherited">
                         <h3 class="name"><code>visible</code></h3>
                         <span class="type">Boolean</span>
@@ -2552,7 +2557,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_visible">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l720"><code>src&#x2F;entities&#x2F;entity.js:720</code></a>
+                            <a href="../files/src_entities_entity.js.html#l719"><code>src&#x2F;entities&#x2F;entity.js:719</code></a>
                             </p>
                     
                     
@@ -2582,7 +2587,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_worldBoundary">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l1172"><code>src&#x2F;entities&#x2F;entity.js:1172</code></a>
+                            <a href="../files/src_entities_entity.js.html#l1227"><code>src&#x2F;entities&#x2F;entity.js:1227</code></a>
                             </p>
                     
                     
@@ -2614,6 +2619,32 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_worpdPositions" class="property item inherited">
+                        <h3 class="name"><code>worpdPositions</code></h3>
+                        <span class="type">Float32Array</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Entity.html#property_worpdPositions">Entity</a>:
+                            <a href="../files/src_entities_entity.js.html#l1453"><code>src&#x2F;entities&#x2F;entity.js:1453</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>World-space vertex positions of this Entity.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_xray" class="property item inherited">
                         <h3 class="name"><code>xray</code></h3>
                         <span class="type"><a href="../classes/XRay.html" class="crosslink">XRay</a></span>
@@ -2625,7 +2656,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_xray">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l685"><code>src&#x2F;entities&#x2F;entity.js:685</code></a>
+                            <a href="../files/src_entities_entity.js.html#l684"><code>src&#x2F;entities&#x2F;entity.js:684</code></a>
                             </p>
                     
                     
@@ -2654,7 +2685,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#property_xrayed">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l1021"><code>src&#x2F;entities&#x2F;entity.js:1021</code></a>
+                            <a href="../files/src_entities_entity.js.html#l1020"><code>src&#x2F;entities&#x2F;entity.js:1020</code></a>
                             </p>
                     
                     
@@ -2730,15 +2761,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#event_billboard">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l594"><code>src&#x2F;entities&#x2F;entity.js:594</code></a>
+                            <a href="../files/src_entities_entity.js.html#l1187"><code>src&#x2F;entities&#x2F;entity.js:1187</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this Entity&#39;s <a href="../classes/Entity.html#property_billboard" class="crosslink">billboard</a>
-                    property changes.</p>
+                            <p>Fired whenever this Entity&#39;s <a href="../classes/Entity.html#property_billboard" class="crosslink">billboard</a> property changes.</p>
                     
                         </div>
                     
@@ -2819,7 +2849,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#event_castShadow">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l929"><code>src&#x2F;entities&#x2F;entity.js:929</code></a>
+                            <a href="../files/src_entities_entity.js.html#l928"><code>src&#x2F;entities&#x2F;entity.js:928</code></a>
                             </p>
                     
                     
@@ -2861,7 +2891,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#event_clippable">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l851"><code>src&#x2F;entities&#x2F;entity.js:851</code></a>
+                            <a href="../files/src_entities_entity.js.html#l850"><code>src&#x2F;entities&#x2F;entity.js:850</code></a>
                             </p>
                     
                     
@@ -2903,7 +2933,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#event_clips">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l334"><code>src&#x2F;entities&#x2F;entity.js:334</code></a>
+                            <a href="../files/src_entities_entity.js.html#l372"><code>src&#x2F;entities&#x2F;entity.js:372</code></a>
                             </p>
                     
                     
@@ -2945,7 +2975,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#event_collidable">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l891"><code>src&#x2F;entities&#x2F;entity.js:891</code></a>
+                            <a href="../files/src_entities_entity.js.html#l890"><code>src&#x2F;entities&#x2F;entity.js:890</code></a>
                             </p>
                     
                     
@@ -2987,7 +3017,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#event_culled">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l774"><code>src&#x2F;entities&#x2F;entity.js:774</code></a>
+                            <a href="../files/src_entities_entity.js.html#l773"><code>src&#x2F;entities&#x2F;entity.js:773</code></a>
                             </p>
                     
                     
@@ -3096,7 +3126,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#event_geometry">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l376"><code>src&#x2F;entities&#x2F;entity.js:376</code></a>
+                            <a href="../files/src_entities_entity.js.html#l414"><code>src&#x2F;entities&#x2F;entity.js:414</code></a>
                             </p>
                     
                     
@@ -3138,7 +3168,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#event_layer">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l1091"><code>src&#x2F;entities&#x2F;entity.js:1091</code></a>
+                            <a href="../files/src_entities_entity.js.html#l1090"><code>src&#x2F;entities&#x2F;entity.js:1090</code></a>
                             </p>
                     
                     
@@ -3180,7 +3210,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#event_lights">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l421"><code>src&#x2F;entities&#x2F;entity.js:421</code></a>
+                            <a href="../files/src_entities_entity.js.html#l459"><code>src&#x2F;entities&#x2F;entity.js:459</code></a>
                             </p>
                     
                     
@@ -3222,7 +3252,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#event_material">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l456"><code>src&#x2F;entities&#x2F;entity.js:456</code></a>
+                            <a href="../files/src_entities_entity.js.html#l494"><code>src&#x2F;entities&#x2F;entity.js:494</code></a>
                             </p>
                     
                     
@@ -3264,7 +3294,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#event_morphTargets">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l492"><code>src&#x2F;entities&#x2F;entity.js:492</code></a>
+                            <a href="../files/src_entities_entity.js.html#l530"><code>src&#x2F;entities&#x2F;entity.js:530</code></a>
                             </p>
                     
                     
@@ -3306,7 +3336,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#event_Outline">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l666"><code>src&#x2F;entities&#x2F;entity.js:666</code></a>
+                            <a href="../files/src_entities_entity.js.html#l665"><code>src&#x2F;entities&#x2F;entity.js:665</code></a>
                             </p>
                     
                     
@@ -3348,7 +3378,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#event_outlined">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l1007"><code>src&#x2F;entities&#x2F;entity.js:1007</code></a>
+                            <a href="../files/src_entities_entity.js.html#l1006"><code>src&#x2F;entities&#x2F;entity.js:1006</code></a>
                             </p>
                     
                     
@@ -3390,7 +3420,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#event_pickable">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l814"><code>src&#x2F;entities&#x2F;entity.js:814</code></a>
+                            <a href="../files/src_entities_entity.js.html#l813"><code>src&#x2F;entities&#x2F;entity.js:813</code></a>
                             </p>
                     
                     
@@ -3432,7 +3462,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#event_picked">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l192"><code>src&#x2F;entities&#x2F;entity.js:192</code></a>
+                            <a href="../files/src_entities_entity.js.html#l227"><code>src&#x2F;entities&#x2F;entity.js:227</code></a>
                             </p>
                     
                     
@@ -3497,7 +3527,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#event_receiveShadow">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l968"><code>src&#x2F;entities&#x2F;entity.js:968</code></a>
+                            <a href="../files/src_entities_entity.js.html#l967"><code>src&#x2F;entities&#x2F;entity.js:967</code></a>
                             </p>
                     
                     
@@ -3581,7 +3611,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#event_transform">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l534"><code>src&#x2F;entities&#x2F;entity.js:534</code></a>
+                            <a href="../files/src_entities_entity.js.html#l572"><code>src&#x2F;entities&#x2F;entity.js:572</code></a>
                             </p>
                     
                     
@@ -3667,7 +3697,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#event_viewport">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l630"><code>src&#x2F;entities&#x2F;entity.js:630</code></a>
+                            <a href="../files/src_entities_entity.js.html#l629"><code>src&#x2F;entities&#x2F;entity.js:629</code></a>
                             </p>
                     
                     
@@ -3710,7 +3740,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#event_visible">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l740"><code>src&#x2F;entities&#x2F;entity.js:740</code></a>
+                            <a href="../files/src_entities_entity.js.html#l739"><code>src&#x2F;entities&#x2F;entity.js:739</code></a>
                             </p>
                     
                     
@@ -3752,7 +3782,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#event_XRay">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l701"><code>src&#x2F;entities&#x2F;entity.js:701</code></a>
+                            <a href="../files/src_entities_entity.js.html#l700"><code>src&#x2F;entities&#x2F;entity.js:700</code></a>
                             </p>
                     
                     
@@ -3794,7 +3824,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Entity.html#event_xrayed">Entity</a>:
-                            <a href="../files/src_entities_entity.js.html#l1046"><code>src&#x2F;entities&#x2F;entity.js:1046</code></a>
+                            <a href="../files/src_entities_entity.js.html#l1045"><code>src&#x2F;entities&#x2F;entity.js:1045</code></a>
                             </p>
                     
                     

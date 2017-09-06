@@ -46,7 +46,6 @@
                                 <li><a href="../classes/Annotation.html">Annotation</a></li>
                                 <li><a href="../classes/AnnotationStory.html">AnnotationStory</a></li>
                                 <li><a href="../classes/AxisHelper.html">AxisHelper</a></li>
-                                <li><a href="../classes/Billboard.html">Billboard</a></li>
                                 <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
                                 <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
@@ -210,7 +209,7 @@
 
  * MetallicMaterial is usually used for conductive materials, such as metal.
  * {{#crossLink &quot;SpecularMaterial&quot;}}{{/crossLink}} is usually used for insulators, such as wood, ceramics and plastic.
- * {{#crossLink &quot;MetallicMaterial&quot;}}{{/crossLink}} is usually used for non-realistic objects.
+ * {{#crossLink &quot;PhongMaterial&quot;}}{{/crossLink}} is usually used for non-realistic objects.
 
  &lt;img src=&quot;../../../assets/images/MetallicMaterial.png&quot;&gt;&lt;/img&gt;
 
@@ -256,7 +255,7 @@
  within the same {{#crossLink &quot;Texture&quot;}}{{/crossLink}} for efficiency.
 
  &#x60;&#x60;&#x60;&#x60;javascript
- new xeogl.Entity({
+ var hydrant = new xeogl.Entity({
 
     geometry: new xeogl.OBJGeometry({
         src: &quot;models/obj/FireHydrantMesh.obj&quot;
@@ -347,7 +346,7 @@
  *R* component multiplies by {{#crossLink &quot;MetallicMaterial/metallic:property&quot;}}{{/crossLink}} and *G* multiplies by {{#crossLink &quot;MetallicMaterial/roughness:property&quot;}}{{/crossLink}}.
 
  &#x60;&#x60;&#x60;&#x60;javascript
- new xeogl.MetallicMaterial({
+ hydrant.material = new xeogl.MetallicMaterial({
 
     baseColor: [1,1,1], // Default value
     metallic: 1.0,      // Default value
@@ -369,12 +368,44 @@
  &#x60;&#x60;&#x60;&#x60;
 
  Although not shown in this example, we can also texture {{#crossLink &quot;MetallicMaterial/alpha:property&quot;}}{{/crossLink}} with
- the *A* component of {{#crossLink &quot;MetallicMaterial/diffuseMap:property&quot;}}{{/crossLink}}&#x27;s {{#crossLink &quot;Texture&quot;}}{{/crossLink}},
+ the *A* component of {{#crossLink &quot;MetallicMaterial/baseColorMap:property&quot;}}{{/crossLink}}&#x27;s {{#crossLink &quot;Texture&quot;}}{{/crossLink}},
  if required.
 
  ## Transparency
 
- TODO
+ ### Alpha Blending
+
+ Let&#x27;s make our hydrant transparent.
+
+ We&#x27;ll update its MetallicMaterial&#x27;s {{#crossLink &quot;MetallicMaterial/alpha:property&quot;}}{{/crossLink}}
+ and {{#crossLink &quot;MetallicMaterial/alphaMode:property&quot;}}{{/crossLink}}, causing it to blend 50% with the background:
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ hydrant.material.alpha = 0.5;
+ hydrant.material.alphaMode = &quot;blend&quot;;
+ &#x60;&#x60;&#x60;&#x60;
+
+ &lt;img src=&quot;../../../assets/images/screenshots/MetallicMaterial/alphaBlend.png&quot;&gt;&lt;/img&gt;
+
+ ### Alpha Masking
+
+ Let&#x27;s apply an alpha mask to our hydrant.
+
+ We&#x27;ll give its MetallicMaterial an {{#crossLink &quot;MetallicMaterial/alphaMap:property&quot;}}{{/crossLink}}
+ and configure {{#crossLink &quot;MetallicMaterial/alpha:property&quot;}}{{/crossLink}}, {{#crossLink &quot;MetallicMaterial/alphaMode:property&quot;}}{{/crossLink}},
+ and {{#crossLink &quot;MetallicMaterial/alphaCutoff:property&quot;}}{{/crossLink}} to treat it as an alpha mask:
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ hydrant.material.alphaMap = new xeogl.Texture({
+        src: &quot;textures/diffuse/crossGridColorMap.jpg&quot;
+    });
+
+ hydrant.material.alpha = 1.0;
+ hydrant.material.alphaMode = &quot;mask&quot;;
+ hydrant.material.alphaCutoff = 0.2;
+ &#x60;&#x60;&#x60;&#x60;
+
+ &lt;img src=&quot;../../../assets/images/screenshots/MetallicMaterial/alphaMask.png&quot;&gt;&lt;/img&gt;
 
  @class MetallicMaterial
  @module xeogl
@@ -471,10 +502,10 @@
                 type: &quot;MetallicMaterial&quot;,
                 baseColor: xeogl.math.vec4([1.0, 1.0, 1.0]),
                 emissive: xeogl.math.vec4([0.0, 0.0, 0.0]),
-                metallic: 1.0,
-                roughness: 1.0,
-                specularF0: 0.0,
-                alpha: 1.0,
+                metallic: null,
+                roughness: null,
+                specularF0: null,
+                alpha: null,
                 baseColorMap: null,
                 alphaMap: null,
                 metallicMap: null,
@@ -483,8 +514,8 @@
                 emissiveMap: null,
                 occlusionMap: null,
                 normalMap: null,
-                alphaMode: 0, // &quot;opaque&quot;
-                alphaCutoff: 0.5,
+                alphaMode: null, // &quot;opaque&quot;
+                alphaCutoff: null,
                 backfaces: null,
                 frontface: null, // Boolean for speed; true == &quot;ccw&quot;, false == &quot;cw&quot;
                 hash: null
@@ -1079,11 +1110,8 @@
              @type {String}
              */
             alphaMode: (function () {
-                var modes = {
-                    &quot;opaque&quot;: 0,
-                    &quot;mask&quot;: 1,
-                    &quot;blend&quot;: 2
-                };
+                var modes = {&quot;opaque&quot;: 0, &quot;mask&quot;: 1, &quot;blend&quot;: 2};
+                var modeNames = [&quot;opaque&quot;, &quot;mask&quot;, &quot;blend&quot;];
                 return {
                     set: function (alphaMode) {
 
@@ -1104,7 +1132,7 @@
                         this._renderer.imageDirty = true;
 
                         /**
-                         Fired whenever this MetallicMaterial&#x27;s {{#crossLink &quot;MetallicMaterial/look:property&quot;}}{{/crossLink}} property changes.
+                         Fired whenever this MetallicMaterial&#x27;s {{#crossLink &quot;MetallicMaterial/alphaMode:property&quot;}}{{/crossLink}} property changes.
 
                          @event alphaMode
                          @param value {Number} The property&#x27;s new value
@@ -1112,7 +1140,7 @@
                         this.fire(&quot;alphaMode&quot;, this._state.alphaMode);
                     },
                     get: function () {
-                        return modes[this._state.alphaMode];
+                        return modeNames[this._state.alphaMode];
                     }
                 };
             })(),

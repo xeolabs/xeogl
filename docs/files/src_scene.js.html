@@ -46,7 +46,6 @@
                                 <li><a href="../classes/Annotation.html">Annotation</a></li>
                                 <li><a href="../classes/AnnotationStory.html">AnnotationStory</a></li>
                                 <li><a href="../classes/AxisHelper.html">AxisHelper</a></li>
-                                <li><a href="../classes/Billboard.html">Billboard</a></li>
                                 <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
                                 <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
@@ -999,30 +998,6 @@
                     return this.components[&quot;default.transform&quot;] ||
                         new xeogl.Transform(this, {
                             id: &quot;default.transform&quot;,
-                            isDefault: true
-                        });
-                }
-            },
-
-            /**
-             * The default {{#crossLink &quot;Billboard&quot;}}Billboard{{/crossLink}} provided by this Scene.
-             *
-             * This {{#crossLink &quot;Billboard&quot;}}Billboard{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.billboard&quot;
-             * and an {{#crossLink &quot;Billboard/active:property&quot;}}{{/crossLink}} property set to false, to disable it.
-             *
-             * {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink &quot;Billboard&quot;}}Billboard{{/crossLink}} by default.
-             *
-             * @property billboard
-             * @final
-             * @type Billboard
-             */
-            billboard: {
-                get: function () {
-                    return this.components[&quot;default.billboard&quot;] ||
-                        new xeogl.Billboard(this, {
-                            id: &quot;default.billboard&quot;,
-                            active: false,
                             isDefault: true
                         });
                 }
