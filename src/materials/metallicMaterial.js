@@ -12,7 +12,7 @@
 
  * MetallicMaterial is usually used for conductive materials, such as metal.
  * {{#crossLink "SpecularMaterial"}}{{/crossLink}} is usually used for insulators, such as wood, ceramics and plastic.
- * {{#crossLink "MetallicMaterial"}}{{/crossLink}} is usually used for non-realistic objects.
+ * {{#crossLink "PhongMaterial"}}{{/crossLink}} is usually used for non-realistic objects.
 
  <img src="../../../assets/images/MetallicMaterial.png"></img>
 
@@ -58,7 +58,7 @@
  within the same {{#crossLink "Texture"}}{{/crossLink}} for efficiency.
 
  ````javascript
- new xeogl.Entity({
+ var hydrant = new xeogl.Entity({
 
     geometry: new xeogl.OBJGeometry({
         src: "models/obj/FireHydrantMesh.obj"
@@ -149,7 +149,7 @@
  *R* component multiplies by {{#crossLink "MetallicMaterial/metallic:property"}}{{/crossLink}} and *G* multiplies by {{#crossLink "MetallicMaterial/roughness:property"}}{{/crossLink}}.
 
  ````javascript
- new xeogl.MetallicMaterial({
+ hydrant.material = new xeogl.MetallicMaterial({
 
     baseColor: [1,1,1], // Default value
     metallic: 1.0,      // Default value
@@ -171,12 +171,44 @@
  ````
 
  Although not shown in this example, we can also texture {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}} with
- the *A* component of {{#crossLink "MetallicMaterial/diffuseMap:property"}}{{/crossLink}}'s {{#crossLink "Texture"}}{{/crossLink}},
+ the *A* component of {{#crossLink "MetallicMaterial/baseColorMap:property"}}{{/crossLink}}'s {{#crossLink "Texture"}}{{/crossLink}},
  if required.
 
  ## Transparency
 
- TODO
+ ### Alpha Blending
+
+ Let's make our hydrant transparent.
+
+ We'll update its MetallicMaterial's {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}}
+ and {{#crossLink "MetallicMaterial/alphaMode:property"}}{{/crossLink}}, causing it to blend 50% with the background:
+
+ ````javascript
+ hydrant.material.alpha = 0.5;
+ hydrant.material.alphaMode = "blend";
+ ````
+
+ <img src="../../../assets/images/screenshots/MetallicMaterial/alphaBlend.png"></img>
+
+ ### Alpha Masking
+
+ Let's apply an alpha mask to our hydrant.
+
+ We'll give its MetallicMaterial an {{#crossLink "MetallicMaterial/alphaMap:property"}}{{/crossLink}}
+ and configure {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}}, {{#crossLink "MetallicMaterial/alphaMode:property"}}{{/crossLink}},
+ and {{#crossLink "MetallicMaterial/alphaCutoff:property"}}{{/crossLink}} to treat it as an alpha mask:
+
+ ````javascript
+ hydrant.material.alphaMap = new xeogl.Texture({
+        src: "textures/diffuse/crossGridColorMap.jpg"
+    });
+
+ hydrant.material.alpha = 1.0;
+ hydrant.material.alphaMode = "mask";
+ hydrant.material.alphaCutoff = 0.2;
+ ````
+
+ <img src="../../../assets/images/screenshots/MetallicMaterial/alphaMask.png"></img>
 
  @class MetallicMaterial
  @module xeogl
@@ -273,10 +305,10 @@
                 type: "MetallicMaterial",
                 baseColor: xeogl.math.vec4([1.0, 1.0, 1.0]),
                 emissive: xeogl.math.vec4([0.0, 0.0, 0.0]),
-                metallic: 1.0,
-                roughness: 1.0,
-                specularF0: 0.0,
-                alpha: 1.0,
+                metallic: null,
+                roughness: null,
+                specularF0: null,
+                alpha: null,
                 baseColorMap: null,
                 alphaMap: null,
                 metallicMap: null,
@@ -285,8 +317,8 @@
                 emissiveMap: null,
                 occlusionMap: null,
                 normalMap: null,
-                alphaMode: 0, // "opaque"
-                alphaCutoff: 0.5,
+                alphaMode: null, // "opaque"
+                alphaCutoff: null,
                 backfaces: null,
                 frontface: null, // Boolean for speed; true == "ccw", false == "cw"
                 hash: null
@@ -881,11 +913,8 @@
              @type {String}
              */
             alphaMode: (function () {
-                var modes = {
-                    "opaque": 0,
-                    "mask": 1,
-                    "blend": 2
-                };
+                var modes = {"opaque": 0, "mask": 1, "blend": 2};
+                var modeNames = ["opaque", "mask", "blend"];
                 return {
                     set: function (alphaMode) {
 
@@ -906,7 +935,7 @@
                         this._renderer.imageDirty = true;
 
                         /**
-                         Fired whenever this MetallicMaterial's {{#crossLink "MetallicMaterial/look:property"}}{{/crossLink}} property changes.
+                         Fired whenever this MetallicMaterial's {{#crossLink "MetallicMaterial/alphaMode:property"}}{{/crossLink}} property changes.
 
                          @event alphaMode
                          @param value {Number} The property's new value
@@ -914,7 +943,7 @@
                         this.fire("alphaMode", this._state.alphaMode);
                     },
                     get: function () {
-                        return modes[this._state.alphaMode];
+                        return modeNames[this._state.alphaMode];
                     }
                 };
             })(),

@@ -12,7 +12,7 @@
  ## Overview
 
  * Used for rendering non-realistic objects such as "helpers", wireframe objects, labels etc.
- * Use the physically-based {{#crossLink "MetallicMaterial"}}{{/crossLink}} or {{#crossLink "SpecularMaterial"}}{{/crossLink}} realism is required.
+ * Use the physically-based {{#crossLink "MetallicMaterial"}}{{/crossLink}} or {{#crossLink "SpecularMaterial"}}{{/crossLink}} when more realism is required.
 
  <img src="../../../assets/images/PhongMaterial.png"></img>
 
@@ -54,7 +54,7 @@
  * a {{#crossLink "TorusGeometry"}}{{/crossLink}}.
 
  ```` javascript
- var entity = new xeogl.Entity({
+ var torus = new xeogl.Entity({
 
     lights: new xeogl.Lights({
         lights: [
@@ -92,7 +92,34 @@
 
  ## Transparency
 
- TODO
+ ### Alpha Blending
+
+ Let's make our torus transparent. We'll update its PhongMaterial's {{#crossLink "PhongMaterial/alpha:property"}}{{/crossLink}}
+ and {{#crossLink "PhongMaterial/alphaMode:property"}}{{/crossLink}}, causing it to blend 50% with the background:
+
+ ````javascript
+ torus.material.alpha = 0.5;
+ torus.material.alphaMode = "blend";
+ ````
+ *TODO: Screenshot*
+
+ ### Alpha Masking
+
+ Now let's make holes in our torus instead. We'll give its PhongMaterial an {{#crossLink "PhongMaterial/alphaMap:property"}}{{/crossLink}}
+ and configure {{#crossLink "PhongMaterial/alpha:property"}}{{/crossLink}}, {{#crossLink "PhongMaterial/alphaMode:property"}}{{/crossLink}},
+ and {{#crossLink "PhongMaterial/alphaCutoff:property"}}{{/crossLink}} to treat it as an alpha mask:
+
+ ````javascript
+ torus.material.alphaMap = new xeogl.Texture({
+        src: "textures/diffuse/crossGridColorMap.jpg"
+    });
+
+ torus.material.alpha = 1.0;
+ torus.material.alphaMode = "mask";
+ torus.material.alphaCutoff = 0.2;
+ ````
+*TODO: Screenshot*
+
 
  @class PhongMaterial
  @module xeogl
@@ -109,7 +136,6 @@
  @param [cfg.specular=[ 1.0, 1.0, 1.0 ]] {Array of Number} PhongMaterial specular color.
  @param [cfg.emissive=[ 0.0, 0.0, 0.0 ]] {Array of Number} PhongMaterial emissive color.
  @param [cfg.alpha=1] {Number} Scalar in range 0-1 that controls alpha, where 0 is completely transparent and 1 is completely opaque.
- Only applies while {{#crossLink "Modes"}}Modes{{/crossLink}} {{#crossLink "Modes/transparent:property"}}transparent{{/crossLink}} equals ````true````.
  @param [cfg.shininess=80] {Number} Scalar in range 0-128 that determines the size and sharpness of specular highlights.
  @param [cfg.reflectivity=1] {Number} Scalar in range 0-1 that controls how much {{#crossLink "CubeMap"}}CubeMap{{/crossLink}} is reflected.
  @param [cfg.lineWidth=1] {Number} Scalar that controls the width of lines for {{#crossLink "Geometry"}}{{/crossLink}} with {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} set to "lines".
@@ -152,15 +178,15 @@
                 specular: xeogl.math.vec3([1.0, 1.0, 1.0]),
                 emissive: xeogl.math.vec3([0.0, 0.0, 0.0]),
 
-                alpha: 1.0,
-                shininess: 80.0,
-                reflectivity: 1.0,
+                alpha: null,
+                shininess: null,
+                reflectivity: null,
 
-                alphaMode: 0, // "opaque"
-                alphaCutoff: 0.5,
+                alphaMode: null,
+                alphaCutoff: null,
 
-                lineWidth: 1.0,
-                pointSize: 1.0,
+                lineWidth: null,
+                pointSize: null,
 
                 backfaces: null,
                 frontface: null, // Boolean for speed; true == "ccw", false == "cw"
@@ -458,10 +484,6 @@
              Factor in the range [0..1] indicating how transparent the PhongMaterial is.
 
              A value of 0.0 indicates fully transparent, 1.0 is fully opaque.
-
-             Attached {{#crossLink "Entity"}}Entities{{/crossLink}} will appear transparent only if they are also attached
-             to {{#crossLink "Modes"}}Modes{{/crossLink}} that have {{#crossLink "Modes/transparent:property"}}transparent{{/crossLink}}
-             set to **true**.
 
              Multiplies by {{#crossLink "PhongMaterial/alphaMap:property"}}{{/crossLink}}.
 
@@ -1078,11 +1100,8 @@
              @type {String}
              */
             alphaMode: (function () {
-                var modes = {
-                    "opaque": 0,
-                    "mask": 1,
-                    "blend": 2
-                };
+                var modes = {"opaque": 0, "mask": 1, "blend": 2};
+                var modeNames = ["opaque", "mask", "blend"];
                 return {
                     set: function (alphaMode) {
 
@@ -1103,7 +1122,7 @@
                         this._renderer.imageDirty = true;
 
                         /**
-                         Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/look:property"}}{{/crossLink}} property changes.
+                         Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/alphaMode:property"}}{{/crossLink}} property changes.
 
                          @event alphaMode
                          @param value {Number} The property's new value
@@ -1111,7 +1130,7 @@
                         this.fire("alphaMode", this._state.alphaMode);
                     },
                     get: function () {
-                        return modes[this._state.alphaMode];
+                        return modeNames[this._state.alphaMode];
                     }
                 };
             })(),
@@ -1166,7 +1185,7 @@
              The backfaces will belong to {{#crossLink "Geometry"}}{{/crossLink}} compoents that are also attached to
              the {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
-             Fires a {{#crossLink "SpecularMaterial/backfaces:event"}}{{/crossLink}} event on change.
+             Fires a {{#crossLink "PhongMaterial/backfaces:event"}}{{/crossLink}} event on change.
 
              @property backfaces
              @default false
@@ -1206,7 +1225,7 @@
              The faces will belong to {{#crossLink "Geometry"}}{{/crossLink}} components that are also attached to
              the {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
-             Fires a {{#crossLink "SpecularMaterial/frontface:event"}}{{/crossLink}} event on change.
+             Fires a {{#crossLink "PhongMaterial/frontface:event"}}{{/crossLink}} event on change.
 
              @property frontface
              @default "ccw"

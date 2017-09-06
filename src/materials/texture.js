@@ -510,8 +510,8 @@
             /**
              * How this Texture is sampled when a texel covers less than one pixel.
              *
-             * Options are:
              *
+             * Options are:
              *
              *     * **"nearest"** - Uses the value of the texture element that is nearest
              *     (in Manhattan distance) to the center of the pixel being textured.

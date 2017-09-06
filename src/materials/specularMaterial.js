@@ -64,10 +64,13 @@
  within the same {{#crossLink "Texture"}}{{/crossLink}} for efficiency.
 
  ````javascript
- new xeogl.Entity({
+ var plasteredSphere = new xeogl.Entity({
 
-    geometry: new xeogl.OBJGeometry({
-        src: "models/obj/FireHydrantMesh.obj"
+    geometry: new xeogl.SphereGeometry({
+        center: [0,0,0],
+        radius: 1.5,
+        heightSegments: 60,
+        widthSegments: 60
     }),
 
     lights: new xeogl.Lights({
@@ -148,7 +151,7 @@
  *RGB* component multiplies by {{#crossLink "SpecularMaterial/specular:property"}}{{/crossLink}} and *A* multiplies by {{#crossLink "SpecularMaterial/glossiness:property"}}{{/crossLink}}.
 
  ````javascript
- new xeogl.SpecularMaterial({
+ plasteredSphere.material = new xeogl.SpecularMaterial({
 
     // Default values
     diffuse: [1.0, 1.0, 1.0],
@@ -170,12 +173,40 @@
  ````
 
  Although not shown in this example, we can also texture {{#crossLink "SpecularMaterial/alpha:property"}}{{/crossLink}} with
- the *A* component of {{#crossLink "SpecularMaterial/baseColorMap:property"}}{{/crossLink}}'s {{#crossLink "Texture"}}{{/crossLink}},
+ the *A* component of {{#crossLink "SpecularMaterial/diffuseMap:property"}}{{/crossLink}}'s {{#crossLink "Texture"}}{{/crossLink}},
  if required.
 
  ## Transparency
 
- TODO
+ ### Alpha Blending
+
+ Let's make our plastered sphere transparent. We'll update its SpecularMaterial's {{#crossLink "SpecularMaterial/alpha:property"}}{{/crossLink}}
+ and {{#crossLink "SpecularMaterial/alphaMode:property"}}{{/crossLink}}, causing it to blend 50% with the background:
+
+ ````javascript
+ plasteredSphere.material.alpha = 0.5;
+ plasteredSphere.material.alphaMode = "blend";
+ ````
+
+ *TODO: Screenshot*
+
+ ### Alpha Masking
+
+ Now let's make holes in our plastered sphere. We'll give its SpecularMaterial an {{#crossLink "SpecularMaterial/alphaMap:property"}}{{/crossLink}}
+ and configure {{#crossLink "SpecularMaterial/alpha:property"}}{{/crossLink}}, {{#crossLink "SpecularMaterial/alphaMode:property"}}{{/crossLink}},
+ and {{#crossLink "SpecularMaterial/alphaCutoff:property"}}{{/crossLink}} to treat it as an alpha mask:
+
+ ````javascript
+ plasteredSphere.material.alphaMap = new xeogl.Texture({
+        src: "textures/diffuse/crossGridColorMap.jpg"
+    });
+
+ plasteredSphere.material.alpha = 1.0;
+ plasteredSphere.material.alphaMode = "mask";
+ plasteredSphere.material.alphaCutoff = 0.2;
+ ````
+
+ *TODO: Screenshot*
 
  @class SpecularMaterial
  @module xeogl
@@ -236,9 +267,7 @@
  @param [cfg.alpha=1.0] {Number} Factor in the range 0..1 indicating how transparent this SpecularMaterial is.
  A value of 0.0 indicates fully transparent, 1.0 is fully opaque. Multiplies by the *R* component of
  {{#crossLink "SpecularMaterial/alphaMap:property"}}{{/crossLink}} and the *A* component, if present, of
- {{#crossLink "SpecularMaterial/diffuseMap:property"}}{{/crossLink}}. Attached {{#crossLink "Entity"}}Entities{{/crossLink}}
- will appear transparent only if they are also attached to {{#crossLink "Modes"}}Modes{{/crossLink}} that
- have {{#crossLink "Modes/transparent:property"}}transparent{{/crossLink}} set to **true**.
+ {{#crossLink "SpecularMaterial/diffuseMap:property"}}{{/crossLink}}.
 
  @param [cfg.alphaMap=undefined] {Texture} RGB {{#crossLink "Texture"}}{{/crossLink}} containing this SpecularMaterial's
  alpha in its *R* component. The *R* component multiplies by the {{#crossLink "SpecularMaterial/alpha:property"}}{{/crossLink}} property. Must
@@ -270,9 +299,9 @@
                 diffuse: xeogl.math.vec4([1.0, 1.0, 1.0]),
                 emissive: xeogl.math.vec4([0.0, 0.0, 0.0]),
                 specular: xeogl.math.vec4([1.0, 1.0, 1.0]),
-                glossiness: 1.0,
-                specularF0: 0.0,
-                alpha: 1.0,
+                glossiness: null,
+                specularF0: null,
+                alpha: null,
 
                 diffuseMap: null,
                 emissiveMap: null,
@@ -282,8 +311,8 @@
                 occlusionMap: null,
                 alphaMap: null,
                 normalMap: null,
-                alphaMode: 0, // "opaque"
-                alphaCutoff: 0.5,
+                alphaMode: null,
+                alphaCutoff: null,
                 hash: null
             });
 
@@ -400,10 +429,6 @@
 
              The *RGB* components multiply by the {{#crossLink "SpecularMaterial/diffuse:property"}}{{/crossLink}} property,
              while the *A* component, if present, multiplies by the {{#crossLink "SpecularMaterial/alpha:property"}}{{/crossLink}} property.
-
-             Attached {{#crossLink "Entity"}}Entities{{/crossLink}} will appear transparent only if they are also attached
-             to {{#crossLink "Modes"}}Modes{{/crossLink}} that have {{#crossLink "Modes/transparent:property"}}transparent{{/crossLink}}
-             set to **true**.
 
              Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this SpecularMaterial.
 
@@ -746,10 +771,6 @@
              Multiplies by the *R* component of {{#crossLink "SpecularMaterial/alphaMap:property"}}{{/crossLink}} and
              the *A* component, if present, of {{#crossLink "SpecularMaterial/diffuseMap:property"}}{{/crossLink}}.
 
-             Attached {{#crossLink "Entity"}}Entities{{/crossLink}} will appear transparent only if they are also attached
-             to {{#crossLink "Modes"}}Modes{{/crossLink}} that have {{#crossLink "Modes/transparent:property"}}transparent{{/crossLink}}
-             set to **true**.
-
              Fires an {{#crossLink "SpecularMaterial/alpha:event"}}{{/crossLink}} event on change.
 
              @property alpha
@@ -893,11 +914,8 @@
              @type {String}
              */
             alphaMode: (function () {
-                var modes = {
-                    "opaque": 0,
-                    "mask": 1,
-                    "blend": 2
-                };
+                var modes = {"opaque": 0, "mask": 1, "blend": 2};
+                var modeNames = ["opaque", "mask", "blend"];
                 return {
                     set: function (alphaMode) {
 
@@ -918,7 +936,7 @@
                         this._renderer.imageDirty = true;
 
                         /**
-                         Fired whenever this MetallicMaterial's {{#crossLink "SpecularMaterial/look:property"}}{{/crossLink}} property changes.
+                         Fired whenever this SpecularMaterial's {{#crossLink "SpecularMaterial/alphaMode:property"}}{{/crossLink}} property changes.
 
                          @event alphaMode
                          @param value {Number} The property's new value
@@ -926,7 +944,7 @@
                         this.fire("alphaMode", this._state.alphaMode);
                     },
                     get: function () {
-                        return modes[this._state.alphaMode];
+                        return modeNames[this._state.alphaMode];
                     }
                 };
             })(),

@@ -202,7 +202,7 @@
  {{#crossLink "Scene/transform:property"}}transform{{/crossLink}} (which is an identity matrix which performs no transformation).
  @param [cfg.viewport] {String|Viewport} ID or instance of a {{#crossLink "Viewport"}}{{/crossLink}} attached to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
  {{#crossLink "Scene/viewport:property"}}{{/crossLink}}, which is automatically resizes to the canvas.
- @param [cfg.outline] {String|Outline} ID or instance of a {{#crossLink "Outline"}}{{/crossLink}} attached to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
+ @param [cfg.outline] {String|Outline} ID or instance of an {{#crossLink "Outline"}}{{/crossLink}} attached to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
  {{#crossLink "Scene/outline:property"}}{{/crossLink}}.
  @param [cfg.xray] {String|XRay} ID or instance of a {{#crossLink "XRay"}}{{/crossLink}} attached to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
  {{#crossLink "Scene/xray:property"}}{{/crossLink}}.
@@ -294,8 +294,10 @@
             this._worldBoundary = null;
             this._viewBoundary = null;
             this._canvasBoundary = null;
+            this._worldPositions = null;
 
             this._worldBoundaryDirty = true;
+            this._worldPositionsDirty = true;
             this._viewBoundaryDirty = true;
             this._canvasBoundaryDirty = true;
         },
@@ -1449,6 +1451,42 @@
             },
 
             /**
+             * World-space vertex positions of this Entity.
+             *
+             * These are internally generated on-demand and cached. To free the cached
+             * vertex World positions when you're done with them, set this property to null or undefined.
+             *
+             * @property worpdPositions
+             * @type Float32Array
+             * @final
+             */
+            worldPositions: {
+
+                get: function () {
+                    if (this._worldPositionsDirty) {
+                        var positions = this.geometry.positions;
+                        if (!this._worldPositions) {
+                            this._worldPositions = new Float32Array(positions.length);
+                        }
+                        if (!this._attached.transform) {
+                            this._worldPositions.set(positions);
+                        } else {
+                            xeogl.math.transformPositions3(this._attached.transform.leafMatrix, positions, this._worldPositions);
+                        }
+                        this._worldPositionsDirty = false;
+                    }
+                    return this._worldPositions;
+                },
+
+                set: function(value) {
+                    if (value = undefined || value === null) {
+                        this._worldPositions = null; // Release memory
+                        this._worldPositionsDirty = true;
+                    }
+                }
+            },
+
+            /**
              * JSON object containing the (GLSL) source code of the shaders for this Entity.
              *
              * This is sometimes useful to have as a reference
@@ -1522,6 +1560,7 @@
 
         _setWorldBoundaryDirty: function () {
             this._worldBoundaryDirty = true;
+            this._worldPositionsDirty = true;
             if (this._worldBoundary) {
                 this._worldBoundary.fire("updated", true);
             }
