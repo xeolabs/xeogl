@@ -64,7 +64,7 @@ function materialGallery(menuId, cfg) {
 
     var lights = new xeogl.Lights({
         lights: dirLights,
-        lightMap: lightMap,
+     //  lightMap: lightMap,
         reflectionMap: reflectionMap
     });
 
@@ -106,7 +106,7 @@ function materialGallery(menuId, cfg) {
         diffuse: [0, 0, 0],
         lineWidth: 2
     });
-    var billboard = new xeogl.Billboard();
+
     var id;
     var entityCfg;
     var materialCfg;
@@ -142,14 +142,14 @@ function materialGallery(menuId, cfg) {
             }),
             material: textMaterial,
             transform: transform,
-            billboard: billboard
+            billboard: "spherical"
         });
 
         new xeogl.Entity({
             geometry: wireGeometry,
             material: textMaterial,
             transform: transform,
-            billboard: billboard
+            billboard: "spherical"
         });
     }
 
