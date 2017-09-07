@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2017-09-06
+ * Built on 2017-09-07
  *
  * MIT License
  * Copyright 2017, Lindsay Kay
@@ -219,7 +219,6 @@
         // tasks are pushed to it with calls to xeogl.schedule
 
         this._taskQueue = new Queue();
-      //  this._taskQueue = [];
 
         //-----------------------------------------------------------------------
         // Game loop
@@ -35897,7 +35896,7 @@ TODO
  {{#crossLink "Scene/transform:property"}}transform{{/crossLink}} (which is an identity matrix which performs no transformation).
  @param [cfg.viewport] {String|Viewport} ID or instance of a {{#crossLink "Viewport"}}{{/crossLink}} attached to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
  {{#crossLink "Scene/viewport:property"}}{{/crossLink}}, which is automatically resizes to the canvas.
- @param [cfg.outline] {String|Outline} ID or instance of a {{#crossLink "Outline"}}{{/crossLink}} attached to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
+ @param [cfg.outline] {String|Outline} ID or instance of an {{#crossLink "Outline"}}{{/crossLink}} attached to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
  {{#crossLink "Scene/outline:property"}}{{/crossLink}}.
  @param [cfg.xray] {String|XRay} ID or instance of a {{#crossLink "XRay"}}{{/crossLink}} attached to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
  {{#crossLink "Scene/xray:property"}}{{/crossLink}}.
@@ -37147,6 +37146,9 @@ TODO
 
             /**
              * World-space vertex positions of this Entity.
+             *
+             * These are internally generated on-demand and cached. To free the cached
+             * vertex World positions when you're done with them, set this property to null or undefined.
              *
              * @property worpdPositions
              * @type Float32Array

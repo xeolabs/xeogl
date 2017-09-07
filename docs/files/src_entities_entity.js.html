@@ -399,7 +399,7 @@
  {{#crossLink &quot;Scene/transform:property&quot;}}transform{{/crossLink}} (which is an identity matrix which performs no transformation).
  @param [cfg.viewport] {String|Viewport} ID or instance of a {{#crossLink &quot;Viewport&quot;}}{{/crossLink}} attached to this Entity. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance,
  {{#crossLink &quot;Scene/viewport:property&quot;}}{{/crossLink}}, which is automatically resizes to the canvas.
- @param [cfg.outline] {String|Outline} ID or instance of a {{#crossLink &quot;Outline&quot;}}{{/crossLink}} attached to this Entity. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance,
+ @param [cfg.outline] {String|Outline} ID or instance of an {{#crossLink &quot;Outline&quot;}}{{/crossLink}} attached to this Entity. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance,
  {{#crossLink &quot;Scene/outline:property&quot;}}{{/crossLink}}.
  @param [cfg.xray] {String|XRay} ID or instance of a {{#crossLink &quot;XRay&quot;}}{{/crossLink}} attached to this Entity. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance,
  {{#crossLink &quot;Scene/xray:property&quot;}}{{/crossLink}}.
@@ -1649,6 +1649,9 @@
 
             /**
              * World-space vertex positions of this Entity.
+             *
+             * These are internally generated on-demand and cached. To free the cached
+             * vertex World positions when you&#x27;re done with them, set this property to null or undefined.
              *
              * @property worpdPositions
              * @type Float32Array

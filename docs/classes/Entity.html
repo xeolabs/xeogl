@@ -547,7 +547,7 @@ that can make it behave as a billboard.</p>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>ID or instance of a <a href="../classes/Outline.html" class="crosslink">Outline</a> attached to this Entity. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Entity. Defaults to the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default instance,
+                                            <p>ID or instance of an <a href="../classes/Outline.html" class="crosslink">Outline</a> attached to this Entity. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Entity. Defaults to the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default instance,
         <a href="../classes/Scene.html#property_outline" class="crosslink">outline</a>.</p>
         
                                         </div>
@@ -2086,7 +2086,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l1486"><code>src&#x2F;entities&#x2F;entity.js:1486</code></a>
+                            <a href="../files/src_entities_entity.js.html#l1489"><code>src&#x2F;entities&#x2F;entity.js:1489</code></a>
                             </p>
                     
                     
@@ -2115,7 +2115,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l1523"><code>src&#x2F;entities&#x2F;entity.js:1523</code></a>
+                            <a href="../files/src_entities_entity.js.html#l1526"><code>src&#x2F;entities&#x2F;entity.js:1526</code></a>
                             </p>
                     
                     
@@ -2839,6 +2839,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>World-space vertex positions of this Entity.</p>
+                    <p>These are internally generated on-demand and cached. To free the cached
+                    vertex World positions when you&#39;re done with them, set this property to null or undefined.</p>
                     
                         </div>
                     

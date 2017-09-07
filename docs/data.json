@@ -2914,7 +2914,7 @@
                         },
                         {
                             "name": "outline",
-                            "description": "ID or instance of a {{#crossLink \"Outline\"}}{{/crossLink}} attached to this Entity. Must be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default instance,\n{{#crossLink \"Scene/outline:property\"}}{{/crossLink}}.",
+                            "description": "ID or instance of an {{#crossLink \"Outline\"}}{{/crossLink}} attached to this Entity. Must be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default instance,\n{{#crossLink \"Scene/outline:property\"}}{{/crossLink}}.",
                             "type": "String|Outline",
                             "optional": true
                         },
@@ -12013,7 +12013,7 @@
         {
             "file": "src/entities/entity.js",
             "line": 1453,
-            "description": "World-space vertex positions of this Entity.",
+            "description": "World-space vertex positions of this Entity.\n\nThese are internally generated on-demand and cached. To free the cached\nvertex World positions when you're done with them, set this property to null or undefined.",
             "itemtype": "property",
             "name": "worpdPositions",
             "type": "Float32Array",
@@ -12024,7 +12024,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1486,
+            "line": 1489,
             "description": "JSON object containing the (GLSL) source code of the shaders for this Entity.\n\nThis is sometimes useful to have as a reference\nwhen constructing your own custom {{#crossLink \"Shader\"}}{{/crossLink}} components.\n\nWill return null if xeogl has not yet rendered this Entity.",
             "itemtype": "property",
             "name": "glsl",
@@ -12036,7 +12036,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1523,
+            "line": 1526,
             "description": "The (GLSL) source code of the shaders for this Entity, as a string.\n\nThis is sometimes useful to have as a reference\nwhen constructing your own custom {{#crossLink \"Shader\"}}{{/crossLink}} components.\n\nWill return null if xeogl has not yet rendered this Entity.",
             "itemtype": "property",
             "name": "glslString",
@@ -23152,7 +23152,7 @@
         },
         {
             "file": "src/xeogl.js",
-            "line": 302,
+            "line": 301,
             "description": "Fired on each game loop iteration.",
             "itemtype": "event",
             "name": "tick",
@@ -23189,7 +23189,7 @@
         },
         {
             "file": "src/xeogl.js",
-            "line": 358,
+            "line": 357,
             "description": "The default {{#crossLink \"Scene\"}}Scene{{/crossLink}}.\n\nComponents created without an explicit parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} will be created within this\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} by default.\n\nxeogl creates the default {{#crossLink \"Scene\"}}Scene{{/crossLink}} as soon as you either\nreference this property for the first time, or create your first {{#crossLink \"Entity\"}}Entity{{/crossLink}} without\na specified {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "property",
             "name": "scene",
@@ -23201,7 +23201,7 @@
         },
         {
             "file": "src/xeogl.js",
-            "line": 387,
+            "line": 386,
             "description": "Registers a scene on xeogl.\nThis is called within the xeogl.Scene constructor.",
             "itemtype": "method",
             "name": "_addScene",
@@ -23220,7 +23220,7 @@
         },
         {
             "file": "src/xeogl.js",
-            "line": 442,
+            "line": 441,
             "description": "Schedule a task for xeogl to run at the next frame.\n\nInternally, this pushes the task to a FIFO queue. Within each frame interval, xeogl processes the queue\nfor a certain period of time, popping tasks and running them. After each frame interval, tasks that did not\nget a chance to run during the task are left in the queue to be run next time.",
             "itemtype": "method",
             "name": "scheduleTask",
@@ -23243,7 +23243,7 @@
         },
         {
             "file": "src/xeogl.js",
-            "line": 491,
+            "line": 490,
             "description": "Destroys all user-created {{#crossLink \"Scene\"}}Scenes{{/crossLink}} and\nclears the default {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "method",
             "name": "clear",
@@ -23254,7 +23254,7 @@
         },
         {
             "file": "src/xeogl.js",
-            "line": 520,
+            "line": 519,
             "description": "Tests if the given object is an array",
             "access": "private",
             "tagname": "",
@@ -23264,7 +23264,7 @@
         },
         {
             "file": "src/xeogl.js",
-            "line": 528,
+            "line": 527,
             "description": "Tests if the given value is a string",
             "params": [
                 {
@@ -23284,7 +23284,7 @@
         },
         {
             "file": "src/xeogl.js",
-            "line": 538,
+            "line": 537,
             "description": "Tests if the given value is a number",
             "params": [
                 {
@@ -23304,7 +23304,7 @@
         },
         {
             "file": "src/xeogl.js",
-            "line": 548,
+            "line": 547,
             "description": "Tests if the given value is an ID",
             "params": [
                 {
@@ -23324,7 +23324,7 @@
         },
         {
             "file": "src/xeogl.js",
-            "line": 558,
+            "line": 557,
             "description": "Tests if the given components are the same, where the components can be either IDs or instances.",
             "params": [
                 {
@@ -23348,7 +23348,7 @@
         },
         {
             "file": "src/xeogl.js",
-            "line": 577,
+            "line": 576,
             "description": "Tests if the given value is a function",
             "params": [
                 {
@@ -23368,7 +23368,7 @@
         },
         {
             "file": "src/xeogl.js",
-            "line": 587,
+            "line": 586,
             "description": "Tests if the given value is a JavaScript JSON object, eg, ````{ foo: \"bar\" }````.",
             "params": [
                 {
@@ -23388,7 +23388,7 @@
         },
         {
             "file": "src/xeogl.js",
-            "line": 600,
+            "line": 599,
             "description": "Tests if the given component type is a subtype of another component supertype.",
             "params": [
                 {
@@ -23416,21 +23416,21 @@
         },
         {
             "file": "src/xeogl.js",
-            "line": 630,
+            "line": 629,
             "class": "xeogl",
             "module": "xeogl",
             "namespace": "xeogl"
         },
         {
             "file": "src/xeogl.js",
-            "line": 636,
+            "line": 635,
             "class": "xeogl",
             "module": "xeogl",
             "namespace": "xeogl"
         },
         {
             "file": "src/xeogl.js",
-            "line": 647,
+            "line": 646,
             "description": "Add non-null/defined properties of o to o2",
             "access": "private",
             "tagname": "",
@@ -23440,7 +23440,7 @@
         },
         {
             "file": "src/xeogl.js",
-            "line": 662,
+            "line": 661,
             "description": "Add properties of o to o2 where undefined or null on o2",
             "access": "private",
             "tagname": "",
@@ -23450,7 +23450,7 @@
         },
         {
             "file": "src/xeogl.js",
-            "line": 677,
+            "line": 676,
             "description": "Returns true if the given map is empty.",
             "params": [
                 {
@@ -23470,7 +23470,7 @@
         },
         {
             "file": "src/xeogl.js",
-            "line": 692,
+            "line": 691,
             "description": "Returns the given ID as a string, in quotes if the ID was a string to begin with.\n\nThis is useful for logging IDs.",
             "params": [
                 {
@@ -23491,7 +23491,7 @@
         },
         {
             "file": "src/xeogl.js",
-            "line": 705,
+            "line": 704,
             "description": "Returns the concatenation of two typed arrays.",
             "params": [
                 {
@@ -27646,47 +27646,47 @@
         },
         {
             "message": "unknown tag: demo",
-            "line": " src/xeogl.js:491"
+            "line": " src/xeogl.js:490"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeogl.js:528"
+            "line": " src/xeogl.js:527"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeogl.js:538"
+            "line": " src/xeogl.js:537"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeogl.js:548"
+            "line": " src/xeogl.js:547"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeogl.js:558"
+            "line": " src/xeogl.js:557"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeogl.js:577"
+            "line": " src/xeogl.js:576"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeogl.js:587"
+            "line": " src/xeogl.js:586"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeogl.js:600"
+            "line": " src/xeogl.js:599"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeogl.js:677"
+            "line": " src/xeogl.js:676"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeogl.js:692"
+            "line": " src/xeogl.js:691"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeogl.js:705"
+            "line": " src/xeogl.js:704"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -28558,63 +28558,63 @@
         },
         {
             "message": "Missing item type\nTests if the given object is an array",
-            "line": " src/xeogl.js:520"
+            "line": " src/xeogl.js:519"
         },
         {
             "message": "Missing item type\nTests if the given value is a string",
-            "line": " src/xeogl.js:528"
+            "line": " src/xeogl.js:527"
         },
         {
             "message": "Missing item type\nTests if the given value is a number",
-            "line": " src/xeogl.js:538"
+            "line": " src/xeogl.js:537"
         },
         {
             "message": "Missing item type\nTests if the given value is an ID",
-            "line": " src/xeogl.js:548"
+            "line": " src/xeogl.js:547"
         },
         {
             "message": "Missing item type\nTests if the given components are the same, where the components can be either IDs or instances.",
-            "line": " src/xeogl.js:558"
+            "line": " src/xeogl.js:557"
         },
         {
             "message": "Missing item type\nTests if the given value is a function",
-            "line": " src/xeogl.js:577"
+            "line": " src/xeogl.js:576"
         },
         {
             "message": "Missing item type\nTests if the given value is a JavaScript JSON object, eg, ````{ foo: \"bar\" }````.",
-            "line": " src/xeogl.js:587"
+            "line": " src/xeogl.js:586"
         },
         {
             "message": "Missing item type\nTests if the given component type is a subtype of another component supertype.",
-            "line": " src/xeogl.js:600"
+            "line": " src/xeogl.js:599"
         },
         {
             "message": "Missing item type",
-            "line": " src/xeogl.js:630"
+            "line": " src/xeogl.js:629"
         },
         {
             "message": "Missing item type",
-            "line": " src/xeogl.js:636"
+            "line": " src/xeogl.js:635"
         },
         {
             "message": "Missing item type\nAdd non-null/defined properties of o to o2",
-            "line": " src/xeogl.js:647"
+            "line": " src/xeogl.js:646"
         },
         {
             "message": "Missing item type\nAdd properties of o to o2 where undefined or null on o2",
-            "line": " src/xeogl.js:662"
+            "line": " src/xeogl.js:661"
         },
         {
             "message": "Missing item type\nReturns true if the given map is empty.",
-            "line": " src/xeogl.js:677"
+            "line": " src/xeogl.js:676"
         },
         {
             "message": "Missing item type\nReturns the given ID as a string, in quotes if the ID was a string to begin with.\n\nThis is useful for logging IDs.",
-            "line": " src/xeogl.js:692"
+            "line": " src/xeogl.js:691"
         },
         {
             "message": "Missing item type\nReturns the concatenation of two typed arrays.",
-            "line": " src/xeogl.js:705"
+            "line": " src/xeogl.js:704"
         },
         {
             "message": "Missing item type\nAdds a frame to this CameraPath, given as the current position of a {{#crossLink \"Camera\"}}{{/crossLink}}.\n\nThe {{#crossLink \"Camera/property:view\"}}Camera's view transform{{/crossLink}} must be a {{#crossLink \"Lookat\"}}{{/crossLink}}.",
