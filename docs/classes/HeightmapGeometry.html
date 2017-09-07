@@ -46,7 +46,6 @@
                                 <li><a href="../classes/Annotation.html">Annotation</a></li>
                                 <li><a href="../classes/AnnotationStory.html">AnnotationStory</a></li>
                                 <li><a href="../classes/AxisHelper.html">AxisHelper</a></li>
-                                <li><a href="../classes/Billboard.html">Billboard</a></li>
                                 <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
                                 <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
@@ -66,7 +65,6 @@
                                 <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
-                                <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
                                 <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -80,14 +78,11 @@
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
-                                <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
-                                <li><a href="../classes/LookatHelper.html">LookatHelper</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
-                                <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
@@ -117,7 +112,6 @@
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/SpotLight.html">SpotLight</a></li>
-                                <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
                                 <li><a href="../classes/Story.html">Story</a></li>
                                 <li><a href="../classes/TeapotGeometry.html">TeapotGeometry</a></li>
@@ -127,9 +121,9 @@
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
-                                <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
                                 <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/XRay.html">XRay</a></li>
                                 <li><a href="../classes/ZSpaceEffect.html">ZSpaceEffect</a></li>
                                 <li><a href="../classes/ZSpaceStylusControl.html">ZSpaceStylusControl</a></li>
                             </ul>
@@ -143,9 +137,9 @@
                                 <li><a href="..//modules/clipping.html">clipping</a></li>
                                 <li><a href="..//modules/configs.html">configs</a></li>
                                 <li><a href="..//modules/controls.html">controls</a></li>
-                                <li><a href="..//modules/culling.html">culling</a></li>
                                 <li><a href="..//modules/curves.html">curves</a></li>
                                 <li><a href="..//modules/effects.html">effects</a></li>
+                                <li><a href="..//modules/emphasis.html">emphasis</a></li>
                                 <li><a href="..//modules/entities.html">entities</a></li>
                                 <li><a href="..//modules/generation.html">generation</a></li>
                                 <li><a href="..//modules/geometry.html">geometry</a></li>
@@ -249,9 +243,7 @@ updating its <a href="../classes/Geometry.html#property_primitive" class="crossl
     material: new xeogl.PhongMaterial({
         diffuseMap: new xeogl.Texture({
             src: "textures/diffuse/uvGrid2.jpg"
-        })
-    }),
-    modes: new xeogl.Modes({
+        }),
         backfaces: true // So that we can see the faces from underneath
     })
 });
@@ -1482,7 +1474,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Geometry.html#property_autoNormals">Geometry</a>:
-                            <a href="../files/src_geometry_geometry.js.html#l1004"><code>src&#x2F;geometry&#x2F;geometry.js:1004</code></a>
+                            <a href="../files/src_geometry_geometry.js.html#l973"><code>src&#x2F;geometry&#x2F;geometry.js:973</code></a>
                             </p>
                     
                     
@@ -1512,7 +1504,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l504"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:504</code></a>
+                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l502"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:502</code></a>
                             </p>
                     
                     
@@ -1539,7 +1531,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Geometry.html#property_colors">Geometry</a>:
-                            <a href="../files/src_geometry_geometry.js.html#l897"><code>src&#x2F;geometry&#x2F;geometry.js:897</code></a>
+                            <a href="../files/src_geometry_geometry.js.html#l866"><code>src&#x2F;geometry&#x2F;geometry.js:866</code></a>
                             </p>
                     
                     
@@ -1617,7 +1609,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l419"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:419</code></a>
+                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l417"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:417</code></a>
                             </p>
                     
                     
@@ -1647,7 +1639,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Geometry.html#property_indices">Geometry</a>:
-                            <a href="../files/src_geometry_geometry.js.html#l920"><code>src&#x2F;geometry&#x2F;geometry.js:920</code></a>
+                            <a href="../files/src_geometry_geometry.js.html#l889"><code>src&#x2F;geometry&#x2F;geometry.js:889</code></a>
                             </p>
                     
                     
@@ -1728,7 +1720,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Geometry.html#property_localBoundary">Geometry</a>:
-                            <a href="../files/src_geometry_geometry.js.html#l946"><code>src&#x2F;geometry&#x2F;geometry.js:946</code></a>
+                            <a href="../files/src_geometry_geometry.js.html#l915"><code>src&#x2F;geometry&#x2F;geometry.js:915</code></a>
                             </p>
                     
                     
@@ -1759,7 +1751,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l375"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:375</code></a>
+                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l373"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:373</code></a>
                             </p>
                     
                     
@@ -1811,7 +1803,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Geometry.html#property_normals">Geometry</a>:
-                            <a href="../files/src_geometry_geometry.js.html#l851"><code>src&#x2F;geometry&#x2F;geometry.js:851</code></a>
+                            <a href="../files/src_geometry_geometry.js.html#l820"><code>src&#x2F;geometry&#x2F;geometry.js:820</code></a>
                             </p>
                     
                     
@@ -1838,7 +1830,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Geometry.html#property_positions">Geometry</a>:
-                            <a href="../files/src_geometry_geometry.js.html#l825"><code>src&#x2F;geometry&#x2F;geometry.js:825</code></a>
+                            <a href="../files/src_geometry_geometry.js.html#l794"><code>src&#x2F;geometry&#x2F;geometry.js:794</code></a>
                             </p>
                     
                     
@@ -1867,7 +1859,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Geometry.html#property_primitive">Geometry</a>:
-                            <a href="../files/src_geometry_geometry.js.html#l740"><code>src&#x2F;geometry&#x2F;geometry.js:740</code></a>
+                            <a href="../files/src_geometry_geometry.js.html#l709"><code>src&#x2F;geometry&#x2F;geometry.js:709</code></a>
                             </p>
                     
                     
@@ -1921,7 +1913,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l459"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:459</code></a>
+                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l457"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:457</code></a>
                             </p>
                     
                     
@@ -2041,7 +2033,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Geometry.html#property_usage">Geometry</a>:
-                            <a href="../files/src_geometry_geometry.js.html#l669"><code>src&#x2F;geometry&#x2F;geometry.js:669</code></a>
+                            <a href="../files/src_geometry_geometry.js.html#l638"><code>src&#x2F;geometry&#x2F;geometry.js:638</code></a>
                             </p>
                     
                     
@@ -2069,7 +2061,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Geometry.html#property_uv">Geometry</a>:
-                            <a href="../files/src_geometry_geometry.js.html#l874"><code>src&#x2F;geometry&#x2F;geometry.js:874</code></a>
+                            <a href="../files/src_geometry_geometry.js.html#l843"><code>src&#x2F;geometry&#x2F;geometry.js:843</code></a>
                             </p>
                     
                     
@@ -2096,7 +2088,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l674"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:674</code></a>
+                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l672"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:672</code></a>
                             </p>
                     
                     
@@ -2123,7 +2115,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l542"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:542</code></a>
+                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l540"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:540</code></a>
                             </p>
                     
                     
@@ -2150,7 +2142,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l586"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:586</code></a>
+                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l584"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:584</code></a>
                             </p>
                     
                     
@@ -2177,7 +2169,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l718"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:718</code></a>
+                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l716"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:716</code></a>
                             </p>
                     
                     
@@ -2204,7 +2196,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l630"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:630</code></a>
+                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l628"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:628</code></a>
                             </p>
                     
                     
@@ -2237,7 +2229,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Geometry.html#event_autoNormals">Geometry</a>:
-                            <a href="../files/src_geometry_geometry.js.html#l1036"><code>src&#x2F;geometry&#x2F;geometry.js:1036</code></a>
+                            <a href="../files/src_geometry_geometry.js.html#l1005"><code>src&#x2F;geometry&#x2F;geometry.js:1005</code></a>
                             </p>
                     
                     
@@ -2279,7 +2271,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l529"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:529</code></a>
+                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l527"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:527</code></a>
                             </p>
                     
                     
@@ -2321,7 +2313,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Geometry.html#event_colors">Geometry</a>:
-                            <a href="../files/src_geometry_geometry.js.html#l1319"><code>src&#x2F;geometry&#x2F;geometry.js:1319</code></a>
+                            <a href="../files/src_geometry_geometry.js.html#l1288"><code>src&#x2F;geometry&#x2F;geometry.js:1288</code></a>
                             </p>
                     
                     
@@ -2388,7 +2380,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l446"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:446</code></a>
+                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l444"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:444</code></a>
                             </p>
                     
                     
@@ -2430,7 +2422,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l334"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:334</code></a>
+                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l332"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:332</code></a>
                             </p>
                     
                     
@@ -2475,7 +2467,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Geometry
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_geometry_geometry.js.html#l1398"><code>src&#x2F;geometry&#x2F;geometry.js:1398</code></a>
+                            <a href="../files/src_geometry_geometry.js.html#l1367"><code>src&#x2F;geometry&#x2F;geometry.js:1367</code></a>
                             </p>
                     
                     
@@ -2517,7 +2509,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l290"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:290</code></a>
+                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l288"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:288</code></a>
                             </p>
                     
                     
@@ -2560,7 +2552,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l405"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:405</code></a>
+                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l403"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:403</code></a>
                             </p>
                     
                     
@@ -2602,7 +2594,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Geometry.html#event_normals">Geometry</a>:
-                            <a href="../files/src_geometry_geometry.js.html#l1187"><code>src&#x2F;geometry&#x2F;geometry.js:1187</code></a>
+                            <a href="../files/src_geometry_geometry.js.html#l1156"><code>src&#x2F;geometry&#x2F;geometry.js:1156</code></a>
                             </p>
                     
                     
@@ -2647,7 +2639,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Geometry
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_geometry_geometry.js.html#l1109"><code>src&#x2F;geometry&#x2F;geometry.js:1109</code></a>
+                            <a href="../files/src_geometry_geometry.js.html#l1078"><code>src&#x2F;geometry&#x2F;geometry.js:1078</code></a>
                             </p>
                     
                     
@@ -2689,7 +2681,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Geometry.html#event_primitive">Geometry</a>:
-                            <a href="../files/src_geometry_geometry.js.html#l811"><code>src&#x2F;geometry&#x2F;geometry.js:811</code></a>
+                            <a href="../files/src_geometry_geometry.js.html#l780"><code>src&#x2F;geometry&#x2F;geometry.js:780</code></a>
                             </p>
                     
                     
@@ -2731,7 +2723,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l490"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:490</code></a>
+                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l488"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:488</code></a>
                             </p>
                     
                     
@@ -2773,7 +2765,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Geometry.html#event_usage">Geometry</a>:
-                            <a href="../files/src_geometry_geometry.js.html#l726"><code>src&#x2F;geometry&#x2F;geometry.js:726</code></a>
+                            <a href="../files/src_geometry_geometry.js.html#l695"><code>src&#x2F;geometry&#x2F;geometry.js:695</code></a>
                             </p>
                     
                     
@@ -2815,7 +2807,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Geometry.html#event_uvs">Geometry</a>:
-                            <a href="../files/src_geometry_geometry.js.html#l1253"><code>src&#x2F;geometry&#x2F;geometry.js:1253</code></a>
+                            <a href="../files/src_geometry_geometry.js.html#l1222"><code>src&#x2F;geometry&#x2F;geometry.js:1222</code></a>
                             </p>
                     
                     
@@ -2857,7 +2849,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l704"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:704</code></a>
+                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l702"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:702</code></a>
                             </p>
                     
                     
@@ -2899,7 +2891,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l572"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:572</code></a>
+                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l570"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:570</code></a>
                             </p>
                     
                     
@@ -2941,7 +2933,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l616"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:616</code></a>
+                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l614"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:614</code></a>
                             </p>
                     
                     
@@ -2983,7 +2975,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l748"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:748</code></a>
+                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l746"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:746</code></a>
                             </p>
                     
                     
@@ -3025,7 +3017,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l660"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:660</code></a>
+                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l658"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:658</code></a>
                             </p>
                     
                     

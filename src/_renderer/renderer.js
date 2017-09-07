@@ -74,21 +74,17 @@
 
         // Render states 
 
-        this.visibility = null;
-        this.cull = null;
-        this.modes = null;
-        this.layer = null;
         this.lights = null;
         this.material = null;
         this.modelTransform = null;
         this.viewTransform = null;
         this.projTransform = null;
-        this.billboard = null;
-        this.stationary = null;
         this.clips = null;
         this.geometry = null;
         this.viewport = null;
         this.outline = null;
+        this.xray = null;
+        this.modes = null;
 
         // Dirty flags 
 
@@ -129,17 +125,13 @@
             object.hash = "";
         }
 
-        object.layer = this.layer;
         object.material = this.material;
         object.geometry = this.geometry;
-        object.visibility = this.visibility;
-        object.cull = this.cull;
-        object.modes = this.modes;
-        object.billboard = this.billboard;
-        object.stationary = this.stationary;
         object.viewport = this.viewport;
         object.lights = this.lights;
         object.outline = this.outline;
+        object.xray = this.xray;
+        object.modes = this.modes;
 
         // Build hash of the object's state configuration. This is used
         // to hash the object's shader so that it may be reused by other
@@ -150,9 +142,7 @@
             this.clips.hash,
             this.material.hash,
             this.lights.hash,
-            this.modes.hash,
-            this.billboard.hash,
-            this.stationary.hash
+            this.modes.hash
         ]).join(";");
 
         if (hash !== object.hash) {
@@ -187,12 +177,12 @@
         this._setChunk(object, 1, "modelTransform", this.modelTransform);
         this._setChunk(object, 2, "viewTransform", this.viewTransform);
         this._setChunk(object, 3, "projTransform", this.projTransform);
-        this._setChunk(object, 4, "modes", this.modes);
-        this._setChunk(object, 5, "lights", this.lights);
-        this._setChunk(object, 6, this.material.type, this.material); // Supports different material systems
-        this._setChunk(object, 7, "clips", this.clips);
-        this._setChunk(object, 8, "viewport", this.viewport);
-        this._setChunk(object, 9, "outline", this.outline);
+        this._setChunk(object, 4, "lights", this.lights);
+        this._setChunk(object, 5, this.material.type, this.material); // Supports different material systems
+        this._setChunk(object, 6, "clips", this.clips);
+        this._setChunk(object, 7, "viewport", this.viewport);
+        this._setChunk(object, 8, "outline", this.outline);
+        this._setChunk(object, 9, "xray", this.xray);
         this._setChunk(object, 10, "geometry", this.geometry);
         this._setChunk(object, 11, "draw", this.geometry, true); // Must be last
 
@@ -330,7 +320,7 @@
                 object.sortKey = -1;
             } else {
                 object.sortKey =
-                    +((object.layer.priority + 1) * 10000000000000)
+                    +((object.modes.layer + 1) * 10000000000000)
                     + ((object.program.id + 1) * 100000000)
                     + ((object.material.id + 1) * 10000)
                     + object.geometry.id;
@@ -357,7 +347,7 @@
         this._shadowObjectLists = {}; // TODO: Optimize for GC
         for (i = 0, len = this._objectListLen; i < len; i++) {
             object = this._objectList[i];
-            if (!object.compiled || !object.modes.castShadow || object.visibility.visible) {
+            if (!object.compiled || !object.modes.castShadow || object.modes.visible) {
                 continue;
             }
             lights = object.lights.lights;
@@ -458,7 +448,7 @@
 
             for (i = 0, len = objects.length; i < len; i++) {
                 object = objects[i];
-                if (!object.compiled || !object.visibility.visible) {
+                if (!object.compiled || !object.modes.visible) {
                     continue; // For now, culled objects still cast shadows
                 }
                 drawObjectShadow(frameCtx, object);
@@ -580,14 +570,14 @@
 
             for (i = 0, len = this._objectListLen; i < len; i++) {
                 object = this._objectList[i];
-                if (!object.compiled || object.cull.culled === true || object.visibility.visible === false) {
+                if (!object.compiled || object.modes.culled === true || object.modes.visible === false) {
                     continue;
                 }
-                if (object.modes.transparent) {
+                if (object.material.alphaMode === 2 /* blend */  || object.modes.xray) {
                     transparentObjects[numTransparentObjects++] = object;
                     continue;
                 }
-                if (object.modes.outline) {
+                if (object.modes.outlined) {
                     outlinedObjects[numOutlinedObjects++] = object;
                     continue;
                 }
@@ -637,6 +627,7 @@
                 gl.depthMask(false);
                 gl.blendEquation(gl.FUNC_ADD);
                 gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+                //gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
                 gl.colorMask(true, true, true, true);
 
@@ -646,7 +637,7 @@
 
                 for (i = 0; i < numTransparentObjects; i++) {
                     object = transparentObjects[i];
-                    if (object.modes.outline) {
+                    if (object.modes.outlined) {
                         outlinedObjects[numOutlinedObjects++] = object; // Build outlined list
                         continue;
                     }
@@ -668,8 +659,7 @@
             frameStats.bindTexture = frameCtx.bindTexture;
             frameStats.bindArray = frameCtx.bindArray;
 
-            var numTextureUnits = gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
-
+            var numTextureUnits = xeogl.WEBGL_INFO.MAX_TEXTURE_IMAGE_UNITS;
             for (var ii = 0; ii < numTextureUnits; ii++) {
                 gl.activeTexture(gl.TEXTURE0 + ii);
                 gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
@@ -840,7 +830,7 @@
 
             for (i = 0, len = this._objectListLen; i < len; i++) {
                 object = this._objectList[i];
-                if (!object.compiled || object.cull.culled === true || object.visibility.visible === false || object.modes.pickable === false) {
+                if (!object.compiled || object.modes.culled === true || object.modes.visible === false || object.modes.pickable === false) {
                     continue;
                 }
                 this._objectPickList[this._objectPickListLen++] = object;

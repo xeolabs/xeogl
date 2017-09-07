@@ -46,7 +46,6 @@
                                 <li><a href="../classes/Annotation.html">Annotation</a></li>
                                 <li><a href="../classes/AnnotationStory.html">AnnotationStory</a></li>
                                 <li><a href="../classes/AxisHelper.html">AxisHelper</a></li>
-                                <li><a href="../classes/Billboard.html">Billboard</a></li>
                                 <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
                                 <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
@@ -66,7 +65,6 @@
                                 <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
-                                <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
                                 <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
@@ -80,14 +78,11 @@
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
-                                <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
-                                <li><a href="../classes/LookatHelper.html">LookatHelper</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
-                                <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
@@ -117,7 +112,6 @@
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/SpotLight.html">SpotLight</a></li>
-                                <li><a href="../classes/Stationary.html">Stationary</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
                                 <li><a href="../classes/Story.html">Story</a></li>
                                 <li><a href="../classes/TeapotGeometry.html">TeapotGeometry</a></li>
@@ -127,9 +121,9 @@
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
-                                <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
                                 <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/XRay.html">XRay</a></li>
                                 <li><a href="../classes/ZSpaceEffect.html">ZSpaceEffect</a></li>
                                 <li><a href="../classes/ZSpaceStylusControl.html">ZSpaceStylusControl</a></li>
                             </ul>
@@ -143,9 +137,9 @@
                                 <li><a href="..//modules/clipping.html">clipping</a></li>
                                 <li><a href="..//modules/configs.html">configs</a></li>
                                 <li><a href="..//modules/controls.html">controls</a></li>
-                                <li><a href="..//modules/culling.html">culling</a></li>
                                 <li><a href="..//modules/curves.html">curves</a></li>
                                 <li><a href="..//modules/effects.html">effects</a></li>
+                                <li><a href="..//modules/emphasis.html">emphasis</a></li>
                                 <li><a href="..//modules/entities.html">entities</a></li>
                                 <li><a href="..//modules/generation.html">generation</a></li>
                                 <li><a href="..//modules/geometry.html">geometry</a></li>
@@ -352,7 +346,7 @@
                 }),
                 transform: new xeogl.Scale(this, {
                     xyz: [2000, 2000, 2000], // Overridden when we initialize the &#x27;size&#x27; property, below
-                    Xparent: new xeogl.Rotate(this, {
+                    parent: new xeogl.Rotate(this, {
                         xyz: [0, 0,1 ],
                         angle: -90,
                         parent: new xeogl.Rotate(this, {
@@ -369,22 +363,13 @@
                     emissiveMap: new xeogl.Texture(this, {
                         src: cfg.src,
                         flipY: true
-                    })
+                    }),
+                    backfaces: true // Show interior faces of our skybox geometry
                 }),
-                stationary: new xeogl.Stationary(this, {
-                    active: true
-                }),
-                visibility: new xeogl.Visibility(this, {
-                    visible: false
-                }),
-                modes: new xeogl.Modes(this, {
-                    backfaces: true, // Show interior faces of our skybox geometry
-                    pickable: false, // Don&#x27;t want to ba able to pick skybox
-
-                    // SkyBox does not contribute to the size of any enclosing boundaries
-                    // that might be calculated by xeogl, eg. like that returned by xeogl.Scene#worldBoundary
-                    collidable: false
-                })
+                stationary: true,
+                visible: false,
+                pickable: false,
+                collidable: false
             });
 
             this.size = cfg.size; // Sets &#x27;xyz&#x27; property on the Entity&#x27;s Scale transform
@@ -437,7 +422,7 @@
 
                 set: function (value) {
 
-                    this._skyboxEntity.visibility.visible = value;
+                    this._skyboxEntity.visible = value;
 
                     /**
                      Fired whenever this Skybox&#x27;s {{#crossLink &quot;Skybox/active:property&quot;}}{{/crossLink}} property changes.
@@ -445,11 +430,11 @@
                      @event active
                      @param value {Boolean} The property&#x27;s new value
                      */
-                    this.fire(&quot;active&quot;, this._skyboxEntity.visibility.visible);
+                    this.fire(&quot;active&quot;, this._skyboxEntity.visible);
                 },
 
                 get: function () {
-                    return this._skyboxEntity.visibility.visible;
+                    return this._skyboxEntity.visible;
                 }
             }
         },

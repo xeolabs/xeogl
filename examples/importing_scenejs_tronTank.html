@@ -25,8 +25,11 @@
 <body>
 
 <div id="info">
-    <h1><a href="../docs/classes/SceneJSModel.html" target="_parent">SceneJSModel</a> imported from a SceneJS JSON file</h1>
-    <pre id="log">model:  SceneJS Tron Tank - [<a href='https://github.com/xeolabs/xeogl/tree/master/examples/models/scenejs/tronTank/README.md' target="_parent">model info</a>]</pre>
+    <h1><a href="../docs/classes/SceneJSModel.html" target="_parent">SceneJSModel</a> imported from a SceneJS JSON file
+    </h1>
+    <pre id="log">model:  SceneJS Tron Tank - [<a
+            href='https://github.com/xeolabs/xeogl/tree/master/examples/models/scenejs/tronTank/README.md'
+            target="_parent">model info</a>]</pre>
 </div>
 
 <div id="logos">
@@ -43,7 +46,7 @@
 
     (function () {
 
-        var cameraFollow = new xeogl.CameraFollowAnimation({fit: true, fitFOV: 45 });
+        var cameraFollow = new xeogl.CameraFollowAnimation({fit: true, fitFOV: 45});
         var cameraFlight = new xeogl.CameraFlightAnimation();
 
         // Fly to a target with the default camera
@@ -154,10 +157,8 @@
             type: "xeogl.PhongMaterial",
             diffuse: [0.0, 0.0, 0.0],
             specular: [0, 0, 0],
-            opacity: 0.3
-        },
-        modes: {
-            transparent: true
+            alpha: 0.3,
+            alphaMode: "blend"
         },
         transform: {
             type: "xeogl.Translate",
@@ -203,13 +204,9 @@
             emissive: [0.4, 1, 0.4],
             lineWidth: 6
         },
-        visibility: {
-            visible: false
-        },
-        modes: {
-            pickable: false, // Can't be picked
-            collidable: false // Does not contribute to overall scene boundary
-        }
+        visible: false,
+        pickable: false, // Can't be picked
+        collidable: false // Does not contribute to overall scene boundary
     });
 
     // Attach tank to the path; move it along path and
@@ -284,13 +281,11 @@
                     wrapS: "repeat",
                     wrapT: "repeat",
                     scale: [1, 1]
-                }
+                },
+                backfaces: false // Don't show backfaces, so that if camera gets buried in a box we can still see out
             },
-            modes: {
-                backfaces: false, // Don't show backfaces, so that if camera gets buried in a box we can still see out
-                pickable: false, // Can't be picked
-                collidable: false // Does not contribute to overall scene boundary
-            }
+            pickable: false, // Can't be picked
+            collidable: false // Does not contribute to overall scene boundary
         });
 
         //---------------------------------------------------------------------------------
@@ -314,48 +309,14 @@
                     wrapS: "repeat",
                     wrapT: "repeat",
                     scale: [30, 30]
-                }
+                },
+                backfaces: true // Show backfaces
             },
-            modes: {
-                backfaces: true, // Show backfaces
-                pickable: false, // Can't be picked
-                collidable: false // Does not contribute to overall scene boundary
-            }
+            pickable: false, // Can't be picked
+            collidable: false // Does not contribute to overall scene boundary
         });
 
     })();
-
-    //---------------------------------------------------------------------------------
-    // Skybox
-    //---------------------------------------------------------------------------------
-    //
-    //    new xeogl.Entity({
-    //        geometry: {
-    //            type: "xeogl.BoxGeometry",
-    //            xSize: 1200,
-    //            ySize: 600,
-    //            zSize: 1200
-    //        },
-    //        material: {
-    //            type: "xeogl.SpecularMaterial",
-    //            diffuse: [0.7, 0.7, 0.7],
-    //            specular: [0.2, 0.2, 0.3],
-    //            glossiness: 0.1,
-    //            emissive: [0.1, 0.1, 0.1],
-    //            diffuseMap: {
-    //                src: "textures/diffuse/UVCheckerMap11-1024.png",
-    //                wrapS: "repeat",
-    //                wrapT: "repeat",
-    //                scale: [1, 1]
-    //            }
-    //        },
-    //        modes: {
-    //            backfaces: true, // Show backfaces
-    //            frontface: "ccw", // Need lighting on interior surface
-    //            pickable: false, // Can't be picked
-    //            collidable: false // Does not contribute to overall scene boundary
-    //        }
-    //    });
 
 
     //---------------------------------------------------------------------------------
@@ -401,4 +362,3 @@
 
 </script>
 </body>
-</html>

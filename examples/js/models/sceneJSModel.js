@@ -434,15 +434,15 @@
                           specularMap,
                           emissiveMap,
                           normalMap,
-                          opacityMap,
+                          alphaMap,
                           diffuseFresnel,
                           specularFresnel,
                           emissiveFresnel,
                           normalFresnel,
-                          opacityFresnel,
-                          layer,
-                          stage,
-                          modes) {
+                          alphaFresnel,
+                          transparent,
+                          backfaces,
+                          layer) {
 
             switch (node.type) {
 
@@ -465,7 +465,7 @@
                                 metallic: 1.0,
                                 roughness: 0.4,
                                 emissive: emissive,
-                                opacity: node.alpha
+                                alpha: node.alpha
                             });
                             break;
 
@@ -477,7 +477,7 @@
                                 specular: specular,
                                 glossiness: 0.5,
                                 emissive: emissive,
-                                opacity: node.alpha
+                                alpha: node.alpha
                             });
                             break;
 
@@ -490,7 +490,7 @@
                                 specular: specular,
                                 // shininess: node.shine,
                                 emissive: emissive,
-                                opacity: node.alpha
+                                alpha: node.alpha
                             });
                     }
 
@@ -561,7 +561,7 @@
                             break;
 
                         case "alpha":
-                            opacityMap = texture;
+                            alphaMap = texture;
                             break;
 
                         case "normals":
@@ -601,7 +601,7 @@
                             break;
 
                         case "alpha":
-                            opacityFresnel = fresnel;
+                            alphaFresnel = fresnel;
                             break;
                     }
 
@@ -609,38 +609,19 @@
 
                 case "flags":
 
-                    modes = this.add({
-                        type: "xeogl.Modes",
-                        id: this._createID(node),
-                        transparent: node.transparent,
-                        backfaces: node.backfaces,
-                        pickable: node.picking,
-                        clippable: node.clipping,
-                        frontface: node.frontface
-                    });
+                    transparent = node.transparent;
+                    backfaces = node.backfaces;
+
+                    // TODO: pickable and clippable
 
                     break;
 
                 case "layer":
 
-                    layer = this.add({
-                        type: "xeogl.Layer",
-                        id: this._createID(node),
-                        priority: node.priority
-                    });
+                    layer = node.priority;
 
                     break;
 
-                case "stage":
-
-                    layer = this.add({
-                        type: "xeogl.Stage",
-                        id: this._createID(node),
-                        priority: node.priority,
-                        pickable: node.pickable
-                    });
-
-                    break;
 
                 case "geometry":
 
@@ -658,13 +639,17 @@
                         material.diffuseMap = diffuseMap;
                         material.specularMap = specularMap;
                         material.emissiveMap = emissiveMap;
-                        material.opacityMap = opacityMap;
+                        material.alphaMap = alphaMap;
                         material.normalMap = normalMap;
 
                         material.diffuseFresnel = diffuseFresnel;
                         material.specularFresnel = specularFresnel;
                         material.emissiveFresnel = emissiveFresnel;
-                        material.opacityFresnel = opacityFresnel;
+                        material.alphaFresnel = alphaFresnel;
+
+                        material.alphaMode = transparent ? "blend" : "opaque";
+
+                        material.backfaces = !!backfaces;
                     }
 
                     this.add({
@@ -673,7 +658,7 @@
                         geometry: geometry,
                         transform: transform,
                         material: material,
-                        modes: modes
+                        layer: layer
                     });
 
                     break;
@@ -691,15 +676,15 @@
                         specularMap,
                         emissiveMap,
                         normalMap,
-                        opacityMap,
+                        alphaMap,
                         diffuseFresnel,
                         specularFresnel,
                         emissiveFresnel,
                         normalFresnel,
-                        opacityFresnel,
-                        layer,
-                        stage,
-                        modes);
+                        alphaFresnel,
+                        transparent,
+                        backfaces,
+                        layer);
                 }
             }
         },

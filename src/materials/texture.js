@@ -60,7 +60,7 @@
             src: "diffuseMap.jpg"
         }),
         shininess: 80, // Default
-        opacity: 1.0 // Default
+        alpha: 1.0 // Default
     }),
 
     geometry: new xeogl.TorusGeometry()
@@ -308,12 +308,9 @@
                      */
                     self.fire("loaded", self._src);
                 }
-
-//                task.setCompleted();
             };
 
             image.onerror = function () {
-                //              task.setFailed();
                 if (spinnerTextures) {
                     spinner.processes--;
                 }
@@ -513,8 +510,8 @@
             /**
              * How this Texture is sampled when a texel covers less than one pixel.
              *
-             * Options are:
              *
+             * Options are:
              *
              *     * **"nearest"** - Uses the value of the texture element that is nearest
              *     (in Manhattan distance) to the center of the pixel being textured.

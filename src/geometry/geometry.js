@@ -137,37 +137,6 @@
  ````javascript
  ````
 
- ### Toggling back-faces on and off
-
- Now we'll attach a {{#crossLink "Modes"}}{{/crossLink}} to that last {{#crossLink "Entity"}}{{/crossLink}}, so that
- we can show or hide its {{#crossLink "Geometry"}}Geometry's{{/crossLink}} backfaces:
-
- ```` javascript
- var modes = new xeogl.Modes();
-
- quadEntity.modes = modes;
-
- // Hide backfaces
-
- modes.backfaces = false;
- ````
-
- ### Setting front-face vertex winding
-
- The <a href="https://www.opengl.org/wiki/Face_Culling" target="other">vertex winding order</a> of each face determines
- whether it's a front-face or a back-face.
-
- By default, xeogl considers faces to be front-faces if they have a counter-clockwise
- winding order, but we can change that by setting the {{#crossLink "Modes"}}{{/crossLink}}
- {{#crossLink "Modes/frontface:property"}}{{/crossLink}} property:
-
- ```` javascript
- // Set the winding order for front-faces to clockwise
- // Options are "ccw" for counter-clockwise or "cw" for clockwise
-
- modes.frontface = "cw";
- ````
-
  ### Getting the Local-space boundary
 
  We can get a Geometry's Local-space {{#crossLink "Boundary3D"}}{{/crossLink}} like so:

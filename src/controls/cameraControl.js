@@ -114,16 +114,8 @@
                     emissive: [1.0, 1.0, 0.6],
                     lineWidth: 4
                 }),
-                visibility: this.create({
-                    type: "xeogl.Visibility",
-                    visible: false
-                }),
-                modes: this.create({
-                    type: "xeogl.Modes",
-                    // Does not contribute to the size of any enclosing boundaries
-                    // that might be calculated by xeogl, eg. like that returned by xeogl.Scene#worldBoundary
-                    collidable: false
-                })
+                visible: false,
+                collidable: false
             });
 
             this.keyboardAxis = this.create({
@@ -210,7 +202,7 @@
             var aabb = worldBoundary.aabb;
 
             this._boundaryHelper.geometry.aabb = aabb;
-            //    this._boundaryHelper.visibility.visible = true;
+            //    this._boundaryHelper.visible = true;
 
             if (pos) {
 
@@ -240,7 +232,7 @@
         },
 
         _hideEntityBoundary: function () {
-            this._boundaryHelper.visibility.visible = false;
+            this._boundaryHelper.visible = false;
         },
 
         _props: {

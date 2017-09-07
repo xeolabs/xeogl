@@ -216,7 +216,7 @@
                 pointSize: 5
             }),
             transform: {type: "xeogl.Translate"},
-            visibility: {type: "xeogl.Visibility"}
+            visible: true
         });
         this._testablePins[pinId] = pin;
     };
@@ -225,7 +225,7 @@
     VisibilityTester.prototype.setPinTestable = function (pinId, testable) {
         var pin = this._pins[pinId];
         if (pin) {
-            this._markers[pinId].visibility.visible = testable;
+            this._markers[pinId].visible = testable;
             testable ? this._testablePins[pinId] = pin : delete this._testablePins[pinId];
         }
     };
@@ -578,7 +578,7 @@
         _entityAttached: function (entity) {
             this._onEntityLocalBoundary = entity.localBoundary.on("updated", this._setLocalPosDirty, this);
             this._onEntityWorldBoundary = entity.worldBoundary.on("updated", this._setWorldPosDirty, this);
-            this._onEntityVisible = entity.visibility.on("visible", this._entityVisible, this);
+            this._onEntityVisible = entity.on("visible", this._entityVisible, this);
             this._setLocalPosDirty();
         },
 
@@ -606,7 +606,7 @@
         _entityDetached: function (entity) {
             entity.localBoundary.off(this._onEntityLocalBoundary);
             entity.worldBoundary.off(this._onEntityWorldBoundary);
-            entity.visibility.off(this._onEntityVisible);
+            entity.off(this._onEntityVisible);
             this._entityVisible(false);
         },
 

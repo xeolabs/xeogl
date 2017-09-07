@@ -116,9 +116,6 @@
             occlusionMap: occlusionMap,
             normalMap: normalMap
         }),
-        modes: new xeogl.Modes({
-            transparent: false
-        }),
         transform: new xeogl.Scale({
             xyz: [50, 50, 50]
         })
@@ -162,7 +159,7 @@
         this["glossiness"] = material.glossiness;
         this["emissive"] = typedToJS(material.emissive);
         this["reflectivity"] = material.reflectivity;
-        this["opacity"] = material.opacity;
+        this["alpha"] = material.alpha;
 
         this["diffuseMap"] = !!material.diffuseMap;
         this["specularMap"] = !!material.specularMap;
@@ -191,9 +188,9 @@
             material.specular = JSToTyped(["specular"]);
             material.glossiness = self["glossiness"];
             material.reflectivity = self["reflectivity"];
-            material.opacity = self["opacity"];
+            material.alpha = self["alpha"];
 
-            entity.modes.transparent = (material.opacity < 1);
+            entity.material.alphaMode = (material.alpha < 1) ? "blend" : "opaque";
 
             if (self["diffuseMap"] !== !!material.diffuseMap) {
                 material.diffuseMap = self["diffuseMap"] ? diffuseMap : null;
@@ -253,7 +250,7 @@
     materialFolder.add(menu, 'glossiness', 0.0, 1.0);
     materialFolder.add(menu, 'reflectivity', 0.0, 1.0);
     materialFolder.addColor(menu, 'emissive', [0, 0, 0]);
-    materialFolder.add(menu, 'opacity', 0.0, 1.0);
+    materialFolder.add(menu, 'alpha', 0.0, 1.0);
 
     materialFolder.add(menu, 'diffuseMap', true);
     materialFolder.add(menu, 'specularMap', true);

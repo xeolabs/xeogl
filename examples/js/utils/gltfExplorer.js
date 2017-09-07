@@ -68,8 +68,9 @@ var gltfExplorer = function (menuId, files) {
             if (!id) {
                 cameraFlight.flyTo();
                 if (lastEntity) {
-                    lastEntity.modes.transparent = true;
-                    lastEntity.modes.outline = false;
+                    lastEntity.material.alphaMode = "blend";
+                    lastEntity.material.alpha = 0.4;
+                    lastEntity.outlined = false;
                     lastEntity = null;
                 }
                 return;
@@ -80,12 +81,14 @@ var gltfExplorer = function (menuId, files) {
             if (entity) {
 
                 if (lastEntity) {
-                    lastEntity.modes.transparent = true;
-                    lastEntity.modes.outline = false;
+                    lastEntity.material.alphaMode = "blend";
+                    lastEntity.material.alpha = 0.4;
+                    lastEntity.outlined = false;
                 }
 
-                entity.modes.transparent = false;
-                entity.modes.outline = true;
+                entity.material.alphaMode = "opaque";
+                entity.material.alpha = 1.0;
+                entity.outlined = true;
 
                 cameraFlight.flyTo({
                     aabb: entity.worldBoundary.aabb,
@@ -128,29 +131,10 @@ var gltfExplorer = function (menuId, files) {
                 entity = entities[entityId];
 
                 entity.material = entity.material.clone();
-
-                //switch (entity.material.type) {
-                //    case "xeogl.PhongMaterial":
-                //        entity.material.diffuse = [0.5, 0.5, 0.5];
-                //        break;
-                //
-                //    case "xeogl.SpecularMaterial":
-                //        break;
-                //
-                //    case "xeogl.MetallicMaterial":
-                //        entity.material.baseColor = [0.5, 0.5, 0.5];
-                //        break;
-                //}
-                entity.material.opacity = 0.5;
-
-                entity.modes = entity.modes.clone();
-                entity.modes.transparent = true;
-
-                // Add the Material and Modes to the GLTFModel
-                // so that they get destroyed automatically
+                entity.material.alpha = 0.5;
+                entity.material.alphaMode = "blend";
 
                 model.add(entity.material);
-                model.add(entity.modes);
 
                 html.push("<a href='javascript:flyTo(\"" + entity.id + "\")'>" + (entity.meta.name || ("entity." + i++)) + "</a><br>")
             }

@@ -46,6 +46,7 @@
     "src/_renderer/chunks/modelTransformChunk.js",
     "src/_renderer/chunks/modesChunk.js",
     "src/_renderer/chunks/outlineChunk.js",
+    "src/_renderer/chunks/xrayChunk.js",
     "src/_renderer/chunks/phongMaterialChunk.js",
     "src/_renderer/chunks/metallicMaterialChunk.js",
     "src/_renderer/chunks/specularMaterialChunk.js",
@@ -88,10 +89,6 @@
     "src/controls/mousePickEntity.js",
     "src/controls/mouseZoomCamera.js",
 
-    "src/culling/_module.js",
-    "src/culling/cull.js",
-    "src/culling/visibility.js",
-
     "src/geometry/_module.js",
     "src/geometry/geometry.js",
     "src/geometry/boxGeometry.js",
@@ -119,8 +116,9 @@
     "src/models/_module.js",
     "src/models/model.js",
 
-    "src/outline/_module.js",
-    "src/outline/outline.js",
+    "src/emphasis/_module.js",
+    "src/emphasis/outline.js",
+    "src/emphasis/xray.js",
 
     "src/materials/_module.js",
     "src/materials/material.js",
@@ -134,8 +132,6 @@
     "src/entities/entity.js",
 
     "src/rendering/_module.js",
-    "src/rendering/layer.js",
-    "src/rendering/modes.js",
     "src/rendering/viewport.js",
 
     "src/boundaries/_module.js",
@@ -148,8 +144,6 @@
     "src/transforms/quaternion.js",
     "src/transforms/scale.js",
     "src/transforms/translate.js",
-    "src/transforms/billboard.js",
-    "src/transforms/stationary.js",
     "src/transforms/frustum.js",
     "src/transforms/lookat.js",
     "src/transforms/ortho.js",

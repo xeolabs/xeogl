@@ -37,9 +37,7 @@
      material: new xeogl.PhongMaterial({
          diffuseMap: new xeogl.Texture({
              src: "textures/diffuse/uvGrid2.jpg"
-         })
-     }),
-     modes: new xeogl.Modes({
+         }),
          backfaces: true // So that we can see the faces from underneath
      })
  });

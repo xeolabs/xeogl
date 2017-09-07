@@ -32,7 +32,7 @@
                 diffuse: [1.0, 1.0, 1.0],
                 specular: [0.4, 0.4, 0.4],
                 glossiness: 0.0,
-                opacity: 1.0,
+                alpha: 1.0,
                 diffuseMap: {
                     src: "textures/diffuse/uvGrid2.jpg"
                 }
@@ -44,7 +44,7 @@
                 diffuse: [0.7, 0.7, 0.7],
                 specular: [1.0, 1.0, 1.0],
                 glossiness: 0.5,
-                opacity: 1.0,
+                alpha: 1.0,
                 specularMap: {
                     src: "textures/specular/crosshatchSpecularMap.jpg"
                 }
@@ -56,7 +56,7 @@
                 diffuse: [0.7, 0.3, 0.3],
                 specular: [1.0, 1.0, 1.0],
                 glossiness: 1.0,
-                opacity: 1.0,
+                alpha: 1.0,
                 glossinessMap: {
                     src: "textures/glossiness/crosshatchGlossinessMap.jpg"
                 }
@@ -71,23 +71,24 @@
                 emissive: [0.8, 0.2, 0.0],
                 specular: [1.0, 1.0, 1.0],
                 glossiness: 0.5,
-                opacity: 1.0,
+                alpha: 1.0,
                 emissiveMap: {
                     src: "textures/emissive/emissiveMap.jpg"
                 }
             }
         },
 
-        "Opacity map": {
+        "Alpha map": {
             material: {
                 type: "xeogl.SpecularMaterial",
                 diffuse: [0.6, 0.2, 0.2],
                 specular: [0.2, 0.5, 0.2],
                 glossiness: 0.5,
-                opacity: 1.0,
-                opacityMap: {
-                    src: "textures/opacity/crosshatchOpacityMap.jpg"
-                }
+                alpha: 1.0,
+                alphaMap: {
+                    src: "textures/alpha/crosshatchAlphaMap.jpg"
+                },
+                alphaMode: "mask"
             }
         },
         "Normal map": {
@@ -96,7 +97,7 @@
                 diffuse: [0.5, 0.27, 0.074],
                 specular: [0.8, 0.6, 0.1],
                 glossiness: 0.1,
-                opacity: 1.0,
+                alpha: 1.0,
                 normalMap: {
                     src: "textures/normal/chesterfieldNormalMap.png",
                     scale: [6, 6]
@@ -111,7 +112,7 @@
                 specular: [0.5, 0.5, 0.8],
                 glossiness: 0.1,
                 diffuseMap: {
-                    src: "textures/opacity/crosshatchOpacityMap.jpg"
+                    src: "textures/alpha/crosshatchAlphaMap.jpg"
                 }
             }
         }

@@ -15,9 +15,7 @@
 <body>
 
 <div id="info">
-    <h1>implementing a custom skybox using the <a
-        href="../docs/classes/Stationary.html"
-        target="_parent">Stationary</a> component</h1>
+    <h1>implementing a custom skybox</h1>
 </div>
 
 <script>
@@ -111,23 +109,16 @@
             ambient: [0, 0, 0],
             diffuse: [0, 0, 0],
             specular: [0, 0, 0],
-            emissive: [1,1,1],
+            emissive: [1, 1, 1],
             emissiveMap: new xeogl.Texture({
                 src: "textures/skybox/miramarClouds.jpg",
                 flipY: true
-            })
+            }),
+            backfaces: true // Show interior faces of our skybox geometry
         }),
-        stationary: new xeogl.Stationary({ // Locks position with respect to viewpoint
-            active: true
-        }),
-        modes: new xeogl.Modes({
-            backfaces: true, // Show interior faces of our skybox geometry
-            pickable: false, // Don't want to ba able to pick skybox
-
-            // Skybox will not contribute to the size of any enclosing boundaries
-            // that might be calculated by xeogl, eg. like that returned by xeogl.Scene#worldBoundary
-            collidable: false
-        })
+        stationary: true, // Locks position with respect to viewpoint
+        pickable: false,
+        collidable: false
     });
 
     var moon = new xeogl.Entity({
@@ -149,13 +140,9 @@
                 xyz: [50, 10, 50]
             })
         }),
-        stationary: new xeogl.Stationary({ // Locks position with respect to viewpoint
-            active: true
-        }),
-        modes: new xeogl.Modes({
-            pickable: false, // Don't want to ba able to pick the moon
-            collidable: false // Moon will not contribute to the size of any enclosing boundaries
-        })
+        stationary: true, // Locks position with respect to viewpoint
+        pickable: false, // Don't want to ba able to pick the moon
+        collidable: false // Moon will not contribute to the size of any enclosing boundaries
     });
 
     // Move the camera back a bit

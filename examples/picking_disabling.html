@@ -11,8 +11,7 @@
 <body>
 
 <div id="info">
-    <h1>using <a href="../docs/classes/Modes.html" target="_parent">Modes</a> components to disable picking for the red <a
-                href="../docs/classes/Entity.html" target="_parent">Entities</a></h1>
+    <h1>Disabling picking for the red <a href="../docs/classes/Entity.html" target="_parent">Entities</a></h1>
     <pre id="log"></pre>
 </div>
 
@@ -71,9 +70,7 @@
                 shininess: 3
             }),
 
-            modes: new xeogl.Modes({
-                pickable: pickable
-            })
+            pickable: pickable
         });
     }
 

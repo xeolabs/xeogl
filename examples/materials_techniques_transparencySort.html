@@ -27,17 +27,14 @@
         diffuseMap: new xeogl.Texture({
             src: "textures/diffuse/uvGrid2.jpg"
         }),
-        opacityFresnel: new xeogl.Fresnel({
+        alphaFresnel: new xeogl.Fresnel({
             edgeBias: 0.2,
             centerBias: 0.7,
             edgeColor: [1.0, 0.0, 0.0],
             centerColor: [0.3, 1.0, 1.0],
             power: 1.0
-        })
-    });
-
-    var modes = new xeogl.Modes({
-        transparent: true
+        }),
+        alphaMode: "blend"
     });
 
     var r = 25;
@@ -49,7 +46,6 @@
 
             geometry: geometry,
             material: material,
-            modes: modes,
 
             transform: new xeogl.Translate({
                 xyz: [
@@ -59,26 +55,17 @@
                 ]
             }),
 
-            // A xeogl.Layer sets the Entity's rendering order,
-            // typically for transparency sorting.
-
-            // We'll dynamically update the Layer's priority
-            // to a value that's in proportion to the Z position
-            // of the center of the Entity's View-space bounding box.
-
-            layer: new xeogl.Layer({
-                priority: 0
-            })
+            layer: 0
         });
 
         entity.viewBoundary.on("updated", updateLayer, entity); // Event, callback, scope
     }
 
     function updateLayer() {
-        this.layer.priority = 1000 * this.viewBoundary.center[2];
+        this.layer = 1000 * this.viewBoundary.center[2];
     }
 
-    var scene = modes.scene;
+    var scene = xeogl.scene;
 
     scene.camera.view.zoom(r / 4);
 

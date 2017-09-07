@@ -87,12 +87,6 @@ TODO
                 ambient: [0, 0, 0],
                 pointSize: 8
             });
-
-            this._modes = this.create({
-                type: "xeogl.Modes",
-                pickable: false,
-                collidable: false
-            });
         },
 
         /**
@@ -118,7 +112,8 @@ TODO
                 drawing = new xeogl._EntityPointMarkings({ // Defined in this code module, after this component type
                     entity: entity,
                     material: this._material,
-                    modes: this._modes
+                    pickable: false,
+                    collidable: false
                 });
                 this._drawings[entity.id] = drawing;
                 var self = this;
@@ -225,7 +220,8 @@ TODO
                     usage: "dynamic"
                 },
                 material: cfg.material,
-                modes: cfg.modes,
+                pickable: false,
+                collidable: false,
                 visibility: entity.visibility,  // Visibility and transform in synch with target entity
                 XXXXtransform: entity.transform
             });

@@ -27,26 +27,19 @@
     });
 
     var material = new xeogl.PhongMaterial({
-        diffuse: [0, 0, 0],
-        specular: [0, 0, 0],
-        emissive: [1, 1, 1],
-        opacityMap: new xeogl.Texture({
-            src: "textures/opacity/cloud10.png"
-        }),
-        opacity: 1.0
+        ambient: [0.3, 0.3, 0.3],
+        shininess: 30,
+        diffuse: [0.1, 0.1, 0.4],
+        emissive: [1.1,1],
+        alpha: 1.0,
+        alphaMap: {
+            src: "textures/alpha/cloud10.png"
+        },
+        alphaMode: "blend"
     });
 
     var lights = new xeogl.Lights({
         lights: []
-    });
-
-    var billboard = new xeogl.Billboard({
-        spherical: true
-    });
-
-    var modes = new xeogl.Modes({
-        transparent: true,
-        pickable: false
     });
 
     var numClouds = 200;
@@ -61,8 +54,8 @@
         var entity = new xeogl.Entity({
             geometry: geometry,
             material: material,
-            lights: lights,
-            billboard: billboard,
+           // lights: lights,
+            billboard: "spherical",
             transform: new xeogl.Translate({
                 xyz: [
                     Math.random() * r - halfr,
@@ -70,8 +63,8 @@
                     Math.random() * r - halfr
                 ]
             }),
-            modes: modes,
-            layer: new xeogl.Layer()
+            pickable: false,
+            layer: 0
         });
 
         clouds.push(entity);
@@ -85,7 +78,7 @@
 //
 //            entity.viewBoundary.on("updated", function () {
 //                var center = this.center;
-//                _object.layer.priority = 1000.0 + center[2];
+//                _object.layer = 1000.0 + center[2];
 //            });
 //        })();
     }
@@ -101,7 +94,7 @@
     scene.on("tick", function () {
 
         for (var i = 0; i < numClouds; i++) {
-            clouds[i].layer.priority = clouds[i].viewBoundary.center[2] * 100.0;
+            clouds[i].layer = clouds[i].viewBoundary.center[2] * 100.0;
         }
 
         var view = scene.camera.view;

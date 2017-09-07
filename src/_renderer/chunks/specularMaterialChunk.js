@@ -17,7 +17,7 @@
             this._uGlossiness = draw.getUniform("materialGlossiness");
             this._uReflectivity = draw.getUniform("reflectivityFresnel");
             this._uEmissive = draw.getUniform("materialEmissive");
-            this._uOpacity = draw.getUniform("materialOpacity");
+            this._uAlphaModeCutoff = draw.getUniform("materialAlphaModeCutoff");
 
             if (state.diffuseMap) {
                 this._uDiffuseMap = "diffuseMap";
@@ -49,9 +49,9 @@
                 this._uOcclusionMapMatrix = draw.getUniform("occlusionMapMatrix");
             }
 
-            if (state.opacityMap) {
-                this._uOpacityMap = "opacityMap";
-                this._uOpacityMapMatrix = draw.getUniform("opacityMapMatrix");
+            if (state.alphaMap) {
+                this._uAlphaMap = "alphaMap";
+                this._uAlphaMapMatrix = draw.getUniform("alphaMapMatrix");
             }
 
             if (state.normalMap) {
@@ -88,8 +88,8 @@
                 this._uEmissive.setValue(state.emissive);
             }
 
-            if (this._uOpacity) {
-                this._uOpacity.setValue(state.opacity);
+            if (this._uAlphaModeCutoff) {
+                this._uAlphaModeCutoff.setValue([1.0 * state.alpha, state.alphaMode === 1 ? 1.0 : 0.0, state.alphaCutoff, 0]);
             }
 
             if (state.diffuseMap && state.diffuseMap.texture && this._uDiffuseMap) {
@@ -146,12 +146,12 @@
                 }
             }
 
-            if (state.opacityMap && state.opacityMap.texture && this._uOpacityMap) {
-                draw.bindTexture(this._uOpacityMap, state.opacityMap.texture, frameCtx.textureUnit);
+            if (state.alphaMap && state.alphaMap.texture && this._uAlphaMap) {
+                draw.bindTexture(this._uAlphaMap, state.alphaMap.texture, frameCtx.textureUnit);
                 frameCtx.textureUnit = (frameCtx.textureUnit + 1) % xeogl.WEBGL_INFO.MAX_TEXTURE_IMAGE_UNITS;
                 frameCtx.bindTexture++;
-                if (this._uOpacityMapMatrix) {
-                    this._uOpacityMapMatrix.setValue(state.opacityMap.matrix);
+                if (this._uAlphaMapMatrix) {
+                    this._uAlphaMapMatrix.setValue(state.alphaMap.matrix);
                 }
             }
 
@@ -162,6 +162,83 @@
                 if (this._uNormalMapMatrix) {
                     this._uNormalMapMatrix.setValue(state.normalMap.matrix);
                 }
+            }
+        },
+
+        shadow: function (frameCtx) {
+
+            var state = this.state;
+            var gl = this.program.gl;
+
+            var backfaces = state.backfaces;
+            if (frameCtx.backfaces !== backfaces) {
+                if (backfaces) {
+                    gl.disable(gl.CULL_FACE);
+                } else {
+                    gl.enable(gl.CULL_FACE);
+                }
+                frameCtx.backfaces = backfaces;
+            }
+            var frontface = state.frontface;
+            if (frameCtx.frontface !== frontface) {
+                if (frontface) {
+                    gl.frontFace(gl.CCW);
+                } else {
+                    gl.frontFace(gl.CW);
+                }
+                frameCtx.frontface = frontface;
+            }
+        },
+
+        pickObject: function (frameCtx) {
+
+            var state = this.state;
+            var gl = this.program.gl;
+
+            var backfaces = state.backfaces;
+            if (frameCtx.backfaces !== backfaces) {
+                if (backfaces) {
+                    gl.disable(gl.CULL_FACE);
+                } else {
+                    gl.enable(gl.CULL_FACE);
+                }
+                frameCtx.backfaces = backfaces;
+            }
+
+            var frontface = state.frontface;
+            if (frameCtx.frontface !== frontface) {
+                if (frontface) {
+                    gl.frontFace(gl.CCW);
+                } else {
+                    gl.frontFace(gl.CW);
+                }
+                frameCtx.frontface = frontface;
+            }
+        },
+
+        pickPrimitive: function (frameCtx) {
+
+            var state = this.state;
+            var gl = this.program.gl;
+
+            var backfaces = state.backfaces;
+            if (frameCtx.backfaces !== backfaces) {
+                if (backfaces) {
+                    gl.disable(gl.CULL_FACE);
+                } else {
+                    gl.enable(gl.CULL_FACE);
+                }
+                frameCtx.backfaces = backfaces;
+            }
+
+            var frontface = state.frontface;
+            if (frameCtx.frontface !== frontface) {
+                if (frontface) {
+                    gl.frontFace(gl.CCW);
+                } else {
+                    gl.frontFace(gl.CW);
+                }
+                frameCtx.frontface = frontface;
             }
         }
     });

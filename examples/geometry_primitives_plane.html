@@ -37,17 +37,13 @@
     var material = new xeogl.PhongMaterial({
         diffuseMap: new xeogl.Texture({
             src: "textures/diffuse/uvGrid2.jpg"
-        })
+        }),
+        backfaces: true
     });
 
     var entity = new xeogl.Entity({
         geometry: plane,
-        material: material,
-
-        // Show backfaces
-        modes: new xeogl.Modes({
-            backfaces: true
-        })
+        material: material
     });
 
     // Position camera

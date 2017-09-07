@@ -23,7 +23,8 @@
         material: new xeogl.PhongMaterial({
             ambient: [0.9, 0.3, 0.9],
             diffuse: [0.4, 0.4, 0.9],
-            shininess: 30
+            shininess: 30,
+            backfaces: true  // Show backfaces, since the lid has a big gap around it
         }),
         transform: new xeogl.Rotate({
             xyz: [1, 0, 0],
@@ -31,9 +32,6 @@
             parent: new xeogl.Translate({
                 xyz: [0, -20, 0]
             })
-        }),
-        modes: new xeogl.Modes({
-            backfaces: true  // Show backfaces, since the lid has a big gap around it
         })
     });
 

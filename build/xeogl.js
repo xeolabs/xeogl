@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2017-08-15
+ * Built on 2017-09-07
  *
  * MIT License
  * Copyright 2017, Lindsay Kay
@@ -23,6 +23,52 @@
 (function () {
 
     "use strict";
+
+    // Fast queue that avoids using potentially inefficient array .shift() calls
+    // Based on https://github.com/creationix/fastqueue
+    var Queue = function () {
+
+        var head = [];
+        var headLength = 0;
+        var tail = [];
+        var index = 0;
+        this.length = 0;
+
+        this.shift = function () {
+            if (index >= headLength) {
+                var t = head;
+                t.length = 0;
+                head = tail;
+                tail = t;
+                index = 0;
+                headLength = head.length;
+                if (!headLength) {
+                    return;
+                }
+            }
+            var value = head[index];
+            if (index < 0) {
+                delete head[index++];
+            }
+            else {
+                head[index++] = undefined;
+            }
+            this.length--;
+            return value;
+        };
+
+        this.push = function (item) {
+            this.length++;
+            tail.push(item);
+            return this;
+        };
+
+        this.unshift = function (item) {
+            head[--index] = item;
+            this.length++;
+            return this;
+        };
+    };
 
     var xeogl = function () {
 
@@ -172,7 +218,7 @@
         // Task queue, which is pumped on each frame;
         // tasks are pushed to it with calls to xeogl.schedule
 
-        this._taskQueue = [];
+        this._taskQueue = new Queue();
 
         //-----------------------------------------------------------------------
         // Game loop
@@ -413,7 +459,7 @@
          * for a certain period of time, popping tasks and running them. After each frame interval, tasks that did not
          * get a chance to run during the task are left in the queue to be run next time.
          *
-         * @method schedule
+         * @method scheduleTask
          * @param {Function} callback Callback that runs the task.
          * @param {Object} [scope] Scope for the callback.
          */
@@ -1875,7 +1921,7 @@ var Canvas2Image = (function () {
         })(),
 
         /**
-         * Converts a three-element vector to a JSON-serializable
+         * Converts an n-element vector to a JSON-serializable
          * array with values rounded to two decimal places.
          */
         vecToArray: (function () {
@@ -5246,21 +5292,17 @@ var Canvas2Image = (function () {
 
         // Render states 
 
-        this.visibility = null;
-        this.cull = null;
-        this.modes = null;
-        this.layer = null;
         this.lights = null;
         this.material = null;
         this.modelTransform = null;
         this.viewTransform = null;
         this.projTransform = null;
-        this.billboard = null;
-        this.stationary = null;
         this.clips = null;
         this.geometry = null;
         this.viewport = null;
         this.outline = null;
+        this.xray = null;
+        this.modes = null;
 
         // Dirty flags 
 
@@ -5301,17 +5343,13 @@ var Canvas2Image = (function () {
             object.hash = "";
         }
 
-        object.layer = this.layer;
         object.material = this.material;
         object.geometry = this.geometry;
-        object.visibility = this.visibility;
-        object.cull = this.cull;
-        object.modes = this.modes;
-        object.billboard = this.billboard;
-        object.stationary = this.stationary;
         object.viewport = this.viewport;
         object.lights = this.lights;
         object.outline = this.outline;
+        object.xray = this.xray;
+        object.modes = this.modes;
 
         // Build hash of the object's state configuration. This is used
         // to hash the object's shader so that it may be reused by other
@@ -5322,9 +5360,7 @@ var Canvas2Image = (function () {
             this.clips.hash,
             this.material.hash,
             this.lights.hash,
-            this.modes.hash,
-            this.billboard.hash,
-            this.stationary.hash
+            this.modes.hash
         ]).join(";");
 
         if (hash !== object.hash) {
@@ -5359,12 +5395,12 @@ var Canvas2Image = (function () {
         this._setChunk(object, 1, "modelTransform", this.modelTransform);
         this._setChunk(object, 2, "viewTransform", this.viewTransform);
         this._setChunk(object, 3, "projTransform", this.projTransform);
-        this._setChunk(object, 4, "modes", this.modes);
-        this._setChunk(object, 5, "lights", this.lights);
-        this._setChunk(object, 6, this.material.type, this.material); // Supports different material systems
-        this._setChunk(object, 7, "clips", this.clips);
-        this._setChunk(object, 8, "viewport", this.viewport);
-        this._setChunk(object, 9, "outline", this.outline);
+        this._setChunk(object, 4, "lights", this.lights);
+        this._setChunk(object, 5, this.material.type, this.material); // Supports different material systems
+        this._setChunk(object, 6, "clips", this.clips);
+        this._setChunk(object, 7, "viewport", this.viewport);
+        this._setChunk(object, 8, "outline", this.outline);
+        this._setChunk(object, 9, "xray", this.xray);
         this._setChunk(object, 10, "geometry", this.geometry);
         this._setChunk(object, 11, "draw", this.geometry, true); // Must be last
 
@@ -5502,7 +5538,7 @@ var Canvas2Image = (function () {
                 object.sortKey = -1;
             } else {
                 object.sortKey =
-                    +((object.layer.priority + 1) * 10000000000000)
+                    +((object.modes.layer + 1) * 10000000000000)
                     + ((object.program.id + 1) * 100000000)
                     + ((object.material.id + 1) * 10000)
                     + object.geometry.id;
@@ -5529,7 +5565,7 @@ var Canvas2Image = (function () {
         this._shadowObjectLists = {}; // TODO: Optimize for GC
         for (i = 0, len = this._objectListLen; i < len; i++) {
             object = this._objectList[i];
-            if (!object.compiled || !object.modes.castShadow || object.visibility.visible) {
+            if (!object.compiled || !object.modes.castShadow || object.modes.visible) {
                 continue;
             }
             lights = object.lights.lights;
@@ -5630,7 +5666,7 @@ var Canvas2Image = (function () {
 
             for (i = 0, len = objects.length; i < len; i++) {
                 object = objects[i];
-                if (!object.compiled || !object.visibility.visible) {
+                if (!object.compiled || !object.modes.visible) {
                     continue; // For now, culled objects still cast shadows
                 }
                 drawObjectShadow(frameCtx, object);
@@ -5752,14 +5788,14 @@ var Canvas2Image = (function () {
 
             for (i = 0, len = this._objectListLen; i < len; i++) {
                 object = this._objectList[i];
-                if (!object.compiled || object.cull.culled === true || object.visibility.visible === false) {
+                if (!object.compiled || object.modes.culled === true || object.modes.visible === false) {
                     continue;
                 }
-                if (object.modes.transparent) {
+                if (object.material.alphaMode === 2 /* blend */  || object.modes.xray) {
                     transparentObjects[numTransparentObjects++] = object;
                     continue;
                 }
-                if (object.modes.outline) {
+                if (object.modes.outlined) {
                     outlinedObjects[numOutlinedObjects++] = object;
                     continue;
                 }
@@ -5809,6 +5845,7 @@ var Canvas2Image = (function () {
                 gl.depthMask(false);
                 gl.blendEquation(gl.FUNC_ADD);
                 gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+                //gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
                 gl.colorMask(true, true, true, true);
 
@@ -5818,7 +5855,7 @@ var Canvas2Image = (function () {
 
                 for (i = 0; i < numTransparentObjects; i++) {
                     object = transparentObjects[i];
-                    if (object.modes.outline) {
+                    if (object.modes.outlined) {
                         outlinedObjects[numOutlinedObjects++] = object; // Build outlined list
                         continue;
                     }
@@ -5840,8 +5877,7 @@ var Canvas2Image = (function () {
             frameStats.bindTexture = frameCtx.bindTexture;
             frameStats.bindArray = frameCtx.bindArray;
 
-            var numTextureUnits = gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
-
+            var numTextureUnits = xeogl.WEBGL_INFO.MAX_TEXTURE_IMAGE_UNITS;
             for (var ii = 0; ii < numTextureUnits; ii++) {
                 gl.activeTexture(gl.TEXTURE0 + ii);
                 gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
@@ -6012,7 +6048,7 @@ var Canvas2Image = (function () {
 
             for (i = 0, len = this._objectListLen; i < len; i++) {
                 object = this._objectList[i];
-                if (!object.compiled || object.cull.culled === true || object.visibility.visible === false || object.modes.pickable === false) {
+                if (!object.compiled || object.modes.culled === true || object.modes.visible === false || object.modes.pickable === false) {
                     continue;
                 }
                 this._objectPickList[this._objectPickListLen++] = object;
@@ -7559,7 +7595,7 @@ var Canvas2Image = (function () {
      @param cfg {*} Configs
      @param cfg.pickable {Boolean} Flag which controls pickability of the associated render objects.
      @param cfg.clipping {Boolean} Flag which controls whether associated render objects are clippable.
-     @param cfg.transparent {Boolean} Flag which controls transparency of the associated render objects.
+     @param cfg.xray {Boolean} Flag which controls transparency of the associated render objects.
      @param cfg.frontFace {Boolean} Flag which determines winding order of backfaces on the associated render objects - true == "ccw", false == "cw".
      @extends renderer.State
      */
@@ -7671,21 +7707,6 @@ var Canvas2Image = (function () {
      @extends renderer.State
      */
     xeogl.renderer.Billboard = xeogl.renderer.State.extend({
-        _ids: new xeogl.utils.Map({})
-    });
-
-    /**
-
-     Stationary transform state.
-
-     renderer.Stationary
-     @module xeogl
-
-     @constructor
-     @param cfg {*} Configs
-     @extends renderer.State
-     */
-    xeogl.renderer.Stationary = xeogl.renderer.State.extend({
         _ids: new xeogl.utils.Map({})
     });
 
@@ -7825,6 +7846,21 @@ var Canvas2Image = (function () {
      @extends renderer.State
      */
     xeogl.renderer.Outline = xeogl.renderer.State.extend({
+        _ids: new xeogl.utils.Map({})
+    });
+
+    /**
+
+     XRay state.
+
+     renderer.XRay
+     @module xeogl
+
+     @constructor
+     @param cfg {*} Configs
+     @extends renderer.State
+     */
+    xeogl.renderer.XRay = xeogl.renderer.State.extend({
         _ids: new xeogl.utils.Map({})
     });
 })();
@@ -8389,7 +8425,7 @@ var Canvas2Image = (function () {
         var reflection; // True when rendering state contains reflections
         var diffuseFresnel;
         var specularFresnel;
-        var opacityFresnel;
+        var alphaFresnel;
         var reflectivityFresnel;
         var emissiveFresnel;
         var receiveShadow;
@@ -8427,7 +8463,7 @@ var Canvas2Image = (function () {
             reflection = hasReflection();
             diffuseFresnel = states.material.diffuseFresnel;
             specularFresnel = states.material.specularFresnel;
-            opacityFresnel = states.material.opacityFresnel;
+            alphaFresnel = states.material.alphaFresnel;
             reflectivityFresnel = states.material.reflectivityFresnel;
             emissiveFresnel = states.material.emissiveFresnel;
             receiveShadow = receivesShadow();
@@ -8476,7 +8512,7 @@ var Canvas2Image = (function () {
                 material.occlusionMap ||
                 material.baseColorMap ||
                 material.diffuseMap ||
-                material.opacityMap ||
+                material.alphaMap ||
                 material.specularMap ||
                 material.glossinessMap ||
                 material.specularGlossinessMap ||
@@ -8641,12 +8677,14 @@ var Canvas2Image = (function () {
                 add("attribute vec3 normal;");
             }
 
-            if (states.billboard.active) {
+            var billboard = states.modes.billboard;
+
+            if (billboard === "spherical" || billboard === "cylindrical") {
                 add("void billboard(inout mat4 mat) {");
                 add("   mat[0][0] = 1.0;");
                 add("   mat[0][1] = 0.0;");
                 add("   mat[0][2] = 0.0;");
-                if (states.billboard.spherical) {
+                if (billboard === "spherical") {
                     add("   mat[1][0] = 0.0;");
                     add("   mat[1][1] = 1.0;");
                     add("   mat[1][2] = 0.0;");
@@ -8662,11 +8700,11 @@ var Canvas2Image = (function () {
             add("mat4 viewMatrix2 = viewMatrix;");
             add("mat4 modelMatrix2 = modelMatrix;");
 
-            if (states.stationary.active) {
+            if (states.modes.stationary) {
                 add("viewMatrix2[3][0] = viewMatrix2[3][1] = viewMatrix2[3][2] = 0.0;")
             }
 
-            if (states.billboard.active) {
+            if (billboard === "spherical" || billboard === "cylindrical") {
                 add("billboard(modelMatrix2);");
                 add("billboard(viewMatrix2);");
             }
@@ -8778,14 +8816,16 @@ var Canvas2Image = (function () {
                 add("uniform float pointSize;");
             }
 
-            if (states.billboard.active) {
+            var billboard = states.modes.billboard;
+
+            if (billboard === "spherical" || billboard === "cylindrical") {
 
                 add("void billboard(inout mat4 mat) {");
                 add("   mat[0][0] = 1.0;");
                 add("   mat[0][1] = 0.0;");
                 add("   mat[0][2] = 0.0;");
 
-                if (states.billboard.spherical) {
+                if (billboard === "spherical") {
                     add("   mat[1][0] = 0.0;");
                     add("   mat[1][1] = 1.0;");
                     add("   mat[1][2] = 0.0;");
@@ -8822,11 +8862,11 @@ var Canvas2Image = (function () {
             add("mat4 viewMatrix2           = viewMatrix;");
             add("mat4 modelMatrix2          = modelMatrix;");
 
-            if (states.stationary.active) {
+            if (states.modes.stationary) {
                 add("viewMatrix2[3][0] = viewMatrix2[3][1] = viewMatrix2[3][2] = 0.0;")
             }
 
-            if (states.billboard.active) {
+            if (billboard === "spherical" || billboard === "cylindrical") {
 
                 add("mat4 modelViewMatrix = viewMatrix2 * modelMatrix2;");
 
@@ -9215,7 +9255,7 @@ var Canvas2Image = (function () {
                 || material.glossinessMap
                 || material.specularGlossinessMap
                 || material.occlusionMap
-                || material.opacityMap)) {
+                || material.alphaMap)) {
                 add("varying vec2 vUV;");
             }
 
@@ -9238,8 +9278,8 @@ var Canvas2Image = (function () {
                 add("uniform vec3 materialBaseColor;");
             }
 
-            if (material.opacity !== undefined && material.opacity !== null) {
-                add("uniform float materialOpacity;");
+            if (material.alpha !== undefined && material.alpha !== null) {
+                add("uniform vec4 materialAlphaModeCutoff;"); // [alpha, alphaMode, alphaCutoff]
             }
 
             if (material.emissive) {
@@ -9342,10 +9382,10 @@ var Canvas2Image = (function () {
                 }
             }
 
-            if (geometry.uv && material.opacityMap) {
-                add("uniform sampler2D opacityMap;");
-                if (material.opacityMap.matrix) {
-                    add("uniform mat4 opacityMapMatrix;");
+            if (geometry.uv && material.alphaMap) {
+                add("uniform sampler2D alphaMap;");
+                if (material.alphaMap.matrix) {
+                    add("uniform mat4 alphaMapMatrix;");
                 }
             }
 
@@ -9376,7 +9416,7 @@ var Canvas2Image = (function () {
 
             if (geometry.normals && (material.diffuseFresnel ||
                 material.specularFresnel ||
-                material.opacityFresnel ||
+                material.alphaFresnel ||
                 material.emissiveFresnel ||
                 material.reflectivityFresnel)) {
 
@@ -9402,12 +9442,12 @@ var Canvas2Image = (function () {
                     add("uniform vec3   specularFresnelEdgeColor;");
                 }
 
-                if (material.opacityFresnel) {
-                    add("uniform float  opacityFresnelCenterBias;");
-                    add("uniform float  opacityFresnelEdgeBias;");
-                    add("uniform float  opacityFresnelPower;");
-                    add("uniform vec3   opacityFresnelCenterColor;");
-                    add("uniform vec3   opacityFresnelEdgeColor;");
+                if (material.alphaFresnel) {
+                    add("uniform float  alphaFresnelCenterBias;");
+                    add("uniform float  alphaFresnelEdgeBias;");
+                    add("uniform float  alphaFresnelPower;");
+                    add("uniform vec3   alphaFresnelCenterColor;");
+                    add("uniform vec3   alphaFresnelEdgeColor;");
                 }
 
                 if (material.reflectivityFresnel) {
@@ -9520,14 +9560,14 @@ var Canvas2Image = (function () {
                 add("vec3 specular = vec3(1.0, 1.0, 1.0);");
             }
 
-            if (material.opacity !== undefined) {
-                add("float opacity = materialOpacity;");
+            if (material.alpha !== undefined) {
+                add("float alpha = materialAlphaModeCutoff[0];");
             } else {
-                add("float opacity = 1.0;");
+                add("float alpha = 1.0;");
             }
 
             if (geometry.colors) {
-                add("opacity *= vColor.a;");
+                add("alpha *= vColor.a;");
             }
 
             if (material.glossiness !== undefined) {
@@ -9571,7 +9611,7 @@ var Canvas2Image = (function () {
                 || material.specularMap
                 || material.glossinessMap
                 || material.specularGlossinessMap
-                || material.opacityMap)) {
+                || material.alphaMap)) {
                 add("vec4 texturePos = vec4(vUV.s, vUV.t, 1.0, 1.0);");
                 add("vec2 textureCoord;");
             }
@@ -9591,7 +9631,9 @@ var Canvas2Image = (function () {
                 } else {
                     add("textureCoord = texturePos.xy;");
                 }
-                add("diffuseColor *= texture2D(diffuseMap, textureCoord).rgb;");
+                add("vec4 diffuseTexel = texture2D(diffuseMap, textureCoord);");
+                add("diffuseColor *= diffuseTexel.rgb;");
+                add("alpha *= diffuseTexel.a;");
             }
 
             if (geometry.uv && material.baseColorMap) {
@@ -9602,7 +9644,7 @@ var Canvas2Image = (function () {
                 }
                 add("vec4 baseColorTexel = texture2D(baseColorMap, textureCoord);");
                 add("diffuseColor *= baseColorTexel.rgb;");
-             //   add("opacity *= baseColorTexel.a;");
+                add("alpha *= baseColorTexel.a;");
             }
 
             if (geometry.uv && material.emissiveMap) {
@@ -9614,13 +9656,13 @@ var Canvas2Image = (function () {
                 add("emissiveColor *= texture2D(emissiveMap, textureCoord).rgb;");
             }
 
-            if (geometry.uv && material.opacityMap) {
-                if (material.opacityMap.matrix) {
-                    add("textureCoord = (opacityMapMatrix * texturePos).xy;");
+            if (geometry.uv && material.alphaMap) {
+                if (material.alphaMap.matrix) {
+                    add("textureCoord = (alphaMapMatrix * texturePos).xy;");
                 } else {
                     add("textureCoord = texturePos.xy;");
                 }
-                add("opacity *= texture2D(opacityMap, textureCoord).r;");
+                add("alpha *= texture2D(alphaMap, textureCoord).r;");
             }
 
             if (geometry.uv && material.occlusionMap) {
@@ -9709,7 +9751,7 @@ var Canvas2Image = (function () {
 
                 add("vec3 viewEyeDir = normalize(-vViewPosition);");
 
-                if (material.diffuseFresnel || material.specularFresnel || material.opacityFresnel || material.emissiveFresnel || material.reflectivityFresnel) {
+                if (material.diffuseFresnel || material.specularFresnel || material.alphaFresnel || material.emissiveFresnel || material.reflectivityFresnel) {
                     if (material.diffuseFresnel) {
                         add("float diffuseFresnel = fresnel(viewEyeDir, viewNormal, diffuseFresnelEdgeBias, diffuseFresnelCenterBias, diffuseFresnelPower);");
                         add("diffuseColor *= mix(diffuseFresnelEdgeColor, diffuseFresnelCenterColor, diffuseFresnel);");
@@ -9718,15 +9760,19 @@ var Canvas2Image = (function () {
                         add("float specularFresnel = fresnel(viewEyeDir, viewNormal, specularFresnelEdgeBias, specularFresnelCenterBias, specularFresnelPower);");
                         add("specular *= mix(specularFresnelEdgeColor, specularFresnelCenterColor, specularFresnel);");
                     }
-                    if (material.opacityFresnel) {
-                        add("float opacityFresnel = fresnel(viewEyeDir, viewNormal, opacityFresnelEdgeBias, opacityFresnelCenterBias, opacityFresnelPower);");
-                        add("opacity *= mix(opacityFresnelEdgeColor.r, opacityFresnelCenterColor.r, opacityFresnel);");
+                    if (material.alphaFresnel) {
+                        add("float alphaFresnel = fresnel(viewEyeDir, viewNormal, alphaFresnelEdgeBias, alphaFresnelCenterBias, alphaFresnelPower);");
+                        add("alpha *= mix(alphaFresnelEdgeColor.r, alphaFresnelCenterColor.r, alphaFresnel);");
                     }
                     if (material.emissiveFresnel) {
                         add("float emissiveFresnel = fresnel(viewEyeDir, viewNormal, emissiveFresnelEdgeBias, emissiveFresnelCenterBias, emissiveFresnelPower);");
                         add("emissiveColor *= mix(emissiveFresnelEdgeColor, emissiveFresnelCenterColor, emissiveFresnel);");
                     }
                 }
+
+                add("if (materialAlphaModeCutoff[1] == 1.0 && alpha < materialAlphaModeCutoff[2]) {"); // ie. (alphaMode == "mask" && alpha < alphaCutoff)
+                add("   discard;"); // TODO: Discard earlier within this shader?
+                add("}");
 
                 // PREPARE INPUTS FOR SHADER FUNCTIONS
 
@@ -9855,8 +9901,7 @@ var Canvas2Image = (function () {
                 add("vec3 outgoingLight = emissiveColor + ambientColor;");
             }
 
-
-            add("gl_FragColor = vec4(outgoingLight, opacity);");
+            add("gl_FragColor = vec4(outgoingLight, alpha);");
              //    add("gl_FragColor = LinearTosRGB(gl_FragColor);");  // Gamma correction
 
             add("}");
@@ -10623,31 +10668,7 @@ var Canvas2Image = (function () {
             var state = this.state;
             var gl = this.program.gl;
 
-            var backfaces = state.backfaces;
-
-            if (frameCtx.backfaces !== backfaces) {
-                if (backfaces) {
-                    gl.disable(gl.CULL_FACE);
-                } else {
-                    gl.enable(gl.CULL_FACE);
-                }
-                frameCtx.backfaces = backfaces;
-            }
-
-            var frontface = state.frontface;
-
-            if (frameCtx.frontface !== frontface) {
-
-                // frontface is boolean for speed,
-                // true == "ccw", false == "cw"
-
-                if (frontface) {
-                    gl.frontFace(gl.CCW);
-                } else {
-                    gl.frontFace(gl.CW);
-                }
-                frameCtx.frontface = frontface;
-            }
+            //..?
         },
 
         shadow: function (frameCtx) {
@@ -10655,29 +10676,7 @@ var Canvas2Image = (function () {
             var state = this.state;
             var gl = this.program.gl;
 
-            var backfaces = state.backfaces;
-            if (frameCtx.backfaces !== backfaces) {
-                if (backfaces) {
-                    gl.disable(gl.CULL_FACE);
-                } else {
-                    gl.enable(gl.CULL_FACE);
-                }
-                frameCtx.backfaces = backfaces;
-            }
-
-            var frontface = state.frontface;
-            if (frameCtx.frontface !== frontface) {
-
-                // frontface is boolean for speed,
-                // true == "ccw", false == "cw"
-
-                if (frontface) {
-                    gl.frontFace(gl.CCW);
-                } else {
-                    gl.frontFace(gl.CW);
-                }
-                frameCtx.frontface = frontface;
-            }
+            //..?
         },
 
         pickObject: function (frameCtx) {
@@ -10685,29 +10684,7 @@ var Canvas2Image = (function () {
             var state = this.state;
             var gl = this.program.gl;
 
-            var backfaces = state.backfaces;
-            if (frameCtx.backfaces !== backfaces) {
-                if (backfaces) {
-                    gl.disable(gl.CULL_FACE);
-                } else {
-                    gl.enable(gl.CULL_FACE);
-                }
-                frameCtx.backfaces = backfaces;
-            }
-
-            var frontface = state.frontface;
-            if (frameCtx.frontface !== frontface) {
-
-                // frontface is boolean for speed,
-                // true == "ccw", false == "cw"
-
-                if (frontface) {
-                    gl.frontFace(gl.CCW);
-                } else {
-                    gl.frontFace(gl.CW);
-                }
-                frameCtx.frontface = frontface;
-            }
+            //..?
         },
 
         pickPrimitive: function (frameCtx) {
@@ -10715,29 +10692,7 @@ var Canvas2Image = (function () {
             var state = this.state;
             var gl = this.program.gl;
 
-            var backfaces = state.backfaces;
-            if (frameCtx.backfaces !== backfaces) {
-                if (backfaces) {
-                    gl.disable(gl.CULL_FACE);
-                } else {
-                    gl.enable(gl.CULL_FACE);
-                }
-                frameCtx.backfaces = backfaces;
-            }
-
-            var frontface = state.frontface;
-            if (frameCtx.frontface !== frontface) {
-
-                // frontface is boolean for speed,
-                // true == "ccw", false == "cw"
-
-                if (frontface) {
-                    gl.frontFace(gl.CCW);
-                } else {
-                    gl.frontFace(gl.CW);
-                }
-                frameCtx.frontface = frontface;
-            }
+            //..?
         }
     });
 })();
@@ -10778,6 +10733,37 @@ var Canvas2Image = (function () {
 
     xeogl.renderer.ChunkFactory.createChunkType({
 
+        type: "xray",
+
+        build: function () {
+
+            var xray = this.program.xray;
+
+            //this._uColor = xray.getUniform("color");
+            //this._uThickness = xray.getUniform("thickness");
+        },
+
+        xray: function (frameCtx) {
+
+            var state = this.state;
+
+            //if (this._uColor) {
+            //    this._uColor.setValue(state.color);
+            //}
+            //
+            //if (this._uThickness) {
+            //    this._uThickness.setValue(state.thickness);
+            //}
+        }
+    });
+
+})();
+;(function () {
+
+    "use strict";
+
+    xeogl.renderer.ChunkFactory.createChunkType({
+
         type: "phongMaterial",
 
         build: function () {
@@ -10792,7 +10778,7 @@ var Canvas2Image = (function () {
             this._uDiffuse = draw.getUniform("materialDiffuse");
             this._uSpecular = draw.getUniform("materialSpecular");
             this._uEmissive = draw.getUniform("materialEmissive");
-            this._uOpacity = draw.getUniform("materialOpacity");
+            this._uAlphaModeCutoff = draw.getUniform("materialAlphaModeCutoff");
             this._uShininess = draw.getUniform("materialShininess");
 
             this._uPointSize = draw.getUniform("pointSize");
@@ -10819,9 +10805,9 @@ var Canvas2Image = (function () {
                 this._uEmissiveMapMatrix = draw.getUniform("emissiveMapMatrix");
             }
 
-            if (state.opacityMap) {
-                this._uOpacityMap = "opacityMap";
-                this._uOpacityMapMatrix = draw.getUniform("opacityMapMatrix");
+            if (state.alphaMap) {
+                this._uAlphaMap = "alphaMap";
+                this._uAlphaMapMatrix = draw.getUniform("alphaMapMatrix");
             }
 
             if (state.reflectivityMap) {
@@ -10857,12 +10843,12 @@ var Canvas2Image = (function () {
                 this._uSpecularFresnelPower = draw.getUniform("specularFresnelPower");
             }
 
-            if (state.opacityFresnel) {
-                this._uOpacityFresnelEdgeBias = draw.getUniform("opacityFresnelEdgeBias");
-                this._uOpacityFresnelCenterBias = draw.getUniform("opacityFresnelCenterBias");
-                this._uOpacityFresnelEdgeColor = draw.getUniform("opacityFresnelEdgeColor");
-                this._uOpacityFresnelCenterColor = draw.getUniform("opacityFresnelCenterColor");
-                this._uOpacityFresnelPower = draw.getUniform("opacityFresnelPower");
+            if (state.alphaFresnel) {
+                this._uAlphaFresnelEdgeBias = draw.getUniform("alphaFresnelEdgeBias");
+                this._uAlphaFresnelCenterBias = draw.getUniform("alphaFresnelCenterBias");
+                this._uAlphaFresnelEdgeColor = draw.getUniform("alphaFresnelEdgeColor");
+                this._uAlphaFresnelCenterColor = draw.getUniform("alphaFresnelCenterColor");
+                this._uAlphaFresnelPower = draw.getUniform("alphaFresnelPower");
             }
 
             if (state.reflectivityFresnel) {
@@ -10919,8 +10905,8 @@ var Canvas2Image = (function () {
                 this._uEmissive.setValue(state.emissive);
             }
 
-            if (this._uOpacity) {
-                this._uOpacity.setValue(state.opacity);
+            if (this._uAlphaModeCutoff) {
+                this._uAlphaModeCutoff.setValue([1.0 * state.alpha, state.alphaMode === 1 ? 1.0 : 0.0, state.alphaCutoff, 0]);
             }
 
             // Ambient map
@@ -10971,15 +10957,15 @@ var Canvas2Image = (function () {
                 }
             }
 
-            // Opacity map
+            // Alpha map
 
-            if (state.opacityMap && state.opacityMap.texture && this._uOpacityMap) {
-                draw.bindTexture(this._uOpacityMap, state.opacityMap.texture, frameCtx.textureUnit);
+            if (state.alphaMap && state.alphaMap.texture && this._uAlphaMap) {
+                draw.bindTexture(this._uAlphaMap, state.alphaMap.texture, frameCtx.textureUnit);
                 frameCtx.textureUnit = (frameCtx.textureUnit + 1) % xeogl.WEBGL_INFO.MAX_TEXTURE_IMAGE_UNITS;
                 frameCtx.bindTexture++;
 
-                if (this._uOpacityMapMatrix) {
-                    this._uOpacityMapMatrix.setValue(state.opacityMap.matrix);
+                if (this._uAlphaMapMatrix) {
+                    this._uAlphaMapMatrix.setValue(state.alphaMap.matrix);
                 }
             }
 
@@ -11066,26 +11052,26 @@ var Canvas2Image = (function () {
                 }
             }
 
-            if (state.opacityFresnel) {
+            if (state.alphaFresnel) {
 
-                if (this._uOpacityFresnelEdgeBias) {
-                    this._uOpacityFresnelEdgeBias.setValue(state.opacityFresnel.edgeBias);
+                if (this._uAlphaFresnelEdgeBias) {
+                    this._uAlphaFresnelEdgeBias.setValue(state.alphaFresnel.edgeBias);
                 }
 
-                if (this._uOpacityFresnelCenterBias) {
-                    this._uOpacityFresnelCenterBias.setValue(state.opacityFresnel.centerBias);
+                if (this._uAlphaFresnelCenterBias) {
+                    this._uAlphaFresnelCenterBias.setValue(state.alphaFresnel.centerBias);
                 }
 
-                if (this._uOpacityFresnelEdgeColor) {
-                    this._uOpacityFresnelEdgeColor.setValue(state.opacityFresnel.edgeColor);
+                if (this._uAlphaFresnelEdgeColor) {
+                    this._uAlphaFresnelEdgeColor.setValue(state.alphaFresnel.edgeColor);
                 }
 
-                if (this._uOpacityFresnelCenterColor) {
-                    this._uOpacityFresnelCenterColor.setValue(state.opacityFresnel.centerColor);
+                if (this._uAlphaFresnelCenterColor) {
+                    this._uAlphaFresnelCenterColor.setValue(state.alphaFresnel.centerColor);
                 }
 
-                if (this._uOpacityFresnelPower) {
-                    this._uOpacityFresnelPower.setValue(state.opacityFresnel.power);
+                if (this._uAlphaFresnelPower) {
+                    this._uAlphaFresnelPower.setValue(state.alphaFresnel.power);
                 }
             }
 
@@ -11134,6 +11120,83 @@ var Canvas2Image = (function () {
                     this._uEmissiveFresnelPower.setValue(state.emissiveFresnel.power);
                 }
             }
+        },
+
+        shadow: function (frameCtx) {
+
+            var state = this.state;
+            var gl = this.program.gl;
+
+            var backfaces = state.backfaces;
+            if (frameCtx.backfaces !== backfaces) {
+                if (backfaces) {
+                    gl.disable(gl.CULL_FACE);
+                } else {
+                    gl.enable(gl.CULL_FACE);
+                }
+                frameCtx.backfaces = backfaces;
+            }
+            var frontface = state.frontface;
+            if (frameCtx.frontface !== frontface) {
+                if (frontface) {
+                    gl.frontFace(gl.CCW);
+                } else {
+                    gl.frontFace(gl.CW);
+                }
+                frameCtx.frontface = frontface;
+            }
+        },
+
+        pickObject: function (frameCtx) {
+
+            var state = this.state;
+            var gl = this.program.gl;
+
+            var backfaces = state.backfaces;
+            if (frameCtx.backfaces !== backfaces) {
+                if (backfaces) {
+                    gl.disable(gl.CULL_FACE);
+                } else {
+                    gl.enable(gl.CULL_FACE);
+                }
+                frameCtx.backfaces = backfaces;
+            }
+
+            var frontface = state.frontface;
+            if (frameCtx.frontface !== frontface) {
+                if (frontface) {
+                    gl.frontFace(gl.CCW);
+                } else {
+                    gl.frontFace(gl.CW);
+                }
+                frameCtx.frontface = frontface;
+            }
+        },
+
+        pickPrimitive: function (frameCtx) {
+
+            var state = this.state;
+            var gl = this.program.gl;
+
+            var backfaces = state.backfaces;
+            if (frameCtx.backfaces !== backfaces) {
+                if (backfaces) {
+                    gl.disable(gl.CULL_FACE);
+                } else {
+                    gl.enable(gl.CULL_FACE);
+                }
+                frameCtx.backfaces = backfaces;
+            }
+
+            var frontface = state.frontface;
+            if (frameCtx.frontface !== frontface) {
+                if (frontface) {
+                    gl.frontFace(gl.CCW);
+                } else {
+                    gl.frontFace(gl.CW);
+                }
+                frameCtx.frontface = frontface;
+            }
         }
     });
 
@@ -11157,7 +11220,7 @@ var Canvas2Image = (function () {
             this._uRoughness = draw.getUniform("materialRoughness");
             this._uSpecularF0 = draw.getUniform("materialSpecularF0");
             this._uEmissive = draw.getUniform("materialEmissive");
-            this._uOpacity = draw.getUniform("materialOpacity");
+            this._uAlphaModeCutoff = draw.getUniform("materialAlphaModeCutoff");
 
             if (state.baseColorMap) {
                 this._uBaseColorMap = "baseColorMap";
@@ -11189,9 +11252,9 @@ var Canvas2Image = (function () {
                 this._uOcclusionMapMatrix = draw.getUniform("occlusionMapMatrix");
             }
 
-            if (state.opacityMap) {
-                this._uOpacityMap = "opacityMap";
-                this._uOpacityMapMatrix = draw.getUniform("opacityMapMatrix");
+            if (state.alphaMap) {
+                this._uAlphaMap = "alphaMap";
+                this._uAlphaMapMatrix = draw.getUniform("alphaMapMatrix");
             }
 
             if (state.normalMap) {
@@ -11228,8 +11291,8 @@ var Canvas2Image = (function () {
                 this._uEmissive.setValue(state.emissive);
             }
 
-            if (this._uOpacity) {
-                this._uOpacity.setValue(state.opacity);
+            if (this._uAlphaModeCutoff) {
+                this._uAlphaModeCutoff.setValue([1.0 * state.alpha, state.alphaMode === 1 ? 1.0 : 0.0, state.alphaCutoff, 0]);
             }
 
             if (state.baseColorMap && state.baseColorMap.texture && this._uBaseColorMap) {
@@ -11286,12 +11349,12 @@ var Canvas2Image = (function () {
                 }
             }
 
-            if (state.opacityMap && state.opacityMap.texture && this._uOpacityMap) {
-                draw.bindTexture(this._uOpacityMap, state.opacityMap.texture, frameCtx.textureUnit);
+            if (state.alphaMap && state.alphaMap.texture && this._uAlphaMap) {
+                draw.bindTexture(this._uAlphaMap, state.alphaMap.texture, frameCtx.textureUnit);
                   frameCtx.textureUnit = (frameCtx.textureUnit + 1) % xeogl.WEBGL_INFO.MAX_TEXTURE_IMAGE_UNITS;
                 frameCtx.bindTexture++;
-                if (this._uOpacityMapMatrix) {
-                    this._uOpacityMapMatrix.setValue(state.opacityMap.matrix);
+                if (this._uAlphaMapMatrix) {
+                    this._uAlphaMapMatrix.setValue(state.alphaMap.matrix);
                 }
             }
 
@@ -11302,6 +11365,83 @@ var Canvas2Image = (function () {
                 if (this._uNormalMapMatrix) {
                     this._uNormalMapMatrix.setValue(state.normalMap.matrix);
                 }
+            }
+        },
+
+        shadow: function (frameCtx) {
+
+            var state = this.state;
+            var gl = this.program.gl;
+
+            var backfaces = state.backfaces;
+            if (frameCtx.backfaces !== backfaces) {
+                if (backfaces) {
+                    gl.disable(gl.CULL_FACE);
+                } else {
+                    gl.enable(gl.CULL_FACE);
+                }
+                frameCtx.backfaces = backfaces;
+            }
+            var frontface = state.frontface;
+            if (frameCtx.frontface !== frontface) {
+                if (frontface) {
+                    gl.frontFace(gl.CCW);
+                } else {
+                    gl.frontFace(gl.CW);
+                }
+                frameCtx.frontface = frontface;
+            }
+        },
+
+        pickObject: function (frameCtx) {
+
+            var state = this.state;
+            var gl = this.program.gl;
+
+            var backfaces = state.backfaces;
+            if (frameCtx.backfaces !== backfaces) {
+                if (backfaces) {
+                    gl.disable(gl.CULL_FACE);
+                } else {
+                    gl.enable(gl.CULL_FACE);
+                }
+                frameCtx.backfaces = backfaces;
+            }
+
+            var frontface = state.frontface;
+            if (frameCtx.frontface !== frontface) {
+                if (frontface) {
+                    gl.frontFace(gl.CCW);
+                } else {
+                    gl.frontFace(gl.CW);
+                }
+                frameCtx.frontface = frontface;
+            }
+        },
+
+        pickPrimitive: function (frameCtx) {
+
+            var state = this.state;
+            var gl = this.program.gl;
+
+            var backfaces = state.backfaces;
+            if (frameCtx.backfaces !== backfaces) {
+                if (backfaces) {
+                    gl.disable(gl.CULL_FACE);
+                } else {
+                    gl.enable(gl.CULL_FACE);
+                }
+                frameCtx.backfaces = backfaces;
+            }
+
+            var frontface = state.frontface;
+            if (frameCtx.frontface !== frontface) {
+                if (frontface) {
+                    gl.frontFace(gl.CCW);
+                } else {
+                    gl.frontFace(gl.CW);
+                }
+                frameCtx.frontface = frontface;
             }
         }
     });
@@ -11326,7 +11466,7 @@ var Canvas2Image = (function () {
             this._uGlossiness = draw.getUniform("materialGlossiness");
             this._uReflectivity = draw.getUniform("reflectivityFresnel");
             this._uEmissive = draw.getUniform("materialEmissive");
-            this._uOpacity = draw.getUniform("materialOpacity");
+            this._uAlphaModeCutoff = draw.getUniform("materialAlphaModeCutoff");
 
             if (state.diffuseMap) {
                 this._uDiffuseMap = "diffuseMap";
@@ -11358,9 +11498,9 @@ var Canvas2Image = (function () {
                 this._uOcclusionMapMatrix = draw.getUniform("occlusionMapMatrix");
             }
 
-            if (state.opacityMap) {
-                this._uOpacityMap = "opacityMap";
-                this._uOpacityMapMatrix = draw.getUniform("opacityMapMatrix");
+            if (state.alphaMap) {
+                this._uAlphaMap = "alphaMap";
+                this._uAlphaMapMatrix = draw.getUniform("alphaMapMatrix");
             }
 
             if (state.normalMap) {
@@ -11397,8 +11537,8 @@ var Canvas2Image = (function () {
                 this._uEmissive.setValue(state.emissive);
             }
 
-            if (this._uOpacity) {
-                this._uOpacity.setValue(state.opacity);
+            if (this._uAlphaModeCutoff) {
+                this._uAlphaModeCutoff.setValue([1.0 * state.alpha, state.alphaMode === 1 ? 1.0 : 0.0, state.alphaCutoff, 0]);
             }
 
             if (state.diffuseMap && state.diffuseMap.texture && this._uDiffuseMap) {
@@ -11455,12 +11595,12 @@ var Canvas2Image = (function () {
                 }
             }
 
-            if (state.opacityMap && state.opacityMap.texture && this._uOpacityMap) {
-                draw.bindTexture(this._uOpacityMap, state.opacityMap.texture, frameCtx.textureUnit);
+            if (state.alphaMap && state.alphaMap.texture && this._uAlphaMap) {
+                draw.bindTexture(this._uAlphaMap, state.alphaMap.texture, frameCtx.textureUnit);
                 frameCtx.textureUnit = (frameCtx.textureUnit + 1) % xeogl.WEBGL_INFO.MAX_TEXTURE_IMAGE_UNITS;
                 frameCtx.bindTexture++;
-                if (this._uOpacityMapMatrix) {
-                    this._uOpacityMapMatrix.setValue(state.opacityMap.matrix);
+                if (this._uAlphaMapMatrix) {
+                    this._uAlphaMapMatrix.setValue(state.alphaMap.matrix);
                 }
             }
 
@@ -11471,6 +11611,83 @@ var Canvas2Image = (function () {
                 if (this._uNormalMapMatrix) {
                     this._uNormalMapMatrix.setValue(state.normalMap.matrix);
                 }
+            }
+        },
+
+        shadow: function (frameCtx) {
+
+            var state = this.state;
+            var gl = this.program.gl;
+
+            var backfaces = state.backfaces;
+            if (frameCtx.backfaces !== backfaces) {
+                if (backfaces) {
+                    gl.disable(gl.CULL_FACE);
+                } else {
+                    gl.enable(gl.CULL_FACE);
+                }
+                frameCtx.backfaces = backfaces;
+            }
+            var frontface = state.frontface;
+            if (frameCtx.frontface !== frontface) {
+                if (frontface) {
+                    gl.frontFace(gl.CCW);
+                } else {
+                    gl.frontFace(gl.CW);
+                }
+                frameCtx.frontface = frontface;
+            }
+        },
+
+        pickObject: function (frameCtx) {
+
+            var state = this.state;
+            var gl = this.program.gl;
+
+            var backfaces = state.backfaces;
+            if (frameCtx.backfaces !== backfaces) {
+                if (backfaces) {
+                    gl.disable(gl.CULL_FACE);
+                } else {
+                    gl.enable(gl.CULL_FACE);
+                }
+                frameCtx.backfaces = backfaces;
+            }
+
+            var frontface = state.frontface;
+            if (frameCtx.frontface !== frontface) {
+                if (frontface) {
+                    gl.frontFace(gl.CCW);
+                } else {
+                    gl.frontFace(gl.CW);
+                }
+                frameCtx.frontface = frontface;
+            }
+        },
+
+        pickPrimitive: function (frameCtx) {
+
+            var state = this.state;
+            var gl = this.program.gl;
+
+            var backfaces = state.backfaces;
+            if (frameCtx.backfaces !== backfaces) {
+                if (backfaces) {
+                    gl.disable(gl.CULL_FACE);
+                } else {
+                    gl.enable(gl.CULL_FACE);
+                }
+                frameCtx.backfaces = backfaces;
+            }
+
+            var frontface = state.frontface;
+            if (frameCtx.frontface !== frontface) {
+                if (frontface) {
+                    gl.frontFace(gl.CCW);
+                } else {
+                    gl.frontFace(gl.CW);
+                }
+                frameCtx.frontface = frontface;
             }
         }
     });
@@ -13271,17 +13488,14 @@ var Canvas2Image = (function () {
             dummy = this.project;
             dummy = this.camera;
             dummy = this.clips;
-            dummy = this.visibility;
-            dummy = this.cull;
-            dummy = this.modes;
             dummy = this.geometry;
-            dummy = this.layer;
             dummy = this.lights;
             dummy = this.material;
             dummy = this.morphTargets;
             dummy = this.transform;
             dummy = this.viewport;
             dummy = this.outline;
+            dummy = this.xray;
         },
 
         // Called by each component that is created with this Scene as parent.
@@ -13713,54 +13927,6 @@ var Canvas2Image = (function () {
             },
 
             /**
-             * The default {{#crossLink "Billboard"}}Billboard{{/crossLink}} provided by this Scene.
-             *
-             * This {{#crossLink "Billboard"}}Billboard{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.billboard"
-             * and an {{#crossLink "Billboard/active:property"}}{{/crossLink}} property set to false, to disable it.
-             *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "Billboard"}}Billboard{{/crossLink}} by default.
-             *
-             * @property billboard
-             * @final
-             * @type Billboard
-             */
-            billboard: {
-                get: function () {
-                    return this.components["default.billboard"] ||
-                        new xeogl.Billboard(this, {
-                            id: "default.billboard",
-                            active: false,
-                            isDefault: true
-                        });
-                }
-            },
-
-            /**
-             * The default {{#crossLink "Stationary"}}Stationary{{/crossLink}} provided by this Scene.
-             *
-             * This {{#crossLink "Stationary"}}Stationary{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.stationary"
-             * and an {{#crossLink "Stationary/active:property"}}{{/crossLink}} property set to false, to disable it.
-             *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "Stationary"}}Stationary{{/crossLink}} by default.
-             *
-             * @property stationary
-             * @final
-             * @type Stationary
-             */
-            stationary: {
-                get: function () {
-                    return this.components["default.stationary"] ||
-                        new xeogl.Stationary(this, {
-                            id: "default.stationary",
-                            active: false,
-                            isDefault: true
-                        });
-                }
-            },
-
-            /**
              * The default {{#crossLink "Clips"}}Clips{{/crossLink}} provided by this Scene.
              *
              * This {{#crossLink "Clips"}}Clips{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.clips",
@@ -13784,74 +13950,6 @@ var Canvas2Image = (function () {
             },
 
             /**
-             * The default {{#crossLink "Visibility"}}Visibility{{/crossLink}} provided by this Scene.
-             *
-             * This {{#crossLink "Visibility"}}Visibility{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.visibility",
-             * with all other properties initialised to their default values.
-             *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "Visibility"}}Visibility{{/crossLink}} by default.
-             * @property visibility
-             * @final
-             * @type Visibility
-             */
-            visibility: {
-                get: function () {
-                    return this.components["default.visibility"] ||
-                        new xeogl.Visibility(this, {
-                            id: "default.visibility",
-                            isDefault: true,
-                            visible: true
-                        });
-                }
-            },
-
-            /**
-             * The default {{#crossLink "Cull"}}{{/crossLink}} provided by this Scene.
-             *
-             * This {{#crossLink "Cull"}}cull{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.cull",
-             * with all other properties initialised to their default values.
-             *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "Cull"}}{{/crossLink}} by default.
-             * @property cull
-             * @final
-             * @type cull
-             */
-            cull: {
-                get: function () {
-                    return this.components["default.cull"] ||
-                        new xeogl.Cull(this, {
-                            id: "default.cull",
-                            isDefault: true,
-                            culled: false
-                        });
-                }
-            },
-
-            /**
-             * The default {{#crossLink "Modes"}}Modes{{/crossLink}} provided by this Scene.
-             *
-             * This {{#crossLink "Modes"}}Modes{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.modes",
-             * with all other properties initialised to their default values.
-             *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "Modes"}}Modes{{/crossLink}} by default.
-             * @property modes
-             * @final
-             * @type Modes
-             */
-            modes: {
-                get: function () {
-                    return this.components["default.modes"] ||
-                        new xeogl.Modes(this, {
-                            id: "default.modes",
-                            isDefault: true
-                        });
-                }
-            },
-
-            /**
              * The default geometry provided by this Scene, which is a {{#crossLink "BoxGeometry"}}BoxGeometry{{/crossLink}}.
              *
              * This {{#crossLink "BoxGeometry"}}BoxGeometry{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.geometry".
@@ -13868,29 +13966,6 @@ var Canvas2Image = (function () {
                         new xeogl.BoxGeometry(this, {
                             id: "default.geometry",
                             isDefault: true
-                        });
-                }
-            },
-
-            /**
-             * The default {{#crossLink "Layer"}}Layer{{/crossLink}} provided by this Scene.
-             *
-             * This {{#crossLink "Layer"}}Layer{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.layer",
-             * with all other properties initialised to their default values.
-             *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "Layer"}}Layer{{/crossLink}} by default.
-             * @property layer
-             * @final
-             * @type Layer
-             */
-            layer: {
-                get: function () {
-                    return this.components["default.layer"] ||
-                        new xeogl.Layer(this, {
-                            id: "default.layer",
-                            isDefault: true,
-                            priority: 0
                         });
                 }
             },
@@ -14066,6 +14141,29 @@ var Canvas2Image = (function () {
             },
 
             /**
+             * The default {{#crossLink "XRay"}}{{/crossLink}} provided by this Scene.
+             *
+             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink "XRay"}}{{/crossLink}} by default.
+             *
+             * @property xray
+             * @final
+             * @type XRay
+             */
+            xray: {
+                get: function () {
+                    return this.components["default.xray"] ||
+                        new xeogl.XRay(this, {
+                            id: "default.xray",
+
+                            // TODO: defaults
+                            foo: 1,
+                            bar: 2
+                        });
+                }
+            },
+
+            /**
              * The World-space 3D boundary of this Scene.
              *
              * The {{#crossLink "Boundary3D"}}{{/crossLink}} will be lazy-initialized the first time
@@ -14110,7 +14208,7 @@ var Canvas2Image = (function () {
 
                                         entity = entities[entityId];
 
-                                        if (entity.modes.collidable) {
+                                        if (entity.collidable) {
 
                                             // Only include boundaries of entities that are allowed
                                             // to contribute to the size of an enclosing boundary
@@ -14151,8 +14249,7 @@ var Canvas2Image = (function () {
         /**
          * Attempts to pick an {{#crossLink "Entity"}}Entity{{/crossLink}} in this Scene.
          *
-         * Ignores {{#crossLink "Entity"}}Entities{{/crossLink}} that are attached
-         * to {{#crossLink "Modes"}}Modes{{/crossLink}} with {{#crossLink "Modes/pickable:property"}}pickable{{/crossLink}}
+         * Ignores {{#crossLink "Entity"}}Entities{{/crossLink}} with {{#crossLink "Entity/pickable:property"}}pickable{{/crossLink}}
          * set *false*.
          *
          * Picking the {{#crossLink "Entity"}}{{/crossLink}} at the given canvas coordinates:
@@ -14991,14 +15088,8 @@ var Canvas2Image = (function () {
                     emissive: [0.5, 1.0, 0.5],
                     lineWidth: 2
                 }),
-                visibility: this.create({
-                    type: "xeogl.Visibility",
-                    visible: false
-                }),
-                modes: this.create({
-                    type: "xeogl.Modes",
-                    collidable: false // Effectively has no boundary
-                })
+                visible: false,
+                collidable: false
             });
 
             // Shows a wireframe box for target AABBs
@@ -15016,14 +15107,8 @@ var Canvas2Image = (function () {
                         lineWidth: 2
                     })
                 }),
-                visibility: this.create({
-                    type: "xeogl.Visibility",
-                    visible: false
-                }),
-                modes: this.create({
-                    type: "xeogl.Modes",
-                    collidable: false // Effectively has no boundary
-                })
+               visible: false,
+                collidable: false // Effectively has no boundary
             });
 
             this._look1 = math.vec3();
@@ -15199,7 +15284,7 @@ var Canvas2Image = (function () {
 
                     if (params.showAABB !== false) {
                         this._aabbHelper.geometry.aabb = aabb;
-                        this._aabbHelper.visibility.visible = true;
+                        this._aabbHelper.visible = true;
                     }
 
                     var aabbCenter = math.getAABB3Center(aabb);
@@ -15497,7 +15582,7 @@ var Canvas2Image = (function () {
                 return;
             }
 
-            this._aabbHelper.visibility.visible = false;
+            this._aabbHelper.visible = false;
 
             this._flying = false;
 
@@ -15530,7 +15615,7 @@ var Canvas2Image = (function () {
                 return;
             }
 
-            this._aabbHelper.visibility.visible = false;
+            this._aabbHelper.visible = false;
 
             this._flying = false;
 
@@ -17060,10 +17145,7 @@ var Canvas2Image = (function () {
  fall on the other side of the plane from the origin ("outside").
  * You can update the {{#crossLink "Clip/mode:property"}}{{/crossLink}} of a Clip to activate or deactivate it, or to
  switch which side it discards fragments from.
- * Clipping may also be enabled or disabled for specific {{#crossLink "Entity"}}Entities{{/crossLink}}
- via the {{#crossLink "Modes/clipping:property"}}{{/crossLink}} flag on {{#crossLink "Modes"}}Modes{{/crossLink}} components
- attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.
-
+ * Clipping may also be enabled or disabled for specific {{#crossLink "Entity"}}Entities{{/crossLink}} via their {{#crossLink "Entity/clippable:property"}}{{/crossLink}} properties.
 
  <img src="../../../assets/images/Clip.png"></img>
 
@@ -17108,16 +17190,14 @@ var Canvas2Image = (function () {
 
  ### Toggling clipping on and off
 
- Now we'll attach a {{#crossLink "Modes"}}{{/crossLink}} to the {{#crossLink "Entity"}}{{/crossLink}}, so that we can
- enable or disable clipping of it:
+ An {{#crossLink "Entity"}}{{/crossLink}}is clippable by default. We can toggle its clippability like so:
 
  ```` javascript
- entity.modes = new xeogl.Modes(scene, {
-    clipping: true
- });
-
  // Disable clipping for the Entity
- entity.modes.clipping = false;
+ entity.clippable = false;
+
+ // Enable clipping for the Entity
+ entity.clippable = false;
  ````
 
  @class Clip
@@ -17293,9 +17373,7 @@ var Canvas2Image = (function () {
  * Each {{#crossLink "Clip"}}Clip{{/crossLink}} is has a {{#crossLink "Clip/mode:property"}}{{/crossLink}}, which indicates whether it is disabled ("disabled"), discarding fragments that fall on the origin-side of the plane ("inside"), or clipping fragments that fall on the other side of the plane from the origin ("outside").
  * You can update each {{#crossLink "Clip"}}Clip{{/crossLink}}'s {{#crossLink "Clip/mode:property"}}{{/crossLink}} to
  activate or deactivate it, or to switch which side it discards fragments from.
- * Clipping may also be enabled or disabled for specific {{#crossLink "Entity"}}Entities{{/crossLink}}
- via the {{#crossLink "Modes/clipping:property"}}{{/crossLink}} flag on {{#crossLink "Modes"}}Modes{{/crossLink}} components
- attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ * Clipping may also be enabled or disabled for specific {{#crossLink "Entity"}}Entities{{/crossLink}} via their {{#crossLink "Entity/clippable:property"}}{{/crossLink}} properties.
 
  <img src="../../../assets/images/Clips.png"></img>
 
@@ -17752,16 +17830,8 @@ var Canvas2Image = (function () {
                     emissive: [1.0, 1.0, 0.6],
                     lineWidth: 4
                 }),
-                visibility: this.create({
-                    type: "xeogl.Visibility",
-                    visible: false
-                }),
-                modes: this.create({
-                    type: "xeogl.Modes",
-                    // Does not contribute to the size of any enclosing boundaries
-                    // that might be calculated by xeogl, eg. like that returned by xeogl.Scene#worldBoundary
-                    collidable: false
-                })
+                visible: false,
+                collidable: false
             });
 
             this.keyboardAxis = this.create({
@@ -17848,7 +17918,7 @@ var Canvas2Image = (function () {
             var aabb = worldBoundary.aabb;
 
             this._boundaryHelper.geometry.aabb = aabb;
-            //    this._boundaryHelper.visibility.visible = true;
+            //    this._boundaryHelper.visible = true;
 
             if (pos) {
 
@@ -17878,7 +17948,7 @@ var Canvas2Image = (function () {
         },
 
         _hideEntityBoundary: function () {
-            this._boundaryHelper.visibility.visible = false;
+            this._boundaryHelper.visible = false;
         },
 
         _props: {
@@ -20535,273 +20605,6 @@ var Canvas2Image = (function () {
 
 })();
 ;/**
- * Components for controlling the visibility of Entities.
- *
- * @module xeogl
- * @submodule culling
- */;/**
- A **Cull** component toggles the culling of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
-
- ## Overview
-
- * An {{#crossLink "Entity"}}{{/crossLink}} is visible when its Cull's {{#crossLink "Cull/culled:property"}}{{/crossLink}} property is true and {{#crossLink "Visibility"}}Visibility's{{/crossLink}} {{#crossLink "Visibility/visible:property"}}{{/crossLink}} property is false.
- * Cull components are intended for **visibility culling systems** to control the visibility of {{#crossLink "Entity"}}Entities{{/crossLink}}.
- * {{#crossLink "Visibility"}}{{/crossLink}} components are intended for users to control the visibility of {{#crossLink "Entity"}}Entities{{/crossLink}} via UIs.
- * A Cull may be shared among multiple {{#crossLink "Entity"}}Entities{{/crossLink}} to toggle
- their culling status as a group.
-
- <img src="../../../assets/images/Cull.png"></img>
-
- ## Usage
-
- This example creates a Cull that toggles the culling of
- two {{#crossLink "Entity"}}Entities{{/crossLink}}.
-
- ````javascript
- // Create a Cull component
- var cull = new xeogl.Cull({
-    culled: false
- });
-
- // Create two Entities whose culling will be controlled by our Cull
-
- var entity1 = new xeogl.Entity({
-    cull: cull
- });
-
- var entity2 = new xeogl.Entity({
-    cull: cull
- });
-
- // Subscribe to change on the Cull's "culled" property
- var handle = cull.on("culled", function(value) {
-    //...
- });
-
- // Hide our Entities by flipping the Cull's "culled" property,
- // which will also call our handler
- cull.culled = true;
-
- // Unsubscribe from the Cull again
- cull.off(handle);
-
- // When we destroy our Cull, the Entities will fall back
- // on the Scene's default Cull instance
- cull.destroy();
- ````
- @class Cull
- @module xeogl
- @submodule culling
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Cull in the default
- {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Cull.
- @param [cfg.culled=false] {Boolean} Flag which controls culling of the attached {{#crossLink "Entity"}}Entities{{/crossLink}}
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    xeogl.Cull = xeogl.Component.extend({
-
-        type: "xeogl.Cull",
-
-        _init: function (cfg) {
-
-            this._state = new xeogl.renderer.Cull({
-                culled: true
-            });
-
-            this.culled = cfg.culled;
-        },
-
-        _props: {
-
-            /**
-             Indicates whether this Cull culls its attached {{#crossLink "Entity"}}Entities{{/crossLink}} or not.
-
-             Fires a {{#crossLink "Cull/culled:event"}}{{/crossLink}} event on change.
-
-             @property culled
-             @default false
-             @type Boolean
-             */
-            culled: {
-
-                set: function (value) {
-
-                    value = !!value;
-
-                    if (value === this._state.culled) {
-                        return;
-                    }
-
-                    this._state.culled = value;
-
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     Fired whenever this Cull's {{#crossLink "Cull/culled:property"}}{{/crossLink}} property changes.
-
-                     @event culled
-                     @param value {Boolean} The property's new value
-                     */
-                    this.fire("culled", this._state.culled);
-                },
-
-                get: function () {
-                    return this._state.culled;
-                }
-            }
-        },
-
-        _compile: function () {
-            this._renderer.cull = this._state;
-        },
-
-        _getJSON: function () {
-            return {
-                culled: this.culled
-            };
-        },
-
-        _destroy: function () {
-            this._state.destroy();
-        }
-    });
-
-})();
-;/**
- A **Visibility** toggles the visibility of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
-
- * An {{#crossLink "Entity"}}{{/crossLink}} is visible when its Visibility's {{#crossLink "Visibility/visible:property"}}{{/crossLink}}
- property is true and {{#crossLink "Cull"}}Cull's{{/crossLink}} {{#crossLink "Cull/culled:property"}}{{/crossLink}} property is false.
- * Visibility components are intended for users to control the visibility of {{#crossLink "Entity"}}Entities{{/crossLink}} via UIs.
- * {{#crossLink "Cull"}}{{/crossLink}} components are intended for **visibility culling systems** to control the visibility of {{#crossLink "Entity"}}Entities{{/crossLink}}.
- * A Visibility may be shared among multiple {{#crossLink "Entity"}}Entities{{/crossLink}} to toggle
- their visibility as a group.
-
- <img src="../../../assets/images/Visibility.png"></img>
-
- ## Usage
-
- This example creates a Visibility that toggles the visibility of
- two {{#crossLink "Entity"}}Entities{{/crossLink}}.
-
- ````javascript
- var visibility = new xeogl.Visibility({
-    visible: true
- });
-
- // Create two Entities whose visibility will be controlled by our Visibility
-
- var entity1 = new xeogl.Entity({
-    visibility: visibility
- });
-
- var entity2 = new xeogl.Entity({
-    visibility: visibility
- });
-
- // Subscribe to change on the Visibility's "visible" property
- var handle = visibility.on("visible", function(value) {
-    //...
- });
-
- // Hide our Entities by flipping the Visibility's "visible" property,
- // which will also call our handler
- visibility.visible = false;
-
- // Unsubscribe from the Visibility again
- visibility.off(handle);
-
- // When we destroy our Visibility, the Entities will fall back
- // on the Scene's default Visibility instance
- visibility.destroy();
- ````
- @class Visibility
- @module xeogl
- @submodule culling
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Visibility in the default
- {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Visibility.
- @param [cfg.visible=true] {Boolean} Flag which controls visibility of the attached {{#crossLink "Entity"}}Entities{{/crossLink}}
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    xeogl.Visibility = xeogl.Component.extend({
-
-        type: "xeogl.Visibility",
-
-        _init: function (cfg) {
-
-            this._state = new xeogl.renderer.Visibility({
-                visible: true
-            });
-
-            this.visible = cfg.visible;
-        },
-
-        _props: {
-
-            /**
-             Indicates whether this Visibility makes attached {{#crossLink "Entity"}}Entities{{/crossLink}} visible or not.
-
-             Fires a {{#crossLink "Visibility/visible:event"}}{{/crossLink}} event on change.
-
-             @property visible
-             @default true
-             @type Boolean
-             */
-            visible: {
-
-                set: function (value) {
-
-                    this._state.visible =  value !== false;
-
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     Fired whenever this Visibility's {{#crossLink "Visibility/visible:property"}}{{/crossLink}} property changes.
-
-                     @event visible
-                     @param value {Boolean} The property's new value
-                     */
-                    this.fire("visible",  this._state.visible);
-                },
-
-                get: function () {
-                    return this._state.visible;
-                }
-            }
-        },
-
-        _compile: function () {
-            this._renderer.visibility = this._state;
-        },
-
-        _getJSON: function () {
-            return {
-                visible: this.visible
-            };
-        },
-
-        _destroy: function () {
-            this._state.destroy();
-        }
-    });
-
-})();
-;/**
  * Components for defining geometry.
  *
  * @module xeogl
@@ -20943,37 +20746,6 @@ var Canvas2Image = (function () {
  ````
 
  ````javascript
- ````
-
- ### Toggling back-faces on and off
-
- Now we'll attach a {{#crossLink "Modes"}}{{/crossLink}} to that last {{#crossLink "Entity"}}{{/crossLink}}, so that
- we can show or hide its {{#crossLink "Geometry"}}Geometry's{{/crossLink}} backfaces:
-
- ```` javascript
- var modes = new xeogl.Modes();
-
- quadEntity.modes = modes;
-
- // Hide backfaces
-
- modes.backfaces = false;
- ````
-
- ### Setting front-face vertex winding
-
- The <a href="https://www.opengl.org/wiki/Face_Culling" target="other">vertex winding order</a> of each face determines
- whether it's a front-face or a back-face.
-
- By default, xeogl considers faces to be front-faces if they have a counter-clockwise
- winding order, but we can change that by setting the {{#crossLink "Modes"}}{{/crossLink}}
- {{#crossLink "Modes/frontface:property"}}{{/crossLink}} property:
-
- ```` javascript
- // Set the winding order for front-faces to clockwise
- // Options are "ccw" for counter-clockwise or "cw" for clockwise
-
- modes.frontface = "cw";
  ````
 
  ### Getting the Local-space boundary
@@ -30136,7 +29908,7 @@ TODO
                             // path, when that path is joins a path that belongs to an Entity that
                             // we processed earlier
 
-                            return;
+                            break;
                         }
 
                         rootTransform = rootTransform.parent;
@@ -30485,10 +30257,10 @@ TODO
     });
 
 })();;/**
- * An outline rendering effect for emphasis.
+ * Emphasis effect components.
  *
  * @module xeogl
- * @submodule outline
+ * @submodule emphasis
  */;/**
  A **Outline** renders an outline around attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
@@ -30508,23 +30280,19 @@ TODO
  new xeogl.Entity({
      geometry: new xeogl.TorusGeometry(),
      outline: outline,
-     modes: new xeogl.Modes({
-        outline: false  // Hide the outline (default)
-     });
+     outlined: false  // Hide the outline (default)
  });
 
  new xeogl.Entity({
      geometry: new xeogl.BoxGeometry(),
      outline: outline,
-     modes: new xeogl.Modes({
-        outline: true  // Show the outline
-     });
+     outlined: true  // Show the outline
  });
  ````
 
  @class Outline
  @module xeogl
- @submodule outline
+ @submodule emphasis
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this Outline within the
  default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
@@ -30666,6 +30434,178 @@ TODO
 
 })();
 ;/**
+ A **XRay** renders attached an X-ray view of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+ ## Overview
+
+ TODO
+
+ ## Usage
+
+ ````javascript
+
+ var xray = new xeogl.XRay({
+    thickness: 15,      // Default
+    color: [1,0,0]      // Default
+ });
+
+ new xeogl.Entity({
+     geometry: new xeogl.TorusGeometry(),
+     xray: xray,
+     xrayed: false
+ });
+
+ new xeogl.Entity({
+     geometry: new xeogl.BoxGeometry(),
+     xray: xray,
+     xrayed: true
+ });
+ ````
+
+ @class XRay
+ @module xeogl
+ @submodule emphasis
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this XRay within the
+ default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} XRay configuration
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this XRay.
+ @param [cfg.thickness=15] {Number} Thickness of the XRay in pixels.
+ @param [cfg.color=[1,1,0]] {Float32Array} The RGB XRay color.
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    xeogl.XRay = xeogl.Component.extend({
+
+        type: "xeogl.XRay",
+
+        _init: function (cfg) {
+
+            this._state = new xeogl.renderer.XRay({
+                thickness: 15,
+                color: xeogl.math.vec3([1.0, 1.0, 0.0])
+            });
+
+            this.thickness = cfg.thickness;
+            this.color = cfg.color;
+        },
+
+        _props: {
+
+            /**
+             * The XRay's thickness in pixels.
+             *
+             * Fires a {{#crossLink "XRay/thickness:event"}}{{/crossLink}} event on change.
+             *
+             * @property thickness
+             * @default 15
+             * @type Number
+             */
+            thickness: {
+
+                set: function (value) {
+
+                    // TODO: Only accept rendering thickness in range [0...MAX_thickness]
+
+                    value = value || 15;
+
+                    value = Math.round(value);
+
+
+                    if (value === this._state.thickness) {
+                        return;
+                    }
+
+                    this._state.thickness = value;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     * Fired whenever this XRay's  {{#crossLink "XRay/thickness:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event thickness
+                     * @param value The property's new value
+                     */
+                    this.fire("thickness", this._state.thickness);
+                },
+
+                get: function () {
+                    return this._state.thickness;
+                }
+            },
+
+            /**
+             The XRay's RGB color.
+
+             Fires a {{#crossLink "XRay/color:event"}}{{/crossLink}} event on change.
+
+             @property color
+             @default [1.0, 1.0, 0.0]
+             @type Float32Array
+             */
+            color: {
+
+                set: function (value) {
+
+                    var color = this._state.color;
+
+                    if (!color) {
+                        color = this._state.color = new Float32Array(3);
+
+                    } else if (value && color[0] === value[0] && color[1] === value[1] && color[2] === value[2]) {
+                        return;
+                    }
+
+                    if (value) {
+                        color[0] = value[0];
+                        color[1] = value[1];
+                        color[2] = value[2];
+
+                    } else {
+                        color[0] = 1;
+                        color[1] = 1;
+                        color[2] = 0;
+                    }
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     * Fired whenever this XRay's {{#crossLink "XRay/color:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event color
+                     * @param value {Float32Array} The property's new value
+                     */
+                    this.fire("color", this._state.color);
+                },
+
+                get: function () {
+                    return this._state.color;
+                }
+            }
+        },
+
+        _compile: function () {
+            this._renderer.xray = this._state;
+        },
+
+        _getJSON: function () {
+            return {
+                thickness: this._state.thickness,
+                color: xeogl.math.vecToArray(this._state.color)
+            };
+        },
+
+        _destroy: function () {
+            this._state.destroy();
+        }
+    });
+
+})();
+;/**
  * Components to define the surface appearance of Entities.
  *
  * @module xeogl
@@ -30720,7 +30660,7 @@ TODO
  ## Overview
 
  * Used for rendering non-realistic objects such as "helpers", wireframe objects, labels etc.
- * Use the physically-based {{#crossLink "MetallicMaterial"}}{{/crossLink}} or {{#crossLink "SpecularMaterial"}}{{/crossLink}} realism is required.
+ * Use the physically-based {{#crossLink "MetallicMaterial"}}{{/crossLink}} or {{#crossLink "SpecularMaterial"}}{{/crossLink}} when more realism is required.
 
  <img src="../../../assets/images/PhongMaterial.png"></img>
 
@@ -30732,23 +30672,26 @@ TODO
  |  {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} | Array | [0, 1] for all components | [1,1,1,1] | linear | The RGB components of the diffuse light reflected by the material. |
  |  {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}} | Array | [0, 1] for all components | [1,1,1,1] | linear | The RGB components of the specular light reflected by the material. |
  |  {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}} | Array | [0, 1] for all components | [0,0,0] | linear | The RGB components of the light emitted by the material. |
- | {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The transparency of the material surface (0 fully transparent, 1 fully opaque). |
+ | {{#crossLink "PhongMaterial/alpha:property"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The transparency of the material surface (0 fully transparent, 1 fully opaque). |
  | {{#crossLink "PhongMaterial/shininess:property"}}{{/crossLink}} | Number | [0, 128] | 80 | linear | Determines the size and sharpness of specular highlights. |
  | {{#crossLink "PhongMaterial/reflectivity:property"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | Determines the amount of reflectivity. |
- | {{#crossLink "PhongMaterial/diffuseMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}}. |
- | {{#crossLink "PhongMaterial/specularMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}}. |
+ | {{#crossLink "PhongMaterial/diffuseMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink "PhongMaterial/alpha:property"}}{{/crossLink}}. |
+ | {{#crossLink "PhongMaterial/specularMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink "PhongMaterial/alpha:property"}}{{/crossLink}}. |
  | {{#crossLink "PhongMaterial/emissiveMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Texture with RGB components multiplying by {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}}. |
- | {{#crossLink "PhongMaterial/opacityMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}}. |
+ | {{#crossLink "PhongMaterial/alphaMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink "PhongMaterial/alpha:property"}}{{/crossLink}}. |
  | {{#crossLink "PhongMaterial/occlusionMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Ambient occlusion texture multiplying by {{#crossLink "PhongMaterial/ambient:property"}}{{/crossLink}}, {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} and {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}}. |
  | {{#crossLink "PhongMaterial/normalMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Tangent-space normal map. |
  | {{#crossLink "PhongMaterial/diffuseFresnel:property"}}{{/crossLink}} | {{#crossLink "Fresnel"}}{{/crossLink}} |  | null |  | Fresnel term applied to {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}}. |
  | {{#crossLink "PhongMaterial/specularFresnel:property"}}{{/crossLink}} | {{#crossLink "Fresnel"}}{{/crossLink}} |  | null |  | Fresnel term applied to {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}}. |
  | {{#crossLink "PhongMaterial/emissiveFresnel:property"}}{{/crossLink}} | {{#crossLink "Fresnel"}}{{/crossLink}} |  | null |  | Fresnel term applied to {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}}. |
  | {{#crossLink "PhongMaterial/reflectivityFresnel:property"}}{{/crossLink}} | {{#crossLink "Fresnel"}}{{/crossLink}} |  | null |  | Fresnel term applied to {{#crossLink "PhongMaterial/reflectivity:property"}}{{/crossLink}}. |
- | {{#crossLink "PhongMaterial/opacityFresnel:property"}}{{/crossLink}} | {{#crossLink "Fresnel"}}{{/crossLink}} |  | null |  | Fresnel term applied to {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}}. |
+ | {{#crossLink "PhongMaterial/alphaFresnel:property"}}{{/crossLink}} | {{#crossLink "Fresnel"}}{{/crossLink}} |  | null |  | Fresnel term applied to {{#crossLink "PhongMaterial/alpha:property"}}{{/crossLink}}. |
  | {{#crossLink "PhongMaterial/lineWidth:property"}}{{/crossLink}} | Number | [0..100] | 1 |  | Line width in pixels. |
  | {{#crossLink "PhongMaterial/pointSize:property"}}{{/crossLink}} | Number | [0..100] | 1 |  | Point size in pixels. |
-
+ | {{#crossLink "PhongMaterial/alphaMode:property"}}{{/crossLink}} | String | "opaque", "blend", "mask" | "blend" |  | Alpha blend mode. |
+ | {{#crossLink "PhongMaterial/alphaCutoff:property"}}{{/crossLink}} | Number | [0..1] | 0.5 |  | Alpha cutoff value. |
+ | {{#crossLink "PhongMaterial/backfaces:property"}}{{/crossLink}} | Boolean |  | false |  | Whether to render {{#crossLink "Geometry"}}Geometry{{/crossLink}} backfaces. |
+ | {{#crossLink "PhongMaterial/backfaces:property"}}{{/crossLink}} | String | "ccw", "cw" | "ccw" |  | The winding order for {{#crossLink "Geometry"}}Geometry{{/crossLink}} frontfaces - "cw" for clockwise, or "ccw" for counter-clockwise. |
 
  ## Usage
 
@@ -30759,7 +30702,7 @@ TODO
  * a {{#crossLink "TorusGeometry"}}{{/crossLink}}.
 
  ```` javascript
- var entity = new xeogl.Entity({
+ var torus = new xeogl.Entity({
 
     lights: new xeogl.Lights({
         lights: [
@@ -30788,12 +30731,43 @@ TODO
             power: 4
         }),
         shininess: 80, // Default
-        opacity: 1.0 // Default
+        alpha: 1.0 // Default
     }),
 
     geometry: new xeogl.TorusGeometry()
 });
  ````
+
+ ## Transparency
+
+ ### Alpha Blending
+
+ Let's make our torus transparent. We'll update its PhongMaterial's {{#crossLink "PhongMaterial/alpha:property"}}{{/crossLink}}
+ and {{#crossLink "PhongMaterial/alphaMode:property"}}{{/crossLink}}, causing it to blend 50% with the background:
+
+ ````javascript
+ torus.material.alpha = 0.5;
+ torus.material.alphaMode = "blend";
+ ````
+ *TODO: Screenshot*
+
+ ### Alpha Masking
+
+ Now let's make holes in our torus instead. We'll give its PhongMaterial an {{#crossLink "PhongMaterial/alphaMap:property"}}{{/crossLink}}
+ and configure {{#crossLink "PhongMaterial/alpha:property"}}{{/crossLink}}, {{#crossLink "PhongMaterial/alphaMode:property"}}{{/crossLink}},
+ and {{#crossLink "PhongMaterial/alphaCutoff:property"}}{{/crossLink}} to treat it as an alpha mask:
+
+ ````javascript
+ torus.material.alphaMap = new xeogl.Texture({
+        src: "textures/diffuse/crossGridColorMap.jpg"
+    });
+
+ torus.material.alpha = 1.0;
+ torus.material.alphaMode = "mask";
+ torus.material.alphaCutoff = 0.2;
+ ````
+*TODO: Screenshot*
+
 
  @class PhongMaterial
  @module xeogl
@@ -30809,8 +30783,7 @@ TODO
  @param [cfg.diffuse=[ 1.0, 1.0, 1.0 ]] {Array of Number} PhongMaterial diffuse color.
  @param [cfg.specular=[ 1.0, 1.0, 1.0 ]] {Array of Number} PhongMaterial specular color.
  @param [cfg.emissive=[ 0.0, 0.0, 0.0 ]] {Array of Number} PhongMaterial emissive color.
- @param [cfg.opacity=1] {Number} Scalar in range 0-1 that controls opacity, where 0 is completely transparent and 1 is completely opaque.
- Only applies while {{#crossLink "Modes"}}Modes{{/crossLink}} {{#crossLink "Modes/transparent:property"}}transparent{{/crossLink}} equals ````true````.
+ @param [cfg.alpha=1] {Number} Scalar in range 0-1 that controls alpha, where 0 is completely transparent and 1 is completely opaque.
  @param [cfg.shininess=80] {Number} Scalar in range 0-128 that determines the size and sharpness of specular highlights.
  @param [cfg.reflectivity=1] {Number} Scalar in range 0-1 that controls how much {{#crossLink "CubeMap"}}CubeMap{{/crossLink}} is reflected.
  @param [cfg.lineWidth=1] {Number} Scalar that controls the width of lines for {{#crossLink "Geometry"}}{{/crossLink}} with {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} set to "lines".
@@ -30820,14 +30793,19 @@ TODO
  @param [cfg.specularMap=null] {Texture} A specular map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the specular property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
  @param [cfg.emissiveMap=undefined] {Texture} An emissive map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the emissive property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
  @param [cfg.normalMap=undefined] {Texture} A normal map {{#crossLink "Texture"}}Texture{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
- @param [cfg.opacityMap=undefined] {Texture} An opacity map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the opacity property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
+ @param [cfg.alphaMap=undefined] {Texture} An alpha map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the alpha property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
  @param [cfg.reflectivityMap=undefined] {Texture} A reflectivity control map {{#crossLink "Texture"}}Texture{{/crossLink}}, which will override the effect of the reflectivity property. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
  @param [cfg.occlusionMap=null] {Texture} An occlusion map {{#crossLink "Texture"}}Texture{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
  @param [cfg.diffuseFresnel=undefined] {Fresnel} A diffuse {{#crossLink "Fresnel"}}Fresnel{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
  @param [cfg.specularFresnel=undefined] {Fresnel} A specular {{#crossLink "Fresnel"}}Fresnel{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
  @param [cfg.emissiveFresnel=undefined] {Fresnel} An emissive {{#crossLink "Fresnel"}}Fresnel{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
- @param [cfg.opacityFresnel=undefined] {Fresnel} An opacity {{#crossLink "Fresnel"}}Fresnel{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
+ @param [cfg.alphaFresnel=undefined] {Fresnel} An alpha {{#crossLink "Fresnel"}}Fresnel{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
  @param [cfg.reflectivityFresnel=undefined] {Fresnel} A reflectivity {{#crossLink "Fresnel"}}Fresnel{{/crossLink}}. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
+ @param [cfg.alphaMode="opaque"] {String} The alpha blend mode - accepted values are "opaque", "blend" and "mask".
+ See the {{#crossLink "PhongMaterial/alphaMode:property"}}{{/crossLink}} property for more info.
+ @param [cfg.alphaCutoff=0.5] {Number} The alpha cutoff value. See the {{#crossLink "PhongMaterial/alphaCutoff:property"}}{{/crossLink}} property for more info.
+ @param [cfg.backfaces=false] {Boolean} Whether to render {{#crossLink "Geometry"}}Geometry{{/crossLink}} backfaces.
+ @param [cfg.frontface="ccw"] {Boolean} The winding order for {{#crossLink "Geometry"}}Geometry{{/crossLink}} front faces - "cw" for clockwise, or "ccw" for counter-clockwise.
  */
 (function () {
 
@@ -30848,12 +30826,18 @@ TODO
                 specular: xeogl.math.vec3([1.0, 1.0, 1.0]),
                 emissive: xeogl.math.vec3([0.0, 0.0, 0.0]),
 
-                opacity: 1.0,
-                shininess: 80.0,
-                reflectivity: 1.0,
+                alpha: null,
+                shininess: null,
+                reflectivity: null,
 
-                lineWidth: 1.0,
-                pointSize: 1.0,
+                alphaMode: null,
+                alphaCutoff: null,
+
+                lineWidth: null,
+                pointSize: null,
+
+                backfaces: null,
+                frontface: null, // Boolean for speed; true == "ccw", false == "cw"
 
                 hash: null
             });
@@ -30874,7 +30858,7 @@ TODO
             this.specular = cfg.specular;
             this.emissive = cfg.emissive;
 
-            this.opacity = cfg.opacity;
+            this.alpha = cfg.alpha;
             this.shininess = cfg.shininess;
             this.reflectivity = cfg.reflectivity;
 
@@ -30897,8 +30881,8 @@ TODO
                 this.emissiveMap = cfg.emissiveMap;
             }
 
-            if (cfg.opacityMap) {
-                this.opacityMap = cfg.opacityMap;
+            if (cfg.alphaMap) {
+                this.alphaMap = cfg.alphaMap;
             }
 
             if (cfg.reflectivityMap) {
@@ -30925,13 +30909,19 @@ TODO
                 this.emissiveFresnel = cfg.emissiveFresnel;
             }
 
-            if (cfg.opacityFresnel) {
-                this.opacityFresnel = cfg.opacityFresnel;
+            if (cfg.alphaFresnel) {
+                this.alphaFresnel = cfg.alphaFresnel;
             }
 
             if (cfg.reflectivityFresnel) {
                 this.reflectivityFresnel = cfg.reflectivityFresnel;
             }
+
+            this.alphaMode = cfg.alphaMode;
+            this.alphaCutoff = cfg.alphaCutoff;
+
+            this.backfaces = cfg.backfaces;
+            this.frontface = cfg.frontface;
         },
 
         _props: {
@@ -31143,43 +31133,39 @@ TODO
 
              A value of 0.0 indicates fully transparent, 1.0 is fully opaque.
 
-             Attached {{#crossLink "Entity"}}Entities{{/crossLink}} will appear transparent only if they are also attached
-             to {{#crossLink "Modes"}}Modes{{/crossLink}} that have {{#crossLink "Modes/transparent:property"}}transparent{{/crossLink}}
-             set to **true**.
+             Multiplies by {{#crossLink "PhongMaterial/alphaMap:property"}}{{/crossLink}}.
 
-             Multiplies by {{#crossLink "PhongMaterial/opacityMap:property"}}{{/crossLink}}.
+             Fires an {{#crossLink "PhongMaterial/alpha:event"}}{{/crossLink}} event on change.
 
-             Fires an {{#crossLink "PhongMaterial/opacity:event"}}{{/crossLink}} event on change.
-
-             @property opacity
+             @property alpha
              @default 1.0
              @type Number
              */
-            opacity: {
+            alpha: {
 
                 set: function (value) {
 
                     value = (value !== undefined && value !== null) ? value : 1.0;
 
-                    if (this._state.opacity === value) {
+                    if (this._state.alpha === value) {
                         return;
                     }
 
-                    this._state.opacity = value;
+                    this._state.alpha = value;
 
                     this._renderer.imageDirty = true;
 
                     /**
-                     * Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/alpha:property"}}{{/crossLink}} property changes.
                      *
-                     * @event opacity
+                     * @event alpha
                      * @param value {Number} The property's new value
                      */
-                    this.fire("opacity", this._state.opacity);
+                    this.fire("alpha", this._state.alpha);
                 },
 
                 get: function () {
-                    return this._state.opacity;
+                    return this._state.alpha;
                 }
             },
 
@@ -31469,33 +31455,33 @@ TODO
             },
 
             /**
-             An opacity {{#crossLink "Texture"}}{{/crossLink}} attached to this PhongMaterial.
+             An alpha {{#crossLink "Texture"}}{{/crossLink}} attached to this PhongMaterial.
 
-             This property multiplies by {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} when not null or undefined.
+             This property multiplies by {{#crossLink "PhongMaterial/alpha:property"}}{{/crossLink}} when not null or undefined.
 
              Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
 
-             Fires an {{#crossLink "PhongMaterial/opacityMap:event"}}{{/crossLink}} event on change.
+             Fires an {{#crossLink "PhongMaterial/alphaMap:event"}}{{/crossLink}} event on change.
 
-             @property opacityMap
+             @property alphaMap
              @default undefined
              @type {Texture}
              */
-            opacityMap: {
+            alphaMap: {
 
                 set: function (texture) {
 
                     /**
-                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/opacityMap:property"}}{{/crossLink}} property changes.
+                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/alphaMap:property"}}{{/crossLink}} property changes.
 
-                     @event opacityMap
+                     @event alphaMap
                      @param value Number The property's new value
                      */
-                    this._attachComponent("xeogl.Texture", "opacityMap", texture);
+                    this._attachComponent("xeogl.Texture", "alphaMap", texture);
                 },
 
                 get: function () {
-                    return this._attached.opacityMap;
+                    return this._attached.alphaMap;
                 }
             },
 
@@ -31683,33 +31669,33 @@ TODO
             },
 
             /**
-             An opacity {{#crossLink "Fresnel"}}{{/crossLink}} attached to this PhongMaterial.
+             An alpha {{#crossLink "Fresnel"}}{{/crossLink}} attached to this PhongMaterial.
 
-             This property multiplies by {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} when not null or undefined.
+             This property multiplies by {{#crossLink "PhongMaterial/alpha:property"}}{{/crossLink}} when not null or undefined.
 
              Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
 
-             Fires an {{#crossLink "PhongMaterial/opacityFresnel:event"}}{{/crossLink}} event on change.
+             Fires an {{#crossLink "PhongMaterial/alphaFresnel:event"}}{{/crossLink}} event on change.
 
-             @property opacityFresnel
+             @property alphaFresnel
              @default undefined
              @type {Fresnel}
              */
-            opacityFresnel: {
+            alphaFresnel: {
 
                 set: function (fresnel) {
 
                     /**
-                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/opacityFresnel:property"}}{{/crossLink}} property changes.
+                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/alphaFresnel:property"}}{{/crossLink}} property changes.
 
-                     @event opacityFresnel
+                     @event alphaFresnel
                      @param value Number The property's new value
                      */
-                    this._attachComponent("xeogl.Fresnel", "opacityFresnel", fresnel);
+                    this._attachComponent("xeogl.Fresnel", "alphaFresnel", fresnel);
                 },
 
                 get: function () {
-                    return this._attached.opacityFresnel;
+                    return this._attached.alphaFresnel;
                 }
             },
 
@@ -31741,6 +31727,183 @@ TODO
 
                 get: function () {
                     return this._attached.reflectivityFresnel;
+                }
+            },
+
+            /**
+             The alpha rendering mode.
+
+             This governs how alpha is treated. Alpha is the combined result of the
+             {{#crossLink "PhongMaterial/alpha:property"}}{{/crossLink}} and
+             {{#crossLink "PhongMaterial/alphaMap:property"}}{{/crossLink}} properties.
+
+             * "opaque" - The alpha value is ignored and the rendered output is fully opaque.
+             * "mask" - The rendered output is either fully opaque or fully transparent depending on the alpha value and the specified alpha cutoff value.
+             * "blend" - The alpha value is used to composite the source and destination areas. The rendered output is combined with the background using the normal painting operation (i.e. the Porter and Duff over operator).
+
+             Fires an {{#crossLink "PhongMaterial/alphaMode:event"}}{{/crossLink}} event on change.
+
+             @property alphaMode
+             @default "opaque"
+             @type {String}
+             */
+            alphaMode: (function () {
+                var modes = {"opaque": 0, "mask": 1, "blend": 2};
+                var modeNames = ["opaque", "mask", "blend"];
+                return {
+                    set: function (alphaMode) {
+
+                        alphaMode = alphaMode || "opaque";
+
+                        var value = modes[alphaMode];
+
+                        if (value === undefined) {
+                            this.error("Unsupported value for 'alphaMode': " + alphaMode);
+                        }
+
+                        if (this._state.alphaMode === value) {
+                            return;
+                        }
+
+                        this._state.alphaMode = value;
+
+                        this._renderer.imageDirty = true;
+
+                        /**
+                         Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/alphaMode:property"}}{{/crossLink}} property changes.
+
+                         @event alphaMode
+                         @param value {Number} The property's new value
+                         */
+                        this.fire("alphaMode", this._state.alphaMode);
+                    },
+                    get: function () {
+                        return modeNames[this._state.alphaMode];
+                    }
+                };
+            })(),
+
+            /**
+             The alpha cutoff value.
+
+             Specifies the cutoff threshold when {{#crossLink "PhongMaterial/alphaMode:property"}}{{/crossLink}}
+             equals "mask". If the alpha is greater than or equal to this value then it is rendered as fully
+             opaque, otherwise, it is rendered as fully transparent. A value greater than 1.0 will render the entire
+             material as fully transparent. This value is ignored for other modes.
+
+             Alpha is the combined result of the
+             {{#crossLink "PhongMaterial/alpha:property"}}{{/crossLink}} and
+             {{#crossLink "PhongMaterial/alphaMap:property"}}{{/crossLink}} properties.
+
+             Fires an {{#crossLink "PhongMaterial/alphaCutoff:event"}}{{/crossLink}} event on change.
+
+             @property alphaCutoff
+             @default 0.5
+             @type {Number}
+             */
+            alphaCutoff: {
+                set: function (alphaCutoff) {
+
+                    if (alphaCutoff === null || alphaCutoff === undefined) {
+                        alphaCutoff = 0.5;
+                    }
+
+                    if (this._state.alphaCutoff === alphaCutoff) {
+                        return;
+                    }
+
+                    this._state.alphaCutoff = alphaCutoff;
+
+                    /**
+                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/look:property"}}{{/crossLink}} property changes.
+
+                     @event alphaCutoff
+                     @param value {Number} The property's new value
+                     */
+                    this.fire("alphaCutoff", this._state.alphaCutoff);
+                },
+                get: function () {
+                    return this._state.alphaCutoff;
+                }
+            },
+
+            /**
+             Whether backfaces are visible on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+             The backfaces will belong to {{#crossLink "Geometry"}}{{/crossLink}} compoents that are also attached to
+             the {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+             Fires a {{#crossLink "PhongMaterial/backfaces:event"}}{{/crossLink}} event on change.
+
+             @property backfaces
+             @default false
+             @type Boolean
+             */
+            backfaces: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    if (this._state.backfaces === value) {
+                        return;
+                    }
+
+                    this._state.backfaces = value;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/backfaces:property"}}{{/crossLink}} property changes.
+
+                     @event backfaces
+                     @param value The property's new value
+                     */
+                    this.fire("backfaces", this._state.backfaces);
+                },
+
+                get: function () {
+                    return this._state.backfaces;
+                }
+            },
+
+            /**
+             Indicates the winding direction of front faces on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+             The faces will belong to {{#crossLink "Geometry"}}{{/crossLink}} components that are also attached to
+             the {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+             Fires a {{#crossLink "PhongMaterial/frontface:event"}}{{/crossLink}} event on change.
+
+             @property frontface
+             @default "ccw"
+             @type String
+             */
+            frontface: {
+
+                set: function (value) {
+
+                    value = value !== "cw";
+
+                    if (this._state.frontface === value) {
+                        return;
+                    }
+
+                    this._state.frontface = value;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/frontface:property"}}{{/crossLink}} property changes.
+
+                     @event frontface
+                     @param value The property's new value
+                     */
+                    this.fire("frontface", this._state.frontface ? "ccw" : "cw");
+                },
+
+                get: function () {
+                    return this._state.frontface ? "ccw" : "cw";
                 }
             }
         },
@@ -31816,9 +31979,9 @@ TODO
                 }
             }
 
-            if (state.opacityMap) {
+            if (state.alphaMap) {
                 hash.push("/opm");
-                if (state.opacityMap.matrix) {
+                if (state.alphaMap.matrix) {
                     hash.push("/mat");
                 }
             }
@@ -31849,7 +32012,7 @@ TODO
                 hash.push("/ef");
             }
 
-            if (state.opacityFresnel) {
+            if (state.alphaFresnel) {
                 hash.push("/of");
             }
 
@@ -31873,11 +32036,15 @@ TODO
                 ambient: vecToArray(this._state.ambient),
                 diffuse: vecToArray(this._state.diffuse),
                 specular: vecToArray(this._state.specular),
-                emissive: vecToArray(this._state.emissive)
+                emissive: vecToArray(this._state.emissive),
+                alphaMode: this.alphaMode,
+                alphaCutoff: this._state.alphaCutoff,
+                backfaces: this._state.backfaces,
+                frontface: this.frontface // Save string value
             };
 
-            if (this._state.opacity !== 1.0) {
-                json.opacity = this._state.opacity;
+            if (this._state.alpha !== 1.0) {
+                json.alpha = this._state.alpha;
             }
 
             if (this._state.shininess !== 80.0) {
@@ -31922,8 +32089,8 @@ TODO
                 json.emissiveMap = components.emissiveMap.id;
             }
 
-            if (components.opacityMap) {
-                json.opacityMap = components.opacityMap.id;
+            if (components.alphaMap) {
+                json.alphaMap = components.alphaMap.id;
             }
 
             if (components.reflectivityMap) {
@@ -31946,8 +32113,8 @@ TODO
                 json.emissiveFresnel = components.emissiveFresnel.id;
             }
 
-            if (components.opacityFresnel) {
-                json.opacityFresnel = components.opacityFresnel.id;
+            if (components.alphaFresnel) {
+                json.alphaFresnel = components.alphaFresnel.id;
             }
 
             if (components.reflectivityFresnel) {
@@ -31995,16 +32162,19 @@ TODO
  | {{#crossLink "SpecularMaterial/glossiness:property"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The glossiness the material. |
  | {{#crossLink "SpecularMaterial/specularF0:property"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The specularF0 of the material surface. |
  |  {{#crossLink "SpecularMaterial/emissive:property"}}{{/crossLink}} | Array | [0, 1] for all components | [0,0,0] | linear | The RGB components of the emissive color of the material. |
- | {{#crossLink "SpecularMaterial/opacity:property"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The transparency of the material surface (0 fully transparent, 1 fully opaque). |
- | {{#crossLink "SpecularMaterial/diffuseMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink "SpecularMaterial/diffuse:property"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink "SpecularMaterial/opacity:property"}}{{/crossLink}}. |
- | {{#crossLink "SpecularMaterial/specularMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink "SpecularMaterial/specular:property"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink "SpecularMaterial/opacity:property"}}{{/crossLink}}. |
+ | {{#crossLink "SpecularMaterial/alpha:property"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The transparency of the material surface (0 fully transparent, 1 fully opaque). |
+ | {{#crossLink "SpecularMaterial/diffuseMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink "SpecularMaterial/diffuse:property"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink "SpecularMaterial/alpha:property"}}{{/crossLink}}. |
+ | {{#crossLink "SpecularMaterial/specularMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink "SpecularMaterial/specular:property"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink "SpecularMaterial/alpha:property"}}{{/crossLink}}. |
  | {{#crossLink "SpecularMaterial/glossinessMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink "SpecularMaterial/glossiness:property"}}{{/crossLink}}. |
  | {{#crossLink "SpecularMaterial/specularGlossinessMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Texture with first three components multiplying by {{#crossLink "SpecularMaterial/specular:property"}}{{/crossLink}} and fourth component multiplying by {{#crossLink "SpecularMaterial/glossiness:property"}}{{/crossLink}}. |
  | {{#crossLink "SpecularMaterial/emissiveMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Texture with RGB components multiplying by {{#crossLink "SpecularMaterial/emissive:property"}}{{/crossLink}}. |
- | {{#crossLink "SpecularMaterial/opacityMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink "SpecularMaterial/opacity:property"}}{{/crossLink}}. |
+ | {{#crossLink "SpecularMaterial/alphaMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink "SpecularMaterial/alpha:property"}}{{/crossLink}}. |
  | {{#crossLink "SpecularMaterial/occlusionMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Ambient occlusion texture multiplying by surface's reflected diffuse and specular light. |
  | {{#crossLink "SpecularMaterial/normalMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Tangent-space normal map. |
-
+ | {{#crossLink "SpecularMaterial/alphaMode:property"}}{{/crossLink}} | String | "opaque", "blend", "mask" | "blend" |  | Alpha blend mode. |
+ | {{#crossLink "SpecularMaterial/alphaCutoff:property"}}{{/crossLink}} | Number | [0..1] | 0.5 |  | Alpha cutoff value. |
+ | {{#crossLink "SpecularMaterial/backfaces:property"}}{{/crossLink}} | Boolean |  | false |  | Whether to render {{#crossLink "Geometry"}}Geometry{{/crossLink}} backfaces. |
+ | {{#crossLink "SpecularMaterial/backfaces:property"}}{{/crossLink}} | String | "ccw", "cw" | "ccw" |  | The winding order for {{#crossLink "Geometry"}}Geometry{{/crossLink}} frontfaces - "cw" for clockwise, or "ccw" for counter-clockwise. |
 
  ## Usage
 
@@ -32025,10 +32195,13 @@ TODO
  within the same {{#crossLink "Texture"}}{{/crossLink}} for efficiency.
 
  ````javascript
- new xeogl.Entity({
+ var plasteredSphere = new xeogl.Entity({
 
-    geometry: new xeogl.OBJGeometry({
-        src: "models/obj/FireHydrantMesh.obj"
+    geometry: new xeogl.SphereGeometry({
+        center: [0,0,0],
+        radius: 1.5,
+        heightSegments: 60,
+        widthSegments: 60
     }),
 
     lights: new xeogl.Lights({
@@ -32079,7 +32252,7 @@ TODO
         specular: [1.0, 1.0, 1.0],
         glossiness: 1.0,
         emissive: [0.0, 0.0, 0.0]
-        opacity: 1.0,
+        alpha: 1.0,
 
         // Textures to multiply some of the channels
 
@@ -32109,14 +32282,14 @@ TODO
  *RGB* component multiplies by {{#crossLink "SpecularMaterial/specular:property"}}{{/crossLink}} and *A* multiplies by {{#crossLink "SpecularMaterial/glossiness:property"}}{{/crossLink}}.
 
  ````javascript
- new xeogl.SpecularMaterial({
+ plasteredSphere.material = new xeogl.SpecularMaterial({
 
     // Default values
     diffuse: [1.0, 1.0, 1.0],
     specular: [1.0, 1.0, 1.0],
     glossiness: 1.0,
     emissive: [0.0, 0.0, 0.0]
-    opacity: 1.0,
+    alpha: 1.0,
 
     diffuseMap: {
         src: "textures/materials/poligon/Plaster07_1k/Plaster07_COL_VAR1_1K.jpg"
@@ -32130,9 +32303,41 @@ TODO
  });
  ````
 
- Although not shown in this example, we can also texture {{#crossLink "MetallicMaterial/opacity:property"}}{{/crossLink}} with
- the *A* component of {{#crossLink "MetallicMaterial/baseColorMap:property"}}{{/crossLink}}'s {{#crossLink "Texture"}}{{/crossLink}},
+ Although not shown in this example, we can also texture {{#crossLink "SpecularMaterial/alpha:property"}}{{/crossLink}} with
+ the *A* component of {{#crossLink "SpecularMaterial/diffuseMap:property"}}{{/crossLink}}'s {{#crossLink "Texture"}}{{/crossLink}},
  if required.
+
+ ## Transparency
+
+ ### Alpha Blending
+
+ Let's make our plastered sphere transparent. We'll update its SpecularMaterial's {{#crossLink "SpecularMaterial/alpha:property"}}{{/crossLink}}
+ and {{#crossLink "SpecularMaterial/alphaMode:property"}}{{/crossLink}}, causing it to blend 50% with the background:
+
+ ````javascript
+ plasteredSphere.material.alpha = 0.5;
+ plasteredSphere.material.alphaMode = "blend";
+ ````
+
+ *TODO: Screenshot*
+
+ ### Alpha Masking
+
+ Now let's make holes in our plastered sphere. We'll give its SpecularMaterial an {{#crossLink "SpecularMaterial/alphaMap:property"}}{{/crossLink}}
+ and configure {{#crossLink "SpecularMaterial/alpha:property"}}{{/crossLink}}, {{#crossLink "SpecularMaterial/alphaMode:property"}}{{/crossLink}},
+ and {{#crossLink "SpecularMaterial/alphaCutoff:property"}}{{/crossLink}} to treat it as an alpha mask:
+
+ ````javascript
+ plasteredSphere.material.alphaMap = new xeogl.Texture({
+        src: "textures/diffuse/crossGridColorMap.jpg"
+    });
+
+ plasteredSphere.material.alpha = 1.0;
+ plasteredSphere.material.alphaMode = "mask";
+ plasteredSphere.material.alphaCutoff = 0.2;
+ ````
+
+ *TODO: Screenshot*
 
  @class SpecularMaterial
  @module xeogl
@@ -32153,9 +32358,9 @@ TODO
  components of {{#crossLink "SpecularMaterial/diffuseMap:property"}}{{/crossLink}}.
 
  @param [cfg.diffuseMap=undefined] {Texture} RGBA {{#crossLink "Texture"}}{{/crossLink}} containing the diffuse color
- of this SpecularMaterial, with optional *A* component for opacity. The RGB components multiply by the
+ of this SpecularMaterial, with optional *A* component for alpha. The RGB components multiply by the
  {{#crossLink "SpecularMaterial/diffuse:property"}}{{/crossLink}} property,
- while the *A* component, if present, multiplies by the {{#crossLink "SpecularMaterial/opacity:property"}}{{/crossLink}} property.
+ while the *A* component, if present, multiplies by the {{#crossLink "SpecularMaterial/alpha:property"}}{{/crossLink}} property.
 
  @param [cfg.specular=[1,1,1]] {Number} RGB specular color of this SpecularMaterial. Multiplies by the
  {{#crossLink "SpecularMaterial/specularMap:property"}}{{/crossLink}} and the *RGB* components of
@@ -32190,16 +32395,24 @@ TODO
  @param [cfg.normalMap=undefined] {Texture} RGB tangent-space normal {{#crossLink "Texture"}}{{/crossLink}}. Must be
  within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this SpecularMaterial.
 
- @param [cfg.opacity=1.0] {Number} Factor in the range 0..1 indicating how transparent this SpecularMaterial is.
+ @param [cfg.alpha=1.0] {Number} Factor in the range 0..1 indicating how transparent this SpecularMaterial is.
  A value of 0.0 indicates fully transparent, 1.0 is fully opaque. Multiplies by the *R* component of
- {{#crossLink "SpecularMaterial/opacityMap:property"}}{{/crossLink}} and the *A* component, if present, of
- {{#crossLink "SpecularMaterial/diffuseMap:property"}}{{/crossLink}}. Attached {{#crossLink "Entity"}}Entities{{/crossLink}}
- will appear transparent only if they are also attached to {{#crossLink "Modes"}}Modes{{/crossLink}} that
- have {{#crossLink "Modes/transparent:property"}}transparent{{/crossLink}} set to **true**.
+ {{#crossLink "SpecularMaterial/alphaMap:property"}}{{/crossLink}} and the *A* component, if present, of
+ {{#crossLink "SpecularMaterial/diffuseMap:property"}}{{/crossLink}}.
 
- @param [cfg.opacityMap=undefined] {Texture} RGB {{#crossLink "Texture"}}{{/crossLink}} containing this SpecularMaterial's
- opacity in its *R* component. The *R* component multiplies by the {{#crossLink "SpecularMaterial/opacity:property"}}{{/crossLink}} property. Must
+ @param [cfg.alphaMap=undefined] {Texture} RGB {{#crossLink "Texture"}}{{/crossLink}} containing this SpecularMaterial's
+ alpha in its *R* component. The *R* component multiplies by the {{#crossLink "SpecularMaterial/alpha:property"}}{{/crossLink}} property. Must
  be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this SpecularMaterial.
+
+ @param [cfg.alphaMode="opaque"] {String} The alpha blend mode - accepted values are "opaque", "blend" and "mask".
+ See the {{#crossLink "SpecularMaterial/alphaMode:property"}}{{/crossLink}} property for more info.
+
+ @param [cfg.alphaCutoff=0.5] {Number} The alpha cutoff value.
+ See the {{#crossLink "SpecularMaterial/alphaCutoff:property"}}{{/crossLink}} property for more info.
+
+ @param [cfg.backfaces=false] {Boolean} Whether to render {{#crossLink "Geometry"}}Geometry{{/crossLink}} backfaces.
+
+ @param [cfg.frontface="ccw"] {Boolean} The winding order for {{#crossLink "Geometry"}}Geometry{{/crossLink}} front faces - "cw" for clockwise, or "ccw" for counter-clockwise.
 
  */
 (function () {
@@ -32217,9 +32430,9 @@ TODO
                 diffuse: xeogl.math.vec4([1.0, 1.0, 1.0]),
                 emissive: xeogl.math.vec4([0.0, 0.0, 0.0]),
                 specular: xeogl.math.vec4([1.0, 1.0, 1.0]),
-                glossiness: 1.0,
-                specularF0: 0.0,
-                opacity: 1.0,
+                glossiness: null,
+                specularF0: null,
+                alpha: null,
 
                 diffuseMap: null,
                 emissiveMap: null,
@@ -32227,9 +32440,10 @@ TODO
                 glossinessMap: null,
                 specularGlossinessMap: null,
                 occlusionMap: null,
-                opacityMap: null,
+                alphaMap: null,
                 normalMap: null,
-
+                alphaMode: null,
+                alphaCutoff: null,
                 hash: null
             });
 
@@ -32249,7 +32463,7 @@ TODO
             this.glossiness = cfg.glossiness;
             this.specularF0 = cfg.specularF0;
             this.emissive = cfg.emissive;
-            this.opacity = cfg.opacity;
+            this.alpha = cfg.alpha;
 
             if (cfg.diffuseMap) {
                 this.diffuseMap = cfg.diffuseMap;
@@ -32275,13 +32489,16 @@ TODO
                 this.occlusionMap = cfg.occlusionMap;
             }
 
-            if (cfg.opacityMap) {
-                this.opacityMap = cfg.opacityMap;
+            if (cfg.alphaMap) {
+                this.alphaMap = cfg.alphaMap;
             }
 
             if (cfg.normalMap) {
                 this.normalMap = cfg.normalMap;
             }
+
+            this.alphaMode = cfg.alphaMode;
+            this.alphaCutoff = cfg.alphaCutoff;
         },
 
         _props: {
@@ -32339,14 +32556,10 @@ TODO
             },
 
             /**
-             RGB {{#crossLink "Texture"}}{{/crossLink}} containing the diffuse color of this SpecularMaterial, with optional *A* component for opacity.
+             RGB {{#crossLink "Texture"}}{{/crossLink}} containing the diffuse color of this SpecularMaterial, with optional *A* component for alpha.
 
              The *RGB* components multiply by the {{#crossLink "SpecularMaterial/diffuse:property"}}{{/crossLink}} property,
-             while the *A* component, if present, multiplies by the {{#crossLink "SpecularMaterial/opacity:property"}}{{/crossLink}} property.
-
-             Attached {{#crossLink "Entity"}}Entities{{/crossLink}} will appear transparent only if they are also attached
-             to {{#crossLink "Modes"}}Modes{{/crossLink}} that have {{#crossLink "Modes/transparent:property"}}transparent{{/crossLink}}
-             set to **true**.
+             while the *A* component, if present, multiplies by the {{#crossLink "SpecularMaterial/alpha:property"}}{{/crossLink}} property.
 
              Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this SpecularMaterial.
 
@@ -32633,7 +32846,7 @@ TODO
                         emissive[1] = 0;
                         emissive[2] = 0;
                     }
-                    
+
                     this._renderer.imageDirty = true;
 
                     /**
@@ -32686,75 +32899,71 @@ TODO
 
              A value of 0.0 is fully transparent, while 1.0 is fully opaque.
 
-             Multiplies by the *R* component of {{#crossLink "SpecularMaterial/opacityMap:property"}}{{/crossLink}} and
+             Multiplies by the *R* component of {{#crossLink "SpecularMaterial/alphaMap:property"}}{{/crossLink}} and
              the *A* component, if present, of {{#crossLink "SpecularMaterial/diffuseMap:property"}}{{/crossLink}}.
 
-             Attached {{#crossLink "Entity"}}Entities{{/crossLink}} will appear transparent only if they are also attached
-             to {{#crossLink "Modes"}}Modes{{/crossLink}} that have {{#crossLink "Modes/transparent:property"}}transparent{{/crossLink}}
-             set to **true**.
+             Fires an {{#crossLink "SpecularMaterial/alpha:event"}}{{/crossLink}} event on change.
 
-             Fires an {{#crossLink "SpecularMaterial/opacity:event"}}{{/crossLink}} event on change.
-
-             @property opacity
+             @property alpha
              @default 1.0
              @type Number
              */
-            opacity: {
+            alpha: {
 
                 set: function (value) {
 
                     value = (value !== undefined && value !== null) ? value : 1.0;
 
-                    if (this._state.opacity === value) {
+                    if (this._state.alpha === value) {
                         return;
                     }
 
-                    this._state.opacity = value;
+                    this._state.alpha = value;
 
                     this._renderer.imageDirty = true;
 
                     /**
-                     * Fired whenever this SpecularMaterial's {{#crossLink "SpecularMaterial/opacity:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this SpecularMaterial's {{#crossLink "SpecularMaterial/alpha:property"}}{{/crossLink}} property changes.
                      *
-                     * @event opacity
+                     * @event alpha
                      * @param value {Number} The property's new value
                      */
-                    this.fire("opacity", this._state.opacity);
+                    this.fire("alpha", this._state.alpha);
                 },
 
                 get: function () {
-                    return this._state.opacity;
+                    return this._state.alpha;
                 }
             },
 
             /**
-             RGB {{#crossLink "Texture"}}{{/crossLink}} with opacity in its *R* component.
+             RGB {{#crossLink "Texture"}}{{/crossLink}} with alpha in its *R* component.
 
-             The *R* component multiplies by the {{#crossLink "SpecularMaterial/opacity:property"}}{{/crossLink}} property.
+             The *R* component multiplies by the {{#crossLink "SpecularMaterial/alpha:property"}}{{/crossLink}} property.
 
              Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this SpecularMaterial.
 
-             Fires an {{#crossLink "SpecularMaterial/opacityMap:event"}}{{/crossLink}} event on change.
+             Fires an {{#crossLink "SpecularMaterial/alphaMap:event"}}{{/crossLink}} event on change.
 
-             @property opacityMap
+             @property alphaMap
              @default undefined
              @type {Texture}
              */
-            opacityMap: {
+            alphaMap: {
 
                 set: function (texture) {
 
                     /**
-                     Fired whenever this SpecularMaterial's {{#crossLink "SpecularMaterial/opacityMap:property"}}{{/crossLink}} property changes.
+                     Fired whenever this SpecularMaterial's {{#crossLink "SpecularMaterial/alphaMap:property"}}{{/crossLink}} property changes.
 
-                     @event opacityMap
+                     @event alphaMap
                      @param value Number The property's new value
                      */
-                    this._attachComponent("xeogl.Texture", "opacityMap", texture);
+                    this._attachComponent("xeogl.Texture", "alphaMap", texture);
                 },
 
                 get: function () {
-                    return this._attached.opacityMap;
+                    return this._attached.alphaMap;
                 }
             },
 
@@ -32815,6 +33024,184 @@ TODO
 
                 get: function () {
                     return this._attached.occlusionMap;
+                }
+            },
+
+            /**
+             The alpha rendering mode.
+
+             This governs how alpha is treated. Alpha is the combined result of the
+             {{#crossLink "SpecularMaterial/alpha:property"}}{{/crossLink}} and
+             {{#crossLink "SpecularMaterial/alphaMap:property"}}{{/crossLink}} properties.
+
+             * "opaque" - The alpha value is ignored and the rendered output is fully opaque.
+             * "mask" - The rendered output is either fully opaque or fully transparent depending on the alpha value and the specified alpha cutoff value.
+             * "blend" - The alpha value is used to composite the source and destination areas. The rendered output is combined with the background using the normal painting operation (i.e. the Porter and Duff over operator).
+
+             Fires an {{#crossLink "SpecularMaterial/alphaMode:event"}}{{/crossLink}} event on change.
+
+             @property alphaMode
+             @default "opaque"
+             @type {String}
+             */
+            alphaMode: (function () {
+                var modes = {"opaque": 0, "mask": 1, "blend": 2};
+                var modeNames = ["opaque", "mask", "blend"];
+                return {
+                    set: function (alphaMode) {
+
+                        alphaMode = alphaMode || "opaque";
+
+                        var value = modes[alphaMode];
+
+                        if (value === undefined) {
+                            this.error("Unsupported value for 'alphaMode': " + alphaMode);
+                        }
+
+                        if (this._state.alphaMode === value) {
+                            return;
+                        }
+
+                        this._state.alphaMode = value;
+
+                        this._renderer.imageDirty = true;
+
+                        /**
+                         Fired whenever this SpecularMaterial's {{#crossLink "SpecularMaterial/alphaMode:property"}}{{/crossLink}} property changes.
+
+                         @event alphaMode
+                         @param value {Number} The property's new value
+                         */
+                        this.fire("alphaMode", this._state.alphaMode);
+                    },
+                    get: function () {
+                        return modeNames[this._state.alphaMode];
+                    }
+                };
+            })(),
+
+            /**
+             The alpha cutoff value.
+
+             Specifies the cutoff threshold when {{#crossLink "SpecularMaterial/alphaMode:property"}}{{/crossLink}}
+             equals "mask". If the alpha is greater than or equal to this value then it is rendered as fully
+             opaque, otherwise, it is rendered as fully transparent. A value greater than 1.0 will render the entire
+             material as fully transparent. This value is ignored for other modes.
+
+             Alpha is the combined result of the
+             {{#crossLink "SpecularMaterial/alpha:property"}}{{/crossLink}} and
+             {{#crossLink "SpecularMaterial/alphaMap:property"}}{{/crossLink}} properties.
+
+             Fires an {{#crossLink "SpecularMaterial/alphaCutoff:event"}}{{/crossLink}} event on change.
+
+             @property alphaCutoff
+             @default 0.5
+             @type {Number}
+             */
+            alphaCutoff: {
+                set: function (alphaCutoff) {
+
+                    if (alphaCutoff === null || alphaCutoff === undefined) {
+                        alphaCutoff = 0.5;
+                    }
+
+                    if (this._state.alphaCutoff === alphaCutoff) {
+                        return;
+                    }
+
+                    this._state.alphaCutoff = alphaCutoff;
+
+                    /**
+                     Fired whenever this SpecularMaterial's {{#crossLink "SpecularMaterial/look:property"}}{{/crossLink}} property changes.
+
+                     @event alphaCutoff
+                     @param value {Number} The property's new value
+                     */
+                    this.fire("alphaCutoff", this._state.alphaCutoff);
+                },
+                get: function () {
+                    return this._state.alphaCutoff;
+                }
+            },
+
+
+            /**
+             Whether backfaces are visible on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+             The backfaces will belong to {{#crossLink "Geometry"}}{{/crossLink}} compoents that are also attached to
+             the {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+             Fires a {{#crossLink "PhongMaterial/backfaces:event"}}{{/crossLink}} event on change.
+
+             @property backfaces
+             @default false
+             @type Boolean
+             */
+            backfaces: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    if (this._state.backfaces === value) {
+                        return;
+                    }
+
+                    this._state.backfaces = value;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this SpecularMaterial's {{#crossLink "SpecularMaterial/backfaces:property"}}{{/crossLink}} property changes.
+
+                     @event backfaces
+                     @param value The property's new value
+                     */
+                    this.fire("backfaces", this._state.backfaces);
+                },
+
+                get: function () {
+                    return this._state.backfaces;
+                }
+            },
+
+            /**
+             Indicates the winding direction of front faces on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+             The faces will belong to {{#crossLink "Geometry"}}{{/crossLink}} components that are also attached to
+             the {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+             Fires a {{#crossLink "SpecularMaterial/frontface:event"}}{{/crossLink}} event on change.
+
+             @property frontface
+             @default "ccw"
+             @type String
+             */
+            frontface: {
+
+                set: function (value) {
+
+                    value = value !== "cw";
+
+                    if (this._state.frontface === value) {
+                        return;
+                    }
+
+                    this._state.frontface = value;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this SpecularMaterial's {{#crossLink "SpecularMaterial/frontface:property"}}{{/crossLink}} property changes.
+
+                     @event frontface
+                     @param value The property's new value
+                     */
+                    this.fire("frontface", this._state.frontface ? "ccw" : "cw");
+                },
+
+                get: function () {
+                    return this._state.frontface ? "ccw" : "cw";
                 }
             }
         },
@@ -32904,9 +33291,9 @@ TODO
                 }
             }
 
-            if (state.opacityMap) {
+            if (state.alphaMap) {
                 hash.push("/opm");
-                if (state.opacityMap.matrix) {
+                if (state.alphaMap.matrix) {
                     hash.push("/mat");
                 }
             }
@@ -32926,7 +33313,11 @@ TODO
                 glossiness: this._state.glossiness,
                 specularF0: this._state.specularF0,
                 emissive: vecToArray(this._state.emissive),
-                opacity: this._state.opacity
+                alpha: this._state.alpha,
+                alphaMode: this.alphaMode,
+                alphaCutoff: this._state.alphaCutoff,
+                backfaces: this._state.backfaces,
+                frontface: this.frontface // Save string value
             };
 
             var components = this._attached;
@@ -32955,8 +33346,8 @@ TODO
                 json.occlusionMap = components.occlusionMap.id;
             }
 
-            if (components.opacityMap) {
-                json.opacityMap = components.opacityMap.id;
+            if (components.alphaMap) {
+                json.alphaMap = components.alphaMap.id;
             }
 
             if (components.normalMap) {
@@ -32999,21 +33390,24 @@ TODO
 
  | Property | Type | Range | Default Value | Space | Description |
  |:--------:|:----:|:-----:|:-------------:|:-----:|:-----------:|
- |  {{#crossLink "MetallicMaterial/baseColor:property"}}{{/crossLink}} | Array | [0, 1] for all components | [1,1,1,1] | linear | The RGB components of the base color of the material. |
+ | {{#crossLink "MetallicMaterial/baseColor:property"}}{{/crossLink}} | Array | [0, 1] for all components | [1,1,1,1] | linear | The RGB components of the base color of the material. |
  | {{#crossLink "MetallicMaterial/metallic:property"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The metallic-ness the material (1 for metals, 0 for non-metals). |
  | {{#crossLink "MetallicMaterial/roughness:property"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The roughness of the material surface. |
  | {{#crossLink "MetallicMaterial/specularF0:property"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The specular Fresnel of the material surface. |
- |  {{#crossLink "MetallicMaterial/emissive:property"}}{{/crossLink}} | Array | [0, 1] for all components | [0,0,0] | linear | The RGB components of the emissive color of the material. |
- | {{#crossLink "MetallicMaterial/opacity:property"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The transparency of the material surface (0 fully transparent, 1 fully opaque). |
- | {{#crossLink "MetallicMaterial/baseColorMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink "MetallicMaterial/baseColor:property"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink "MetallicMaterial/opacity:property"}}{{/crossLink}}. |
+ | {{#crossLink "MetallicMaterial/emissive:property"}}{{/crossLink}} | Array | [0, 1] for all components | [0,0,0] | linear | The RGB components of the emissive color of the material. |
+ | {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The transparency of the material surface (0 fully transparent, 1 fully opaque). |
+ | {{#crossLink "MetallicMaterial/baseColorMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink "MetallicMaterial/baseColor:property"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}}. |
  | {{#crossLink "MetallicMaterial/metallicMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink "MetallicMaterial/metallic:property"}}{{/crossLink}}. |
  | {{#crossLink "MetallicMaterial/roughnessMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink "MetallicMaterial/roughness:property"}}{{/crossLink}}. |
  | {{#crossLink "MetallicMaterial/metallicRoughnessMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink "MetallicMaterial/metallic:property"}}{{/crossLink}} and second component multiplying by {{#crossLink "MetallicMaterial/roughness:property"}}{{/crossLink}}. |
  | {{#crossLink "MetallicMaterial/emissiveMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Texture with RGB components multiplying by {{#crossLink "MetallicMaterial/emissive:property"}}{{/crossLink}}. |
- | {{#crossLink "MetallicMaterial/opacityMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink "MetallicMaterial/opacity:property"}}{{/crossLink}}. |
+ | {{#crossLink "MetallicMaterial/alphaMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}}. |
  | {{#crossLink "MetallicMaterial/occlusionMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Ambient occlusion texture multiplying by surface's reflected diffuse and specular light. |
- | {{#crossLink "SpecularMaterial/normalMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Tangent-space normal map. |
-
+ | {{#crossLink "MetallicMaterial/normalMap:property"}}{{/crossLink}} | {{#crossLink "Texture"}}{{/crossLink}} |  | null | linear | Tangent-space normal map. |
+ | {{#crossLink "MetallicMaterial/alphaMode:property"}}{{/crossLink}} | String | "opaque", "blend", "mask" | "blend" |  | Alpha blend mode. |
+ | {{#crossLink "MetallicMaterial/alphaCutoff:property"}}{{/crossLink}} | Number | [0..1] | 0.5 |  | Alpha cutoff value. |
+ | {{#crossLink "MetallicMaterial/backfaces:property"}}{{/crossLink}} | Boolean |  | false |  | Whether to render {{#crossLink "Geometry"}}Geometry{{/crossLink}} backfaces. |
+ | {{#crossLink "MetallicMaterial/backfaces:property"}}{{/crossLink}} | String | "ccw", "cw" | "ccw" |  | The winding order for {{#crossLink "Geometry"}}Geometry{{/crossLink}} frontfaces - "cw" for clockwise, or "ccw" for counter-clockwise. |
 
  ## Usage
 
@@ -33028,7 +33422,7 @@ TODO
  within the same {{#crossLink "Texture"}}{{/crossLink}} for efficiency.
 
  ````javascript
- new xeogl.Entity({
+ var hydrant = new xeogl.Entity({
 
     geometry: new xeogl.OBJGeometry({
         src: "models/obj/FireHydrantMesh.obj"
@@ -33082,7 +33476,7 @@ TODO
         metallic: 1.0,
         roughness: 1.0,
         emissive: [0.0, 0.0, 0.0],
-        opacity: 1.0,
+        alpha: 1.0,
 
         // Textures to multiply by some of the channels
 
@@ -33119,7 +33513,7 @@ TODO
  *R* component multiplies by {{#crossLink "MetallicMaterial/metallic:property"}}{{/crossLink}} and *G* multiplies by {{#crossLink "MetallicMaterial/roughness:property"}}{{/crossLink}}.
 
  ````javascript
- new xeogl.MetallicMaterial({
+ hydrant.material = new xeogl.MetallicMaterial({
 
     baseColor: [1,1,1], // Default value
     metallic: 1.0,      // Default value
@@ -33140,9 +33534,45 @@ TODO
  });
  ````
 
- Although not shown in this example, we can also texture {{#crossLink "SpecularMaterial/opacity:property"}}{{/crossLink}} with
- the *A* component of {{#crossLink "SpecularMaterial/diffuseMap:property"}}{{/crossLink}}'s {{#crossLink "Texture"}}{{/crossLink}},
+ Although not shown in this example, we can also texture {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}} with
+ the *A* component of {{#crossLink "MetallicMaterial/baseColorMap:property"}}{{/crossLink}}'s {{#crossLink "Texture"}}{{/crossLink}},
  if required.
+
+ ## Transparency
+
+ ### Alpha Blending
+
+ Let's make our hydrant transparent.
+
+ We'll update its MetallicMaterial's {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}}
+ and {{#crossLink "MetallicMaterial/alphaMode:property"}}{{/crossLink}}, causing it to blend 50% with the background:
+
+ ````javascript
+ hydrant.material.alpha = 0.5;
+ hydrant.material.alphaMode = "blend";
+ ````
+
+ <img src="../../../assets/images/screenshots/MetallicMaterial/alphaBlend.png"></img>
+
+ ### Alpha Masking
+
+ Let's apply an alpha mask to our hydrant.
+
+ We'll give its MetallicMaterial an {{#crossLink "MetallicMaterial/alphaMap:property"}}{{/crossLink}}
+ and configure {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}}, {{#crossLink "MetallicMaterial/alphaMode:property"}}{{/crossLink}},
+ and {{#crossLink "MetallicMaterial/alphaCutoff:property"}}{{/crossLink}} to treat it as an alpha mask:
+
+ ````javascript
+ hydrant.material.alphaMap = new xeogl.Texture({
+        src: "textures/diffuse/crossGridColorMap.jpg"
+    });
+
+ hydrant.material.alpha = 1.0;
+ hydrant.material.alphaMode = "mask";
+ hydrant.material.alphaCutoff = 0.2;
+ ````
+
+ <img src="../../../assets/images/screenshots/MetallicMaterial/alphaMask.png"></img>
 
  @class MetallicMaterial
  @module xeogl
@@ -33174,20 +33604,18 @@ TODO
  @param [cfg.emissive=[0,0,0]] {Float32Array}  RGB emissive color of this MetallicMaterial. Multiplies by the RGB
  components of {{#crossLink "MetallicMaterial/emissiveMap:property"}}{{/crossLink}}.
 
- @param [cfg.opacity=1.0] {Number} Factor in the range 0..1 indicating how transparent this MetallicMaterial is.
- A value of 0.0 indicates fully transparent, 1.0 is fully opaque. Multiplies by the *R* component of
- {{#crossLink "MetallicMaterial/opacityMap:property"}}{{/crossLink}} and the *A* component, if present, of
- {{#crossLink "MetallicMaterial/baseColorMap:property"}}{{/crossLink}}. Attached {{#crossLink "Entity"}}Entities{{/crossLink}}
- will appear transparent only if they are also attached to {{#crossLink "Modes"}}Modes{{/crossLink}} that
- have {{#crossLink "Modes/transparent:property"}}transparent{{/crossLink}} set to **true**.
+ @param [cfg.alpha=1.0] {Number} Factor in the range 0..1 indicating the alpha of this MetallicMaterial.
+ Multiplies by the *R* component of {{#crossLink "MetallicMaterial/alphaMap:property"}}{{/crossLink}} and the *A* component,
+ if present, of {{#crossLink "MetallicMaterial/baseColorMap:property"}}{{/crossLink}}. The value of
+ {{#crossLink "MetallicMaterial/alphaMode:property"}}{{/crossLink}} indicates how alpha is interpreted when rendering.
 
  @param [cfg.baseColorMap=undefined] {Texture} RGBA {{#crossLink "Texture"}}{{/crossLink}} containing the diffuse color
- of this MetallicMaterial, with optional *A* component for opacity. The RGB components multiply by the
+ of this MetallicMaterial, with optional *A* component for alpha. The RGB components multiply by the
  {{#crossLink "MetallicMaterial/baseColor:property"}}{{/crossLink}} property,
- while the *A* component, if present, multiplies by the {{#crossLink "MetallicMaterial/opacity:property"}}{{/crossLink}} property.
+ while the *A* component, if present, multiplies by the {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}} property.
 
- @param [cfg.opacityMap=undefined] {Texture} RGB {{#crossLink "Texture"}}{{/crossLink}} containing this MetallicMaterial's
- opacity in its *R* component. The *R* component multiplies by the {{#crossLink "MetallicMaterial/opacity:property"}}{{/crossLink}} property. Must
+ @param [cfg.alphaMap=undefined] {Texture} RGB {{#crossLink "Texture"}}{{/crossLink}} containing this MetallicMaterial's
+ alpha in its *R* component. The *R* component multiplies by the {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}} property. Must
  be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MetallicMaterial.
 
  @param [cfg.metallicMap=undefined] {Texture} RGB {{#crossLink "Texture"}}{{/crossLink}} containing this MetallicMaterial's
@@ -33217,6 +33645,15 @@ TODO
  @param [cfg.normalMap=undefined] {Texture} RGB tangent-space normal {{#crossLink "Texture"}}{{/crossLink}}. Must be
  within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MetallicMaterial.
 
+ @param [cfg.alphaMode="opaque"] {String} The alpha blend mode, which specifies how alpha is to be interpreted. Accepted
+ values are "opaque", "blend" and "mask". See the {{#crossLink "MetallicMaterial/alphaMode:property"}}{{/crossLink}} property for more info.
+
+ @param [cfg.alphaCutoff=0.5] {Number} The alpha cutoff value.
+ See the {{#crossLink "MetallicMaterial/alphaCutoff:property"}}{{/crossLink}} property for more info.
+
+ @param [cfg.backfaces=false] {Boolean} Whether to render {{#crossLink "Geometry"}}Geometry{{/crossLink}} backfaces.
+ @param [cfg.frontface="ccw"] {Boolean} The winding order for {{#crossLink "Geometry"}}Geometry{{/crossLink}} front faces - "cw" for clockwise, or "ccw" for counter-clockwise.
+
  */
 (function () {
 
@@ -33232,18 +33669,22 @@ TODO
                 type: "MetallicMaterial",
                 baseColor: xeogl.math.vec4([1.0, 1.0, 1.0]),
                 emissive: xeogl.math.vec4([0.0, 0.0, 0.0]),
-                metallic: 1.0,
-                roughness: 1.0,
-                specularF0: 0.0,
-                opacity: 1.0,
+                metallic: null,
+                roughness: null,
+                specularF0: null,
+                alpha: null,
                 baseColorMap: null,
-                opacityMap: null,
+                alphaMap: null,
                 metallicMap: null,
                 roughnessMap: null,
                 metallicRoughnessMap: null,
                 emissiveMap: null,
                 occlusionMap: null,
                 normalMap: null,
+                alphaMode: null, // "opaque"
+                alphaCutoff: null,
+                backfaces: null,
+                frontface: null, // Boolean for speed; true == "ccw", false == "cw"
                 hash: null
             });
 
@@ -33263,7 +33704,7 @@ TODO
             this.roughness = cfg.roughness;
             this.specularF0 = cfg.specularF0;
             this.emissive = cfg.emissive;
-            this.opacity = cfg.opacity;
+            this.alpha = cfg.alpha;
 
             if (cfg.baseColorMap) {
                 this.baseColorMap = cfg.baseColorMap;
@@ -33289,13 +33730,18 @@ TODO
                 this.occlusionMap = cfg.occlusionMap;
             }
 
-            if (cfg.opacityMap) {
-                this.opacityMap = cfg.opacityMap;
+            if (cfg.alphaMap) {
+                this.alphaMap = cfg.alphaMap;
             }
 
             if (cfg.normalMap) {
                 this.normalMap = cfg.normalMap;
             }
+
+            this.alphaMode = cfg.alphaMode;
+            this.alphaCutoff = cfg.alphaCutoff;
+            this.backfaces = cfg.backfaces;
+            this.frontface = cfg.frontface;
         },
 
         _props: {
@@ -33352,14 +33798,10 @@ TODO
             },
 
             /**
-             RGB {{#crossLink "Texture"}}{{/crossLink}} containing the diffuse color of this MetallicMaterial, with optional *A* component for opacity.
+             RGB {{#crossLink "Texture"}}{{/crossLink}} containing the diffuse color of this MetallicMaterial, with optional *A* component for alpha.
 
              The RGB components multiply by the {{#crossLink "MetallicMaterial/baseColor:property"}}{{/crossLink}} property,
-             while the *A* component, if present, multiplies by the {{#crossLink "MetallicMaterial/opacity:property"}}{{/crossLink}} property.
-
-             Attached {{#crossLink "Entity"}}Entities{{/crossLink}} will appear transparent only if they are also attached
-             to {{#crossLink "Modes"}}Modes{{/crossLink}} that have {{#crossLink "Modes/transparent:property"}}transparent{{/crossLink}}
-             set to **true**.
+             while the *A* component, if present, multiplies by the {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}} property.
 
              Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MetallicMaterial.
 
@@ -33715,79 +34157,76 @@ TODO
             },
 
             /**
-             Factor in the range [0..1] indicating how transparent this MetallicMaterial is.
+             Factor in the range [0..1] indicating the alpha value.
 
-             A value of 0.0 indicates fully transparent, 1.0 is fully opaque.
-
-             Multiplies by the *R* component of {{#crossLink "MetallicMaterial/opacityMap:property"}}{{/crossLink}} and
+             Multiplies by the *R* component of {{#crossLink "MetallicMaterial/alphaMap:property"}}{{/crossLink}} and
              the *A* component, if present, of {{#crossLink "MetallicMaterial/baseColorMap:property"}}{{/crossLink}}.
 
-             Attached {{#crossLink "Entity"}}Entities{{/crossLink}} will appear transparent only if they are also attached
-             to {{#crossLink "Modes"}}Modes{{/crossLink}} that have {{#crossLink "Modes/transparent:property"}}transparent{{/crossLink}}
-             set to **true**.
+             The value of {{#crossLink "MetallicMaterial/alphaMode:property"}}{{/crossLink}} indicates how alpha is
+             interpreted when rendering.
 
-             Fires an {{#crossLink "MetallicMaterial/opacity:event"}}{{/crossLink}} event on change.
+             Fires an {{#crossLink "MetallicMaterial/alpha:event"}}{{/crossLink}} event on change.
 
-             @property opacity
+             @property alpha
              @default 1.0
              @type Number
              */
-            opacity: {
+            alpha: {
 
                 set: function (value) {
 
                     value = (value !== undefined && value !== null) ? value : 1.0;
 
-                    if (this._state.opacity === value) {
+                    if (this._state.alpha === value) {
                         return;
                     }
 
-                    this._state.opacity = value;
+                    this._state.alpha = value;
 
                     this._renderer.imageDirty = true;
 
                     /**
-                     * Fired whenever this MetallicMaterial's {{#crossLink "MetallicMaterial/opacity:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this MetallicMaterial's {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}} property changes.
                      *
-                     * @event opacity
+                     * @event alpha
                      * @param value {Number} The property's new value
                      */
-                    this.fire("opacity", this._state.opacity);
+                    this.fire("alpha", this._state.alpha);
                 },
 
                 get: function () {
-                    return this._state.opacity;
+                    return this._state.alpha;
                 }
             },
 
             /**
-             RGB {{#crossLink "Texture"}}{{/crossLink}} containing this MetallicMaterial's opacity in its *R* component.
+             RGB {{#crossLink "Texture"}}{{/crossLink}} containing this MetallicMaterial's alpha in its *R* component.
 
-             The *R* component multiplies by the {{#crossLink "MetallicMaterial/opacity:property"}}{{/crossLink}} property.
+             The *R* component multiplies by the {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}} property.
 
              Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MetallicMaterial.
 
-             Fires an {{#crossLink "MetallicMaterial/opacityMap:event"}}{{/crossLink}} event on change.
+             Fires an {{#crossLink "MetallicMaterial/alphaMap:event"}}{{/crossLink}} event on change.
 
-             @property opacityMap
+             @property alphaMap
              @default undefined
              @type {Texture}
              */
-            opacityMap: {
+            alphaMap: {
 
                 set: function (texture) {
 
                     /**
-                     Fired whenever this MetallicMaterial's {{#crossLink "MetallicMaterial/opacityMap:property"}}{{/crossLink}} property changes.
+                     Fired whenever this MetallicMaterial's {{#crossLink "MetallicMaterial/alphaMap:property"}}{{/crossLink}} property changes.
 
-                     @event opacityMap
+                     @event alphaMap
                      @param value Number The property's new value
                      */
-                    this._attachComponent("xeogl.Texture", "opacityMap", texture);
+                    this._attachComponent("xeogl.Texture", "alphaMap", texture);
                 },
 
                 get: function () {
-                    return this._attached.opacityMap;
+                    return this._attached.alphaMap;
                 }
             },
 
@@ -33796,7 +34235,7 @@ TODO
 
              Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this MetallicMaterial.
 
-             Fires a {{#crossLink "PhongMaterial/normalMap:event"}}{{/crossLink}} event on change.
+             Fires a {{#crossLink "MetallicMaterial/normalMap:event"}}{{/crossLink}} event on change.
 
              @property normalMap
              @default undefined
@@ -33807,7 +34246,7 @@ TODO
                 set: function (texture) {
 
                     /**
-                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/normalMap:property"}}{{/crossLink}} property changes.
+                     Fired whenever this MetallicMaterial's {{#crossLink "MetallicMaterial/normalMap:property"}}{{/crossLink}} property changes.
 
                      @event normalMap
                      @param value Number The property's new value
@@ -33817,6 +34256,183 @@ TODO
 
                 get: function () {
                     return this._attached.normalMap;
+                }
+            },
+
+            /**
+             The alpha rendering mode.
+
+             This specifies how alpha is interpreted. Alpha is the combined result of the
+             {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}} and
+             {{#crossLink "MetallicMaterial/alphaMap:property"}}{{/crossLink}} properties.
+
+             * "opaque" - The alpha value is ignored and the rendered output is fully opaque.
+             * "mask" - The rendered output is either fully opaque or fully transparent depending on the alpha and {{#crossLink "MetallicMaterial/alphaCutoff:property"}}{{/crossLink}}.
+             * "blend" - The alpha value is used to composite the source and destination areas. The rendered output is combined with the background using the normal painting operation (i.e. the Porter and Duff over operator).
+
+             Fires an {{#crossLink "MetallicMaterial/alphaMode:event"}}{{/crossLink}} event on change.
+
+             @property alphaMode
+             @default "opaque"
+             @type {String}
+             */
+            alphaMode: (function () {
+                var modes = {"opaque": 0, "mask": 1, "blend": 2};
+                var modeNames = ["opaque", "mask", "blend"];
+                return {
+                    set: function (alphaMode) {
+
+                        alphaMode = alphaMode || "opaque";
+
+                        var value = modes[alphaMode];
+
+                        if (value === undefined) {
+                            this.error("Unsupported value for 'alphaMode': " + alphaMode);
+                        }
+
+                        if (this._state.alphaMode === value) {
+                            return;
+                        }
+
+                        this._state.alphaMode = value;
+
+                        this._renderer.imageDirty = true;
+
+                        /**
+                         Fired whenever this MetallicMaterial's {{#crossLink "MetallicMaterial/alphaMode:property"}}{{/crossLink}} property changes.
+
+                         @event alphaMode
+                         @param value {Number} The property's new value
+                         */
+                        this.fire("alphaMode", this._state.alphaMode);
+                    },
+                    get: function () {
+                        return modeNames[this._state.alphaMode];
+                    }
+                };
+            })(),
+
+            /**
+             The alpha cutoff value.
+
+             Specifies the cutoff threshold when {{#crossLink "MetallicMaterial/alphaMode:property"}}{{/crossLink}}
+             equals "mask". If the alpha is greater than or equal to this value then it is rendered as fully
+             opaque, otherwise, it is rendered as fully transparent. A value greater than 1.0 will render the entire
+             material as fully transparent. This value is ignored for other modes.
+
+             Alpha is the combined result of the
+             {{#crossLink "MetallicMaterial/alpha:property"}}{{/crossLink}} and
+             {{#crossLink "MetallicMaterial/alphaMap:property"}}{{/crossLink}} properties.
+
+             Fires an {{#crossLink "MetallicMaterial/alphaCutoff:event"}}{{/crossLink}} event on change.
+
+             @property alphaCutoff
+             @default 0.5
+             @type {Number}
+             */
+            alphaCutoff: {
+                set: function (alphaCutoff) {
+
+                    if (alphaCutoff === null || alphaCutoff === undefined) {
+                        alphaCutoff = 0.5;
+                    }
+
+                    if (this._state.alphaCutoff === alphaCutoff) {
+                        return;
+                    }
+
+                    this._state.alphaCutoff = alphaCutoff;
+
+                    /**
+                     Fired whenever this MetallicMaterial's {{#crossLink "MetallicMaterial/look:property"}}{{/crossLink}} property changes.
+
+                     @event alphaCutoff
+                     @param value {Number} The property's new value
+                     */
+                    this.fire("alphaCutoff", this._state.alphaCutoff);
+                },
+                get: function () {
+                    return this._state.alphaCutoff;
+                }
+            },
+
+            /**
+             Whether backfaces are visible on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+             The backfaces will belong to {{#crossLink "Geometry"}}{{/crossLink}} compoents that are also attached to
+             the {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+             Fires a {{#crossLink "MetallicMaterial/backfaces:event"}}{{/crossLink}} event on change.
+
+             @property backfaces
+             @default false
+             @type Boolean
+             */
+            backfaces: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    if (this._state.backfaces === value) {
+                        return;
+                    }
+
+                    this._state.backfaces = value;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this MetallicMaterial' {{#crossLink "MetallicMaterial/backfaces:property"}}{{/crossLink}} property changes.
+
+                     @event backfaces
+                     @param value The property's new value
+                     */
+                    this.fire("backfaces", this._state.backfaces);
+                },
+
+                get: function () {
+                    return this._state.backfaces;
+                }
+            },
+
+            /**
+             Indicates the winding direction of front faces on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+             The faces will belong to {{#crossLink "Geometry"}}{{/crossLink}} components that are also attached to
+             the {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+             Fires a {{#crossLink "MetallicMaterial/frontface:event"}}{{/crossLink}} event on change.
+
+             @property frontface
+             @default "ccw"
+             @type String
+             */
+            frontface: {
+
+                set: function (value) {
+
+                    value = value !== "cw";
+
+                    if (this._state.frontface === value) {
+                        return;
+                    }
+
+                    this._state.frontface = value;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this MetallicMaterial' {{#crossLink "MetallicMaterial/frontface:property"}}{{/crossLink}} property changes.
+
+                     @event frontface
+                     @param value The property's new value
+                     */
+                    this.fire("frontface", this._state.frontface ? "ccw" : "cw");
+                },
+
+                get: function () {
+                    return this._state.frontface ? "ccw" : "cw";
                 }
             }
         },
@@ -33899,9 +34515,9 @@ TODO
                 }
             }
 
-            if (state.opacityMap) {
+            if (state.alphaMap) {
                 hash.push("/opm");
-                if (state.opacityMap.matrix) {
+                if (state.alphaMap.matrix) {
                     hash.push("/mat");
                 }
             }
@@ -33928,7 +34544,11 @@ TODO
                 roughness: this._state.roughness,
                 specularF0: this._state.specularF0,
                 emissive: vecToArray(this._state.emissive),
-                opacity: this._state.opacity
+                alpha: this._state.alpha,
+                alphaMode: this.alphaMode,
+                alphaCutoff: this._state.alphaCutoff,
+                backfaces: this._state.backfaces,
+                frontface: this.frontface // Save string value
             };
 
             var components = this._attached;
@@ -34031,7 +34651,7 @@ TODO
             src: "diffuseMap.jpg"
         }),
         shininess: 80, // Default
-        opacity: 1.0 // Default
+        alpha: 1.0 // Default
     }),
 
     geometry: new xeogl.TorusGeometry()
@@ -34279,12 +34899,9 @@ TODO
                      */
                     self.fire("loaded", self._src);
                 }
-
-//                task.setCompleted();
             };
 
             image.onerror = function () {
-                //              task.setFailed();
                 if (spinnerTextures) {
                     spinner.processes--;
                 }
@@ -34484,8 +35101,8 @@ TODO
             /**
              * How this Texture is sampled when a texel covers less than one pixel.
              *
-             * Options are:
              *
+             * Options are:
              *
              *     * **"nearest"** - Uses the value of the texture element that is nearest
              *     (in Manhattan distance) to the center of the pixel being textured.
@@ -35193,6 +35810,68 @@ TODO
  var center = canvasBoundary.center;
  ````
 
+ ## Skyboxes
+
+ An {{#crossLink "Entity"}}{{/crossLink}} has a {{#crossLink "Entity/stationary:property"}}{{/crossLink}} property
+ that will cause it to never translate with respect to the viewpoint, while still rotationg, as if always far away.
+
+ This is useful for using Entities as skyboxes, like so:
+
+ ````javascript
+ new xeogl.Entity({
+
+     geometry: new xeogl.BoxGeometry({
+         xSize: 1000,
+         ySize: 1000,
+         zSize: 1000
+     }),
+
+     material: new xeogl.PhongMaterial({
+         diffuseMap: new xeogl.Texture({
+            src: "textures/diffuse/uvGrid2.jpg"
+         })
+     }),
+
+     stationary: true // Locks position with respect to viewpoint
+ });
+ ````
+
+ ## Billboarding
+
+ An {{#crossLink "Entity"}}{{/crossLink}} has a {{#crossLink "Entity/billboard:property"}}{{/crossLink}} property
+ that can make it behave as a billboard.
+
+ Two billboard types are supported:
+
+ * **Spherical** billboards are free to rotate their {{#crossLink "Entity"}}Entities{{/crossLink}} in any direction and always face the {{#crossLink "Camera"}}{{/crossLink}} perfectly.
+ * **Cylindrical** billboards rotate their {{#crossLink "Entity"}}Entities{{/crossLink}} towards the {{#crossLink "Camera"}}{{/crossLink}}, but only about the Y-axis.
+
+ Note that {{#crossLink "Scale"}}{{/crossLink}} transformations to have no effect on billboarded {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+ The example below shows a box that remains rotated directly towards the viewpoint, using spherical billboarding:
+
+ ````javascript
+ new xeogl.Entity({
+
+     geometry: new xeogl.BoxGeometry(),
+
+     material: new xeogl.PhongMaterial({
+         diffuseMap: new xeogl.Texture({
+            src: "textures/diffuse/uvGrid2.jpg"
+         })
+     }),
+
+     billboard: "spherical"
+ });
+ ````
+
+ #### Examples
+
+ * [Spherical billboards](../../examples/#transforms_billboard_spherical)
+ * [Cylindrical billboards](../../examples/#transforms_billboard_cylindrical)
+ * [Clouds using billboards](../../examples/#transforms_billboard_spherical_clouds)
+
+
  @class Entity
  @module xeogl
  @submodule entities
@@ -35205,16 +35884,8 @@ TODO
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
  @param [cfg.clips] {String|Clips} ID or instance of a {{#crossLink "Clips"}}Clips{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/clips:property"}}clips{{/crossLink}}.
- @param [cfg.visibility] {String|Visibility} ID or instance of a {{#crossLink "Visibility"}}Visibility{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
- parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/visibility:property"}}visibility{{/crossLink}}.
- @param [cfg.cull] {String|Cull} ID or instance of a {{#crossLink "Cull"}}{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
- parent {{#crossLink "Scene"}}{{/crossLink}}'s default instance, {{#crossLink "Scene/cull:property"}}cull{{/crossLink}}.
- @param [cfg.modes] {String|Modes} ID or instance of a {{#crossLink "Modes"}}Modes{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
- parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/modes:property"}}modes{{/crossLink}}.
  @param [cfg.geometry] {String|Geometry} ID or instance of a {{#crossLink "Geometry"}}Geometry{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/geometry:property"}}geometry{{/crossLink}}, which is a 2x2x2 box.
- @param [cfg.layer] {String|Layer} ID or instance of a {{#crossLink "Layer"}}Layer{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
- parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/layer:property"}}layer{{/crossLink}}.
  @param [cfg.lights] {String|Lights} ID or instance of a {{#crossLink "Lights"}}Lights{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/lights:property"}}lights{{/crossLink}}.
  @param [cfg.material] {String|Material} ID or instance of a {{#crossLink "Material"}}Material{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
@@ -35225,8 +35896,22 @@ TODO
  {{#crossLink "Scene/transform:property"}}transform{{/crossLink}} (which is an identity matrix which performs no transformation).
  @param [cfg.viewport] {String|Viewport} ID or instance of a {{#crossLink "Viewport"}}{{/crossLink}} attached to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
  {{#crossLink "Scene/viewport:property"}}{{/crossLink}}, which is automatically resizes to the canvas.
- @param [cfg.outline] {String|Outline} ID or instance of a {{#crossLink "Outline"}}{{/crossLink}} attached to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
+ @param [cfg.outline] {String|Outline} ID or instance of an {{#crossLink "Outline"}}{{/crossLink}} attached to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
  {{#crossLink "Scene/outline:property"}}{{/crossLink}}.
+ @param [cfg.xray] {String|XRay} ID or instance of a {{#crossLink "XRay"}}{{/crossLink}} attached to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
+ {{#crossLink "Scene/xray:property"}}{{/crossLink}}.
+ @param [cfg.visible=true] {Boolean}  Indicates if this Entity is visible.
+ @param [cfg.culled=true] {Boolean}  Indicates if this Entity is culled from view.
+ @param [cfg.pickable=true] {Boolean}  Indicates if this Entity is pickable.
+ @param [cfg.clippable=true] {Boolean} Indicates if this Entity is clippable by {{#crossLink "Clips"}}{{/crossLink}}.
+ @param [cfg.xrayed=false] {Boolean} Whether to render this Entity as X-rayed, as configured by the Entity's {{#crossLink "XRay"}}{{/crossLink}} component.
+ @param [cfg.collidable=true] {Boolean} Whether this Entity is included in boundary calculations.
+ @param [cfg.castShadow=true] {Boolean} Whether this Entity casts shadows.
+ @param [cfg.receiveShadow=true] {Boolean} Whether this Entity receives shadows.
+ @param [cfg.outlined=false] {Boolean} Whether an outline is rendered around this entity, as configured by the Entity's {{#crossLink "Outline"}}{{/crossLink}} component
+ @param [cfg.layer=0] {Number} Indicates this Entity's rendering priority, typically used for transparency sorting,
+ @param [cfg.stationary=false] {Boolean} Disables the effect of {{#crossLink "Lookat"}}view transform{{/crossLink}} translations for this Entity. This is useful for skybox Entities.
+ @param [cfg.billboard="none"] {String} Specifies the billboarding behaviour for this Entity. Options are "none", "spherical" and "cylindrical".
  @param [cfg.loading] {Boolean} Flag which indicates that this Entity is freshly loaded. This will increment the
  {{#crossLink "Spinner/processes:property"}}Spinner processes{{/crossLink}} count, and then when this Entity is first
  rendered, will decrement the count again.
@@ -35251,6 +35936,21 @@ TODO
 
         _init: function (cfg) {
 
+            this._state = new xeogl.renderer.Modes({
+                visible: true,
+                culled: false,
+                pickable: null,
+                clippable: null,
+                xrayed: null,
+                collidable: null,
+                castShadow: null,
+                receiveShadow: null,
+                outlined: null,
+                layer: null,
+                billboard: null,
+                hash: ""
+            });
+
             this._loading = cfg.loading;
 
             if (this._loading === true) {
@@ -35259,19 +35959,28 @@ TODO
 
             this.camera = cfg.camera;
             this.clips = cfg.clips;
-            this.visibility = cfg.visibility;
-            this.cull = cfg.cull;
-            this.modes = cfg.modes;
             this.geometry = cfg.geometry;
-            this.layer = cfg.layer;
             this.lights = cfg.lights;
             this.material = cfg.material;
             this.morphTargets = cfg.morphTargets;
             this.transform = cfg.transform;
-            this.billboard = cfg.billboard;
             this.stationary = cfg.stationary;
             this.viewport = cfg.viewport;
             this.outline = cfg.outline;
+            this.xray = cfg.xray;
+
+            this.visible = cfg.visible;
+            this.culled = cfg.culled;
+            this.pickable = cfg.pickable;
+            this.clippable = cfg.clippable;
+            this.xrayed = cfg.xrayed;
+            this.collidable = cfg.collidable;
+            this.castShadow = cfg.castShadow;
+            this.receiveShadow = cfg.receiveShadow;
+            this.outlined = cfg.outlined;
+            this.layer = cfg.layer;
+            this.stationary = cfg.stationary;
+            this.billboard = cfg.billboard;
 
             // Cached boundary for each coordinate space
             // The Entity's Geometry component caches the Local-space boundary
@@ -35279,8 +35988,10 @@ TODO
             this._worldBoundary = null;
             this._viewBoundary = null;
             this._canvasBoundary = null;
+            this._worldPositions = null;
 
             this._worldBoundaryDirty = true;
+            this._worldPositionsDirty = true;
             this._viewBoundaryDirty = true;
             this._canvasBoundaryDirty = true;
         },
@@ -35371,112 +36082,6 @@ TODO
             },
 
             /**
-             * The {{#crossLink "Visibility"}}Visibility{{/crossLink}} attached to this Entity.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/visibility:property"}}visibility{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * Fires an {{#crossLink "Entity/visibility:event"}}{{/crossLink}} event on change.
-             *
-             * @property visibility
-             * @type Visibility
-             */
-            visibility: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this Entity's  {{#crossLink "Entity/visibility:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event visibility
-                     * @param value The property's new value
-                     */
-                    this._attach({
-                        name: "visibility",
-                        type: "xeogl.Visibility",
-                        component: value,
-                        sceneDefault: true
-                    });
-                },
-
-                get: function () {
-                    return this._attached.visibility;
-                }
-            },
-
-            /**
-             * The {{#crossLink "Cull"}}{{/crossLink}} attached to this Entity.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/cull:property"}}cull{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * Fires an {{#crossLink "Entity/cull:event"}}{{/crossLink}} event on change.
-             *
-             * @property cull
-             * @type Cull
-             */
-            cull: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this Entity's  {{#crossLink "Entity/cull:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event cull
-                     * @param value The property's new value
-                     */
-
-                    this._attach({
-                        name: "cull",
-                        type: "xeogl.Cull",
-                        component: value,
-                        sceneDefault: true
-                    });
-                },
-
-                get: function () {
-                    return this._attached.cull;
-                }
-            },
-
-            /**
-             * The {{#crossLink "Modes"}}Modes{{/crossLink}} attached to this Entity.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/modes:property"}}modes{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * Fires an {{#crossLink "Entity/modes:event"}}{{/crossLink}} event on change.
-             *
-             * @property modes
-             * @type Modes
-             */
-            modes: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this Entity's {{#crossLink "Entity/modes:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event modes
-                     * @param value The property's new value
-                     */
-                    this._attach({
-                        name: "modes",
-                        type: "xeogl.Modes",
-                        component: value,
-                        sceneDefault: true
-                    });
-                },
-
-                get: function () {
-                    return this._attached.modes;
-                }
-            },
-
-            /**
              * The {{#crossLink "Geometry"}}Geometry{{/crossLink}} attached to this Entity.
              *
              * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
@@ -35503,7 +36108,7 @@ TODO
                     /**
                      * Fired whenever this Entity's {{#crossLink "Entity/geometry:property"}}{{/crossLink}} property changes.
                      *
-                     * @event modes
+                     * @event geometry
                      * @param value The property's new value
                      */
                     this._attach({
@@ -35526,41 +36131,6 @@ TODO
 
                 get: function () {
                     return this._attached.geometry;
-                }
-            },
-
-            /**
-             * The {{#crossLink "Layer"}}Layer{{/crossLink}} attached to this Entity.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/layer:property"}}layer{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * Fires an {{#crossLink "Entity/layer:event"}}{{/crossLink}} event on change.
-             *
-             * @property layer
-             * @type Layer
-             */
-            layer: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this Entity's  {{#crossLink "Entity/layer:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event layer
-                     * @param value The property's new value
-                     */
-                    this._attach({
-                        name: "layer",
-                        type: "xeogl.Layer",
-                        component: value,
-                        sceneDefault: true
-                    });
-                },
-
-                get: function () {
-                    return this._attached.layer;
                 }
             },
 
@@ -35733,46 +36303,7 @@ TODO
                     return this._attached.transform;
                 }
             },
-
-            /**
-             * The {{#crossLink "Billboard"}}{{/crossLink}} attached to this Entity.
-             *
-             * When {{#crossLink "Billboard/property:active"}}{{/crossLink}}, the {{#crossLink "Billboard"}}{{/crossLink}}
-             * will keep this Entity oriented towards the viewpoint.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/billboard:property"}}billboard{{/crossLink}}
-             * (an identity matrix) when set to a null or undefined value.
-             *
-             * Fires an {{#crossLink "Entity/billboard:event"}}{{/crossLink}} event on change.
-             *
-             * @property billboard
-             * @type Billboard
-             */
-            billboard: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this Entity's {{#crossLink "Entity/billboard:property"}}{{/crossLink}}
-                     * property changes.
-                     *
-                     * @event billboard
-                     * @param value The property's new value
-                     */
-                    this._attach({
-                        name: "billboard",
-                        type: "xeogl.Billboard",
-                        component: value,
-                        sceneDefault: true
-                    });
-                },
-
-                get: function () {
-                    return this._attached.billboard;
-                }
-            },
-
+            
             /**
              * The {{#crossLink "Viewport"}}{{/crossLink}} attached to this Entity.
              *
@@ -35810,47 +36341,7 @@ TODO
             },
 
             /**
-             * The {{#crossLink "Stationary"}}{{/crossLink}} attached to this Entity.
-             *
-             * When {{#crossLink "Stationary/property:active"}}{{/crossLink}}, the {{#crossLink "Stationary"}}{{/crossLink}}
-             * will prevent the translation component of the viewing transform from being applied to this Entity, yet
-             * still allowing it to rotate.
-             *
-             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/stationary:property"}}stationary{{/crossLink}},
-             * which is disabled by default.
-             *
-             * Fires an {{#crossLink "Entity/stationary:event"}}{{/crossLink}} event on change.
-             *
-             * @property stationary
-             * @type Stationary
-             */
-            stationary: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this Entity's {{#crossLink "Entity/stationary:property"}}{{/crossLink}}
-                     * property changes.
-                     *
-                     * @event stationary
-                     * @param value The property's new value
-                     */
-                    this._attach({
-                        name: "stationary",
-                        type: "xeogl.Stationary",
-                        component: value,
-                        sceneDefault: true
-                    });
-                },
-
-                get: function () {
-                    return this._attached.stationary;
-                }
-            },
-
-            /**
-             * The {{#crossLink "Outline"}}Outline{{/crossLink}} attached to this Entity.
+             * The {{#crossLink "Outline"}}Outline{{/crossLink}} effect attached to this Entity.
              *
              * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
              * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/outline:property"}}Outline{{/crossLink}} when set to
@@ -35884,6 +36375,522 @@ TODO
                 }
             },
 
+            /**
+             * The {{#crossLink "XRay"}}XRay{{/crossLink}} effect attached to this Entity.
+             *
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
+             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/xray:property"}}XRay{{/crossLink}} when set to
+             * a null or undefined value.
+             *
+             * Fires an {{#crossLink "Entity/xray:event"}}{{/crossLink}} event on change.
+             *
+             * @property xray
+             * @type XRay
+             */
+            xray: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this Entity's  {{#crossLink "Entity/XRay:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event XRay
+                     * @param value The property's new value
+                     */
+                    this._attach({
+                        name: "xray",
+                        type: "xeogl.XRay",
+                        component: value,
+                        sceneDefault: true
+                    });
+                },
+
+                get: function () {
+                    return this._attached.xray;
+                }
+            },
+
+            /**
+             Indicates whether this Entity is visible or not.
+
+             The Entity is only rendered when {{#crossLink "Entity/visible:property"}}{{/crossLink}} is true and
+             {{#crossLink "Entity/culled:property"}}{{/crossLink}} is false.
+             
+             Fires a {{#crossLink "Entity/visible:event"}}{{/crossLink}} event on change.
+
+             @property visible
+             @default true
+             @type Boolean
+             */
+            visible: {
+
+                set: function (value) {
+
+                    this._state.visible =  value !== false;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this Entity's {{#crossLink "Entity/visible:property"}}{{/crossLink}} property changes.
+
+                     @event visible
+                     @param value {Boolean} The property's new value
+                     */
+                    this.fire("visible",  this._state.visible);
+                },
+
+                get: function () {
+                    return this._state.visible;
+                }
+            },
+
+            /**
+             Indicates whether or not this Entity is currently culled from view.
+
+             The Entity is only rendered when {{#crossLink "Entity/visible:property"}}{{/crossLink}} is true and
+             {{#crossLink "Entity/culled:property"}}{{/crossLink}} is false.
+
+             Fires a {{#crossLink "Entity/culled:event"}}{{/crossLink}} event on change.
+
+             @property culled
+             @default false
+             @type Boolean
+             */
+            culled: {
+
+                set: function (value) {
+                    
+                    this._state.culled =  !!value;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this Entity's {{#crossLink "Entity/culled:property"}}{{/crossLink}} property changes.
+
+                     @event culled
+                     @param value {Boolean} The property's new value
+                     */
+                    this.fire("culled",  this._state.culled);
+                },
+
+                get: function () {
+                    return this._state.culled;
+                }
+            },
+
+            /**
+             Indicates whether this entity is pickable or not.
+
+             Picking is done via calls to {{#crossLink "Canvas/pick:method"}}Canvas#pick{{/crossLink}}.
+
+             Fires a {{#crossLink "Entity/pickable:event"}}{{/crossLink}} event on change.
+
+             @property pickable
+             @default true
+             @type Boolean
+             */
+            pickable: {
+
+                set: function (value) {
+
+                    value = value !== false;
+
+                    if (this._state.pickable === value) {
+                        return;
+                    }
+
+                    this._state.pickable = value;
+
+                    // No need to trigger a render;
+                    // state is only used when picking
+
+                    /**
+                     * Fired whenever this Entity's {{#crossLink "Entity/pickable:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event pickable
+                     * @param value The property's new value
+                     */
+                    this.fire("pickable", this._state.pickable);
+                },
+
+                get: function () {
+                    return this._state.pickable;
+                }
+            },
+
+            /**
+             Indicates whether this Entity is clippable by {{#crossLink "Clips"}}{{/crossLink}} components.
+
+             Fires a {{#crossLink "Entity/clippable:event"}}{{/crossLink}} event on change.
+
+             @property clippable
+             @default true
+             @type Boolean
+             */
+            clippable: {
+
+                set: function (value) {
+
+                    value = value !== false;
+
+                    if (this._state.clippable === value) {
+                        return;
+                    }
+
+                    this._state.clippable = value;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this Entity's {{#crossLink "Entity/clippable:property"}}{{/crossLink}} property changes.
+
+                     @event clippable
+                     @param value The property's new value
+                     */
+                    this.fire("clippable", this._state.clippable);
+                },
+
+                get: function () {
+                    return this._state.clippable;
+                }
+            },
+
+            /**
+             Indicates whether this Entity is included in boundary calculations.
+
+             Set this false if the Entity is a helper or indicator that should not be included in boundary calculations.
+
+             For example, when set false, the {{#crossLink "Entity/worldBoundary:property"}}World-space boundary{{/crossLink}} of all attached {{#crossLink "Entity"}}Entities{{/crossLink}} would not be considered when calculating the {{#crossLink "Scene/worldBoundary:property"}}World-space boundary{{/crossLink}} of their
+             {{#crossLink "Scene"}}{{/crossLink}}.
+
+             Fires a {{#crossLink "Entity/collidable:event"}}{{/crossLink}} event on change.
+
+             @property collidable
+             @default true
+             @type Boolean
+             */
+            collidable: {
+
+                set: function (value) {
+
+                    value = value !== false;
+
+                    if (value === this._state.collidable) {
+                        return;
+                    }
+
+                    this._state.collidable = value;
+
+                    /**
+                     Fired whenever this Entity's {{#crossLink "Entity/collidable:property"}}{{/crossLink}} property changes.
+
+                     @event collidable
+                     @param value The property's new value
+                     */
+                    this.fire("collidable", this._state.collidable);
+                },
+
+                get: function () {
+                    return this._state.collidable;
+                }
+            },
+
+
+            /**
+             Indicates whether this Entity casts shadows.
+
+             Fires a {{#crossLink "Entity/castShadow:event"}}{{/crossLink}} event on change.
+
+             @property castShadow
+             @default true
+             @type Boolean
+             */
+            castShadow: {
+
+                set: function (value) {
+
+                    value = value !== false;
+
+                    if (value === this._state.castShadow) {
+                        return;
+                    }
+
+                    this._state.castShadow = value;
+
+                    this._renderer.imageDirty = true; // Re-render in next shadow map generation pass
+
+                    /**
+                     Fired whenever this Entity's {{#crossLink "Entity/castShadow:property"}}{{/crossLink}} property changes.
+
+                     @event castShadow
+                     @param value The property's new value
+                     */
+                    this.fire("castShadow", this._state.castShadow);
+                },
+
+                get: function () {
+                    return this._state.castShadow;
+                }
+            },
+
+            /**
+             Indicates whether this Entity receives shadows.
+
+             Fires a {{#crossLink "Entity/receiveShadow:event"}}{{/crossLink}} event on change.
+
+             @property receiveShadow
+             @default true
+             @type Boolean
+             */
+            receiveShadow: {
+
+                set: function (value) {
+
+                    value = value !== false;
+
+                    if (value === this._state.receiveShadow) {
+                        return;
+                    }
+
+                    this._state.receiveShadow = value;
+
+                    this._state.hash = value ? "/mod/rs;" : "/mod;";
+
+                    this.fire("dirty", this); // Now need to (re)compile shaders to include/exclude shadow mapping
+
+                    /**
+                     Fired whenever this Entity's {{#crossLink "Entity/receiveShadow:property"}}{{/crossLink}} property changes.
+
+                     @event receiveShadow
+                     @param value The property's new value
+                     */
+                    this.fire("receiveShadow", this._state.receiveShadow);
+                },
+
+                get: function () {
+                    return this._state.receiveShadow;
+                }
+            },
+
+            /**
+             Indicates whether this Entity is rendered with an outline.
+
+             The outline effect is configured via the Entity's {{#crossLink "Entity/outline:property"}}outline{{/crossLink}} component.
+
+             Fires a {{#crossLink "Entity/outlined:event"}}{{/crossLink}} event on change.
+
+             @property outlined
+             @default false
+             @type Boolean
+             */
+            outlined: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    if (value === this._state.outlined) {
+                        return;
+                    }
+
+                    this._state.outlined = value;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this Entity' {{#crossLink "Entity/outlined:property"}}{{/crossLink}} property changes.
+
+                     @event outlined
+                     @param value The property's new value
+                     */
+                    this.fire("outlined", this._state.outlined);
+                },
+
+                get: function () {
+                    return this._state.outlined;
+                }
+            },
+
+            /**
+             Indicates whether this Entity is rendered X-rayed (transparent).
+
+             The X-ray effect is configured via the Entity's {{#crossLink "Entity/xray:property"}}outline{{/crossLink}} component.
+
+             Fires a {{#crossLink "Entity/xrayed:event"}}{{/crossLink}} event on change.
+
+             @property xrayed
+             @default false
+             @type Boolean
+             */
+            xrayed: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    if (this._state.xrayed === value) {
+                        return;
+                    }
+
+                    this._state.xrayed = value;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this Entity's {{#crossLink "Entity/xrayed:property"}}{{/crossLink}} property changes.
+
+                     @event xrayed
+                     @param value The property's new value
+                     */
+                    this.fire("xrayed", this._state.xrayed);
+                },
+
+                get: function () {
+                    return this._state.xrayed;
+                }
+            },
+
+            /**
+             * Indicates this Entity's rendering order.
+             *
+             * This can be set on multiple transparent Entities, to make them render in a specific order   
+             * for correct alpha blending.
+             *
+             * Fires a {{#crossLink "Layer/layer:event"}}{{/crossLink}} event on change.
+             *
+             * @property layer
+             * @default 0
+             * @type Number
+             */
+            layer: {
+
+                set: function (value) {
+
+                    // TODO: Only accept rendering layer in range [0...MAX_layer]
+
+                    value = value || 0;
+
+                    value = Math.round(value);
+
+
+                    if (value === this._state.layer) {
+                        return;
+                    }
+
+                    this._state.layer = value;
+
+                    this._renderer.stateOrderDirty = true;
+
+                    /**
+                     * Fired whenever this Entity's  {{#crossLink "Layer/layer:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event layer
+                     * @param value The property's new value
+                     */
+                    this.fire("layer", this._state.layer);
+                },
+
+                get: function () {
+                    return this._state.layer;
+                }
+            },
+
+            /**
+             * Flag which indicates whether this Entity is stationary or not.
+             *
+             * Setting this true will disable the effect of {{#crossLink "Lookat"}}view transform{{/crossLink}}
+             * translations for this Entity, while still alowing it to rotate. This is useful for skybox Entities.
+
+             * Fires an {{#crossLink "Entity/stationary:event"}}{{/crossLink}} event on change.
+             *
+             * @property stationary
+             * @default false
+             * @type Boolean
+             */
+            stationary: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    if (this._state.stationary === value) {
+                        return;
+                    }
+
+                    this._state.stationary = value;
+
+                  //  this._state.hash = (this._state.stationary ? "a;" : ";");
+
+                    this.fire("dirty", this);
+
+                    /**
+                     * Fired whenever this Entity's {{#crossLink "Entity/stationary:property"}}{{/crossLink}} property changes.
+                     * @event stationary
+                     * @param value The property's new value
+                     */
+                    this.fire('stationary', this._state.stationary);
+                },
+
+                get: function () {
+                    return this._state.stationary;
+                }
+            },
+
+            /**
+             * Specifies the billboarding behaviour for this Entity.
+             *
+             * Options are:
+             *
+             *     * **"none"** -  **(default)** - No billboarding.
+             *     * **"spherical"** - Entity is billboarded to face the viewpoint, rotating both vertically and horizontally.
+             *     * **"cylindrical"** - Entity is billboarded to face the viewpoint, rotating only about its vertically
+             *     axis. Use this mode for things like trees on a landscape.
+             *
+             * Fires an {{#crossLink "Entity/billboard:event"}}{{/crossLink}} event on change.
+             *
+             * @property billboard
+             * @default "none"
+             * @type String
+             */
+            billboard: {
+
+                set: function (value) {
+
+                    value = value || "none";
+
+                    if (value !== "spherical" &&
+                        value !== "cylindrical" &&
+                        value !== "none") {
+
+                        this.error("Unsupported value for 'billboard': " + value + " - accepted values are " +
+                            "'spherical', 'cylindrical' and 'none' - defaulting to 'none'.");
+
+                        value = "none";
+                    }
+
+                    if (this._state.billboard === value) {
+                        return;
+                    }
+
+                    this._state.billboard = value;
+
+                    this._state.hash = (this._state.active ? "a;" : ";") + (this._state.billboard ? "s;" : ";");
+
+                    this.fire("dirty", this);
+
+                    /**
+                     * Fired whenever this Entity's {{#crossLink "Entity/billboard:property"}}{{/crossLink}} property changes.
+                     * @event billboard
+                     * @param value The property's new value
+                     */
+                    this.fire('billboard', this._state.billboard);
+                },
+
+                get: function () {
+                    return this._state.billboard;
+                }
+            },
+            
             /**
              * Local-space 3D boundary of this Entity.
              *
@@ -36138,6 +37145,42 @@ TODO
             },
 
             /**
+             * World-space vertex positions of this Entity.
+             *
+             * These are internally generated on-demand and cached. To free the cached
+             * vertex World positions when you're done with them, set this property to null or undefined.
+             *
+             * @property worpdPositions
+             * @type Float32Array
+             * @final
+             */
+            worldPositions: {
+
+                get: function () {
+                    if (this._worldPositionsDirty) {
+                        var positions = this.geometry.positions;
+                        if (!this._worldPositions) {
+                            this._worldPositions = new Float32Array(positions.length);
+                        }
+                        if (!this._attached.transform) {
+                            this._worldPositions.set(positions);
+                        } else {
+                            xeogl.math.transformPositions3(this._attached.transform.leafMatrix, positions, this._worldPositions);
+                        }
+                        this._worldPositionsDirty = false;
+                    }
+                    return this._worldPositions;
+                },
+
+                set: function(value) {
+                    if (value = undefined || value === null) {
+                        this._worldPositions = null; // Release memory
+                        this._worldPositionsDirty = true;
+                    }
+                }
+            },
+
+            /**
              * JSON object containing the (GLSL) source code of the shaders for this Entity.
              *
              * This is sometimes useful to have as a reference
@@ -36211,6 +37254,7 @@ TODO
 
         _setWorldBoundaryDirty: function () {
             this._worldBoundaryDirty = true;
+            this._worldPositionsDirty = true;
             if (this._worldBoundary) {
                 this._worldBoundary.fire("updated", true);
             }
@@ -36279,18 +37323,17 @@ TODO
 
             attached.camera._compile();
             attached.clips._compile();
-            attached.visibility._compile();
-            attached.cull._compile();
-            attached.modes._compile();
             attached.geometry._compile();
-            attached.layer._compile();
             attached.lights._compile();
             attached.material._compile();
             this._renderer.modelTransform = attached.transform._state;
-            attached.billboard._compile();
-            attached.stationary._compile();
             attached.viewport._compile();
             attached.outline._compile();
+            attached.xray._compile();
+
+            this._makeHash();
+
+            this._renderer.modes = this._state;
 
             // (Re)build this Entity in the renderer; for each Entity in teh scene graph,
             // there is an "object" in the renderer, that has the same ID as the entity
@@ -36308,6 +37351,7 @@ TODO
 
                 this.scene.canvas.spinner.processes--;
                 this._loading = false;
+                this.fire("loaded", true);
             }
 
             if (result && result.error) {
@@ -36319,6 +37363,23 @@ TODO
             }
         },
 
+        _makeHash: function () {
+            var hash = [];
+            var state = this._state;
+            if (state.stationary) {
+                hash.push("/s");
+            }
+            if (state.billboard === "none") {
+                hash.push("/n");
+            } else if (state.billboard === "spherical") {
+                hash.push("/s");
+            } else if (state.billboard === "cylindrical") {
+                hash.push("/c");
+            }
+            hash.push(";");
+            this._state.hash = hash.join("");
+        },
+
         _getJSON: function () {
 
             var attached = this._attached;
@@ -36326,18 +37387,26 @@ TODO
             return {
                 camera: attached.camera.id,
                 clips: attached.clips.id,
-                visibility: attached.visibility.id,
-                cull: attached.cull.id,
-                modes: attached.modes.id,
                 geometry: attached.geometry.id,
-                layer: attached.layer.id,
                 lights: attached.lights.id,
                 material: attached.material.id,
                 transform: attached.transform.id,
-                billboard: attached.billboard.id,
-                stationary: attached.stationary.id,
                 viewport: attached.viewport.id,
-                outline: attached.outline.id
+                outline: attached.outline.id,
+                xray: attached.xray.id,
+
+                visible: this._state.visible,
+                culled: this._state.culled,
+                pickable: this._state.pickable,
+                clippable: this._state.clippable,
+                collidable: this._state.collidable,
+                castShadow: this._state.castShadow,
+                receiveShadow: this._state.receiveShadow,
+                outlined: this._state.outlined,
+                xrayed:  this._state.xrayed,
+                layer: this._state.layer,
+                stationary: this._state.stationary,
+                billboard: this._state.billboard
             };
         },
 
@@ -36353,695 +37422,6 @@ TODO
  * @module xeogl
  * @submodule rendering
  */;/**
- A **Layer** sets the rendering order of {{#crossLink "Entity"}}Entities{{/crossLink}} within their {{#crossLink "Stage"}}Stages{{/crossLink}}.
-
- ## Overview
-
- * When xeogl renders a {{#crossLink "Scene"}}Scene{{/crossLink}}, each {{#crossLink "Stage"}}Stage{{/crossLink}} within that will render its bin
- of {{#crossLink "Entity"}}Entities{{/crossLink}} in turn, from the lowest priority {{#crossLink "Stage"}}Stage{{/crossLink}} to the highest.
- * {{#crossLink "Stage"}}Stages{{/crossLink}} are typically used for ordering the render-to-texture steps in posteffects pipelines.
- * You can control the render order of the individual {{#crossLink "Entity"}}Entities{{/crossLink}} ***within*** a {{#crossLink "Stage"}}Stage{{/crossLink}}
- by associating them with {{#crossLink "Layer"}}Layers{{/crossLink}}.
- * {{#crossLink "Layer"}}Layers{{/crossLink}} are typically used to <a href="https://www.opengl.org/wiki/Transparency_Sorting" target="_other">transparency-sort</a> the
- {{#crossLink "Entity"}}Entities{{/crossLink}} within {{#crossLink "Stage"}}Stages{{/crossLink}}.
- * {{#crossLink "Entity"}}Entities{{/crossLink}} not explicitly attached to a Layer are implicitly
- attached to the {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
- {{#crossLink "Scene/layer:property"}}layer{{/crossLink}}. which has
- a {{#crossLink "Layer/priority:property"}}{{/crossLink}} value of zero.
- * You can use Layers without defining any {{#crossLink "Stage"}}Stages{{/crossLink}} if you simply let your
- {{#crossLink "Entity"}}Entities{{/crossLink}} fall back on the {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
- {{#crossLink "Scene/stage:property"}}stage{{/crossLink}}. which has a {{#crossLink "Stage/priority:property"}}{{/crossLink}} value of zero.
-
- <img src="../../../assets/images/Layer.png"></img>
-
- ## Examples
-
- * [Clouds as billboarded and z-sorted alpha maps](../../examples/#transforms_billboard_spherical_clouds)
-
- ## Usage
-
- In this example we'll use Layers to perform <a href="https://www.opengl.org/wiki/Transparency_Sorting" target="_other">transparency sorting</a>,
- which ensures that transparent entities are rendered farthest-to-nearest, so that they alpha-blend correctly with each other.
-
- We want to render the three nested boxes shown below, in which the innermost box is opaque and blue,
- the box enclosing that is transparent and yellow, and the outermost box is transparent and green. We need the boxes to
- render in order innermost-to-outermost, in order to blend transparencies correctly.
-
- <img src="../../assets/images/transparencySort.jpg"></img>
-
- Our scene has one {{#crossLink "Stage"}}{{/crossLink}}, just for completeness. As mentioned earlier, you don't have to
- create this because the {{#crossLink "Scene"}}{{/crossLink}} will provide its default {{#crossLink "Stage"}}{{/crossLink}}.
- Then, within that {{#crossLink "Stage"}}{{/crossLink}}, we create an {{#crossLink "Entity"}}{{/crossLink}} for each box,
- each assigned to a different prioritised {{#crossLink "Layer"}}{{/crossLink}} to ensure that they are rendered in the right order.
-
- ````javascript
- // A Stage, just for completeness
- // We could instead just implicitly default to the Scene's default Stage
- var stage = new xeogl.Stage({
-    priority: 0
- });
-
- // Geometry we'll share among our Entities
- var geometry = new xeogl.BoxGeometry();
-
- // Innermost box
- // Blue and opaque, in Layer with render order 0, renders first
-
- var entity1 = new xeogl.Entity({
-    geometry: geometry,
-    stage: stage,
-    layer: new xeogl.Layer({
-        priority: 1
-    }),
-    material: new xeogl.PhongMaterial({
-        diffuse: [0.2, 0.2, 1.0],
-        opacity: 1.0
-    })
- });
-
- // Middle box
- // Red and transparent, in Layer with render order 2, renders next
-
- var entity2 = new xeogl.Entity({
-    geometry: geometry,
-    stage: stage,
-    layer: new xeogl.Layer({
-        priority: 2
-    }),
-    material: new xeogl.Layer({
-        priority: 2
-    }),
-    scale: new xeogl.Scale({
-        xyz: [6, 6, 6]
-    })
- });
-
- // Outermost box
- // Green and transparent, in Layer with render order 3, renders last
-
- var entity3 = new xeogl.Entity({
-    geometry: geometry,
-    stage: stage,
-    layer: new xeogl.Layer({
-        priority: 3
-    }),
-    material: new xeogl.PhongMaterial({
-        diffuse: [0.2, 1, 0.2],
-        opacity: 0.2
-    }),
-    scale: new xeogl.Scale({
-        xyz: [9, 9, 9]
-    })
- });
- ````
-
- @class Layer
- @module xeogl
- @submodule rendering
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Geometry in the default
- {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Layer.
- @param [cfg.priority=0] {Number} The rendering priority,
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    xeogl.Layer = xeogl.Component.extend({
-
-        type: "xeogl.Layer",
-
-        _init: function (cfg) {
-
-            this._state = new xeogl.renderer.Layer({
-                priority: null
-            });
-
-            this.priority = cfg.priority;
-        },
-
-        _props: {
-
-            /**
-             * Indicates this Layer's rendering priority for the attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
-             *
-             * Each {{#crossLink "Entity"}}{{/crossLink}} is also attached to a {{#crossLink "Stage"}}Stage{{/crossLink}}, which sets a *stage* rendering
-             * priority via its {{#crossLink "Stage/priority:property"}}priority{{/crossLink}} property.
-             *
-             * Fires a {{#crossLink "Layer/priority:event"}}{{/crossLink}} event on change.
-             *
-             * @property priority
-             * @default 0
-             * @type Number
-             */
-            priority: {
-
-                set: function (value) {
-
-                    // TODO: Only accept rendering priority in range [0...MAX_PRIORITY]
-
-                    value = value || 0;
-
-                    value = Math.round(value);
-
-
-                    if (value === this._state.priority) {
-                        return;
-                    }
-
-                    this._state.priority = value;
-
-                    this._renderer.stateOrderDirty = true;
-
-                    /**
-                     * Fired whenever this Layer's  {{#crossLink "Layer/priority:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event priority
-                     * @param value The property's new value
-                     */
-                    this.fire("priority", this._state.priority);
-                },
-
-                get: function () {
-                    return this._state.priority;
-                }
-            }
-        },
-
-        _compile: function () {
-            this._renderer.layer = this._state;
-        },
-
-        _getJSON: function () {
-            return {
-                priority: this._state.priority
-            };
-        },
-
-        _destroy: function () {
-            this._state.destroy();
-        }
-    });
-
-})();
-;/**
- A **Modes** toggles various xeogl modes and capabilities for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
-
- ## Overview
-
- * Though the rendering modes are defined by various different components attached to the {{#crossLink "Entity"}}Entities{{/crossLink}},
- Modes components provide a single point through which you can toggle them on or off.
- * A Modes may be shared among multiple {{#crossLink "Entity"}}Entities{{/crossLink}} to toggle
- rendering modes for them as a group.
-
- <img src="../../../assets/images/Modes.png"></img>
-
- ## Usage
-
- In this example we have a Modes that toggles rendering modes for two {{#crossLink "Entity"}}Entities{{/crossLink}}. The
- properties of the Modes are initialised to their default values.
-
- ````javascript
- // Create a Modes with default properties
- var modes = new xeogl.Modes(scene, {
-    collidable: true,           // Include Entities in boundary calculations
-    pickable: true,             // Enable picking
-    clippable true,             // Enable effect of xeogl.Clip components
-    transparent : false,        // Disable transparency
-    backfaces : true,           // Render backfaces
-    frontface : "ccw",          // Front faces have counter-clockwise vertex winding
-    outline: false              // Don't outline for emphasis
- });
-
- var boxGeometry = new xeogl.BoxGeometry();
-
- // Create two Entities whose rendering modes will be controlled by our Modes
-
- var entity1 = new xeogl.Entity({
-     geometry: boxGeometry,
-     modes: modes,
-     translate: new xeogl.Translate({
-        xyz: [3, 0, 0]
-     })
- });
-
- var entity2 = new xeogl.Entity(scene, {
-     geometry: boxGeometry,
-     modes: modes,
-     translate: new xeogl.Translate({
-        xyz: [3, 0, 0]
-     })
- });
- ````
-
- @class Modes
- @module xeogl
- @submodule rendering
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Modes in the default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Modes.
- @param [cfg.pickable=true] {Boolean}  Whether to enable picking.
- @param [cfg.clippable=true] {Boolean} Whether to enable clippable by {{#crossLink "Clips"}}{{/crossLink}}.
- @param [cfg.transparent=false] {Boolean} Whether to enable the transparency effect created by {{#crossLink "Material"}}Material{{/crossLink}}s when they have
- {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} < 1.0. This mode will set attached {{#crossLink "Entity"}}Entities{{/crossLink}} transparent (ie. to be rendered in a
- transparency pass with blending enabled etc), while
- the {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} will indicate the **degree** of their transparency
- (ie. where opacity of 0.0 indicates maximum translucency and opacity of 1.0 indicates minimum translucency).
- @param [cfg.backfaces=false] {Boolean} Whether to render {{#crossLink "Geometry"}}Geometry{{/crossLink}} backfaces.
- @param [cfg.frontface="ccw"] {Boolean} The winding order for {{#crossLink "Geometry"}}Geometry{{/crossLink}} front faces - "cw" for clockwise, or "ccw" for counter-clockwise.
- @param [cfg.collidable=true] {Boolean} Whether attached {{#crossLink "Entity"}}Entities{{/crossLink}} are included in boundary-related calculations. Set this false if the
- {{#crossLink "Entity"}}Entities{{/crossLink}} are things like helpers or indicators that should not be included in boundary calculations.
- @param [cfg.castShadow=true] {Boolean} Whether attached {{#crossLink "Entity"}}Entities{{/crossLink}} cast shadows.
- @param [cfg.receiveShadow=true] {Boolean} Whether attached {{#crossLink "Entity"}}Entities{{/crossLink}} receive shadows.
- @param [cfg.outline=false] {Boolean} Whether an outline is drawn around the attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    xeogl.Modes = xeogl.Component.extend({
-
-        type: "xeogl.Modes",
-
-        _init: function (cfg) {
-
-            this._state = new xeogl.renderer.Modes({
-                pickable: null,
-                clippable: null,
-                transparent: null,
-                backfaces: null,
-                frontface: null, // Boolean for speed; true == "ccw", false == "cw"
-                collidable: null,
-                castShadow: null,
-                receiveShadow: null,
-                outline: null,
-                hash: ""
-            });
-
-            this.pickable = cfg.pickable;
-            this.clippable = cfg.clippable;
-            this.transparent = cfg.transparent;
-            this.backfaces = cfg.backfaces;
-            this.frontface = cfg.frontface;
-            this.collidable = cfg.collidable;
-            this.castShadow = cfg.castShadow;
-            this.receiveShadow = cfg.receiveShadow;
-            this.outline = cfg.outline;
-        },
-
-        _props: {
-
-            /**
-             Whether this Modes enables picking of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
-
-             Picking is performed via calls to {{#crossLink "Canvas/pick:method"}}Canvas#pick{{/crossLink}}.
-
-             Fires a {{#crossLink "Modes/pickable:event"}}{{/crossLink}} event on change.
-
-             @property pickable
-             @default true
-             @type Boolean
-             */
-            pickable: {
-
-                set: function (value) {
-
-                    value = value !== false;
-
-                    if (this._state.pickable === value) {
-                        return;
-                    }
-
-                    this._state.pickable = value;
-
-                    // No need to trigger a render;
-                    // state is only used when picking
-
-                    /**
-                     * Fired whenever this Modes' {{#crossLink "Modes/pickable:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event pickable
-                     * @param value The property's new value
-                     */
-                    this.fire("pickable", this._state.pickable);
-                },
-
-                get: function () {
-                    return this._state.pickable;
-                }
-            },
-
-            /**
-             Whether this Modes enables clippable of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
-
-             clippable is done by {{#crossLink "Clips"}}{{/crossLink}} that are also attached to
-             the {{#crossLink "Entity"}}Entities{{/crossLink}}.
-
-             Fires a {{#crossLink "Modes/clippable:event"}}{{/crossLink}} event on change.
-
-             @property clippable
-             @default true
-             @type Boolean
-             */
-            clippable: {
-
-                set: function (value) {
-
-                    value = value !== false;
-
-                    if (this._state.clippable === value) {
-                        return;
-                    }
-
-                    this._state.clippable = value;
-
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     Fired whenever this Modes' {{#crossLink "Modes/clippable:property"}}{{/crossLink}} property changes.
-
-                     @event clippable
-                     @param value The property's new value
-                     */
-                    this.fire("clippable", this._state.clippable);
-                },
-
-                get: function () {
-                    return this._state.clippable;
-                }
-            },
-
-            /**
-             Whether this Modes sets attached {{#crossLink "Entity"}}Entities{{/crossLink}} transparent.
-
-             When true. this property will set attached {{#crossLink "Entity"}}Entities{{/crossLink}} transparent (ie. to be rendered in a
-             transparency pass with blending enabled etc), while
-             the {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} will be used to indicate the **degree** of their transparency
-             (ie. where opacity of 0.0 indicates maximum translucency and opacity of 1.0 indicates minimum translucency).
-
-             Fires a {{#crossLink "Modes/transparent:event"}}{{/crossLink}} event on change.
-
-             @property transparent
-             @default false
-             @type Boolean
-             */
-            transparent: {
-
-                set: function (value) {
-
-                    value = !!value;
-
-                    if (this._state.transparent === value) {
-                        return;
-                    }
-
-                    this._state.transparent = value;
-
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     Fired whenever this Modes' {{#crossLink "Modes/transparent:property"}}{{/crossLink}} property changes.
-
-                     @event transparent
-                     @param value The property's new value
-                     */
-                    this.fire("transparent", this._state.transparent);
-                },
-
-                get: function () {
-                    return this._state.transparent;
-                }
-            },
-
-            /**
-             Whether this Modes enables backfaces to be visible on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
-
-             The backfaces will belong to {{#crossLink "Geometry"}}{{/crossLink}} compoents that are also attached to
-             the {{#crossLink "Entity"}}Entities{{/crossLink}}.
-
-             Fires a {{#crossLink "Modes/backfaces:event"}}{{/crossLink}} event on change.
-
-             @property backfaces
-             @default false
-             @type Boolean
-             */
-            backfaces: {
-
-                set: function (value) {
-
-                    value = !!value;
-
-                    if (this._state.backfaces === value) {
-                        return;
-                    }
-
-                    this._state.backfaces = value;
-
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     Fired whenever this Modes' {{#crossLink "Modes/backfaces:property"}}{{/crossLink}} property changes.
-
-                     @event backfaces
-                     @param value The property's new value
-                     */
-                    this.fire("backfaces", this._state.backfaces);
-                },
-
-                get: function () {
-                    return this._state.backfaces;
-                }
-            },
-
-            /**
-             Indicates the winding direction of front faces on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
-
-             The faces will belong to {{#crossLink "Geometry"}}{{/crossLink}} components that are also attached to
-             the {{#crossLink "Entity"}}Entities{{/crossLink}}.
-
-             Fires a {{#crossLink "Modes/frontface:event"}}{{/crossLink}} event on change.
-
-             @property frontface
-             @default "ccw"
-             @type String
-             */
-            frontface: {
-
-                set: function (value) {
-
-                    value = value !== "cw";
-
-                    if (this._state.frontface === value) {
-                        return;
-                    }
-
-                    this._state.frontface = value;
-
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     Fired whenever this Modes' {{#crossLink "Modes/frontface:property"}}{{/crossLink}} property changes.
-
-                     @event frontface
-                     @param value The property's new value
-                     */
-                    this.fire("frontface", this._state.frontface ? "ccw" : "cw");
-                },
-
-                get: function () {
-                    return this._state.frontface ? "ccw" : "cw";
-                }
-            },
-
-            /**
-             Whether attached {{#crossLink "Entity"}}Entities{{/crossLink}} are included
-             in boundary-related calculations.
-
-             Set this false if the
-             {{#crossLink "Entity"}}Entities{{/crossLink}} are things like helpers or indicators that should not be included in boundary calculations.
-
-             For example, when set false, the {{#crossLink "Entity/worldBoundary:property"}}World-space boundary{{/crossLink}} of all attached {{#crossLink "Entity"}}Entities{{/crossLink}} would not be considered when calculating the {{#crossLink "Scene/worldBoundary:property"}}World-space boundary{{/crossLink}} of their
-             {{#crossLink "Scene"}}{{/crossLink}}.
-
-             Fires a {{#crossLink "Modes/collidable:event"}}{{/crossLink}} event on change.
-
-             @property collidable
-             @default true
-             @type Boolean
-             */
-            collidable: {
-
-                set: function (value) {
-
-                    value = value !== false;
-
-                    if (value === this._state.collidable) {
-                        return;
-                    }
-
-                    this._state.collidable = value;
-
-                    /**
-                     Fired whenever this Modes' {{#crossLink "Modes/collidable:property"}}{{/crossLink}} property changes.
-
-                     @event collidable
-                     @param value The property's new value
-                     */
-                    this.fire("collidable", this._state.collidable);
-                },
-
-                get: function () {
-                    return this._state.collidable;
-                }
-            },
-
-
-            /**
-             Whether attached {{#crossLink "Entity"}}Entities{{/crossLink}} casts shadows.
-
-             Fires a {{#crossLink "Modes/castShadow:event"}}{{/crossLink}} event on change.
-
-             @property castShadow
-             @default true
-             @type Boolean
-             */
-            castShadow: {
-
-                set: function (value) {
-
-                    value = value !== false;
-
-                    if (value === this._state.castShadow) {
-                        return;
-                    }
-
-                    this._state.castShadow = value;
-
-                    this._renderer.imageDirty = true; // Re-render in next shadow map generation pass
-
-                    /**
-                     Fired whenever this Modes' {{#crossLink "Modes/castShadow:property"}}{{/crossLink}} property changes.
-
-                     @event castShadow
-                     @param value The property's new value
-                     */
-                    this.fire("castShadow", this._state.castShadow);
-                },
-
-                get: function () {
-                    return this._state.castShadow;
-                }
-            },
-
-            /**
-             Whether attached {{#crossLink "Entity"}}Entities{{/crossLink}} receives shadows.
-
-             Fires a {{#crossLink "Modes/receiveShadow:event"}}{{/crossLink}} event on change.
-
-             @property receiveShadow
-             @default true
-             @type Boolean
-             */
-            receiveShadow: {
-
-                set: function (value) {
-
-                    value = value !== false;
-
-                    if (value === this._state.receiveShadow) {
-                        return;
-                    }
-
-                    this._state.receiveShadow = value;
-
-                    this._state.hash = value ? "/mod/rs;" : "/mod;";
-
-                    this.fire("dirty"); // Now need to (re)compile shaders to include/exclude shadow mapping
-
-                    /**
-                     Fired whenever this Modes' {{#crossLink "Modes/receiveShadow:property"}}{{/crossLink}} property changes.
-
-                     @event receiveShadow
-                     @param value The property's new value
-                     */
-                    this.fire("receiveShadow", this._state.receiveShadow);
-                },
-
-                get: function () {
-                    return this._state.receiveShadow;
-                }
-            },
-
-            /**
-             Whether an outline is drawn around attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
-
-             Fires a {{#crossLink "Modes/outline:event"}}{{/crossLink}} event on change.
-
-             @property outline
-             @default false
-             @type Boolean
-             */
-            outline: {
-
-                set: function (value) {
-
-                    value = !!value;
-
-                    if (value === this._state.outline) {
-                        return;
-                    }
-
-                    this._state.outline = value;
-
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     Fired whenever this Modes' {{#crossLink "Modes/outline:property"}}{{/crossLink}} property changes.
-
-                     @event outline
-                     @param value The property's new value
-                     */
-                    this.fire("outline", this._state.outline);
-                },
-
-                get: function () {
-                    return this._state.outline;
-                }
-            }
-        },
-
-        _compile: function () {
-            this._renderer.modes = this._state;
-        },
-
-        _getJSON: function () {
-            return {
-                pickable: this._state.pickable,
-                clippable: this._state.clippable,
-                transparent: this._state.transparent,
-                backfaces: this._state.backfaces,
-                frontface: this._state.frontface,
-                collidable: this._state.collidable,
-                castShadow: this._state.castShadow,
-                receiveShadow: this._state.receiveShadow,
-                outline: this._state.outline
-            };
-        },
-
-        _destroy: function () {
-            this._state.destroy();
-        }
-    });
-
-})();
-;/**
  A **Viewport** defines a region within the canvas in which attached {{#crossLink "Entity"}}Entities{{/crossLink}} will render.
 
  <br>
@@ -38914,324 +39294,6 @@ TODO
                 json.parent = this._parent.id;
             }
             return json;
-        }
-    });
-
-})();
-;/**
- A **Billboard** is a modelling {{#crossLink "Transform"}}{{/crossLink}} that causes associated {{#crossLink "Entity"}}Entities{{/crossLink}} to be always oriented towards the Camera.
-
- <a href="../../examples/#transforms_billboard_spherical"><img src="http://i.giphy.com/l3vR13LcnTuQGMInu.gif"></img></a>
-
- ## Overview
-
- * **Spherical** billboards are free to rotate their {{#crossLink "Entity"}}Entities{{/crossLink}} in any direction and always face the {{#crossLink "Camera"}}{{/crossLink}} perfectly.
- * **Cylindrical** billboards rotate their {{#crossLink "Entity"}}Entities{{/crossLink}} towards the {{#crossLink "Camera"}}{{/crossLink}}, but only about the Y-axis.
- * A Billboard will cause {{#crossLink "Scale"}}{{/crossLink}} transformations to have no effect on its {{#crossLink "Entity"}}Entities{{/crossLink}}
-
- <img src="../../../assets/images/Billboard.png"></img>
-
- ## Examples
-
- * [Spherical billboards](../../examples/#transforms_billboard_spherical)
- * [Cylindrical billboards](../../examples/#transforms_billboard_cylindrical)
- * [Clouds using billboards](../../examples/#transforms_billboard_spherical_clouds)
-
- ## Usage
-
- Let's create 1000 randomly-positioned {{#crossLink "Entity"}}Entities{{/crossLink}} that always face towards the
- viewpoint as we orbit the {{#crossLink "Camera"}}{{/crossLink}} about the X and Y axis:
-
- ```` javascript
- // Create 1000 Entities in default Scene with shared Geometry, PhongMaterial and Billboard
-
- var geometry = new xeogl.Geometry({
-     primitive: "triangles",
-     positions: [3, 3, 0, -3, 3, 0, -3, -3, 0, 3, -3, 0],
-     normals: [-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0],
-     uv: [1, 1, 0, 1, 0, 0, 1, 0],
-     indices: [2, 1, 0, 3, 2, 0] // Ensure these will be front-faces
- });
-
- var material = new xeogl.PhongMaterial({
-     emissiveMap: new xeogl.Texture({
-         src: "textures/diffuse/teapot.jpg"
-     })
- });
-
- var billboard = new xeogl.Billboard({
-     spherical: true
- });
-
- for (var i = 0; i < 1000; i++) {
-     new xeogl.Entity({
-         geometry: geometry,
-         material: material,
-         billboard: billboard,
-         transform: new xeogl.Translate({
-             xyz: [Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50]
-         })
-     });
- }
-
- // Move eye back to see everything, then orbit the Camera
-
- var scene = xeogl.scene;
-
- scene.camera.view.zoom(120);
-
- scene.on("tick", function () {
-
-          var view = scene.camera.view;
-
-          view.rotateEyeY(0.2);
-          view.rotateEyeX(0.1);
-     });
- ````
-
- @class Billboard
- @module xeogl
- @submodule transforms
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Billboard in the default
- {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Billboard.
- @param [cfg.active=true] {Boolean} Indicates if this Billboard is active or not.
- @param [cfg.spherical=true] {Boolean} Indicates if this Billboard is spherical (true) or cylindrical (false).
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    xeogl.Billboard = xeogl.Component.extend({
-
-        type: "xeogl.Billboard",
-
-        _init: function (cfg) {
-
-            this._super(cfg);
-
-            this._state = new xeogl.renderer.Billboard({
-                active: true,
-                spherical: true,
-                hash: "a;s;"
-            });
-
-            this.active = cfg.active !== false;
-            this.spherical = cfg.spherical !== false;
-        },
-
-        _props: {
-
-            /**
-             * Flag which indicates whether this Billboard is active or not.
-             *
-             * Fires an {{#crossLink "Billboard/active:event"}}{{/crossLink}} event on change.
-             *
-             * @property active
-             * @type Boolean
-             */
-            active: {
-
-                set: function (value) {
-
-                    value = !!value;
-
-                    if (this._state.active === value) {
-                        return;
-                    }
-
-                    this._state.active = value;
-
-                    this._state.hash = (this._state.active ? "a;" : ";") + (this._state.spherical ? "s;" : ";");
-
-                    this.fire("dirty", true);
-
-                    /**
-                     * Fired whenever this Billboard's {{#crossLink "Billboard/active:property"}}{{/crossLink}} property changes.
-                     * @event active
-                     * @param value The property's new value
-                     */
-                    this.fire('active', this._state.active);
-                },
-
-                get: function () {
-                    return this._state.active;
-                }
-            },
-
-            /**
-             * Flag which indicates whether this Billboard is spherical (true) or cylindrical (false).
-             *
-             * Fires an {{#crossLink "Billboard/spherical:event"}}{{/crossLink}} event on change.
-             *
-             * @property spherical
-             * @type Boolean
-             */
-            spherical: {
-
-                set: function (value) {
-
-                    value = !!value;
-
-                    if (this._state.spherical === value) {
-                        return;
-                    }
-
-                    this._state.spherical = value;
-
-                    this._state.hash = (this._state.active ? "a;" : ";") + (this._state.spherical ? "s;" : ";");
-
-                    this.fire("dirty", true);
-
-                    /**
-                     * Fired whenever this Billboard's {{#crossLink "Billboard/spherical:property"}}{{/crossLink}} property changes.
-                     * @event spherical
-                     * @param value The property's new value
-                     */
-                    this.fire('spherical', this._state.spherical);
-                },
-
-                get: function () {
-                    return this._state.spherical;
-                }
-            }
-        },
-
-        _compile: function () {
-            this._renderer.billboard = this._state;
-        },
-
-
-        _getJSON: function () {
-            return {
-                active: this._state.active
-            };
-        }
-    });
-
-})();
-;/**
- A **Stationary** disables the effect of {{#crossLink "Lookat"}}view transform{{/crossLink}} translations for
- associated {{#crossLink "Entity"}}Entities{{/crossLink}} or {{#crossLink "Model"}}Models{{/crossLink}}.
-
- ## Overview
-
- <img src="../../../assets/images/Stationary.png"></img>
-
- ## Examples
-
- * [Custom Skybox using a Stationary component](../../examples/#skyboxes_skybox_custom)
-
- ## Usage
-
- An {{#crossLink "Entity"}}{{/crossLink}} with a Stationary that will cause it to never translate with respect to
- the viewpoint, as if far away.
-
- ````javascript
- new xeogl.Entity({
-
-     geometry: new xeogl.BoxGeometry({
-         xSize: 1,
-         ySize: 1,
-         zSize: 1
-     }),
-
-     material: new xeogl.PhongMaterial({
-         diffuseMap: new xeogl.Texture({
-            src: "textures/diffuse/uvGrid2.jpg"
-         })
-     }),
-
-     stationary: new xeogl.Stationary({ // Locks position with respect to viewpoint
-         active: true
-     })
- });
- ````
-
- @class Stationary
- @module xeogl
- @submodule transforms
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Stationary in the default
- {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Stationary.
- @param [cfg.active=true] {Boolean} Indicates if this Stationary is active or not.
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    xeogl.Stationary = xeogl.Component.extend({
-
-        type: "xeogl.Stationary",
-
-        _init: function (cfg) {
-
-            this._super(cfg);
-
-            this._state = new xeogl.renderer.Stationary({
-                active: true
-            });
-
-            this.active = cfg.active !== false;
-        },
-
-        _props: {
-
-            /**
-             * Flag which indicates whether this Stationary is active or not.
-             *
-             * Fires an {{#crossLink "Stationary/active:event"}}{{/crossLink}} event on change.
-             *
-             * @property active
-             * @type Boolean
-             */
-            active: {
-
-                set: function (value) {
-
-                    value = !!value;
-
-                    if (this._state.active === value) {
-                        return;
-                    }
-
-                    this._state.active = value;
-
-                    this._state.hash = (this._state.active ? "a;" : ";");
-
-                    this.fire("dirty", true);
-
-                    /**
-                     * Fired whenever this Stationary's {{#crossLink "Stationary/active:property"}}{{/crossLink}} property changes.
-                     * @event active
-                     * @param value The property's new value
-                     */
-                    this.fire('active', this._state.active);
-                },
-
-                get: function () {
-                    return this._state.active;
-                }
-            }
-        },
-
-        _compile: function () {
-            this._renderer.stationary = this._state;
-        },
-
-
-        _getJSON: function () {
-            return {
-                active: this._state.active
-            };
         }
     });
 

@@ -45,7 +45,7 @@
                 ambient: [0.0, 0.0, 0.0],
                 diffuse: [1.0, 1.0, 1.0],
                 shininess: 80,
-                opacity: 1.0,
+                alpha: 1.0,
                 diffuseMap: diffuseMap
             }
         },
@@ -56,7 +56,7 @@
                 diffuse: [0.3, 0.3, 0.5],
                 specular: [1.0, 0.4, 0.4],
                 shininess: 20,
-                opacity: 1.0,
+                alpha: 1.0,
                 specularMap: {
                     src: "textures/diffuse/crossGridColorMap.jpg",
                     minFilter: "linearMipmapLinear",
@@ -79,7 +79,7 @@
                 diffuse: [0.160, 0.170, 0.180],
                 emissive: [0.8, 0.2, 0.0],
                 specular: [1, 1, 1],
-                opacity: 1.0,
+                alpha: 1.0,
                 emissiveMap: {
                     src: "textures/emissive/emissiveMap.jpg",
                     minFilter: "linearMipmapLinear",
@@ -92,14 +92,14 @@
                 }
             }
         },
-        "Opacity map": {
+        "Alpha map": {
             material: {
                 type: "xeogl.PhongMaterial",
                 ambient: [0.3, 0.3, 0.3],
                 shininess: 30,
                 diffuse: [0.1, 0.1, 0.4],
-                opacity: 1.0,
-                opacityMap: {
+                alpha: 1.0,
+                alphaMap: {
                     src: "textures/diffuse/crossGridColorMap.jpg",
                     minFilter: "linearMipmapLinear",
                     magFiler: "linear",
@@ -108,7 +108,8 @@
                     translate: [0, 0],
                     scale: [1, 1],
                     rotate: 0
-                }
+                },
+                alphaMode: "mask"
             }
         },
         "Normal map": {

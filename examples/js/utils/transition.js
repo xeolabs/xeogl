@@ -29,8 +29,8 @@ var Transition = function () {
         }
     });
 
-    this.xray = function (ids, opacity) {
-        var opacityFresnel = new xeogl.Fresnel({
+    this.xray = function (ids, alpha) {
+        var alphaFresnel = new xeogl.Fresnel({
             edgeBias: 0.2,
             centerBias: 0.8,
             edgeColor: [1.0, 1.0, 1.0],
@@ -41,13 +41,13 @@ var Transition = function () {
             var id = ids [i];
             tasks.push((function () {
                 var entity = model.entities[id];
-                var startOpacity = entity.material.opacity;
+                var startAlpha = entity.material.alpha;
                 return function (t) {
-                    var newOpacity = startOpacity + (t * (opacity - startOpacity));
-                    entity.material.opacity =newOpacity;
-                    entity.modes.transparent = (newOpacity < 1.0);
+                    var newAlpha = startAlpha + (t * (alpha - startAlpha));
+                    entity.material.alpha =newAlpha;
+                    entity.material.alphaMode = (newAlpha < 1.0) ? "blend" : "opaque"; // Note: breaks alpha maps
 
-                    //  entity.material.opacityFresnel = opacityFresnel;
+                    //  entity.material.alphaFresnel = alphaFresnel;
                 };
             })());
         }

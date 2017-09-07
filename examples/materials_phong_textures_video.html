@@ -28,17 +28,13 @@
     var diffuseMap = new xeogl.Texture();
 
     var material = new xeogl.PhongMaterial({
-        diffuseMap: diffuseMap
+        diffuseMap: diffuseMap,
+        backfaces: true
     });
 
     var entity = new xeogl.Entity({
         geometry: geometry,
-        material: material,
-
-        // Show backfaces
-        modes: new xeogl.Modes({
-            backfaces: true
-        })
+        material: material
     });
 
     entity.camera.view.zoom(-5);

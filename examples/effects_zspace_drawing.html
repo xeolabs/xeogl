@@ -22,7 +22,7 @@
 
 <div id="info"
      style="left: 0; text-align: left; background: black; opacity: 0.7; padding: 8px; color: white; font-size: 14pt;">
-    <span><a href="http://xeogl.org" target="_parent" >xeogl</a><br>
+    <span><a href="http://xeogl.org" target="_parent">xeogl</a><br>
         using <a
                 href="../docs/classes/GLTFModel.html"
                 target="_parent">GLTFModel</a> and <a
@@ -38,7 +38,7 @@
     //----------------------------------------------------------------------------
 
     var gearbox = new xeogl.GLTFModel({
-            src: "models/gltf/GearboxAssy/glTF/GearboxAssy.gltf"
+        src: "models/gltf/GearboxAssy/glTF/GearboxAssy.gltf"
     });
 
     gearbox.on("loaded", function () {
@@ -46,8 +46,8 @@
         //---------------------------------------------------------------------------------------
         // When the GLTFModel has loaded, iterate over all the Entities in the GLTFModel:
         //
-        // 1. Ensure that each Entity has its own Material and Modes components, so that
-        // we can set it transparent individually. Add the Material and Modes to the GLTFModel
+        // 1. Ensure that each Entity has its own Material components, so that
+        // we can set it transparent individually. Add the Materials to the GLTFModel
         // so that they get destroyed whenever the GLTFModel is destroyed or reloaded.
         //
         // 2. Flatten each Entity's transform hierarchy down to one Transform.
@@ -62,7 +62,7 @@
                 entity = entities[entityId];
 
                 // Ensure the Entity has its own unique Material
-                // Add the Material and Modes to the GLTFModel
+                // Add the Materials to the GLTFModel
                 // so that they get destroyed automatically
 
                 gearbox.add(entity.material = entity.material.clone());
@@ -88,7 +88,7 @@
                 ambient: [0, 0, 0],
                 lineWidth: 2
             }),
-            modes: new xeogl.Modes({pickable: false})
+            pickable: false
         });
 
         var positions = new Float32Array(6);
@@ -134,10 +134,8 @@
                 diffuse: [0, 0, 0],
                 pointSize: 8
             }),
-            modes: new xeogl.Modes({
-                pickable: false,
-                collidable: false
-            })
+            pickable: false,
+            collidable: false
         });
 
         this.addPoint = function (pos) {

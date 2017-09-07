@@ -95,13 +95,12 @@
 
  **Entities**
 
- Let's make our gear {{#crossLink "Entity"}}{{/crossLink}} invisible. This time we'll get the {{#crossLink "Entity"}}{{/crossLink}} itself, then update
- its {{#crossLink "Visibility"}}{{/crossLink}} component:
+ Let's make our gear {{#crossLink "Entity"}}{{/crossLink}} invisible:
 
  ````javascript
  var gear53 = gearbox.scene.components["gearbox#n274017_gear_53.entity.0"];
 
- gear53.visibility.visible = false;
+ gear53.visible = false;
  ````
 
  Note the format of the {{#crossLink "Entity"}}{{/crossLink}}'s ID: ````<GLTFModel ID>#<glTF node ID>.entity.<glTF mesh index>````
@@ -110,11 +109,6 @@
  before, the part before the hash is the ID of the GLTFModel, which is then followed by the ID of the glTF node, then "entity"
  to signify that this is an Entity ID, then finally an index to differentiate the Entity from those loaded from other
  meshes on the same glTF node.
-
- When we load multiple Entities from a glTF node, then they will share the same {{#crossLink "Transform"}}{{/crossLink}} and {{#crossLink "Visibility"}}{{/crossLink}} components. This
- lets us update their transformation and visibility as a group, as if they were a composite entity that represents
- the glTF node.
-
 
  ## Examples
 
@@ -521,7 +515,7 @@
 
                 //TODO
 
-                alert("interleaved buffer!");
+//                alert("interleaved buffer!");
 
             } else {
                 accessorInfo._typedArray = new TypedArray(arraybuffer._buffer, accessorInfo.byteOffset || 0, accessorInfo.count * itemSize);
@@ -599,27 +593,25 @@
                 cfg.emissive = emissiveFactor;
             }
 
-            // TODO: Alpha handling - see https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/schema/material.schema.json
+            cfg.backfaces = !!materialInfo.doubleSided;
 
             var alphaMode = materialInfo.alphaMode;
             switch (alphaMode) {
                 case "OPAQUE":
+                    cfg.alphaMode = "opaque";
                     break;
                 case "MASK":
+                    cfg.alphaMode = "mask";
                     break;
                 case "BLEND":
+                    cfg.alphaMode = "blend";
                     break;
                 default:
             }
 
             var alphaCutoff = materialInfo.alphaCutoff;
-            if (alphaCutoff) {
-                //
-            }
-
-            var doubleSided = materialInfo.doubleSided;
-            if (doubleSided) {
-                //
+            if (alphaCutoff !== undefined) {
+                cfg.alphaCutoff = alphaCutoff;
             }
 
             var extensions = materialInfo.extensions;
@@ -633,7 +625,7 @@
                     var diffuseFactor = specularPBR.diffuseFactor;
                     if (diffuseFactor !== null && diffuseFactor !== undefined) {
                         cfg.diffuse = diffuseFactor.slice(0, 3);
-                        cfg.opacity = diffuseFactor[3];
+                        cfg.alpha = diffuseFactor[3];
                     }
 
                     var diffuseTexture = specularPBR.diffuseTexture;
@@ -729,10 +721,9 @@
 
                     var transparency = values.transparency;
                     if (transparency !== null && transparency !== undefined) {
-                        cfg.opacity = transparency;
-                        // TODO transparent mode
+                        cfg.alpha = transparency;
                     } else {
-                        cfg.opacity = 1.0;
+                        cfg.alpha = 1.0;
                     }
 
                     var transparent = values.transparent;
@@ -754,7 +745,7 @@
                 var baseColorFactor = metallicPBR.baseColorFactor;
                 if (baseColorFactor) {
                     cfg.baseColor = baseColorFactor.slice(0, 3);
-                    cfg.opacity = baseColorFactor[3];
+                    cfg.alpha = baseColorFactor[3];
                 }
 
                 var baseColorTexture = metallicPBR.baseColorTexture;
@@ -820,7 +811,6 @@
                 var geometryCfg;
                 var meshCfg;
                 var geometry;
-                var modes;
 
                 for (var i = 0, len = primitivesInfo.length; i < len; i++) {
 
@@ -872,34 +862,11 @@
                     ctx.model.add(geometry);
                     meshCfg.geometry = geometry;
 
-                    modes = new xeogl.Modes(ctx.model);
-                    ctx.model.add(modes);
-                    meshCfg.modes = modes;
-
                     materialIndex = primitiveInfo.material;
                     if (materialIndex !== null && materialIndex !== undefined) {
                         materialInfo = json.materials[materialIndex];
                         if (materialInfo) {
                             meshCfg.material = materialInfo._material;
-
-                            var alphaMode = materialInfo.alphaMode;
-                            switch (alphaMode) {
-                                case "OPAQUE":
-                                    break;
-                                case "MASK":
-                                    break;
-                                case "BLEND":
-                                    modes.transparent = true;
-                                    break;
-                                default:
-                            }
-
-                            var alphaCutoff = materialInfo.alphaCutoff;
-                            if (alphaCutoff) {
-                                // TODO
-                            }
-
-                            modes.backfaces = !!materialInfo.doubleSided;
                         }
                     }
 
@@ -934,11 +901,11 @@
                     error(ctx, "Node not found: " + i);
                     continue;
                 }
-                loadNode(ctx, nodeInfo, null);
+                loadNode(ctx, i, nodeInfo, null);
             }
         }
 
-        function loadNode(ctx, nodeInfo, transform) {
+        function loadNode(ctx, nodeIdx, nodeInfo, transform) {
             var json = ctx.json;
             var model = ctx.model;
 
@@ -984,31 +951,18 @@
 
                 if (meshInfo) {
 
-                    var visibility = new xeogl.Visibility(model);
-                    model.add(visibility);
-
-                    var cull = new xeogl.Cull(model);
-                    model.add(cull);
-
                     var meshes = meshInfo._mesh;
                     var mesh;
                     var entityId;
                     var entity;
-                    var entities;
-                    var scene = ctx.model.scene;
+                    var numMeshes = meshes.length;
+                    var manyMeshes = numMeshes > 1;
 
-                    for (var i = 0, len = meshes.length; i < len; i++) {
+                    for (var i = 0, len = numMeshes; i < len; i++) {
 
                         mesh = meshes[i];
 
-                        entityId = makeID(ctx, "entity." + i);
-
-                        entities = scene.types["xeogl.Entity"];
-                        if (entities) {
-                            for (var j = 0; entities[entityId]; j++) {
-                                entityId = makeID(ctx, i + "entity." + i + "." + j);
-                            }
-                        }
+                        entityId = makeEntityId(ctx, nodeInfo, nodeIdx, manyMeshes);
 
                         var meta = nodeInfo.extra || {};
                         meta.name = nodeInfo.name;
@@ -1019,14 +973,15 @@
                             material: mesh.material,
                             geometry: mesh.geometry,
                             transform: transform,
-                            visibility: visibility,
-                            cull: cull,
-                            modes: mesh.modes,
 
                             // Indicates that this Entity is freshly loaded -  increments the xeogl.Spinner#processes
                             // count on the Scene Canvas, which will decrement again as soon as Entity is compiled
                             // into the render graph, causing the Spinner to show until this Entity is visible
                             loading: true // TODO: track loading state explicitely
+                        });
+
+                        entity.on("loaded", function () {
+                            //alert("done");
                         });
 
                         model.add(entity);
@@ -1037,16 +992,33 @@
             if (nodeInfo.children) {
                 var children = nodeInfo.children;
                 var childNodeInfo;
-                var nodeIdx;
+                var childNodeIdx;
                 for (var i = 0, len = children.length; i < len; i++) {
-                    nodeIdx = children[i];
-                    childNodeInfo = json.nodes[nodeIdx];
+                    childNodeIdx = children[i];
+                    childNodeInfo = json.nodes[childNodeIdx];
                     if (!childNodeInfo) {
                         error(ctx, "Node not found: " + i);
                         continue;
                     }
-                    loadNode(ctx, childNodeInfo, transform);
+                    loadNode(ctx, nodeIdx, childNodeInfo, transform);
                 }
+            }
+        }
+
+        function makeEntityId(ctx, nodeInfo, nodeIdx, manyMeshes) {
+            var prefix = nodeInfo.name || nodeIdx;
+            var id = makeID(ctx, prefix);
+            if (!manyMeshes && !ctx.model.entities[id]) {
+                return id;
+            }
+            var id2;
+            var i = 0;
+            while (true) {
+                id2 = id + "." + i;
+                if (!ctx.model.entities[id2]) {
+                    return id2;
+                }
+                i++;
             }
         }
 

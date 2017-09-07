@@ -368,17 +368,14 @@
             dummy = this.project;
             dummy = this.camera;
             dummy = this.clips;
-            dummy = this.visibility;
-            dummy = this.cull;
-            dummy = this.modes;
             dummy = this.geometry;
-            dummy = this.layer;
             dummy = this.lights;
             dummy = this.material;
             dummy = this.morphTargets;
             dummy = this.transform;
             dummy = this.viewport;
             dummy = this.outline;
+            dummy = this.xray;
         },
 
         // Called by each component that is created with this Scene as parent.
@@ -810,54 +807,6 @@
             },
 
             /**
-             * The default {{#crossLink "Billboard"}}Billboard{{/crossLink}} provided by this Scene.
-             *
-             * This {{#crossLink "Billboard"}}Billboard{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.billboard"
-             * and an {{#crossLink "Billboard/active:property"}}{{/crossLink}} property set to false, to disable it.
-             *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "Billboard"}}Billboard{{/crossLink}} by default.
-             *
-             * @property billboard
-             * @final
-             * @type Billboard
-             */
-            billboard: {
-                get: function () {
-                    return this.components["default.billboard"] ||
-                        new xeogl.Billboard(this, {
-                            id: "default.billboard",
-                            active: false,
-                            isDefault: true
-                        });
-                }
-            },
-
-            /**
-             * The default {{#crossLink "Stationary"}}Stationary{{/crossLink}} provided by this Scene.
-             *
-             * This {{#crossLink "Stationary"}}Stationary{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.stationary"
-             * and an {{#crossLink "Stationary/active:property"}}{{/crossLink}} property set to false, to disable it.
-             *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "Stationary"}}Stationary{{/crossLink}} by default.
-             *
-             * @property stationary
-             * @final
-             * @type Stationary
-             */
-            stationary: {
-                get: function () {
-                    return this.components["default.stationary"] ||
-                        new xeogl.Stationary(this, {
-                            id: "default.stationary",
-                            active: false,
-                            isDefault: true
-                        });
-                }
-            },
-
-            /**
              * The default {{#crossLink "Clips"}}Clips{{/crossLink}} provided by this Scene.
              *
              * This {{#crossLink "Clips"}}Clips{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.clips",
@@ -881,74 +830,6 @@
             },
 
             /**
-             * The default {{#crossLink "Visibility"}}Visibility{{/crossLink}} provided by this Scene.
-             *
-             * This {{#crossLink "Visibility"}}Visibility{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.visibility",
-             * with all other properties initialised to their default values.
-             *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "Visibility"}}Visibility{{/crossLink}} by default.
-             * @property visibility
-             * @final
-             * @type Visibility
-             */
-            visibility: {
-                get: function () {
-                    return this.components["default.visibility"] ||
-                        new xeogl.Visibility(this, {
-                            id: "default.visibility",
-                            isDefault: true,
-                            visible: true
-                        });
-                }
-            },
-
-            /**
-             * The default {{#crossLink "Cull"}}{{/crossLink}} provided by this Scene.
-             *
-             * This {{#crossLink "Cull"}}cull{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.cull",
-             * with all other properties initialised to their default values.
-             *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "Cull"}}{{/crossLink}} by default.
-             * @property cull
-             * @final
-             * @type cull
-             */
-            cull: {
-                get: function () {
-                    return this.components["default.cull"] ||
-                        new xeogl.Cull(this, {
-                            id: "default.cull",
-                            isDefault: true,
-                            culled: false
-                        });
-                }
-            },
-
-            /**
-             * The default {{#crossLink "Modes"}}Modes{{/crossLink}} provided by this Scene.
-             *
-             * This {{#crossLink "Modes"}}Modes{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.modes",
-             * with all other properties initialised to their default values.
-             *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "Modes"}}Modes{{/crossLink}} by default.
-             * @property modes
-             * @final
-             * @type Modes
-             */
-            modes: {
-                get: function () {
-                    return this.components["default.modes"] ||
-                        new xeogl.Modes(this, {
-                            id: "default.modes",
-                            isDefault: true
-                        });
-                }
-            },
-
-            /**
              * The default geometry provided by this Scene, which is a {{#crossLink "BoxGeometry"}}BoxGeometry{{/crossLink}}.
              *
              * This {{#crossLink "BoxGeometry"}}BoxGeometry{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.geometry".
@@ -965,29 +846,6 @@
                         new xeogl.BoxGeometry(this, {
                             id: "default.geometry",
                             isDefault: true
-                        });
-                }
-            },
-
-            /**
-             * The default {{#crossLink "Layer"}}Layer{{/crossLink}} provided by this Scene.
-             *
-             * This {{#crossLink "Layer"}}Layer{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.layer",
-             * with all other properties initialised to their default values.
-             *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "Layer"}}Layer{{/crossLink}} by default.
-             * @property layer
-             * @final
-             * @type Layer
-             */
-            layer: {
-                get: function () {
-                    return this.components["default.layer"] ||
-                        new xeogl.Layer(this, {
-                            id: "default.layer",
-                            isDefault: true,
-                            priority: 0
                         });
                 }
             },
@@ -1163,6 +1021,29 @@
             },
 
             /**
+             * The default {{#crossLink "XRay"}}{{/crossLink}} provided by this Scene.
+             *
+             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink "XRay"}}{{/crossLink}} by default.
+             *
+             * @property xray
+             * @final
+             * @type XRay
+             */
+            xray: {
+                get: function () {
+                    return this.components["default.xray"] ||
+                        new xeogl.XRay(this, {
+                            id: "default.xray",
+
+                            // TODO: defaults
+                            foo: 1,
+                            bar: 2
+                        });
+                }
+            },
+
+            /**
              * The World-space 3D boundary of this Scene.
              *
              * The {{#crossLink "Boundary3D"}}{{/crossLink}} will be lazy-initialized the first time
@@ -1207,7 +1088,7 @@
 
                                         entity = entities[entityId];
 
-                                        if (entity.modes.collidable) {
+                                        if (entity.collidable) {
 
                                             // Only include boundaries of entities that are allowed
                                             // to contribute to the size of an enclosing boundary
@@ -1248,8 +1129,7 @@
         /**
          * Attempts to pick an {{#crossLink "Entity"}}Entity{{/crossLink}} in this Scene.
          *
-         * Ignores {{#crossLink "Entity"}}Entities{{/crossLink}} that are attached
-         * to {{#crossLink "Modes"}}Modes{{/crossLink}} with {{#crossLink "Modes/pickable:property"}}pickable{{/crossLink}}
+         * Ignores {{#crossLink "Entity"}}Entities{{/crossLink}} with {{#crossLink "Entity/pickable:property"}}pickable{{/crossLink}}
          * set *false*.
          *
          * Picking the {{#crossLink "Entity"}}{{/crossLink}} at the given canvas coordinates:

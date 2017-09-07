@@ -22,8 +22,9 @@
     <h1>
         Physically-based rendering using <a href="../docs/classes/MetallicMaterial.html"
                                             target="_parent">MetallicMaterial</a></h1>
-    <pre id="log">model: OBJ fire hydrant with PBR textures - [<a href='https://github.com/xeolabs/xeogl/tree/master/examples/models/obj/fireHydrant/README.md'
-                                                                    target="_parent">model info</a>]</pre>
+    <pre id="log">model: OBJ fire hydrant with PBR textures - [<a
+            href='https://github.com/xeolabs/xeogl/tree/master/examples/models/obj/fireHydrant/README.md'
+            target="_parent">model info</a>]</pre>
 </div>
 <div id="dat-gui-container">
 </div>
@@ -38,24 +39,27 @@
 
     var dirLights = [
         new xeogl.DirLight({
+            id: "keyLight",
             dir: [0.8, -0.6, -0.8],
-            color: [1.0, 0.9, 0.9],
+            color: [0.8, 0.8, 0.8],
             intensity: 1.0,
-            space: "view"
+            space: "world"
         }),
 
         new xeogl.DirLight({
+            id: "fillLight",
             dir: [-0.8, -0.4, -0.4],
-            color: [1.0, 0.9, 0.9],
+            color: [0.99, 0.7, 0.7],
             intensity: 1.0,
-            space: "view"
+            space: "world"
         }),
 
         new xeogl.DirLight({
-            dir: [0.4, -0.4, 0.8],
-            color: [0.7, 0.9, 0.9],
+            id: "rimLight",
+            dir: [0.2, -0.8, 0.8],
+            color: [0.6, 0.89, 0.89],
             intensity: 1.0,
-            space: "view"
+            space: "world"
         })
     ];
 
@@ -110,6 +114,11 @@
         src: "models/obj/fireHydrant/fire_hydrant_Mixed_AO.png"
     });
 
+    var alphaMap = new xeogl.Texture({
+        src: "textures/diffuse/crossGridColorMap.jpg"
+    });
+
+
     var hydrant = new xeogl.Entity({
 
         geometry: new xeogl.OBJGeometry({
@@ -126,10 +135,6 @@
             metallicMap: metallicMap,
             //metallicRoughnessMap: metallicRoughnessMap,
             occlusionMap: occlusionMap
-        }),
-
-        modes: new xeogl.Modes({
-            transparent: false
         }),
 
         transform: new xeogl.Scale({
@@ -176,7 +181,7 @@
         this["metallic"] = material.metallic;
         this["roughness"] = material.roughness;
         this["specularF0"] = material.specularF0;
-        this["opacity"] = material.opacity;
+        this["alpha"] = material.alpha;
 
 
         this["baseColorMap"] = !!material.baseColorMap;
@@ -184,6 +189,7 @@
         this["roughnessMap"] = !!material.roughnessMap;
         this["normalMap"] = !!material.normalMap;
         this["occlusionMap"] = !!material.occlusionMap;
+        this["alphaMap"] = !!material.alphaMap;
 
         this["lightMap"] = !!lights.lightMap;
         this["reflectionMap"] = !!lights.reflectionMap;
@@ -206,9 +212,6 @@
             material.metallic = self["metallic"];
             material.roughness = self["roughness"];
             material.specularF0 = self["specularF0"];
-            material.opacity = self["opacity"];
-
-            hydrant.modes.transparent = (material.opacity < 1);
 
             if (self["baseColorMap"] !== !!material.baseColorMap) {
                 material.baseColorMap = self["baseColorMap"] ? baseColorMap : null;
@@ -236,6 +239,27 @@
 
             if (self["reflectionMap"] !== !!lights.reflectionMap) {
                 lights.reflectionMap = self["reflectionMap"] ? reflectionMap : null;
+            }
+
+            if (self["alphaMap"] !== !!material.alphaMap) {
+                if (self["alphaMap"]) {
+                    material.alphaMap = alphaMap;
+                    material.alphaMode = "mask";
+                    material.alphaCutoff = 0.1;
+                } else {
+                    material.alphaMap = null;
+                    material.alphaMode = (material.alpha < 1) ? "blend" : "opaque";
+                }
+            }
+
+            material.alpha = self["alpha"];
+
+            if (material.alphaMap) {
+                material.alphaMode = "mask";
+            } else if (material.alpha < 1.0) {
+                material.alphaMode = "blend";
+            } else {
+                material.alphaMode = "opaque";
             }
 
             if (self["dirLights"] !== !!(lights.lights && lights.lights.length > 0)) {
@@ -268,12 +292,13 @@
     materialFolder.add(menu, 'metallic', 0.0, 1.0);
     materialFolder.add(menu, 'roughness', 0.0, 1.0);
     materialFolder.add(menu, 'specularF0', 0.0, 1.0);
-    materialFolder.add(menu, 'opacity', 0.0, 1.0);
+    materialFolder.add(menu, 'alpha', 0.0, 1.0);
     materialFolder.add(menu, 'baseColorMap', true);
     materialFolder.add(menu, 'metallicMap', true);
     materialFolder.add(menu, 'roughnessMap', true);
     materialFolder.add(menu, 'normalMap', true);
     materialFolder.add(menu, 'occlusionMap', true);
+    materialFolder.add(menu, 'alphaMap', true);
     materialFolder.open();
 
     var lightsFolder = gui.addFolder('Lights');

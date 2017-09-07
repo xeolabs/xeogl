@@ -139,14 +139,8 @@
                     emissive: [0.5, 1.0, 0.5],
                     lineWidth: 2
                 }),
-                visibility: this.create({
-                    type: "xeogl.Visibility",
-                    visible: false
-                }),
-                modes: this.create({
-                    type: "xeogl.Modes",
-                    collidable: false // Effectively has no boundary
-                })
+                visible: false,
+                collidable: false
             });
 
             // Shows a wireframe box for target AABBs
@@ -164,14 +158,8 @@
                         lineWidth: 2
                     })
                 }),
-                visibility: this.create({
-                    type: "xeogl.Visibility",
-                    visible: false
-                }),
-                modes: this.create({
-                    type: "xeogl.Modes",
-                    collidable: false // Effectively has no boundary
-                })
+               visible: false,
+                collidable: false // Effectively has no boundary
             });
 
             this._look1 = math.vec3();
@@ -347,7 +335,7 @@
 
                     if (params.showAABB !== false) {
                         this._aabbHelper.geometry.aabb = aabb;
-                        this._aabbHelper.visibility.visible = true;
+                        this._aabbHelper.visible = true;
                     }
 
                     var aabbCenter = math.getAABB3Center(aabb);
@@ -645,7 +633,7 @@
                 return;
             }
 
-            this._aabbHelper.visibility.visible = false;
+            this._aabbHelper.visible = false;
 
             this._flying = false;
 
@@ -678,7 +666,7 @@
                 return;
             }
 
-            this._aabbHelper.visibility.visible = false;
+            this._aabbHelper.visible = false;
 
             this._flying = false;
 

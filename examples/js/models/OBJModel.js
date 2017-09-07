@@ -68,8 +68,8 @@
         case "confRoom#mesh30":
             break;
         default: // Not a chair entity
-            entity.modes.transparent = true;
-            entity.material.opacity = 0.5;
+            entity.material.alpha = 0.5;
+            entity.material.blendMode = "blend"
     }
  }
  ````
@@ -802,14 +802,16 @@
                     case 'd':
                         alpha = parseFloat(value);
                         if (alpha < 1) {
-                            materialCfg.opacity = alpha;
+                            materialCfg.alpha = alpha;
+                            materialCfg.alphaMode = "blend";
                         }
                         break;
 
                     case 'tr':
                         alpha = parseFloat(value);
                         if (alpha > 0) {
-                            materialCfg.opacity = 1 - alpha;
+                            materialCfg.alpha = 1 - alpha;
+                            materialCfg.alphaMode = "blend";
                         }
                         break;
 
@@ -914,7 +916,8 @@
                 } else {
                     material = new xeogl.PhongMaterial(model, {
                         //emissive: [0.6, 0.6, 0.0],
-                        diffuse: [0.6, 0.6, 0.6]
+                        diffuse: [0.6, 0.6, 0.6],
+                        backfaces: true
                     });
                     model.add(material);
                 }
@@ -925,11 +928,7 @@
                     id: model.id + "#" + object.id,
                     geometry: xeoGeometry,
                     material: material,
-                    modes: {
-                        transparent: (material && material.opacity < 1),
-                        backfaces: true,
-                        pickable: true
-                    }
+                    pickable: true
                 });
 
                 model.add(entity);

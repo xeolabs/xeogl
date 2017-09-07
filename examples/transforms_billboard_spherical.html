@@ -37,17 +37,13 @@
         lights: []
     });
 
-    var billboard = new xeogl.Billboard({
-        spherical: true
-    });
-
     for (var i = 0; i < 300; i++) {
 
         new xeogl.Entity({
             geometry: geometry,
             material: material,
             lights: lights,
-            billboard: billboard,
+            billboard: "spherical",
             transform: new xeogl.Translate({
                 xyz: [Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50]
             })

@@ -42,7 +42,7 @@
             dir: [0.8, -0.6, -0.8],
             color: [0.8, 0.8, 0.8],
             intensity: 1.0,
-            space: "view"
+            space: "world"
         }),
 
         new xeogl.DirLight({
@@ -50,7 +50,7 @@
             dir: [-0.8, -0.4, -0.4],
             color: [0.4, 0.4, 0.5],
             intensity: 1.0,
-            space: "view"
+            space: "world"
         }),
 
         new xeogl.DirLight({
@@ -58,7 +58,7 @@
             dir: [0.2, -0.8, 0.8],
             color: [0.8, 0.8, 0.8],
             intensity: 1.0,
-            space: "view"
+            space: "world"
         })
     ];
 
@@ -127,10 +127,7 @@
                     diffuse: [0.6, 0.6, 0.6],
                     specular: [specular, specular, specular],
                     glossiness: glossiness,
-                    opacity: 1
-                }),
-                modes: new xeogl.Modes({
-                    transparent: false
+                    alpha: 1
                 }),
                 transform: new xeogl.Translate({
                     xyz: [x, y, 0]
@@ -165,9 +162,7 @@
         transform: new xeogl.Translate({
             xyz: [min, min - inc, 0]
         }),
-        modes: {
-            collidable: false
-        }
+        collidable: false
     });
 
     new xeogl.Entity({
@@ -183,9 +178,7 @@
                 xyz: [min - inc, max, 0]
             })
         }),
-        modes: {
-            collidable: false
-        }
+        collidable: false
     });
 
     //--------------------------------------------------------------------------------------
@@ -212,7 +205,7 @@
 
             this["diffuse"] = typedToJS(material.diffuse);
             this["emissive"] = typedToJS(material.emissive);
-            this["opacity"] = material.opacity;
+            this["alpha"] = material.alpha;
 
             this["lightMap"] = !!lights.lightMap;
             this["reflectionMap"] = !!lights.reflectionMap;
@@ -230,8 +223,8 @@
 
                     material.diffuse = JSToTyped(self["diffuse"]);
                     material.emissive = JSToTyped(self["emissive"]);
-                    material.opacity = self["opacity"];
-                    entity.modes.transparent = (material.opacity < 1);
+                    material.alpha = self["alpha"];
+                    material.alphaMode = (material.alpha < 1) ? "blend" : "opaque";
 
                     if (self["lightMap"] !== !!lights.lightMap) {
                         lights.lightMap = self["lightMap"] ? lightMap : null;
@@ -265,7 +258,7 @@
         var materialFolder = gui.addFolder('MetallicMaterial');
         materialFolder.addColor(menu, 'diffuse', [255, 255, 255]);
         materialFolder.addColor(menu, 'emissive', [0, 0, 0]);
-        materialFolder.add(menu, 'opacity', 0.0, 1.0);
+        materialFolder.add(menu, 'alpha', 0.0, 1.0);
         materialFolder.open();
 
         var lightsFolder = gui.addFolder('Environment');

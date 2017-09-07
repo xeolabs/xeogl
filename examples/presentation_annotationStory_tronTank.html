@@ -182,10 +182,8 @@
                 type: "xeogl.PhongMaterial",
                 diffuse: [0.0, 0.0, 0.0],
                 specular: [0, 0, 0],
-                opacity: 0.3
-            },
-            modes: {
-                transparent: true
+                alpha: 0.3,
+                alphaMode: "blend"
             },
             transform: {
                 type: "xeogl.Translate",
@@ -318,13 +316,11 @@
                 wrapS: "repeat",
                 wrapT: "repeat",
                 scale: [30, 30]
-            }
+            },
+            backfaces: true
         },
-        modes: {
-            backfaces: true, // Show backfaces
-            pickable: false, // Can't be picked
-            collidable: false // Does not contribute to overall scene boundary
-        }
+        pickable: false, // Can't be picked
+        collidable: false // Does not contribute to overall scene boundary
     });
 
 </script>

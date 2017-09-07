@@ -60,7 +60,7 @@
             diffuse: [0.7, 0.7, 0.7],
             specular: [1.0, 1.0, 1.0],
             emissive: [0, 0, 0],
-            opacity: 1.0,
+            alpha: 1.0,
             ambient: [1, 1, 0]
 
         }),
@@ -77,13 +77,11 @@
         material: new xeogl.PhongMaterial({
             diffuseMap: new xeogl.Texture({
                 src: "textures/diffuse/uvGrid2.jpg"
-            })
+            }),
+            backfaces: true
         }),
         transform: new xeogl.Translate({
             xyz: [0, -2.1, 0]
-        }),
-        modes: new xeogl.Modes({
-            backfaces: true
         }),
         lights: lights
     });

@@ -13,7 +13,8 @@
 <body>
 
 <div id="info">
-    <h1><a href="../docs/classes/OBJGeometry.html" target="_parent">OBJGeometry</a> loaded from a <a href="http://www.cybercity3d.com/sample-data">CyberCity3D</a> sample</h1>
+    <h1><a href="../docs/classes/OBJGeometry.html" target="_parent">OBJGeometry</a> loaded from a <a
+            href="http://www.cybercity3d.com/sample-data">CyberCity3D</a> sample</h1>
 </div>
 
 <div id="logos">
@@ -43,12 +44,10 @@
     var reflectedCity = new xeogl.Entity({
         geometry: miamiGeometry,
         material: new xeogl.PhongMaterial({
-            diffuse: [0.890196, 0.882353, 0.870588]
+            diffuse: [0.890196, 0.882353, 0.870588],
+            frontface: "cw"
         }),
-        modes: new xeogl.Modes({
-            frontface: "cw",    // Reverse face vertex winding since we're reflecting
-            collidable: false   // Don't include in scene boundary calculation
-        }),
+        collidable: false,
         transform: new xeogl.Scale({  // Reflection transform
             xyz: [0.01, -0.01, 0.01],
             parent: new xeogl.Translate({
@@ -67,13 +66,11 @@
             diffuse: [0, 0, 0],
             specular: [.3, .3, .3],
             shininess: 150,
-            opacity: 0.6
+            alpha: 0.6,
+            alphaMode: "blend",
+            backfaces: true
         }),
-        modes: new xeogl.Modes({
-            backfaces: true,
-            transparent: true,
-            collidable: false   // Don't include in scene boundary calculation
-        }),
+        collidable: false,
         transform: new xeogl.Translate({
             xyz: [0, -1.185, 0]
         })

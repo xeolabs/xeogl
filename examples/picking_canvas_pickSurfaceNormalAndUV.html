@@ -52,7 +52,8 @@
     var material = new xeogl.PhongMaterial({
         diffuseMap: new xeogl.Texture({
             src: "textures/diffuse/uvGrid2.jpg"
-        })
+        }),
+        backfaces: true
     });
 
     // A Entity that we can pick - a heightmap with a diffuse map
@@ -75,11 +76,7 @@
         transform: new xeogl.Translate({
             xyz: [0, 0, 0]
         }),
-        material: material,
-
-        modes: new xeogl.Modes({
-            backfaces: true
-        })
+        material: material
     });
 
     // Torus
