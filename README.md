@@ -2,7 +2,6 @@
 
 [http://xeogl.org](http://xeogl.org)
 
-[![License][license-img]][license-url]
 [![Codacy Badge](https://api.codacy.com/project/badge/grade/a834272d6bf448f7a77947d7b784f261)](https://www.codacy.com/app/lindsay-kay/xeogl)
 
 ## About
