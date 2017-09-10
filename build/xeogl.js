@@ -16551,6 +16551,7 @@ var Canvas2Image = (function () {
          WebGL drawing buffer, which has a performance overhead.
 
          #### Usage:
+
          ````javascript
          // Get snapshot asynchronously
          myScene.canvas.getSnapshot({
@@ -16569,13 +16570,12 @@ var Canvas2Image = (function () {
              format: "png" // Options are "jpeg" (default), "png" and "bmp"
          });
          ````
-
          @method getSnapshot
          @param {*} [params] Capture options.
          @param {Number} [params.width] Desired width of result in pixels - defaults to width of canvas.
          @param {Number} [params.height] Desired height of result in pixels - defaults to height of canvas.
          @param {String} [params.format="jpeg"] Desired format; "jpeg", "png" or "bmp".
-         @param {Function} ok Callback to return the image data when taking a snapshot asynchronously.
+         @param {Function} [ok] Callback to return the image data when taking a snapshot asynchronously.
          @returns {String} String-encoded image data when taking the snapshot synchronously. Returns null when the ````ok```` callback is given.
          */
         getSnapshot: function (params, ok) {
@@ -36107,7 +36107,7 @@ TODO
              * The {{#crossLink "Geometry"}}Geometry{{/crossLink}} attached to this Entity.
              *
              * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/geometry:property"}}camera{{/crossLink}}
+             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/geometry:property"}}geometry{{/crossLink}}
              * (a simple box) when set to a null or undefined value.
              *
              * Fires an {{#crossLink "Entity/geometry:event"}}{{/crossLink}} event on change.
@@ -36859,20 +36859,20 @@ TODO
             },
 
             /**
-             * Specifies the billboarding behaviour for this Entity.
-             *
-             * Options are:
-             *
-             *     * **"none"** -  **(default)** - No billboarding.
-             *     * **"spherical"** - Entity is billboarded to face the viewpoint, rotating both vertically and horizontally.
-             *     * **"cylindrical"** - Entity is billboarded to face the viewpoint, rotating only about its vertically
-             *     axis. Use this mode for things like trees on a landscape.
-             *
-             * Fires an {{#crossLink "Entity/billboard:event"}}{{/crossLink}} event on change.
-             *
-             * @property billboard
-             * @default "none"
-             * @type String
+              Specifies the billboarding behaviour for this Entity.
+             
+              Options are:
+             
+               * **"none"** -  **(default)** - No billboarding.
+               * **"spherical"** - Entity is billboarded to face the viewpoint, rotating both vertically and horizontally.
+               * **"cylindrical"** - Entity is billboarded to face the viewpoint, rotating only about its vertically
+                  axis. Use this mode for things like trees on a landscape.
+             
+              Fires an {{#crossLink "Entity/billboard:event"}}{{/crossLink}} event on change.
+             
+              @property billboard
+              @default "none"
+              @type String
              */
             billboard: {
 

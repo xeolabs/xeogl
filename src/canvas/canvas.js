@@ -538,6 +538,7 @@
          WebGL drawing buffer, which has a performance overhead.
 
          #### Usage:
+
          ````javascript
          // Get snapshot asynchronously
          myScene.canvas.getSnapshot({
@@ -556,13 +557,12 @@
              format: "png" // Options are "jpeg" (default), "png" and "bmp"
          });
          ````
-
          @method getSnapshot
          @param {*} [params] Capture options.
          @param {Number} [params.width] Desired width of result in pixels - defaults to width of canvas.
          @param {Number} [params.height] Desired height of result in pixels - defaults to height of canvas.
          @param {String} [params.format="jpeg"] Desired format; "jpeg", "png" or "bmp".
-         @param {Function} ok Callback to return the image data when taking a snapshot asynchronously.
+         @param {Function} [ok] Callback to return the image data when taking a snapshot asynchronously.
          @returns {String} String-encoded image data when taking the snapshot synchronously. Returns null when the ````ok```` callback is given.
          */
         getSnapshot: function (params, ok) {
