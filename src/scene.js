@@ -1633,7 +1633,7 @@
             }
 
             // Render a frame
-            // Only renders if there was a state update
+            // Only renders if there was a state update, or forced
 
             this._renderer.render({
                 pass: pass,

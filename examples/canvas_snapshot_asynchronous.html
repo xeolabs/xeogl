@@ -18,7 +18,7 @@
         canvas {
             display: inline-block;
             margin: 5px;
-            margin-top:70px;
+            margin-top: 70px;
             border: white 1px solid;
         }
 
@@ -34,8 +34,8 @@
 
 <div id="info">
     <h1>taking a snapshot of a <a
-        href="../docs/classes/Canvas.html"
-        target="_parent">Canvas</a> once per second</h1>
+            href="../docs/classes/Canvas.html"
+            target="_parent">Canvas</a> once per second, asynchronously</h1>
 </div>
 
 <!-- Scene canvas -->
@@ -49,20 +49,13 @@
 
 <script>
 
-    // Canvas snapshot needs WebGL preserveDrawingBuffer to be true.
-    // We can set that for the default scene by creating it and configuring ourselves.
-
+    // Eagerly create the default scene so we can bind it to our canvas
     xeogl.scene = new xeogl.Scene({
-        canvas: "myCanvas",
-        contextAttr: {
-            preserveDrawingBuffer: true
-        }
+        canvas: "myCanvas"
     });
 
-    var scene = xeogl.scene;
-
     // Torus entity
-    new xeogl.Entity({
+    var torus = new xeogl.Entity({
         geometry: new xeogl.TorusGeometry({
             radius: 1.0,
             tube: 0.3,
@@ -78,6 +71,8 @@
             })
         })
     });
+
+    var scene = torus.scene;
 
     // Set initial camera position
     scene.camera.view.eye = [0, 0, -4];
@@ -100,11 +95,21 @@
     var snapshotImage = document.getElementById("snapshotImage");
 
     window.setInterval(function () {
-        snapshotImage.src = scene.canvas.getSnapshot({
+
+        // Get a snapshot asynchronously, within the next RAF.
+        // Note that a synchronous snapshot is not possible here,
+        // because we didn't configure the Scene to preserve the
+        // drawing buffer.
+
+        scene.canvas.getSnapshot({
             width: 500, // Defaults to size of canvas
             height: 500,
             format: "png" // Options are "jpeg" (default), "png" and "bmp"
+        }, function (src) {
+
+            snapshotImage.src = src;
         });
+
     }, 1000);
 
 </script>

@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2017-09-07
+ * Built on 2017-09-10
  *
  * MIT License
  * Copyright 2017, Lindsay Kay
@@ -14753,7 +14753,7 @@ var Canvas2Image = (function () {
             }
 
             // Render a frame
-            // Only renders if there was a state update
+            // Only renders if there was a state update, or forced
 
             this._renderer.render({
                 pass: pass,
@@ -16209,8 +16209,7 @@ var Canvas2Image = (function () {
                 this.contextAttr.preserveDrawingBuffer = false;
             }
 
-            this.contextAttr.alpha = true;
-
+           // this.contextAttr.alpha = true;
             this.contextAttr.stencil = true;
 
             if (!cfg.canvas) {
@@ -16544,8 +16543,26 @@ var Canvas2Image = (function () {
         /**
          Returns a snapshot of this Canvas as a Base64-encoded image.
 
+         When a callback is given, this method will capture the snapshot asynchronously, on the next animation frame
+         and return it via the callback.
+
+         When no callback is given, this method captures and returns the snapshot immediately. Note that is only
+         possible when you have configured the Canvas's {{#crossLink "Scene"}}Scene{{/crossLink}} to preserve the
+         WebGL drawing buffer, which has a performance overhead.
+
          #### Usage:
          ````javascript
+         // Get snapshot asynchronously
+         myScene.canvas.getSnapshot({
+             width: 500, // Defaults to size of canvas
+             height: 500,
+             format: "png" // Options are "jpeg" (default), "png" and "bmp"
+         }, function(imageDataURL) {
+             imageElement.src = imageDataURL;
+         });
+
+         // Get snapshot synchronously, requires that Scene be
+         // configured with preserveDrawingBuffer; true
          imageElement.src = myScene.canvas.getSnapshot({
              width: 500, // Defaults to size of canvas
              height: 500,
@@ -16558,44 +16575,49 @@ var Canvas2Image = (function () {
          @param {Number} [params.width] Desired width of result in pixels - defaults to width of canvas.
          @param {Number} [params.height] Desired height of result in pixels - defaults to height of canvas.
          @param {String} [params.format="jpeg"] Desired format; "jpeg", "png" or "bmp".
-         @returns {String} String-encoded image data.
+         @param {Function} ok Callback to return the image data when taking a snapshot asynchronously.
+         @returns {String} String-encoded image data when taking the snapshot synchronously. Returns null when the ````ok```` callback is given.
          */
-        getSnapshot: function (params) {
+        getSnapshot: function (params, ok) {
 
             if (!this.canvas) {
                 this.error("Can't get snapshot - no canvas.");
+                ok(null);
                 return;
             }
 
-            // Force-render a frame
-            this.scene.render();
+            if (ok) { // Asynchronous
+                var self = this;
+                requestAnimationFrame(function () {
+                    self.scene.render(true); // Force-render a frame
+                    ok(self._getSnapshot(params));
+                });
+            } else { 
+                return this._getSnapshot(params);
+            }
+        },
 
+        _getSnapshot: function (params) {
             params = params || {};
-
             var width = params.width || this.canvas.width;
             var height = params.height || this.canvas.height;
             var format = params.format || "jpeg";
             var image;
-
             switch (format) {
                 case "jpeg":
                     image = Canvas2Image.saveAsJPEG(this.canvas, true, width, height);
                     break;
-
                 case "png":
                     image = Canvas2Image.saveAsPNG(this.canvas, true, width, height);
                     break;
-
                 case "bmp":
                     image = Canvas2Image.saveAsBMP(this.canvas, true, width, height);
                     break;
-
                 default:
                     this.error("Unsupported snapshot format: '" + format
                         + "' - supported types are 'jpeg', 'bmp' and 'png' - defaulting to 'jpeg'");
                     image = Canvas2Image.saveAsJPEG(this.canvas, true, width, height);
             }
-
             return image.src;
         },
 

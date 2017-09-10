@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <style>
+        body {
+            background-color: #000000;
+            padding: 5px;
+            margin: 0;
+        }
+
+        canvas {
+            display: inline-block;
+            margin: 5px;
+            margin-top:70px;
+            border: white 1px solid;
+        }
+
+        #snapshotImage {
+            display: inline-block;
+            margin: 5px;
+            border: white 1px solid;
+        }
+    </style>
+
+</head>
+<body>
+
+<div id="info">
+    <h1>taking a snapshot of a <a
+        href="../docs/classes/Canvas.html"
+        target="_parent">Canvas</a> once per second, synchronously</h1>
+</div>
+
+<!-- Scene canvas -->
+<canvas id="myCanvas" width="500px" height="500px"></canvas>
+
+<!-- Snapshot image -->
+<img id="snapshotImage" src="" width="500px" height="500px"/>
+
+<!-- Arrow image -->
+<img src="images/arrow.png" style="position:absolute; left: 490px; top: 200px; background: rgba(0,0,0,0);"/>
+
+<script>
+
+    // Eagerly create the default scene so we can bind it to our canvas and set
+    // preserveDrawingBuffer true, as required for synchronous canvas snapshots.
+
+    // Note that preserveDrawingBuffer incurs a performance penalty, and is false by default.
+
+    xeogl.scene = new xeogl.Scene({
+        canvas: "myCanvas",
+        contextAttr: {
+            preserveDrawingBuffer: true
+        }
+    });
+
+    var scene = xeogl.scene;
+
+    // Torus entity
+    new xeogl.Entity({
+        geometry: new xeogl.TorusGeometry({
+            radius: 1.0,
+            tube: 0.3,
+            radialSegments: 32,
+            tubeSegments: 24,
+            arc: Math.PI * 2.0
+        }),
+        material: new xeogl.PhongMaterial({
+            ambient: [0.9, 0.3, 0.9],
+            shininess: 30,
+            diffuseMap: new xeogl.Texture({
+                src: "textures/diffuse/uvGrid2.jpg"
+            })
+        })
+    });
+
+    // Set initial camera position
+    scene.camera.view.eye = [0, 0, -4];
+
+    // Orbit the camera
+    scene.on("tick", function () {
+
+        var view = scene.camera.view;
+
+        view.rotateEyeY(0.6);
+        view.rotateEyeX(0.3);
+    });
+
+    // Allow user interaction
+    new xeogl.CameraControl();
+
+    // Every second, grab a snapshot of the canvas on the right
+    // and show it in the image element on the left
+
+    var snapshotImage = document.getElementById("snapshotImage");
+
+    window.setInterval(function () {
+
+        // Get a snapshot synchronously. Note that a synchronous snapshot is possible here
+        // because we configured the Scene to preserve the drawing buffer.
+
+        snapshotImage.src = scene.canvas.getSnapshot({
+            width: 500, // Defaults to size of canvas
+            height: 500,
+            format: "png" // Options are "jpeg" (default), "png" and "bmp"
+        });
+
+    }, 1000);
+
+</script>
+</body>
+</html>

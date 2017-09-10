@@ -1006,8 +1006,7 @@
         }
 
         function makeEntityId(ctx, nodeInfo, nodeIdx, manyMeshes) {
-            var prefix = nodeInfo.name || nodeIdx;
-            var id = makeID(ctx, prefix);
+            var id = makeID(ctx, nodeInfo.name || nodeIdx);
             if (!manyMeshes && !ctx.model.entities[id]) {
                 return id;
             }
