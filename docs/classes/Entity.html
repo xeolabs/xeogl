@@ -1791,11 +1791,13 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="description">
                             <p>Specifies the billboarding behaviour for this Entity.</p>
                     <p>Options are:</p>
-                    <pre class="code prettyprint"><code>* **"none"** -  **(default)** - No billboarding.
-                    * **"spherical"** - Entity is billboarded to face the viewpoint, rotating both vertically and horizontally.
-                    * **"cylindrical"** - Entity is billboarded to face the viewpoint, rotating only about its vertically
-                    axis. Use this mode for things like trees on a landscape.
-                    </code></pre><p>Fires an <a href="../classes/Entity.html#event_billboard" class="crosslink">billboard</a> event on change.</p>
+                    <ul>
+                    <li><strong>"none"</strong> -  <strong>(default)</strong> - No billboarding.</li>
+                    <li><strong>"spherical"</strong> - Entity is billboarded to face the viewpoint, rotating both vertically and horizontally.</li>
+                    <li><strong>"cylindrical"</strong> - Entity is billboarded to face the viewpoint, rotating only about its vertically
+                     axis. Use this mode for things like trees on a landscape.</li>
+                    </ul>
+                    <p>Fires an <a href="../classes/Entity.html#event_billboard" class="crosslink">billboard</a> event on change.</p>
                     
                         </div>
                     
@@ -2062,7 +2064,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="description">
                             <p>The <a href="../classes/Geometry.html" class="crosslink">Geometry</a> attached to this Entity.</p>
                     <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Entity. Defaults to the parent
-                    <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_geometry" class="crosslink">camera</a>
+                    <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_geometry" class="crosslink">geometry</a>
                     (a simple box) when set to a null or undefined value.</p>
                     <p>Fires an <a href="../classes/Entity.html#event_geometry" class="crosslink">geometry</a> event on change.</p>
                     <p>Updates Entity/boundary,

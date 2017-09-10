@@ -226,13 +226,6 @@
             "fors": {},
             "namespaces": {}
         },
-        "src/canvas/canvas-v2.js": {
-            "name": "src/canvas/canvas-v2.js",
-            "modules": {},
-            "classes": {},
-            "fors": {},
-            "namespaces": {}
-        },
         "src/canvas/canvas.js": {
             "name": "src/canvas/canvas.js",
             "modules": {},
@@ -9397,338 +9390,6 @@
             "submodule": "camera"
         },
         {
-            "file": "src/canvas/canvas-v2.js",
-            "line": 126,
-            "description": "The HTML canvas. When the {{#crossLink \"Viewer\"}}{{/crossLink}} was configured with the ID of an existing canvas within the DOM,\nthen this property will be that element, otherwise it will be a full-page canvas that this Canvas has\ncreated by default, with a z-index of -10000.",
-            "itemtype": "property",
-            "name": "canvas",
-            "type": "{HTMLCanvasElement}",
-            "final": 1,
-            "class": "Canvas",
-            "module": "xeogl",
-            "submodule": "canvas"
-        },
-        {
-            "file": "src/canvas/canvas-v2.js",
-            "line": 137,
-            "description": "A transparent HTML DIV overlaid over the {{#crossLink \"Canvas/canvas:property\"}}{{/crossLink}}, with a z-index\nof 100000.\n\nThe parent {{#crossLink \"Scene\"}}{{/crossLink}}'s {{#crossLink \"Input\"}}{{/crossLink}} will relay mouse\nevents from this DIV, instead of from the {{#crossLink \"Canvas/canvas:property\"}}{{/crossLink}}.\n\nWhen you need to have various HTML elements floating around over\nthe {{#crossLink \"Canvas/canvas:property\"}}{{/crossLink}}, then if you give those a z-index that lies between\nthat of the {{#crossLink \"Canvas/canvas:property\"}}{{/crossLink}} and this DIV, your elements will not\ninterfere with those events.",
-            "itemtype": "property",
-            "name": "canvas",
-            "type": "{HTMLCanvasElement}",
-            "final": 1,
-            "class": "Canvas",
-            "module": "xeogl",
-            "submodule": "canvas"
-        },
-        {
-            "file": "src/canvas/canvas-v2.js",
-            "line": 155,
-            "description": "The WebGL rendering context.",
-            "itemtype": "property",
-            "name": "gl",
-            "type": "{WebGLRenderingContext}",
-            "final": 1,
-            "class": "Canvas",
-            "module": "xeogl",
-            "submodule": "canvas"
-        },
-        {
-            "file": "src/canvas/canvas-v2.js",
-            "line": 164,
-            "description": "True when WebGL 2 support is enabled.",
-            "itemtype": "property",
-            "name": "webgl2",
-            "type": "{Boolean}",
-            "final": 1,
-            "class": "Canvas",
-            "module": "xeogl",
-            "submodule": "canvas"
-        },
-        {
-            "file": "src/canvas/canvas-v2.js",
-            "line": 173,
-            "description": "Indicates whether this Canvas is transparent.",
-            "itemtype": "property",
-            "name": "transparent",
-            "type": "{Boolean}",
-            "default": "{false}",
-            "final": 1,
-            "class": "Canvas",
-            "module": "xeogl",
-            "submodule": "canvas"
-        },
-        {
-            "file": "src/canvas/canvas-v2.js",
-            "line": 183,
-            "description": "Attributes for the WebGL context",
-            "type": "{{}|*}",
-            "class": "Canvas",
-            "module": "xeogl",
-            "submodule": "canvas"
-        },
-        {
-            "file": "src/canvas/canvas-v2.js",
-            "line": 244,
-            "description": "Boundary of the Canvas in absolute browser window coordinates.\n\n### Usage:\n\n````javascript\nvar boundary = myScene.canvas.boundary;\n\nvar xmin = boundary[0];\nvar ymin = boundary[1];\nvar width = boundary[2];\nvar height = boundary[3];\n````",
-            "itemtype": "property",
-            "name": "boundary",
-            "type": "{{Array of Number}}",
-            "final": 1,
-            "class": "Canvas",
-            "module": "xeogl",
-            "submodule": "canvas"
-        },
-        {
-            "file": "src/canvas/canvas-v2.js",
-            "line": 281,
-            "description": "Fired whenever the WebGL context has been lost",
-            "itemtype": "event",
-            "name": "webglContextLost",
-            "class": "Canvas",
-            "module": "xeogl",
-            "submodule": "canvas"
-        },
-        {
-            "file": "src/canvas/canvas-v2.js",
-            "line": 294,
-            "description": "Fired whenever the WebGL context has been restored again after having previously being lost",
-            "itemtype": "event",
-            "name": "webglContextRestored",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The WebGL context object"
-                }
-            ],
-            "class": "Canvas",
-            "module": "xeogl",
-            "submodule": "canvas"
-        },
-        {
-            "file": "src/canvas/canvas-v2.js",
-            "line": 354,
-            "description": "Fired whenever this Canvas's {{#crossLink \"Canvas/boundary:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "boundary",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Canvas",
-            "module": "xeogl",
-            "submodule": "canvas"
-        },
-        {
-            "file": "src/canvas/canvas-v2.js",
-            "line": 391,
-            "description": "Creates a default canvas in the DOM.",
-            "access": "private",
-            "tagname": "",
-            "class": "Canvas",
-            "module": "xeogl",
-            "submodule": "canvas"
-        },
-        {
-            "file": "src/canvas/canvas-v2.js",
-            "line": 421,
-            "description": "Creates a image element behind the canvas, for purpose of showing a custom background.",
-            "access": "private",
-            "tagname": "",
-            "class": "Canvas",
-            "module": "xeogl",
-            "submodule": "canvas"
-        },
-        {
-            "file": "src/canvas/canvas-v2.js",
-            "line": 448,
-            "description": "Creates an invisible DIV over the canvas, for purpose of catching\ninput events without interfering with app-lever UI bits floating underneath.",
-            "access": "private",
-            "tagname": "",
-            "class": "Canvas",
-            "module": "xeogl",
-            "submodule": "canvas"
-        },
-        {
-            "file": "src/canvas/canvas-v2.js",
-            "line": 485,
-            "access": "private",
-            "tagname": "",
-            "class": "Canvas",
-            "module": "xeogl",
-            "submodule": "canvas"
-        },
-        {
-            "file": "src/canvas/canvas-v2.js",
-            "line": 504,
-            "access": "private",
-            "tagname": "",
-            "class": "Canvas",
-            "module": "xeogl",
-            "submodule": "canvas"
-        },
-        {
-            "file": "src/canvas/canvas-v2.js",
-            "line": 524,
-            "description": "Initialises the WebGL context",
-            "access": "private",
-            "tagname": "",
-            "class": "Canvas",
-            "module": "xeogl",
-            "submodule": "canvas"
-        },
-        {
-            "file": "src/canvas/canvas-v2.js",
-            "line": 557,
-            "description": "Fired whenever the canvas failed to get a WebGL context, which probably means that WebGL\nis either unsupported or has been disabled.",
-            "itemtype": "event",
-            "name": "webglContextFailed",
-            "class": "Canvas",
-            "module": "xeogl",
-            "submodule": "canvas"
-        },
-        {
-            "file": "src/canvas/canvas-v2.js",
-            "line": 566,
-            "description": "Returns a snapshot of this Canvas as a Base64-encoded image.\n\n#### Usage:\n````javascript\nimageElement.src = myScene.canvas.getSnapshot({\n    width: 500, // Defaults to size of canvas\n    height: 500,\n    format: \"png\" // Options are \"jpeg\" (default), \"png\" and \"bmp\"\n});\n````",
-            "itemtype": "method",
-            "name": "getSnapshot",
-            "params": [
-                {
-                    "name": "params",
-                    "description": "Capture options.",
-                    "type": "*",
-                    "optional": true,
-                    "props": [
-                        {
-                            "name": "width",
-                            "description": "Desired width of result in pixels - defaults to width of canvas.",
-                            "type": "Number",
-                            "optional": true
-                        },
-                        {
-                            "name": "height",
-                            "description": "Desired height of result in pixels - defaults to height of canvas.",
-                            "type": "Number",
-                            "optional": true
-                        },
-                        {
-                            "name": "format",
-                            "description": "Desired format; \"jpeg\", \"png\" or \"bmp\".",
-                            "type": "String",
-                            "optional": true,
-                            "optdefault": "\"jpeg\""
-                        }
-                    ]
-                }
-            ],
-            "return": {
-                "description": "String-encoded image data.",
-                "type": "String"
-            },
-            "class": "Canvas",
-            "module": "xeogl",
-            "submodule": "canvas"
-        },
-        {
-            "file": "src/canvas/canvas-v2.js",
-            "line": 624,
-            "description": "Reads colors of pixels from the last rendered frame.\n\n<p>Call this method like this:</p>\n\n````JavaScript\n\n// Ignore transparent pixels (default is false)\nvar opaqueOnly = true;\n\nvar colors = new Float32Array(8);\n\nmyCanvas.readPixels([ 100, 22, 12, 33 ], colors, 2, opaqueOnly);\n````\n\nThen the r,g,b components of the colors will be set to the colors at those pixels.",
-            "params": [
-                {
-                    "name": "pixels",
-                    "description": "",
-                    "type": "Float32Array"
-                },
-                {
-                    "name": "colors",
-                    "description": "",
-                    "type": "Float32Array"
-                },
-                {
-                    "name": "size",
-                    "description": "",
-                    "type": "Number"
-                },
-                {
-                    "name": "opaqueOnly",
-                    "description": "",
-                    "type": "Boolean"
-                }
-            ],
-            "class": "Canvas",
-            "module": "xeogl",
-            "submodule": "canvas"
-        },
-        {
-            "file": "src/canvas/canvas-v2.js",
-            "line": 652,
-            "description": "A background color for the canvas. This is overridden by {{#crossLink \"Canvas/backgroundImage:property\"}}{{/crossLink}}.\n\nYou can set this to a new color at any time.\n\nFires a {{#crossLink \"Canvas/backgroundColor:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "backgroundColor",
-            "type": "Float32Array",
-            "default": "null",
-            "class": "Canvas",
-            "module": "xeogl",
-            "submodule": "canvas"
-        },
-        {
-            "file": "src/canvas/canvas-v2.js",
-            "line": 681,
-            "description": "Fired whenever this Canvas's {{#crossLink \"Canvas/backgroundColor:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "backgroundColor",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Canvas",
-            "module": "xeogl",
-            "submodule": "canvas"
-        },
-        {
-            "file": "src/canvas/canvas-v2.js",
-            "line": 694,
-            "description": "URL of a background image for the canvas. This is overrided by {{#crossLink \"Canvas/backgroundColor/property\"}}{{/crossLink}}.\n\nYou can set this to a new file path at any time.\n\nFires a {{#crossLink \"Canvas/background:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "backgroundImage",
-            "type": "String",
-            "class": "Canvas",
-            "module": "xeogl",
-            "submodule": "canvas"
-        },
-        {
-            "file": "src/canvas/canvas-v2.js",
-            "line": 729,
-            "description": "Fired whenever this Canvas's {{#crossLink \"Canvas/backgroundImage:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "backgroundImage",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Canvas",
-            "module": "xeogl",
-            "submodule": "canvas"
-        },
-        {
-            "file": "src/canvas/canvas-v2.js",
-            "line": 742,
-            "description": "The busy {{#crossLink \"Spinner\"}}{{/crossLink}} for this Canvas.",
-            "itemtype": "property",
-            "name": "spinner",
-            "type": "Spinner",
-            "final": 1,
-            "class": "Canvas",
-            "module": "xeogl",
-            "submodule": "canvas"
-        },
-        {
             "file": "src/canvas/canvas.js",
             "line": 126,
             "description": "The HTML canvas. When the {{#crossLink \"Viewer\"}}{{/crossLink}} was configured with the ID of an existing canvas within the DOM,\nthen this property will be that element, otherwise it will be a full-page canvas that this Canvas has\ncreated by default, with a z-index of -10000.",
@@ -9905,7 +9566,7 @@
         {
             "file": "src/canvas/canvas.js",
             "line": 530,
-            "description": "Returns a snapshot of this Canvas as a Base64-encoded image.\n\nWhen a callback is given, this method will capture the snapshot asynchronously, on the next animation frame\nand return it via the callback.\n\nWhen no callback is given, this method captures and returns the snapshot immediately. Note that is only\npossible when you have configured the Canvas's {{#crossLink \"Scene\"}}Scene{{/crossLink}} to preserve the\nWebGL drawing buffer, which has a performance overhead.\n\n#### Usage:\n````javascript\n// Get snapshot asynchronously\nmyScene.canvas.getSnapshot({\n    width: 500, // Defaults to size of canvas\n    height: 500,\n    format: \"png\" // Options are \"jpeg\" (default), \"png\" and \"bmp\"\n}, function(imageDataURL) {\n    imageElement.src = imageDataURL;\n});\n\n// Get snapshot synchronously, requires that Scene be\n// configured with preserveDrawingBuffer; true\nimageElement.src = myScene.canvas.getSnapshot({\n    width: 500, // Defaults to size of canvas\n    height: 500,\n    format: \"png\" // Options are \"jpeg\" (default), \"png\" and \"bmp\"\n});\n````",
+            "description": "Returns a snapshot of this Canvas as a Base64-encoded image.\n\nWhen a callback is given, this method will capture the snapshot asynchronously, on the next animation frame\nand return it via the callback.\n\nWhen no callback is given, this method captures and returns the snapshot immediately. Note that is only\npossible when you have configured the Canvas's {{#crossLink \"Scene\"}}Scene{{/crossLink}} to preserve the\nWebGL drawing buffer, which has a performance overhead.\n\n#### Usage:\n\n````javascript\n// Get snapshot asynchronously\nmyScene.canvas.getSnapshot({\n    width: 500, // Defaults to size of canvas\n    height: 500,\n    format: \"png\" // Options are \"jpeg\" (default), \"png\" and \"bmp\"\n}, function(imageDataURL) {\n    imageElement.src = imageDataURL;\n});\n\n// Get snapshot synchronously, requires that Scene be\n// configured with preserveDrawingBuffer; true\nimageElement.src = myScene.canvas.getSnapshot({\n    width: 500, // Defaults to size of canvas\n    height: 500,\n    format: \"png\" // Options are \"jpeg\" (default), \"png\" and \"bmp\"\n});\n````",
             "itemtype": "method",
             "name": "getSnapshot",
             "params": [
@@ -9939,7 +9600,8 @@
                 {
                     "name": "ok",
                     "description": "Callback to return the image data when taking a snapshot asynchronously.",
-                    "type": "Function"
+                    "type": "Function",
+                    "optional": true
                 }
             ],
             "return": {
@@ -11414,7 +11076,7 @@
         {
             "file": "src/entities/entity.js",
             "line": 390,
-            "description": "The {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/geometry:property\"}}camera{{/crossLink}}\n(a simple box) when set to a null or undefined value.\n\nFires an {{#crossLink \"Entity/geometry:event\"}}{{/crossLink}} event on change.\n\nUpdates {{#crossLink \"Entity/boundary\"}}{{/crossLink}},\n{{#crossLink \"Entity/worldObb\"}}{{/crossLink}} and\n{{#crossLink \"Entity/center\"}}{{/crossLink}}",
+            "description": "The {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/geometry:property\"}}geometry{{/crossLink}}\n(a simple box) when set to a null or undefined value.\n\nFires an {{#crossLink \"Entity/geometry:event\"}}{{/crossLink}} event on change.\n\nUpdates {{#crossLink \"Entity/boundary\"}}{{/crossLink}},\n{{#crossLink \"Entity/worldObb\"}}{{/crossLink}} and\n{{#crossLink \"Entity/center\"}}{{/crossLink}}",
             "itemtype": "property",
             "name": "geometry",
             "type": "Geometry",
@@ -11942,7 +11604,7 @@
         {
             "file": "src/entities/entity.js",
             "line": 1145,
-            "description": "Specifies the billboarding behaviour for this Entity.\n\nOptions are:\n\n    * **\"none\"** -  **(default)** - No billboarding.\n    * **\"spherical\"** - Entity is billboarded to face the viewpoint, rotating both vertically and horizontally.\n    * **\"cylindrical\"** - Entity is billboarded to face the viewpoint, rotating only about its vertically\n    axis. Use this mode for things like trees on a landscape.\n\nFires an {{#crossLink \"Entity/billboard:event\"}}{{/crossLink}} event on change.",
+            "description": "Specifies the billboarding behaviour for this Entity.\n             \nOptions are:\n             \n * **\"none\"** -  **(default)** - No billboarding.\n * **\"spherical\"** - Entity is billboarded to face the viewpoint, rotating both vertically and horizontally.\n * **\"cylindrical\"** - Entity is billboarded to face the viewpoint, rotating only about its vertically\n    axis. Use this mode for things like trees on a landscape.\n             \nFires an {{#crossLink \"Entity/billboard:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "billboard",
             "default": "\"none\"",
@@ -27555,10 +27217,6 @@
     "warnings": [
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/canvas/canvas-v2.js:566"
-        },
-        {
-            "message": "replacing incorrect tag: returns with return",
             "line": " src/canvas/canvas.js:530"
         },
         {
@@ -28168,38 +27826,6 @@
         {
             "message": "Missing item type\nRemoves the item of the given ID from the map and returns it",
             "line": " src/_utils/map.js:53"
-        },
-        {
-            "message": "Missing item type\nAttributes for the WebGL context",
-            "line": " src/canvas/canvas-v2.js:183"
-        },
-        {
-            "message": "Missing item type\nCreates a default canvas in the DOM.",
-            "line": " src/canvas/canvas-v2.js:391"
-        },
-        {
-            "message": "Missing item type\nCreates a image element behind the canvas, for purpose of showing a custom background.",
-            "line": " src/canvas/canvas-v2.js:421"
-        },
-        {
-            "message": "Missing item type\nCreates an invisible DIV over the canvas, for purpose of catching\ninput events without interfering with app-lever UI bits floating underneath.",
-            "line": " src/canvas/canvas-v2.js:448"
-        },
-        {
-            "message": "Missing item type",
-            "line": " src/canvas/canvas-v2.js:485"
-        },
-        {
-            "message": "Missing item type",
-            "line": " src/canvas/canvas-v2.js:504"
-        },
-        {
-            "message": "Missing item type\nInitialises the WebGL context",
-            "line": " src/canvas/canvas-v2.js:524"
-        },
-        {
-            "message": "Missing item type\nReads colors of pixels from the last rendered frame.\n\n<p>Call this method like this:</p>\n\n````JavaScript\n\n// Ignore transparent pixels (default is false)\nvar opaqueOnly = true;\n\nvar colors = new Float32Array(8);\n\nmyCanvas.readPixels([ 100, 22, 12, 33 ], colors, 2, opaqueOnly);\n````\n\nThen the r,g,b components of the colors will be set to the colors at those pixels.",
-            "line": " src/canvas/canvas-v2.js:624"
         },
         {
             "message": "Missing item type\nAttributes for the WebGL context",
