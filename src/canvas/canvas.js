@@ -530,7 +530,7 @@
         /**
          Returns a snapshot of this Canvas as a Base64-encoded image.
 
-         When a callback is given, this method will capture the snapshot asynchronously, on the next animation frame
+         When a callback is given, this method will capture the snapshot asynchronously, on the next animation frame,
          and return it via the callback.
 
          When no callback is given, this method captures and returns the snapshot immediately. Note that is only
@@ -552,9 +552,9 @@
          // Get snapshot synchronously, requires that Scene be
          // configured with preserveDrawingBuffer; true
          imageElement.src = myScene.canvas.getSnapshot({
-             width: 500, // Defaults to size of canvas
+             width: 500,
              height: 500,
-             format: "png" // Options are "jpeg" (default), "png" and "bmp"
+             format: "png"
          });
          ````
          @method getSnapshot

@@ -1699,15 +1699,16 @@
             "classes": {
                 "SplineCurveHelper": 1,
                 "Entity": 1,
-                "PointLightHelper": 1
+                "PointLightHelper": 1,
+                "ViewCube": 1
             },
             "fors": {},
             "is_submodule": 1,
             "namespaces": {},
             "module": "xeogl",
             "namespace": "",
-            "file": "examples/js/helpers/splineCurveHelper.js",
-            "line": 1,
+            "file": "examples/js/helpers/viewCube.js",
+            "line": 5,
             "description": "Shows the shape and control points of {{#crossLink \"SplineCurve\"}}{{/crossLink}}",
             "tag": "module"
         },
@@ -8801,13 +8802,13 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 675,
+            "line": 676,
             "description": "Attempts to pick an object.",
             "class": "CameraFlightAnimation"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 877,
+            "line": 878,
             "description": "Reads the colors of some pixels in the current image.",
             "class": "CameraFlightAnimation"
         },

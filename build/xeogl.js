@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2017-09-10
+ * Built on 2017-09-12
  *
  * MIT License
  * Copyright 2017, Lindsay Kay
@@ -5841,11 +5841,12 @@ var Canvas2Image = (function () {
 
             if (numTransparentObjects > 0) {
 
+                gl.enable(gl.CULL_FACE);
                 gl.enable(gl.BLEND);
-                gl.depthMask(false);
+             //   gl.depthMask(false);
                 gl.blendEquation(gl.FUNC_ADD);
-                gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-                //gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+               // gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+                gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
                 gl.colorMask(true, true, true, true);
 
@@ -16543,7 +16544,7 @@ var Canvas2Image = (function () {
         /**
          Returns a snapshot of this Canvas as a Base64-encoded image.
 
-         When a callback is given, this method will capture the snapshot asynchronously, on the next animation frame
+         When a callback is given, this method will capture the snapshot asynchronously, on the next animation frame,
          and return it via the callback.
 
          When no callback is given, this method captures and returns the snapshot immediately. Note that is only
@@ -16565,9 +16566,9 @@ var Canvas2Image = (function () {
          // Get snapshot synchronously, requires that Scene be
          // configured with preserveDrawingBuffer; true
          imageElement.src = myScene.canvas.getSnapshot({
-             width: 500, // Defaults to size of canvas
+             width: 500,
              height: 500,
-             format: "png" // Options are "jpeg" (default), "png" and "bmp"
+             format: "png"
          });
          ````
          @method getSnapshot
