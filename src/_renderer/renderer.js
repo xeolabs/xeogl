@@ -72,7 +72,7 @@
         // Shadow->Object lookup
         this._shadowObjectLists = {};
 
-        // Render states 
+        // Render states
 
         this.lights = null;
         this.material = null;
@@ -86,7 +86,7 @@
         this.xray = null;
         this.modes = null;
 
-        // Dirty flags 
+        // Dirty flags
 
         this.objectListDirty = true;
         this.stateOrderDirty = true;
