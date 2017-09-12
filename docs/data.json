@@ -1321,6 +1321,15 @@
             },
             "fors": {},
             "namespaces": {}
+        },
+        "examples/js/helpers/viewCube.js": {
+            "name": "examples/js/helpers/viewCube.js",
+            "modules": {},
+            "classes": {
+                "ViewCube": 1
+            },
+            "fors": {},
+            "namespaces": {}
         }
     },
     "modules": {
@@ -7954,6 +7963,41 @@
             "line": 1,
             "description": "Shows the shape and control points of {{#crossLink \"SplineCurve\"}}{{/crossLink}}",
             "extends": "Component"
+        },
+        "ViewCube": {
+            "name": "ViewCube",
+            "shortname": "ViewCube",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "entities",
+            "namespace": "",
+            "file": "examples/js/helpers/viewCube.js",
+            "line": 5,
+            "description": "Helper widget that indicates the World coordinate axis.\nThe helper works by tracking updates on a xeogl.Lookat and orienting a gnomon accordingly.",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "cfg",
+                    "description": "Configuration",
+                    "type": "*",
+                    "props": [
+                        {
+                            "name": "lookat",
+                            "description": "A {{#crossLink \"xeogl.Lookat\"}}{{/crossLink}} to observe.",
+                            "type": "xeogl.Lookat"
+                        },
+                        {
+                            "name": "size]  Pixel dimensions of helper's canvas, [250, 250",
+                            "description": "by default.",
+                            "type": "Int16Array",
+                            "optional": true
+                        }
+                    ]
+                }
+            ]
         }
     },
     "classitems": [
@@ -9567,7 +9611,7 @@
         {
             "file": "src/canvas/canvas.js",
             "line": 530,
-            "description": "Returns a snapshot of this Canvas as a Base64-encoded image.\n\nWhen a callback is given, this method will capture the snapshot asynchronously, on the next animation frame\nand return it via the callback.\n\nWhen no callback is given, this method captures and returns the snapshot immediately. Note that is only\npossible when you have configured the Canvas's {{#crossLink \"Scene\"}}Scene{{/crossLink}} to preserve the\nWebGL drawing buffer, which has a performance overhead.\n\n#### Usage:\n\n````javascript\n// Get snapshot asynchronously\nmyScene.canvas.getSnapshot({\n    width: 500, // Defaults to size of canvas\n    height: 500,\n    format: \"png\" // Options are \"jpeg\" (default), \"png\" and \"bmp\"\n}, function(imageDataURL) {\n    imageElement.src = imageDataURL;\n});\n\n// Get snapshot synchronously, requires that Scene be\n// configured with preserveDrawingBuffer; true\nimageElement.src = myScene.canvas.getSnapshot({\n    width: 500, // Defaults to size of canvas\n    height: 500,\n    format: \"png\" // Options are \"jpeg\" (default), \"png\" and \"bmp\"\n});\n````",
+            "description": "Returns a snapshot of this Canvas as a Base64-encoded image.\n\nWhen a callback is given, this method will capture the snapshot asynchronously, on the next animation frame,\nand return it via the callback.\n\nWhen no callback is given, this method captures and returns the snapshot immediately. Note that is only\npossible when you have configured the Canvas's {{#crossLink \"Scene\"}}Scene{{/crossLink}} to preserve the\nWebGL drawing buffer, which has a performance overhead.\n\n#### Usage:\n\n````javascript\n// Get snapshot asynchronously\nmyScene.canvas.getSnapshot({\n    width: 500, // Defaults to size of canvas\n    height: 500,\n    format: \"png\" // Options are \"jpeg\" (default), \"png\" and \"bmp\"\n}, function(imageDataURL) {\n    imageElement.src = imageDataURL;\n});\n\n// Get snapshot synchronously, requires that Scene be\n// configured with preserveDrawingBuffer; true\nimageElement.src = myScene.canvas.getSnapshot({\n    width: 500,\n    height: 500,\n    format: \"png\"\n});\n````",
             "itemtype": "method",
             "name": "getSnapshot",
             "params": [
@@ -27213,6 +27257,18 @@
             ],
             "class": "SplineCurveHelper",
             "module": "entities"
+        },
+        {
+            "file": "examples/js/helpers/viewCube.js",
+            "line": 346,
+            "params": [
+                {
+                    "name": "visible",
+                    "description": ""
+                }
+            ],
+            "class": "ViewCube",
+            "module": "entities"
         }
     ],
     "warnings": [
@@ -27802,11 +27858,11 @@
         },
         {
             "message": "Missing item type\nAttempts to pick an object.",
-            "line": " src/_renderer/renderer.js:675"
+            "line": " src/_renderer/renderer.js:676"
         },
         {
             "message": "Missing item type\nReads the colors of some pixels in the current image.",
-            "line": " src/_renderer/renderer.js:877"
+            "line": " src/_renderer/renderer.js:878"
         },
         {
             "message": "Missing item type\nRenderer states",
@@ -28327,6 +28383,10 @@
         {
             "message": "Missing item type",
             "line": " examples/js/helpers/axisHelper.js:346"
+        },
+        {
+            "message": "Missing item type",
+            "line": " examples/js/helpers/viewCube.js:346"
         }
     ]
 }
