@@ -916,7 +916,8 @@
          * The method is given a component type, configuration and optional instance ID, like so:
          *
          * ````javascript
-         * var material = myComponent.create(xeogl.PhongMaterial, {
+         * var material = myComponent.create({
+         *      type: "xeogl.PhongMaterial",
          *      diffuse: [1,0,0],
          *      specular: [1,1,0]
          * }, "myMaterial");
@@ -926,19 +927,17 @@
          * {{#crossLink "PhongMaterial"}}{{/crossLink}}, passing the given  attributes to the component's constructor.
          *
          * If you call this method again, specifying the same ````type```` and ````instanceId````, the method will return the same
-         * component instance that it returned the first time, and will ignore the configuration:
+         * component instance that it returned the first time, and will ignore the new configuration:
          *
          * ````javascript
-         * var material2 = component.create(xeogl.PhongMaterial, { specular: [1,1,0] }, "myMaterial");
+         * var material2 = component.create({ type: "xeogl.PhongMaterial", specular: [1,1,0] }, "myMaterial");
          * ````
          *
          * So in this example, our {{#crossLink "PhongMaterial"}}{{/crossLink}} will continue to have the red specular
          * and diffuse color that we specified the first time.
          *
          * Each time you call this method with the same ````type```` and ````instanceId````, the Scene will internally increment a
-         * reference count for the component instance. You can release the shared component instance with a call to
-         * {{#crossLink "Scene/putSharedComponent:method"}}{{/crossLink}}, and once you have released it as many
-         * times as you got it, the Scene will destroy the component.
+         * reference count for the component instance.
          *
          * @method create
          * @param {*} [cfg] Configuration for the component instance - only used if this is the first time you are getting
