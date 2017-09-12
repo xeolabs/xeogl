@@ -80,6 +80,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "Transform",
         "Translate",
         "VectorTextGeometry",
+        "ViewCube",
         "Viewport",
         "XRay",
         "ZSpaceEffect",

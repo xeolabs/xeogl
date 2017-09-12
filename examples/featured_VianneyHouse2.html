@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.js"></script>
+    <script src="js/models/glTFModel.js"></script>
+
+    <script src="js/skyboxes/skybox.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+
+<body>
+
+<div id="info-bottom">
+    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - loading glTF</h1>
+    <pre id="log">model: <a
+            href=https://sketchfab.com/bimcc' target="_parent">https://sketchfab.com/bimcc</a></pre>
+</div>
+
+<script>
+
+    //---------------------------------------------------
+    // Load the model
+    //---------------------------------------------------
+
+    var model = new xeogl.GLTFModel({
+        src: "models/gltf/vianney_house_2/scene.gltf",
+        transform: new xeogl.Rotate({
+            xyz: [1,0,0],
+            angle: -90
+        })
+    });
+
+    //-----------------------------------------------------------------------------------------------------
+    // Camera
+    //-----------------------------------------------------------------------------------------------------
+
+    var view = xeogl.scene.camera.view;
+
+    view.eye = [14.430580139160156, 59.75834655761719, 70.47972106933594];
+    view.look = [14.513423919677734, 22.365800857543945, -40.4671745300293];
+    view.up = [0.007161871995776892, 0.9561106562614441, -0.29351264238357544];
+
+    var spinning = true;
+
+    model.on("loaded", function () {
+        xeogl.scene.on("tick", function () { // Slowly orbit the camera
+            if (spinning) {
+                view.rotateEyeY(0.1);
+            }
+        });
+    });
+
+    var cameraControl = new xeogl.CameraControl(); // User camera control
+    cameraControl.mouseZoom.sensitivity = 10;
+
+</script>
+</body>
+</html>

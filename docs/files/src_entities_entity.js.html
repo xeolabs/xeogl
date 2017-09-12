@@ -120,6 +120,7 @@
                                 <li><a href="../classes/Transform.html">Transform</a></li>
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
+                                <li><a href="../classes/ViewCube.html">ViewCube</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
                                 <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
@@ -588,7 +589,7 @@
              * The {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} attached to this Entity.
              *
              * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this Entity. Defaults to the parent
-             * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/geometry:property&quot;}}camera{{/crossLink}}
+             * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/geometry:property&quot;}}geometry{{/crossLink}}
              * (a simple box) when set to a null or undefined value.
              *
              * Fires an {{#crossLink &quot;Entity/geometry:event&quot;}}{{/crossLink}} event on change.
@@ -1340,20 +1341,20 @@
             },
 
             /**
-             * Specifies the billboarding behaviour for this Entity.
-             *
-             * Options are:
-             *
-             *     * **&quot;none&quot;** -  **(default)** - No billboarding.
-             *     * **&quot;spherical&quot;** - Entity is billboarded to face the viewpoint, rotating both vertically and horizontally.
-             *     * **&quot;cylindrical&quot;** - Entity is billboarded to face the viewpoint, rotating only about its vertically
-             *     axis. Use this mode for things like trees on a landscape.
-             *
-             * Fires an {{#crossLink &quot;Entity/billboard:event&quot;}}{{/crossLink}} event on change.
-             *
-             * @property billboard
-             * @default &quot;none&quot;
-             * @type String
+              Specifies the billboarding behaviour for this Entity.
+             
+              Options are:
+             
+               * **&quot;none&quot;** -  **(default)** - No billboarding.
+               * **&quot;spherical&quot;** - Entity is billboarded to face the viewpoint, rotating both vertically and horizontally.
+               * **&quot;cylindrical&quot;** - Entity is billboarded to face the viewpoint, rotating only about its vertically
+                  axis. Use this mode for things like trees on a landscape.
+             
+              Fires an {{#crossLink &quot;Entity/billboard:event&quot;}}{{/crossLink}} event on change.
+             
+              @property billboard
+              @default &quot;none&quot;
+              @type String
              */
             billboard: {
 
