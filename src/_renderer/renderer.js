@@ -307,9 +307,10 @@
                 this._objectList[this._objectListLen++] = this.objects[objectId];
             }
         }
-        for (var i = this._objectListLen, len = this._objectList.length; i < len; i) {
+        for (var i = this._objectListLen, len = this._objectList.length; i < len; i++) {
             this._objectList[i] = null; // Release memory
         }
+        this._objectList.length = this._objectListLen;
     };
 
     xeogl.renderer.Renderer.prototype._makeStateSortKeys = function () {
