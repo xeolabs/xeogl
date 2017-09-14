@@ -8846,13 +8846,13 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 676,
+            "line": 677,
             "description": "Attempts to pick an object.",
             "class": "CameraFlightAnimation"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 878,
+            "line": 879,
             "description": "Reads the colors of some pixels in the current image.",
             "class": "CameraFlightAnimation"
         },
@@ -9006,7 +9006,7 @@
         },
         {
             "file": "src/animation/cameraFlightAnimation.js",
-            "line": 397,
+            "line": 404,
             "description": "Jumps this CameraFlightAnimation's {{#crossLink \"Camera\"}}{{/crossLink}} to the given target.\n\n * When the target is a boundary, this CameraFlightAnimation will position the {{#crossLink \"Camera\"}}{{/crossLink}}\n at where the target fills most of the canvas.\n * When the target is an explicit {{#crossLink \"Camera\"}}{{/crossLink}} position, given as ````eye````, ````look```` and ````up````\n vectors, then this CameraFlightAnimation will jump the {{#crossLink \"Camera\"}}{{/crossLink}} to that target.",
             "itemtype": "method",
             "name": "flyTo",
@@ -9074,7 +9074,7 @@
         },
         {
             "file": "src/animation/cameraFlightAnimation.js",
-            "line": 626,
+            "line": 633,
             "description": "Stops an earlier flyTo, fires arrival callback.",
             "itemtype": "method",
             "name": "stop",
@@ -9084,7 +9084,7 @@
         },
         {
             "file": "src/animation/cameraFlightAnimation.js",
-            "line": 659,
+            "line": 666,
             "description": "Cancels an earlier flyTo without calling the arrival callback.",
             "itemtype": "method",
             "name": "cancel",
@@ -9094,7 +9094,7 @@
         },
         {
             "file": "src/animation/cameraFlightAnimation.js",
-            "line": 685,
+            "line": 692,
             "description": "The {{#crossLink \"Camera\"}}{{/crossLink}} being controlled by this CameraFlightAnimation.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this CameraFlightAnimation. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}} when set to\na null or undefined value.\n\nFires a {{#crossLink \"CameraFlightAnimation/camera:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "camera",
@@ -9105,7 +9105,7 @@
         },
         {
             "file": "src/animation/cameraFlightAnimation.js",
-            "line": 701,
+            "line": 708,
             "description": "Fired whenever this CameraFlightAnimation's {{#crossLink \"CameraFlightAnimation/camera:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "camera",
@@ -9121,7 +9121,7 @@
         },
         {
             "file": "src/animation/cameraFlightAnimation.js",
-            "line": 725,
+            "line": 732,
             "description": "Flight duration, in seconds, when calling {{#crossLink \"CameraFlightAnimation/flyTo:method\"}}{{/crossLink}}.\n\nStops any flight currently in progress.\n\nFires a {{#crossLink \"CameraFlightAnimation/duration:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "duration",
@@ -9133,7 +9133,7 @@
         },
         {
             "file": "src/animation/cameraFlightAnimation.js",
-            "line": 742,
+            "line": 749,
             "description": "Fired whenever this CameraFlightAnimation's {{#crossLink \"CameraFlightAnimation/duration:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "duration",
@@ -9150,7 +9150,7 @@
         },
         {
             "file": "src/animation/cameraFlightAnimation.js",
-            "line": 758,
+            "line": 765,
             "description": "When true, will ensure that this CameraFlightAnimation is flying to a boundary it will always adjust the distance between the\n{{#crossLink \"CameraFlightAnimation/camera:property\"}}camera{{/crossLink}}'s {{#crossLink \"Lookat/eye:property\"}}eye{{/crossLink}}\nand {{#crossLink \"Lookat/look:property\"}}{{/crossLink}}\nso as to ensure that the target boundary is always filling the view volume.\n\nWhen false, the eye will remain at its current distance from the look position.\n\nFires a {{#crossLink \"CameraFlightAnimation/fit:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "fit",
@@ -9162,7 +9162,7 @@
         },
         {
             "file": "src/animation/cameraFlightAnimation.js",
-            "line": 778,
+            "line": 785,
             "description": "Fired whenever this CameraFlightAnimation's\n{{#crossLink \"CameraFlightAnimation/fit:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "fit",
@@ -9178,7 +9178,7 @@
         },
         {
             "file": "src/animation/cameraFlightAnimation.js",
-            "line": 793,
+            "line": 800,
             "description": "How much of field-of-view, in degrees, that a target {{#crossLink \"Entity\"}}{{/crossLink}} or its AABB should\nfill the canvas when calling {{#crossLink \"CameraFlightAnimation/flyTo:method\"}}{{/crossLink}} or {{#crossLink \"CameraFlightAnimation/jumpTo:method\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"CameraFlightAnimation/fitFOV:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "fitFOV",
@@ -9190,7 +9190,7 @@
         },
         {
             "file": "src/animation/cameraFlightAnimation.js",
-            "line": 809,
+            "line": 816,
             "description": "Fired whenever this CameraFlightAnimation's {{#crossLink \"CameraFlightAnimation/fitFOV:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "fitFOV",
@@ -9207,7 +9207,7 @@
         },
         {
             "file": "src/animation/cameraFlightAnimation.js",
-            "line": 823,
+            "line": 830,
             "description": "When true, will cause this CameraFlightAnimation to point the {{#crossLink \"CameraFlightAnimation/camera:property\"}}{{/crossLink}}\nin the direction that it is travelling.\n\nFires a {{#crossLink \"CameraFlightAnimation/trail:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "trail",
@@ -9219,7 +9219,7 @@
         },
         {
             "file": "src/animation/cameraFlightAnimation.js",
-            "line": 839,
+            "line": 846,
             "description": "Fired whenever this CameraFlightAnimation's {{#crossLink \"CameraFlightAnimation/trail:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "trail",
@@ -22135,7 +22135,7 @@
         {
             "file": "src/component.js",
             "line": 910,
-            "description": "Convenience method for creating a Component within this Component's {{#crossLink \"Scene\"}}{{/crossLink}}.\n\nYou would typically use this method to conveniently instantiate components that you'd want to\nshare (ie. \"instance\") among your {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nThe method is given a component type, configuration and optional instance ID, like so:\n\n````javascript\nvar material = myComponent.create(xeogl.PhongMaterial, {\n     diffuse: [1,0,0],\n     specular: [1,1,0]\n}, \"myMaterial\");\n````\n\nThe first time you call this method for the given ````type```` and ````instanceId````, this method will create the\n{{#crossLink \"PhongMaterial\"}}{{/crossLink}}, passing the given  attributes to the component's constructor.\n\nIf you call this method again, specifying the same ````type```` and ````instanceId````, the method will return the same\ncomponent instance that it returned the first time, and will ignore the configuration:\n\n````javascript\nvar material2 = component.create(xeogl.PhongMaterial, { specular: [1,1,0] }, \"myMaterial\");\n````\n\nSo in this example, our {{#crossLink \"PhongMaterial\"}}{{/crossLink}} will continue to have the red specular\nand diffuse color that we specified the first time.\n\nEach time you call this method with the same ````type```` and ````instanceId````, the Scene will internally increment a\nreference count for the component instance. You can release the shared component instance with a call to\n{{#crossLink \"Scene/putSharedComponent:method\"}}{{/crossLink}}, and once you have released it as many\ntimes as you got it, the Scene will destroy the component.",
+            "description": "Convenience method for creating a Component within this Component's {{#crossLink \"Scene\"}}{{/crossLink}}.\n\nYou would typically use this method to conveniently instantiate components that you'd want to\nshare (ie. \"instance\") among your {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nThe method is given a component type, configuration and optional instance ID, like so:\n\n````javascript\nvar material = myComponent.create({\n     type: \"xeogl.PhongMaterial\",\n     diffuse: [1,0,0],\n     specular: [1,1,0]\n}, \"myMaterial\");\n````\n\nThe first time you call this method for the given ````type```` and ````instanceId````, this method will create the\n{{#crossLink \"PhongMaterial\"}}{{/crossLink}}, passing the given  attributes to the component's constructor.\n\nIf you call this method again, specifying the same ````type```` and ````instanceId````, the method will return the same\ncomponent instance that it returned the first time, and will ignore the new configuration:\n\n````javascript\nvar material2 = component.create({ type: \"xeogl.PhongMaterial\", specular: [1,1,0] }, \"myMaterial\");\n````\n\nSo in this example, our {{#crossLink \"PhongMaterial\"}}{{/crossLink}} will continue to have the red specular\nand diffuse color that we specified the first time.\n\nEach time you call this method with the same ````type```` and ````instanceId````, the Scene will internally increment a\nreference count for the component instance.",
             "itemtype": "method",
             "name": "create",
             "params": [
@@ -22161,7 +22161,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 982,
+            "line": 981,
             "description": "Protected method, called by sub-classes to queue a call to _update().",
             "access": "protected",
             "tagname": "",
@@ -22179,7 +22179,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 998,
+            "line": 997,
             "access": "private",
             "tagname": "",
             "class": "Component",
@@ -22187,7 +22187,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1010,
+            "line": 1009,
             "description": "Protected virtual template method, optionally implemented\nby sub-classes to perform a scheduled task.",
             "access": "protected",
             "tagname": "",
@@ -22196,7 +22196,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1018,
+            "line": 1017,
             "description": "Protected template method, implemented by sub-classes to compile\ntheir state into their Scene's xeogl.renderer.Renderer.",
             "access": "protected",
             "tagname": "",
@@ -22205,7 +22205,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1029,
+            "line": 1028,
             "description": "JSON object containing the state of this Component.",
             "itemtype": "property",
             "name": "json",
@@ -22216,7 +22216,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1056,
+            "line": 1055,
             "description": "String containing the serialized JSON state of this Component.",
             "itemtype": "property",
             "name": "string",
@@ -22227,7 +22227,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1138,
+            "line": 1137,
             "description": "Experimental: string containing a JavaScript expression that would instantiate this Component.",
             "itemtype": "property",
             "name": "string",
@@ -22238,7 +22238,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1153,
+            "line": 1152,
             "description": "Destroys this component.\n\nFires a {{#crossLink \"Component/destroyed:event\"}}{{/crossLink}} event on this Component.\n\nAutomatically disassociates this component from other components, causing them to fall back on any\ndefaults that this component overrode on them.\n\nTODO: describe effect with respect to #create",
             "itemtype": "method",
             "name": "destroy",
@@ -22247,7 +22247,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1227,
+            "line": 1226,
             "description": "Fired when this Component is destroyed.",
             "itemtype": "event",
             "name": "destroyed",
@@ -22256,7 +22256,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1235,
+            "line": 1234,
             "description": "Protected template method, implemented by sub-classes\nto clean up just before the component is destroyed.",
             "access": "protected",
             "tagname": "",
@@ -22647,7 +22647,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 949,
+            "line": 950,
             "description": "The default {{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.morphTargets\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "morphTargets",
@@ -22660,7 +22660,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 972,
+            "line": 973,
             "description": "The default {{#crossLink \"Viewport\"}}{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Viewport\"}}{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.viewport\" and\n{{#crossLink \"Viewport/autoBoundary:property\"}}{{/crossLink}} set ````true````.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Viewport\"}}{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "viewport",
@@ -22671,7 +22671,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 997,
+            "line": 998,
             "description": "The default {{#crossLink \"Outline\"}}{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Outline\"}}{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.outline\",\na {{#crossLink \"Outline/color:property\"}}color{{/crossLink}} set to ````[1,1,0]````\na {{#crossLink \"Outline/thickness:property\"}}thickness{{/crossLink}} set to ````15````.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Outline\"}}{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "outline",
@@ -22682,7 +22682,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1023,
+            "line": 1024,
             "description": "The default {{#crossLink \"XRay\"}}{{/crossLink}} provided by this Scene.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"XRay\"}}{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "xray",
@@ -22693,7 +22693,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1046,
+            "line": 1047,
             "description": "The World-space 3D boundary of this Scene.\n\nThe {{#crossLink \"Boundary3D\"}}{{/crossLink}} will be lazy-initialized the first time\nyou reference this property, and will persist on this Scene until you\ncall {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} on the {{#crossLink \"Boundary3D\"}}{{/crossLink}}\nagain. The property will then be set to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance\nnext time you reference it.\n\n<h4>Performance</h4>\n\nTo minimize performance overhead, only reference this property if you need it, and destroy\nthe {{#crossLink \"Boundary3D\"}}{{/crossLink}} as soon as you don't need it anymore.",
             "itemtype": "property",
             "name": "worldBoundary",
@@ -22704,7 +22704,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1129,
+            "line": 1130,
             "description": "Attempts to pick an {{#crossLink \"Entity\"}}Entity{{/crossLink}} in this Scene.\n\nIgnores {{#crossLink \"Entity\"}}Entities{{/crossLink}} with {{#crossLink \"Entity/pickable:property\"}}pickable{{/crossLink}}\nset *false*.\n\nPicking the {{#crossLink \"Entity\"}}{{/crossLink}} at the given canvas coordinates:\n\n````javascript\nvar hit = scene.pick({\n    canvasPos: [23, 131]\n });\n\nif (hit) { // Picked an Entity\n    var entity = hit.entity;\n}\n````\n\n**Usage:**\n\nPicking the {{#crossLink \"Entity\"}}{{/crossLink}} that intersects a ray cast through the canvas:\n\n````javascript\nvar hit = scene.pick({\n    pickSurface: true,\n    canvasPos: [23, 131]\n });\n\nif (hit) { // Picked an Entity\n\n    var entity = hit.entity;\n\n    // These properties are only on the hit result when we do a ray-pick:\n\n    var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n    var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n    var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n    var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle\n    var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle\n    var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle\n    var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n    var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n    var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n}\n````\n\nPicking the {{#crossLink \"Entity\"}}{{/crossLink}} that intersects an arbitrarily-aligned World-space ray:\n\n````javascript\nvar hit = scene.pick({\n    pickSurface: true,       // Picking with arbitrarily-positioned ray\n    origin: [0,0,-5],    // Ray origin\n    direction: [0,0,1]   // Ray direction\n});\n\nif (hit) { // Picked an Entity with the ray\n\n    var entity = hit.entity;\n\n    var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n    var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n    var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n    var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle\n    var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle\n    var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle\n    var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n    var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n    var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n    var origin = hit.origin; // Float32Array containing the World-space ray origin\n    var direction = hit.direction; // Float32Array containing the World-space ray direction\n}\n````",
             "itemtype": "method",
             "name": "pick",
@@ -22751,7 +22751,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1440,
+            "line": 1453,
             "description": "Resets this Scene to its default state.\n\nReferences to any components in this Scene will become invalid.",
             "itemtype": "method",
             "name": "clear",
@@ -22760,7 +22760,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1466,
+            "line": 1479,
             "description": "Convenience method for creating or reusing a Component within this Scene.\n\nYou would typically use this method to conveniently instantiate components that you'd want to\nshare (ie. \"instance\") among your {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nThe method is given a component type, share ID and constructor attributes, like so:\n\n````javascript\nvar material = myScene.getComponent(\"xeogl.PhongMaterial\", \"myMaterial\", { diffuse: [1,0,0] });\n````\n\nThe first time you call this method for the given ````type```` and ````instanceId````, this method will create the\n{{#crossLink \"PhongMaterial\"}}{{/crossLink}}, passing the given  attributes to the component's constructor.\n\nIf you call this method again, specifying the same ````type```` and ````instanceId````, the method will return the same\ncomponent instance that it returned the first time, and will ignore the attributes:\n\n````javascript\nvar material2 = myScene.getComponent(\"xeogl.PhongMaterial\", \"myMaterial\", { specular: [1,1,0] });\n````\n\nEach time you call this method with the same ````type```` and ````instanceId````, the Scene will internally increment a\nreference count for the component instance. You can release the shared component instance with a call to\n{{#crossLink \"Scene/putSharedComponent:method\"}}{{/crossLink}}, and once you have released it as many\ntimes as you got it, the Scene will destroy the component.",
             "itemtype": "method",
             "name": "_getSharedComponent",
@@ -22788,7 +22788,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1580,
+            "line": 1593,
             "description": "Releases a shared component instance that was got earlier\nwith {{#crossLink \"Scene/getSharedComponent:method\"}}{{/crossLink}}.",
             "params": [
                 {
@@ -22802,7 +22802,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1608,
+            "line": 1621,
             "description": "Compiles and renders this Scene",
             "access": "private",
             "tagname": "",
@@ -27358,11 +27358,11 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/scene.js:1129"
+            "line": " src/scene.js:1130"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/scene.js:1466"
+            "line": " src/scene.js:1479"
         },
         {
             "message": "unknown tag: demo",
@@ -27858,11 +27858,11 @@
         },
         {
             "message": "Missing item type\nAttempts to pick an object.",
-            "line": " src/_renderer/renderer.js:676"
+            "line": " src/_renderer/renderer.js:677"
         },
         {
             "message": "Missing item type\nReads the colors of some pixels in the current image.",
-            "line": " src/_renderer/renderer.js:878"
+            "line": " src/_renderer/renderer.js:879"
         },
         {
             "message": "Missing item type\nRenderer states",
@@ -28210,31 +28210,31 @@
         },
         {
             "message": "Missing item type\nProtected method, called by sub-classes to queue a call to _update().",
-            "line": " src/component.js:982"
+            "line": " src/component.js:981"
         },
         {
             "message": "Missing item type",
-            "line": " src/component.js:998"
+            "line": " src/component.js:997"
         },
         {
             "message": "Missing item type\nProtected virtual template method, optionally implemented\nby sub-classes to perform a scheduled task.",
-            "line": " src/component.js:1010"
+            "line": " src/component.js:1009"
         },
         {
             "message": "Missing item type\nProtected template method, implemented by sub-classes to compile\ntheir state into their Scene's xeogl.renderer.Renderer.",
-            "line": " src/component.js:1018"
+            "line": " src/component.js:1017"
         },
         {
             "message": "Missing item type\nProtected template method, implemented by sub-classes\nto clean up just before the component is destroyed.",
-            "line": " src/component.js:1235"
+            "line": " src/component.js:1234"
         },
         {
             "message": "Missing item type\nReleases a shared component instance that was got earlier\nwith {{#crossLink \"Scene/getSharedComponent:method\"}}{{/crossLink}}.",
-            "line": " src/scene.js:1580"
+            "line": " src/scene.js:1593"
         },
         {
             "message": "Missing item type\nCompiles and renders this Scene",
-            "line": " src/scene.js:1608"
+            "line": " src/scene.js:1621"
         },
         {
             "message": "Missing item type\nInformation about available WebGL support",

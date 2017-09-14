@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2017-09-12
+ * Built on 2017-09-14
  *
  * MIT License
  * Copyright 2017, Lindsay Kay
@@ -5290,7 +5290,7 @@ var Canvas2Image = (function () {
         // Shadow->Object lookup
         this._shadowObjectLists = {};
 
-        // Render states 
+        // Render states
 
         this.lights = null;
         this.material = null;
@@ -5304,7 +5304,7 @@ var Canvas2Image = (function () {
         this.xray = null;
         this.modes = null;
 
-        // Dirty flags 
+        // Dirty flags
 
         this.objectListDirty = true;
         this.stateOrderDirty = true;
@@ -5525,9 +5525,10 @@ var Canvas2Image = (function () {
                 this._objectList[this._objectListLen++] = this.objects[objectId];
             }
         }
-        for (var i = this._objectListLen, len = this._objectList.length; i < len; i) {
+        for (var i = this._objectListLen, len = this._objectList.length; i < len; i++) {
             this._objectList[i] = null; // Release memory
         }
+        this._objectList.length = this._objectListLen;
     };
 
     xeogl.renderer.Renderer.prototype._makeStateSortKeys = function () {
@@ -8998,241 +8999,245 @@ var Canvas2Image = (function () {
 
             add("precision " + getFSFloatPrecision(states.gl) + " float;");
 
-            //--------------------------------------------------------------------------------
-            // LIGHT AND REFLECTION MAP INPUTS
-            // Define here so available globally to shader functions
-            //--------------------------------------------------------------------------------
+            if (geometry.normals) {
 
-            if (states.lights.lightMap) {
-                add("uniform samplerCube lightMap;");
-                add("uniform mat4 viewNormalMatrix;");
-            }
+                //--------------------------------------------------------------------------------
+                // LIGHT AND REFLECTION MAP INPUTS
+                // Define here so available globally to shader functions
+                //--------------------------------------------------------------------------------
 
-            if (states.lights.reflectionMap) {
-                add("uniform samplerCube reflectionMap;");
-            }
-
-            if (states.lights.lightMap || states.lights.reflectionMap) {
-                add("uniform mat4 viewMatrix;");
-            }
-
-
-            //--------------------------------------------------------------------------------
-            // SHADING FUNCTIONS
-            //--------------------------------------------------------------------------------
-
-            // CONSTANT DEFINITIONS
-
-            add("#define PI 3.14159265359");
-            add("#define RECIPROCAL_PI 0.31830988618");
-            add("#define RECIPROCAL_PI2 0.15915494");
-            add("#define EPSILON 1e-6");
-
-            add("#define saturate(a) clamp( a, 0.0, 1.0 )");
-
-            // UTILITY DEFINITIONS
-
-            add("float pow2(const in float x) {");
-            add("   return x*x;");
-            add("}");
-
-            add("vec3 inverseTransformDirection(in vec3 dir, in mat4 matrix) {");
-            add("   return normalize( ( vec4( dir, 0.0 ) * matrix ).xyz );");
-            add("}");
-
-            // STRUCTURES
-
-            add("struct IncidentLight {");
-            add("   vec3 color;");
-            add("   vec3 direction;");
-            add("};");
-
-            add("struct ReflectedLight {");
-            add("   vec3 diffuse;");
-            add("   vec3 specular;");
-            add("};");
-
-            add("struct Geometry {");
-            add("   vec3 position;");
-            add("   vec3 viewNormal;");
-            add("   vec3 worldNormal;");
-            add("   vec3 viewEyeDir;");
-            add("};");
-
-            add("struct Material {");
-            add("   vec3    diffuseColor;");
-            add("   float   specularRoughness;");
-            add("   vec3    specularColor;");
-            add("   float   shine;"); // Only used for Phong
-            add("};");
-
-            // DIFFUSE BRDF EVALUATION
-
-            add("vec3 BRDF_Diffuse_Lambert(const in vec3 diffuseColor) {");
-            add("   return RECIPROCAL_PI * diffuseColor;");
-            add("}");
-
-            // COMMON UTILS
-
-            add("vec4 LinearTosRGB( in vec4 value ) {");
-            add("   return vec4(mix(pow(value.rgb,vec3(0.41666))*1.055-vec3(0.055), value.rgb*12.92, vec3(lessThanEqual(value.rgb,vec3(0.0031308)))),value.w);");
-            add("}");
-
-            if (phongMaterial) {
-
-                if (states.lights.lightMap || states.lights.reflectionMap) {
-
-                    add("void computePhongLightMapping(const in Geometry geometry, const in Material material, inout ReflectedLight reflectedLight) {");
-
-                    if (states.lights.lightMap) {
-                        add("   vec3 irradiance = textureCube(lightMap, geometry.worldNormal).rgb;");
-                        add("   irradiance *= PI;");
-                        add("   vec3 diffuseBRDFContrib = BRDF_Diffuse_Lambert(material.diffuseColor);");
-                        add("   reflectedLight.diffuse += irradiance * diffuseBRDFContrib;");
-                    }
-
-                    if (states.lights.reflectionMap) {
-                        //     add("   vec3 reflectVec             = reflect(-geometry.viewEyeDir, geometry.worldNormal);");
-                        //   //  add("   reflectVec                  = inverseTransformDirection(reflectVec, viewMatrix);");
-                        //     add("   vec3 radiance               = textureCube(reflectionMap, geometry.worldNormal).rgb;");
-                        ////     add("   radiance *= PI;");
-                        //     add("   reflectedLight.specular     += radiance;");
-                    }
-
-                    add("}");
+                if (states.lights.lightMap) {
+                    add("uniform samplerCube lightMap;");
+                    add("uniform mat4 viewNormalMatrix;");
                 }
-
-                add("void computePhongLighting(const in IncidentLight directLight, const in Geometry geometry, const in Material material, inout ReflectedLight reflectedLight) {");
-                add("   float dotNL     = saturate(dot(geometry.viewNormal, directLight.direction));");
-                add("   vec3 irradiance = dotNL * directLight.color * PI;");
-                add("   reflectedLight.diffuse  += irradiance * BRDF_Diffuse_Lambert(material.diffuseColor);");
-                add("   reflectedLight.specular += directLight.color * material.specularColor * pow(max(dot(reflect(-directLight.direction, -geometry.viewNormal), geometry.viewEyeDir), 0.0), material.shine);");
-                add("}");
-            }
-
-            if (pbrMetalRough || pbrSpecGloss) {
-
-                // IRRADIANCE EVALUATION
-
-                //add("vec3 sample_reflectMapEquirect(const in vec3 reflect, const in float mipLevel) {");
-                //add("   vec2 sampleUV;");
-                //add("   sampleUV.y = saturate(reflect.y * 0.5 + 0.5);");
-                //add("   sampleUV.x = atan(reflect.z, reflect.x) * RECIPROCAL_PI2 + 0.5;");
-                //add("   vec4 texColor = texture2D(reflectionMap, sampleUV, mipLevel);");
-                //add("   return texColor.rgb;"); // assumed to be linear
-                //add("}");
-
-                add("float GGXRoughnessToBlinnExponent(const in float ggxRoughness) {");
-                add("   return (2.0 / pow2(ggxRoughness + 0.0001) - 2.0);");
-                add("}");
-
-                add("float getSpecularMIPLevel(const in float blinnShininessExponent, const in int maxMIPLevel) {");
-                add("   float maxMIPLevelScalar = float( maxMIPLevel );");
-                add("   float desiredMIPLevel = maxMIPLevelScalar - 0.79248 - 0.5 * log2( pow2( blinnShininessExponent ) + 1.0 );");
-                add("   return clamp( desiredMIPLevel, 0.0, maxMIPLevelScalar );");
-                add("}");
-
-                //add("vec3 getLightProbeIndirectRadiance(const in mat4 viewMatrix, const in Geometry geometry, const in float blinnShininessExponent, const in int maxMIPLevel) {");
-                //add("   vec3 reflectVec = reflect(geometry.viewEyeDir, geometry.viewNormal);");
-                //add("   reflectVec = inverseTransformDirection(reflectVec, viewMatrix);");
-                //add("   float mipLevel = getSpecularMIPLevel( blinnShininessExponent, maxMIPLevel );");
-                //add("   vec3 reflectionMapColor = sample_reflectMapEquirect(reflectVec, float(mipLevel));");
-                //add("   return reflectionMapColor;");
-                //add("}");
-
 
                 if (states.lights.reflectionMap) {
-                    add("vec3 getLightProbeIndirectRadiance(const in vec3 reflectVec, const in float blinnShininessExponent, const in int maxMIPLevel) {");
-                    add("   float mipLevel = 0.5 * getSpecularMIPLevel(blinnShininessExponent, maxMIPLevel);"); //TODO: a random factor - fix this
-                    add("   vec3 envMapColor = textureCube(reflectionMap, reflectVec, mipLevel).rgb;");
-                    add("   return envMapColor;");
-                    add("}");
+                    add("uniform samplerCube reflectionMap;");
                 }
-
-                // SPECULAR BRDF EVALUATION
-
-                add("vec3 F_Schlick(const in vec3 specularColor, const in float dotLH) {");
-                add("   float fresnel = exp2( ( -5.55473 * dotLH - 6.98316 ) * dotLH );");
-                add("   return ( 1.0 - specularColor ) * fresnel + specularColor;");
-                add("}");
-
-                add("float G_GGX_Smith(const in float alpha, const in float dotNL, const in float dotNV) {");
-                add("   float a2 = pow2( alpha );");
-                add("   float gl = dotNL + sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNL ) );");
-                add("   float gv = dotNV + sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNV ) );");
-                add("   return 1.0 / ( gl * gv );");
-                add("}");
-
-                add("float G_GGX_SmithCorrelated(const in float alpha, const in float dotNL, const in float dotNV) {");
-                add("   float a2 = pow2( alpha );");
-                add("   float gv = dotNL * sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNV ) );");
-                add("   float gl = dotNV * sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNL ) );");
-                add("   return 0.5 / max( gv + gl, EPSILON );");
-                add("}");
-
-                add("float D_GGX(const in float alpha, const in float dotNH) {");
-                add("   float a2 = pow2( alpha );");
-                add("   float denom = pow2( dotNH ) * ( a2 - 1.0 ) + 1.0;");
-                add("   return RECIPROCAL_PI * a2 / pow2( denom );");
-                add("}");
-
-                add("vec3 BRDF_Specular_GGX(const in IncidentLight incidentLight, const in Geometry geometry, const in vec3 specularColor, const in float roughness) {");
-                add("   float alpha = pow2( roughness );");
-                add("   vec3 halfDir = normalize( incidentLight.direction + geometry.viewEyeDir );");
-                add("   float dotNL = saturate( dot( geometry.viewNormal, incidentLight.direction ) );");
-                add("   float dotNV = saturate( dot( geometry.viewNormal, geometry.viewEyeDir ) );");
-                add("   float dotNH = saturate( dot( geometry.viewNormal, halfDir ) );");
-                add("   float dotLH = saturate( dot( incidentLight.direction, halfDir ) );");
-                add("   vec3  F = F_Schlick( specularColor, dotLH );");
-                add("   float G = G_GGX_SmithCorrelated( alpha, dotNL, dotNV );");
-                add("   float D = D_GGX( alpha, dotNH );");
-                add("   return F * (G * D);");
-                add("}");
-
-                add("vec3 BRDF_Specular_GGX_Environment(const in Geometry geometry, const in vec3 specularColor, const in float roughness) {");
-                add("   float dotNV = saturate(dot(geometry.viewNormal, geometry.viewEyeDir));");
-                add("   const vec4 c0 = vec4( -1, -0.0275, -0.572,  0.022);");
-                add("   const vec4 c1 = vec4(  1,  0.0425,   1.04, -0.04);");
-                add("   vec4 r = roughness * c0 + c1;");
-                add("   float a004 = min(r.x * r.x, exp2(-9.28 * dotNV)) * r.x + r.y;");
-                add("   vec2 AB    = vec2(-1.04, 1.04) * a004 + r.zw;");
-                add("   return specularColor * AB.x + AB.y;");
-                add("}");
-
 
                 if (states.lights.lightMap || states.lights.reflectionMap) {
+                    add("uniform mat4 viewMatrix;");
+                }
 
-                    add("void computePBRLightMapping(const in Geometry geometry, const in Material material, inout ReflectedLight reflectedLight) {");
+                //--------------------------------------------------------------------------------
+                // SHADING FUNCTIONS
+                //--------------------------------------------------------------------------------
 
-                    if (states.lights.lightMap) {
-                        add("   vec3 irradiance = textureCube(lightMap, geometry.worldNormal).rgb;");
-                        add("   irradiance *= PI;");
-                        add("   vec3 diffuseBRDFContrib = BRDF_Diffuse_Lambert(material.diffuseColor);");
-                        add("   reflectedLight.diffuse += irradiance * diffuseBRDFContrib;");
-                        //   add("   reflectedLight.diffuse = vec3(1.0, 0.0, 0.0);");
+                // CONSTANT DEFINITIONS
+
+                add("#define PI 3.14159265359");
+                add("#define RECIPROCAL_PI 0.31830988618");
+                add("#define RECIPROCAL_PI2 0.15915494");
+                add("#define EPSILON 1e-6");
+
+                add("#define saturate(a) clamp( a, 0.0, 1.0 )");
+
+                // UTILITY DEFINITIONS
+
+                add("float pow2(const in float x) {");
+                add("   return x*x;");
+                add("}");
+
+                add("vec3 inverseTransformDirection(in vec3 dir, in mat4 matrix) {");
+                add("   return normalize( ( vec4( dir, 0.0 ) * matrix ).xyz );");
+                add("}");
+
+                // STRUCTURES
+
+                add("struct IncidentLight {");
+                add("   vec3 color;");
+                add("   vec3 direction;");
+                add("};");
+
+                add("struct ReflectedLight {");
+                add("   vec3 diffuse;");
+                add("   vec3 specular;");
+                add("};");
+
+                add("struct Geometry {");
+                add("   vec3 position;");
+                add("   vec3 viewNormal;");
+                add("   vec3 worldNormal;");
+                add("   vec3 viewEyeDir;");
+                add("};");
+
+                add("struct Material {");
+                add("   vec3    diffuseColor;");
+                add("   float   specularRoughness;");
+                add("   vec3    specularColor;");
+                add("   float   shine;"); // Only used for Phong
+                add("};");
+
+                // DIFFUSE BRDF EVALUATION
+
+                add("vec3 BRDF_Diffuse_Lambert(const in vec3 diffuseColor) {");
+                add("   return RECIPROCAL_PI * diffuseColor;");
+                add("}");
+
+                // COMMON UTILS
+
+                add("vec4 LinearTosRGB( in vec4 value ) {");
+                add("   return vec4(mix(pow(value.rgb,vec3(0.41666))*1.055-vec3(0.055), value.rgb*12.92, vec3(lessThanEqual(value.rgb,vec3(0.0031308)))),value.w);");
+                add("}");
+
+                if (phongMaterial) {
+
+                    if (states.lights.lightMap || states.lights.reflectionMap) {
+
+                        add("void computePhongLightMapping(const in Geometry geometry, const in Material material, inout ReflectedLight reflectedLight) {");
+
+                        if (states.lights.lightMap) {
+                            add("   vec3 irradiance = textureCube(lightMap, geometry.worldNormal).rgb;");
+                            add("   irradiance *= PI;");
+                            add("   vec3 diffuseBRDFContrib = BRDF_Diffuse_Lambert(material.diffuseColor);");
+                            add("   reflectedLight.diffuse += irradiance * diffuseBRDFContrib;");
+                        }
+
+                        if (states.lights.reflectionMap) {
+                            //     add("   vec3 reflectVec             = reflect(-geometry.viewEyeDir, geometry.worldNormal);");
+                            //   //  add("   reflectVec                  = inverseTransformDirection(reflectVec, viewMatrix);");
+                            //     add("   vec3 radiance               = textureCube(reflectionMap, geometry.worldNormal).rgb;");
+                            ////     add("   radiance *= PI;");
+                            //     add("   reflectedLight.specular     += radiance;");
+                        }
+
+                        add("}");
                     }
 
-                    if (states.lights.reflectionMap) {
-                        add("   vec3 reflectVec             = reflect(-geometry.viewEyeDir, geometry.viewNormal);");
-                        add("   reflectVec                  = inverseTransformDirection(reflectVec, viewMatrix);");
-                        add("   float blinnExpFromRoughness = GGXRoughnessToBlinnExponent(material.specularRoughness);");
-                        add("   vec3 radiance               = getLightProbeIndirectRadiance(reflectVec, blinnExpFromRoughness, 8);");
-                        add("   vec3 specularBRDFContrib    = BRDF_Specular_GGX_Environment(geometry, material.specularColor, material.specularRoughness);");
-                        add("   reflectedLight.specular     += radiance * specularBRDFContrib;");
-                    }
-
+                    add("void computePhongLighting(const in IncidentLight directLight, const in Geometry geometry, const in Material material, inout ReflectedLight reflectedLight) {");
+                    add("   float dotNL     = saturate(dot(geometry.viewNormal, directLight.direction));");
+                    add("   vec3 irradiance = dotNL * directLight.color * PI;");
+                    add("   reflectedLight.diffuse  += irradiance * BRDF_Diffuse_Lambert(material.diffuseColor);");
+                    add("   reflectedLight.specular += directLight.color * material.specularColor * pow(max(dot(reflect(-directLight.direction, -geometry.viewNormal), geometry.viewEyeDir), 0.0), material.shine);");
                     add("}");
                 }
 
-                // MAIN LIGHTING COMPUTATION FUNCTION
+                if (pbrMetalRough || pbrSpecGloss) {
 
-                add("void computePBRLighting(const in IncidentLight incidentLight, const in Geometry geometry, const in Material material, inout ReflectedLight reflectedLight) {");
-                add("   float dotNL     = saturate(dot(geometry.viewNormal, incidentLight.direction));");
-                add("   vec3 irradiance = dotNL * incidentLight.color * PI;");
-                add("   reflectedLight.diffuse  += irradiance * BRDF_Diffuse_Lambert(material.diffuseColor);");
-                add("   reflectedLight.specular += irradiance * BRDF_Specular_GGX(incidentLight, geometry, material.specularColor, material.specularRoughness);");
-                add("}");
-            }
+                    // IRRADIANCE EVALUATION
+
+                    //add("vec3 sample_reflectMapEquirect(const in vec3 reflect, const in float mipLevel) {");
+                    //add("   vec2 sampleUV;");
+                    //add("   sampleUV.y = saturate(reflect.y * 0.5 + 0.5);");
+                    //add("   sampleUV.x = atan(reflect.z, reflect.x) * RECIPROCAL_PI2 + 0.5;");
+                    //add("   vec4 texColor = texture2D(reflectionMap, sampleUV, mipLevel);");
+                    //add("   return texColor.rgb;"); // assumed to be linear
+                    //add("}");
+
+                    add("float GGXRoughnessToBlinnExponent(const in float ggxRoughness) {");
+                    add("   return (2.0 / pow2(ggxRoughness + 0.0001) - 2.0);");
+                    add("}");
+
+                    add("float getSpecularMIPLevel(const in float blinnShininessExponent, const in int maxMIPLevel) {");
+                    add("   float maxMIPLevelScalar = float( maxMIPLevel );");
+                    add("   float desiredMIPLevel = maxMIPLevelScalar - 0.79248 - 0.5 * log2( pow2( blinnShininessExponent ) + 1.0 );");
+                    add("   return clamp( desiredMIPLevel, 0.0, maxMIPLevelScalar );");
+                    add("}");
+
+                    //add("vec3 getLightProbeIndirectRadiance(const in mat4 viewMatrix, const in Geometry geometry, const in float blinnShininessExponent, const in int maxMIPLevel) {");
+                    //add("   vec3 reflectVec = reflect(geometry.viewEyeDir, geometry.viewNormal);");
+                    //add("   reflectVec = inverseTransformDirection(reflectVec, viewMatrix);");
+                    //add("   float mipLevel = getSpecularMIPLevel( blinnShininessExponent, maxMIPLevel );");
+                    //add("   vec3 reflectionMapColor = sample_reflectMapEquirect(reflectVec, float(mipLevel));");
+                    //add("   return reflectionMapColor;");
+                    //add("}");
+
+
+                    if (states.lights.reflectionMap) {
+                        add("vec3 getLightProbeIndirectRadiance(const in vec3 reflectVec, const in float blinnShininessExponent, const in int maxMIPLevel) {");
+                        add("   float mipLevel = 0.5 * getSpecularMIPLevel(blinnShininessExponent, maxMIPLevel);"); //TODO: a random factor - fix this
+                        add("   vec3 envMapColor = textureCube(reflectionMap, reflectVec, mipLevel).rgb;");
+                        add("   return envMapColor;");
+                        add("}");
+                    }
+
+                    // SPECULAR BRDF EVALUATION
+
+                    add("vec3 F_Schlick(const in vec3 specularColor, const in float dotLH) {");
+                    add("   float fresnel = exp2( ( -5.55473 * dotLH - 6.98316 ) * dotLH );");
+                    add("   return ( 1.0 - specularColor ) * fresnel + specularColor;");
+                    add("}");
+
+                    add("float G_GGX_Smith(const in float alpha, const in float dotNL, const in float dotNV) {");
+                    add("   float a2 = pow2( alpha );");
+                    add("   float gl = dotNL + sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNL ) );");
+                    add("   float gv = dotNV + sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNV ) );");
+                    add("   return 1.0 / ( gl * gv );");
+                    add("}");
+
+                    add("float G_GGX_SmithCorrelated(const in float alpha, const in float dotNL, const in float dotNV) {");
+                    add("   float a2 = pow2( alpha );");
+                    add("   float gv = dotNL * sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNV ) );");
+                    add("   float gl = dotNV * sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNL ) );");
+                    add("   return 0.5 / max( gv + gl, EPSILON );");
+                    add("}");
+
+                    add("float D_GGX(const in float alpha, const in float dotNH) {");
+                    add("   float a2 = pow2( alpha );");
+                    add("   float denom = pow2( dotNH ) * ( a2 - 1.0 ) + 1.0;");
+                    add("   return RECIPROCAL_PI * a2 / pow2( denom );");
+                    add("}");
+
+                    add("vec3 BRDF_Specular_GGX(const in IncidentLight incidentLight, const in Geometry geometry, const in vec3 specularColor, const in float roughness) {");
+                    add("   float alpha = pow2( roughness );");
+                    add("   vec3 halfDir = normalize( incidentLight.direction + geometry.viewEyeDir );");
+                    add("   float dotNL = saturate( dot( geometry.viewNormal, incidentLight.direction ) );");
+                    add("   float dotNV = saturate( dot( geometry.viewNormal, geometry.viewEyeDir ) );");
+                    add("   float dotNH = saturate( dot( geometry.viewNormal, halfDir ) );");
+                    add("   float dotLH = saturate( dot( incidentLight.direction, halfDir ) );");
+                    add("   vec3  F = F_Schlick( specularColor, dotLH );");
+                    add("   float G = G_GGX_SmithCorrelated( alpha, dotNL, dotNV );");
+                    add("   float D = D_GGX( alpha, dotNH );");
+                    add("   return F * (G * D);");
+                    add("}");
+
+                    add("vec3 BRDF_Specular_GGX_Environment(const in Geometry geometry, const in vec3 specularColor, const in float roughness) {");
+                    add("   float dotNV = saturate(dot(geometry.viewNormal, geometry.viewEyeDir));");
+                    add("   const vec4 c0 = vec4( -1, -0.0275, -0.572,  0.022);");
+                    add("   const vec4 c1 = vec4(  1,  0.0425,   1.04, -0.04);");
+                    add("   vec4 r = roughness * c0 + c1;");
+                    add("   float a004 = min(r.x * r.x, exp2(-9.28 * dotNV)) * r.x + r.y;");
+                    add("   vec2 AB    = vec2(-1.04, 1.04) * a004 + r.zw;");
+                    add("   return specularColor * AB.x + AB.y;");
+                    add("}");
+
+
+                    if (states.lights.lightMap || states.lights.reflectionMap) {
+
+                        add("void computePBRLightMapping(const in Geometry geometry, const in Material material, inout ReflectedLight reflectedLight) {");
+
+                        if (states.lights.lightMap) {
+                            add("   vec3 irradiance = textureCube(lightMap, geometry.worldNormal).rgb;");
+                            add("   irradiance *= PI;");
+                            add("   vec3 diffuseBRDFContrib = BRDF_Diffuse_Lambert(material.diffuseColor);");
+                            add("   reflectedLight.diffuse += irradiance * diffuseBRDFContrib;");
+                            //   add("   reflectedLight.diffuse = vec3(1.0, 0.0, 0.0);");
+                        }
+
+                        if (states.lights.reflectionMap) {
+                            add("   vec3 reflectVec             = reflect(-geometry.viewEyeDir, geometry.viewNormal);");
+                            add("   reflectVec                  = inverseTransformDirection(reflectVec, viewMatrix);");
+                            add("   float blinnExpFromRoughness = GGXRoughnessToBlinnExponent(material.specularRoughness);");
+                            add("   vec3 radiance               = getLightProbeIndirectRadiance(reflectVec, blinnExpFromRoughness, 8);");
+                            add("   vec3 specularBRDFContrib    = BRDF_Specular_GGX_Environment(geometry, material.specularColor, material.specularRoughness);");
+                            add("   reflectedLight.specular     += radiance * specularBRDFContrib;");
+                        }
+
+                        add("}");
+                    }
+
+                    // MAIN LIGHTING COMPUTATION FUNCTION
+
+                    add("void computePBRLighting(const in IncidentLight incidentLight, const in Geometry geometry, const in Material material, inout ReflectedLight reflectedLight) {");
+                    add("   float dotNL     = saturate(dot(geometry.viewNormal, incidentLight.direction));");
+                    add("   vec3 irradiance = dotNL * incidentLight.color * PI;");
+                    add("   reflectedLight.diffuse  += irradiance * BRDF_Diffuse_Lambert(material.diffuseColor);");
+                    add("   reflectedLight.specular += irradiance * BRDF_Specular_GGX(incidentLight, geometry, material.specularColor, material.specularRoughness);");
+                    add("}");
+
+                } // (pbrMetalRough || pbrSpecGloss)
+
+            } // geometry.normals
 
             //--------------------------------------------------------------------------------
             // GEOMETRY INPUTS
@@ -10246,6 +10251,9 @@ var Canvas2Image = (function () {
             if (state.indices) {
                 gl.drawElements(state.primitive, state.indices.numItems, state.indices.itemType, 0);
                 frameCtx.drawElements++;
+
+            } else if (state.positions) {
+                gl.drawArrays(gl.TRIANGLES, 0, state.positions.numItems);
             }
         },
 
@@ -10256,6 +10264,9 @@ var Canvas2Image = (function () {
             if (state.indices) {
                 gl.drawElements(state.primitive, state.indices.numItems, state.indices.itemType, 0);
                 frameCtx.drawElements++;
+
+            } else if (state.positions) {
+                gl.drawArrays(state.primitive, 0, state.positions.numItems);
             }
         },
 
@@ -10277,6 +10288,9 @@ var Canvas2Image = (function () {
 
             if (state.indices) {
                 gl.drawElements(state.primitive, state.indices.numItems, state.indices.itemType, 0);
+
+            } else if (state.positions) {
+                gl.drawArrays(state.primitive, 0, state.positions.numItems);
             }
         },
 
@@ -10288,7 +10302,7 @@ var Canvas2Image = (function () {
             var pickPositions = state.getPickPositions();
 
             if (pickPositions) {
-                gl.drawArrays(state.primitive, 0, pickPositions.numItems / 3);
+                gl.drawArrays(state.primitive, 0, pickPositions.numItems);
             }
         },
 
@@ -12793,7 +12807,8 @@ var Canvas2Image = (function () {
          * The method is given a component type, configuration and optional instance ID, like so:
          *
          * ````javascript
-         * var material = myComponent.create(xeogl.PhongMaterial, {
+         * var material = myComponent.create({
+         *      type: "xeogl.PhongMaterial",
          *      diffuse: [1,0,0],
          *      specular: [1,1,0]
          * }, "myMaterial");
@@ -12803,19 +12818,17 @@ var Canvas2Image = (function () {
          * {{#crossLink "PhongMaterial"}}{{/crossLink}}, passing the given  attributes to the component's constructor.
          *
          * If you call this method again, specifying the same ````type```` and ````instanceId````, the method will return the same
-         * component instance that it returned the first time, and will ignore the configuration:
+         * component instance that it returned the first time, and will ignore the new configuration:
          *
          * ````javascript
-         * var material2 = component.create(xeogl.PhongMaterial, { specular: [1,1,0] }, "myMaterial");
+         * var material2 = component.create({ type: "xeogl.PhongMaterial", specular: [1,1,0] }, "myMaterial");
          * ````
          *
          * So in this example, our {{#crossLink "PhongMaterial"}}{{/crossLink}} will continue to have the red specular
          * and diffuse color that we specified the first time.
          *
          * Each time you call this method with the same ````type```` and ````instanceId````, the Scene will internally increment a
-         * reference count for the component instance. You can release the shared component instance with a call to
-         * {{#crossLink "Scene/putSharedComponent:method"}}{{/crossLink}}, and once you have released it as many
-         * times as you got it, the Scene will destroy the component.
+         * reference count for the component instance.
          *
          * @method create
          * @param {*} [cfg] Configuration for the component instance - only used if this is the first time you are getting
@@ -14062,7 +14075,8 @@ var Canvas2Image = (function () {
                     return this.components["default.material"] ||
                         new xeogl.PhongMaterial(this, {
                             id: "default.material",
-                            isDefault: true
+                            isDefault: true,
+                            emissive: [0.4, 0.4, 0.4] // Visible by default on geometry without normals
                         });
                 }
             },
@@ -14417,20 +14431,32 @@ var Canvas2Image = (function () {
                                 var indices = geometry.indices;
                                 var positions = geometry.positions;
 
-                                var ia = indices[i];
-                                var ib = indices[i + 1];
-                                var ic = indices[i + 2];
+                                var ia3;
+                                var ib3;
+                                var ic3;
 
-                                var ia3 = ia * 3;
-                                var ib3 = ib * 3;
-                                var ic3 = ic * 3;
+                                if (indices) {
 
-                                //
-                                triangleVertices[0] = ia;
-                                triangleVertices[1] = ib;
-                                triangleVertices[2] = ic;
+                                    var ia = indices[i];
+                                    var ib = indices[i + 1];
+                                    var ic = indices[i + 2];
 
-                                hit.indices = triangleVertices;
+                                    triangleVertices[0] = ia;
+                                    triangleVertices[1] = ib;
+                                    triangleVertices[2] = ic;
+
+                                    hit.indices = triangleVertices;
+
+                                    ia3 = ia * 3;
+                                    ib3 = ib * 3;
+                                    ic3 = ic * 3;
+
+                                } else {
+
+                                    ia3 = i * 3;
+                                    ib3 = ia3 + 3;
+                                    ic3 = ib3 + 3;
+                                }
 
                                 a[0] = positions[ia3];
                                 a[1] = positions[ia3 + 1];
@@ -15275,11 +15301,18 @@ var Canvas2Image = (function () {
 
                 if (aabb) {
 
-                    if (aabb[3] <= aabb[0] || aabb[4] <= aabb[1] || aabb[5] <= aabb[2]) {
+                    if (aabb[3] < aabb[0] || aabb[4] < aabb[1] || aabb[5] < aabb[2]) {
+
+                        // Don't fly to an inverted boundary
+                        return;
+                    }
+
+                    if (aabb[3] === aabb[0] && aabb[4] === aabb[1] && aabb[5] === aabb[2]) {
 
                         // Don't fly to an empty boundary
                         return;
                     }
+
 
                     // Show boundary
 
@@ -37306,7 +37339,7 @@ TODO
         // Returns true if there is enough on this Entity to render something.
         _valid: function () {
             var geometry = this._attached.geometry;
-            return !this.destroyed && geometry && geometry.positions && geometry.indices;
+            return !this.destroyed && geometry && geometry.positions;
 
         },
 

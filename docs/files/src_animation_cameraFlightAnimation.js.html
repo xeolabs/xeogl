@@ -523,11 +523,18 @@
 
                 if (aabb) {
 
-                    if (aabb[3] &lt;= aabb[0] || aabb[4] &lt;= aabb[1] || aabb[5] &lt;= aabb[2]) {
+                    if (aabb[3] &lt; aabb[0] || aabb[4] &lt; aabb[1] || aabb[5] &lt; aabb[2]) {
+
+                        // Don&#x27;t fly to an inverted boundary
+                        return;
+                    }
+
+                    if (aabb[3] === aabb[0] &amp;&amp; aabb[4] === aabb[1] &amp;&amp; aabb[5] === aabb[2]) {
 
                         // Don&#x27;t fly to an empty boundary
                         return;
                     }
+
 
                     // Show boundary
 

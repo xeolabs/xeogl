@@ -1589,7 +1589,7 @@
         // Returns true if there is enough on this Entity to render something.
         _valid: function () {
             var geometry = this._attached.geometry;
-            return !this.destroyed && geometry && geometry.positions && geometry.indices;
+            return !this.destroyed && geometry && geometry.positions;
 
         },
 

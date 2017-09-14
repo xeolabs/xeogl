@@ -941,7 +941,8 @@
                     return this.components["default.material"] ||
                         new xeogl.PhongMaterial(this, {
                             id: "default.material",
-                            isDefault: true
+                            isDefault: true,
+                            emissive: [0.4, 0.4, 0.4] // Visible by default on geometry without normals
                         });
                 }
             },
@@ -1296,20 +1297,32 @@
                                 var indices = geometry.indices;
                                 var positions = geometry.positions;
 
-                                var ia = indices[i];
-                                var ib = indices[i + 1];
-                                var ic = indices[i + 2];
+                                var ia3;
+                                var ib3;
+                                var ic3;
 
-                                var ia3 = ia * 3;
-                                var ib3 = ib * 3;
-                                var ic3 = ic * 3;
+                                if (indices) {
 
-                                //
-                                triangleVertices[0] = ia;
-                                triangleVertices[1] = ib;
-                                triangleVertices[2] = ic;
+                                    var ia = indices[i];
+                                    var ib = indices[i + 1];
+                                    var ic = indices[i + 2];
 
-                                hit.indices = triangleVertices;
+                                    triangleVertices[0] = ia;
+                                    triangleVertices[1] = ib;
+                                    triangleVertices[2] = ic;
+
+                                    hit.indices = triangleVertices;
+
+                                    ia3 = ia * 3;
+                                    ib3 = ib * 3;
+                                    ic3 = ic * 3;
+
+                                } else {
+
+                                    ia3 = i * 3;
+                                    ib3 = ia3 + 3;
+                                    ic3 = ib3 + 3;
+                                }
 
                                 a[0] = positions[ia3];
                                 a[1] = positions[ia3 + 1];

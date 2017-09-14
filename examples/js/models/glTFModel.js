@@ -360,6 +360,7 @@
                 src: src,
                 basePath: basePath,
                 json: json,
+                scene: model.scene,
                 model: model
             };
 
@@ -534,7 +535,7 @@
         }
 
         function loadTexture(ctx, textureInfo) {
-            var texture = new xeogl.Texture(ctx.model, {
+            var texture = new xeogl.Texture(ctx.scene, {
                 src: ctx.basePath + ctx.json.images[textureInfo.source].uri,
                 flipY: !!textureInfo.flipY
             });
@@ -654,7 +655,7 @@
                         }
                     }
 
-                    return new xeogl.SpecularMaterial(ctx.model, cfg);
+                    return new xeogl.SpecularMaterial(ctx.scene, cfg);
                 }
 
                 // Common Phong, Blinn, Lambert or Constant materials
@@ -733,7 +734,7 @@
                         //cfg.transparent = 1.0;
                     }
 
-                    return new xeogl.PhongMaterial(ctx.model, cfg);
+                    return new xeogl.PhongMaterial(ctx.scene, cfg);
                 }
             }
 
@@ -774,12 +775,12 @@
                     }
                 }
 
-                return new xeogl.MetallicMaterial(ctx.model, cfg);
+                return new xeogl.MetallicMaterial(ctx.scene, cfg);
             }
 
             // Default material
 
-            return new xeogl.PhongMaterial(ctx.model, cfg);
+            return new xeogl.PhongMaterial(ctx.scene, cfg);
         }
 
         function loadMeshes(ctx) {
@@ -858,7 +859,7 @@
 
                     meshCfg = {};
 
-                    geometry = new xeogl.Geometry(ctx.model, geometryCfg);
+                    geometry = new xeogl.Geometry(ctx.scene, geometryCfg);
                     ctx.model.add(geometry);
                     meshCfg.geometry = geometry;
 
@@ -878,14 +879,13 @@
 
         function loadDefaultScene(ctx) {
             var json = ctx.json;
-            if (json.scene !== undefined) {
-                var defaultSceneInfo = json.scenes[json.scene];
-                if (!defaultSceneInfo) {
-                    error(ctx, "glTF has no default scene");
-                    return;
-                }
-                loadScene(ctx, defaultSceneInfo);
+            var scene = json.scene || 0;
+            var defaultSceneInfo = json.scenes[scene];
+            if (!defaultSceneInfo) {
+                error(ctx, "glTF has no default scene");
+                return;
             }
+            loadScene(ctx, defaultSceneInfo);
         }
 
         function loadScene(ctx, sceneInfo) {

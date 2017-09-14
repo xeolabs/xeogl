@@ -24,6 +24,9 @@
             if (state.indices) {
                 gl.drawElements(state.primitive, state.indices.numItems, state.indices.itemType, 0);
                 frameCtx.drawElements++;
+
+            } else if (state.positions) {
+                gl.drawArrays(gl.TRIANGLES, 0, state.positions.numItems);
             }
         },
 
@@ -34,6 +37,9 @@
             if (state.indices) {
                 gl.drawElements(state.primitive, state.indices.numItems, state.indices.itemType, 0);
                 frameCtx.drawElements++;
+
+            } else if (state.positions) {
+                gl.drawArrays(state.primitive, 0, state.positions.numItems);
             }
         },
 
@@ -55,6 +61,9 @@
 
             if (state.indices) {
                 gl.drawElements(state.primitive, state.indices.numItems, state.indices.itemType, 0);
+
+            } else if (state.positions) {
+                gl.drawArrays(state.primitive, 0, state.positions.numItems);
             }
         },
 
@@ -66,7 +75,7 @@
             var pickPositions = state.getPickPositions();
 
             if (pickPositions) {
-                gl.drawArrays(state.primitive, 0, pickPositions.numItems / 3);
+                gl.drawArrays(state.primitive, 0, pickPositions.numItems);
             }
         },
 
