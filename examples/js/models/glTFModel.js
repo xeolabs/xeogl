@@ -879,14 +879,13 @@
 
         function loadDefaultScene(ctx) {
             var json = ctx.json;
-            if (json.scene !== undefined) {
-                var defaultSceneInfo = json.scenes[json.scene];
-                if (!defaultSceneInfo) {
-                    error(ctx, "glTF has no default scene");
-                    return;
-                }
-                loadScene(ctx, defaultSceneInfo);
+            var scene = json.scene || 0;
+            var defaultSceneInfo = json.scenes[scene];
+            if (!defaultSceneInfo) {
+                error(ctx, "glTF has no default scene");
+                return;
             }
+            loadScene(ctx, defaultSceneInfo);
         }
 
         function loadScene(ctx, sceneInfo) {
