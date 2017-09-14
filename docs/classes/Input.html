@@ -898,7 +898,8 @@ input.on("keyup", function(keyCode) {
 <p>You would typically use this method to conveniently instantiate components that you&#39;d want to
 share (ie. "instance") among your <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
 <p>The method is given a component type, configuration and optional instance ID, like so:</p>
-<pre class="code prettyprint"><code class="lang-javascript">var material = myComponent.create(xeogl.PhongMaterial, {
+<pre class="code prettyprint"><code class="lang-javascript">var material = myComponent.create({
+     type: "xeogl.PhongMaterial",
      diffuse: [1,0,0],
      specular: [1,1,0]
 }, "myMaterial");
@@ -906,15 +907,13 @@ share (ie. "instance") among your <a href="../classes/Entity.html" class="crossl
 <p>The first time you call this method for the given <code>type</code> and <code>instanceId</code>, this method will create the
 <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a>, passing the given  attributes to the component&#39;s constructor.</p>
 <p>If you call this method again, specifying the same <code>type</code> and <code>instanceId</code>, the method will return the same
-component instance that it returned the first time, and will ignore the configuration:</p>
-<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create(xeogl.PhongMaterial, { specular: [1,1,0] }, "myMaterial");
+component instance that it returned the first time, and will ignore the new configuration:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create({ type: "xeogl.PhongMaterial", specular: [1,1,0] }, "myMaterial");
 </code></pre>
 <p>So in this example, our <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a> will continue to have the red specular
 and diffuse color that we specified the first time.</p>
 <p>Each time you call this method with the same <code>type</code> and <code>instanceId</code>, the Scene will internally increment a
-reference count for the component instance. You can release the shared component instance with a call to
-Scene/putSharedComponent:method, and once you have released it as many
-times as you got it, the Scene will destroy the component.</p>
+reference count for the component instance.</p>
 
     </div>
 
@@ -977,7 +976,7 @@ component - you can specify the component ID in the <code>cfg</code> parameter.<
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_component.js.html#l1153"><code>src&#x2F;component.js:1153</code></a>
+        <a href="../files/src_component.js.html#l1152"><code>src&#x2F;component.js:1152</code></a>
         </p>
 
 
@@ -1670,7 +1669,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_json">Component</a>:
-                            <a href="../files/src_component.js.html#l1029"><code>src&#x2F;component.js:1029</code></a>
+                            <a href="../files/src_component.js.html#l1028"><code>src&#x2F;component.js:1028</code></a>
                             </p>
                     
                     
@@ -4324,7 +4323,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_component.js.html#l1056"><code>src&#x2F;component.js:1056</code></a>
+                            <a href="../files/src_component.js.html#l1055"><code>src&#x2F;component.js:1055</code></a>
                             </p>
                     
                     
@@ -4459,7 +4458,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l1227"><code>src&#x2F;component.js:1227</code></a>
+                            <a href="../files/src_component.js.html#l1226"><code>src&#x2F;component.js:1226</code></a>
                             </p>
                     
                     

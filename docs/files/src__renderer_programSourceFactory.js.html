@@ -791,241 +791,245 @@
 
             add(&quot;precision &quot; + getFSFloatPrecision(states.gl) + &quot; float;&quot;);
 
-            //--------------------------------------------------------------------------------
-            // LIGHT AND REFLECTION MAP INPUTS
-            // Define here so available globally to shader functions
-            //--------------------------------------------------------------------------------
+            if (geometry.normals) {
 
-            if (states.lights.lightMap) {
-                add(&quot;uniform samplerCube lightMap;&quot;);
-                add(&quot;uniform mat4 viewNormalMatrix;&quot;);
-            }
+                //--------------------------------------------------------------------------------
+                // LIGHT AND REFLECTION MAP INPUTS
+                // Define here so available globally to shader functions
+                //--------------------------------------------------------------------------------
 
-            if (states.lights.reflectionMap) {
-                add(&quot;uniform samplerCube reflectionMap;&quot;);
-            }
-
-            if (states.lights.lightMap || states.lights.reflectionMap) {
-                add(&quot;uniform mat4 viewMatrix;&quot;);
-            }
-
-
-            //--------------------------------------------------------------------------------
-            // SHADING FUNCTIONS
-            //--------------------------------------------------------------------------------
-
-            // CONSTANT DEFINITIONS
-
-            add(&quot;#define PI 3.14159265359&quot;);
-            add(&quot;#define RECIPROCAL_PI 0.31830988618&quot;);
-            add(&quot;#define RECIPROCAL_PI2 0.15915494&quot;);
-            add(&quot;#define EPSILON 1e-6&quot;);
-
-            add(&quot;#define saturate(a) clamp( a, 0.0, 1.0 )&quot;);
-
-            // UTILITY DEFINITIONS
-
-            add(&quot;float pow2(const in float x) {&quot;);
-            add(&quot;   return x*x;&quot;);
-            add(&quot;}&quot;);
-
-            add(&quot;vec3 inverseTransformDirection(in vec3 dir, in mat4 matrix) {&quot;);
-            add(&quot;   return normalize( ( vec4( dir, 0.0 ) * matrix ).xyz );&quot;);
-            add(&quot;}&quot;);
-
-            // STRUCTURES
-
-            add(&quot;struct IncidentLight {&quot;);
-            add(&quot;   vec3 color;&quot;);
-            add(&quot;   vec3 direction;&quot;);
-            add(&quot;};&quot;);
-
-            add(&quot;struct ReflectedLight {&quot;);
-            add(&quot;   vec3 diffuse;&quot;);
-            add(&quot;   vec3 specular;&quot;);
-            add(&quot;};&quot;);
-
-            add(&quot;struct Geometry {&quot;);
-            add(&quot;   vec3 position;&quot;);
-            add(&quot;   vec3 viewNormal;&quot;);
-            add(&quot;   vec3 worldNormal;&quot;);
-            add(&quot;   vec3 viewEyeDir;&quot;);
-            add(&quot;};&quot;);
-
-            add(&quot;struct Material {&quot;);
-            add(&quot;   vec3    diffuseColor;&quot;);
-            add(&quot;   float   specularRoughness;&quot;);
-            add(&quot;   vec3    specularColor;&quot;);
-            add(&quot;   float   shine;&quot;); // Only used for Phong
-            add(&quot;};&quot;);
-
-            // DIFFUSE BRDF EVALUATION
-
-            add(&quot;vec3 BRDF_Diffuse_Lambert(const in vec3 diffuseColor) {&quot;);
-            add(&quot;   return RECIPROCAL_PI * diffuseColor;&quot;);
-            add(&quot;}&quot;);
-
-            // COMMON UTILS
-
-            add(&quot;vec4 LinearTosRGB( in vec4 value ) {&quot;);
-            add(&quot;   return vec4(mix(pow(value.rgb,vec3(0.41666))*1.055-vec3(0.055), value.rgb*12.92, vec3(lessThanEqual(value.rgb,vec3(0.0031308)))),value.w);&quot;);
-            add(&quot;}&quot;);
-
-            if (phongMaterial) {
-
-                if (states.lights.lightMap || states.lights.reflectionMap) {
-
-                    add(&quot;void computePhongLightMapping(const in Geometry geometry, const in Material material, inout ReflectedLight reflectedLight) {&quot;);
-
-                    if (states.lights.lightMap) {
-                        add(&quot;   vec3 irradiance = textureCube(lightMap, geometry.worldNormal).rgb;&quot;);
-                        add(&quot;   irradiance *= PI;&quot;);
-                        add(&quot;   vec3 diffuseBRDFContrib = BRDF_Diffuse_Lambert(material.diffuseColor);&quot;);
-                        add(&quot;   reflectedLight.diffuse += irradiance * diffuseBRDFContrib;&quot;);
-                    }
-
-                    if (states.lights.reflectionMap) {
-                        //     add(&quot;   vec3 reflectVec             = reflect(-geometry.viewEyeDir, geometry.worldNormal);&quot;);
-                        //   //  add(&quot;   reflectVec                  = inverseTransformDirection(reflectVec, viewMatrix);&quot;);
-                        //     add(&quot;   vec3 radiance               = textureCube(reflectionMap, geometry.worldNormal).rgb;&quot;);
-                        ////     add(&quot;   radiance *= PI;&quot;);
-                        //     add(&quot;   reflectedLight.specular     += radiance;&quot;);
-                    }
-
-                    add(&quot;}&quot;);
+                if (states.lights.lightMap) {
+                    add(&quot;uniform samplerCube lightMap;&quot;);
+                    add(&quot;uniform mat4 viewNormalMatrix;&quot;);
                 }
-
-                add(&quot;void computePhongLighting(const in IncidentLight directLight, const in Geometry geometry, const in Material material, inout ReflectedLight reflectedLight) {&quot;);
-                add(&quot;   float dotNL     = saturate(dot(geometry.viewNormal, directLight.direction));&quot;);
-                add(&quot;   vec3 irradiance = dotNL * directLight.color * PI;&quot;);
-                add(&quot;   reflectedLight.diffuse  += irradiance * BRDF_Diffuse_Lambert(material.diffuseColor);&quot;);
-                add(&quot;   reflectedLight.specular += directLight.color * material.specularColor * pow(max(dot(reflect(-directLight.direction, -geometry.viewNormal), geometry.viewEyeDir), 0.0), material.shine);&quot;);
-                add(&quot;}&quot;);
-            }
-
-            if (pbrMetalRough || pbrSpecGloss) {
-
-                // IRRADIANCE EVALUATION
-
-                //add(&quot;vec3 sample_reflectMapEquirect(const in vec3 reflect, const in float mipLevel) {&quot;);
-                //add(&quot;   vec2 sampleUV;&quot;);
-                //add(&quot;   sampleUV.y = saturate(reflect.y * 0.5 + 0.5);&quot;);
-                //add(&quot;   sampleUV.x = atan(reflect.z, reflect.x) * RECIPROCAL_PI2 + 0.5;&quot;);
-                //add(&quot;   vec4 texColor = texture2D(reflectionMap, sampleUV, mipLevel);&quot;);
-                //add(&quot;   return texColor.rgb;&quot;); // assumed to be linear
-                //add(&quot;}&quot;);
-
-                add(&quot;float GGXRoughnessToBlinnExponent(const in float ggxRoughness) {&quot;);
-                add(&quot;   return (2.0 / pow2(ggxRoughness + 0.0001) - 2.0);&quot;);
-                add(&quot;}&quot;);
-
-                add(&quot;float getSpecularMIPLevel(const in float blinnShininessExponent, const in int maxMIPLevel) {&quot;);
-                add(&quot;   float maxMIPLevelScalar = float( maxMIPLevel );&quot;);
-                add(&quot;   float desiredMIPLevel = maxMIPLevelScalar - 0.79248 - 0.5 * log2( pow2( blinnShininessExponent ) + 1.0 );&quot;);
-                add(&quot;   return clamp( desiredMIPLevel, 0.0, maxMIPLevelScalar );&quot;);
-                add(&quot;}&quot;);
-
-                //add(&quot;vec3 getLightProbeIndirectRadiance(const in mat4 viewMatrix, const in Geometry geometry, const in float blinnShininessExponent, const in int maxMIPLevel) {&quot;);
-                //add(&quot;   vec3 reflectVec = reflect(geometry.viewEyeDir, geometry.viewNormal);&quot;);
-                //add(&quot;   reflectVec = inverseTransformDirection(reflectVec, viewMatrix);&quot;);
-                //add(&quot;   float mipLevel = getSpecularMIPLevel( blinnShininessExponent, maxMIPLevel );&quot;);
-                //add(&quot;   vec3 reflectionMapColor = sample_reflectMapEquirect(reflectVec, float(mipLevel));&quot;);
-                //add(&quot;   return reflectionMapColor;&quot;);
-                //add(&quot;}&quot;);
-
 
                 if (states.lights.reflectionMap) {
-                    add(&quot;vec3 getLightProbeIndirectRadiance(const in vec3 reflectVec, const in float blinnShininessExponent, const in int maxMIPLevel) {&quot;);
-                    add(&quot;   float mipLevel = 0.5 * getSpecularMIPLevel(blinnShininessExponent, maxMIPLevel);&quot;); //TODO: a random factor - fix this
-                    add(&quot;   vec3 envMapColor = textureCube(reflectionMap, reflectVec, mipLevel).rgb;&quot;);
-                    add(&quot;   return envMapColor;&quot;);
-                    add(&quot;}&quot;);
+                    add(&quot;uniform samplerCube reflectionMap;&quot;);
                 }
-
-                // SPECULAR BRDF EVALUATION
-
-                add(&quot;vec3 F_Schlick(const in vec3 specularColor, const in float dotLH) {&quot;);
-                add(&quot;   float fresnel = exp2( ( -5.55473 * dotLH - 6.98316 ) * dotLH );&quot;);
-                add(&quot;   return ( 1.0 - specularColor ) * fresnel + specularColor;&quot;);
-                add(&quot;}&quot;);
-
-                add(&quot;float G_GGX_Smith(const in float alpha, const in float dotNL, const in float dotNV) {&quot;);
-                add(&quot;   float a2 = pow2( alpha );&quot;);
-                add(&quot;   float gl = dotNL + sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNL ) );&quot;);
-                add(&quot;   float gv = dotNV + sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNV ) );&quot;);
-                add(&quot;   return 1.0 / ( gl * gv );&quot;);
-                add(&quot;}&quot;);
-
-                add(&quot;float G_GGX_SmithCorrelated(const in float alpha, const in float dotNL, const in float dotNV) {&quot;);
-                add(&quot;   float a2 = pow2( alpha );&quot;);
-                add(&quot;   float gv = dotNL * sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNV ) );&quot;);
-                add(&quot;   float gl = dotNV * sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNL ) );&quot;);
-                add(&quot;   return 0.5 / max( gv + gl, EPSILON );&quot;);
-                add(&quot;}&quot;);
-
-                add(&quot;float D_GGX(const in float alpha, const in float dotNH) {&quot;);
-                add(&quot;   float a2 = pow2( alpha );&quot;);
-                add(&quot;   float denom = pow2( dotNH ) * ( a2 - 1.0 ) + 1.0;&quot;);
-                add(&quot;   return RECIPROCAL_PI * a2 / pow2( denom );&quot;);
-                add(&quot;}&quot;);
-
-                add(&quot;vec3 BRDF_Specular_GGX(const in IncidentLight incidentLight, const in Geometry geometry, const in vec3 specularColor, const in float roughness) {&quot;);
-                add(&quot;   float alpha = pow2( roughness );&quot;);
-                add(&quot;   vec3 halfDir = normalize( incidentLight.direction + geometry.viewEyeDir );&quot;);
-                add(&quot;   float dotNL = saturate( dot( geometry.viewNormal, incidentLight.direction ) );&quot;);
-                add(&quot;   float dotNV = saturate( dot( geometry.viewNormal, geometry.viewEyeDir ) );&quot;);
-                add(&quot;   float dotNH = saturate( dot( geometry.viewNormal, halfDir ) );&quot;);
-                add(&quot;   float dotLH = saturate( dot( incidentLight.direction, halfDir ) );&quot;);
-                add(&quot;   vec3  F = F_Schlick( specularColor, dotLH );&quot;);
-                add(&quot;   float G = G_GGX_SmithCorrelated( alpha, dotNL, dotNV );&quot;);
-                add(&quot;   float D = D_GGX( alpha, dotNH );&quot;);
-                add(&quot;   return F * (G * D);&quot;);
-                add(&quot;}&quot;);
-
-                add(&quot;vec3 BRDF_Specular_GGX_Environment(const in Geometry geometry, const in vec3 specularColor, const in float roughness) {&quot;);
-                add(&quot;   float dotNV = saturate(dot(geometry.viewNormal, geometry.viewEyeDir));&quot;);
-                add(&quot;   const vec4 c0 = vec4( -1, -0.0275, -0.572,  0.022);&quot;);
-                add(&quot;   const vec4 c1 = vec4(  1,  0.0425,   1.04, -0.04);&quot;);
-                add(&quot;   vec4 r = roughness * c0 + c1;&quot;);
-                add(&quot;   float a004 = min(r.x * r.x, exp2(-9.28 * dotNV)) * r.x + r.y;&quot;);
-                add(&quot;   vec2 AB    = vec2(-1.04, 1.04) * a004 + r.zw;&quot;);
-                add(&quot;   return specularColor * AB.x + AB.y;&quot;);
-                add(&quot;}&quot;);
-
 
                 if (states.lights.lightMap || states.lights.reflectionMap) {
+                    add(&quot;uniform mat4 viewMatrix;&quot;);
+                }
 
-                    add(&quot;void computePBRLightMapping(const in Geometry geometry, const in Material material, inout ReflectedLight reflectedLight) {&quot;);
+                //--------------------------------------------------------------------------------
+                // SHADING FUNCTIONS
+                //--------------------------------------------------------------------------------
 
-                    if (states.lights.lightMap) {
-                        add(&quot;   vec3 irradiance = textureCube(lightMap, geometry.worldNormal).rgb;&quot;);
-                        add(&quot;   irradiance *= PI;&quot;);
-                        add(&quot;   vec3 diffuseBRDFContrib = BRDF_Diffuse_Lambert(material.diffuseColor);&quot;);
-                        add(&quot;   reflectedLight.diffuse += irradiance * diffuseBRDFContrib;&quot;);
-                        //   add(&quot;   reflectedLight.diffuse = vec3(1.0, 0.0, 0.0);&quot;);
+                // CONSTANT DEFINITIONS
+
+                add(&quot;#define PI 3.14159265359&quot;);
+                add(&quot;#define RECIPROCAL_PI 0.31830988618&quot;);
+                add(&quot;#define RECIPROCAL_PI2 0.15915494&quot;);
+                add(&quot;#define EPSILON 1e-6&quot;);
+
+                add(&quot;#define saturate(a) clamp( a, 0.0, 1.0 )&quot;);
+
+                // UTILITY DEFINITIONS
+
+                add(&quot;float pow2(const in float x) {&quot;);
+                add(&quot;   return x*x;&quot;);
+                add(&quot;}&quot;);
+
+                add(&quot;vec3 inverseTransformDirection(in vec3 dir, in mat4 matrix) {&quot;);
+                add(&quot;   return normalize( ( vec4( dir, 0.0 ) * matrix ).xyz );&quot;);
+                add(&quot;}&quot;);
+
+                // STRUCTURES
+
+                add(&quot;struct IncidentLight {&quot;);
+                add(&quot;   vec3 color;&quot;);
+                add(&quot;   vec3 direction;&quot;);
+                add(&quot;};&quot;);
+
+                add(&quot;struct ReflectedLight {&quot;);
+                add(&quot;   vec3 diffuse;&quot;);
+                add(&quot;   vec3 specular;&quot;);
+                add(&quot;};&quot;);
+
+                add(&quot;struct Geometry {&quot;);
+                add(&quot;   vec3 position;&quot;);
+                add(&quot;   vec3 viewNormal;&quot;);
+                add(&quot;   vec3 worldNormal;&quot;);
+                add(&quot;   vec3 viewEyeDir;&quot;);
+                add(&quot;};&quot;);
+
+                add(&quot;struct Material {&quot;);
+                add(&quot;   vec3    diffuseColor;&quot;);
+                add(&quot;   float   specularRoughness;&quot;);
+                add(&quot;   vec3    specularColor;&quot;);
+                add(&quot;   float   shine;&quot;); // Only used for Phong
+                add(&quot;};&quot;);
+
+                // DIFFUSE BRDF EVALUATION
+
+                add(&quot;vec3 BRDF_Diffuse_Lambert(const in vec3 diffuseColor) {&quot;);
+                add(&quot;   return RECIPROCAL_PI * diffuseColor;&quot;);
+                add(&quot;}&quot;);
+
+                // COMMON UTILS
+
+                add(&quot;vec4 LinearTosRGB( in vec4 value ) {&quot;);
+                add(&quot;   return vec4(mix(pow(value.rgb,vec3(0.41666))*1.055-vec3(0.055), value.rgb*12.92, vec3(lessThanEqual(value.rgb,vec3(0.0031308)))),value.w);&quot;);
+                add(&quot;}&quot;);
+
+                if (phongMaterial) {
+
+                    if (states.lights.lightMap || states.lights.reflectionMap) {
+
+                        add(&quot;void computePhongLightMapping(const in Geometry geometry, const in Material material, inout ReflectedLight reflectedLight) {&quot;);
+
+                        if (states.lights.lightMap) {
+                            add(&quot;   vec3 irradiance = textureCube(lightMap, geometry.worldNormal).rgb;&quot;);
+                            add(&quot;   irradiance *= PI;&quot;);
+                            add(&quot;   vec3 diffuseBRDFContrib = BRDF_Diffuse_Lambert(material.diffuseColor);&quot;);
+                            add(&quot;   reflectedLight.diffuse += irradiance * diffuseBRDFContrib;&quot;);
+                        }
+
+                        if (states.lights.reflectionMap) {
+                            //     add(&quot;   vec3 reflectVec             = reflect(-geometry.viewEyeDir, geometry.worldNormal);&quot;);
+                            //   //  add(&quot;   reflectVec                  = inverseTransformDirection(reflectVec, viewMatrix);&quot;);
+                            //     add(&quot;   vec3 radiance               = textureCube(reflectionMap, geometry.worldNormal).rgb;&quot;);
+                            ////     add(&quot;   radiance *= PI;&quot;);
+                            //     add(&quot;   reflectedLight.specular     += radiance;&quot;);
+                        }
+
+                        add(&quot;}&quot;);
                     }
 
-                    if (states.lights.reflectionMap) {
-                        add(&quot;   vec3 reflectVec             = reflect(-geometry.viewEyeDir, geometry.viewNormal);&quot;);
-                        add(&quot;   reflectVec                  = inverseTransformDirection(reflectVec, viewMatrix);&quot;);
-                        add(&quot;   float blinnExpFromRoughness = GGXRoughnessToBlinnExponent(material.specularRoughness);&quot;);
-                        add(&quot;   vec3 radiance               = getLightProbeIndirectRadiance(reflectVec, blinnExpFromRoughness, 8);&quot;);
-                        add(&quot;   vec3 specularBRDFContrib    = BRDF_Specular_GGX_Environment(geometry, material.specularColor, material.specularRoughness);&quot;);
-                        add(&quot;   reflectedLight.specular     += radiance * specularBRDFContrib;&quot;);
-                    }
-
+                    add(&quot;void computePhongLighting(const in IncidentLight directLight, const in Geometry geometry, const in Material material, inout ReflectedLight reflectedLight) {&quot;);
+                    add(&quot;   float dotNL     = saturate(dot(geometry.viewNormal, directLight.direction));&quot;);
+                    add(&quot;   vec3 irradiance = dotNL * directLight.color * PI;&quot;);
+                    add(&quot;   reflectedLight.diffuse  += irradiance * BRDF_Diffuse_Lambert(material.diffuseColor);&quot;);
+                    add(&quot;   reflectedLight.specular += directLight.color * material.specularColor * pow(max(dot(reflect(-directLight.direction, -geometry.viewNormal), geometry.viewEyeDir), 0.0), material.shine);&quot;);
                     add(&quot;}&quot;);
                 }
 
-                // MAIN LIGHTING COMPUTATION FUNCTION
+                if (pbrMetalRough || pbrSpecGloss) {
 
-                add(&quot;void computePBRLighting(const in IncidentLight incidentLight, const in Geometry geometry, const in Material material, inout ReflectedLight reflectedLight) {&quot;);
-                add(&quot;   float dotNL     = saturate(dot(geometry.viewNormal, incidentLight.direction));&quot;);
-                add(&quot;   vec3 irradiance = dotNL * incidentLight.color * PI;&quot;);
-                add(&quot;   reflectedLight.diffuse  += irradiance * BRDF_Diffuse_Lambert(material.diffuseColor);&quot;);
-                add(&quot;   reflectedLight.specular += irradiance * BRDF_Specular_GGX(incidentLight, geometry, material.specularColor, material.specularRoughness);&quot;);
-                add(&quot;}&quot;);
-            }
+                    // IRRADIANCE EVALUATION
+
+                    //add(&quot;vec3 sample_reflectMapEquirect(const in vec3 reflect, const in float mipLevel) {&quot;);
+                    //add(&quot;   vec2 sampleUV;&quot;);
+                    //add(&quot;   sampleUV.y = saturate(reflect.y * 0.5 + 0.5);&quot;);
+                    //add(&quot;   sampleUV.x = atan(reflect.z, reflect.x) * RECIPROCAL_PI2 + 0.5;&quot;);
+                    //add(&quot;   vec4 texColor = texture2D(reflectionMap, sampleUV, mipLevel);&quot;);
+                    //add(&quot;   return texColor.rgb;&quot;); // assumed to be linear
+                    //add(&quot;}&quot;);
+
+                    add(&quot;float GGXRoughnessToBlinnExponent(const in float ggxRoughness) {&quot;);
+                    add(&quot;   return (2.0 / pow2(ggxRoughness + 0.0001) - 2.0);&quot;);
+                    add(&quot;}&quot;);
+
+                    add(&quot;float getSpecularMIPLevel(const in float blinnShininessExponent, const in int maxMIPLevel) {&quot;);
+                    add(&quot;   float maxMIPLevelScalar = float( maxMIPLevel );&quot;);
+                    add(&quot;   float desiredMIPLevel = maxMIPLevelScalar - 0.79248 - 0.5 * log2( pow2( blinnShininessExponent ) + 1.0 );&quot;);
+                    add(&quot;   return clamp( desiredMIPLevel, 0.0, maxMIPLevelScalar );&quot;);
+                    add(&quot;}&quot;);
+
+                    //add(&quot;vec3 getLightProbeIndirectRadiance(const in mat4 viewMatrix, const in Geometry geometry, const in float blinnShininessExponent, const in int maxMIPLevel) {&quot;);
+                    //add(&quot;   vec3 reflectVec = reflect(geometry.viewEyeDir, geometry.viewNormal);&quot;);
+                    //add(&quot;   reflectVec = inverseTransformDirection(reflectVec, viewMatrix);&quot;);
+                    //add(&quot;   float mipLevel = getSpecularMIPLevel( blinnShininessExponent, maxMIPLevel );&quot;);
+                    //add(&quot;   vec3 reflectionMapColor = sample_reflectMapEquirect(reflectVec, float(mipLevel));&quot;);
+                    //add(&quot;   return reflectionMapColor;&quot;);
+                    //add(&quot;}&quot;);
+
+
+                    if (states.lights.reflectionMap) {
+                        add(&quot;vec3 getLightProbeIndirectRadiance(const in vec3 reflectVec, const in float blinnShininessExponent, const in int maxMIPLevel) {&quot;);
+                        add(&quot;   float mipLevel = 0.5 * getSpecularMIPLevel(blinnShininessExponent, maxMIPLevel);&quot;); //TODO: a random factor - fix this
+                        add(&quot;   vec3 envMapColor = textureCube(reflectionMap, reflectVec, mipLevel).rgb;&quot;);
+                        add(&quot;   return envMapColor;&quot;);
+                        add(&quot;}&quot;);
+                    }
+
+                    // SPECULAR BRDF EVALUATION
+
+                    add(&quot;vec3 F_Schlick(const in vec3 specularColor, const in float dotLH) {&quot;);
+                    add(&quot;   float fresnel = exp2( ( -5.55473 * dotLH - 6.98316 ) * dotLH );&quot;);
+                    add(&quot;   return ( 1.0 - specularColor ) * fresnel + specularColor;&quot;);
+                    add(&quot;}&quot;);
+
+                    add(&quot;float G_GGX_Smith(const in float alpha, const in float dotNL, const in float dotNV) {&quot;);
+                    add(&quot;   float a2 = pow2( alpha );&quot;);
+                    add(&quot;   float gl = dotNL + sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNL ) );&quot;);
+                    add(&quot;   float gv = dotNV + sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNV ) );&quot;);
+                    add(&quot;   return 1.0 / ( gl * gv );&quot;);
+                    add(&quot;}&quot;);
+
+                    add(&quot;float G_GGX_SmithCorrelated(const in float alpha, const in float dotNL, const in float dotNV) {&quot;);
+                    add(&quot;   float a2 = pow2( alpha );&quot;);
+                    add(&quot;   float gv = dotNL * sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNV ) );&quot;);
+                    add(&quot;   float gl = dotNV * sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNL ) );&quot;);
+                    add(&quot;   return 0.5 / max( gv + gl, EPSILON );&quot;);
+                    add(&quot;}&quot;);
+
+                    add(&quot;float D_GGX(const in float alpha, const in float dotNH) {&quot;);
+                    add(&quot;   float a2 = pow2( alpha );&quot;);
+                    add(&quot;   float denom = pow2( dotNH ) * ( a2 - 1.0 ) + 1.0;&quot;);
+                    add(&quot;   return RECIPROCAL_PI * a2 / pow2( denom );&quot;);
+                    add(&quot;}&quot;);
+
+                    add(&quot;vec3 BRDF_Specular_GGX(const in IncidentLight incidentLight, const in Geometry geometry, const in vec3 specularColor, const in float roughness) {&quot;);
+                    add(&quot;   float alpha = pow2( roughness );&quot;);
+                    add(&quot;   vec3 halfDir = normalize( incidentLight.direction + geometry.viewEyeDir );&quot;);
+                    add(&quot;   float dotNL = saturate( dot( geometry.viewNormal, incidentLight.direction ) );&quot;);
+                    add(&quot;   float dotNV = saturate( dot( geometry.viewNormal, geometry.viewEyeDir ) );&quot;);
+                    add(&quot;   float dotNH = saturate( dot( geometry.viewNormal, halfDir ) );&quot;);
+                    add(&quot;   float dotLH = saturate( dot( incidentLight.direction, halfDir ) );&quot;);
+                    add(&quot;   vec3  F = F_Schlick( specularColor, dotLH );&quot;);
+                    add(&quot;   float G = G_GGX_SmithCorrelated( alpha, dotNL, dotNV );&quot;);
+                    add(&quot;   float D = D_GGX( alpha, dotNH );&quot;);
+                    add(&quot;   return F * (G * D);&quot;);
+                    add(&quot;}&quot;);
+
+                    add(&quot;vec3 BRDF_Specular_GGX_Environment(const in Geometry geometry, const in vec3 specularColor, const in float roughness) {&quot;);
+                    add(&quot;   float dotNV = saturate(dot(geometry.viewNormal, geometry.viewEyeDir));&quot;);
+                    add(&quot;   const vec4 c0 = vec4( -1, -0.0275, -0.572,  0.022);&quot;);
+                    add(&quot;   const vec4 c1 = vec4(  1,  0.0425,   1.04, -0.04);&quot;);
+                    add(&quot;   vec4 r = roughness * c0 + c1;&quot;);
+                    add(&quot;   float a004 = min(r.x * r.x, exp2(-9.28 * dotNV)) * r.x + r.y;&quot;);
+                    add(&quot;   vec2 AB    = vec2(-1.04, 1.04) * a004 + r.zw;&quot;);
+                    add(&quot;   return specularColor * AB.x + AB.y;&quot;);
+                    add(&quot;}&quot;);
+
+
+                    if (states.lights.lightMap || states.lights.reflectionMap) {
+
+                        add(&quot;void computePBRLightMapping(const in Geometry geometry, const in Material material, inout ReflectedLight reflectedLight) {&quot;);
+
+                        if (states.lights.lightMap) {
+                            add(&quot;   vec3 irradiance = textureCube(lightMap, geometry.worldNormal).rgb;&quot;);
+                            add(&quot;   irradiance *= PI;&quot;);
+                            add(&quot;   vec3 diffuseBRDFContrib = BRDF_Diffuse_Lambert(material.diffuseColor);&quot;);
+                            add(&quot;   reflectedLight.diffuse += irradiance * diffuseBRDFContrib;&quot;);
+                            //   add(&quot;   reflectedLight.diffuse = vec3(1.0, 0.0, 0.0);&quot;);
+                        }
+
+                        if (states.lights.reflectionMap) {
+                            add(&quot;   vec3 reflectVec             = reflect(-geometry.viewEyeDir, geometry.viewNormal);&quot;);
+                            add(&quot;   reflectVec                  = inverseTransformDirection(reflectVec, viewMatrix);&quot;);
+                            add(&quot;   float blinnExpFromRoughness = GGXRoughnessToBlinnExponent(material.specularRoughness);&quot;);
+                            add(&quot;   vec3 radiance               = getLightProbeIndirectRadiance(reflectVec, blinnExpFromRoughness, 8);&quot;);
+                            add(&quot;   vec3 specularBRDFContrib    = BRDF_Specular_GGX_Environment(geometry, material.specularColor, material.specularRoughness);&quot;);
+                            add(&quot;   reflectedLight.specular     += radiance * specularBRDFContrib;&quot;);
+                        }
+
+                        add(&quot;}&quot;);
+                    }
+
+                    // MAIN LIGHTING COMPUTATION FUNCTION
+
+                    add(&quot;void computePBRLighting(const in IncidentLight incidentLight, const in Geometry geometry, const in Material material, inout ReflectedLight reflectedLight) {&quot;);
+                    add(&quot;   float dotNL     = saturate(dot(geometry.viewNormal, incidentLight.direction));&quot;);
+                    add(&quot;   vec3 irradiance = dotNL * incidentLight.color * PI;&quot;);
+                    add(&quot;   reflectedLight.diffuse  += irradiance * BRDF_Diffuse_Lambert(material.diffuseColor);&quot;);
+                    add(&quot;   reflectedLight.specular += irradiance * BRDF_Specular_GGX(incidentLight, geometry, material.specularColor, material.specularRoughness);&quot;);
+                    add(&quot;}&quot;);
+
+                } // (pbrMetalRough || pbrSpecGloss)
+
+            } // geometry.normals
 
             //--------------------------------------------------------------------------------
             // GEOMETRY INPUTS

@@ -1114,7 +1114,8 @@
          * The method is given a component type, configuration and optional instance ID, like so:
          *
          * &#x60;&#x60;&#x60;&#x60;javascript
-         * var material = myComponent.create(xeogl.PhongMaterial, {
+         * var material = myComponent.create({
+         *      type: &quot;xeogl.PhongMaterial&quot;,
          *      diffuse: [1,0,0],
          *      specular: [1,1,0]
          * }, &quot;myMaterial&quot;);
@@ -1124,19 +1125,17 @@
          * {{#crossLink &quot;PhongMaterial&quot;}}{{/crossLink}}, passing the given  attributes to the component&#x27;s constructor.
          *
          * If you call this method again, specifying the same &#x60;&#x60;&#x60;&#x60;type&#x60;&#x60;&#x60;&#x60; and &#x60;&#x60;&#x60;&#x60;instanceId&#x60;&#x60;&#x60;&#x60;, the method will return the same
-         * component instance that it returned the first time, and will ignore the configuration:
+         * component instance that it returned the first time, and will ignore the new configuration:
          *
          * &#x60;&#x60;&#x60;&#x60;javascript
-         * var material2 = component.create(xeogl.PhongMaterial, { specular: [1,1,0] }, &quot;myMaterial&quot;);
+         * var material2 = component.create({ type: &quot;xeogl.PhongMaterial&quot;, specular: [1,1,0] }, &quot;myMaterial&quot;);
          * &#x60;&#x60;&#x60;&#x60;
          *
          * So in this example, our {{#crossLink &quot;PhongMaterial&quot;}}{{/crossLink}} will continue to have the red specular
          * and diffuse color that we specified the first time.
          *
          * Each time you call this method with the same &#x60;&#x60;&#x60;&#x60;type&#x60;&#x60;&#x60;&#x60; and &#x60;&#x60;&#x60;&#x60;instanceId&#x60;&#x60;&#x60;&#x60;, the Scene will internally increment a
-         * reference count for the component instance. You can release the shared component instance with a call to
-         * {{#crossLink &quot;Scene/putSharedComponent:method&quot;}}{{/crossLink}}, and once you have released it as many
-         * times as you got it, the Scene will destroy the component.
+         * reference count for the component instance.
          *
          * @method create
          * @param {*} [cfg] Configuration for the component instance - only used if this is the first time you are getting
