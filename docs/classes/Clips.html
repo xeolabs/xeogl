@@ -60,6 +60,7 @@
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
+                                <li><a href="../classes/ClipHelper.html">ClipHelper</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
@@ -210,26 +211,8 @@
 
 
 <div class="box intro">
-    <p>A <strong>Clips</strong> is a group of arbitrarily-aligned World-space <a href="../classes/Clip.html" class="crosslink">Clip</a> planes, which may be used to create
- cross-section views of attached <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
-<h2 id="overview">Overview</h2>
-<ul>
-<li>Each <a href="../classes/Clip.html" class="crosslink">Clip</a> is specified in World-space, as being perpendicular to a vector
-<a href="../classes/Clip.html#property_dir" class="crosslink">dir</a> that emanates from the origin, offset at a
-distance <a href="../classes/Clip.html#property_dist" class="crosslink">dist</a> along that vector.<ul>
-<li>You can move each <a href="../classes/Clip.html" class="crosslink">Clip</a> back and forth along its vector by varying
-its <a href="../classes/Clip.html#property_dist" class="crosslink">dist</a>.</li>
-<li>Likewise, you can rotate each <a href="../classes/Clip.html" class="crosslink">Clip</a> about the origin by rotating
-its <a href="../classes/Clip.html#property_dir" class="crosslink">dir</a> vector.</li>
-<li>Each <a href="../classes/Clip.html" class="crosslink">Clip</a> is has a <a href="../classes/Clip.html#property_mode" class="crosslink">mode</a>, which indicates whether it is disabled ("disabled"), discarding fragments that fall on the origin-side of the plane ("inside"), or clipping fragments that fall on the other side of the plane from the origin ("outside").</li>
-<li>You can update each <a href="../classes/Clip.html" class="crosslink">Clip</a>&#39;s <a href="../classes/Clip.html#property_mode" class="crosslink">mode</a> to
-activate or deactivate it, or to switch which side it discards fragments from.</li>
-<li>Clipping may also be enabled or disabled for specific <a href="../classes/Entity.html" class="crosslink">Entities</a> via their <a href="../classes/Entity.html#property_clippable" class="crosslink">clippable</a> properties.
-<img src="../../../assets/images/Clips.png"></img><h2 id="usage">Usage</h2>
-See <a href="../classes/Clip.html" class="crosslink">Clip</a> for an example.</li>
-</ul>
-</li>
-</ul>
+    <p>A <strong>Clips</strong> applies a set of <a href="../classes/Clip.html" class="crosslink">Clip</a> planes to attached <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
+<p>See <a href="../classes/Clip.html" class="crosslink">Clip</a> for more info.</p>
 
 </div>
 
@@ -283,7 +266,7 @@ See <a href="../classes/Clip.html" class="crosslink">Clip</a> for an example.</l
         
                             <div class="param-description">
                                 <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a> - creates this Clips in the default
-         <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted.</p>
+        <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted.</p>
         
                             </div>
         
@@ -307,7 +290,7 @@ See <a href="../classes/Clip.html" class="crosslink">Clip</a> for an example.</l
         
                                         <div class="param-description">
                                             <p>Optional ID, unique among all components in the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>,
-         generated automatically when omitted.</p>
+        generated automatically when omitted.</p>
         
                                         </div>
         
@@ -330,7 +313,7 @@ See <a href="../classes/Clip.html" class="crosslink">Clip</a> for an example.</l
         
                                         <div class="param-description">
                                             <p>Array containing either IDs or instances of
-         <a href="../classes/Clip.html" class="crosslink">Clip</a> components within the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+        <a href="../classes/Clip.html" class="crosslink">Clip</a> components within the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
         
                                         </div>
         
@@ -1206,7 +1189,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_clipping_clips.js.html#l76"><code>src&#x2F;clipping&#x2F;clips.js:76</code></a>
+                            <a href="../files/src_clipping_clips.js.html#l55"><code>src&#x2F;clipping&#x2F;clips.js:55</code></a>
                             </p>
                     
                     
@@ -1482,7 +1465,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_clipping_clips.js.html#l171"><code>src&#x2F;clipping&#x2F;clips.js:171</code></a>
+                            <a href="../files/src_clipping_clips.js.html#l150"><code>src&#x2F;clipping&#x2F;clips.js:150</code></a>
                             </p>
                     
                     

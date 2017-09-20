@@ -174,17 +174,18 @@
         }
 
         this._setChunk(object, 0, "program", object.program); // Must be first
-        this._setChunk(object, 1, "modelTransform", this.modelTransform);
-        this._setChunk(object, 2, "viewTransform", this.viewTransform);
-        this._setChunk(object, 3, "projTransform", this.projTransform);
-        this._setChunk(object, 4, "lights", this.lights);
-        this._setChunk(object, 5, this.material.type, this.material); // Supports different material systems
-        this._setChunk(object, 6, "clips", this.clips);
-        this._setChunk(object, 7, "viewport", this.viewport);
-        this._setChunk(object, 8, "outline", this.outline);
-        this._setChunk(object, 9, "xray", this.xray);
-        this._setChunk(object, 10, "geometry", this.geometry);
-        this._setChunk(object, 11, "draw", this.geometry, true); // Must be last
+        this._setChunk(object, 1, "modes", this.modes);
+        this._setChunk(object, 2, "modelTransform", this.modelTransform);
+        this._setChunk(object, 3, "viewTransform", this.viewTransform);
+        this._setChunk(object, 4, "projTransform", this.projTransform);
+        this._setChunk(object, 5, "lights", this.lights);
+        this._setChunk(object, 6, this.material.type, this.material); // Supports different material systems
+        this._setChunk(object, 7, "clips", this.clips);
+        this._setChunk(object, 8, "viewport", this.viewport);
+        this._setChunk(object, 9, "outline", this.outline);
+        this._setChunk(object, 10, "xray", this.xray);
+        this._setChunk(object, 11, "geometry", this.geometry);
+        this._setChunk(object, 12, "draw", this.geometry, true); // Must be last
 
         // Ambient light is global across everything in display, and
         // can never be disabled, so grab it now because we want to

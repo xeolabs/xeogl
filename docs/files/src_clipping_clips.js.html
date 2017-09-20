@@ -60,6 +60,7 @@
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
+                                <li><a href="../classes/ClipHelper.html">ClipHelper</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
@@ -197,30 +198,9 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
+ A **Clips** applies a set of {{#crossLink &quot;Clip&quot;}}{{/crossLink}} planes to attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
 
- A **Clips** is a group of arbitrarily-aligned World-space {{#crossLink &quot;Clip&quot;}}Clip{{/crossLink}} planes, which may be used to create
- cross-section views of attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
-
- ## Overview
-
-
- * Each {{#crossLink &quot;Clip&quot;}}Clip{{/crossLink}} is specified in World-space, as being perpendicular to a vector
- {{#crossLink &quot;Clip/dir:property&quot;}}{{/crossLink}} that emanates from the origin, offset at a
- distance {{#crossLink &quot;Clip/dist:property&quot;}}{{/crossLink}} along that vector.
- * You can move each {{#crossLink &quot;Clip&quot;}}Clip{{/crossLink}} back and forth along its vector by varying
- its {{#crossLink &quot;Clip/dist:property&quot;}}{{/crossLink}}.
- * Likewise, you can rotate each {{#crossLink &quot;Clip&quot;}}Clip{{/crossLink}} about the origin by rotating
- its {{#crossLink &quot;Clip/dir:property&quot;}}{{/crossLink}} vector.
- * Each {{#crossLink &quot;Clip&quot;}}Clip{{/crossLink}} is has a {{#crossLink &quot;Clip/mode:property&quot;}}{{/crossLink}}, which indicates whether it is disabled (&quot;disabled&quot;), discarding fragments that fall on the origin-side of the plane (&quot;inside&quot;), or clipping fragments that fall on the other side of the plane from the origin (&quot;outside&quot;).
- * You can update each {{#crossLink &quot;Clip&quot;}}Clip{{/crossLink}}&#x27;s {{#crossLink &quot;Clip/mode:property&quot;}}{{/crossLink}} to
- activate or deactivate it, or to switch which side it discards fragments from.
- * Clipping may also be enabled or disabled for specific {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} via their {{#crossLink &quot;Entity/clippable:property&quot;}}{{/crossLink}} properties.
-
- &lt;img src=&quot;../../../assets/images/Clips.png&quot;&gt;&lt;/img&gt;
-
- ## Usage
-
- See {{#crossLink &quot;Clip&quot;}}{{/crossLink}} for an example.
+ See {{#crossLink &quot;Clip&quot;}}{{/crossLink}} for more info.
 
  @class Clips
  @module xeogl
@@ -413,10 +393,8 @@
             var hash = [];
 
             for (var i = 0, len = clips.length; i &lt; len; i++) {
-
                 clip = clips[i];
-
-                hash.push(clip._state.mode);
+                hash.push(&quot;cp&quot;);
             }
 
             hash.push(&quot;;&quot;);

@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2017-09-14
+ * Built on 2017-09-20
  *
  * MIT License
  * Copyright 2017, Lindsay Kay
@@ -5392,17 +5392,18 @@ var Canvas2Image = (function () {
         }
 
         this._setChunk(object, 0, "program", object.program); // Must be first
-        this._setChunk(object, 1, "modelTransform", this.modelTransform);
-        this._setChunk(object, 2, "viewTransform", this.viewTransform);
-        this._setChunk(object, 3, "projTransform", this.projTransform);
-        this._setChunk(object, 4, "lights", this.lights);
-        this._setChunk(object, 5, this.material.type, this.material); // Supports different material systems
-        this._setChunk(object, 6, "clips", this.clips);
-        this._setChunk(object, 7, "viewport", this.viewport);
-        this._setChunk(object, 8, "outline", this.outline);
-        this._setChunk(object, 9, "xray", this.xray);
-        this._setChunk(object, 10, "geometry", this.geometry);
-        this._setChunk(object, 11, "draw", this.geometry, true); // Must be last
+        this._setChunk(object, 1, "modes", this.modes);
+        this._setChunk(object, 2, "modelTransform", this.modelTransform);
+        this._setChunk(object, 3, "viewTransform", this.viewTransform);
+        this._setChunk(object, 4, "projTransform", this.projTransform);
+        this._setChunk(object, 5, "lights", this.lights);
+        this._setChunk(object, 6, this.material.type, this.material); // Supports different material systems
+        this._setChunk(object, 7, "clips", this.clips);
+        this._setChunk(object, 8, "viewport", this.viewport);
+        this._setChunk(object, 9, "outline", this.outline);
+        this._setChunk(object, 10, "xray", this.xray);
+        this._setChunk(object, 11, "geometry", this.geometry);
+        this._setChunk(object, 12, "draw", this.geometry, true); // Must be last
 
         // Ambient light is global across everything in display, and
         // can never be disabled, so grab it now because we want to
@@ -8431,6 +8432,7 @@ var Canvas2Image = (function () {
         var reflectivityFresnel;
         var emissiveFresnel;
         var receiveShadow;
+        var clipping;
 
         var vertexPickObjectSrc;
         var fragmentPickObjectSrc;
@@ -8459,6 +8461,7 @@ var Canvas2Image = (function () {
             texturing = hasTextures();
             normals = hasNormals();
             normalMapping = hasNormalMap();
+            clipping = states.clips.clips.length > 0;
             phongMaterial = (states.material.type === "phongMaterial");
             MetallicMaterial = (states.material.type === "MetallicMaterial");
             SpecularMaterial = (states.material.type === "SpecularMaterial");
@@ -8756,6 +8759,10 @@ var Canvas2Image = (function () {
 
             add("varying    vec3 vViewPosition;");
 
+            if (clipping) {
+                add("varying vec4 vWorldPosition;");
+            }
+
             if (states.lights.lightMap) {
                 add("varying    vec3 vWorldNormal;");
             }
@@ -8959,7 +8966,13 @@ var Canvas2Image = (function () {
             if (states.geometry.primitiveName === "points") {
                 add("gl_PointSize = pointSize;");
             }
+
+            if (clipping) {
+                add("vWorldPosition = worldPosition;");
+            }
+
             add("   vViewPosition = viewPosition.xyz;");
+
             add("   gl_Position = projMatrix * viewPosition;");
 
             if (receiveShadow) {
@@ -8998,6 +9011,20 @@ var Canvas2Image = (function () {
             add("// Drawing fragment shader");
 
             add("precision " + getFSFloatPrecision(states.gl) + " float;");
+
+            //--------------------------------------------------------------------------------
+            // USER CLIP PLANES
+            //--------------------------------------------------------------------------------
+
+            if (clipping) {
+                add("varying vec4 vWorldPosition;");
+                add("uniform bool clippable;");
+                for (var i = 0; i < states.clips.clips.length; i++) {
+                    add("uniform bool clipActive" + i + ";");
+                    add("uniform vec3 clipPos" + i + ";");
+                    add("uniform vec3 clipDir" + i + ";");
+                }
+            }
 
             if (geometry.normals) {
 
@@ -9526,6 +9553,18 @@ var Canvas2Image = (function () {
 
             add("void main(void) {");
 
+            if (clipping) {
+                add("if (clippable) {");
+                add("  float dist = 0.0;");
+                for (var i = 0; i < states.clips.clips.length; i++) {
+                    add("if (clipActive" + i + ") {");
+                    add("   dist += clamp(dot(-clipDir" + i + ".xyz, vWorldPosition.xyz - clipPos" + i + ".xyz), 0.0, 1000.0);");
+                    add("}");
+                }
+                add("  if (dist > 0.0) { discard; }");
+                add("}");
+            }
+
             if (geometry.primitiveName === "points") {
                 add("vec2 cxy = 2.0 * gl_PointCoord - 1.0;");
                 add("float r = dot(cxy, cxy);");
@@ -9908,7 +9947,7 @@ var Canvas2Image = (function () {
             }
 
             add("gl_FragColor = vec4(outgoingLight, alpha);");
-             //    add("gl_FragColor = LinearTosRGB(gl_FragColor);");  // Gamma correction
+            //    add("gl_FragColor = LinearTosRGB(gl_FragColor);");  // Gamma correction
 
             add("}");
 
@@ -10146,85 +10185,89 @@ var Canvas2Image = (function () {
 
     "use strict";
 
-    /**
-     * Create display state chunk type for draw and pick render of user clipping planes
-     */
     xeogl.renderer.ChunkFactory.createChunkType({
 
         type: "clips",
 
         build: function () {
 
+            var type;
             var i;
             var len;
-
-            this._uClipModeDraw = this._uClipModeDraw || [];
-            this._uClipPlaneDraw = this._uClipPlaneDraw || [];
-
-            var draw = this.program.draw;
-
-            for (i = 0, len = this.state.clips.length; i < len; i++) {
-                this._uClipModeDraw[i] = draw.getUniform("xeo_uClipMode" + i);
-                this._uClipPlaneDraw[i] = draw.getUniform("xeo_uClipPlane" + i)
-            }
-
-            this._uClipModePick = this._uClipModePick || [];
-            this._uClipPlanePick = this._uClipPlanePick || [];
-
-            var pick = this.program.pick;
-
-            for (i = 0, len = this.state.clips.length; i < len; i++) {
-                this._uClipModePick[i] = pick.getUniform("xeo_uClipMode" + i);
-                this._uClipPlanePick[i] = pick.getUniform("xeo_uClipPlane" + i)
-            }
-        },
-
-        drawPick: function (frameCtx) {
-
-            return;
-
-            var uClipMode = (frameCtx.pick) ? this._uClipModePick : this._uClipModeDraw;
-            var uClipPlane = (frameCtx.pick) ? this._uClipPlanePick : this._uClipPlaneDraw;
-
-            var mode;
-            var plane;
+            var uniforms;
+            var program;
             var clips = this.state.clips;
-            var clip;
+            var clipUniforms;
 
-            for (var i = 0, len = clips.length; i < len; i++) {
+            this._uniforms = {
+                draw: [],
+                pickObject: [],
+                pickPrimitive: [],
+                outline: []
+            };
 
-                mode = uClipMode[i];
-                plane = uClipPlane[i];
-
-                if (mode && plane) {
-
-                    clip = clips[i];
-
-                    if (clip.mode === "inside") {
-
-                        mode.setValue(2);
-                        plane.setValue(clip.plane);
-
-                    } else if (clip.mode === "outside") {
-
-                        mode.setValue(1);
-                        plane.setValue(clip.plane);
-
-                    } else {
-
-                        // Disabled
-
-                        mode.setValue(0);
+            for (type in this._uniforms) {
+                if (this._uniforms.hasOwnProperty(type)) {
+                    uniforms = this._uniforms[type];
+                    program = this.program[type];
+                    for (i = 0, len = clips.length; i < len; i++) {
+                        clipUniforms = {
+                            active: program.getUniform("clipActive" + i),
+                            pos: program.getUniform("clipPos" + i),
+                            dir: program.getUniform("clipDir" + i)
+                        };
+                        uniforms.push(clipUniforms);
                     }
                 }
             }
         },
 
-        outline: function(frameCtx) {
-            this.drawPick(frameCtx);
+        _drawAndPick: function (frameCtx, type) {
+            var clips = this.state.clips;
+            var clip;
+            var uniforms = this._uniforms[type];
+            var clipUniforms;
+            var uClipActive;
+            var uClipPos;
+            var uClipDir;
+            for (var i = 0, len = uniforms.length; i < len; i++) {
+                clip = clips[i];
+                clipUniforms = uniforms[i];
+                uClipActive = clipUniforms.active;
+                if (uClipActive) {
+                    uClipActive.setValue(clip.active);
+                }
+                uClipPos = clipUniforms.pos;
+                if (uClipPos) {
+                    clipUniforms.pos.setValue(clip.pos);
+                }
+                uClipDir = clipUniforms.dir;
+                if (uClipDir) {
+                    clipUniforms.dir.setValue(clip.dir);
+                }
+            }
+        },
+
+        draw: function (frameCtx) {
+            this._drawAndPick(frameCtx, "draw");
+        },
+
+        shadow: function (frameCtx) {
+            this._drawAndPick(frameCtx, "shadow");
+        },
+
+        pickObject: function (frameCtx) {
+            this._drawAndPick(frameCtx, "pickObject");
+        },
+
+        pickPrimitive: function (frameCtx) {
+            this._drawAndPick(frameCtx, "pickPrimitive");
+        },
+
+        outline: function (frameCtx) {
+            this._drawAndPick(frameCtx, "outline");
         }
     });
-
 })();;(function () {
 
     "use strict";
@@ -10676,38 +10719,35 @@ var Canvas2Image = (function () {
         type: "modes",
 
         build: function () {
+
+            this._clippableDraw = this.program.draw.getUniform("clippable");
+            this._clippableShadow = this.program.shadow.getUniform("clippable");
+            this._clippablePickObject = this.program.pickObject.getUniform("clippable");
+            this._clippablePickPrimitive = this.program.pickPrimitive.getUniform("clippable");
         },
 
         draw: function (frameCtx) {
-
-            var state = this.state;
-            var gl = this.program.gl;
-
-            //..?
+            if (this._clippableDraw) {
+                this._clippableDraw.setValue(this.state.clippable);
+            }
         },
 
         shadow: function (frameCtx) {
-
-            var state = this.state;
-            var gl = this.program.gl;
-
-            //..?
+            if (this._clippableShadow) {
+                this._clippableShadow.setValue(this.state.clippable);
+            }
         },
 
         pickObject: function (frameCtx) {
-
-            var state = this.state;
-            var gl = this.program.gl;
-
-            //..?
+            if (this._clippablePickObject) {
+                this._clippablePickObject.setValue(this.state.clippable);
+            }
         },
 
         pickPrimitive: function (frameCtx) {
-
-            var state = this.state;
-            var gl = this.program.gl;
-
-            //..?
+            if (this._clippablePickPrimitive) {
+                this._clippablePickPrimitive.setValue(this.state.clippable);
+            }
         }
     });
 })();
@@ -17184,76 +17224,69 @@ var Canvas2Image = (function () {
  * @module xeogl
  * @submodule clipping
  */;/**
- A **Clip** is an arbitrarily-aligned World-space clipping plane used to create
- cross-section views of associated {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **Clip** is an arbitrarily-aligned World-space clipping plane.
+
+ <a href="../../examples/#clipping_userClipPlanes"><img src="../../../assets/images/screenshots/Clips.png"></img></a>
 
  ## Overview
 
- * These are grouped within {{#crossLink "Clips"}}Clips{{/crossLink}} components, which are attached to
- {{#crossLink "Entity"}}Entities{{/crossLink}}. See the {{#crossLink "Clips"}}Clips{{/crossLink}} documentation
- for more info.
- * A Clip is specified in World-space, as being perpendicular to a vector {{#crossLink "Clip/dir:property"}}{{/crossLink}}
- that emanates from the origin, offset at a distance {{#crossLink "Clip/dist:property"}}{{/crossLink}} along that vector.
- * You can move a Clip back and forth along its vector by varying {{#crossLink "Clip/dist:property"}}{{/crossLink}}.
- * Likewise, you can rotate a Clip about the origin by rotating the {{#crossLink "Clip/dir:property"}}{{/crossLink}} vector.
- * A Clip is has a {{#crossLink "Clip/mode:property"}}{{/crossLink}},  which indicates whether it is disabled
- ("disabled"), discarding fragments that fall on the origin-side of the plane ("inside"), or clipping fragments that
- fall on the other side of the plane from the origin ("outside").
- * You can update the {{#crossLink "Clip/mode:property"}}{{/crossLink}} of a Clip to activate or deactivate it, or to
- switch which side it discards fragments from.
- * Clipping may also be enabled or disabled for specific {{#crossLink "Entity"}}Entities{{/crossLink}} via their {{#crossLink "Entity/clippable:property"}}{{/crossLink}} properties.
+ * Used to slice portions off objects, to create cross-section views or reveal interiors.
+ * Is contained within {{#crossLink "Clips"}}{{/crossLink}} components, which are attached to {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ * Has a World-space position in {{#crossLink "Clip/pos:property"}}{{/crossLink}} and a orientation in {{#crossLink "Clip/dir:property"}}{{/crossLink}}.
+ * Discards elements from the half-space in the direction of {{#crossLink "Clip/dir:property"}}{{/crossLink}}.
+ * Can be be enabled or disabled via its {{#crossLink "Clip/active:property"}}{{/crossLink}} property.
 
- <img src="../../../assets/images/Clip.png"></img>
+ <img src="../../../assets/images/Clips.png"></img>
 
  ## Usage
 
-
- * In this example we have an {{#crossLink "Entity"}}{{/crossLink}} that's clipped by a {{#crossLink "Clips"}}{{/crossLink}}
- that contains two {{#crossLink "Clip"}}{{/crossLink}} planes.
- * The first {{#crossLink "Clip"}}{{/crossLink}} plane is on the
- positive diagonal, while the second is on the negative diagonal.
- * The {{#crossLink "Entity"}}Entity's{{/crossLink}}
- {{#crossLink "Geometry"}}{{/crossLink}} is a box, and the planes will clip off two of the box's corners.
-
+ In the example below, we have an {{#crossLink "Entity"}}{{/crossLink}} that's attached by a {{#crossLink "Clips"}}{{/crossLink}}
+ that contains two {{#crossLink "Clip"}}{{/crossLink}} components.  The first {{#crossLink "Clip"}}{{/crossLink}} is on the
+ positive diagonal, while the second is on the negative diagonal. The {{#crossLink "Entity"}}Entity's{{/crossLink}} {{#crossLink "Geometry"}}{{/crossLink}}
+ is a box, which will get two of its corners clipped off.
 
  ````javascript
  // Create a set of Clip planes
  clips = new xeogl.Clip({
-     clips: [
+    clips: [
 
-         // Clip plane on negative diagonal
-         new xeogl.Clip({
-             dir: [-1.0, -1.0, -1.0], // Direction of Clip from World space origin
-             dist: 2.0,               // Distance along direction vector
-             mode: "outside"          // Clip fragments that fall beyond the plane
-         }),
+        // Clip plane on negative diagonal
+        new xeogl.Clip({
+            pos: [1.0, 1.0, 1.0],
+            dir: [-1.0, -1.0, -1.0],
+            active: true
+        }),
 
-         // Clip plane on positive diagonal
-         new xeogl.Clip({
-             dir: [1.0, 1.0, 1.0],
-             dist: 2.0,
-             mode: "outside"
-         })
-     ]
+        // Clip plane on positive diagonal
+        new xeogl.Clip({
+            pos: [-1.0, -1.0, -1.0],
+            dir: [1.0, 1.0, 1.0],
+            active: true
+        })
+    ]
  });
 
  // Create an Entity that's clipped by our Clip planes
  var entity = new xeogl.Entity({
      geometry: new xeogl.BoxGeometry(),
-     clips: clips
+     clips: clips,
+     clippable: true // Enable clippability (default)
  });
  ````
 
- ### Toggling clipping on and off
+ ### Switching clipping on and off for an Entity
 
- An {{#crossLink "Entity"}}{{/crossLink}}is clippable by default. We can toggle its clippability like so:
+ An {{#crossLink "Entity"}}{{/crossLink}}'s {{#crossLink "Entity/clippable:property"}}{{/crossLink}} property indicates
+ whether or not it is affected by Clip components.
+
+ You can switch it at any time, like this:
 
  ```` javascript
  // Disable clipping for the Entity
  entity.clippable = false;
 
  // Enable clipping for the Entity
- entity.clippable = false;
+ entity.clippable = true;
  ````
 
  @class Clip
@@ -17266,10 +17299,9 @@ var Canvas2Image = (function () {
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  You only need to supply an ID if you need to be able to find the Clip by ID within the {{#crossLink "Scene"}}Scene{{/crossLink}}.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Clip.
- @param [cfg.mode="disabled"] {String} Clipping mode - "disabled" to clip nothing, "inside" to reject points inside the plane, "outside" to reject points outside the plane.
- @param [dir= [1, 0, 0]] {Array of Number} The direction of the clipping plane from the World-space origin.
- @param [dist=1.0] {Number} Distance to the clipping plane along the direction vector.
-
+ @param [cfg.active=true] {Boolean} Indicates whether or not this Clip is active.
+ @param [cfg.pos=[0,0,0]] {Array of Number} World-space position of the clipping plane.
+ @param [cfg.dir=[0,0 -1]] {Array of Number} Vector perpendicular to the plane surface, indicating its orientation.
  @extends Component
  */
 (function () {
@@ -17283,73 +17315,95 @@ var Canvas2Image = (function () {
         _init: function (cfg) {
 
             this._state = {
-                mode: "disabled",
-                dir: [1,0,0],
-                dist: 1.0
+                active: true,
+                pos: new Float32Array(3),
+                dir: new Float32Array(3)
             };
 
-            this.mode = cfg.mode;
+            this.active = cfg.active;
+            this.pos = cfg.pos;
             this.dir = cfg.dir;
-            this.dist = cfg.dist;
         },
 
         _props: {
 
             /**
-             The current mode of this Clip.
+             Indicates whether this Clip is active or not.
 
-             Possible states are:
+             Fires a {{#crossLink "Clip/active:event"}}{{/crossLink}} event on change.
 
-
-             * "disabled" - inactive
-             * "inside" - clipping fragments that fall within the half-space on the origin-side of the Clip plane
-             * "outside" - clipping fragments that fall on the other side of the Clip plane from the origin
-
-
-             Fires a {{#crossLink "Clip/mode:event"}}{{/crossLink}} event on change.
-
-             @property mode
-             @default "disabled"
-             @type String
+             @property active
+             @default true
+             @type Boolean
              */
-            mode: {
+            active: {
 
                 set: function (value) {
 
-                    this._state.mode =  value || "disabled";
-
-                    this._renderer.imageDirty = true;
+                    this._state.active = value !== false;
 
                     /**
-                     Fired whenever this Clip's {{#crossLink "Clip/mode:property"}}{{/crossLink}} property changes.
+                     Fired whenever this Clip's {{#crossLink "Clip/active:property"}}{{/crossLink}} property changes.
 
-                     @event mode
-                     @param value {String} The property's new value
+                     @event active
+                     @param value {Boolean} The property's new value
                      */
-                    this.fire("mode", this._state.mode);
+                    this.fire("active", this._state.active);
                 },
 
                 get: function () {
-                    return this._state.mode;
+                    return this._state.active;
                 }
             },
 
             /**
-             A vector emanating from the World-space origin that indicates the orientation of this Clip plane.
+             The World-space position of this Clip's plane.
 
-             The Clip plane will be oriented perpendicular to this vector.
+             Fires a {{#crossLink "Clip/pos:event"}}{{/crossLink}} event on change.
+
+             @property pos
+             @default [0, 0, 0]
+             @type Float32Array
+             */
+            pos: {
+
+                set: function (value) {
+
+                    this._state.pos.set(value || [0, 0, 0]);
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this Clip's {{#crossLink "Clip/pos:property"}}{{/crossLink}} property changes.
+
+                     @event pos
+                     @param value Float32Array The property's new value
+                     */
+                    this.fire("pos", this._state.pos);
+                },
+
+                get: function () {
+                    return this._state.pos;
+                }
+            },
+
+            /**
+             Vector indicating the orientation of this Clip plane.
+
+             The vector originates at {{#crossLink "Clip/pos:property"}}{{/crossLink}}. Elements on the
+             same side of the vector are clipped.
 
              Fires a {{#crossLink "Clip/dir:event"}}{{/crossLink}} event on change.
 
              @property dir
-             @default [1.0, 1.0, 1.0]
+             @default [0, 0, -1]
              @type Float32Array
              */
             dir: {
 
                 set: function (value) {
 
-                    this._state.dir =  value || xeogl.math.vec3([1, 0, 0]);
+                    this._state.dir.set(value || [0, 0, -1]);
 
                     this._renderer.imageDirty = true;
 
@@ -17357,7 +17411,7 @@ var Canvas2Image = (function () {
                      Fired whenever this Clip's {{#crossLink "Clip/dir:property"}}{{/crossLink}} property changes.
 
                      @event dir
-                     @param  value  {Float32Array} The property's new value
+                     @param value {Float32Array} The property's new value
                      */
                     this.fire("dir", this._state.dir);
                 },
@@ -17365,77 +17419,22 @@ var Canvas2Image = (function () {
                 get: function () {
                     return this._state.dir;
                 }
-            },
-
-            /**
-             The position of this Clip along the vector indicated by {{#crossLink "Clip/dir:property"}}{{/crossLink}}.
-
-             This is the distance of the Clip plane from the World-space origin.
-
-             Fires a {{#crossLink "Clip/dist:event"}}{{/crossLink}} event on change.
-
-             @property dist
-             @default 1.0
-             @type Number
-             */
-            dist: {
-
-                set: function (value) {
-
-                    this._state.dist = value !== undefined ? value : 1.0;
-
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     Fired whenever this Clip's {{#crossLink "Clip/dist:property"}}{{/crossLink}} property changes.
-
-                     @event dist
-                     @param  value Number The property's new value
-                     */
-                    this.fire("dist", this._state.dist);
-                },
-
-                get: function () {
-                    return this._state.dist;
-                }
             }
         },
 
         _getJSON: function () {
             return {
-                mode: this._state.mode,
+                active: this._state.active,
                 dir: xeogl.math.vecToArray(this._state.dir),
-                dist: this._state.dist
+                pos: xeogl.math.vecToArray(this._state.pos)
             };
         }
     });
-
 })();
 ;/**
+ A **Clips** applies a set of {{#crossLink "Clip"}}{{/crossLink}} planes to attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- A **Clips** is a group of arbitrarily-aligned World-space {{#crossLink "Clip"}}Clip{{/crossLink}} planes, which may be used to create
- cross-section views of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
-
- ## Overview
-
-
- * Each {{#crossLink "Clip"}}Clip{{/crossLink}} is specified in World-space, as being perpendicular to a vector
- {{#crossLink "Clip/dir:property"}}{{/crossLink}} that emanates from the origin, offset at a
- distance {{#crossLink "Clip/dist:property"}}{{/crossLink}} along that vector.
- * You can move each {{#crossLink "Clip"}}Clip{{/crossLink}} back and forth along its vector by varying
- its {{#crossLink "Clip/dist:property"}}{{/crossLink}}.
- * Likewise, you can rotate each {{#crossLink "Clip"}}Clip{{/crossLink}} about the origin by rotating
- its {{#crossLink "Clip/dir:property"}}{{/crossLink}} vector.
- * Each {{#crossLink "Clip"}}Clip{{/crossLink}} is has a {{#crossLink "Clip/mode:property"}}{{/crossLink}}, which indicates whether it is disabled ("disabled"), discarding fragments that fall on the origin-side of the plane ("inside"), or clipping fragments that fall on the other side of the plane from the origin ("outside").
- * You can update each {{#crossLink "Clip"}}Clip{{/crossLink}}'s {{#crossLink "Clip/mode:property"}}{{/crossLink}} to
- activate or deactivate it, or to switch which side it discards fragments from.
- * Clipping may also be enabled or disabled for specific {{#crossLink "Entity"}}Entities{{/crossLink}} via their {{#crossLink "Entity/clippable:property"}}{{/crossLink}} properties.
-
- <img src="../../../assets/images/Clips.png"></img>
-
- ## Usage
-
- See {{#crossLink "Clip"}}{{/crossLink}} for an example.
+ See {{#crossLink "Clip"}}{{/crossLink}} for more info.
 
  @class Clips
  @module xeogl
@@ -17628,10 +17627,8 @@ var Canvas2Image = (function () {
             var hash = [];
 
             for (var i = 0, len = clips.length; i < len; i++) {
-
                 clip = clips[i];
-
-                hash.push(clip._state.mode);
+                hash.push("cp");
             }
 
             hash.push(";");

@@ -25,6 +25,7 @@
         var reflectivityFresnel;
         var emissiveFresnel;
         var receiveShadow;
+        var clipping;
 
         var vertexPickObjectSrc;
         var fragmentPickObjectSrc;
@@ -53,6 +54,7 @@
             texturing = hasTextures();
             normals = hasNormals();
             normalMapping = hasNormalMap();
+            clipping = states.clips.clips.length > 0;
             phongMaterial = (states.material.type === "phongMaterial");
             MetallicMaterial = (states.material.type === "MetallicMaterial");
             SpecularMaterial = (states.material.type === "SpecularMaterial");
@@ -350,6 +352,10 @@
 
             add("varying    vec3 vViewPosition;");
 
+            if (clipping) {
+                add("varying vec4 vWorldPosition;");
+            }
+
             if (states.lights.lightMap) {
                 add("varying    vec3 vWorldNormal;");
             }
@@ -553,7 +559,13 @@
             if (states.geometry.primitiveName === "points") {
                 add("gl_PointSize = pointSize;");
             }
+
+            if (clipping) {
+                add("vWorldPosition = worldPosition;");
+            }
+
             add("   vViewPosition = viewPosition.xyz;");
+
             add("   gl_Position = projMatrix * viewPosition;");
 
             if (receiveShadow) {
@@ -592,6 +604,20 @@
             add("// Drawing fragment shader");
 
             add("precision " + getFSFloatPrecision(states.gl) + " float;");
+
+            //--------------------------------------------------------------------------------
+            // USER CLIP PLANES
+            //--------------------------------------------------------------------------------
+
+            if (clipping) {
+                add("varying vec4 vWorldPosition;");
+                add("uniform bool clippable;");
+                for (var i = 0; i < states.clips.clips.length; i++) {
+                    add("uniform bool clipActive" + i + ";");
+                    add("uniform vec3 clipPos" + i + ";");
+                    add("uniform vec3 clipDir" + i + ";");
+                }
+            }
 
             if (geometry.normals) {
 
@@ -1120,6 +1146,18 @@
 
             add("void main(void) {");
 
+            if (clipping) {
+                add("if (clippable) {");
+                add("  float dist = 0.0;");
+                for (var i = 0; i < states.clips.clips.length; i++) {
+                    add("if (clipActive" + i + ") {");
+                    add("   dist += clamp(dot(-clipDir" + i + ".xyz, vWorldPosition.xyz - clipPos" + i + ".xyz), 0.0, 1000.0);");
+                    add("}");
+                }
+                add("  if (dist > 0.0) { discard; }");
+                add("}");
+            }
+
             if (geometry.primitiveName === "points") {
                 add("vec2 cxy = 2.0 * gl_PointCoord - 1.0;");
                 add("float r = dot(cxy, cxy);");
@@ -1502,7 +1540,7 @@
             }
 
             add("gl_FragColor = vec4(outgoingLight, alpha);");
-             //    add("gl_FragColor = LinearTosRGB(gl_FragColor);");  // Gamma correction
+            //    add("gl_FragColor = LinearTosRGB(gl_FragColor);");  // Gamma correction
 
             add("}");
 

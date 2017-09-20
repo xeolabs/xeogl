@@ -60,6 +60,7 @@
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
+                                <li><a href="../classes/ClipHelper.html">ClipHelper</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
@@ -197,76 +198,69 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
- A **Clip** is an arbitrarily-aligned World-space clipping plane used to create
- cross-section views of associated {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
+ A **Clip** is an arbitrarily-aligned World-space clipping plane.
+
+ &lt;a href=&quot;../../examples/#clipping_userClipPlanes&quot;&gt;&lt;img src=&quot;../../../assets/images/screenshots/Clips.png&quot;&gt;&lt;/img&gt;&lt;/a&gt;
 
  ## Overview
 
- * These are grouped within {{#crossLink &quot;Clips&quot;}}Clips{{/crossLink}} components, which are attached to
- {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}. See the {{#crossLink &quot;Clips&quot;}}Clips{{/crossLink}} documentation
- for more info.
- * A Clip is specified in World-space, as being perpendicular to a vector {{#crossLink &quot;Clip/dir:property&quot;}}{{/crossLink}}
- that emanates from the origin, offset at a distance {{#crossLink &quot;Clip/dist:property&quot;}}{{/crossLink}} along that vector.
- * You can move a Clip back and forth along its vector by varying {{#crossLink &quot;Clip/dist:property&quot;}}{{/crossLink}}.
- * Likewise, you can rotate a Clip about the origin by rotating the {{#crossLink &quot;Clip/dir:property&quot;}}{{/crossLink}} vector.
- * A Clip is has a {{#crossLink &quot;Clip/mode:property&quot;}}{{/crossLink}},  which indicates whether it is disabled
- (&quot;disabled&quot;), discarding fragments that fall on the origin-side of the plane (&quot;inside&quot;), or clipping fragments that
- fall on the other side of the plane from the origin (&quot;outside&quot;).
- * You can update the {{#crossLink &quot;Clip/mode:property&quot;}}{{/crossLink}} of a Clip to activate or deactivate it, or to
- switch which side it discards fragments from.
- * Clipping may also be enabled or disabled for specific {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} via their {{#crossLink &quot;Entity/clippable:property&quot;}}{{/crossLink}} properties.
+ * Used to slice portions off objects, to create cross-section views or reveal interiors.
+ * Is contained within {{#crossLink &quot;Clips&quot;}}{{/crossLink}} components, which are attached to {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
+ * Has a World-space position in {{#crossLink &quot;Clip/pos:property&quot;}}{{/crossLink}} and a orientation in {{#crossLink &quot;Clip/dir:property&quot;}}{{/crossLink}}.
+ * Discards elements from the half-space in the direction of {{#crossLink &quot;Clip/dir:property&quot;}}{{/crossLink}}.
+ * Can be be enabled or disabled via its {{#crossLink &quot;Clip/active:property&quot;}}{{/crossLink}} property.
 
- &lt;img src=&quot;../../../assets/images/Clip.png&quot;&gt;&lt;/img&gt;
+ &lt;img src=&quot;../../../assets/images/Clips.png&quot;&gt;&lt;/img&gt;
 
  ## Usage
 
-
- * In this example we have an {{#crossLink &quot;Entity&quot;}}{{/crossLink}} that&#x27;s clipped by a {{#crossLink &quot;Clips&quot;}}{{/crossLink}}
- that contains two {{#crossLink &quot;Clip&quot;}}{{/crossLink}} planes.
- * The first {{#crossLink &quot;Clip&quot;}}{{/crossLink}} plane is on the
- positive diagonal, while the second is on the negative diagonal.
- * The {{#crossLink &quot;Entity&quot;}}Entity&#x27;s{{/crossLink}}
- {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} is a box, and the planes will clip off two of the box&#x27;s corners.
-
+ In the example below, we have an {{#crossLink &quot;Entity&quot;}}{{/crossLink}} that&#x27;s attached by a {{#crossLink &quot;Clips&quot;}}{{/crossLink}}
+ that contains two {{#crossLink &quot;Clip&quot;}}{{/crossLink}} components.  The first {{#crossLink &quot;Clip&quot;}}{{/crossLink}} is on the
+ positive diagonal, while the second is on the negative diagonal. The {{#crossLink &quot;Entity&quot;}}Entity&#x27;s{{/crossLink}} {{#crossLink &quot;Geometry&quot;}}{{/crossLink}}
+ is a box, which will get two of its corners clipped off.
 
  &#x60;&#x60;&#x60;&#x60;javascript
  // Create a set of Clip planes
  clips = new xeogl.Clip({
-     clips: [
+    clips: [
 
-         // Clip plane on negative diagonal
-         new xeogl.Clip({
-             dir: [-1.0, -1.0, -1.0], // Direction of Clip from World space origin
-             dist: 2.0,               // Distance along direction vector
-             mode: &quot;outside&quot;          // Clip fragments that fall beyond the plane
-         }),
+        // Clip plane on negative diagonal
+        new xeogl.Clip({
+            pos: [1.0, 1.0, 1.0],
+            dir: [-1.0, -1.0, -1.0],
+            active: true
+        }),
 
-         // Clip plane on positive diagonal
-         new xeogl.Clip({
-             dir: [1.0, 1.0, 1.0],
-             dist: 2.0,
-             mode: &quot;outside&quot;
-         })
-     ]
+        // Clip plane on positive diagonal
+        new xeogl.Clip({
+            pos: [-1.0, -1.0, -1.0],
+            dir: [1.0, 1.0, 1.0],
+            active: true
+        })
+    ]
  });
 
  // Create an Entity that&#x27;s clipped by our Clip planes
  var entity = new xeogl.Entity({
      geometry: new xeogl.BoxGeometry(),
-     clips: clips
+     clips: clips,
+     clippable: true // Enable clippability (default)
  });
  &#x60;&#x60;&#x60;&#x60;
 
- ### Toggling clipping on and off
+ ### Switching clipping on and off for an Entity
 
- An {{#crossLink &quot;Entity&quot;}}{{/crossLink}}is clippable by default. We can toggle its clippability like so:
+ An {{#crossLink &quot;Entity&quot;}}{{/crossLink}}&#x27;s {{#crossLink &quot;Entity/clippable:property&quot;}}{{/crossLink}} property indicates
+ whether or not it is affected by Clip components.
+
+ You can switch it at any time, like this:
 
  &#x60;&#x60;&#x60;&#x60; javascript
  // Disable clipping for the Entity
  entity.clippable = false;
 
  // Enable clipping for the Entity
- entity.clippable = false;
+ entity.clippable = true;
  &#x60;&#x60;&#x60;&#x60;
 
  @class Clip
@@ -279,10 +273,9 @@
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, generated automatically when omitted.
  You only need to supply an ID if you need to be able to find the Clip by ID within the {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Clip.
- @param [cfg.mode=&quot;disabled&quot;] {String} Clipping mode - &quot;disabled&quot; to clip nothing, &quot;inside&quot; to reject points inside the plane, &quot;outside&quot; to reject points outside the plane.
- @param [dir= [1, 0, 0]] {Array of Number} The direction of the clipping plane from the World-space origin.
- @param [dist=1.0] {Number} Distance to the clipping plane along the direction vector.
-
+ @param [cfg.active=true] {Boolean} Indicates whether or not this Clip is active.
+ @param [cfg.pos=[0,0,0]] {Array of Number} World-space position of the clipping plane.
+ @param [cfg.dir=[0,0 -1]] {Array of Number} Vector perpendicular to the plane surface, indicating its orientation.
  @extends Component
  */
 (function () {
@@ -296,73 +289,95 @@
         _init: function (cfg) {
 
             this._state = {
-                mode: &quot;disabled&quot;,
-                dir: [1,0,0],
-                dist: 1.0
+                active: true,
+                pos: new Float32Array(3),
+                dir: new Float32Array(3)
             };
 
-            this.mode = cfg.mode;
+            this.active = cfg.active;
+            this.pos = cfg.pos;
             this.dir = cfg.dir;
-            this.dist = cfg.dist;
         },
 
         _props: {
 
             /**
-             The current mode of this Clip.
+             Indicates whether this Clip is active or not.
 
-             Possible states are:
+             Fires a {{#crossLink &quot;Clip/active:event&quot;}}{{/crossLink}} event on change.
 
-
-             * &quot;disabled&quot; - inactive
-             * &quot;inside&quot; - clipping fragments that fall within the half-space on the origin-side of the Clip plane
-             * &quot;outside&quot; - clipping fragments that fall on the other side of the Clip plane from the origin
-
-
-             Fires a {{#crossLink &quot;Clip/mode:event&quot;}}{{/crossLink}} event on change.
-
-             @property mode
-             @default &quot;disabled&quot;
-             @type String
+             @property active
+             @default true
+             @type Boolean
              */
-            mode: {
+            active: {
 
                 set: function (value) {
 
-                    this._state.mode =  value || &quot;disabled&quot;;
-
-                    this._renderer.imageDirty = true;
+                    this._state.active = value !== false;
 
                     /**
-                     Fired whenever this Clip&#x27;s {{#crossLink &quot;Clip/mode:property&quot;}}{{/crossLink}} property changes.
+                     Fired whenever this Clip&#x27;s {{#crossLink &quot;Clip/active:property&quot;}}{{/crossLink}} property changes.
 
-                     @event mode
-                     @param value {String} The property&#x27;s new value
+                     @event active
+                     @param value {Boolean} The property&#x27;s new value
                      */
-                    this.fire(&quot;mode&quot;, this._state.mode);
+                    this.fire(&quot;active&quot;, this._state.active);
                 },
 
                 get: function () {
-                    return this._state.mode;
+                    return this._state.active;
                 }
             },
 
             /**
-             A vector emanating from the World-space origin that indicates the orientation of this Clip plane.
+             The World-space position of this Clip&#x27;s plane.
 
-             The Clip plane will be oriented perpendicular to this vector.
+             Fires a {{#crossLink &quot;Clip/pos:event&quot;}}{{/crossLink}} event on change.
+
+             @property pos
+             @default [0, 0, 0]
+             @type Float32Array
+             */
+            pos: {
+
+                set: function (value) {
+
+                    this._state.pos.set(value || [0, 0, 0]);
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this Clip&#x27;s {{#crossLink &quot;Clip/pos:property&quot;}}{{/crossLink}} property changes.
+
+                     @event pos
+                     @param value Float32Array The property&#x27;s new value
+                     */
+                    this.fire(&quot;pos&quot;, this._state.pos);
+                },
+
+                get: function () {
+                    return this._state.pos;
+                }
+            },
+
+            /**
+             Vector indicating the orientation of this Clip plane.
+
+             The vector originates at {{#crossLink &quot;Clip/pos:property&quot;}}{{/crossLink}}. Elements on the
+             same side of the vector are clipped.
 
              Fires a {{#crossLink &quot;Clip/dir:event&quot;}}{{/crossLink}} event on change.
 
              @property dir
-             @default [1.0, 1.0, 1.0]
+             @default [0, 0, -1]
              @type Float32Array
              */
             dir: {
 
                 set: function (value) {
 
-                    this._state.dir =  value || xeogl.math.vec3([1, 0, 0]);
+                    this._state.dir.set(value || [0, 0, -1]);
 
                     this._renderer.imageDirty = true;
 
@@ -370,7 +385,7 @@
                      Fired whenever this Clip&#x27;s {{#crossLink &quot;Clip/dir:property&quot;}}{{/crossLink}} property changes.
 
                      @event dir
-                     @param  value  {Float32Array} The property&#x27;s new value
+                     @param value {Float32Array} The property&#x27;s new value
                      */
                     this.fire(&quot;dir&quot;, this._state.dir);
                 },
@@ -378,51 +393,17 @@
                 get: function () {
                     return this._state.dir;
                 }
-            },
-
-            /**
-             The position of this Clip along the vector indicated by {{#crossLink &quot;Clip/dir:property&quot;}}{{/crossLink}}.
-
-             This is the distance of the Clip plane from the World-space origin.
-
-             Fires a {{#crossLink &quot;Clip/dist:event&quot;}}{{/crossLink}} event on change.
-
-             @property dist
-             @default 1.0
-             @type Number
-             */
-            dist: {
-
-                set: function (value) {
-
-                    this._state.dist = value !== undefined ? value : 1.0;
-
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     Fired whenever this Clip&#x27;s {{#crossLink &quot;Clip/dist:property&quot;}}{{/crossLink}} property changes.
-
-                     @event dist
-                     @param  value Number The property&#x27;s new value
-                     */
-                    this.fire(&quot;dist&quot;, this._state.dist);
-                },
-
-                get: function () {
-                    return this._state.dist;
-                }
             }
         },
 
         _getJSON: function () {
             return {
-                mode: this._state.mode,
+                active: this._state.active,
                 dir: xeogl.math.vecToArray(this._state.dir),
-                dist: this._state.dist
+                pos: xeogl.math.vecToArray(this._state.pos)
             };
         }
     });
-
 })();
 
     </pre>

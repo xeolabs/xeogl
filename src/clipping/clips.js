@@ -1,28 +1,7 @@
 /**
+ A **Clips** applies a set of {{#crossLink "Clip"}}{{/crossLink}} planes to attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- A **Clips** is a group of arbitrarily-aligned World-space {{#crossLink "Clip"}}Clip{{/crossLink}} planes, which may be used to create
- cross-section views of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
-
- ## Overview
-
-
- * Each {{#crossLink "Clip"}}Clip{{/crossLink}} is specified in World-space, as being perpendicular to a vector
- {{#crossLink "Clip/dir:property"}}{{/crossLink}} that emanates from the origin, offset at a
- distance {{#crossLink "Clip/dist:property"}}{{/crossLink}} along that vector.
- * You can move each {{#crossLink "Clip"}}Clip{{/crossLink}} back and forth along its vector by varying
- its {{#crossLink "Clip/dist:property"}}{{/crossLink}}.
- * Likewise, you can rotate each {{#crossLink "Clip"}}Clip{{/crossLink}} about the origin by rotating
- its {{#crossLink "Clip/dir:property"}}{{/crossLink}} vector.
- * Each {{#crossLink "Clip"}}Clip{{/crossLink}} is has a {{#crossLink "Clip/mode:property"}}{{/crossLink}}, which indicates whether it is disabled ("disabled"), discarding fragments that fall on the origin-side of the plane ("inside"), or clipping fragments that fall on the other side of the plane from the origin ("outside").
- * You can update each {{#crossLink "Clip"}}Clip{{/crossLink}}'s {{#crossLink "Clip/mode:property"}}{{/crossLink}} to
- activate or deactivate it, or to switch which side it discards fragments from.
- * Clipping may also be enabled or disabled for specific {{#crossLink "Entity"}}Entities{{/crossLink}} via their {{#crossLink "Entity/clippable:property"}}{{/crossLink}} properties.
-
- <img src="../../../assets/images/Clips.png"></img>
-
- ## Usage
-
- See {{#crossLink "Clip"}}{{/crossLink}} for an example.
+ See {{#crossLink "Clip"}}{{/crossLink}} for more info.
 
  @class Clips
  @module xeogl
@@ -215,10 +194,8 @@
             var hash = [];
 
             for (var i = 0, len = clips.length; i < len; i++) {
-
                 clip = clips[i];
-
-                hash.push(clip._state.mode);
+                hash.push("cp");
             }
 
             hash.push(";");
