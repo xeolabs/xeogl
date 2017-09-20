@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/_renderer/chunks/clipsChunk.js - xeogl</title>
+    <title>ClipHelper - xeogl</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link href='https://fonts.googleapis.com/css?family=Exo+2:400,800,900,700,600,500|Roboto:100,300,400,500,700,900'  rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
@@ -60,6 +60,7 @@
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
+                                <li><a href="../classes/ClipHelper.html">ClipHelper</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
@@ -192,95 +193,255 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1 class="file-heading">File: src/_renderer/chunks/clipsChunk.js</h1>
+<h1>ClipHelper</h1>
+<div class="box meta">
 
-<div class="file">
-    <pre class="code prettyprint linenums">
-(function () {
 
-    &quot;use strict&quot;;
+        <div class="foundat">
+            Defined in: <a href="../files/examples_js_helpers_clipHelper.js.html#l1"><code>examples&#x2F;js&#x2F;helpers&#x2F;clipHelper.js:1</code></a>
+        </div>
 
-    /**
-     * Create display state chunk type for draw and pick render of user clipping planes
-     */
-    xeogl.renderer.ChunkFactory.createChunkType({
+            Module: <a href="../modules/xeogl.html">xeogl</a>
 
-        type: &quot;clips&quot;,
+</div>
 
-        build: function () {
 
-            var i;
-            var len;
+<div class="box intro">
+    <p>Helper that visualizes the position and direction of a <a href="../classes/Clip.html" class="crosslink">Clip</a>.
+The helper works by tracking updates to the <a href="../classes/Clip.html" class="crosslink">Clip</a>&#39;s
+ <a href="../classes/Clip.html#property_pos" class="crosslink">pos</a> and <a href="../classes/Clip.html#property_dir" class="crosslink">dir</a>.</p>
 
-            this._uClipModeDraw = this._uClipModeDraw || [];
-            this._uClipPlaneDraw = this._uClipPlaneDraw || [];
+</div>
 
-            var draw = this.program.draw;
+    <div class="constructor">
+        <h2>Constructor</h2>
+        <div id="method_ClipHelper" class="method item">
+            <h3 class="name"><code>ClipHelper</code></h3>
+        
+                <div class="args">
+                    <span class="paren">(</span><ul class="args-list inline commas">
+                        <li class="arg">
+                                <code>cfg</code>
+                        </li>
+                    </ul><span class="paren">)</span>
+                </div>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+            <div class="meta">
+                        <p>
+                        Defined in
+                <a href="../files/examples_js_helpers_clipHelper.js.html#l1"><code>examples&#x2F;js&#x2F;helpers&#x2F;clipHelper.js:1</code></a>
+                </p>
+        
+        
+        
+            </div>
+        
+            <div class="description">
+                
+            </div>
+        
+                <div class="params">
+                    <h4>Parameters:</h4>
+        
+                    <ul class="params-list">
+                        <li class="param">
+                                <code class="param-name">cfg</code>
+                                <span class="type"></span>
+        
+        
+                            <div class="param-description">
+                                <p>Configuration</p>
+        
+                            </div>
+        
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">clip</code>
+                                            <span class="type"><a href="../classes/Clip.html" class="crosslink">Clip</a></span>
+        
+                                        <div class="param-description">
+                                            <p>A <a href="../classes/Clip.html" class="crosslink">Clip</a> to visualize.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[visible=true]</code>
+                                            <span class="type">Boolean</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Indicates whether or not this helper is visible.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                </ul>
+                        </li>
+                    </ul>
+                </div>
+        
+        
+        
+        </div>
+    </div>
 
-            for (i = 0, len = this.state.clips.length; i &lt; len; i++) {
-                this._uClipModeDraw[i] = draw.getUniform(&quot;xeo_uClipMode&quot; + i);
-                this._uClipPlaneDraw[i] = draw.getUniform(&quot;xeo_uClipPlane&quot; + i)
-            }
+<div id="classdocs" class="tabview">
+    <ul class="api-class-tabs">
+        <li class="api-class-tab index"><a href="#index">Index</a></li>
 
-            this._uClipModePick = this._uClipModePick || [];
-            this._uClipPlanePick = this._uClipPlanePick || [];
+            <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
+            <li class="api-class-tab events"><a href="#events">Events</a></li>
+    </ul>
 
-            var pick = this.program.pick;
+    <div>
+        <div id="index" class="api-class-tabpanel index">
+            <h2 class="off-left">Index</h2>
 
-            for (i = 0, len = this.state.clips.length; i &lt; len; i++) {
-                this._uClipModePick[i] = pick.getUniform(&quot;xeo_uClipMode&quot; + i);
-                this._uClipPlanePick[i] = pick.getUniform(&quot;xeo_uClipPlane&quot; + i)
-            }
-        },
 
-        drawPick: function (frameCtx) {
+                <div class="index-section properties">
+                    <h3>Properties</h3>
 
-            return;
+                    <ul class="index-list properties">
+                            <li class="index-item property">
+                                <a href="#property_clip">clip</a>
 
-            var uClipMode = (frameCtx.pick) ? this._uClipModePick : this._uClipModeDraw;
-            var uClipPlane = (frameCtx.pick) ? this._uClipPlanePick : this._uClipPlaneDraw;
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_visible">visible</a>
 
-            var mode;
-            var plane;
-            var clips = this.state.clips;
-            var clip;
+                            </li>
+                    </ul>
+                </div>
 
-            for (var i = 0, len = clips.length; i &lt; len; i++) {
 
-                mode = uClipMode[i];
-                plane = uClipPlane[i];
+                <div class="index-section events">
+                    <h3>Events</h3>
 
-                if (mode &amp;&amp; plane) {
+                    <ul class="index-list events">
+                            <li class="index-item event">
+                                <a href="#event_visible">visible</a>
 
-                    clip = clips[i];
+                            </li>
+                    </ul>
+                </div>
+        </div>
 
-                    if (clip.mode === &quot;inside&quot;) {
 
-                        mode.setValue(2);
-                        plane.setValue(clip.plane);
+            <div id="properties" class="api-class-tabpanel">
+                <h2 class="off-left">Properties</h2>
 
-                    } else if (clip.mode === &quot;outside&quot;) {
+                    <div id="property_clip" class="property item">
+                        <h3 class="name"><code>clip</code></h3>
+                        <span class="type"><a href="../classes/Clip.html" class="crosslink">Clip</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_helpers_clipHelper.js.html#l122"><code>examples&#x2F;js&#x2F;helpers&#x2F;clipHelper.js:122</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The <a href="../classes/Clip.html" class="crosslink">Clip</a> attached to this ClipHelper.</p>
+                    <p>Fires an ClipHelper/Clip:event event on change.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_visible" class="property item">
+                        <h3 class="name"><code>visible</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_helpers_clipHelper.js.html#l167"><code>examples&#x2F;js&#x2F;helpers&#x2F;clipHelper.js:167</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Indicates whether this ClipHelper is visible or not.</p>
+                    <p>Fires a ClipHelper/active:event event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> true</p>
+                    
+                    
+                    </div>
+            </div>
 
-                        mode.setValue(1);
-                        plane.setValue(clip.plane);
 
-                    } else {
+            <div id="events" class="api-class-tabpanel">
+                <h2 class="off-left">Events</h2>
 
-                        // Disabled
-
-                        mode.setValue(0);
-                    }
-                }
-            }
-        },
-
-        outline: function(frameCtx) {
-            this.drawPick(frameCtx);
-        }
-    });
-
-})();
-    </pre>
+                    <div id="event_visible" class="events item">
+                        <h3 class="name"><code>visible</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_helpers_clipHelper.js.html#l186"><code>examples&#x2F;js&#x2F;helpers&#x2F;clipHelper.js:186</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this helper&#39;s <a href="../classes/ClipHelper.html#property_visible" class="crosslink">visible</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Boolean</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+            </div>
+    </div>
 </div>
                     </div>
                 </div>

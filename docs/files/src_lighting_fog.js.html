@@ -60,6 +60,7 @@
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
+                                <li><a href="../classes/ClipHelper.html">ClipHelper</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
@@ -374,7 +375,7 @@
                      * @event dir
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;dir&quot;, this._state.dir);
+                    if (xeogl.fireEvents) this.fire(&quot;dir&quot;, this._state.dir);
                 },
 
                 get: function () {
@@ -404,7 +405,7 @@
                      * @event color
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;color&quot;, this._state.color);
+                    if (xeogl.fireEvents) this.fire(&quot;color&quot;, this._state.color);
                 },
 
                 get: function () {
@@ -436,7 +437,7 @@
                      * @event intensity
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;intensity&quot;, this._state.intensity);
+                    if (xeogl.fireEvents) this.fire(&quot;intensity&quot;, this._state.intensity);
                 },
 
                 get: function () {
@@ -473,7 +474,7 @@
                      * @event space
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;space&quot;, this._state.space);
+                    if (xeogl.fireEvents) this.fire(&quot;space&quot;, this._state.space);
                 },
 
                 get: function () {

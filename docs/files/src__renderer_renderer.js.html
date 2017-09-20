@@ -60,6 +60,7 @@
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
+                                <li><a href="../classes/ClipHelper.html">ClipHelper</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
@@ -372,17 +373,18 @@
         }
 
         this._setChunk(object, 0, &quot;program&quot;, object.program); // Must be first
-        this._setChunk(object, 1, &quot;modelTransform&quot;, this.modelTransform);
-        this._setChunk(object, 2, &quot;viewTransform&quot;, this.viewTransform);
-        this._setChunk(object, 3, &quot;projTransform&quot;, this.projTransform);
-        this._setChunk(object, 4, &quot;lights&quot;, this.lights);
-        this._setChunk(object, 5, this.material.type, this.material); // Supports different material systems
-        this._setChunk(object, 6, &quot;clips&quot;, this.clips);
-        this._setChunk(object, 7, &quot;viewport&quot;, this.viewport);
-        this._setChunk(object, 8, &quot;outline&quot;, this.outline);
-        this._setChunk(object, 9, &quot;xray&quot;, this.xray);
-        this._setChunk(object, 10, &quot;geometry&quot;, this.geometry);
-        this._setChunk(object, 11, &quot;draw&quot;, this.geometry, true); // Must be last
+        this._setChunk(object, 1, &quot;modes&quot;, this.modes);
+        this._setChunk(object, 2, &quot;modelTransform&quot;, this.modelTransform);
+        this._setChunk(object, 3, &quot;viewTransform&quot;, this.viewTransform);
+        this._setChunk(object, 4, &quot;projTransform&quot;, this.projTransform);
+        this._setChunk(object, 5, &quot;lights&quot;, this.lights);
+        this._setChunk(object, 6, this.material.type, this.material); // Supports different material systems
+        this._setChunk(object, 7, &quot;clips&quot;, this.clips);
+        this._setChunk(object, 8, &quot;viewport&quot;, this.viewport);
+        this._setChunk(object, 9, &quot;outline&quot;, this.outline);
+        this._setChunk(object, 10, &quot;xray&quot;, this.xray);
+        this._setChunk(object, 11, &quot;geometry&quot;, this.geometry);
+        this._setChunk(object, 12, &quot;draw&quot;, this.geometry, true); // Must be last
 
         // Ambient light is global across everything in display, and
         // can never be disabled, so grab it now because we want to
