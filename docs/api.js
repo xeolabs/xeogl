@@ -20,6 +20,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "Canvas",
         "CardboardEffect",
         "Clip",
+        "ClipHelper",
         "Clips",
         "Component",
         "Configs",

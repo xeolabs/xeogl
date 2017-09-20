@@ -7,38 +7,35 @@
         type: "modes",
 
         build: function () {
+
+            this._clippableDraw = this.program.draw.getUniform("clippable");
+            this._clippableShadow = this.program.shadow.getUniform("clippable");
+            this._clippablePickObject = this.program.pickObject.getUniform("clippable");
+            this._clippablePickPrimitive = this.program.pickPrimitive.getUniform("clippable");
         },
 
         draw: function (frameCtx) {
-
-            var state = this.state;
-            var gl = this.program.gl;
-
-            //..?
+            if (this._clippableDraw) {
+                this._clippableDraw.setValue(this.state.clippable);
+            }
         },
 
         shadow: function (frameCtx) {
-
-            var state = this.state;
-            var gl = this.program.gl;
-
-            //..?
+            if (this._clippableShadow) {
+                this._clippableShadow.setValue(this.state.clippable);
+            }
         },
 
         pickObject: function (frameCtx) {
-
-            var state = this.state;
-            var gl = this.program.gl;
-
-            //..?
+            if (this._clippablePickObject) {
+                this._clippablePickObject.setValue(this.state.clippable);
+            }
         },
 
         pickPrimitive: function (frameCtx) {
-
-            var state = this.state;
-            var gl = this.program.gl;
-
-            //..?
+            if (this._clippablePickPrimitive) {
+                this._clippablePickPrimitive.setValue(this.state.clippable);
+            }
         }
     });
 })();

@@ -21,13 +21,6 @@
             "fors": {},
             "namespaces": {}
         },
-        "src/_renderer/chunks/clipsChunk.js": {
-            "name": "src/_renderer/chunks/clipsChunk.js",
-            "modules": {},
-            "classes": {},
-            "fors": {},
-            "namespaces": {}
-        },
         "src/_renderer/chunks/geometryChunk.js": {
             "name": "src/_renderer/chunks/geometryChunk.js",
             "modules": {},
@@ -1293,6 +1286,15 @@
             "fors": {},
             "namespaces": {}
         },
+        "examples/js/helpers/clipHelper.js": {
+            "name": "examples/js/helpers/clipHelper.js",
+            "modules": {},
+            "classes": {
+                "ClipHelper": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
         "examples/js/helpers/labelHelper.js": {
             "name": "examples/js/helpers/labelHelper.js",
             "modules": {},
@@ -1448,6 +1450,7 @@
                 "ZSpaceEffect": 1,
                 "ZSpaceStylusControl": 1,
                 "AxisHelper": 1,
+                "ClipHelper": 1,
                 "LabelHelper": 1,
                 "PointLightHelper": 1
             },
@@ -2450,7 +2453,7 @@
             "namespace": "",
             "file": "src/clipping/clip.js",
             "line": 1,
-            "description": "A **Clip** is an arbitrarily-aligned World-space clipping plane used to create\ncross-section views of associated {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n## Overview\n\n* These are grouped within {{#crossLink \"Clips\"}}Clips{{/crossLink}} components, which are attached to\n{{#crossLink \"Entity\"}}Entities{{/crossLink}}. See the {{#crossLink \"Clips\"}}Clips{{/crossLink}} documentation\nfor more info.\n* A Clip is specified in World-space, as being perpendicular to a vector {{#crossLink \"Clip/dir:property\"}}{{/crossLink}}\nthat emanates from the origin, offset at a distance {{#crossLink \"Clip/dist:property\"}}{{/crossLink}} along that vector.\n* You can move a Clip back and forth along its vector by varying {{#crossLink \"Clip/dist:property\"}}{{/crossLink}}.\n* Likewise, you can rotate a Clip about the origin by rotating the {{#crossLink \"Clip/dir:property\"}}{{/crossLink}} vector.\n* A Clip is has a {{#crossLink \"Clip/mode:property\"}}{{/crossLink}},  which indicates whether it is disabled\n(\"disabled\"), discarding fragments that fall on the origin-side of the plane (\"inside\"), or clipping fragments that\nfall on the other side of the plane from the origin (\"outside\").\n* You can update the {{#crossLink \"Clip/mode:property\"}}{{/crossLink}} of a Clip to activate or deactivate it, or to\nswitch which side it discards fragments from.\n* Clipping may also be enabled or disabled for specific {{#crossLink \"Entity\"}}Entities{{/crossLink}} via their {{#crossLink \"Entity/clippable:property\"}}{{/crossLink}} properties.\n\n<img src=\"../../../assets/images/Clip.png\"></img>\n\n## Usage\n\n\n* In this example we have an {{#crossLink \"Entity\"}}{{/crossLink}} that's clipped by a {{#crossLink \"Clips\"}}{{/crossLink}}\nthat contains two {{#crossLink \"Clip\"}}{{/crossLink}} planes.\n* The first {{#crossLink \"Clip\"}}{{/crossLink}} plane is on the\npositive diagonal, while the second is on the negative diagonal.\n* The {{#crossLink \"Entity\"}}Entity's{{/crossLink}}\n{{#crossLink \"Geometry\"}}{{/crossLink}} is a box, and the planes will clip off two of the box's corners.\n\n\n````javascript\n// Create a set of Clip planes\nclips = new xeogl.Clip({\n    clips: [\n\n        // Clip plane on negative diagonal\n        new xeogl.Clip({\n            dir: [-1.0, -1.0, -1.0], // Direction of Clip from World space origin\n            dist: 2.0,               // Distance along direction vector\n            mode: \"outside\"          // Clip fragments that fall beyond the plane\n        }),\n\n        // Clip plane on positive diagonal\n        new xeogl.Clip({\n            dir: [1.0, 1.0, 1.0],\n            dist: 2.0,\n            mode: \"outside\"\n        })\n    ]\n});\n\n// Create an Entity that's clipped by our Clip planes\nvar entity = new xeogl.Entity({\n    geometry: new xeogl.BoxGeometry(),\n    clips: clips\n});\n````\n\n### Toggling clipping on and off\n\nAn {{#crossLink \"Entity\"}}{{/crossLink}}is clippable by default. We can toggle its clippability like so:\n\n```` javascript\n// Disable clipping for the Entity\nentity.clippable = false;\n\n// Enable clipping for the Entity\nentity.clippable = false;\n````",
+            "description": "A **Clip** is an arbitrarily-aligned World-space clipping plane.\n\n<a href=\"../../examples/#clipping_userClipPlanes\"><img src=\"../../../assets/images/screenshots/Clips.png\"></img></a>\n\n## Overview\n\n* Used to slice portions off objects, to create cross-section views or reveal interiors.\n* Is contained within {{#crossLink \"Clips\"}}{{/crossLink}} components, which are attached to {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n* Has a World-space position in {{#crossLink \"Clip/pos:property\"}}{{/crossLink}} and a orientation in {{#crossLink \"Clip/dir:property\"}}{{/crossLink}}.\n* Discards elements from the half-space in the direction of {{#crossLink \"Clip/dir:property\"}}{{/crossLink}}.\n* Can be be enabled or disabled via its {{#crossLink \"Clip/active:property\"}}{{/crossLink}} property.\n\n<img src=\"../../../assets/images/Clips.png\"></img>\n\n## Usage\n\nIn the example below, we have an {{#crossLink \"Entity\"}}{{/crossLink}} that's attached by a {{#crossLink \"Clips\"}}{{/crossLink}}\nthat contains two {{#crossLink \"Clip\"}}{{/crossLink}} components.  The first {{#crossLink \"Clip\"}}{{/crossLink}} is on the\npositive diagonal, while the second is on the negative diagonal. The {{#crossLink \"Entity\"}}Entity's{{/crossLink}} {{#crossLink \"Geometry\"}}{{/crossLink}}\nis a box, which will get two of its corners clipped off.\n\n````javascript\n// Create a set of Clip planes\nclips = new xeogl.Clip({\n   clips: [\n\n       // Clip plane on negative diagonal\n       new xeogl.Clip({\n           pos: [1.0, 1.0, 1.0],\n           dir: [-1.0, -1.0, -1.0],\n           active: true\n       }),\n\n       // Clip plane on positive diagonal\n       new xeogl.Clip({\n           pos: [-1.0, -1.0, -1.0],\n           dir: [1.0, 1.0, 1.0],\n           active: true\n       })\n   ]\n});\n\n// Create an Entity that's clipped by our Clip planes\nvar entity = new xeogl.Entity({\n    geometry: new xeogl.BoxGeometry(),\n    clips: clips,\n    clippable: true // Enable clippability (default)\n});\n````\n\n### Switching clipping on and off for an Entity\n\nAn {{#crossLink \"Entity\"}}{{/crossLink}}'s {{#crossLink \"Entity/clippable:property\"}}{{/crossLink}} property indicates\nwhether or not it is affected by Clip components.\n\nYou can switch it at any time, like this:\n\n```` javascript\n// Disable clipping for the Entity\nentity.clippable = false;\n\n// Enable clipping for the Entity\nentity.clippable = true;\n````",
             "submodule": "clipping",
             "is_constructor": 1,
             "params": [
@@ -2479,27 +2482,27 @@
                             "optional": true
                         },
                         {
-                            "name": "mode",
-                            "description": "Clipping mode - \"disabled\" to clip nothing, \"inside\" to reject points inside the plane, \"outside\" to reject points outside the plane.",
-                            "type": "String",
+                            "name": "active",
+                            "description": "Indicates whether or not this Clip is active.",
+                            "type": "Boolean",
                             "optional": true,
-                            "optdefault": "\"disabled\""
+                            "optdefault": "true"
+                        },
+                        {
+                            "name": "pos",
+                            "description": "World-space position of the clipping plane.",
+                            "type": "Array of Number",
+                            "optional": true,
+                            "optdefault": "[0,0,0]"
+                        },
+                        {
+                            "name": "dir",
+                            "description": "Vector perpendicular to the plane surface, indicating its orientation.",
+                            "type": "Array of Number",
+                            "optional": true,
+                            "optdefault": "[0,0 -1]"
                         }
                     ]
-                },
-                {
-                    "name": "dir",
-                    "description": "The direction of the clipping plane from the World-space origin.",
-                    "type": "Array of Number",
-                    "optional": true,
-                    "optdefault": " [1, 0, 0]"
-                },
-                {
-                    "name": "dist",
-                    "description": "Distance to the clipping plane along the direction vector.",
-                    "type": "Number",
-                    "optional": true,
-                    "optdefault": "1.0"
                 }
             ],
             "extends": "Component"
@@ -2516,13 +2519,13 @@
             "namespace": "",
             "file": "src/clipping/clips.js",
             "line": 1,
-            "description": "A **Clips** is a group of arbitrarily-aligned World-space {{#crossLink \"Clip\"}}Clip{{/crossLink}} planes, which may be used to create\n cross-section views of attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n## Overview\n\n* Each {{#crossLink \"Clip\"}}Clip{{/crossLink}} is specified in World-space, as being perpendicular to a vector\n {{#crossLink \"Clip/dir:property\"}}{{/crossLink}} that emanates from the origin, offset at a\n distance {{#crossLink \"Clip/dist:property\"}}{{/crossLink}} along that vector.\n * You can move each {{#crossLink \"Clip\"}}Clip{{/crossLink}} back and forth along its vector by varying\n its {{#crossLink \"Clip/dist:property\"}}{{/crossLink}}.\n * Likewise, you can rotate each {{#crossLink \"Clip\"}}Clip{{/crossLink}} about the origin by rotating\n its {{#crossLink \"Clip/dir:property\"}}{{/crossLink}} vector.\n * Each {{#crossLink \"Clip\"}}Clip{{/crossLink}} is has a {{#crossLink \"Clip/mode:property\"}}{{/crossLink}}, which indicates whether it is disabled (\"disabled\"), discarding fragments that fall on the origin-side of the plane (\"inside\"), or clipping fragments that fall on the other side of the plane from the origin (\"outside\").\n * You can update each {{#crossLink \"Clip\"}}Clip{{/crossLink}}'s {{#crossLink \"Clip/mode:property\"}}{{/crossLink}} to\n activate or deactivate it, or to switch which side it discards fragments from.\n * Clipping may also be enabled or disabled for specific {{#crossLink \"Entity\"}}Entities{{/crossLink}} via their {{#crossLink \"Entity/clippable:property\"}}{{/crossLink}} properties.\n<img src=\"../../../assets/images/Clips.png\"></img>\n## Usage\nSee {{#crossLink \"Clip\"}}{{/crossLink}} for an example.",
+            "description": "A **Clips** applies a set of {{#crossLink \"Clip\"}}{{/crossLink}} planes to attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nSee {{#crossLink \"Clip\"}}{{/crossLink}} for more info.",
             "submodule": "clipping",
             "is_constructor": 1,
             "params": [
                 {
                     "name": "scene",
-                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this Clips in the default\n {{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this Clips in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
                     "type": "Scene",
                     "optional": true
                 },
@@ -2534,7 +2537,7 @@
                     "props": [
                         {
                             "name": "id",
-                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}},\n generated automatically when omitted.",
+                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}},\ngenerated automatically when omitted.",
                             "type": "String",
                             "optional": true
                         },
@@ -2546,7 +2549,7 @@
                         },
                         {
                             "name": "clips",
-                            "description": "Array containing either IDs or instances of\n {{#crossLink \"Clip\"}}Clip{{/crossLink}} components within the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
+                            "description": "Array containing either IDs or instances of\n{{#crossLink \"Clip\"}}Clip{{/crossLink}} components within the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
                             "type": "Array(String)|Array(xeogl.Clip)",
                             "optional": true
                         }
@@ -7882,6 +7885,42 @@
                 }
             ]
         },
+        "ClipHelper": {
+            "name": "ClipHelper",
+            "shortname": "ClipHelper",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "xeogl",
+            "namespace": "",
+            "file": "examples/js/helpers/clipHelper.js",
+            "line": 1,
+            "description": "Helper that visualizes the position and direction of a {{#crossLink \"Clip\"}}{{/crossLink}}.\nThe helper works by tracking updates to the {{#crossLink \"Clip\"}}{{/crossLink}}'s\n {{#crossLink \"Clip/pos:property\"}}{{/crossLink}} and {{#crossLink \"Clip/dir:property\"}}{{/crossLink}}.",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "cfg",
+                    "description": "Configuration",
+                    "type": "*",
+                    "props": [
+                        {
+                            "name": "clip",
+                            "description": "A {{#crossLink \"Clip\"}}{{/crossLink}} to visualize.",
+                            "type": "Clip"
+                        },
+                        {
+                            "name": "visible",
+                            "description": "Indicates whether or not this helper is visible.",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "true"
+                        }
+                    ]
+                }
+            ]
+        },
         "LabelHelper": {
             "name": "LabelHelper",
             "shortname": "LabelHelper",
@@ -8097,12 +8136,6 @@
             "file": "src/_renderer/chunks/chunkFactory.js",
             "line": 123,
             "description": "Restores the chunks in this factory after a WebGL context recovery.",
-            "class": "CameraFlightAnimation"
-        },
-        {
-            "file": "src/_renderer/chunks/clipsChunk.js",
-            "line": 5,
-            "description": "Create display state chunk type for draw and pick render of user clipping planes",
             "class": "CameraFlightAnimation"
         },
         {
@@ -8803,13 +8836,13 @@
         },
         {
             "file": "src/_renderer/programSourceFactory.js",
-            "line": 38,
+            "line": 39,
             "description": "Get source code for a program to render the given states.\nAttempts to reuse cached source code for the given hash.",
             "class": "CameraFlightAnimation"
         },
         {
             "file": "src/_renderer/programSourceFactory.js",
-            "line": 141,
+            "line": 143,
             "description": "Releases program source code back to this factory.",
             "class": "CameraFlightAnimation"
         },
@@ -8846,13 +8879,13 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 677,
+            "line": 678,
             "description": "Attempts to pick an object.",
             "class": "CameraFlightAnimation"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 879,
+            "line": 880,
             "description": "Reads the colors of some pixels in the current image.",
             "class": "CameraFlightAnimation"
         },
@@ -9812,27 +9845,27 @@
         },
         {
             "file": "src/clipping/clip.js",
-            "line": 113,
-            "description": "The current mode of this Clip.\n\nPossible states are:\n\n\n* \"disabled\" - inactive\n* \"inside\" - clipping fragments that fall within the half-space on the origin-side of the Clip plane\n* \"outside\" - clipping fragments that fall on the other side of the Clip plane from the origin\n\n\nFires a {{#crossLink \"Clip/mode:event\"}}{{/crossLink}} event on change.",
+            "line": 105,
+            "description": "Indicates whether this Clip is active or not.\n\nFires a {{#crossLink \"Clip/active:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
-            "name": "mode",
-            "default": "\"disabled\"",
-            "type": "String",
+            "name": "active",
+            "default": "true",
+            "type": "Boolean",
             "class": "Clip",
             "module": "xeogl",
             "submodule": "clipping"
         },
         {
             "file": "src/clipping/clip.js",
-            "line": 138,
-            "description": "Fired whenever this Clip's {{#crossLink \"Clip/mode:property\"}}{{/crossLink}} property changes.",
+            "line": 120,
+            "description": "Fired whenever this Clip's {{#crossLink \"Clip/active:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
-            "name": "mode",
+            "name": "active",
             "params": [
                 {
                     "name": "value",
                     "description": "The property's new value",
-                    "type": "String"
+                    "type": "Boolean"
                 }
             ],
             "class": "Clip",
@@ -9841,11 +9874,11 @@
         },
         {
             "file": "src/clipping/clip.js",
-            "line": 152,
-            "description": "A vector emanating from the World-space origin that indicates the orientation of this Clip plane.\n\nThe Clip plane will be oriented perpendicular to this vector.\n\nFires a {{#crossLink \"Clip/dir:event\"}}{{/crossLink}} event on change.",
+            "line": 134,
+            "description": "The World-space position of this Clip's plane.\n\nFires a {{#crossLink \"Clip/pos:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
-            "name": "dir",
-            "default": "[1.0, 1.0, 1.0]",
+            "name": "pos",
+            "default": "[0, 0, 0]",
             "type": "Float32Array",
             "class": "Clip",
             "module": "xeogl",
@@ -9853,7 +9886,35 @@
         },
         {
             "file": "src/clipping/clip.js",
-            "line": 171,
+            "line": 151,
+            "description": "Fired whenever this Clip's {{#crossLink \"Clip/pos:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "pos",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "Float32Array The property's new value"
+                }
+            ],
+            "class": "Clip",
+            "module": "xeogl",
+            "submodule": "clipping"
+        },
+        {
+            "file": "src/clipping/clip.js",
+            "line": 165,
+            "description": "Vector indicating the orientation of this Clip plane.\n\nThe vector originates at {{#crossLink \"Clip/pos:property\"}}{{/crossLink}}. Elements on the\nsame side of the vector are clipped.\n\nFires a {{#crossLink \"Clip/dir:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "dir",
+            "default": "[0, 0, -1]",
+            "type": "Float32Array",
+            "class": "Clip",
+            "module": "xeogl",
+            "submodule": "clipping"
+        },
+        {
+            "file": "src/clipping/clip.js",
+            "line": 185,
             "description": "Fired whenever this Clip's {{#crossLink \"Clip/dir:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "dir",
@@ -9869,36 +9930,8 @@
             "submodule": "clipping"
         },
         {
-            "file": "src/clipping/clip.js",
-            "line": 185,
-            "description": "The position of this Clip along the vector indicated by {{#crossLink \"Clip/dir:property\"}}{{/crossLink}}.\n\nThis is the distance of the Clip plane from the World-space origin.\n\nFires a {{#crossLink \"Clip/dist:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "dist",
-            "default": "1.0",
-            "type": "Number",
-            "class": "Clip",
-            "module": "xeogl",
-            "submodule": "clipping"
-        },
-        {
-            "file": "src/clipping/clip.js",
-            "line": 204,
-            "description": "Fired whenever this Clip's {{#crossLink \"Clip/dist:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "dist",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "Number The property's new value"
-                }
-            ],
-            "class": "Clip",
-            "module": "xeogl",
-            "submodule": "clipping"
-        },
-        {
             "file": "src/clipping/clips.js",
-            "line": 76,
+            "line": 55,
             "description": "The clipping planes contained within this Clips.\n\nFires a {{#crossLink \"Clips/clips:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "clips",
@@ -9910,7 +9943,7 @@
         },
         {
             "file": "src/clipping/clips.js",
-            "line": 171,
+            "line": 150,
             "description": "Fired whenever this Clips' {{#crossLink \"Clips/clips:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "clips",
@@ -27223,6 +27256,43 @@
             "module": "xeogl"
         },
         {
+            "file": "examples/js/helpers/clipHelper.js",
+            "line": 122,
+            "description": "The {{#crossLink \"Clip\"}}Clip{{/crossLink}} attached to this ClipHelper.\n\nFires an {{#crossLink \"ClipHelper/Clip:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "clip",
+            "type": "Clip",
+            "class": "ClipHelper",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/helpers/clipHelper.js",
+            "line": 167,
+            "description": "Indicates whether this ClipHelper is visible or not.\n\nFires a {{#crossLink \"ClipHelper/active:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "visible",
+            "default": "true",
+            "type": "Boolean",
+            "class": "ClipHelper",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/helpers/clipHelper.js",
+            "line": 186,
+            "description": "Fired whenever this helper's {{#crossLink \"ClipHelper/visible:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "visible",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value",
+                    "type": "Boolean"
+                }
+            ],
+            "class": "ClipHelper",
+            "module": "xeogl"
+        },
+        {
             "file": "examples/js/helpers/pointLightHelper.js",
             "line": 53,
             "description": "The {{#crossLink \"PointLight\"}}PointLight{{/crossLink}} attached to this PointLightHelper.\n\nFires an {{#crossLink \"PointLightHelper/pointLight:event\"}}{{/crossLink}} event on change.",
@@ -27499,10 +27569,6 @@
         {
             "message": "Missing item type\nRestores the chunks in this factory after a WebGL context recovery.",
             "line": " src/_renderer/chunks/chunkFactory.js:123"
-        },
-        {
-            "message": "Missing item type\nCreate display state chunk type for draw and pick render of user clipping planes",
-            "line": " src/_renderer/chunks/clipsChunk.js:5"
         },
         {
             "message": "Missing item type\nCreate display state chunk type for draw and pick render of geometry",
@@ -27834,11 +27900,11 @@
         },
         {
             "message": "Missing item type\nGet source code for a program to render the given states.\nAttempts to reuse cached source code for the given hash.",
-            "line": " src/_renderer/programSourceFactory.js:38"
+            "line": " src/_renderer/programSourceFactory.js:39"
         },
         {
             "message": "Missing item type\nReleases program source code back to this factory.",
-            "line": " src/_renderer/programSourceFactory.js:141"
+            "line": " src/_renderer/programSourceFactory.js:143"
         },
         {
             "message": "Missing item type\nOptional callback to fire when renderer wants to\nbind an output framebuffer. This is useful when we need to bind a stereo output buffer for WebVR.\n\nWhen this is missing, the renderer will implicitly bind\nWebGL's default framebuffer.\n\nThe callback takes one parameter, which is the index of the current\nrendering pass in which the buffer is to be bound.\n\nUse like this: myRenderer.bindOutputFramebuffer = function(pass) { .. });",
@@ -27858,11 +27924,11 @@
         },
         {
             "message": "Missing item type\nAttempts to pick an object.",
-            "line": " src/_renderer/renderer.js:677"
+            "line": " src/_renderer/renderer.js:678"
         },
         {
             "message": "Missing item type\nReads the colors of some pixels in the current image.",
-            "line": " src/_renderer/renderer.js:879"
+            "line": " src/_renderer/renderer.js:880"
         },
         {
             "message": "Missing item type\nRenderer states",

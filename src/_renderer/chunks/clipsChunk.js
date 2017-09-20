@@ -2,83 +2,87 @@
 
     "use strict";
 
-    /**
-     * Create display state chunk type for draw and pick render of user clipping planes
-     */
     xeogl.renderer.ChunkFactory.createChunkType({
 
         type: "clips",
 
         build: function () {
 
+            var type;
             var i;
             var len;
-
-            this._uClipModeDraw = this._uClipModeDraw || [];
-            this._uClipPlaneDraw = this._uClipPlaneDraw || [];
-
-            var draw = this.program.draw;
-
-            for (i = 0, len = this.state.clips.length; i < len; i++) {
-                this._uClipModeDraw[i] = draw.getUniform("xeo_uClipMode" + i);
-                this._uClipPlaneDraw[i] = draw.getUniform("xeo_uClipPlane" + i)
-            }
-
-            this._uClipModePick = this._uClipModePick || [];
-            this._uClipPlanePick = this._uClipPlanePick || [];
-
-            var pick = this.program.pick;
-
-            for (i = 0, len = this.state.clips.length; i < len; i++) {
-                this._uClipModePick[i] = pick.getUniform("xeo_uClipMode" + i);
-                this._uClipPlanePick[i] = pick.getUniform("xeo_uClipPlane" + i)
-            }
-        },
-
-        drawPick: function (frameCtx) {
-
-            return;
-
-            var uClipMode = (frameCtx.pick) ? this._uClipModePick : this._uClipModeDraw;
-            var uClipPlane = (frameCtx.pick) ? this._uClipPlanePick : this._uClipPlaneDraw;
-
-            var mode;
-            var plane;
+            var uniforms;
+            var program;
             var clips = this.state.clips;
-            var clip;
+            var clipUniforms;
 
-            for (var i = 0, len = clips.length; i < len; i++) {
+            this._uniforms = {
+                draw: [],
+                pickObject: [],
+                pickPrimitive: [],
+                outline: []
+            };
 
-                mode = uClipMode[i];
-                plane = uClipPlane[i];
-
-                if (mode && plane) {
-
-                    clip = clips[i];
-
-                    if (clip.mode === "inside") {
-
-                        mode.setValue(2);
-                        plane.setValue(clip.plane);
-
-                    } else if (clip.mode === "outside") {
-
-                        mode.setValue(1);
-                        plane.setValue(clip.plane);
-
-                    } else {
-
-                        // Disabled
-
-                        mode.setValue(0);
+            for (type in this._uniforms) {
+                if (this._uniforms.hasOwnProperty(type)) {
+                    uniforms = this._uniforms[type];
+                    program = this.program[type];
+                    for (i = 0, len = clips.length; i < len; i++) {
+                        clipUniforms = {
+                            active: program.getUniform("clipActive" + i),
+                            pos: program.getUniform("clipPos" + i),
+                            dir: program.getUniform("clipDir" + i)
+                        };
+                        uniforms.push(clipUniforms);
                     }
                 }
             }
         },
 
-        outline: function(frameCtx) {
-            this.drawPick(frameCtx);
+        _drawAndPick: function (frameCtx, type) {
+            var clips = this.state.clips;
+            var clip;
+            var uniforms = this._uniforms[type];
+            var clipUniforms;
+            var uClipActive;
+            var uClipPos;
+            var uClipDir;
+            for (var i = 0, len = uniforms.length; i < len; i++) {
+                clip = clips[i];
+                clipUniforms = uniforms[i];
+                uClipActive = clipUniforms.active;
+                if (uClipActive) {
+                    uClipActive.setValue(clip.active);
+                }
+                uClipPos = clipUniforms.pos;
+                if (uClipPos) {
+                    clipUniforms.pos.setValue(clip.pos);
+                }
+                uClipDir = clipUniforms.dir;
+                if (uClipDir) {
+                    clipUniforms.dir.setValue(clip.dir);
+                }
+            }
+        },
+
+        draw: function (frameCtx) {
+            this._drawAndPick(frameCtx, "draw");
+        },
+
+        shadow: function (frameCtx) {
+            this._drawAndPick(frameCtx, "shadow");
+        },
+
+        pickObject: function (frameCtx) {
+            this._drawAndPick(frameCtx, "pickObject");
+        },
+
+        pickPrimitive: function (frameCtx) {
+            this._drawAndPick(frameCtx, "pickPrimitive");
+        },
+
+        outline: function (frameCtx) {
+            this._drawAndPick(frameCtx, "outline");
         }
     });
-
 })();

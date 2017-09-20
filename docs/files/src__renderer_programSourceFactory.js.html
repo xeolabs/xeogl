@@ -60,6 +60,7 @@
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
+                                <li><a href="../classes/ClipHelper.html">ClipHelper</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
@@ -223,6 +224,7 @@
         var reflectivityFresnel;
         var emissiveFresnel;
         var receiveShadow;
+        var clipping;
 
         var vertexPickObjectSrc;
         var fragmentPickObjectSrc;
@@ -251,6 +253,7 @@
             texturing = hasTextures();
             normals = hasNormals();
             normalMapping = hasNormalMap();
+            clipping = states.clips.clips.length &gt; 0;
             phongMaterial = (states.material.type === &quot;phongMaterial&quot;);
             MetallicMaterial = (states.material.type === &quot;MetallicMaterial&quot;);
             SpecularMaterial = (states.material.type === &quot;SpecularMaterial&quot;);
@@ -548,6 +551,10 @@
 
             add(&quot;varying    vec3 vViewPosition;&quot;);
 
+            if (clipping) {
+                add(&quot;varying vec4 vWorldPosition;&quot;);
+            }
+
             if (states.lights.lightMap) {
                 add(&quot;varying    vec3 vWorldNormal;&quot;);
             }
@@ -751,7 +758,13 @@
             if (states.geometry.primitiveName === &quot;points&quot;) {
                 add(&quot;gl_PointSize = pointSize;&quot;);
             }
+
+            if (clipping) {
+                add(&quot;vWorldPosition = worldPosition;&quot;);
+            }
+
             add(&quot;   vViewPosition = viewPosition.xyz;&quot;);
+
             add(&quot;   gl_Position = projMatrix * viewPosition;&quot;);
 
             if (receiveShadow) {
@@ -790,6 +803,20 @@
             add(&quot;// Drawing fragment shader&quot;);
 
             add(&quot;precision &quot; + getFSFloatPrecision(states.gl) + &quot; float;&quot;);
+
+            //--------------------------------------------------------------------------------
+            // USER CLIP PLANES
+            //--------------------------------------------------------------------------------
+
+            if (clipping) {
+                add(&quot;varying vec4 vWorldPosition;&quot;);
+                add(&quot;uniform bool clippable;&quot;);
+                for (var i = 0; i &lt; states.clips.clips.length; i++) {
+                    add(&quot;uniform bool clipActive&quot; + i + &quot;;&quot;);
+                    add(&quot;uniform vec3 clipPos&quot; + i + &quot;;&quot;);
+                    add(&quot;uniform vec3 clipDir&quot; + i + &quot;;&quot;);
+                }
+            }
 
             if (geometry.normals) {
 
@@ -1318,6 +1345,18 @@
 
             add(&quot;void main(void) {&quot;);
 
+            if (clipping) {
+                add(&quot;if (clippable) {&quot;);
+                add(&quot;  float dist = 0.0;&quot;);
+                for (var i = 0; i &lt; states.clips.clips.length; i++) {
+                    add(&quot;if (clipActive&quot; + i + &quot;) {&quot;);
+                    add(&quot;   dist += clamp(dot(-clipDir&quot; + i + &quot;.xyz, vWorldPosition.xyz - clipPos&quot; + i + &quot;.xyz), 0.0, 1000.0);&quot;);
+                    add(&quot;}&quot;);
+                }
+                add(&quot;  if (dist &gt; 0.0) { discard; }&quot;);
+                add(&quot;}&quot;);
+            }
+
             if (geometry.primitiveName === &quot;points&quot;) {
                 add(&quot;vec2 cxy = 2.0 * gl_PointCoord - 1.0;&quot;);
                 add(&quot;float r = dot(cxy, cxy);&quot;);
@@ -1700,7 +1739,7 @@
             }
 
             add(&quot;gl_FragColor = vec4(outgoingLight, alpha);&quot;);
-             //    add(&quot;gl_FragColor = LinearTosRGB(gl_FragColor);&quot;);  // Gamma correction
+            //    add(&quot;gl_FragColor = LinearTosRGB(gl_FragColor);&quot;);  // Gamma correction
 
             add(&quot;}&quot;);
 

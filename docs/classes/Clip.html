@@ -60,6 +60,7 @@
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
+                                <li><a href="../classes/ClipHelper.html">ClipHelper</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
@@ -210,67 +211,58 @@
 
 
 <div class="box intro">
-    <p>A <strong>Clip</strong> is an arbitrarily-aligned World-space clipping plane used to create
-cross-section views of associated <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
+    <p>A <strong>Clip</strong> is an arbitrarily-aligned World-space clipping plane.</p>
+<p><a href="../../examples/#clipping_userClipPlanes"><img src="../../../assets/images/screenshots/Clips.png"></img></a></p>
 <h2 id="overview">Overview</h2>
 <ul>
-<li>These are grouped within <a href="../classes/Clips.html" class="crosslink">Clips</a> components, which are attached to
-<a href="../classes/Entity.html" class="crosslink">Entities</a>. See the <a href="../classes/Clips.html" class="crosslink">Clips</a> documentation
-for more info.</li>
-<li>A Clip is specified in World-space, as being perpendicular to a vector <a href="../classes/Clip.html#property_dir" class="crosslink">dir</a>
-that emanates from the origin, offset at a distance <a href="../classes/Clip.html#property_dist" class="crosslink">dist</a> along that vector.</li>
-<li>You can move a Clip back and forth along its vector by varying <a href="../classes/Clip.html#property_dist" class="crosslink">dist</a>.</li>
-<li>Likewise, you can rotate a Clip about the origin by rotating the <a href="../classes/Clip.html#property_dir" class="crosslink">dir</a> vector.</li>
-<li>A Clip is has a <a href="../classes/Clip.html#property_mode" class="crosslink">mode</a>,  which indicates whether it is disabled
-("disabled"), discarding fragments that fall on the origin-side of the plane ("inside"), or clipping fragments that
-fall on the other side of the plane from the origin ("outside").</li>
-<li>You can update the <a href="../classes/Clip.html#property_mode" class="crosslink">mode</a> of a Clip to activate or deactivate it, or to
-switch which side it discards fragments from.</li>
-<li>Clipping may also be enabled or disabled for specific <a href="../classes/Entity.html" class="crosslink">Entities</a> via their <a href="../classes/Entity.html#property_clippable" class="crosslink">clippable</a> properties.</li>
+<li>Used to slice portions off objects, to create cross-section views or reveal interiors.</li>
+<li>Is contained within <a href="../classes/Clips.html" class="crosslink">Clips</a> components, which are attached to <a href="../classes/Entity.html" class="crosslink">Entities</a>.</li>
+<li>Has a World-space position in <a href="../classes/Clip.html#property_pos" class="crosslink">pos</a> and a orientation in <a href="../classes/Clip.html#property_dir" class="crosslink">dir</a>.</li>
+<li>Discards elements from the half-space in the direction of <a href="../classes/Clip.html#property_dir" class="crosslink">dir</a>.</li>
+<li>Can be be enabled or disabled via its <a href="../classes/Clip.html#property_active" class="crosslink">active</a> property.</li>
 </ul>
-<p><img src="../../../assets/images/Clip.png"></img></p>
+<p><img src="../../../assets/images/Clips.png"></img></p>
 <h2 id="usage">Usage</h2>
-<ul>
-<li>In this example we have an <a href="../classes/Entity.html" class="crosslink">Entity</a> that&#39;s clipped by a <a href="../classes/Clips.html" class="crosslink">Clips</a>
-that contains two <a href="../classes/Clip.html" class="crosslink">Clip</a> planes.</li>
-<li>The first <a href="../classes/Clip.html" class="crosslink">Clip</a> plane is on the
-positive diagonal, while the second is on the negative diagonal.</li>
-<li>The <a href="../classes/Entity.html" class="crosslink">Entity&#39;s</a>
-<a href="../classes/Geometry.html" class="crosslink">Geometry</a> is a box, and the planes will clip off two of the box&#39;s corners.</li>
-</ul>
+<p>In the example below, we have an <a href="../classes/Entity.html" class="crosslink">Entity</a> that&#39;s attached by a <a href="../classes/Clips.html" class="crosslink">Clips</a>
+that contains two <a href="../classes/Clip.html" class="crosslink">Clip</a> components.  The first <a href="../classes/Clip.html" class="crosslink">Clip</a> is on the
+positive diagonal, while the second is on the negative diagonal. The <a href="../classes/Entity.html" class="crosslink">Entity&#39;s</a> <a href="../classes/Geometry.html" class="crosslink">Geometry</a>
+is a box, which will get two of its corners clipped off.</p>
 <pre class="code prettyprint"><code class="lang-javascript">// Create a set of Clip planes
 clips = new xeogl.Clip({
-    clips: [
+   clips: [
 
-        // Clip plane on negative diagonal
-        new xeogl.Clip({
-            dir: [-1.0, -1.0, -1.0], // Direction of Clip from World space origin
-            dist: 2.0,               // Distance along direction vector
-            mode: "outside"          // Clip fragments that fall beyond the plane
-        }),
+       // Clip plane on negative diagonal
+       new xeogl.Clip({
+           pos: [1.0, 1.0, 1.0],
+           dir: [-1.0, -1.0, -1.0],
+           active: true
+       }),
 
-        // Clip plane on positive diagonal
-        new xeogl.Clip({
-            dir: [1.0, 1.0, 1.0],
-            dist: 2.0,
-            mode: "outside"
-        })
-    ]
+       // Clip plane on positive diagonal
+       new xeogl.Clip({
+           pos: [-1.0, -1.0, -1.0],
+           dir: [1.0, 1.0, 1.0],
+           active: true
+       })
+   ]
 });
 
 // Create an Entity that&#39;s clipped by our Clip planes
 var entity = new xeogl.Entity({
     geometry: new xeogl.BoxGeometry(),
-    clips: clips
+    clips: clips,
+    clippable: true // Enable clippability (default)
 });
 </code></pre>
-<h3 id="toggling-clipping-on-and-off">Toggling clipping on and off</h3>
-<p>An <a href="../classes/Entity.html" class="crosslink">Entity</a>is clippable by default. We can toggle its clippability like so:</p>
+<h3 id="switching-clipping-on-and-off-for-an-entity">Switching clipping on and off for an Entity</h3>
+<p>An <a href="../classes/Entity.html" class="crosslink">Entity</a>&#39;s <a href="../classes/Entity.html#property_clippable" class="crosslink">clippable</a> property indicates
+whether or not it is affected by Clip components.</p>
+<p>You can switch it at any time, like this:</p>
 <pre class="code prettyprint"><code class="lang-javascript">// Disable clipping for the Entity
 entity.clippable = false;
 
 // Enable clipping for the Entity
-entity.clippable = false;
+entity.clippable = true;
 </code></pre>
 
 </div>
@@ -287,12 +279,6 @@ entity.clippable = false;
                         </li>
                         <li class="arg">
                                 <code class="optional">[cfg]</code>
-                        </li>
-                        <li class="arg">
-                                <code class="optional">[dir= [1, 0, 0]]</code>
-                        </li>
-                        <li class="arg">
-                                <code class="optional">[dist=1.0]</code>
                         </li>
                     </ul><span class="paren">)</span>
                 </div>
@@ -372,41 +358,39 @@ entity.clippable = false;
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[mode=&quot;disabled&quot;]</code>
-                                            <span class="type">String</span>
+                                            <code class="param-name optional">[active=true]</code>
+                                            <span class="type">Boolean</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Clipping mode - &quot;disabled&quot; to clip nothing, &quot;inside&quot; to reject points inside the plane, &quot;outside&quot; to reject points outside the plane.</p>
+                                            <p>Indicates whether or not this Clip is active.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[pos=[0,0,0]]</code>
+                                            <span class="type">Array of Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>World-space position of the clipping plane.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[dir=[0,0 -1]]</code>
+                                            <span class="type">Array of Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Vector perpendicular to the plane surface, indicating its orientation.</p>
         
                                         </div>
         
                                     </li>
                                 </ul>
-                        </li>
-                        <li class="param">
-                                <code class="param-name optional">[dir= [1, 0, 0]]</code>
-                                <span class="type">Array of Number</span>
-                                <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-        
-                            <div class="param-description">
-                                <p>The direction of the clipping plane from the World-space origin.</p>
-        
-                            </div>
-        
-                        </li>
-                        <li class="param">
-                                <code class="param-name optional">[dist=1.0]</code>
-                                <span class="type">Number</span>
-                                <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-        
-                            <div class="param-description">
-                                <p>Distance to the clipping plane along the direction vector.</p>
-        
-                            </div>
-        
                         </li>
                     </ul>
                 </div>
@@ -480,16 +464,16 @@ entity.clippable = false;
                     <h3>Properties</h3>
 
                     <ul class="index-list properties extends">
+                            <li class="index-item property">
+                                <a href="#property_active">active</a>
+
+                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_destroyed">destroyed</a>
 
                             </li>
                             <li class="index-item property">
                                 <a href="#property_dir">dir</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_dist">dist</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -509,7 +493,7 @@ entity.clippable = false;
 
                             </li>
                             <li class="index-item property">
-                                <a href="#property_mode">mode</a>
+                                <a href="#property_pos">pos</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -536,6 +520,10 @@ entity.clippable = false;
                     <h3>Events</h3>
 
                     <ul class="index-list events extends">
+                            <li class="index-item event">
+                                <a href="#event_active">active</a>
+
+                            </li>
                             <li class="index-item event inherited">
                                 <a href="#event_destroyed">destroyed</a>
 
@@ -545,11 +533,7 @@ entity.clippable = false;
 
                             </li>
                             <li class="index-item event">
-                                <a href="#event_dist">dist</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_mode">mode</a>
+                                <a href="#event_pos">pos</a>
 
                             </li>
                     </ul>
@@ -1282,6 +1266,33 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
+                    <div id="property_active" class="property item">
+                        <h3 class="name"><code>active</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_clipping_clip.js.html#l105"><code>src&#x2F;clipping&#x2F;clip.js:105</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Indicates whether this Clip is active or not.</p>
+                    <p>Fires a <a href="../classes/Clip.html#event_active" class="crosslink">active</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> true</p>
+                    
+                    
+                    </div>
                     <div id="property_destroyed" class="property item inherited">
                         <h3 class="name"><code>destroyed</code></h3>
                         <span class="type">Boolean</span>
@@ -1318,48 +1329,21 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_clipping_clip.js.html#l152"><code>src&#x2F;clipping&#x2F;clip.js:152</code></a>
+                            <a href="../files/src_clipping_clip.js.html#l165"><code>src&#x2F;clipping&#x2F;clip.js:165</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>A vector emanating from the World-space origin that indicates the orientation of this Clip plane.</p>
-                    <p>The Clip plane will be oriented perpendicular to this vector.</p>
+                            <p>Vector indicating the orientation of this Clip plane.</p>
+                    <p>The vector originates at <a href="../classes/Clip.html#property_pos" class="crosslink">pos</a>. Elements on the
+                    same side of the vector are clipped.</p>
                     <p>Fires a <a href="../classes/Clip.html#event_dir" class="crosslink">dir</a> event on change.</p>
                     
                         </div>
                     
-                            <p><strong>Default:</strong> [1.0, 1.0, 1.0]</p>
-                    
-                    
-                    </div>
-                    <div id="property_dist" class="property item">
-                        <h3 class="name"><code>dist</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_clipping_clip.js.html#l185"><code>src&#x2F;clipping&#x2F;clip.js:185</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The position of this Clip along the vector indicated by <a href="../classes/Clip.html#property_dir" class="crosslink">dir</a>.</p>
-                    <p>This is the distance of the Clip plane from the World-space origin.</p>
-                    <p>Fires a <a href="../classes/Clip.html#event_dist" class="crosslink">dist</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> 1.0</p>
+                            <p><strong>Default:</strong> [0, 0, -1]</p>
                     
                     
                     </div>
@@ -1465,9 +1449,9 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_mode" class="property item">
-                        <h3 class="name"><code>mode</code></h3>
-                        <span class="type">String</span>
+                    <div id="property_pos" class="property item">
+                        <h3 class="name"><code>pos</code></h3>
+                        <span class="type">Float32Array</span>
                     
                     
                     
@@ -1476,25 +1460,19 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_clipping_clip.js.html#l113"><code>src&#x2F;clipping&#x2F;clip.js:113</code></a>
+                            <a href="../files/src_clipping_clip.js.html#l134"><code>src&#x2F;clipping&#x2F;clip.js:134</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The current mode of this Clip.</p>
-                    <p>Possible states are:</p>
-                    <ul>
-                    <li>"disabled" - inactive</li>
-                    <li>"inside" - clipping fragments that fall within the half-space on the origin-side of the Clip plane</li>
-                    <li>"outside" - clipping fragments that fall on the other side of the Clip plane from the origin</li>
-                    </ul>
-                    <p>Fires a <a href="../classes/Clip.html#event_mode" class="crosslink">mode</a> event on change.</p>
+                            <p>The World-space position of this Clip&#39;s plane.</p>
+                    <p>Fires a <a href="../classes/Clip.html#event_pos" class="crosslink">pos</a> event on change.</p>
                     
                         </div>
                     
-                            <p><strong>Default:</strong> &quot;disabled&quot;</p>
+                            <p><strong>Default:</strong> [0, 0, 0]</p>
                     
                     
                     </div>
@@ -1620,6 +1598,48 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="events" class="api-class-tabpanel">
                 <h2 class="off-left">Events</h2>
 
+                    <div id="event_active" class="events item">
+                        <h3 class="name"><code>active</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_clipping_clip.js.html#l120"><code>src&#x2F;clipping&#x2F;clip.js:120</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Clip&#39;s <a href="../classes/Clip.html#property_active" class="crosslink">active</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Boolean</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
                     <div id="event_destroyed" class="events item inherited">
                         <h3 class="name"><code>destroyed</code></h3>
                         <span class="type"></span>
@@ -1656,7 +1676,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_clipping_clip.js.html#l171"><code>src&#x2F;clipping&#x2F;clip.js:171</code></a>
+                            <a href="../files/src_clipping_clip.js.html#l185"><code>src&#x2F;clipping&#x2F;clip.js:185</code></a>
                             </p>
                     
                     
@@ -1687,8 +1707,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_dist" class="events item">
-                        <h3 class="name"><code>dist</code></h3>
+                    <div id="event_pos" class="events item">
+                        <h3 class="name"><code>pos</code></h3>
                         <span class="type"></span>
                     
                     
@@ -1698,14 +1718,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_clipping_clip.js.html#l204"><code>src&#x2F;clipping&#x2F;clip.js:204</code></a>
+                            <a href="../files/src_clipping_clip.js.html#l151"><code>src&#x2F;clipping&#x2F;clip.js:151</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this Clip&#39;s <a href="../classes/Clip.html#property_dist" class="crosslink">dist</a> property changes.</p>
+                            <p>Fired whenever this Clip&#39;s <a href="../classes/Clip.html#property_pos" class="crosslink">pos</a> property changes.</p>
                     
                         </div>
                     
@@ -1719,49 +1739,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                                         <div class="param-description">
-                                            <p>Number The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_mode" class="events item">
-                        <h3 class="name"><code>mode</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_clipping_clip.js.html#l138"><code>src&#x2F;clipping&#x2F;clip.js:138</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Clip&#39;s <a href="../classes/Clip.html#property_mode" class="crosslink">mode</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">String</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
+                                            <p>Float32Array The property&#39;s new value</p>
                     
                                         </div>
                     
