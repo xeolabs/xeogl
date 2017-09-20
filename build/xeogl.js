@@ -17270,7 +17270,7 @@ var Canvas2Image = (function () {
  var entity = new xeogl.Entity({
      geometry: new xeogl.BoxGeometry(),
      clips: clips,
-     clippable: true // Enable clippability (default)
+     clippable: true // Enable clipping (default)
  });
  ````
 
