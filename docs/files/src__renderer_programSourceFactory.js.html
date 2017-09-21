@@ -226,15 +226,6 @@
         var receiveShadow;
         var clipping;
 
-        var vertexPickObjectSrc;
-        var fragmentPickObjectSrc;
-        var vertexPickPrimSrc;
-        var fragmentPickPrimSrc;
-        var vertexShadowSrc;
-        var fragmentShadowSrc;
-        var vertexOutlineSrc;
-        var fragmentOutlineSrc;
-
         /**
          * Get source code for a program to render the given states.
          * Attempts to reuse cached source code for the given hash.
@@ -356,9 +347,6 @@
         // composed from state, in the same manner as the draw shaders.
 
         function vertexPickObject() {
-            if (vertexPickObjectSrc) {
-                return vertexPickObjectSrc;
-            }
             begin();
             add(&quot;// Object picking vertex shader&quot;);
             add(&quot;attribute vec3 position;&quot;);
@@ -367,72 +355,109 @@
             add(&quot;uniform mat4 viewNormalMatrix;&quot;);
             add(&quot;uniform mat4 projMatrix;&quot;);
             add(&quot;varying vec4 vViewPosition;&quot;);
+            if (clipping) {
+                add(&quot;varying vec4 vWorldPosition;&quot;);
+            }
             add(&quot;void main(void) {&quot;);
             add(&quot;   vec4 tmpVertex = vec4(position, 1.0); &quot;);
-            add(&quot;   vViewPosition = viewMatrix * modelMatrix * tmpVertex;&quot;);
+            add(&quot;   vec4 worldPosition = modelMatrix * tmpVertex;&quot;);
+            add(&quot;   vViewPosition = viewMatrix * worldPosition;&quot;);
+            if (clipping) {
+                add(&quot;   vWorldPosition = worldPosition;&quot;);
+            }
             add(&quot;   gl_Position = projMatrix * vViewPosition;&quot;);
             add(&quot;}&quot;);
-            return vertexPickObjectSrc = end();
+            return end();
         }
 
         function fragmentPickObject() {
-            if (fragmentPickObjectSrc) {
-                return fragmentPickObjectSrc;
-            }
             begin();
             add(&quot;// Object picking fragment shader&quot;);
             add(&quot;precision &quot; + getFSFloatPrecision(states.gl) + &quot; float;&quot;);
             add(&quot;uniform vec4 pickColor;&quot;);
+            if (clipping) {
+                add(&quot;uniform bool clippable;&quot;);
+                add(&quot;varying vec4 vWorldPosition;&quot;);
+                for (var i = 0; i &lt; states.clips.clips.length; i++) {
+                    add(&quot;uniform bool clipActive&quot; + i + &quot;;&quot;);
+                    add(&quot;uniform vec3 clipPos&quot; + i + &quot;;&quot;);
+                    add(&quot;uniform vec3 clipDir&quot; + i + &quot;;&quot;);
+                }
+            }
             add(&quot;void main(void) {&quot;);
+            if (clipping) {
+                add(&quot;if (clippable) {&quot;);
+                add(&quot;  float dist = 0.0;&quot;);
+                for (var i = 0; i &lt; states.clips.clips.length; i++) {
+                    add(&quot;if (clipActive&quot; + i + &quot;) {&quot;);
+                    add(&quot;   dist += clamp(dot(-clipDir&quot; + i + &quot;.xyz, vWorldPosition.xyz - clipPos&quot; + i + &quot;.xyz), 0.0, 1000.0);&quot;);
+                    add(&quot;}&quot;);
+                }
+                add(&quot;  if (dist &gt; 0.0) { discard; }&quot;);
+                add(&quot;}&quot;);
+            }
             add(&quot;   gl_FragColor = pickColor; &quot;);
             add(&quot;}&quot;);
-            return fragmentPickObjectSrc = end();
+            return end();
         }
 
         function vertexPickPrimitive() {
-
-            if (vertexPickPrimSrc) {
-                return vertexPickPrimSrc;
-            }
-
             begin();
-
             add(&quot;// Triangle picking vertex shader&quot;);
-
             add(&quot;attribute vec3 position;&quot;);
             add(&quot;attribute vec4 color;&quot;);
-
             add(&quot;uniform vec3 pickColor;&quot;);
             add(&quot;uniform mat4 modelMatrix;&quot;);
             add(&quot;uniform mat4 viewMatrix;&quot;);
             add(&quot;uniform mat4 projMatrix;&quot;);
-
             add(&quot;varying vec4 vViewPosition;&quot;);
             add(&quot;varying vec4 vColor;&quot;);
-
+            if (clipping) {
+                add(&quot;varying vec4 vWorldPosition;&quot;);
+            }
             add(&quot;void main(void) {&quot;);
             add(&quot;   vec4 tmpVertex = vec4(position, 1.0); &quot;);
             add(&quot;   vec4 worldPosition = modelMatrix * tmpVertex; &quot;);
             add(&quot;   vec4 viewPosition = viewMatrix * worldPosition;&quot;);
+            if (clipping) {
+                add(&quot;   vWorldPosition = worldPosition;&quot;);
+            }
             add(&quot;   vColor = color;&quot;);
             add(&quot;   gl_Position = projMatrix * viewPosition;&quot;);
             add(&quot;}&quot;);
 
-            return vertexPickPrimSrc = end();
+            return end();
         }
 
         function fragmentPickPrimitive() {
-            if (fragmentPickPrimSrc) {
-                return fragmentPickPrimSrc;
-            }
             begin();
             add(&quot;// Triangle picking fragment shader&quot;);
             add(&quot;precision &quot; + getFSFloatPrecision(states.gl) + &quot; float;&quot;);
             add(&quot;varying vec4 vColor;&quot;);
+            if (clipping) {
+                add(&quot;uniform bool clippable;&quot;);
+                add(&quot;varying vec4 vWorldPosition;&quot;);
+                for (var i = 0; i &lt; states.clips.clips.length; i++) {
+                    add(&quot;uniform bool clipActive&quot; + i + &quot;;&quot;);
+                    add(&quot;uniform vec3 clipPos&quot; + i + &quot;;&quot;);
+                    add(&quot;uniform vec3 clipDir&quot; + i + &quot;;&quot;);
+                }
+            }
             add(&quot;void main(void) {&quot;);
+            if (clipping) {
+                add(&quot;if (clippable) {&quot;);
+                add(&quot;  float dist = 0.0;&quot;);
+                for (var i = 0; i &lt; states.clips.clips.length; i++) {
+                    add(&quot;if (clipActive&quot; + i + &quot;) {&quot;);
+                    add(&quot;   dist += clamp(dot(-clipDir&quot; + i + &quot;.xyz, vWorldPosition.xyz - clipPos&quot; + i + &quot;.xyz), 0.0, 1000.0);&quot;);
+                    add(&quot;}&quot;);
+                }
+                add(&quot;  if (dist &gt; 0.0) { discard; }&quot;);
+                add(&quot;}&quot;);
+            }
             add(&quot;   gl_FragColor = vColor;&quot;);
             add(&quot;}&quot;);
-            return fragmentPickPrimSrc = end();
+            return end();
         }
 
         /// NOTE: Shadow shaders will become more complex and will eventually be
@@ -445,21 +470,47 @@
             add(&quot;uniform mat4 modelMatrix;&quot;);
             add(&quot;uniform mat4 shadowViewMatrix;&quot;);
             add(&quot;uniform mat4 shadowProjMatrix;&quot;);
+            if (clipping) {
+                add(&quot;varying vec4 vWorldPosition;&quot;);
+            }
             add(&quot;void main(void) {&quot;);
-            add(&quot;   gl_Position = shadowProjMatrix * (shadowViewMatrix * (modelMatrix * (vec4(position, 1.0))));&quot;);
+            add(&quot;   vec4 worldPosition = modelMatrix * (vec4(position, 1.0));&quot;);
+            if (clipping) {
+                add(&quot;   vWorldPosition = worldPosition;&quot;);
+            }
+            add(&quot;   gl_Position = shadowProjMatrix * (shadowViewMatrix * (worldPosition));&quot;);
             add(&quot;}&quot;);
-            return vertexShadowSrc = end();
+            return end();
         }
 
         function fragmentShadow() {
             begin();
             add(&quot;// Shadow map fragment shader&quot;);
             add(&quot;precision &quot; + getFSFloatPrecision(states.gl) + &quot; float;&quot;);
+            if (clipping) {
+                add(&quot;varying vec4 vWorldPosition;&quot;);
+                add(&quot;uniform bool clippable;&quot;);
+                for (var i = 0; i &lt; states.clips.clips.length; i++) {
+                    add(&quot;uniform bool clipActive&quot; + i + &quot;;&quot;);
+                    add(&quot;uniform vec3 clipPos&quot; + i + &quot;;&quot;);
+                    add(&quot;uniform vec3 clipDir&quot; + i + &quot;;&quot;);
+                }
+            }
             add(&quot;void main(void) {&quot;);
+            if (clipping) {
+                add(&quot;if (clippable) {&quot;);
+                add(&quot;  float dist = 0.0;&quot;);
+                for (var i = 0; i &lt; states.clips.clips.length; i++) {
+                    add(&quot;if (clipActive&quot; + i + &quot;) {&quot;);
+                    add(&quot;   dist += clamp(dot(-clipDir&quot; + i + &quot;.xyz, vWorldPosition.xyz - clipPos&quot; + i + &quot;.xyz), 0.0, 1000.0);&quot;);
+                    add(&quot;}&quot;);
+                }
+                add(&quot;  if (dist &gt; 0.0) { discard; }&quot;);
+                add(&quot;}&quot;);
+            }
             add(&quot;   gl_FragColor = vec4(gl_FragCoord.z, 0.0, 0.0, 0.0);&quot;);
-            //     add(&quot;   gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);&quot;);
             add(&quot;}&quot;);
-            return fragmentShadowSrc = end();
+            return end();
         }
 
         function vertexOutline() {
@@ -469,13 +520,10 @@
             add(&quot;uniform mat4 viewMatrix;&quot;);
             add(&quot;uniform mat4 projMatrix;&quot;);
             add(&quot;uniform float thickness;&quot;);
-
             if (normals) {
                 add(&quot;attribute vec3 normal;&quot;);
             }
-
             var billboard = states.modes.billboard;
-
             if (billboard === &quot;spherical&quot; || billboard === &quot;cylindrical&quot;) {
                 add(&quot;void billboard(inout mat4 mat) {&quot;);
                 add(&quot;   mat[0][0] = 1.0;&quot;);
@@ -491,46 +539,63 @@
                 add(&quot;   mat[2][2] =1.0;&quot;);
                 add(&quot;}&quot;);
             }
-
+            if (clipping) {
+                add(&quot;varying vec4 vWorldPosition;&quot;);
+            }
             add(&quot;void main(void) {&quot;);
-
             add(&quot;mat4 viewMatrix2 = viewMatrix;&quot;);
             add(&quot;mat4 modelMatrix2 = modelMatrix;&quot;);
-
             if (states.modes.stationary) {
                 add(&quot;viewMatrix2[3][0] = viewMatrix2[3][1] = viewMatrix2[3][2] = 0.0;&quot;)
             }
-
             if (billboard === &quot;spherical&quot; || billboard === &quot;cylindrical&quot;) {
                 add(&quot;billboard(modelMatrix2);&quot;);
                 add(&quot;billboard(viewMatrix2);&quot;);
             }
-
             // Displacement
-
             if (normals) {
                 add(&quot;vec4 projPos = projMatrix * viewMatrix2 * modelMatrix2 * vec4(position.xyz, 1.0); &quot;);
                 add(&quot;  vec3 offset = (normalize(normal) * (thickness * 0.0005 * (projPos.z/1.0)));&quot;);
             } else {
                 add(&quot;  vec3 offset = vec3(0.0, 0.0, 0.0);&quot;);
             }
-
-            add(&quot;vec4 worldVertex = modelMatrix * vec4(position.xyz + offset, 1.0); &quot;);
-
-            add(&quot;  gl_Position = projMatrix * (viewMatrix * worldVertex);&quot;);
+            add(&quot;vec4 worldPosition = modelMatrix * vec4(position.xyz + offset, 1.0); &quot;);
+            if (clipping) {
+                add(&quot;   vWorldPosition = worldPosition;&quot;);
+            }
+            add(&quot;  gl_Position = projMatrix * (viewMatrix * worldPosition);&quot;);
             add(&quot;}&quot;);
-            return vertexOutlineSrc = end();
+            return end();
         }
 
         function fragmentOutline() {
             begin();
             add(&quot;precision &quot; + getFSFloatPrecision(states.gl) + &quot; float;&quot;);
             add(&quot;uniform vec3  color;&quot;);
+            if (clipping) {
+                add(&quot;uniform bool clippable;&quot;);
+                add(&quot;varying vec4 vWorldPosition;&quot;);
+                for (var i = 0; i &lt; states.clips.clips.length; i++) {
+                    add(&quot;uniform bool clipActive&quot; + i + &quot;;&quot;);
+                    add(&quot;uniform vec3 clipPos&quot; + i + &quot;;&quot;);
+                    add(&quot;uniform vec3 clipDir&quot; + i + &quot;;&quot;);
+                }
+            }
             add(&quot;void main(void) {&quot;);
+            if (clipping) {
+                add(&quot;if (clippable) {&quot;);
+                add(&quot;  float dist = 0.0;&quot;);
+                for (var i = 0; i &lt; states.clips.clips.length; i++) {
+                    add(&quot;if (clipActive&quot; + i + &quot;) {&quot;);
+                    add(&quot;   dist += clamp(dot(-clipDir&quot; + i + &quot;.xyz, vWorldPosition.xyz - clipPos&quot; + i + &quot;.xyz), 0.0, 1000.0);&quot;);
+                    add(&quot;}&quot;);
+                }
+                add(&quot;  if (dist &gt; 0.0) { discard; }&quot;);
+                add(&quot;}&quot;);
+            }
             add(&quot;   gl_FragColor = vec4(color, 1.0);&quot;);
             add(&quot;}&quot;);
-
-            return fragmentOutlineSrc = end();
+            return end();
         }
 
         function vertexDraw() {

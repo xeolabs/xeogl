@@ -8836,13 +8836,13 @@
         },
         {
             "file": "src/_renderer/programSourceFactory.js",
-            "line": 39,
+            "line": 30,
             "description": "Get source code for a program to render the given states.\nAttempts to reuse cached source code for the given hash.",
             "class": "CameraFlightAnimation"
         },
         {
             "file": "src/_renderer/programSourceFactory.js",
-            "line": 143,
+            "line": 134,
             "description": "Releases program source code back to this factory.",
             "class": "CameraFlightAnimation"
         },
@@ -27900,11 +27900,11 @@
         },
         {
             "message": "Missing item type\nGet source code for a program to render the given states.\nAttempts to reuse cached source code for the given hash.",
-            "line": " src/_renderer/programSourceFactory.js:39"
+            "line": " src/_renderer/programSourceFactory.js:30"
         },
         {
             "message": "Missing item type\nReleases program source code back to this factory.",
-            "line": " src/_renderer/programSourceFactory.js:143"
+            "line": " src/_renderer/programSourceFactory.js:134"
         },
         {
             "message": "Missing item type\nOptional callback to fire when renderer wants to\nbind an output framebuffer. This is useful when we need to bind a stereo output buffer for WebVR.\n\nWhen this is missing, the renderer will implicitly bind\nWebGL's default framebuffer.\n\nThe callback takes one parameter, which is the index of the current\nrendering pass in which the buffer is to be bound.\n\nUse like this: myRenderer.bindOutputFramebuffer = function(pass) { .. });",
