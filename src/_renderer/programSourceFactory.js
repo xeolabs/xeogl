@@ -27,15 +27,6 @@
         var receiveShadow;
         var clipping;
 
-        var vertexPickObjectSrc;
-        var fragmentPickObjectSrc;
-        var vertexPickPrimSrc;
-        var fragmentPickPrimSrc;
-        var vertexShadowSrc;
-        var fragmentShadowSrc;
-        var vertexOutlineSrc;
-        var fragmentOutlineSrc;
-
         /**
          * Get source code for a program to render the given states.
          * Attempts to reuse cached source code for the given hash.
@@ -157,9 +148,6 @@
         // composed from state, in the same manner as the draw shaders.
 
         function vertexPickObject() {
-            if (vertexPickObjectSrc) {
-                return vertexPickObjectSrc;
-            }
             begin();
             add("// Object picking vertex shader");
             add("attribute vec3 position;");
@@ -168,72 +156,109 @@
             add("uniform mat4 viewNormalMatrix;");
             add("uniform mat4 projMatrix;");
             add("varying vec4 vViewPosition;");
+            if (clipping) {
+                add("varying vec4 vWorldPosition;");
+            }
             add("void main(void) {");
             add("   vec4 tmpVertex = vec4(position, 1.0); ");
-            add("   vViewPosition = viewMatrix * modelMatrix * tmpVertex;");
+            add("   vec4 worldPosition = modelMatrix * tmpVertex;");
+            add("   vViewPosition = viewMatrix * worldPosition;");
+            if (clipping) {
+                add("   vWorldPosition = worldPosition;");
+            }
             add("   gl_Position = projMatrix * vViewPosition;");
             add("}");
-            return vertexPickObjectSrc = end();
+            return end();
         }
 
         function fragmentPickObject() {
-            if (fragmentPickObjectSrc) {
-                return fragmentPickObjectSrc;
-            }
             begin();
             add("// Object picking fragment shader");
             add("precision " + getFSFloatPrecision(states.gl) + " float;");
             add("uniform vec4 pickColor;");
+            if (clipping) {
+                add("uniform bool clippable;");
+                add("varying vec4 vWorldPosition;");
+                for (var i = 0; i < states.clips.clips.length; i++) {
+                    add("uniform bool clipActive" + i + ";");
+                    add("uniform vec3 clipPos" + i + ";");
+                    add("uniform vec3 clipDir" + i + ";");
+                }
+            }
             add("void main(void) {");
+            if (clipping) {
+                add("if (clippable) {");
+                add("  float dist = 0.0;");
+                for (var i = 0; i < states.clips.clips.length; i++) {
+                    add("if (clipActive" + i + ") {");
+                    add("   dist += clamp(dot(-clipDir" + i + ".xyz, vWorldPosition.xyz - clipPos" + i + ".xyz), 0.0, 1000.0);");
+                    add("}");
+                }
+                add("  if (dist > 0.0) { discard; }");
+                add("}");
+            }
             add("   gl_FragColor = pickColor; ");
             add("}");
-            return fragmentPickObjectSrc = end();
+            return end();
         }
 
         function vertexPickPrimitive() {
-
-            if (vertexPickPrimSrc) {
-                return vertexPickPrimSrc;
-            }
-
             begin();
-
             add("// Triangle picking vertex shader");
-
             add("attribute vec3 position;");
             add("attribute vec4 color;");
-
             add("uniform vec3 pickColor;");
             add("uniform mat4 modelMatrix;");
             add("uniform mat4 viewMatrix;");
             add("uniform mat4 projMatrix;");
-
             add("varying vec4 vViewPosition;");
             add("varying vec4 vColor;");
-
+            if (clipping) {
+                add("varying vec4 vWorldPosition;");
+            }
             add("void main(void) {");
             add("   vec4 tmpVertex = vec4(position, 1.0); ");
             add("   vec4 worldPosition = modelMatrix * tmpVertex; ");
             add("   vec4 viewPosition = viewMatrix * worldPosition;");
+            if (clipping) {
+                add("   vWorldPosition = worldPosition;");
+            }
             add("   vColor = color;");
             add("   gl_Position = projMatrix * viewPosition;");
             add("}");
 
-            return vertexPickPrimSrc = end();
+            return end();
         }
 
         function fragmentPickPrimitive() {
-            if (fragmentPickPrimSrc) {
-                return fragmentPickPrimSrc;
-            }
             begin();
             add("// Triangle picking fragment shader");
             add("precision " + getFSFloatPrecision(states.gl) + " float;");
             add("varying vec4 vColor;");
+            if (clipping) {
+                add("uniform bool clippable;");
+                add("varying vec4 vWorldPosition;");
+                for (var i = 0; i < states.clips.clips.length; i++) {
+                    add("uniform bool clipActive" + i + ";");
+                    add("uniform vec3 clipPos" + i + ";");
+                    add("uniform vec3 clipDir" + i + ";");
+                }
+            }
             add("void main(void) {");
+            if (clipping) {
+                add("if (clippable) {");
+                add("  float dist = 0.0;");
+                for (var i = 0; i < states.clips.clips.length; i++) {
+                    add("if (clipActive" + i + ") {");
+                    add("   dist += clamp(dot(-clipDir" + i + ".xyz, vWorldPosition.xyz - clipPos" + i + ".xyz), 0.0, 1000.0);");
+                    add("}");
+                }
+                add("  if (dist > 0.0) { discard; }");
+                add("}");
+            }
             add("   gl_FragColor = vColor;");
             add("}");
-            return fragmentPickPrimSrc = end();
+            return end();
         }
 
         /// NOTE: Shadow shaders will become more complex and will eventually be
@@ -246,21 +271,47 @@
             add("uniform mat4 modelMatrix;");
             add("uniform mat4 shadowViewMatrix;");
             add("uniform mat4 shadowProjMatrix;");
+            if (clipping) {
+                add("varying vec4 vWorldPosition;");
+            }
             add("void main(void) {");
-            add("   gl_Position = shadowProjMatrix * (shadowViewMatrix * (modelMatrix * (vec4(position, 1.0))));");
+            add("   vec4 worldPosition = modelMatrix * (vec4(position, 1.0));");
+            if (clipping) {
+                add("   vWorldPosition = worldPosition;");
+            }
+            add("   gl_Position = shadowProjMatrix * (shadowViewMatrix * (worldPosition));");
             add("}");
-            return vertexShadowSrc = end();
+            return end();
         }
 
         function fragmentShadow() {
             begin();
             add("// Shadow map fragment shader");
             add("precision " + getFSFloatPrecision(states.gl) + " float;");
+            if (clipping) {
+                add("varying vec4 vWorldPosition;");
+                add("uniform bool clippable;");
+                for (var i = 0; i < states.clips.clips.length; i++) {
+                    add("uniform bool clipActive" + i + ";");
+                    add("uniform vec3 clipPos" + i + ";");
+                    add("uniform vec3 clipDir" + i + ";");
+                }
+            }
             add("void main(void) {");
+            if (clipping) {
+                add("if (clippable) {");
+                add("  float dist = 0.0;");
+                for (var i = 0; i < states.clips.clips.length; i++) {
+                    add("if (clipActive" + i + ") {");
+                    add("   dist += clamp(dot(-clipDir" + i + ".xyz, vWorldPosition.xyz - clipPos" + i + ".xyz), 0.0, 1000.0);");
+                    add("}");
+                }
+                add("  if (dist > 0.0) { discard; }");
+                add("}");
+            }
             add("   gl_FragColor = vec4(gl_FragCoord.z, 0.0, 0.0, 0.0);");
-            //     add("   gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);");
             add("}");
-            return fragmentShadowSrc = end();
+            return end();
         }
 
         function vertexOutline() {
@@ -270,13 +321,10 @@
             add("uniform mat4 viewMatrix;");
             add("uniform mat4 projMatrix;");
             add("uniform float thickness;");
-
             if (normals) {
                 add("attribute vec3 normal;");
             }
-
             var billboard = states.modes.billboard;
-
             if (billboard === "spherical" || billboard === "cylindrical") {
                 add("void billboard(inout mat4 mat) {");
                 add("   mat[0][0] = 1.0;");
@@ -292,46 +340,63 @@
                 add("   mat[2][2] =1.0;");
                 add("}");
             }
-
+            if (clipping) {
+                add("varying vec4 vWorldPosition;");
+            }
             add("void main(void) {");
-
             add("mat4 viewMatrix2 = viewMatrix;");
             add("mat4 modelMatrix2 = modelMatrix;");
-
             if (states.modes.stationary) {
                 add("viewMatrix2[3][0] = viewMatrix2[3][1] = viewMatrix2[3][2] = 0.0;")
             }
-
             if (billboard === "spherical" || billboard === "cylindrical") {
                 add("billboard(modelMatrix2);");
                 add("billboard(viewMatrix2);");
             }
-
             // Displacement
-
             if (normals) {
                 add("vec4 projPos = projMatrix * viewMatrix2 * modelMatrix2 * vec4(position.xyz, 1.0); ");
                 add("  vec3 offset = (normalize(normal) * (thickness * 0.0005 * (projPos.z/1.0)));");
             } else {
                 add("  vec3 offset = vec3(0.0, 0.0, 0.0);");
             }
-
-            add("vec4 worldVertex = modelMatrix * vec4(position.xyz + offset, 1.0); ");
-
-            add("  gl_Position = projMatrix * (viewMatrix * worldVertex);");
+            add("vec4 worldPosition = modelMatrix * vec4(position.xyz + offset, 1.0); ");
+            if (clipping) {
+                add("   vWorldPosition = worldPosition;");
+            }
+            add("  gl_Position = projMatrix * (viewMatrix * worldPosition);");
             add("}");
-            return vertexOutlineSrc = end();
+            return end();
         }
 
         function fragmentOutline() {
             begin();
             add("precision " + getFSFloatPrecision(states.gl) + " float;");
             add("uniform vec3  color;");
+            if (clipping) {
+                add("uniform bool clippable;");
+                add("varying vec4 vWorldPosition;");
+                for (var i = 0; i < states.clips.clips.length; i++) {
+                    add("uniform bool clipActive" + i + ";");
+                    add("uniform vec3 clipPos" + i + ";");
+                    add("uniform vec3 clipDir" + i + ";");
+                }
+            }
             add("void main(void) {");
+            if (clipping) {
+                add("if (clippable) {");
+                add("  float dist = 0.0;");
+                for (var i = 0; i < states.clips.clips.length; i++) {
+                    add("if (clipActive" + i + ") {");
+                    add("   dist += clamp(dot(-clipDir" + i + ".xyz, vWorldPosition.xyz - clipPos" + i + ".xyz), 0.0, 1000.0);");
+                    add("}");
+                }
+                add("  if (dist > 0.0) { discard; }");
+                add("}");
+            }
             add("   gl_FragColor = vec4(color, 1.0);");
             add("}");
-
-            return fragmentOutlineSrc = end();
+            return end();
         }
 
         function vertexDraw() {
