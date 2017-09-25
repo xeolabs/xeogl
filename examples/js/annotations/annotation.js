@@ -471,11 +471,13 @@ xeogl.Annotation = xeogl.Pin.extend({
         pinShown: {
             set: function (shown) {
 
+                shown = shown !== false;
+
                 if (this._pinShown === shown) {
                     return;
                 }
 
-                this._pinShown = shown !== false;
+                this._pinShown = shown;
                 this._spot.style.visibility = this._pinShown ? "visible" : "hidden";
                 this._spotClickable.style.visibility = this._pinShown ? "visible" : "hidden";
 
@@ -504,11 +506,13 @@ xeogl.Annotation = xeogl.Pin.extend({
         labelShown: {
             set: function (shown) {
 
+                shown = shown !== false;
+
                 if (this._labelShown === shown) {
                     return;
                 }
 
-                this._labelShown = shown !== false;
+                this._labelShown = shown;
                 this._label.style.visibility = this._labelShown && this.visible ? "visible" : "hidden";
 
                 /**
