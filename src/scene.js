@@ -1633,7 +1633,7 @@
                 if (this._dirtyEntities.hasOwnProperty(id)) {
                     entity = this._dirtyEntities[id];
                     if (entity._valid()) {
-                        entity._compileAsynch();
+                        entity._compileAsynch(); // FIXME: asynch compilation breaks when destroying xeogl.Clip components
                         //entity._compile();
                         delete this._dirtyEntities[id];
                         countCompiledEntities++;
