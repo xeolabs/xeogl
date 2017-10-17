@@ -19,6 +19,8 @@
      */
     var math = xeogl.math = {
 
+        MAX_DOUBLE: +100000000,
+        MIN_DOUBLE: -100000000,
         /**
          * The number of radiians in a degree (0.0174532925).
          * @property DEGTORAD

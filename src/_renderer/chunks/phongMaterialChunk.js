@@ -116,6 +116,25 @@
             var maxTextureUnits = xeogl.WEBGL_INFO.MAX_TEXTURE_UNITS;
             //  frameCtx.textureUnit = 0;
 
+            var backfaces = state.backfaces;
+            if (frameCtx.backfaces !== backfaces) {
+                if (backfaces) {
+                    gl.disable(gl.CULL_FACE);
+                } else {
+                    gl.enable(gl.CULL_FACE);
+                }
+                frameCtx.backfaces = backfaces;
+            }
+            var frontface = state.frontface;
+            if (frameCtx.frontface !== frontface) {
+                if (frontface) {
+                    gl.frontFace(gl.CCW);
+                } else {
+                    gl.frontFace(gl.CW);
+                }
+                frameCtx.frontface = frontface;
+            }
+
             if (this._uShininess) {
                 this._uShininess.setValue(state.shininess);
             }

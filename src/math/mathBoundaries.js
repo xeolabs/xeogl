@@ -196,12 +196,12 @@
 
         aabb = aabb || math.AABB3();
 
-        aabb[0] = 10000000;
-        aabb[1] = 10000000;
-        aabb[2] = 10000000;
-        aabb[3] = -10000000;
-        aabb[4] = -10000000;
-        aabb[5] = -10000000;
+        aabb[0] = xeogl.math.MAX_DOUBLE;
+        aabb[1] = xeogl.math.MAX_DOUBLE;
+        aabb[2] = xeogl.math.MAX_DOUBLE;
+        aabb[3] = -xeogl.math.MAX_DOUBLE;
+        aabb[4] = -xeogl.math.MAX_DOUBLE;
+        aabb[5] = -xeogl.math.MAX_DOUBLE;
 
         return aabb;
     };
@@ -268,12 +268,12 @@
 
         aabb = aabb || math.AABB3();
 
-        var xmin = 100000;
-        var ymin = 100000;
-        var zmin = 100000;
-        var xmax = -100000;
-        var ymax = -100000;
-        var zmax = -100000;
+        var xmin = xeogl.math.MAX_DOUBLE;
+        var ymin = xeogl.math.MAX_DOUBLE;
+        var zmin = xeogl.math.MAX_DOUBLE;
+        var xmax = -xeogl.math.MAX_DOUBLE;
+        var ymax = -xeogl.math.MAX_DOUBLE;
+        var zmax = -xeogl.math.MAX_DOUBLE;
 
         var x, y, z;
 
@@ -327,12 +327,12 @@
 
         aabb = aabb || math.AABB3();
 
-        var xmin = 100000;
-        var ymin = 100000;
-        var zmin = 100000;
-        var xmax = -100000;
-        var ymax = -100000;
-        var zmax = -100000;
+        var xmin = xeogl.math.MAX_DOUBLE;
+        var ymin = xeogl.math.MAX_DOUBLE;
+        var zmin = xeogl.math.MAX_DOUBLE;
+        var xmax = -xeogl.math.MAX_DOUBLE;
+        var ymax = -xeogl.math.MAX_DOUBLE;
+        var zmax = -xeogl.math.MAX_DOUBLE;
 
         var x, y, z;
 
@@ -386,12 +386,12 @@
 
         aabb = aabb || math.AABB3();
 
-        var xmin = 100000;
-        var ymin = 100000;
-        var zmin = 100000;
-        var xmax = -100000;
-        var ymax = -100000;
-        var zmax = -100000;
+        var xmin = xeogl.math.MAX_DOUBLE;
+        var ymin = xeogl.math.MAX_DOUBLE;
+        var zmin = xeogl.math.MAX_DOUBLE;
+        var xmax = -xeogl.math.MAX_DOUBLE;
+        var ymax = -xeogl.math.MAX_DOUBLE;
+        var zmax = -xeogl.math.MAX_DOUBLE;
 
         var x, y, z;
 
@@ -631,10 +631,10 @@
 
         aabb = aabb || math.AABB2();
 
-        aabb[0] = 10000000;
-        aabb[1] = 10000000;
-        aabb[2] = -10000000;
-        aabb[3] = -10000000;
+        aabb[0] = xeogl.math.MAX_DOUBLE;
+        aabb[1] = xeogl.math.MAX_DOUBLE;
+        aabb[2] = -xeogl.math.MAX_DOUBLE;
+        aabb[3] = -xeogl.math.MAX_DOUBLE;
 
         return aabb;
     };
@@ -648,10 +648,10 @@
 
         aabb = aabb || math.AABB2();
 
-        var xmin = 10000000;
-        var ymin = 10000000;
-        var xmax = -10000000;
-        var ymax = -10000000;
+        var xmin = xeogl.math.MAX_DOUBLE;
+        var ymin = xeogl.math.MAX_DOUBLE;
+        var xmax = -xeogl.math.MAX_DOUBLE;
+        var ymax = -xeogl.math.MAX_DOUBLE;
 
         var x;
         var y;

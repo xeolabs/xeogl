@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2017-09-21
+ * Built on 2017-10-17
  *
  * MIT License
  * Copyright 2017, Lindsay Kay
@@ -1182,6 +1182,8 @@ var Canvas2Image = (function () {
      */
     var math = xeogl.math = {
 
+        MAX_DOUBLE: +100000000,
+        MIN_DOUBLE: -100000000,
         /**
          * The number of radiians in a degree (0.0174532925).
          * @property DEGTORAD
@@ -3969,12 +3971,12 @@ var Canvas2Image = (function () {
 
         aabb = aabb || math.AABB3();
 
-        aabb[0] = 10000000;
-        aabb[1] = 10000000;
-        aabb[2] = 10000000;
-        aabb[3] = -10000000;
-        aabb[4] = -10000000;
-        aabb[5] = -10000000;
+        aabb[0] = xeogl.math.MAX_DOUBLE;
+        aabb[1] = xeogl.math.MAX_DOUBLE;
+        aabb[2] = xeogl.math.MAX_DOUBLE;
+        aabb[3] = -xeogl.math.MAX_DOUBLE;
+        aabb[4] = -xeogl.math.MAX_DOUBLE;
+        aabb[5] = -xeogl.math.MAX_DOUBLE;
 
         return aabb;
     };
@@ -4041,12 +4043,12 @@ var Canvas2Image = (function () {
 
         aabb = aabb || math.AABB3();
 
-        var xmin = 100000;
-        var ymin = 100000;
-        var zmin = 100000;
-        var xmax = -100000;
-        var ymax = -100000;
-        var zmax = -100000;
+        var xmin = xeogl.math.MAX_DOUBLE;
+        var ymin = xeogl.math.MAX_DOUBLE;
+        var zmin = xeogl.math.MAX_DOUBLE;
+        var xmax = -xeogl.math.MAX_DOUBLE;
+        var ymax = -xeogl.math.MAX_DOUBLE;
+        var zmax = -xeogl.math.MAX_DOUBLE;
 
         var x, y, z;
 
@@ -4100,12 +4102,12 @@ var Canvas2Image = (function () {
 
         aabb = aabb || math.AABB3();
 
-        var xmin = 100000;
-        var ymin = 100000;
-        var zmin = 100000;
-        var xmax = -100000;
-        var ymax = -100000;
-        var zmax = -100000;
+        var xmin = xeogl.math.MAX_DOUBLE;
+        var ymin = xeogl.math.MAX_DOUBLE;
+        var zmin = xeogl.math.MAX_DOUBLE;
+        var xmax = -xeogl.math.MAX_DOUBLE;
+        var ymax = -xeogl.math.MAX_DOUBLE;
+        var zmax = -xeogl.math.MAX_DOUBLE;
 
         var x, y, z;
 
@@ -4159,12 +4161,12 @@ var Canvas2Image = (function () {
 
         aabb = aabb || math.AABB3();
 
-        var xmin = 100000;
-        var ymin = 100000;
-        var zmin = 100000;
-        var xmax = -100000;
-        var ymax = -100000;
-        var zmax = -100000;
+        var xmin = xeogl.math.MAX_DOUBLE;
+        var ymin = xeogl.math.MAX_DOUBLE;
+        var zmin = xeogl.math.MAX_DOUBLE;
+        var xmax = -xeogl.math.MAX_DOUBLE;
+        var ymax = -xeogl.math.MAX_DOUBLE;
+        var zmax = -xeogl.math.MAX_DOUBLE;
 
         var x, y, z;
 
@@ -4404,10 +4406,10 @@ var Canvas2Image = (function () {
 
         aabb = aabb || math.AABB2();
 
-        aabb[0] = 10000000;
-        aabb[1] = 10000000;
-        aabb[2] = -10000000;
-        aabb[3] = -10000000;
+        aabb[0] = xeogl.math.MAX_DOUBLE;
+        aabb[1] = xeogl.math.MAX_DOUBLE;
+        aabb[2] = -xeogl.math.MAX_DOUBLE;
+        aabb[3] = -xeogl.math.MAX_DOUBLE;
 
         return aabb;
     };
@@ -4421,10 +4423,10 @@ var Canvas2Image = (function () {
 
         aabb = aabb || math.AABB2();
 
-        var xmin = 10000000;
-        var ymin = 10000000;
-        var xmax = -10000000;
-        var ymax = -10000000;
+        var xmin = xeogl.math.MAX_DOUBLE;
+        var ymin = xeogl.math.MAX_DOUBLE;
+        var xmax = -xeogl.math.MAX_DOUBLE;
+        var ymax = -xeogl.math.MAX_DOUBLE;
 
         var x;
         var y;
@@ -5761,7 +5763,6 @@ var Canvas2Image = (function () {
 
             gl.enable(gl.DEPTH_TEST);
             gl.frontFace(gl.CCW);
-          //  gl.enable(gl.CULL_FACE);
             gl.disable(gl.CULL_FACE);
             gl.depthMask(true);
             gl.colorMask(true, true, true, false);
@@ -5841,14 +5842,29 @@ var Canvas2Image = (function () {
 
             // Draw transparent objects
 
+            var blendType = true;
+            var transparentDepthMask = true;
+
             if (numTransparentObjects > 0) {
 
                 gl.enable(gl.CULL_FACE);
                 gl.enable(gl.BLEND);
-             //   gl.depthMask(false);
-                gl.blendEquation(gl.FUNC_ADD);
-               // gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-                gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+
+                frameCtx.backfaces = false;
+
+                if (!transparentDepthMask) {
+                    gl.depthMask(false);
+                }
+
+                if (blendType) {
+
+                    // Makes glTF windows appear correct
+                     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+                } else {
+
+                    gl.blendEquation(gl.FUNC_ADD);
+                    gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+                }
 
                 gl.colorMask(true, true, true, true);
 
@@ -9077,6 +9093,10 @@ var Canvas2Image = (function () {
 
             add("precision " + getFSFloatPrecision(states.gl) + " float;");
 
+            add("vec4 LinearTosRGB( in vec4 value ) {");
+            add("   return vec4(mix(pow(value.rgb,vec3(0.41666))*1.055-vec3(0.055), value.rgb*12.92, vec3(lessThanEqual(value.rgb,vec3(0.0031308)))),value.w);");
+            add("}");
+
             //--------------------------------------------------------------------------------
             // USER CLIP PLANES
             //--------------------------------------------------------------------------------
@@ -9167,10 +9187,6 @@ var Canvas2Image = (function () {
                 add("}");
 
                 // COMMON UTILS
-
-                add("vec4 LinearTosRGB( in vec4 value ) {");
-                add("   return vec4(mix(pow(value.rgb,vec3(0.41666))*1.055-vec3(0.055), value.rgb*12.92, vec3(lessThanEqual(value.rgb,vec3(0.0031308)))),value.w);");
-                add("}");
 
                 if (phongMaterial) {
 
@@ -10996,6 +11012,25 @@ var Canvas2Image = (function () {
             var maxTextureUnits = xeogl.WEBGL_INFO.MAX_TEXTURE_UNITS;
             //  frameCtx.textureUnit = 0;
 
+            var backfaces = state.backfaces;
+            if (frameCtx.backfaces !== backfaces) {
+                if (backfaces) {
+                    gl.disable(gl.CULL_FACE);
+                } else {
+                    gl.enable(gl.CULL_FACE);
+                }
+                frameCtx.backfaces = backfaces;
+            }
+            var frontface = state.frontface;
+            if (frameCtx.frontface !== frontface) {
+                if (frontface) {
+                    gl.frontFace(gl.CCW);
+                } else {
+                    gl.frontFace(gl.CW);
+                }
+                frameCtx.frontface = frontface;
+            }
+
             if (this._uShininess) {
                 this._uShininess.setValue(state.shininess);
             }
@@ -11385,6 +11420,25 @@ var Canvas2Image = (function () {
 
         draw: function (frameCtx) {
 
+            var backfaces = state.backfaces;
+            if (frameCtx.backfaces !== backfaces) {
+                if (backfaces) {
+                    gl.disable(gl.CULL_FACE);
+                } else {
+                    gl.enable(gl.CULL_FACE);
+                }
+                frameCtx.backfaces = backfaces;
+            }
+            var frontface = state.frontface;
+            if (frameCtx.frontface !== frontface) {
+                if (frontface) {
+                    gl.frontFace(gl.CCW);
+                } else {
+                    gl.frontFace(gl.CW);
+                }
+                frameCtx.frontface = frontface;
+            }
+
             var draw = this.program.draw;
             var state = this.state;
             var gl = this.program.gl;
@@ -11636,6 +11690,25 @@ var Canvas2Image = (function () {
             var gl = this.program.gl;
             var maxTextureUnits = xeogl.WEBGL_INFO.MAX_TEXTURE_UNITS;
             //    frameCtx.textureUnit = 0;
+
+            var backfaces = state.backfaces;
+            if (frameCtx.backfaces !== backfaces) {
+                if (backfaces) {
+                    gl.disable(gl.CULL_FACE);
+                } else {
+                    gl.enable(gl.CULL_FACE);
+                }
+                frameCtx.backfaces = backfaces;
+            }
+            var frontface = state.frontface;
+            if (frameCtx.frontface !== frontface) {
+                if (frontface) {
+                    gl.frontFace(gl.CCW);
+                } else {
+                    gl.frontFace(gl.CW);
+                }
+                frameCtx.frontface = frontface;
+            }
 
             if (this._uDiffuse) {
                 this._uDiffuse.setValue(state.diffuse);
@@ -14872,7 +14945,7 @@ var Canvas2Image = (function () {
                 if (this._dirtyEntities.hasOwnProperty(id)) {
                     entity = this._dirtyEntities[id];
                     if (entity._valid()) {
-                        entity._compileAsynch();
+                        entity._compileAsynch(); // FIXME: asynch compilation breaks when destroying xeogl.Clip components
                         //entity._compile();
                         delete this._dirtyEntities[id];
                         countCompiledEntities++;
@@ -16480,6 +16553,8 @@ var Canvas2Image = (function () {
 
                         self._spinner._adjustPosition();
 
+                        self._resizeOverlay();
+
                         if (newCanvasSize) {
 
                             var newWidth = canvas.clientWidth;
@@ -16625,6 +16700,26 @@ var Canvas2Image = (function () {
             this.canvas.parentElement.appendChild(div);
 
             this.overlay = div;
+        },
+
+        /** (Re)sizes the overlay DIV to the canvas size
+         * @private
+         */
+        _resizeOverlay: function () {
+
+            if (!this.canvas || !this.overlay) {
+                return;
+            }
+
+            var canvas = this.canvas;
+            var overlay = this.overlay;
+            var overlayStyle = overlay.style;
+
+            var xy = this._getElementXY(canvas);
+            overlayStyle["left"] = xy.x + "px";
+            overlayStyle["top"] = xy.y + "px";
+            overlayStyle["width"] = canvas.clientWidth + "px";
+            overlayStyle["height"] = canvas.clientHeight + "px";
         },
 
         _getElementXY: function (e) {
@@ -30310,12 +30405,12 @@ TODO
                 this._aabb = xeogl.math.AABB3();
             }
 
-            var xmin = 100000;
-            var ymin = 100000;
-            var zmin = 100000;
-            var xmax = -100000;
-            var ymax = -100000;
-            var zmax = -100000;
+            var xmin = xeogl.math.MAX_DOUBLE;
+            var ymin = xeogl.math.MAX_DOUBLE;
+            var zmin = xeogl.math.MAX_DOUBLE;
+            var xmax = -xeogl.math.MAX_DOUBLE;
+            var ymax = -xeogl.math.MAX_DOUBLE;
+            var zmax = -xeogl.math.MAX_DOUBLE;
 
             var component;
             var worldBoundary;
@@ -40034,7 +40129,8 @@ TODO
 
                     this._eye.set(value || [0, 0, 10]);
 
-                    this._needUpdate(0); // Ensure matrix built on next "tick"
+                    this._update();
+                    //this._needUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
                      * Fired whenever this Lookat's  {{#crossLink "Lookat/eye:property"}}{{/crossLink}} property changes.
@@ -40065,7 +40161,8 @@ TODO
 
                     this._look.set(value || [0, 0, 0]);
 
-                    this._needUpdate(0); // Ensure matrix built on next "tick";
+                    this._update();
+                    //this._needUpdate(0); // Ensure matrix built on next "tick";
 
                     /**
                      * Fired whenever this Lookat's  {{#crossLink "Lookat/look:property"}}{{/crossLink}} property changes.
@@ -40094,7 +40191,8 @@ TODO
 
                     this._up.set(value || [0, 1, 0]);
 
-                    this._needUpdate(0); // Ensure matrix built on next "tick"
+                    this._update();
+                    //this._needUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
                      * Fired whenever this Lookat's  {{#crossLink "Lookat/up:property"}}{{/crossLink}} property changes.

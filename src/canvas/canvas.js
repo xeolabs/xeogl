@@ -328,6 +328,8 @@
 
                         self._spinner._adjustPosition();
 
+                        self._resizeOverlay();
+
                         if (newCanvasSize) {
 
                             var newWidth = canvas.clientWidth;
@@ -473,6 +475,26 @@
             this.canvas.parentElement.appendChild(div);
 
             this.overlay = div;
+        },
+
+        /** (Re)sizes the overlay DIV to the canvas size
+         * @private
+         */
+        _resizeOverlay: function () {
+
+            if (!this.canvas || !this.overlay) {
+                return;
+            }
+
+            var canvas = this.canvas;
+            var overlay = this.overlay;
+            var overlayStyle = overlay.style;
+
+            var xy = this._getElementXY(canvas);
+            overlayStyle["left"] = xy.x + "px";
+            overlayStyle["top"] = xy.y + "px";
+            overlayStyle["width"] = canvas.clientWidth + "px";
+            overlayStyle["height"] = canvas.clientHeight + "px";
         },
 
         _getElementXY: function (e) {

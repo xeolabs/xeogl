@@ -62,6 +62,25 @@
 
         draw: function (frameCtx) {
 
+            var backfaces = state.backfaces;
+            if (frameCtx.backfaces !== backfaces) {
+                if (backfaces) {
+                    gl.disable(gl.CULL_FACE);
+                } else {
+                    gl.enable(gl.CULL_FACE);
+                }
+                frameCtx.backfaces = backfaces;
+            }
+            var frontface = state.frontface;
+            if (frameCtx.frontface !== frontface) {
+                if (frontface) {
+                    gl.frontFace(gl.CCW);
+                } else {
+                    gl.frontFace(gl.CW);
+                }
+                frameCtx.frontface = frontface;
+            }
+
             var draw = this.program.draw;
             var state = this.state;
             var gl = this.program.gl;

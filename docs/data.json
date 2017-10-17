@@ -7916,6 +7916,12 @@
                             "type": "Boolean",
                             "optional": true,
                             "optdefault": "true"
+                        },
+                        {
+                            "name": "size",
+                            "description": "The width and height of the ClipHelper plane indicator. When no value is specified,\n will automatically size to fit within the {{#crossLink \"Scene/worldBoundary:property\"}}Scene's worldBoundary{{/crossLink}}.",
+                            "type": "Float32Array",
+                            "optional": true
                         }
                     ]
                 }
@@ -8879,13 +8885,13 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 678,
+            "line": 692,
             "description": "Attempts to pick an object.",
             "class": "CameraFlightAnimation"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 880,
+            "line": 894,
             "description": "Reads the colors of some pixels in the current image.",
             "class": "CameraFlightAnimation"
         },
@@ -9577,7 +9583,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 357,
+            "line": 359,
             "description": "Fired whenever this Canvas's {{#crossLink \"Canvas/boundary:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "boundary",
@@ -9593,7 +9599,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 394,
+            "line": 396,
             "description": "Creates a default canvas in the DOM.",
             "access": "private",
             "tagname": "",
@@ -9603,7 +9609,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 424,
+            "line": 426,
             "description": "Creates a image element behind the canvas, for purpose of showing a custom background.",
             "access": "private",
             "tagname": "",
@@ -9613,7 +9619,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 451,
+            "line": 453,
             "description": "Creates an invisible DIV over the canvas, for purpose of catching\ninput events without interfering with app-lever UI bits floating underneath.",
             "access": "private",
             "tagname": "",
@@ -9623,7 +9629,16 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 488,
+            "line": 480,
+            "access": "private",
+            "tagname": "",
+            "class": "Canvas",
+            "module": "xeogl",
+            "submodule": "canvas"
+        },
+        {
+            "file": "src/canvas/canvas.js",
+            "line": 510,
             "description": "Initialises the WebGL context",
             "access": "private",
             "tagname": "",
@@ -9633,7 +9648,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 521,
+            "line": 543,
             "description": "Fired whenever the canvas failed to get a WebGL context, which probably means that WebGL\nis either unsupported or has been disabled.",
             "itemtype": "event",
             "name": "webglContextFailed",
@@ -9643,7 +9658,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 530,
+            "line": 552,
             "description": "Returns a snapshot of this Canvas as a Base64-encoded image.\n\nWhen a callback is given, this method will capture the snapshot asynchronously, on the next animation frame,\nand return it via the callback.\n\nWhen no callback is given, this method captures and returns the snapshot immediately. Note that is only\npossible when you have configured the Canvas's {{#crossLink \"Scene\"}}Scene{{/crossLink}} to preserve the\nWebGL drawing buffer, which has a performance overhead.\n\n#### Usage:\n\n````javascript\n// Get snapshot asynchronously\nmyScene.canvas.getSnapshot({\n    width: 500, // Defaults to size of canvas\n    height: 500,\n    format: \"png\" // Options are \"jpeg\" (default), \"png\" and \"bmp\"\n}, function(imageDataURL) {\n    imageElement.src = imageDataURL;\n});\n\n// Get snapshot synchronously, requires that Scene be\n// configured with preserveDrawingBuffer; true\nimageElement.src = myScene.canvas.getSnapshot({\n    width: 500,\n    height: 500,\n    format: \"png\"\n});\n````",
             "itemtype": "method",
             "name": "getSnapshot",
@@ -9692,7 +9707,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 611,
+            "line": 633,
             "description": "Reads colors of pixels from the last rendered frame.\n\n<p>Call this method like this:</p>\n\n````JavaScript\n\n// Ignore transparent pixels (default is false)\nvar opaqueOnly = true;\n\nvar colors = new Float32Array(8);\n\nmyCanvas.readPixels([ 100, 22, 12, 33 ], colors, 2, opaqueOnly);\n````\n\nThen the r,g,b components of the colors will be set to the colors at those pixels.",
             "params": [
                 {
@@ -9722,7 +9737,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 639,
+            "line": 661,
             "description": "A background color for the canvas. This is overridden by {{#crossLink \"Canvas/backgroundImage:property\"}}{{/crossLink}}.\n\nYou can set this to a new color at any time.\n\nFires a {{#crossLink \"Canvas/backgroundColor:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "backgroundColor",
@@ -9734,7 +9749,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 668,
+            "line": 690,
             "description": "Fired whenever this Canvas's {{#crossLink \"Canvas/backgroundColor:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "backgroundColor",
@@ -9750,7 +9765,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 681,
+            "line": 703,
             "description": "URL of a background image for the canvas. This is overrided by {{#crossLink \"Canvas/backgroundColor/property\"}}{{/crossLink}}.\n\nYou can set this to a new file path at any time.\n\nFires a {{#crossLink \"Canvas/background:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "backgroundImage",
@@ -9761,7 +9776,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 716,
+            "line": 738,
             "description": "Fired whenever this Canvas's {{#crossLink \"Canvas/backgroundImage:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "backgroundImage",
@@ -9777,7 +9792,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 729,
+            "line": 751,
             "description": "The busy {{#crossLink \"Spinner\"}}{{/crossLink}} for this Canvas.",
             "itemtype": "property",
             "name": "spinner",
@@ -18128,7 +18143,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 22,
+            "line": 24,
             "description": "The number of radiians in a degree (0.0174532925).",
             "itemtype": "property",
             "name": "DEGTORAD",
@@ -18140,7 +18155,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 30,
+            "line": 32,
             "description": "Returns a new, uninitialized two-element vector.",
             "itemtype": "method",
             "name": "vec2",
@@ -18163,7 +18178,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 41,
+            "line": 43,
             "description": "Returns a new, uninitialized three-element vector.",
             "itemtype": "method",
             "name": "vec3",
@@ -18186,7 +18201,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 52,
+            "line": 54,
             "description": "Returns a new, uninitialized four-element vector.",
             "itemtype": "method",
             "name": "vec4",
@@ -18209,7 +18224,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 63,
+            "line": 65,
             "description": "Returns a new, uninitialized 3x3 matrix.",
             "itemtype": "method",
             "name": "mat3",
@@ -18232,7 +18247,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 74,
+            "line": 76,
             "description": "Converts a 3x3 matrix to 4x4",
             "itemtype": "method",
             "name": "mat3ToMat4",
@@ -18258,7 +18273,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 86,
+            "line": 88,
             "description": "Returns a new, uninitialized 4x4 matrix.",
             "itemtype": "method",
             "name": "mat4",
@@ -18281,7 +18296,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 97,
+            "line": 99,
             "description": "Converts a 4x4 matrix to 3x3",
             "itemtype": "method",
             "name": "mat4ToMat3",
@@ -18307,7 +18322,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 109,
+            "line": 111,
             "description": "Returns a new UUID.",
             "itemtype": "method",
             "name": "createUUID",
@@ -18322,7 +18337,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 140,
+            "line": 142,
             "description": "Clamps a value to the given range.",
             "params": [
                 {
@@ -18352,7 +18367,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 151,
+            "line": 153,
             "description": "Floating-point modulus",
             "itemtype": "method",
             "name": "fmod",
@@ -18380,7 +18395,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 170,
+            "line": 172,
             "description": "Negates a four-element vector.",
             "itemtype": "method",
             "name": "negateVec4",
@@ -18409,7 +18424,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 189,
+            "line": 191,
             "description": "Adds one four-element vector to another.",
             "itemtype": "method",
             "name": "addVec4",
@@ -18443,7 +18458,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 209,
+            "line": 211,
             "description": "Adds a scalar value to each element of a four-element vector.",
             "itemtype": "method",
             "name": "addVec4Scalar",
@@ -18477,7 +18492,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 229,
+            "line": 231,
             "description": "Adds one three-element vector to another.",
             "itemtype": "method",
             "name": "addVec3",
@@ -18511,7 +18526,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 248,
+            "line": 250,
             "description": "Adds a scalar value to each element of a three-element vector.",
             "itemtype": "method",
             "name": "addVec4Scalar",
@@ -18545,7 +18560,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 267,
+            "line": 269,
             "description": "Subtracts one four-element vector from another.",
             "itemtype": "method",
             "name": "subVec4",
@@ -18579,7 +18594,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 287,
+            "line": 289,
             "description": "Subtracts one three-element vector from another.",
             "itemtype": "method",
             "name": "subVec3",
@@ -18613,7 +18628,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 306,
+            "line": 308,
             "description": "Subtracts one two-element vector from another.",
             "itemtype": "method",
             "name": "subVec2",
@@ -18647,7 +18662,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 324,
+            "line": 326,
             "description": "Subtracts a scalar value from each element of a four-element vector.",
             "itemtype": "method",
             "name": "subVec4Scalar",
@@ -18681,7 +18696,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 344,
+            "line": 346,
             "description": "Sets each element of a 4-element vector to a scalar value minus the value of that element.",
             "itemtype": "method",
             "name": "subScalarVec4",
@@ -18715,7 +18730,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 364,
+            "line": 366,
             "description": "Multiplies one three-element vector by another.",
             "itemtype": "method",
             "name": "mulVec3",
@@ -18749,7 +18764,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 384,
+            "line": 386,
             "description": "Multiplies each element of a four-element vector by a scalar.",
             "itemtype": "method",
             "name": "mulVec34calar",
@@ -18783,7 +18798,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 404,
+            "line": 406,
             "description": "Multiplies each element of a three-element vector by a scalar.",
             "itemtype": "method",
             "name": "mulVec3Scalar",
@@ -18817,7 +18832,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 423,
+            "line": 425,
             "description": "Multiplies each element of a two-element vector by a scalar.",
             "itemtype": "method",
             "name": "mulVec2Scalar",
@@ -18851,7 +18866,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 441,
+            "line": 443,
             "description": "Divides one three-element vector by another.",
             "itemtype": "method",
             "name": "divVec3",
@@ -18885,7 +18900,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 460,
+            "line": 462,
             "description": "Divides one four-element vector by another.",
             "itemtype": "method",
             "name": "divVec4",
@@ -18919,7 +18934,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 480,
+            "line": 482,
             "description": "Divides a scalar by a three-element vector, returning a new vector.",
             "itemtype": "method",
             "name": "divScalarVec3",
@@ -18948,7 +18963,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 499,
+            "line": 501,
             "description": "Divides a three-element vector by a scalar.",
             "itemtype": "method",
             "name": "divVec3Scalar",
@@ -18977,7 +18992,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 518,
+            "line": 520,
             "description": "Divides a four-element vector by a scalar.",
             "itemtype": "method",
             "name": "divVec4Scalar",
@@ -19006,7 +19021,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 539,
+            "line": 541,
             "description": "Divides a scalar by a four-element vector, returning a new vector.",
             "itemtype": "method",
             "name": "divScalarVec4",
@@ -19035,7 +19050,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 559,
+            "line": 561,
             "description": "Returns the dot product of two four-element vectors.",
             "itemtype": "method",
             "name": "dotVec4",
@@ -19062,7 +19077,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 571,
+            "line": 573,
             "description": "Returns the cross product of two four-element vectors.",
             "itemtype": "method",
             "name": "cross3Vec4",
@@ -19089,7 +19104,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 589,
+            "line": 591,
             "description": "Returns the cross product of two three-element vectors.",
             "itemtype": "method",
             "name": "cross3Vec3",
@@ -19116,7 +19131,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 614,
+            "line": 616,
             "description": "Returns the length of a four-element vector.",
             "itemtype": "method",
             "name": "lenVec4",
@@ -19138,7 +19153,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 625,
+            "line": 627,
             "description": "Returns the dot product of two three-element vectors.",
             "itemtype": "method",
             "name": "dotVec4",
@@ -19165,7 +19180,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 637,
+            "line": 639,
             "description": "Returns the dot product of two two-element vectors.",
             "itemtype": "method",
             "name": "dotVec4",
@@ -19192,7 +19207,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 659,
+            "line": 661,
             "description": "Returns the length of a three-element vector.",
             "itemtype": "method",
             "name": "lenVec3",
@@ -19214,7 +19229,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 670,
+            "line": 672,
             "description": "Returns the length of a two-element vector.",
             "itemtype": "method",
             "name": "lenVec2",
@@ -19236,7 +19251,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 681,
+            "line": 683,
             "itemtype": "method",
             "name": "rcpVec3",
             "static": 1,
@@ -19260,7 +19275,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 693,
+            "line": 695,
             "description": "Normalizes a four-element vector",
             "itemtype": "method",
             "name": "normalizeVec4",
@@ -19285,7 +19300,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 707,
+            "line": 709,
             "description": "Normalizes a three-element vector",
             "itemtype": "method",
             "name": "normalizeVec4",
@@ -19297,7 +19312,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 717,
+            "line": 719,
             "description": "Normalizes a two-element vector",
             "itemtype": "method",
             "name": "normalizeVec2",
@@ -19309,7 +19324,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 727,
+            "line": 729,
             "description": "Creates a three-element vector from the rotation part of a sixteen-element matrix.",
             "params": [
                 {
@@ -19328,7 +19343,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 760,
+            "line": 762,
             "description": "Converts an n-element vector to a JSON-serializable\narray with values rounded to two decimal places.",
             "class": "xeogl.math.math",
             "module": "xeogl",
@@ -19337,7 +19352,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 777,
+            "line": 779,
             "description": "Duplicates a 4x4 identity matrix.",
             "itemtype": "method",
             "name": "dupMat4",
@@ -19349,7 +19364,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 786,
+            "line": 788,
             "description": "Extracts a 3x3 matrix from a 4x4 matrix.",
             "itemtype": "method",
             "name": "mat4To3",
@@ -19361,7 +19376,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 799,
+            "line": 801,
             "description": "Returns a 4x4 matrix with each element set to the given scalar value.",
             "itemtype": "method",
             "name": "m4s",
@@ -19373,7 +19388,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 813,
+            "line": 815,
             "description": "Returns a 4x4 matrix with each element set to zero.",
             "itemtype": "method",
             "name": "setMat4ToZeroes",
@@ -19385,7 +19400,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 822,
+            "line": 824,
             "description": "Returns a 4x4 matrix with each element set to 1.0.",
             "itemtype": "method",
             "name": "setMat4ToOnes",
@@ -19397,7 +19412,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 831,
+            "line": 833,
             "description": "Returns a 4x4 matrix with each element set to 1.0.",
             "itemtype": "method",
             "name": "setMat4ToOnes",
@@ -19409,7 +19424,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 845,
+            "line": 847,
             "description": "Returns a 4x4 matrix with diagonal elements set to the given vector.",
             "itemtype": "method",
             "name": "diagonalMat4c",
@@ -19421,7 +19436,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 854,
+            "line": 856,
             "description": "Returns a 4x4 matrix with diagonal elements set to the given scalar.",
             "itemtype": "method",
             "name": "diagonalMat4s",
@@ -19433,7 +19448,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 863,
+            "line": 865,
             "description": "Returns a 4x4 identity matrix.",
             "itemtype": "method",
             "name": "identityMat4",
@@ -19445,7 +19460,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 895,
+            "line": 897,
             "description": "Tests if the given 4x4 matrix is the identity matrix.",
             "itemtype": "method",
             "name": "isIdentityMat4",
@@ -19457,7 +19472,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 910,
+            "line": 912,
             "description": "Negates the given 4x4 matrix.",
             "itemtype": "method",
             "name": "negateMat4",
@@ -19469,7 +19484,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 938,
+            "line": 940,
             "description": "Adds the given 4x4 matrices together.",
             "itemtype": "method",
             "name": "addMat4",
@@ -19481,7 +19496,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 966,
+            "line": 968,
             "description": "Adds the given scalar to each element of the given 4x4 matrix.",
             "itemtype": "method",
             "name": "addMat4Scalar",
@@ -19493,7 +19508,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 994,
+            "line": 996,
             "description": "Adds the given scalar to each element of the given 4x4 matrix.",
             "itemtype": "method",
             "name": "addScalarMat4",
@@ -19505,7 +19520,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1003,
+            "line": 1005,
             "description": "Subtracts the second 4x4 matrix from the first.",
             "itemtype": "method",
             "name": "subMat4",
@@ -19517,7 +19532,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1031,
+            "line": 1033,
             "description": "Subtracts the given scalar from each element of the given 4x4 matrix.",
             "itemtype": "method",
             "name": "subMat4Scalar",
@@ -19529,7 +19544,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1059,
+            "line": 1061,
             "description": "Subtracts the given scalar from each element of the given 4x4 matrix.",
             "itemtype": "method",
             "name": "subScalarMat4",
@@ -19541,7 +19556,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1087,
+            "line": 1089,
             "description": "Multiplies the two given 4x4 matrix by each other.",
             "itemtype": "method",
             "name": "mulMat4",
@@ -19553,7 +19568,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1128,
+            "line": 1130,
             "description": "Multiplies each element of the given 4x4 matrix by the given scalar.",
             "itemtype": "method",
             "name": "mulMat4Scalar",
@@ -19565,7 +19580,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1156,
+            "line": 1158,
             "description": "Multiplies the given 4x4 matrix by the given four-element vector.",
             "itemtype": "method",
             "name": "mulMat4v4",
@@ -19577,7 +19592,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1171,
+            "line": 1173,
             "description": "Transposes the given 4x4 matrix.",
             "itemtype": "method",
             "name": "transposeMat4",
@@ -19589,7 +19604,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1217,
+            "line": 1219,
             "description": "Returns the determinant of the given 4x4 matrix.",
             "itemtype": "method",
             "name": "determinantMat4",
@@ -19601,7 +19616,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1236,
+            "line": 1238,
             "description": "Returns the inverse of the given 4x4 matrix.",
             "itemtype": "method",
             "name": "inverseMat4",
@@ -19613,7 +19628,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1286,
+            "line": 1288,
             "description": "Returns the trace of the given 4x4 matrix.",
             "itemtype": "method",
             "name": "traceMat4",
@@ -19625,7 +19640,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1295,
+            "line": 1297,
             "description": "Returns 4x4 translation matrix.",
             "itemtype": "method",
             "name": "translationMat4",
@@ -19637,7 +19652,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1308,
+            "line": 1310,
             "description": "Returns 4x4 translation matrix.",
             "itemtype": "method",
             "name": "translationMat4c",
@@ -19649,7 +19664,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1323,
+            "line": 1325,
             "description": "Returns 4x4 translation matrix.",
             "itemtype": "method",
             "name": "translationMat4s",
@@ -19661,7 +19676,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1332,
+            "line": 1334,
             "description": "Efficiently post-concatenates a translation to the given matrix.",
             "params": [
                 {
@@ -19680,7 +19695,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1341,
+            "line": 1343,
             "description": "Efficiently post-concatenates a translation to the given matrix.",
             "params": [
                 {
@@ -19707,7 +19722,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1397,
+            "line": 1399,
             "description": "Returns 4x4 rotation matrix.",
             "itemtype": "method",
             "name": "rotationMat4v",
@@ -19719,7 +19734,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1449,
+            "line": 1451,
             "description": "Returns 4x4 rotation matrix.",
             "itemtype": "method",
             "name": "rotationMat4c",
@@ -19731,7 +19746,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1458,
+            "line": 1460,
             "description": "Returns 4x4 scale matrix.",
             "itemtype": "method",
             "name": "scalingMat4v",
@@ -19743,7 +19758,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1471,
+            "line": 1473,
             "description": "Returns 4x4 scale matrix.",
             "itemtype": "method",
             "name": "scalingMat4c",
@@ -19755,7 +19770,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1486,
+            "line": 1488,
             "description": "Efficiently post-concatenates a scaling to the given matrix.",
             "itemtype": "method",
             "name": "scaleMat4c",
@@ -19784,7 +19799,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1514,
+            "line": 1516,
             "description": "Efficiently post-concatenates a scaling to the given matrix.",
             "itemtype": "method",
             "name": "scaleMat4c",
@@ -19805,7 +19820,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1542,
+            "line": 1544,
             "description": "Returns 4x4 scale matrix.",
             "itemtype": "method",
             "name": "scalingMat4s",
@@ -19817,7 +19832,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1551,
+            "line": 1553,
             "description": "Creates a matrix from a quaternion rotation and vector translation",
             "params": [
                 {
@@ -19847,7 +19862,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1601,
+            "line": 1603,
             "description": "Gets Euler angles from a 4x4 matrix.",
             "params": [
                 {
@@ -19878,7 +19893,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1698,
+            "line": 1700,
             "description": "Returns a 4x4 'lookat' viewing transform matrix.",
             "itemtype": "method",
             "name": "lookAtMat4v",
@@ -19911,7 +19926,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1793,
+            "line": 1795,
             "description": "Returns a 4x4 'lookat' viewing transform matrix.",
             "itemtype": "method",
             "name": "lookAtMat4c",
@@ -19923,7 +19938,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1802,
+            "line": 1804,
             "description": "Returns a 4x4 orthographic projection matrix.",
             "itemtype": "method",
             "name": "orthoMat4c",
@@ -19935,7 +19950,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1838,
+            "line": 1840,
             "description": "Returns a 4x4 perspective projection matrix.",
             "itemtype": "method",
             "name": "frustumMat4v",
@@ -19947,7 +19962,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1882,
+            "line": 1884,
             "description": "Returns a 4x4 perspective projection matrix.",
             "itemtype": "method",
             "name": "frustumMat4v",
@@ -19959,7 +19974,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1913,
+            "line": 1915,
             "description": "Returns a 4x4 perspective projection matrix.",
             "itemtype": "method",
             "name": "perspectiveMat4v",
@@ -19971,7 +19986,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1934,
+            "line": 1936,
             "description": "Transforms a three-element position by a 4x4 matrix.",
             "itemtype": "method",
             "name": "transformPoint3",
@@ -19983,7 +19998,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1950,
+            "line": 1952,
             "description": "Transforms a homogeneous coordinate by a 4x4 matrix.",
             "itemtype": "method",
             "name": "transformPoint3",
@@ -19995,7 +20010,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1968,
+            "line": 1970,
             "description": "Transforms an array of three-element positions by a 4x4 matrix.",
             "itemtype": "method",
             "name": "transformPoints3",
@@ -20007,7 +20022,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2009,
+            "line": 2011,
             "description": "Transforms an array of positions by a 4x4 matrix.",
             "itemtype": "method",
             "name": "transformPositions3",
@@ -20019,7 +20034,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2057,
+            "line": 2059,
             "description": "Transforms a three-element vector by a 4x4 matrix.",
             "itemtype": "method",
             "name": "transformVec3",
@@ -20031,7 +20046,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2071,
+            "line": 2073,
             "description": "Transforms a four-element vector by a 4x4 matrix.",
             "itemtype": "method",
             "name": "transformVec4",
@@ -20043,7 +20058,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2086,
+            "line": 2088,
             "description": "Rotate a 3D vector around the x-axis",
             "itemtype": "method",
             "name": "rotateVec3X",
@@ -20081,7 +20096,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2119,
+            "line": 2121,
             "description": "Rotate a 3D vector around the y-axis",
             "itemtype": "method",
             "name": "rotateVec3Y",
@@ -20119,7 +20134,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2152,
+            "line": 2154,
             "description": "Rotate a 3D vector around the z-axis",
             "itemtype": "method",
             "name": "rotateVec3Z",
@@ -20157,7 +20172,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2185,
+            "line": 2187,
             "description": "Transforms a four-element vector by a 4x4 projection matrix.",
             "itemtype": "method",
             "name": "projectVec4",
@@ -20185,7 +20200,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2202,
+            "line": 2204,
             "description": "Linearly interpolates between two 3D vectors.",
             "itemtype": "method",
             "name": "lerpVec3",
@@ -20197,7 +20212,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2217,
+            "line": 2219,
             "description": "Flattens a two-dimensional array into a one-dimensional array.",
             "itemtype": "method",
             "name": "flatten",
@@ -20219,7 +20234,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2255,
+            "line": 2257,
             "description": "Initializes a quaternion from Euler angles.",
             "params": [
                 {
@@ -21279,7 +21294,7 @@
         },
         {
             "file": "src/transforms/lookat.js",
-            "line": 310,
+            "line": 311,
             "description": "Fired whenever this Lookat's  {{#crossLink \"Lookat/eye:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "eye",
@@ -21295,7 +21310,7 @@
         },
         {
             "file": "src/transforms/lookat.js",
-            "line": 324,
+            "line": 325,
             "description": "Position of this Lookat's point-of-interest.\n\nFires a {{#crossLink \"Lookat/look:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "look",
@@ -21307,7 +21322,7 @@
         },
         {
             "file": "src/transforms/lookat.js",
-            "line": 341,
+            "line": 343,
             "description": "Fired whenever this Lookat's  {{#crossLink \"Lookat/look:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "look",
@@ -21323,7 +21338,7 @@
         },
         {
             "file": "src/transforms/lookat.js",
-            "line": 355,
+            "line": 357,
             "description": "Direction of the \"up\" vector.\nFires an {{#crossLink \"Lookat/up:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "up",
@@ -21335,7 +21350,7 @@
         },
         {
             "file": "src/transforms/lookat.js",
-            "line": 370,
+            "line": 373,
             "description": "Fired whenever this Lookat's  {{#crossLink \"Lookat/up:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "up",
@@ -23977,7 +23992,7 @@
         },
         {
             "file": "examples/js/annotations/annotation.js",
-            "line": 482,
+            "line": 484,
             "description": "Fired whenever this Annotation's {{#crossLink \"Annotation/pinShown:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "pinShown",
@@ -23994,7 +24009,7 @@
         },
         {
             "file": "examples/js/annotations/annotation.js",
-            "line": 495,
+            "line": 497,
             "description": "Specifies whether the label is shown for the Annotation.\n\nFires a {{#crossLink \"Annotation/labelShown:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "labelShown",
@@ -24006,7 +24021,7 @@
         },
         {
             "file": "examples/js/annotations/annotation.js",
-            "line": 514,
+            "line": 518,
             "description": "Fired whenever this Annotation's {{#crossLink \"Annotation/labelShown:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "labelShown",
@@ -27257,7 +27272,7 @@
         },
         {
             "file": "examples/js/helpers/clipHelper.js",
-            "line": 122,
+            "line": 164,
             "description": "The {{#crossLink \"Clip\"}}Clip{{/crossLink}} attached to this ClipHelper.\n\nFires an {{#crossLink \"ClipHelper/Clip:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "clip",
@@ -27267,7 +27282,34 @@
         },
         {
             "file": "examples/js/helpers/clipHelper.js",
-            "line": 167,
+            "line": 207,
+            "description": "The width and height of the ClipHelper plane indicator.\n\nWhen no value is specified, will automatically size to fit within the\n{{#crossLink \"Scene/worldBoundary:property\"}}Scene's worldBoundary{{/crossLink}}.\n\nFires an {{#crossLink \"ClipHelper/size:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "size",
+            "default": "Fitted to scene boundary",
+            "type": "{Float32Array}",
+            "class": "ClipHelper",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/helpers/clipHelper.js",
+            "line": 234,
+            "description": "Fired whenever this ClipHelper's {{#crossLink \"ClipHelper/size:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "size",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value",
+                    "type": "Float32Array"
+                }
+            ],
+            "class": "ClipHelper",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/helpers/clipHelper.js",
+            "line": 247,
             "description": "Indicates whether this ClipHelper is visible or not.\n\nFires a {{#crossLink \"ClipHelper/active:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "visible",
@@ -27278,7 +27320,7 @@
         },
         {
             "file": "examples/js/helpers/clipHelper.js",
-            "line": 186,
+            "line": 267,
             "description": "Fired whenever this helper's {{#crossLink \"ClipHelper/visible:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "visible",
@@ -27344,75 +27386,75 @@
     "warnings": [
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/canvas/canvas.js:530"
+            "line": " src/canvas/canvas.js:552"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:30"
+            "line": " src/math/math.js:32"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:41"
+            "line": " src/math/math.js:43"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:52"
+            "line": " src/math/math.js:54"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:63"
+            "line": " src/math/math.js:65"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:74"
+            "line": " src/math/math.js:76"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:86"
+            "line": " src/math/math.js:88"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:97"
+            "line": " src/math/math.js:99"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:140"
+            "line": " src/math/math.js:142"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:151"
+            "line": " src/math/math.js:153"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:1551"
+            "line": " src/math/math.js:1553"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:1601"
+            "line": " src/math/math.js:1603"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2086"
+            "line": " src/math/math.js:2088"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2119"
+            "line": " src/math/math.js:2121"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2152"
+            "line": " src/math/math.js:2154"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2185"
+            "line": " src/math/math.js:2187"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2217"
+            "line": " src/math/math.js:2219"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2255"
+            "line": " src/math/math.js:2257"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -27924,11 +27966,11 @@
         },
         {
             "message": "Missing item type\nAttempts to pick an object.",
-            "line": " src/_renderer/renderer.js:678"
+            "line": " src/_renderer/renderer.js:692"
         },
         {
             "message": "Missing item type\nReads the colors of some pixels in the current image.",
-            "line": " src/_renderer/renderer.js:880"
+            "line": " src/_renderer/renderer.js:894"
         },
         {
             "message": "Missing item type\nRenderer states",
@@ -27956,23 +27998,27 @@
         },
         {
             "message": "Missing item type\nCreates a default canvas in the DOM.",
-            "line": " src/canvas/canvas.js:394"
+            "line": " src/canvas/canvas.js:396"
         },
         {
             "message": "Missing item type\nCreates a image element behind the canvas, for purpose of showing a custom background.",
-            "line": " src/canvas/canvas.js:424"
+            "line": " src/canvas/canvas.js:426"
         },
         {
             "message": "Missing item type\nCreates an invisible DIV over the canvas, for purpose of catching\ninput events without interfering with app-lever UI bits floating underneath.",
-            "line": " src/canvas/canvas.js:451"
+            "line": " src/canvas/canvas.js:453"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/canvas/canvas.js:480"
         },
         {
             "message": "Missing item type\nInitialises the WebGL context",
-            "line": " src/canvas/canvas.js:488"
+            "line": " src/canvas/canvas.js:510"
         },
         {
             "message": "Missing item type\nReads colors of pixels from the last rendered frame.\n\n<p>Call this method like this:</p>\n\n````JavaScript\n\n// Ignore transparent pixels (default is false)\nvar opaqueOnly = true;\n\nvar colors = new Float32Array(8);\n\nmyCanvas.readPixels([ 100, 22, 12, 33 ], colors, 2, opaqueOnly);\n````\n\nThen the r,g,b components of the colors will be set to the colors at those pixels.",
-            "line": " src/canvas/canvas.js:611"
+            "line": " src/canvas/canvas.js:633"
         },
         {
             "message": "Missing item type\nImplement protected virtual template method {{#crossLink \"Geometry/method:_update\"}}{{/crossLink}},\nto generate geometry data arrays.",
@@ -28060,35 +28106,35 @@
         },
         {
             "message": "Missing item type\nClamps a value to the given range.",
-            "line": " src/math/math.js:140"
+            "line": " src/math/math.js:142"
         },
         {
             "message": "Missing item type\nCreates a three-element vector from the rotation part of a sixteen-element matrix.",
-            "line": " src/math/math.js:727"
+            "line": " src/math/math.js:729"
         },
         {
             "message": "Missing item type\nConverts an n-element vector to a JSON-serializable\narray with values rounded to two decimal places.",
-            "line": " src/math/math.js:760"
+            "line": " src/math/math.js:762"
         },
         {
             "message": "Missing item type\nEfficiently post-concatenates a translation to the given matrix.",
-            "line": " src/math/math.js:1332"
+            "line": " src/math/math.js:1334"
         },
         {
             "message": "Missing item type\nEfficiently post-concatenates a translation to the given matrix.",
-            "line": " src/math/math.js:1341"
+            "line": " src/math/math.js:1343"
         },
         {
             "message": "Missing item type\nCreates a matrix from a quaternion rotation and vector translation",
-            "line": " src/math/math.js:1551"
+            "line": " src/math/math.js:1553"
         },
         {
             "message": "Missing item type\nGets Euler angles from a 4x4 matrix.",
-            "line": " src/math/math.js:1601"
+            "line": " src/math/math.js:1603"
         },
         {
             "message": "Missing item type\nInitializes a quaternion from Euler angles.",
-            "line": " src/math/math.js:2255"
+            "line": " src/math/math.js:2257"
         },
         {
             "message": "Missing item type\nBoundary math functions.",

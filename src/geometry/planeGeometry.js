@@ -163,7 +163,7 @@
 
             offset = 0;
 
-            var indices = new ( ( positions.length / 3 ) > 65535 ? Uint32Arraz : Uint16Array )(planeX * planeZ * 6);
+            var indices = new ( ( positions.length / 3 ) > 65535 ? Uint32Array : Uint16Array )(planeX * planeZ * 6);
 
             for (iz = 0; iz < planeZ; iz++) {
 

@@ -739,12 +739,12 @@
                 this._aabb = xeogl.math.AABB3();
             }
 
-            var xmin = 100000;
-            var ymin = 100000;
-            var zmin = 100000;
-            var xmax = -100000;
-            var ymax = -100000;
-            var zmax = -100000;
+            var xmin = xeogl.math.MAX_DOUBLE;
+            var ymin = xeogl.math.MAX_DOUBLE;
+            var zmin = xeogl.math.MAX_DOUBLE;
+            var xmax = -xeogl.math.MAX_DOUBLE;
+            var ymax = -xeogl.math.MAX_DOUBLE;
+            var zmax = -xeogl.math.MAX_DOUBLE;
 
             var component;
             var worldBoundary;
