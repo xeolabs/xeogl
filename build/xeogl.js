@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2017-10-17
+ * Built on 2017-10-18
  *
  * MIT License
  * Copyright 2017, Lindsay Kay
@@ -11420,6 +11420,12 @@ var Canvas2Image = (function () {
 
         draw: function (frameCtx) {
 
+            var draw = this.program.draw;
+            var state = this.state;
+            var gl = this.program.gl;
+            var maxTextureUnits = xeogl.WEBGL_INFO.MAX_TEXTURE_UNITS;
+         //   frameCtx.textureUnit = 0;
+
             var backfaces = state.backfaces;
             if (frameCtx.backfaces !== backfaces) {
                 if (backfaces) {
@@ -11438,12 +11444,6 @@ var Canvas2Image = (function () {
                 }
                 frameCtx.frontface = frontface;
             }
-
-            var draw = this.program.draw;
-            var state = this.state;
-            var gl = this.program.gl;
-            var maxTextureUnits = xeogl.WEBGL_INFO.MAX_TEXTURE_UNITS;
-         //   frameCtx.textureUnit = 0;
 
             if (this._uBaseColor) {
                 this._uBaseColor.setValue(state.baseColor);
@@ -25108,7 +25108,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
             offset = 0;
 
-            var indices = new ( ( positions.length / 3 ) > 65535 ? Uint32Arraz : Uint16Array )(planeX * planeZ * 6);
+            var indices = new ( ( positions.length / 3 ) > 65535 ? Uint32Array : Uint16Array )(planeX * planeZ * 6);
 
             for (iz = 0; iz < planeZ; iz++) {
 
@@ -35886,8 +35886,8 @@ TODO
         _getJSON: function () {
             var vecToColor = xeogl.math.vecToColor;
             return {
-                edgeColor: vecToArray(this._state.edgeColor),
-                centerColor: vecToArray(this._state.centerColor),
+                edgeColor: xeogl.math.vecToArray(this._state.edgeColor),
+                centerColor: xeogl.math.vecToArray(this._state.centerColor),
                 edgeBias: this._state.edgeBias,
                 centerBias: this._state.centerBias,
                 power: this._state.power
