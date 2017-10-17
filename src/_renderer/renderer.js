@@ -543,7 +543,6 @@
 
             gl.enable(gl.DEPTH_TEST);
             gl.frontFace(gl.CCW);
-          //  gl.enable(gl.CULL_FACE);
             gl.disable(gl.CULL_FACE);
             gl.depthMask(true);
             gl.colorMask(true, true, true, false);
@@ -623,14 +622,29 @@
 
             // Draw transparent objects
 
+            var blendType = true;
+            var transparentDepthMask = true;
+
             if (numTransparentObjects > 0) {
 
                 gl.enable(gl.CULL_FACE);
                 gl.enable(gl.BLEND);
-             //   gl.depthMask(false);
-                gl.blendEquation(gl.FUNC_ADD);
-               // gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-                gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+
+                frameCtx.backfaces = false;
+
+                if (!transparentDepthMask) {
+                    gl.depthMask(false);
+                }
+
+                if (blendType) {
+
+                    // Makes glTF windows appear correct
+                     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+                } else {
+
+                    gl.blendEquation(gl.FUNC_ADD);
+                    gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+                }
 
                 gl.colorMask(true, true, true, true);
 
