@@ -62,6 +62,12 @@
 
         draw: function (frameCtx) {
 
+            var draw = this.program.draw;
+            var state = this.state;
+            var gl = this.program.gl;
+            var maxTextureUnits = xeogl.WEBGL_INFO.MAX_TEXTURE_UNITS;
+         //   frameCtx.textureUnit = 0;
+
             var backfaces = state.backfaces;
             if (frameCtx.backfaces !== backfaces) {
                 if (backfaces) {
@@ -80,12 +86,6 @@
                 }
                 frameCtx.frontface = frontface;
             }
-
-            var draw = this.program.draw;
-            var state = this.state;
-            var gl = this.program.gl;
-            var maxTextureUnits = xeogl.WEBGL_INFO.MAX_TEXTURE_UNITS;
-         //   frameCtx.textureUnit = 0;
 
             if (this._uBaseColor) {
                 this._uBaseColor.setValue(state.baseColor);
