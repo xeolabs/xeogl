@@ -16,11 +16,13 @@
 <body>
 
 <div id="info">
-<h1>user-defined clipping planes</h1>
-<ul>
-<li>using <a href="../docs/classes/Clip.html" target="_parent">Clip</a> components to create eight arbitrary clipping planes</li>
-<li>visualizing each plane with a <a href="../docs/classes/ClipHelper.html" target="_parent">ClipHelper</a></li>
-</ul>
+    <h1>user-defined clipping planes</h1>
+    <ul>
+        <li>using <a href="../docs/classes/Clip.html" target="_parent">Clip</a> components to create eight arbitrary
+            clipping planes
+        </li>
+        <li>visualizing each plane with a <a href="../docs/classes/ClipHelper.html" target="_parent">ClipHelper</a></li>
+    </ul>
 </div>
 
 <script>
@@ -85,6 +87,7 @@
     for (var i = 0, len = clips.clips.length; i < len; i++) {
         new xeogl.ClipHelper({
             clip: clips.clips[i],
+            size: [1.5, 1.5],
             visible: true
         });
     }
