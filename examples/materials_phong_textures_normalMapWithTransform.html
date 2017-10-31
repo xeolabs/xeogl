@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="js/libs/dat.gui.min.js"></script>
+
+    <script src="../build/xeogl.min.js"></script>
+
+<body>
+
+<div id="info">
+    <h1><a href="../docs/classes/BoxGeometry.html" target="_parent">BoxGeometry</a></h1>
+</div>
+
+<script>
+
+    var entity = new xeogl.Entity({
+
+        geometry: new xeogl.BoxGeometry(),
+
+        material: new xeogl.PhongMaterial({
+            diffuseMap: new xeogl.Texture({
+                src: "textures/diffuse/chesterfieldDiffuseMap.png"
+            }),
+            normalMap: new xeogl.Texture({
+                src: "textures/normal/chesterfieldNormalMap.png"
+            })
+        }),
+
+        transform: new xeogl.Rotate({
+            xyz: [0.2, 0.2, 0],
+            angle: 0,
+            parent: new xeogl.Translate({
+                xyz: [0, 0, 0]
+            })
+        })
+    });
+
+
+    var scene = entity.scene;
+
+    var view = scene.camera.view;
+
+    view.eye = [0, 0, -10];
+    var x = -5;
+
+    scene.on("tick", function () {
+
+//        view.rotateEyeY(0.3);
+//        view.rotateEyeX(0.1);
+
+        entity.transform.parent.xyz = [x, 0, 0];
+        entity.transform.angle += 0.2;
+
+        x += 0.03;
+    });
+
+    new xeogl.CameraControl();
+
+</script>
+</body>
+</html>
