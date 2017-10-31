@@ -294,7 +294,6 @@
 
             // Event support - lazy creating these properties because
             // they are expensive to have around if not using them
-            this._events = null;
             this._handleMap = null; // Subscription handle pool
             this._handleEvents = null; // Subscription handles mapped to event names
             this._eventSubs = null; // Event names mapped to subscribers
@@ -543,6 +542,17 @@
                     callback(value);
                 },
                 scope);
+        },
+
+        /**
+         * Returns true if there are any subscribers to the given event on this component.
+         *
+         * @method hasSubs
+         * @param {String} event The event
+         * @return {Boolean} True if there are any subscribers to the given event on this component.
+         */
+        hasSubs: function (event) {
+            return (this._eventSubs && !!this._eventSubs[event]);
         },
 
         /**
