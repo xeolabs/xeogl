@@ -19,7 +19,7 @@
 
 <script>
 
-    const src = "models/gltf/GearboxAssy/glTF/GearboxAssy.gltf";
+    const src = "models/gltf/GearboxAssy/glTF-Embedded/GearboxAssy.gltf";
 
     var model = new xeogl.Model();
 
@@ -34,13 +34,8 @@
                     error(e);
                 }
 
-                var basePath = getBasePath(src);
-
                 var options = {
-                    basePath: basePath,
-                    loadBuffer: function(url, ok, err) {
-                        loadBuffer(basePath + url, ok, err);
-                    }
+                    basePath: getBasePath(src)
                 };
 
                 xeogl.GLTFModel.parse(model, json, options);
@@ -64,23 +59,6 @@
         };
         req.send(null);
     }
-
-    var loadBuffer = function (src, ok, err) {
-        var req = new XMLHttpRequest();
-        req.responseType = 'arraybuffer';
-        req.open('GET', src, true);
-        req.onreadystatechange = function () {
-            if (req.readyState == 4) {
-                if (req.status == "200") {
-                    ok(req.response);
-                } else {
-                    err('loadBuffer error : ' + req.response);
-                }
-                ok(null, req.response, null);
-            }
-        };
-        req.send(null);
-    };
 
     function getBasePath(src) {
         var i = src.lastIndexOf("/");
