@@ -2057,6 +2057,54 @@
         },
 
         /**
+         * Transforms an array of positions by a 4x4 matrix.
+         * @method transformPositions4
+         * @static
+         */
+        transformPositions4: function (m, p, p2) {
+
+            p2 = p2 || p;
+
+            var i;
+            var len = p.length;
+
+            var x;
+            var y;
+            var z;
+
+            var m0 = m[0];
+            var m1 = m[1];
+            var m2 = m[2];
+            var m3 = m[3];
+            var m4 = m[4];
+            var m5 = m[5];
+            var m6 = m[6];
+            var m7 = m[7];
+            var m8 = m[8];
+            var m9 = m[9];
+            var m10 = m[10];
+            var m11 = m[11];
+            var m12 = m[12];
+            var m13 = m[13];
+            var m14 = m[14];
+            var m15 = m[15];
+
+            for (i = 0; i < len; i += 4) {
+
+                x = p[i + 0];
+                y = p[i + 1];
+                z = p[i + 2];
+
+                p2[i + 0] = (m0 * x) + (m4 * y) + (m8 * z) + m12;
+                p2[i + 1] = (m1 * x) + (m5 * y) + (m9 * z) + m13;
+                p2[i + 2] = (m2 * x) + (m6 * y) + (m10 * z) + m14;
+                p2[i + 3] = (m3 * x) + (m7 * y) + (m11 * z) + m15;
+            }
+
+            return p2;
+        },
+
+        /**
          * Transforms a three-element vector by a 4x4 matrix.
          * @method transformVec3
          * @static
