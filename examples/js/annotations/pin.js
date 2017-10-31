@@ -87,7 +87,7 @@
  @param [cfg.primIndex=0] {Number} Index of the triangle containing the Pin. Within the {{#crossLink "Entity"}}Entity's{{/crossLink}} {{#crossLink "Geometry/indices:property"}}Geometry indices{{/crossLink}}, this is the index of the first vertex for the triangle.
  @param [cfg.bary=[0.3,0.3,0.3]] {Float32Array} Barycentric coordinates of the Pin within its triangle.
  @param [cfg.offset=0.2] {Number} How far the Pin is lifted out of its triangle, along the surface normal vector. This is used when occlusion culling, to ensure that the Pin is not lost inside the surface it's attached to.
- @param [cfg.occludable=true] {Boolean} Indicates whether occlusion testing is performed for the Pin, where it will be flagged invisible whenever it's hidden by something else in the 3D view.
+ @param [cfg.occludable=false] {Boolean} Indicates whether occlusion testing is performed for the Pin, where it will be flagged invisible whenever it's hidden by something else in the 3D view.
  @extends Component
  */
 (function () {
@@ -271,12 +271,11 @@
             this._worldPos = new Float32Array(3);
             this._viewPos = new Float32Array(3);
             this._canvasPos = new Float32Array(2);
+            this._localNormal = new Float32Array(3);
+            this._worldNormal = new Float32Array(3);
 
             this._localPosDirty = true;
             this._worldPosDirty = false;
-
-            this._visTester = getVisibilityTester(this.scene);
-            this._visTester.addPin(this);
 
             this.entity = cfg.entity;
             this.primIndex = cfg.primIndex;
@@ -437,13 +436,31 @@
              Fires a {{#crossLink "Pin/occludable:event"}}{{/crossLink}} event on change.
 
              @property occludable
-             @default true
+             @default false
              @type Float32Array
              */
             occludable: {
 
                 set: function (value) {
-                    this._occludable = (value !== false);
+
+                    value = !!value;
+
+                    if (value === this._occludable) {
+                        return;
+                    }
+
+                    this._occludable = value;
+
+                    if (this._occludable) {
+                        if (!this._visTester) {
+                            this._visTester = getVisibilityTester(this.scene);
+                        }
+                        this._visTester.addPin(this);
+                    } else {
+                        if (this._visTester) {
+                            this._visTester.removePin(this);
+                        }
+                    }
 
                     /**
                      * Fired whenever this Pin's {{#crossLink "Pin/occludable:property"}}{{/crossLink}} property changes.
@@ -551,6 +568,26 @@
             },
 
             /**
+             World-space normal vector of this Pin.
+
+             This is read-only and is automatically calculated.
+
+             Fires a {{#crossLink "Pin/worldNormal:event"}}{{/crossLink}} event on change.
+
+             @property worldNormal
+             @default [0,0,1]
+             @type Float32Array
+             @final
+             */
+            worldNormal: {
+
+                get: function () {
+                    this.__update();
+                    return this._worldNormal;
+                }
+            },
+
+            /**
              Indicates if this Pin is currently visible.
 
              This is read-only and is automatically calculated.
@@ -600,7 +637,9 @@
             if (!visible) {
                 this._setVisible(false);
             }
-            this._visTester.setPinTestable(this.id, visible);
+            if (this._visTester) {
+                this._visTester.setPinTestable(this.id, visible);
+            }
         },
 
         _entityDetached: function (entity) {
@@ -613,6 +652,7 @@
         _update: function () {
 
             var localPosDirty = this._localPosDirty;
+            var localNormalDirty = this._localNormalDirty;
             var worldPosDirty = localPosDirty || this._worldPosDirty;
 
             this.__update();
@@ -633,6 +673,12 @@
                  * @event worldPos
                  */
                 this.fire("worldPos", this._worldPos);
+
+                /**
+                 * Fired whenever this Pin's {{#crossLink "Pin/worldNormal:property"}}{{/crossLink}} property changes.
+                 * @event worldNormal
+                 */
+                this.fire("worldNormal", this._worldNormal);
             }
         },
 
@@ -699,6 +745,7 @@
 
                     this._localPosDirty = false;
                     this._worldPosDirty = true;
+                    this._worldNormalDirty = true;
                 }
 
                 if (this._worldPosDirty) {
@@ -708,9 +755,21 @@
                     var transform = entity.transform;
                     transform ? math.transformPoint3(transform.leafMatrix, this._localPos, this._worldPos) : this._worldPos.set(this._localPos);
 
-                    this._visTester.setPinWorldPos(this.id, this._worldPos);
+                    if (this._visTester) {
+                        this._visTester.setPinWorldPos(this.id, this._worldPos);
+                    }
 
                     this._worldPosDirty = false;
+                }
+
+                if (this._worldNormalDirty) {
+
+                    // Transform Local normal into World space
+
+                    var transform = entity.transform;
+                    transform ? math.transformVec3(transform.leafMatrix, this._localNormal, this._worldNormal) : this._worldNormal.set(this._localNormal);
+
+                    this._worldNormalDirty = false;
                 }
             };
 
@@ -746,7 +805,9 @@
         },
 
         _destroy: function () {
-            this._visTester.removePin(this.id);
+            if (this._visTester) {
+                this._visTester.removePin(this.id);
+            }
         }
     });
 })();
