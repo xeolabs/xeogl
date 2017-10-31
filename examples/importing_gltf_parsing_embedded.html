@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.js"></script>
+
+    <script src="js/models/glTFModel.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel.parse</a> - parsing glTF JSON</h1>
+</div>
+
+<script>
+
+    const src = "models/gltf/GearboxAssy/glTF-Embedded/GearboxAssy.gltf";
+
+    var model = new xeogl.Model();
+
+    model.scene.canvas.spinner.processes++;
+
+    loadJSON(src, function (response) {
+
+                var json;
+                try {
+                    json = JSON.parse(response);
+                } catch (e) {
+                    error(e);
+                }
+
+                var options = {
+                    basePath: getBasePath(src)
+                };
+
+                xeogl.GLTFModel.parse(model, json, options);
+
+                model.scene.canvas.spinner.processes--;
+            },
+            function (err) {
+                model.error(err);
+            });
+
+
+    function loadJSON(src, ok) {
+        var req = new XMLHttpRequest();
+        req.overrideMimeType("application/json");
+        req.open('GET', src, true);
+        req.onreadystatechange = function () {
+            if (req.readyState == 4 && // Request finished, response ready
+                    req.status == "200") { // Status OK
+                ok(req.responseText, this);
+            }
+        };
+        req.send(null);
+    }
+
+    function getBasePath(src) {
+        var i = src.lastIndexOf("/");
+        return (i !== 0) ? src.substring(0, i + 1) : "";
+    }
+
+    var view = xeogl.scene.camera.view;
+    view.eye = [10.15, 28.75, -60.93];
+    view.look = [21.66, 10.49, -6.8];
+    view.up = [0.07, 0.95, 0.31];
+
+    var cameraControl = new xeogl.CameraControl();
+
+    model.on("loaded", function () {
+        var cameraFlight = new xeogl.CameraFlightAnimation();
+        cameraFlight.flyTo(model);
+    });
+
+    // Start orbiting thecamera
+    model.scene.on("tick", function () {
+        model.scene.camera.view.rotateEyeY(-0.2);
+    });
+
+</script>
+</body>
+</html>

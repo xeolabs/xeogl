@@ -84,6 +84,7 @@
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
+                                <li><a href="../classes/MousePickControl.html">MousePickControl</a></li>
                                 <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
@@ -96,12 +97,14 @@
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/Pin.html">Pin</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
+                                <li><a href="../classes/PlaneHelper.html">PlaneHelper</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
-                                <li><a href="../classes/PointLightHelper.html">PointLightHelper</a></li>
                                 <li><a href="../classes/PointMarkings.html">PointMarkings</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
+                                <li><a href="../classes/Region.html">Region</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
+                                <li><a href="../classes/Ruler.html">Ruler</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
@@ -121,7 +124,6 @@
                                 <li><a href="../classes/Transform.html">Transform</a></li>
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
-                                <li><a href="../classes/ViewCube.html">ViewCube</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
                                 <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
@@ -464,10 +466,13 @@
      *
      * @param {Model} model Model to parse into.
      * @param {Object} gltf The glTF JSON.
-     * @param {String} [basePath] Base path path to find external resources on, if any.
+     * @param {Object} [options] Parsing options
+     * @param {String} [options.basePath] Base path path to find external resources on, if any.
+     * @param {String} [options.loadBuffer] Callback to load buffer files.
      */
-    xeogl.GLTFModel.parse = function (model, gltf, basePath) {
-        parseGLTF(gltf, &quot;&quot;, basePath || &quot;&quot;, model, function () {
+    xeogl.GLTFModel.parse = function (model, gltf, options) {
+        options = options || {};
+        parseGLTF(gltf, &quot;&quot;, options, model, function () {
                 model.fire(&quot;loaded&quot;, true, true);
             },
             function (msg) {
@@ -485,17 +490,16 @@
         return function (model, src, ok, error) {
 
             loadJSON(src, function (response) { // OK
-
                     var json;
                     try {
                         json = JSON.parse(response);
                     } catch (e) {
                         error(e);
                     }
-
-                    var basePath = getBasePath(src);
-
-                    parseGLTF(json, src, basePath, model, ok, error);
+                    var options = {
+                        basePath: getBasePath(src)
+                    };
+                    parseGLTF(json, src, options, model, ok, error);
                 },
                 error);
         };
@@ -553,11 +557,12 @@
             &#x27;MAT4&#x27;: 16
         };
 
-        return function (json, src, basePath, model, ok) {
+        return function (json, src, options, model, ok) {
 
             var ctx = {
                 src: src,
-                basePath: basePath,
+                loadBuffer: options.loadBuffer,
+                basePath: options.basePath,
                 json: json,
                 scene: model.scene,
                 model: model
@@ -645,19 +650,26 @@
                     }, 0);
                 }
             } else {
-                var request = new XMLHttpRequest();
-                request.responseType = &#x27;arraybuffer&#x27;;
-                request.open(&#x27;GET&#x27;, ctx.basePath + url, true);
-                request.onreadystatechange = function () {
-                    if (request.readyState == 4) {
-                        if (request.status == &quot;200&quot;) {
-                            ok(request.response);
-                        } else {
-                            err(&#x27;loadArrayBuffer error : &#x27; + request.response);
+
+                if (ctx.loadBuffer) {
+                    ctx.loadBuffer(url, ok, err);
+
+                } else {
+
+                    var request = new XMLHttpRequest();
+                    request.responseType = &#x27;arraybuffer&#x27;;
+                    request.open(&#x27;GET&#x27;, ctx.basePath + url, true);
+                    request.onreadystatechange = function () {
+                        if (request.readyState == 4) {
+                            if (request.status == &quot;200&quot;) {
+                                ok(request.response);
+                            } else {
+                                err(&#x27;loadArrayBuffer error : &#x27; + request.response);
+                            }
                         }
-                    }
-                };
-                request.send(null);
+                    };
+                    request.send(null);
+                }
             }
         }
 
@@ -1155,13 +1167,12 @@
                     var entityId;
                     var entity;
                     var numMeshes = meshes.length;
-                    var manyMeshes = numMeshes &gt; 1;
 
                     for (var i = 0, len = numMeshes; i &lt; len; i++) {
 
                         mesh = meshes[i];
 
-                        entityId = makeEntityId(ctx, nodeInfo, nodeIdx, manyMeshes);
+                        entityId = makeEntityId(ctx, nodeInfo, nodeIdx);
 
                         var meta = nodeInfo.extra || {};
                         meta.name = nodeInfo.name;
@@ -1204,11 +1215,8 @@
             }
         }
 
-        function makeEntityId(ctx, nodeInfo, nodeIdx, manyMeshes) {
+        function makeEntityId(ctx, nodeInfo, nodeIdx) {
             var id = makeID(ctx, nodeInfo.name || nodeIdx);
-            if (!manyMeshes &amp;&amp; !ctx.model.entities[id]) {
-                return id;
-            }
             var id2;
             var i = 0;
             while (true) {

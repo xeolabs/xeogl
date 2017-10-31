@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2017-10-18
+ * Built on 2017-10-31
  *
  * MIT License
  * Copyright 2017, Lindsay Kay
@@ -159,6 +159,7 @@
             //},
             components: {
                 scenes: 0,
+                models: 0,
                 entities: 0
             },
             memory: {
@@ -3220,6 +3221,54 @@ var Canvas2Image = (function () {
         },
 
         /**
+         * Transforms an array of positions by a 4x4 matrix.
+         * @method transformPositions4
+         * @static
+         */
+        transformPositions4: function (m, p, p2) {
+
+            p2 = p2 || p;
+
+            var i;
+            var len = p.length;
+
+            var x;
+            var y;
+            var z;
+
+            var m0 = m[0];
+            var m1 = m[1];
+            var m2 = m[2];
+            var m3 = m[3];
+            var m4 = m[4];
+            var m5 = m[5];
+            var m6 = m[6];
+            var m7 = m[7];
+            var m8 = m[8];
+            var m9 = m[9];
+            var m10 = m[10];
+            var m11 = m[11];
+            var m12 = m[12];
+            var m13 = m[13];
+            var m14 = m[14];
+            var m15 = m[15];
+
+            for (i = 0; i < len; i += 4) {
+
+                x = p[i + 0];
+                y = p[i + 1];
+                z = p[i + 2];
+
+                p2[i + 0] = (m0 * x) + (m4 * y) + (m8 * z) + m12;
+                p2[i + 1] = (m1 * x) + (m5 * y) + (m9 * z) + m13;
+                p2[i + 2] = (m2 * x) + (m6 * y) + (m10 * z) + m14;
+                p2[i + 3] = (m3 * x) + (m7 * y) + (m11 * z) + m15;
+            }
+
+            return p2;
+        },
+
+        /**
          * Transforms a three-element vector by a 4x4 matrix.
          * @method transformVec3
          * @static
@@ -5743,7 +5792,7 @@ var Canvas2Image = (function () {
                 this.ambientColor[2] = 0;
             }
 
-            frameCtx.backfaces = true;
+            frameCtx.backfaces = false;
             frameCtx.frontface = true; // true == "ccw" else "cw"
             frameCtx.textureUnit = 0;
             frameCtx.ambientColor = this.ambientColor;
@@ -5763,7 +5812,7 @@ var Canvas2Image = (function () {
 
             gl.enable(gl.DEPTH_TEST);
             gl.frontFace(gl.CCW);
-            gl.disable(gl.CULL_FACE);
+            gl.enable(gl.CULL_FACE);
             gl.depthMask(true);
             gl.colorMask(true, true, true, false);
 
@@ -12363,7 +12412,6 @@ var Canvas2Image = (function () {
 
             // Event support - lazy creating these properties because
             // they are expensive to have around if not using them
-            this._events = null;
             this._handleMap = null; // Subscription handle pool
             this._handleEvents = null; // Subscription handles mapped to event names
             this._eventSubs = null; // Event names mapped to subscribers
@@ -12612,6 +12660,17 @@ var Canvas2Image = (function () {
                     callback(value);
                 },
                 scope);
+        },
+
+        /**
+         * Returns true if there are any subscribers to the given event on this component.
+         *
+         * @method hasSubs
+         * @param {String} event The event
+         * @return {Boolean} True if there are any subscribers to the given event on this component.
+         */
+        hasSubs: function (event) {
+            return (this._eventSubs && !!this._eventSubs[event]);
         },
 
         /**
@@ -13566,6 +13625,15 @@ var Canvas2Image = (function () {
              */
             this.entities = {};
 
+            /**
+             * The {{#crossLink "Model"}}{{/crossLink}}s within
+             * this Scene, mapped to their IDs.
+             *
+             * @property entities
+             * @type {String:xeogl.Model}
+             */
+            this.models = {};
+
             // Map of components created with #getSharedComponent, mapped to their "share IDs"
             this._sharedComponents = {};
 
@@ -13754,6 +13822,16 @@ var Canvas2Image = (function () {
                 xeogl.stats.components.entities++;
             }
 
+            if (c.isType("xeogl.Model")) {
+
+                this.models[c.id] = c;
+
+                // Update scene statistics
+
+                xeogl.stats.components.models++;
+            }
+
+
             /**
              * Fired whenever a component has been created within this Scene.
              * @event componentCreated
@@ -13794,6 +13872,15 @@ var Canvas2Image = (function () {
                 delete this.entities[c.id];
 
                 delete this._dirtyEntities[c.id];
+            }
+
+            if (c.isType("xeogl.Model")) {
+
+                // Component is a xeogl.Model, or a subtype thereof
+
+                xeogl.stats.components.models--;
+
+                delete this.models[c.id];
             }
 
             /**
@@ -14192,10 +14279,6 @@ var Canvas2Image = (function () {
                                 //    id: "default.light0",
                                 //    color: [0.55, 0.55, 0.6],
                                 //    intensity: 1.0
-                                //}),
-
-                                //new xeogl.AmbientLight(this, {
-                                //    color: [0.5, 0.5, 0.55]
                                 //}),
 
                                 //new xeogl.SpotLight(this, {
@@ -32712,6 +32795,8 @@ TODO
 
             this.alphaMode = cfg.alphaMode;
             this.alphaCutoff = cfg.alphaCutoff;
+            this.backfaces = cfg.backfaces;
+            this.frontface = cfg.frontface;
         },
 
         _props: {
@@ -40481,7 +40566,7 @@ TODO
         }),
 
         project: new xeogl.Perspective({
-            fovy: 60,
+            fovy: 50,
             near: 0.1,
             far: 1000
         })
@@ -40501,7 +40586,7 @@ TODO
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Perspective.
  @param [cfg.parent] {String|Transform} ID or instance of a parent {{#crossLink "Transform"}}{{/crossLink}} within the same {{#crossLink "Scene"}}Scene{{/crossLink}}.
- @param [cfg.fovy=60.0] {Number} Field-of-view angle, in degrees, on Y-axis.
+ @param [cfg.fovy=50.0] {Number} Field-of-view angle, in degrees, on Y-axis.
  @param [cfg.near=0.1] {Number} Position of the near plane on the View-space Z-axis.
  @param [cfg.far=10000] {Number} Position of the far plane on the View-space Z-axis.
  @extends Transform
@@ -40519,7 +40604,7 @@ TODO
             this._super(cfg);
 
             this._dirty = false;
-            this._fovy = 60.0;
+            this._fovy = 50.0;
             this._near = 0.1;
             this._far = 10000.0;
 
@@ -40547,14 +40632,14 @@ TODO
              * Fires a {{#crossLink "Perspective/fovy:event"}}{{/crossLink}} event on change.
              *
              * @property fovy
-             * @default 60.0
+             * @default 50.0
              * @type Number
              */
             fovy: {
 
                 set: function (value) {
 
-                    this._fovy = (value !== undefined && value !== null) ? value : 60.0;
+                    this._fovy = (value !== undefined && value !== null) ? value : 50.0;
 
                     this._renderer.imageDirty = true;
 

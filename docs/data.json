@@ -708,6 +708,13 @@
             "fors": {},
             "namespaces": {}
         },
+        "src/math/mathGeometryBuild.2.js": {
+            "name": "src/math/mathGeometryBuild.2.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
         "src/math/mathGeometryBuild.js": {
             "name": "src/math/mathGeometryBuild.js",
             "modules": {},
@@ -949,6 +956,31 @@
             "fors": {},
             "namespaces": {}
         },
+        "examples/js/annotations/region.js": {
+            "name": "examples/js/annotations/region.js",
+            "modules": {},
+            "classes": {
+                "Region": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "examples/js/annotations/ruler.js": {
+            "name": "examples/js/annotations/ruler.js",
+            "modules": {},
+            "classes": {
+                "Ruler": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "examples/js/controls/BIMPickingControl.js": {
+            "name": "examples/js/controls/BIMPickingControl.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
         "examples/js/controls/_module.js": {
             "name": "examples/js/controls/_module.js",
             "modules": {},
@@ -960,6 +992,15 @@
             "name": "examples/js/controls/bimCameraControl.js",
             "modules": {},
             "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "examples/js/controls/mousePickControl.js": {
+            "name": "examples/js/controls/mousePickControl.js",
+            "modules": {},
+            "classes": {
+                "MousePickControl": 1
+            },
             "fors": {},
             "namespaces": {}
         },
@@ -1304,12 +1345,26 @@
             "fors": {},
             "namespaces": {}
         },
+        "examples/js/helpers/mousePickHelper.js": {
+            "name": "examples/js/helpers/mousePickHelper.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "examples/js/helpers/planeHelper.js": {
+            "name": "examples/js/helpers/planeHelper.js",
+            "modules": {},
+            "classes": {
+                "PlaneHelper": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
         "examples/js/helpers/pointLightHelper.js": {
             "name": "examples/js/helpers/pointLightHelper.js",
             "modules": {},
-            "classes": {
-                "PointLightHelper": 1
-            },
+            "classes": {},
             "fors": {},
             "namespaces": {}
         },
@@ -1327,9 +1382,7 @@
         "examples/js/helpers/viewCube.js": {
             "name": "examples/js/helpers/viewCube.js",
             "modules": {},
-            "classes": {
-                "ViewCube": 1
-            },
+            "classes": {},
             "fors": {},
             "namespaces": {}
         }
@@ -1426,6 +1479,9 @@
                 "CameraPathAnimation": 1,
                 "Annotation": 1,
                 "Pin": 1,
+                "Region": 1,
+                "Ruler": 1,
+                "MousePickControl": 1,
                 "CardboardEffect": 1,
                 "StereoEffect": 1,
                 "CubicBezierCurve": 1,
@@ -1452,7 +1508,7 @@
                 "AxisHelper": 1,
                 "ClipHelper": 1,
                 "LabelHelper": 1,
-                "PointLightHelper": 1
+                "PlaneHelper": 1
             },
             "fors": {},
             "namespaces": {
@@ -1460,7 +1516,7 @@
                 "xeogl": 1
             },
             "tag": "main",
-            "file": "examples/js/helpers/pointLightHelper.js",
+            "file": "examples/js/helpers/planeHelper.js",
             "line": 1,
             "description": "The xeogl namespace.",
             "is_constructor": 1,
@@ -1618,14 +1674,15 @@
             "name": "controls",
             "submodules": {},
             "classes": {
-                "CameraControl": 1
+                "CameraControl": 1,
+                "MousePickControl": 1
             },
             "fors": {},
             "is_submodule": 1,
             "namespaces": {},
             "module": "xeogl",
             "namespace": "",
-            "file": "src/controls/cameraControl.js",
+            "file": "examples/js/controls/mousePickControl.js",
             "line": 1,
             "description": "Components for controlling things with user input.",
             "is_constructor": 1,
@@ -1710,17 +1767,15 @@
             },
             "classes": {
                 "SplineCurveHelper": 1,
-                "Entity": 1,
-                "PointLightHelper": 1,
-                "ViewCube": 1
+                "Entity": 1
             },
             "fors": {},
             "is_submodule": 1,
             "namespaces": {},
             "module": "xeogl",
             "namespace": "",
-            "file": "examples/js/helpers/viewCube.js",
-            "line": 5,
+            "file": "examples/js/helpers/splineCurveHelper.js",
+            "line": 1,
             "description": "Shows the shape and control points of {{#crossLink \"SplineCurve\"}}{{/crossLink}}",
             "tag": "module"
         },
@@ -5500,7 +5555,7 @@
             "namespace": "",
             "file": "src/transforms/perspective.js",
             "line": 1,
-            "description": "A **Perspective** is a {{#crossLink \"Transform\"}}{{/crossLink}} that defines a perspective projection transform.\n\n## Overview\n\n* {{#crossLink \"Camera\"}}Camera{{/crossLink}} components pair these with viewing transform components, such as\n{{#crossLink \"Lookat\"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n* Alternatively, use {{#crossLink \"Ortho\"}}{{/crossLink}} if you need a orthographic projection.\n\n<img src=\"../../../assets/images/Perspective.png\"></img>\n\n## Examples\n\n* [Camera with perspective projection](../../examples/#transforms_camera_project_perspective)\n\n## Usage\n\n````Javascript\nnew xeogl.Entity({\n\n    camera: xeogl.Camera({\n\n       view: new xeogl.Lookat({\n           eye: [0, 0, -4],\n           look: [0, 0, 0],\n           up: [0, 1, 0]\n       }),\n\n       project: new xeogl.Perspective({\n           fovy: 60,\n           near: 0.1,\n           far: 1000\n       })\n    }),\n\n    perspective: new xeogl.BoxGeometry()\n});\n````",
+            "description": "A **Perspective** is a {{#crossLink \"Transform\"}}{{/crossLink}} that defines a perspective projection transform.\n\n## Overview\n\n* {{#crossLink \"Camera\"}}Camera{{/crossLink}} components pair these with viewing transform components, such as\n{{#crossLink \"Lookat\"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n* Alternatively, use {{#crossLink \"Ortho\"}}{{/crossLink}} if you need a orthographic projection.\n\n<img src=\"../../../assets/images/Perspective.png\"></img>\n\n## Examples\n\n* [Camera with perspective projection](../../examples/#transforms_camera_project_perspective)\n\n## Usage\n\n````Javascript\nnew xeogl.Entity({\n\n    camera: xeogl.Camera({\n\n       view: new xeogl.Lookat({\n           eye: [0, 0, -4],\n           look: [0, 0, 0],\n           up: [0, 1, 0]\n       }),\n\n       project: new xeogl.Perspective({\n           fovy: 50,\n           near: 0.1,\n           far: 1000\n       })\n    }),\n\n    perspective: new xeogl.BoxGeometry()\n});\n````",
             "submodule": "transforms",
             "is_constructor": 1,
             "params": [
@@ -5539,7 +5594,7 @@
                             "description": "Field-of-view angle, in degrees, on Y-axis.",
                             "type": "Number",
                             "optional": true,
-                            "optdefault": "60.0"
+                            "optdefault": "50.0"
                         },
                         {
                             "name": "near",
@@ -6438,9 +6493,204 @@
                             "description": "Indicates whether occlusion testing is performed for the Pin, where it will be flagged invisible whenever it's hidden by something else in the 3D view.",
                             "type": "Boolean",
                             "optional": true,
+                            "optdefault": "false"
+                        }
+                    ]
+                }
+            ],
+            "extends": "Component"
+        },
+        "Region": {
+            "name": "Region",
+            "shortname": "Region",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "xeogl",
+            "namespace": "",
+            "file": "examples/js/annotations/region.js",
+            "line": 1,
+            "description": "Helper that visualizes the position and direction of a plane.",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "cfg",
+                    "description": "Configuration",
+                    "type": "*",
+                    "props": [
+                        {
+                            "name": "pos",
+                            "description": "World-space position.",
+                            "type": "Float32Array",
+                            "optional": true,
+                            "optdefault": "[0,0,0]"
+                        },
+                        {
+                            "name": "dir",
+                            "description": "World-space direction vector.",
+                            "type": "Float32Array",
+                            "optional": true,
+                            "optdefault": "[0,0,1]"
+                        },
+                        {
+                            "name": "color",
+                            "description": "Emmissive color",
+                            "type": "Float32Array",
+                            "optional": true,
+                            "optdefault": "[0.4,0.4,0.4]"
+                        },
+                        {
+                            "name": "visible",
+                            "description": "Indicates whether or not this helper is visible.",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "true"
+                        },
+                        {
+                            "name": "planeSize",
+                            "description": "The width and height of the Region plane indicator.",
+                            "type": "Float32Array",
+                            "optional": true
+                        },
+                        {
+                            "name": "autoPlaneSize",
+                            "description": "Indicates whether or not this Region's\n {{#crossLink \"Region/planeSize:property\"}}{{/crossLink}} is automatically sized to fit within\n the {{#crossLink \"Scene/worldBoundary:property\"}}Scene's worldBoundary{{/crossLink}}.",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
+                        }
+                    ]
+                }
+            ]
+        },
+        "Ruler": {
+            "name": "Ruler",
+            "shortname": "Ruler",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "xeogl",
+            "namespace": "",
+            "file": "examples/js/annotations/ruler.js",
+            "line": 1,
+            "description": "Helper that visualizes the position and direction of a plane.",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "cfg",
+                    "description": "Configuration",
+                    "type": "*",
+                    "props": [
+                        {
+                            "name": "pos",
+                            "description": "World-space position.",
+                            "type": "Float32Array",
+                            "optional": true,
+                            "optdefault": "[0,0,0]"
+                        },
+                        {
+                            "name": "dir",
+                            "description": "World-space direction vector.",
+                            "type": "Float32Array",
+                            "optional": true,
+                            "optdefault": "[0,0,1]"
+                        },
+                        {
+                            "name": "color",
+                            "description": "Emmissive color",
+                            "type": "Float32Array",
+                            "optional": true,
+                            "optdefault": "[0.4,0.4,0.4]"
+                        },
+                        {
+                            "name": "visible",
+                            "description": "Indicates whether or not this helper is visible.",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "true"
+                        },
+                        {
+                            "name": "planeSize",
+                            "description": "The width and height of the Ruler plane indicator.",
+                            "type": "Float32Array",
+                            "optional": true
+                        },
+                        {
+                            "name": "autoPlaneSize",
+                            "description": "Indicates whether or not this Ruler's\n {{#crossLink \"Ruler/planeSize:property\"}}{{/crossLink}} is automatically sized to fit within\n the {{#crossLink \"Scene/worldBoundary:property\"}}Scene's worldBoundary{{/crossLink}}.",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
+                        }
+                    ]
+                }
+            ]
+        },
+        "MousePickControl": {
+            "name": "MousePickControl",
+            "shortname": "MousePickControl",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "xeogl",
+            "namespace": "",
+            "file": "examples/js/controls/mousePickControl.js",
+            "line": 1,
+            "description": "TODO - notes:\n* Only picks what is subscribed for (ie surface vs object)",
+            "submodule": "controls",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}{{/crossLink}}.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent scene, generated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this MousePickControl.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "camera",
+                            "description": "ID or instance of a {{#crossLink \"Camera\"}}Camera{{/crossLink}} to control.\n Must be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this MousePickControl. Defaults to the\n parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default instance, {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}}.",
+                            "type": "String|Camera",
+                            "optional": true
+                        },
+                        {
+                            "name": "active",
+                            "description": "Whether or not this MousePickControl is active.",
+                            "type": "Boolean",
+                            "optional": true,
                             "optdefault": "true"
                         }
                     ]
+                },
+                {
+                    "name": "firstPerson",
+                    "description": "Whether or not this MousePickControl is in \"first person\" mode.",
+                    "type": "Boolean",
+                    "optional": true,
+                    "optdefault": "false"
                 }
             ],
             "extends": "Component"
@@ -7918,10 +8168,17 @@
                             "optdefault": "true"
                         },
                         {
-                            "name": "size",
-                            "description": "The width and height of the ClipHelper plane indicator. When no value is specified,\n will automatically size to fit within the {{#crossLink \"Scene/worldBoundary:property\"}}Scene's worldBoundary{{/crossLink}}.",
+                            "name": "planeSize",
+                            "description": "The width and height of the ClipHelper plane indicator.",
                             "type": "Float32Array",
                             "optional": true
+                        },
+                        {
+                            "name": "autoPlaneSize",
+                            "description": "Indicates whether or not this ClipHelper's\n {{#crossLink \"ClipHelper/planeSize:property\"}}{{/crossLink}} is automatically sized to fit within\n the {{#crossLink \"Scene/worldBoundary:property\"}}Scene's worldBoundary{{/crossLink}}.",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
                         }
                     ]
                 }
@@ -7949,9 +8206,9 @@
                 }
             ]
         },
-        "PointLightHelper": {
-            "name": "PointLightHelper",
-            "shortname": "PointLightHelper",
+        "PlaneHelper": {
+            "name": "PlaneHelper",
+            "shortname": "PlaneHelper",
             "classitems": [],
             "plugins": [],
             "extensions": [],
@@ -7959,40 +8216,60 @@
             "extension_for": [],
             "module": "xeogl",
             "namespace": "",
-            "file": "examples/js/helpers/pointLightHelper.js",
+            "file": "examples/js/helpers/planeHelper.js",
             "line": 1,
-            "description": "A **PointLightHelper** shows a visual indicator for a {{#crossLink \"PointLight\"}}{{/crossLink}}.\n\n## Example\n\n````javascript\n\n````",
-            "submodule": "entities",
+            "description": "Helper that visualizes the position and direction of a plane.",
             "is_constructor": 1,
             "params": [
                 {
-                    "name": "scene",
-                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this PointLightHelper in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
-                    "type": "Scene",
-                    "optional": true
-                },
-                {
                     "name": "cfg",
-                    "description": "Configs",
+                    "description": "Configuration",
                     "type": "*",
-                    "optional": true,
                     "props": [
                         {
-                            "name": "id",
-                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}},\ngenerated automatically when omitted.",
-                            "type": "String",
+                            "name": "pos",
+                            "description": "World-space position.",
+                            "type": "Float32Array",
+                            "optional": true,
+                            "optdefault": "[0,0,0]"
+                        },
+                        {
+                            "name": "dir",
+                            "description": "World-space direction vector.",
+                            "type": "Float32Array",
+                            "optional": true,
+                            "optdefault": "[0,0,1]"
+                        },
+                        {
+                            "name": "color",
+                            "description": "Emmissive color",
+                            "type": "Float32Array",
+                            "optional": true,
+                            "optdefault": "[0.4,0.4,0.4]"
+                        },
+                        {
+                            "name": "visible",
+                            "description": "Indicates whether or not this helper is visible.",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "true"
+                        },
+                        {
+                            "name": "planeSize",
+                            "description": "The width and height of the PlaneHelper plane indicator.",
+                            "type": "Float32Array",
                             "optional": true
                         },
                         {
-                            "name": "meta",
-                            "description": "Optional map of user-defined metadata to attach to this PointLightHelper.",
-                            "type": "String:Object",
-                            "optional": true
+                            "name": "autoPlaneSize",
+                            "description": "Indicates whether or not this PlaneHelper's\n {{#crossLink \"PlaneHelper/planeSize:property\"}}{{/crossLink}} is automatically sized to fit within\n the {{#crossLink \"Scene/worldBoundary:property\"}}Scene's worldBoundary{{/crossLink}}.",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
                         }
                     ]
                 }
-            ],
-            "extends": "Entity"
+            ]
         },
         "SplineCurveHelper": {
             "name": "SplineCurveHelper",
@@ -8008,41 +8285,6 @@
             "line": 1,
             "description": "Shows the shape and control points of {{#crossLink \"SplineCurve\"}}{{/crossLink}}",
             "extends": "Component"
-        },
-        "ViewCube": {
-            "name": "ViewCube",
-            "shortname": "ViewCube",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "module": "entities",
-            "namespace": "",
-            "file": "examples/js/helpers/viewCube.js",
-            "line": 5,
-            "description": "Helper widget that indicates the World coordinate axis.\nThe helper works by tracking updates on a xeogl.Lookat and orienting a gnomon accordingly.",
-            "is_constructor": 1,
-            "params": [
-                {
-                    "name": "cfg",
-                    "description": "Configuration",
-                    "type": "*",
-                    "props": [
-                        {
-                            "name": "lookat",
-                            "description": "A {{#crossLink \"xeogl.Lookat\"}}{{/crossLink}} to observe.",
-                            "type": "xeogl.Lookat"
-                        },
-                        {
-                            "name": "size]  Pixel dimensions of helper's canvas, [250, 250",
-                            "description": "by default.",
-                            "type": "Int16Array",
-                            "optional": true
-                        }
-                    ]
-                }
-            ]
         }
     },
     "classitems": [
@@ -17307,7 +17549,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 376,
+            "line": 378,
             "description": "RGB diffuse color of this SpecularMaterial.\n\nMultiplies by the *RGB* components of {{#crossLink \"SpecularMaterial/diffuseMap:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"SpecularMaterial/diffuse:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "diffuse",
@@ -17319,7 +17561,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 413,
+            "line": 415,
             "description": "Fired whenever this SpecularMaterial's {{#crossLink \"SpecularMaterial/diffuse:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "diffuse",
@@ -17336,7 +17578,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 427,
+            "line": 429,
             "description": "RGB {{#crossLink \"Texture\"}}{{/crossLink}} containing the diffuse color of this SpecularMaterial, with optional *A* component for alpha.\n\nThe *RGB* components multiply by the {{#crossLink \"SpecularMaterial/diffuse:property\"}}{{/crossLink}} property,\nwhile the *A* component, if present, multiplies by the {{#crossLink \"SpecularMaterial/alpha:property\"}}{{/crossLink}} property.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this SpecularMaterial.\n\nFires a {{#crossLink \"SpecularMaterial/diffuseMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "diffuseMap",
@@ -17348,7 +17590,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 445,
+            "line": 447,
             "description": "Fired whenever this SpecularMaterial's {{#crossLink \"SpecularMaterial/diffuseMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "diffuseMap",
@@ -17364,7 +17606,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 459,
+            "line": 461,
             "description": "RGB specular color of this SpecularMaterial.\n\nMultiplies by the {{#crossLink \"SpecularMaterial/specularMap:property\"}}{{/crossLink}}\nand the *A* component of {{#crossLink \"SpecularMaterial/specularGlossinessMap:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"SpecularMaterial/specular:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "specular",
@@ -17376,7 +17618,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 497,
+            "line": 499,
             "description": "Fired whenever this SpecularMaterial's {{#crossLink \"SpecularMaterial/specular:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "specular",
@@ -17393,7 +17635,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 511,
+            "line": 513,
             "description": "RGB texture containing the specular color of this SpecularMaterial.\n\nMultiplies by the {{#crossLink \"SpecularMaterial/specular:property\"}}{{/crossLink}} property.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this SpecularMaterial.\n\nFires a {{#crossLink \"SpecularMaterial/specularMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "specularMap",
@@ -17405,7 +17647,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 528,
+            "line": 530,
             "description": "Fired whenever this SpecularMaterial's {{#crossLink \"SpecularMaterial/specularGlossinessMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "specularMap",
@@ -17421,7 +17663,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 542,
+            "line": 544,
             "description": "RGBA texture containing this SpecularMaterial's specular color in its *RGB* components and glossiness in its *A* component.\n\nThe *RGB* components multiply by the {{#crossLink \"SpecularMaterial/specular:property\"}}{{/crossLink}} property, while\nthe *A* component multiplies by the {{#crossLink \"SpecularMaterial/glossiness:property\"}}{{/crossLink}} property.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this SpecularMaterial.\n\nFires a {{#crossLink \"SpecularMaterial/specularGlossinessMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "specularGlossinessMap",
@@ -17433,7 +17675,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 560,
+            "line": 562,
             "description": "Fired whenever this SpecularMaterial's {{#crossLink \"SpecularMaterial/specularGlossinessMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "specularGlossinessMap",
@@ -17449,7 +17691,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 574,
+            "line": 576,
             "description": "Factor in the range [0..1] indicating how glossy this SpecularMaterial is.\n\n0 is no glossiness, 1 is full glossiness.\n\nMultiplies by the *R* component of {{#crossLink \"SpecularMaterial/glossinessMap:property\"}}{{/crossLink}}\nand the *A* component of {{#crossLink \"SpecularMaterial/specularGlossinessMap:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"SpecularMaterial/glossiness:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "glossiness",
@@ -17461,7 +17703,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 602,
+            "line": 604,
             "description": "Fired whenever this SpecularMaterial's {{#crossLink \"SpecularMaterial/glossiness:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "glossiness",
@@ -17478,7 +17720,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 616,
+            "line": 618,
             "description": "RGB texture containing this SpecularMaterial's glossiness in its *R* component.\n\nThe *R* component multiplies by the {{#crossLink \"SpecularMaterial/glossiness:property\"}}{{/crossLink}} property.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this SpecularMaterial.\n\nFires a {{#crossLink \"SpecularMaterial/glossinessMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "glossinessMap",
@@ -17490,7 +17732,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 633,
+            "line": 635,
             "description": "Fired whenever this SpecularMaterial's {{#crossLink \"SpecularMaterial/glossinessMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "glossinessMap",
@@ -17506,7 +17748,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 647,
+            "line": 649,
             "description": "Factor in the range [0..1] indicating amount of specular Fresnel.\n\nFires a {{#crossLink \"SpecularMaterial/specularF0:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "specularF0",
@@ -17518,7 +17760,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 670,
+            "line": 672,
             "description": "Fired whenever this SpecularMaterial's {{#crossLink \"SpecularMaterial/specularF0:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "specularF0",
@@ -17535,7 +17777,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 684,
+            "line": 686,
             "description": "RGB emissive color of this SpecularMaterial.\n\nMultiplies by {{#crossLink \"SpecularMaterial/emissiveMap:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"SpecularMaterial/emissive:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "emissive",
@@ -17547,7 +17789,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 721,
+            "line": 723,
             "description": "Fired whenever this SpecularMaterial's {{#crossLink \"SpecularMaterial/emissive:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "emissive",
@@ -17564,7 +17806,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 735,
+            "line": 737,
             "description": "RGB texture containing the emissive color of this SpecularMaterial.\n\nMultiplies by the {{#crossLink \"SpecularMaterial/emissive:property\"}}{{/crossLink}} property.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this SpecularMaterial.\n\nFires a {{#crossLink \"SpecularMaterial/emissiveMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "emissiveMap",
@@ -17576,7 +17818,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 752,
+            "line": 754,
             "description": "Fired whenever this SpecularMaterial's {{#crossLink \"SpecularMaterial/emissiveMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "emissiveMap",
@@ -17592,7 +17834,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 766,
+            "line": 768,
             "description": "Factor in the range [0..1] indicating how transparent this SpecularMaterial is.\n\nA value of 0.0 is fully transparent, while 1.0 is fully opaque.\n\nMultiplies by the *R* component of {{#crossLink \"SpecularMaterial/alphaMap:property\"}}{{/crossLink}} and\nthe *A* component, if present, of {{#crossLink \"SpecularMaterial/diffuseMap:property\"}}{{/crossLink}}.\n\nFires an {{#crossLink \"SpecularMaterial/alpha:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "alpha",
@@ -17604,7 +17846,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 794,
+            "line": 796,
             "description": "Fired whenever this SpecularMaterial's {{#crossLink \"SpecularMaterial/alpha:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "alpha",
@@ -17621,7 +17863,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 808,
+            "line": 810,
             "description": "RGB {{#crossLink \"Texture\"}}{{/crossLink}} with alpha in its *R* component.\n\nThe *R* component multiplies by the {{#crossLink \"SpecularMaterial/alpha:property\"}}{{/crossLink}} property.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this SpecularMaterial.\n\nFires an {{#crossLink \"SpecularMaterial/alphaMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "alphaMap",
@@ -17633,7 +17875,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 825,
+            "line": 827,
             "description": "Fired whenever this SpecularMaterial's {{#crossLink \"SpecularMaterial/alphaMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "alphaMap",
@@ -17649,7 +17891,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 839,
+            "line": 841,
             "description": "RGB tangent-space normal {{#crossLink \"Texture\"}}{{/crossLink}} attached to this SpecularMaterial.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this SpecularMaterial.\n\nFires a {{#crossLink \"PhongMaterial/normalMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "normalMap",
@@ -17661,7 +17903,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 854,
+            "line": 856,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/normalMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "normalMap",
@@ -17677,7 +17919,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 868,
+            "line": 870,
             "description": "RGB ambient occlusion {{#crossLink \"Texture\"}}{{/crossLink}} attached to this SpecularMaterial.\n\nWithin shaders, multiplies by the specular and diffuse light reflected by surfaces.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this SpecularMaterial.\n\nFires a {{#crossLink \"SpecularMaterial/occlusionMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "occlusionMap",
@@ -17689,7 +17931,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 885,
+            "line": 887,
             "description": "Fired whenever this SpecularMaterial's {{#crossLink \"SpecularMaterial/occlusionMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "occlusionMap",
@@ -17705,7 +17947,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 899,
+            "line": 901,
             "description": "The alpha rendering mode.\n\nThis governs how alpha is treated. Alpha is the combined result of the\n{{#crossLink \"SpecularMaterial/alpha:property\"}}{{/crossLink}} and\n{{#crossLink \"SpecularMaterial/alphaMap:property\"}}{{/crossLink}} properties.\n\n* \"opaque\" - The alpha value is ignored and the rendered output is fully opaque.\n* \"mask\" - The rendered output is either fully opaque or fully transparent depending on the alpha value and the specified alpha cutoff value.\n* \"blend\" - The alpha value is used to composite the source and destination areas. The rendered output is combined with the background using the normal painting operation (i.e. the Porter and Duff over operator).\n\nFires an {{#crossLink \"SpecularMaterial/alphaMode:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "alphaMode",
@@ -17717,7 +17959,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 938,
+            "line": 940,
             "description": "Fired whenever this SpecularMaterial's {{#crossLink \"SpecularMaterial/alphaMode:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "alphaMode",
@@ -17734,7 +17976,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 952,
+            "line": 954,
             "description": "The alpha cutoff value.\n\nSpecifies the cutoff threshold when {{#crossLink \"SpecularMaterial/alphaMode:property\"}}{{/crossLink}}\nequals \"mask\". If the alpha is greater than or equal to this value then it is rendered as fully\nopaque, otherwise, it is rendered as fully transparent. A value greater than 1.0 will render the entire\nmaterial as fully transparent. This value is ignored for other modes.\n\nAlpha is the combined result of the\n{{#crossLink \"SpecularMaterial/alpha:property\"}}{{/crossLink}} and\n{{#crossLink \"SpecularMaterial/alphaMap:property\"}}{{/crossLink}} properties.\n\nFires an {{#crossLink \"SpecularMaterial/alphaCutoff:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "alphaCutoff",
@@ -17746,7 +17988,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 983,
+            "line": 985,
             "description": "Fired whenever this SpecularMaterial's {{#crossLink \"SpecularMaterial/look:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "alphaCutoff",
@@ -17763,7 +18005,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 997,
+            "line": 999,
             "description": "Whether backfaces are visible on attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nThe backfaces will belong to {{#crossLink \"Geometry\"}}{{/crossLink}} compoents that are also attached to\nthe {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nFires a {{#crossLink \"PhongMaterial/backfaces:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "backfaces",
@@ -17775,7 +18017,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 1023,
+            "line": 1025,
             "description": "Fired whenever this SpecularMaterial's {{#crossLink \"SpecularMaterial/backfaces:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "backfaces",
@@ -17791,7 +18033,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 1037,
+            "line": 1039,
             "description": "Indicates the winding direction of front faces on attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nThe faces will belong to {{#crossLink \"Geometry\"}}{{/crossLink}} components that are also attached to\nthe {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nFires a {{#crossLink \"SpecularMaterial/frontface:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "frontface",
@@ -17803,7 +18045,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 1063,
+            "line": 1065,
             "description": "Fired whenever this SpecularMaterial's {{#crossLink \"SpecularMaterial/frontface:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "frontface",
@@ -20035,6 +20277,18 @@
         {
             "file": "src/math/math.js",
             "line": 2059,
+            "description": "Transforms an array of positions by a 4x4 matrix.",
+            "itemtype": "method",
+            "name": "transformPositions4",
+            "static": 1,
+            "class": "xeogl.math.math",
+            "module": "xeogl",
+            "submodule": "math",
+            "namespace": "xeogl.math"
+        },
+        {
+            "file": "src/math/math.js",
+            "line": 2107,
             "description": "Transforms a three-element vector by a 4x4 matrix.",
             "itemtype": "method",
             "name": "transformVec3",
@@ -20046,7 +20300,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2073,
+            "line": 2121,
             "description": "Transforms a four-element vector by a 4x4 matrix.",
             "itemtype": "method",
             "name": "transformVec4",
@@ -20058,7 +20312,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2088,
+            "line": 2136,
             "description": "Rotate a 3D vector around the x-axis",
             "itemtype": "method",
             "name": "rotateVec3X",
@@ -20096,7 +20350,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2121,
+            "line": 2169,
             "description": "Rotate a 3D vector around the y-axis",
             "itemtype": "method",
             "name": "rotateVec3Y",
@@ -20134,7 +20388,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2154,
+            "line": 2202,
             "description": "Rotate a 3D vector around the z-axis",
             "itemtype": "method",
             "name": "rotateVec3Z",
@@ -20172,7 +20426,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2187,
+            "line": 2235,
             "description": "Transforms a four-element vector by a 4x4 projection matrix.",
             "itemtype": "method",
             "name": "projectVec4",
@@ -20200,7 +20454,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2204,
+            "line": 2252,
             "description": "Linearly interpolates between two 3D vectors.",
             "itemtype": "method",
             "name": "lerpVec3",
@@ -20212,7 +20466,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2219,
+            "line": 2267,
             "description": "Flattens a two-dimensional array into a one-dimensional array.",
             "itemtype": "method",
             "name": "flatten",
@@ -20234,7 +20488,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2257,
+            "line": 2305,
             "description": "Initializes a quaternion from Euler angles.",
             "params": [
                 {
@@ -20571,6 +20825,44 @@
             "file": "src/math/mathGeometry.js",
             "line": 190,
             "description": "Gets cartesian coordinates from barycentric coordinates within a triangle.",
+            "access": "private",
+            "tagname": "",
+            "class": "Model",
+            "module": "xeogl",
+            "namespace": "xeogl.math"
+        },
+        {
+            "file": "src/math/mathGeometryBuild.2.js",
+            "line": 1,
+            "description": "Boundary math functions.",
+            "class": "Model",
+            "module": "xeogl",
+            "namespace": "xeogl.math"
+        },
+        {
+            "file": "src/math/mathGeometryBuild.2.js",
+            "line": 10,
+            "description": "Builds normal vectors from positions and indices.",
+            "access": "private",
+            "tagname": "",
+            "class": "Model",
+            "module": "xeogl",
+            "namespace": "xeogl.math"
+        },
+        {
+            "file": "src/math/mathGeometryBuild.2.js",
+            "line": 200,
+            "description": "Builds vertex tangent vectors from positions, UVs and indices.",
+            "access": "private",
+            "tagname": "",
+            "class": "Model",
+            "module": "xeogl",
+            "namespace": "xeogl.math"
+        },
+        {
+            "file": "src/math/mathGeometryBuild.2.js",
+            "line": 275,
+            "description": "Builds vertex and index arrays needed by color-indexed triangle picking.",
             "access": "private",
             "tagname": "",
             "class": "Model",
@@ -21454,7 +21746,7 @@
             "description": "The angle, in degrees on the Y-axis, of this Perspective's field-of-view.\n\nFires a {{#crossLink \"Perspective/fovy:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "fovy",
-            "default": "60.0",
+            "default": "50.0",
             "type": "Number",
             "class": "Perspective",
             "module": "xeogl",
@@ -21853,7 +22145,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 328,
+            "line": 327,
             "description": "JavaScript class name for this Component.\n\nThis is used when <a href=\"Scene.html#savingAndLoading\">loading Scenes from JSON</a>, and is included in the JSON\nrepresentation of this Component, so that this class may be instantiated when loading it from the JSON representation.\n\nFor example: \"xeogl.AmbientLight\", \"xeogl.ColorTarget\", \"xeogl.Lights\" etc.",
             "itemtype": "property",
             "name": "type",
@@ -21864,7 +22156,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 342,
+            "line": 341,
             "description": "An array of strings that indicates the chain of super-types within this component's inheritance hierarchy.\n\nFor example, if this component is a {{#crossLink \"Rotate\"}}{{/crossLink}}, which\nextends {{#crossLink \"Transform\"}}{{/crossLink}}, which in turn extends {{#crossLink \"Component\"}}{{/crossLink}},\nthen this property will have the value:\n\n````json\n[\"xeogl.Component\", \"xeogl.Transform\"]\n````\n\nNote that the chain is ordered downwards in the hierarchy, ie. from super-class down towards sub-class.",
             "itemtype": "property",
             "name": "superTypes",
@@ -21875,7 +22167,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 361,
+            "line": 360,
             "description": "Tests if this component is of the given type, or is a subclass of the given type.\n\nThe type may be given as either a string or a component constructor.\n\nThis method works by walking up the inheritance type chain, which this component provides in\nproperty {{#crossLink \"Component/superTypes:property\"}}{{/crossLink}}, returning true as soon as one of the type strings in\nthe chain matches the given type, of false if none match.\n\n#### Examples:\n\n````javascript\nvar myRotate = new xeogl.Rotate({ ... });\n\nmyRotate.isType(xeogl.Component); // Returns true for all xeogl components\nmyRotate.isType(\"xeogl.Component\"); // Returns true for all xeogl components\nmyRotate.isType(xeogl.Rotate); // Returns true\nmyRotate.isType(xeogl.Transform); // Returns true\nmyRotate.isType(\"xeogl.Transform\"); // Returns true\nmyRotate.isType(xeogl.Entity); // Returns false, because xeogl.Rotate does not (even indirectly) extend xeogl.Entity\n````",
             "itemtype": "method",
             "name": "isType",
@@ -21895,7 +22187,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 402,
+            "line": 401,
             "description": "Initializes this component",
             "params": [
                 {
@@ -21910,7 +22202,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 410,
+            "line": 409,
             "description": "Fires an event on this component.\n\nNotifies existing subscribers to the event, optionally retains the event to give to\nany subsequent notifications on the event as they are made.",
             "itemtype": "method",
             "name": "fire",
@@ -21938,7 +22230,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 459,
+            "line": 458,
             "description": "Subscribes to an event on this component.\n\nThe callback is be called with this component as scope.",
             "itemtype": "method",
             "name": "on",
@@ -21970,7 +22262,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 502,
+            "line": 501,
             "description": "Cancels an event subscription that was previously made with {{#crossLink \"Component/on:method\"}}{{/crossLink}} or\n{{#crossLink \"Component/once:method\"}}{{/crossLink}}.",
             "itemtype": "method",
             "name": "off",
@@ -21986,7 +22278,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 527,
+            "line": 526,
             "description": "Subscribes to the next occurrence of the given event, then un-subscribes as soon as the event is handled.\n\nThis is equivalent to calling {{#crossLink \"Component/on:method\"}}{{/crossLink}}, and then calling\n{{#crossLink \"Component/off:method\"}}{{/crossLink}} inside the callback function.",
             "itemtype": "method",
             "name": "once",
@@ -22014,7 +22306,27 @@
         },
         {
             "file": "src/component.js",
-            "line": 548,
+            "line": 547,
+            "description": "Returns true if there are any subscribers to the given event on this component.",
+            "itemtype": "method",
+            "name": "hasSubs",
+            "params": [
+                {
+                    "name": "event",
+                    "description": "The event",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "True if there are any subscribers to the given event on this component.",
+                "type": "Boolean"
+            },
+            "class": "Component",
+            "module": "xeogl"
+        },
+        {
+            "file": "src/component.js",
+            "line": 558,
             "description": "Logs a console debugging message for this component.\n\nThe console message will have this format: *````[LOG] [<component type> <component id>: <message>````*\n\nAlso fires the message as a {{#crossLink \"Scene/log:event\"}}{{/crossLink}} event on the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "method",
             "name": "log",
@@ -22030,7 +22342,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 573,
+            "line": 583,
             "description": "Logs a warning for this component to the JavaScript console.\n\nThe console message will have this format: *````[WARN] [<component type> =<component id>: <message>````*\n\nAlso fires the message as a {{#crossLink \"Scene/warn:event\"}}{{/crossLink}} event on the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "method",
             "name": "warn",
@@ -22046,7 +22358,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 593,
+            "line": 603,
             "description": "Logs an error for this component to the JavaScript console.\n\nThe console message will have this format: *````[ERROR] [<component type> =<component id>: <message>````*\n\nAlso fires the message as an {{#crossLink \"Scene/error:event\"}}{{/crossLink}} event on the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "method",
             "name": "error",
@@ -22062,7 +22374,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 613,
+            "line": 623,
             "description": "Creates a clone of this component.\n\nThe clone will have the same properties as the original, except where\noverridden in the given optional configs.\n\nThe clone will share (by reference) the components of the original, unless overridden.\n\nFor example, if this component is an {{#crossLink \"Entity\"}}{{/crossLink}}, then the clone\nwill be attached to the **same** instances of {{#crossLink \"PhoneMaterial\"}}{{/crossLink}},\n{{#crossLink \"Camera\"}}{{/crossLink}} etc as this component, unless it supplies its own\ninstances for those via the configs.",
             "params": [
                 {
@@ -22081,7 +22393,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 645,
+            "line": 655,
             "description": "Adds a child component to this.\nWhen component not given, attaches the scene's default instance for the given name (if any).\nPublishes the new child component on this component, keyed to the given name.",
             "params": [
                 {
@@ -22182,7 +22494,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 910,
+            "line": 920,
             "description": "Convenience method for creating a Component within this Component's {{#crossLink \"Scene\"}}{{/crossLink}}.\n\nYou would typically use this method to conveniently instantiate components that you'd want to\nshare (ie. \"instance\") among your {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nThe method is given a component type, configuration and optional instance ID, like so:\n\n````javascript\nvar material = myComponent.create({\n     type: \"xeogl.PhongMaterial\",\n     diffuse: [1,0,0],\n     specular: [1,1,0]\n}, \"myMaterial\");\n````\n\nThe first time you call this method for the given ````type```` and ````instanceId````, this method will create the\n{{#crossLink \"PhongMaterial\"}}{{/crossLink}}, passing the given  attributes to the component's constructor.\n\nIf you call this method again, specifying the same ````type```` and ````instanceId````, the method will return the same\ncomponent instance that it returned the first time, and will ignore the new configuration:\n\n````javascript\nvar material2 = component.create({ type: \"xeogl.PhongMaterial\", specular: [1,1,0] }, \"myMaterial\");\n````\n\nSo in this example, our {{#crossLink \"PhongMaterial\"}}{{/crossLink}} will continue to have the red specular\nand diffuse color that we specified the first time.\n\nEach time you call this method with the same ````type```` and ````instanceId````, the Scene will internally increment a\nreference count for the component instance.",
             "itemtype": "method",
             "name": "create",
@@ -22209,7 +22521,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 981,
+            "line": 991,
             "description": "Protected method, called by sub-classes to queue a call to _update().",
             "access": "protected",
             "tagname": "",
@@ -22227,7 +22539,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 997,
+            "line": 1007,
             "access": "private",
             "tagname": "",
             "class": "Component",
@@ -22235,7 +22547,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1009,
+            "line": 1019,
             "description": "Protected virtual template method, optionally implemented\nby sub-classes to perform a scheduled task.",
             "access": "protected",
             "tagname": "",
@@ -22244,7 +22556,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1017,
+            "line": 1027,
             "description": "Protected template method, implemented by sub-classes to compile\ntheir state into their Scene's xeogl.renderer.Renderer.",
             "access": "protected",
             "tagname": "",
@@ -22253,7 +22565,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1028,
+            "line": 1038,
             "description": "JSON object containing the state of this Component.",
             "itemtype": "property",
             "name": "json",
@@ -22264,7 +22576,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1055,
+            "line": 1065,
             "description": "String containing the serialized JSON state of this Component.",
             "itemtype": "property",
             "name": "string",
@@ -22275,7 +22587,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1137,
+            "line": 1147,
             "description": "Experimental: string containing a JavaScript expression that would instantiate this Component.",
             "itemtype": "property",
             "name": "string",
@@ -22286,7 +22598,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1152,
+            "line": 1162,
             "description": "Destroys this component.\n\nFires a {{#crossLink \"Component/destroyed:event\"}}{{/crossLink}} event on this Component.\n\nAutomatically disassociates this component from other components, causing them to fall back on any\ndefaults that this component overrode on them.\n\nTODO: describe effect with respect to #create",
             "itemtype": "method",
             "name": "destroy",
@@ -22295,7 +22607,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1226,
+            "line": 1236,
             "description": "Fired when this Component is destroyed.",
             "itemtype": "event",
             "name": "destroyed",
@@ -22304,7 +22616,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1234,
+            "line": 1244,
             "description": "Protected template method, implemented by sub-classes\nto clean up just before the component is destroyed.",
             "access": "protected",
             "tagname": "",
@@ -22401,7 +22713,17 @@
         },
         {
             "file": "src/scene.js",
-            "line": 269,
+            "line": 257,
+            "description": "The {{#crossLink \"Model\"}}{{/crossLink}}s within\nthis Scene, mapped to their IDs.",
+            "itemtype": "property",
+            "name": "entities",
+            "type": "{String:xeogl.Model}",
+            "class": "Scene",
+            "module": "xeogl"
+        },
+        {
+            "file": "src/scene.js",
+            "line": 278,
             "description": "Configurations for this Scene. Set whatever properties on here\nthat will be useful to the components within the Scene.",
             "final": 1,
             "itemtype": "property",
@@ -22412,7 +22734,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 278,
+            "line": 287,
             "description": "Manages the HTML5 canvas for this Scene.",
             "final": 1,
             "itemtype": "property",
@@ -22423,7 +22745,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 308,
+            "line": 317,
             "description": "Publishes input events that occur on this Scene's canvas.",
             "final": 1,
             "itemtype": "property",
@@ -22434,7 +22756,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 445,
+            "line": 464,
             "description": "Fired whenever a component has been created within this Scene.",
             "itemtype": "event",
             "name": "componentCreated",
@@ -22450,7 +22772,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 487,
+            "line": 515,
             "description": "Fired whenever a component within this Scene has been destroyed.",
             "itemtype": "event",
             "name": "componentDestroyed",
@@ -22466,7 +22788,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 522,
+            "line": 550,
             "description": "Renders a single frame of this Scene.\n\nThe Scene will automatically call this method on itself to render after any updates, but you\ncan call this method to force a render if required. This method is typically used when we want\nto synchronously take a snapshot of the canvas and need everything rendered right at that moment.",
             "itemtype": "method",
             "name": "render",
@@ -22484,7 +22806,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 553,
+            "line": 581,
             "description": "Fired when about to render a frame for a Scene.",
             "itemtype": "event",
             "name": "rendering",
@@ -22505,7 +22827,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 566,
+            "line": 594,
             "description": "Fired when we have just rendered a frame for a Scene.",
             "itemtype": "event",
             "name": "rendering",
@@ -22526,7 +22848,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 580,
+            "line": 608,
             "description": "The number of {{#crossLink \"Scene/tick:property\"}}{{/crossLink}} that happen between each render or this Scene.\n\nFires a {{#crossLink \"Scene/ticksPerRender:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "ticksPerRender",
@@ -22537,7 +22859,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 610,
+            "line": 638,
             "description": "Fired whenever this Scene's {{#crossLink \"Scene/ticksPerRender:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "ticksPerRender",
@@ -22553,7 +22875,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 624,
+            "line": 652,
             "description": "The number of times this Scene renders per frame.\n\nFires a {{#crossLink \"Scene/passes:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "passes",
@@ -22564,7 +22886,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 656,
+            "line": 684,
             "description": "Fired whenever this Scene's {{#crossLink \"Scene/passes:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "passes",
@@ -22580,7 +22902,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 670,
+            "line": 698,
             "description": "When doing multiple passes per frame, specifies whether to clear the\ncanvas before each pass (true) or just before the first pass (false).\n\nFires a {{#crossLink \"Scene/clearEachPass:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "clearEachPass",
@@ -22591,7 +22913,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 694,
+            "line": 722,
             "description": "Fired whenever this Scene's {{#crossLink \"Scene/clearEachPass:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "clearEachPass",
@@ -22607,7 +22929,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 709,
+            "line": 737,
             "description": "The default projection transform provided by this Scene, which is\na {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}.\n\nThis {{#crossLink \"Perspective\"}}Perspective{{/crossLink}} has an\n{{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to\n\"default.project\", with all other properties set to their default\nvalues.\n\n{{#crossLink \"Camera\"}}Cameras{{/crossLink}} within this Scene\nare attached to this {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}\nby default.",
             "itemtype": "property",
             "name": "project",
@@ -22618,7 +22940,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 737,
+            "line": 765,
             "description": "The default viewing transform provided by this Scene, which is a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}.\n\nThis {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.view\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Camera\"}}Cameras{{/crossLink}} within this Scene are attached to\nthis {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "view",
@@ -22629,7 +22951,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 760,
+            "line": 788,
             "description": "The default {{#crossLink \"Camera\"}}Camera{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Camera\"}}Camera{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.camera\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to\nthis {{#crossLink \"Camera\"}}Camera{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "camera",
@@ -22640,7 +22962,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 785,
+            "line": 813,
             "description": "The default modelling {{#crossLink \"Transform\"}}{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Transform\"}}{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.transform\",\nwith all other properties initialised to their default values (ie. an identity matrix).\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to\nthis {{#crossLink \"Transform\"}}{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "transform",
@@ -22651,7 +22973,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 809,
+            "line": 837,
             "description": "The default {{#crossLink \"Clips\"}}Clips{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Clips\"}}Clips{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.clips\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Clips\"}}Clips{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "clips",
@@ -22662,7 +22984,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 832,
+            "line": 860,
             "description": "The default geometry provided by this Scene, which is a {{#crossLink \"BoxGeometry\"}}BoxGeometry{{/crossLink}}.\n\nThis {{#crossLink \"BoxGeometry\"}}BoxGeometry{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.geometry\".\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Geometry\"}}Geometry{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "geometry",
@@ -22673,7 +22995,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 853,
+            "line": 881,
             "description": "The default {{#crossLink \"Lights\"}}Lights{{/crossLink}} provided\nby this Scene.\n\nThis {{#crossLink \"Lights\"}}Lights{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to *````\"default.lights\"````*,\nwith all other properties initialised to their default values (ie. the default set of light sources for a {{#crossLink \"Lights\"}}Lights{{/crossLink}}).\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Lights\"}}Lights{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "lights",
@@ -22684,7 +23006,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 926,
+            "line": 950,
             "description": "The {{#crossLink \"PhongMaterial\"}}PhongMaterial{{/crossLink}} provided as the default material by this Scene.\n\nThis {{#crossLink \"PhongMaterial\"}}PhongMaterial{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.material\", with all\nother properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"PhongMaterial\"}}PhongMaterial{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "material",
@@ -22695,7 +23017,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 950,
+            "line": 974,
             "description": "The default {{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.morphTargets\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "morphTargets",
@@ -22708,7 +23030,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 973,
+            "line": 997,
             "description": "The default {{#crossLink \"Viewport\"}}{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Viewport\"}}{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.viewport\" and\n{{#crossLink \"Viewport/autoBoundary:property\"}}{{/crossLink}} set ````true````.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Viewport\"}}{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "viewport",
@@ -22719,7 +23041,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 998,
+            "line": 1022,
             "description": "The default {{#crossLink \"Outline\"}}{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Outline\"}}{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.outline\",\na {{#crossLink \"Outline/color:property\"}}color{{/crossLink}} set to ````[1,1,0]````\na {{#crossLink \"Outline/thickness:property\"}}thickness{{/crossLink}} set to ````15````.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Outline\"}}{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "outline",
@@ -22730,7 +23052,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1024,
+            "line": 1048,
             "description": "The default {{#crossLink \"XRay\"}}{{/crossLink}} provided by this Scene.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"XRay\"}}{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "xray",
@@ -22741,7 +23063,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1047,
+            "line": 1071,
             "description": "The World-space 3D boundary of this Scene.\n\nThe {{#crossLink \"Boundary3D\"}}{{/crossLink}} will be lazy-initialized the first time\nyou reference this property, and will persist on this Scene until you\ncall {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} on the {{#crossLink \"Boundary3D\"}}{{/crossLink}}\nagain. The property will then be set to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance\nnext time you reference it.\n\n<h4>Performance</h4>\n\nTo minimize performance overhead, only reference this property if you need it, and destroy\nthe {{#crossLink \"Boundary3D\"}}{{/crossLink}} as soon as you don't need it anymore.",
             "itemtype": "property",
             "name": "worldBoundary",
@@ -22752,7 +23074,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1130,
+            "line": 1154,
             "description": "Attempts to pick an {{#crossLink \"Entity\"}}Entity{{/crossLink}} in this Scene.\n\nIgnores {{#crossLink \"Entity\"}}Entities{{/crossLink}} with {{#crossLink \"Entity/pickable:property\"}}pickable{{/crossLink}}\nset *false*.\n\nPicking the {{#crossLink \"Entity\"}}{{/crossLink}} at the given canvas coordinates:\n\n````javascript\nvar hit = scene.pick({\n    canvasPos: [23, 131]\n });\n\nif (hit) { // Picked an Entity\n    var entity = hit.entity;\n}\n````\n\n**Usage:**\n\nPicking the {{#crossLink \"Entity\"}}{{/crossLink}} that intersects a ray cast through the canvas:\n\n````javascript\nvar hit = scene.pick({\n    pickSurface: true,\n    canvasPos: [23, 131]\n });\n\nif (hit) { // Picked an Entity\n\n    var entity = hit.entity;\n\n    // These properties are only on the hit result when we do a ray-pick:\n\n    var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n    var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n    var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n    var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle\n    var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle\n    var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle\n    var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n    var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n    var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n}\n````\n\nPicking the {{#crossLink \"Entity\"}}{{/crossLink}} that intersects an arbitrarily-aligned World-space ray:\n\n````javascript\nvar hit = scene.pick({\n    pickSurface: true,       // Picking with arbitrarily-positioned ray\n    origin: [0,0,-5],    // Ray origin\n    direction: [0,0,1]   // Ray direction\n});\n\nif (hit) { // Picked an Entity with the ray\n\n    var entity = hit.entity;\n\n    var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n    var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n    var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n    var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle\n    var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle\n    var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle\n    var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n    var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n    var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n    var origin = hit.origin; // Float32Array containing the World-space ray origin\n    var direction = hit.direction; // Float32Array containing the World-space ray direction\n}\n````",
             "itemtype": "method",
             "name": "pick",
@@ -22799,7 +23121,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1453,
+            "line": 1477,
             "description": "Resets this Scene to its default state.\n\nReferences to any components in this Scene will become invalid.",
             "itemtype": "method",
             "name": "clear",
@@ -22808,7 +23130,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1479,
+            "line": 1503,
             "description": "Convenience method for creating or reusing a Component within this Scene.\n\nYou would typically use this method to conveniently instantiate components that you'd want to\nshare (ie. \"instance\") among your {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nThe method is given a component type, share ID and constructor attributes, like so:\n\n````javascript\nvar material = myScene.getComponent(\"xeogl.PhongMaterial\", \"myMaterial\", { diffuse: [1,0,0] });\n````\n\nThe first time you call this method for the given ````type```` and ````instanceId````, this method will create the\n{{#crossLink \"PhongMaterial\"}}{{/crossLink}}, passing the given  attributes to the component's constructor.\n\nIf you call this method again, specifying the same ````type```` and ````instanceId````, the method will return the same\ncomponent instance that it returned the first time, and will ignore the attributes:\n\n````javascript\nvar material2 = myScene.getComponent(\"xeogl.PhongMaterial\", \"myMaterial\", { specular: [1,1,0] });\n````\n\nEach time you call this method with the same ````type```` and ````instanceId````, the Scene will internally increment a\nreference count for the component instance. You can release the shared component instance with a call to\n{{#crossLink \"Scene/putSharedComponent:method\"}}{{/crossLink}}, and once you have released it as many\ntimes as you got it, the Scene will destroy the component.",
             "itemtype": "method",
             "name": "_getSharedComponent",
@@ -22836,7 +23158,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1593,
+            "line": 1617,
             "description": "Releases a shared component instance that was got earlier\nwith {{#crossLink \"Scene/getSharedComponent:method\"}}{{/crossLink}}.",
             "params": [
                 {
@@ -22850,7 +23172,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1621,
+            "line": 1645,
             "description": "Compiles and renders this Scene",
             "access": "private",
             "tagname": "",
@@ -22890,7 +23212,7 @@
         },
         {
             "file": "src/xeogl.js",
-            "line": 186,
+            "line": 187,
             "description": "Existing {{#crossLink \"Scene\"}}Scene{{/crossLink}}s , mapped to their IDs",
             "itemtype": "property",
             "name": "scenes",
@@ -22901,7 +23223,7 @@
         },
         {
             "file": "src/xeogl.js",
-            "line": 197,
+            "line": 198,
             "description": "For each component type, a list of its supertypes, ordered upwards in the hierarchy.",
             "type": "{{}}",
             "access": "private",
@@ -22912,7 +23234,7 @@
         },
         {
             "file": "src/xeogl.js",
-            "line": 301,
+            "line": 302,
             "description": "Fired on each game loop iteration.",
             "itemtype": "event",
             "name": "tick",
@@ -22949,7 +23271,7 @@
         },
         {
             "file": "src/xeogl.js",
-            "line": 357,
+            "line": 358,
             "description": "The default {{#crossLink \"Scene\"}}Scene{{/crossLink}}.\n\nComponents created without an explicit parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} will be created within this\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} by default.\n\nxeogl creates the default {{#crossLink \"Scene\"}}Scene{{/crossLink}} as soon as you either\nreference this property for the first time, or create your first {{#crossLink \"Entity\"}}Entity{{/crossLink}} without\na specified {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "property",
             "name": "scene",
@@ -22961,7 +23283,7 @@
         },
         {
             "file": "src/xeogl.js",
-            "line": 386,
+            "line": 387,
             "description": "Registers a scene on xeogl.\nThis is called within the xeogl.Scene constructor.",
             "itemtype": "method",
             "name": "_addScene",
@@ -22980,7 +23302,7 @@
         },
         {
             "file": "src/xeogl.js",
-            "line": 441,
+            "line": 442,
             "description": "Schedule a task for xeogl to run at the next frame.\n\nInternally, this pushes the task to a FIFO queue. Within each frame interval, xeogl processes the queue\nfor a certain period of time, popping tasks and running them. After each frame interval, tasks that did not\nget a chance to run during the task are left in the queue to be run next time.",
             "itemtype": "method",
             "name": "scheduleTask",
@@ -23003,7 +23325,7 @@
         },
         {
             "file": "src/xeogl.js",
-            "line": 490,
+            "line": 491,
             "description": "Destroys all user-created {{#crossLink \"Scene\"}}Scenes{{/crossLink}} and\nclears the default {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "method",
             "name": "clear",
@@ -23014,7 +23336,7 @@
         },
         {
             "file": "src/xeogl.js",
-            "line": 519,
+            "line": 520,
             "description": "Tests if the given object is an array",
             "access": "private",
             "tagname": "",
@@ -23024,7 +23346,7 @@
         },
         {
             "file": "src/xeogl.js",
-            "line": 527,
+            "line": 528,
             "description": "Tests if the given value is a string",
             "params": [
                 {
@@ -23044,7 +23366,7 @@
         },
         {
             "file": "src/xeogl.js",
-            "line": 537,
+            "line": 538,
             "description": "Tests if the given value is a number",
             "params": [
                 {
@@ -23064,7 +23386,7 @@
         },
         {
             "file": "src/xeogl.js",
-            "line": 547,
+            "line": 548,
             "description": "Tests if the given value is an ID",
             "params": [
                 {
@@ -23084,7 +23406,7 @@
         },
         {
             "file": "src/xeogl.js",
-            "line": 557,
+            "line": 558,
             "description": "Tests if the given components are the same, where the components can be either IDs or instances.",
             "params": [
                 {
@@ -23108,7 +23430,7 @@
         },
         {
             "file": "src/xeogl.js",
-            "line": 576,
+            "line": 577,
             "description": "Tests if the given value is a function",
             "params": [
                 {
@@ -23128,7 +23450,7 @@
         },
         {
             "file": "src/xeogl.js",
-            "line": 586,
+            "line": 587,
             "description": "Tests if the given value is a JavaScript JSON object, eg, ````{ foo: \"bar\" }````.",
             "params": [
                 {
@@ -23148,7 +23470,7 @@
         },
         {
             "file": "src/xeogl.js",
-            "line": 599,
+            "line": 600,
             "description": "Tests if the given component type is a subtype of another component supertype.",
             "params": [
                 {
@@ -23176,21 +23498,21 @@
         },
         {
             "file": "src/xeogl.js",
-            "line": 629,
+            "line": 630,
             "class": "xeogl",
             "module": "xeogl",
             "namespace": "xeogl"
         },
         {
             "file": "src/xeogl.js",
-            "line": 635,
+            "line": 636,
             "class": "xeogl",
             "module": "xeogl",
             "namespace": "xeogl"
         },
         {
             "file": "src/xeogl.js",
-            "line": 646,
+            "line": 647,
             "description": "Add non-null/defined properties of o to o2",
             "access": "private",
             "tagname": "",
@@ -23200,7 +23522,7 @@
         },
         {
             "file": "src/xeogl.js",
-            "line": 661,
+            "line": 662,
             "description": "Add properties of o to o2 where undefined or null on o2",
             "access": "private",
             "tagname": "",
@@ -23210,7 +23532,7 @@
         },
         {
             "file": "src/xeogl.js",
-            "line": 676,
+            "line": 677,
             "description": "Returns true if the given map is empty.",
             "params": [
                 {
@@ -23230,7 +23552,7 @@
         },
         {
             "file": "src/xeogl.js",
-            "line": 691,
+            "line": 692,
             "description": "Returns the given ID as a string, in quotes if the ID was a string to begin with.\n\nThis is useful for logging IDs.",
             "params": [
                 {
@@ -23251,7 +23573,7 @@
         },
         {
             "file": "src/xeogl.js",
-            "line": 704,
+            "line": 705,
             "description": "Returns the concatenation of two typed arrays.",
             "params": [
                 {
@@ -24038,7 +24360,7 @@
         },
         {
             "file": "examples/js/annotations/pin.js",
-            "line": 290,
+            "line": 289,
             "description": "The {{#crossLink \"Entity\"}}{{/crossLink}} this Pin is attached to.\n\nYou can attach a Pin to a different {{#crossLink \"Entity\"}}{{/crossLink}} at any time.\n\nNote that {{#crossLink \"Pin/primIndex:property\"}}{{/crossLink}} should always\nbe within the {{#crossLink \"Geometry/indices:property\"}}{{/crossLink}} of the {{#crossLink \"Geometry\"}}{{/crossLink}} belonging to the {{#crossLink \"Entity\"}}Entity{{/crossLink}}.\n\nFires an {{#crossLink \"Pin/entity:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "entity",
@@ -24049,7 +24371,7 @@
         },
         {
             "file": "examples/js/annotations/pin.js",
-            "line": 307,
+            "line": 306,
             "description": "Fired whenever this Pin's {{#crossLink \"Pin/entity:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "entity",
@@ -24065,7 +24387,7 @@
         },
         {
             "file": "examples/js/annotations/pin.js",
-            "line": 327,
+            "line": 326,
             "description": "Index of the triangle containing this pin.\n\nWithin the {{#crossLink \"Geometry/indices:property\"}}{{/crossLink}} of the {{#crossLink \"Geometry\"}}{{/crossLink}} attached to the {{#crossLink \"Entity\"}}{{/crossLink}}, this is the index of the first element for that triangle.\n\nFires a {{#crossLink \"Pin/primIndex:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "primIndex",
@@ -24077,7 +24399,7 @@
         },
         {
             "file": "examples/js/annotations/pin.js",
-            "line": 352,
+            "line": 351,
             "description": "Fired whenever this Pin's {{#crossLink \"Pin/primIndex:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "primIndex",
@@ -24093,7 +24415,7 @@
         },
         {
             "file": "examples/js/annotations/pin.js",
-            "line": 366,
+            "line": 365,
             "description": "Barycentric coordinates of this Pin within its triangle.\n\nA value of ````[0.3, 0.3, 0.3]```` is the center of the triangle.\n\nFires a {{#crossLink \"Pin/bary:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "bary",
@@ -24105,7 +24427,7 @@
         },
         {
             "file": "examples/js/annotations/pin.js",
-            "line": 383,
+            "line": 382,
             "description": "Fired whenever this Pin's {{#crossLink \"Pin/bary:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "bary",
@@ -24121,7 +24443,7 @@
         },
         {
             "file": "examples/js/annotations/pin.js",
-            "line": 396,
+            "line": 395,
             "description": "How far the Pin is lifted out of its triangle, along the surface normal vector.\n\nThis is used when occlusion culling, to ensure that the Pin is not lost inside\nthe surface it's attached to.\n\nFires a {{#crossLink \"Pin/offset:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "offset",
@@ -24133,7 +24455,7 @@
         },
         {
             "file": "examples/js/annotations/pin.js",
-            "line": 414,
+            "line": 413,
             "description": "Fired whenever this Pin's {{#crossLink \"Pin/offset:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "offset",
@@ -24149,11 +24471,11 @@
         },
         {
             "file": "examples/js/annotations/pin.js",
-            "line": 428,
+            "line": 427,
             "description": "Indicates whether occlusion testing is performed for this Pin.\n\nWhen this is true, then {{#crossLink \"Pin/visible:property\"}}{{/crossLink}} will\nbe false whenever the Pin is hidden behind something else in the 3D view.\n\nSet this false if the Pin is to remain visible when hidden behind things while\nbeing within the canvas.\n\nFires a {{#crossLink \"Pin/occludable:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "occludable",
-            "default": "true",
+            "default": "false",
             "type": "Float32Array",
             "class": "Pin",
             "module": "xeogl",
@@ -24161,7 +24483,7 @@
         },
         {
             "file": "examples/js/annotations/pin.js",
-            "line": 448,
+            "line": 465,
             "description": "Fired whenever this Pin's {{#crossLink \"Pin/occludable:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "occludable",
@@ -24177,7 +24499,7 @@
         },
         {
             "file": "examples/js/annotations/pin.js",
-            "line": 461,
+            "line": 478,
             "description": "Local-space 3D coordinates of this Pin.\n\nThis is read-only and is automatically calculated.\n\nFires a {{#crossLink \"Pin/localPos:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "localPos",
@@ -24190,7 +24512,7 @@
         },
         {
             "file": "examples/js/annotations/pin.js",
-            "line": 481,
+            "line": 498,
             "description": "World-space 3D coordinates of this Pin.\n\nThis is read-only and is automatically calculated.\n\nFires a {{#crossLink \"Pin/worldPos:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "worldPos",
@@ -24203,7 +24525,7 @@
         },
         {
             "file": "examples/js/annotations/pin.js",
-            "line": 501,
+            "line": 518,
             "description": "View-space 3D coordinates of this Pin.\n\nThis is read-only and is automatically calculated.",
             "itemtype": "property",
             "name": "viewPos",
@@ -24216,7 +24538,7 @@
         },
         {
             "file": "examples/js/annotations/pin.js",
-            "line": 520,
+            "line": 537,
             "description": "Canvas-space 2D coordinates of this Pin.\n\nThis is read-only and is automatically calculated.",
             "itemtype": "property",
             "name": "canvasPos",
@@ -24229,7 +24551,20 @@
         },
         {
             "file": "examples/js/annotations/pin.js",
-            "line": 553,
+            "line": 570,
+            "description": "World-space normal vector of this Pin.\n\nThis is read-only and is automatically calculated.\n\nFires a {{#crossLink \"Pin/worldNormal:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "worldNormal",
+            "default": "[0,0,1]",
+            "type": "Float32Array",
+            "final": 1,
+            "class": "Pin",
+            "module": "xeogl",
+            "submodule": "annotations"
+        },
+        {
+            "file": "examples/js/annotations/pin.js",
+            "line": 590,
             "description": "Indicates if this Pin is currently visible.\n\nThis is read-only and is automatically calculated.\n\nThe Pin is invisible whenever:\n\n* {{#crossLink \"Pin/canvasPos:property\"}}{{/crossLink}} is currently outside the canvas, or\n* {{#crossLink \"Pin/occludable:property\"}}{{/crossLink}} is true and the Pin is currently occluded by something in the 3D view.\n\nFires a {{#crossLink \"Pin/visible:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "visible",
@@ -24242,7 +24577,7 @@
         },
         {
             "file": "examples/js/annotations/pin.js",
-            "line": 622,
+            "line": 662,
             "description": "Fired whenever this Pin's {{#crossLink \"Pin/localPos:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "localPos",
@@ -24252,7 +24587,7 @@
         },
         {
             "file": "examples/js/annotations/pin.js",
-            "line": 631,
+            "line": 671,
             "description": "Fired whenever this Pin's {{#crossLink \"Pin/worldPos:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "worldPos",
@@ -24262,7 +24597,17 @@
         },
         {
             "file": "examples/js/annotations/pin.js",
-            "line": 727,
+            "line": 677,
+            "description": "Fired whenever this Pin's {{#crossLink \"Pin/worldNormal:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "worldNormal",
+            "class": "Pin",
+            "module": "xeogl",
+            "submodule": "annotations"
+        },
+        {
+            "file": "examples/js/annotations/pin.js",
+            "line": 786,
             "description": "Fired whenever this Pin's {{#crossLink \"Pin/visible:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "visible",
@@ -24277,11 +24622,338 @@
             "submodule": "annotations"
         },
         {
+            "file": "examples/js/annotations/region.js",
+            "line": 134,
+            "class": "Region",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/annotations/region.js",
+            "line": 259,
+            "description": "Origin Pin.\nFires an {{#crossLink \"Region/origin:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "origin",
+            "type": "{Pin}",
+            "class": "Region",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/annotations/region.js",
+            "line": 272,
+            "description": "Target Pin.\nFires an {{#crossLink \"Region/target:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "target",
+            "type": "{Pin}",
+            "class": "Region",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/annotations/region.js",
+            "line": 285,
+            "description": "Length of this Region.\nFires an {{#crossLink \"Region/dist:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "dist",
+            "default": "0",
+            "type": "{Number}",
+            "class": "Region",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/annotations/region.js",
+            "line": 299,
+            "description": "Indicates whether this Region is visible or not.\n\nFires a {{#crossLink \"Region/visible:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "visible",
+            "default": "true",
+            "type": "Boolean",
+            "class": "Region",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/annotations/region.js",
+            "line": 323,
+            "description": "Fired whenever this helper's {{#crossLink \"Region/visible:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "visible",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value",
+                    "type": "Boolean"
+                }
+            ],
+            "class": "Region",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/annotations/ruler.js",
+            "line": 147,
+            "class": "Ruler",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/annotations/ruler.js",
+            "line": 286,
+            "description": "Origin Pin.\nFires an {{#crossLink \"Ruler/origin:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "origin",
+            "type": "{Pin}",
+            "class": "Ruler",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/annotations/ruler.js",
+            "line": 299,
+            "description": "Target Pin.\nFires an {{#crossLink \"Ruler/target:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "target",
+            "type": "{Pin}",
+            "class": "Ruler",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/annotations/ruler.js",
+            "line": 312,
+            "description": "Length of this Ruler.\nFires an {{#crossLink \"Ruler/dist:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "dist",
+            "default": "0",
+            "type": "{Number}",
+            "class": "Ruler",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/annotations/ruler.js",
+            "line": 326,
+            "description": "Indicates whether this Ruler is visible or not.\n\nFires a {{#crossLink \"Ruler/visible:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "visible",
+            "default": "true",
+            "type": "Boolean",
+            "class": "Ruler",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/annotations/ruler.js",
+            "line": 350,
+            "description": "Fired whenever this helper's {{#crossLink \"Ruler/visible:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "visible",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value",
+                    "type": "Boolean"
+                }
+            ],
+            "class": "Ruler",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/controls/BIMPickingControl.js",
+            "line": 1,
+            "description": "Mouse picking control.",
+            "params": [
+                {
+                    "name": "viewer",
+                    "description": ""
+                },
+                {
+                    "name": "cfg",
+                    "description": ""
+                }
+            ],
+            "is_constructor": 1,
+            "class": "MousePickControl",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/controls/BIMPickingControl.js",
+            "line": 168,
+            "description": "Subscribes to an event on this BIMPickingControl.",
+            "itemtype": "method",
+            "name": "on",
+            "params": [
+                {
+                    "name": "event",
+                    "description": "The event",
+                    "type": "String"
+                },
+                {
+                    "name": "callback",
+                    "description": "Called fired on the event",
+                    "type": "Function"
+                }
+            ],
+            "class": "MousePickControl",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/controls/BIMPickingControl.js",
+            "line": 183,
+            "description": "Fires an event on this BIMPickingControl.",
+            "itemtype": "method",
+            "name": "fire",
+            "params": [
+                {
+                    "name": "event",
+                    "description": "The event type name",
+                    "type": "String"
+                },
+                {
+                    "name": "value",
+                    "description": "The event parameters",
+                    "type": "Object"
+                }
+            ],
+            "class": "MousePickControl",
+            "module": "xeogl"
+        },
+        {
             "file": "examples/js/controls/bimCameraControl.js",
             "line": 5,
             "description": "Controls camera with mouse and keyboard, handles selection of entities and rotation point.",
-            "class": "CardboardEffect",
+            "class": "MousePickControl",
             "module": "xeogl"
+        },
+        {
+            "file": "examples/js/controls/mousePickControl.js",
+            "line": 28,
+            "description": "JavaScript class name for this Component.",
+            "itemtype": "property",
+            "name": "type",
+            "type": "String",
+            "final": 1,
+            "class": "MousePickControl",
+            "module": "xeogl",
+            "submodule": "controls"
+        },
+        {
+            "file": "examples/js/controls/mousePickControl.js",
+            "line": 79,
+            "description": "Fired whenever this MousePickControl hovers off an entity.",
+            "itemtype": "event",
+            "name": "hoverOut",
+            "params": [
+                {
+                    "name": "pickedEntityId",
+                    "description": "The entity ID"
+                }
+            ],
+            "class": "MousePickControl",
+            "module": "xeogl",
+            "submodule": "controls"
+        },
+        {
+            "file": "examples/js/controls/mousePickControl.js",
+            "line": 98,
+            "description": "Fired whenever this MousePickControl hovers over the surface of an entity.",
+            "itemtype": "event",
+            "name": "hoverSurface",
+            "params": [
+                {
+                    "name": "hit",
+                    "description": ""
+                }
+            ],
+            "class": "MousePickControl",
+            "module": "xeogl",
+            "submodule": "controls"
+        },
+        {
+            "file": "examples/js/controls/mousePickControl.js",
+            "line": 149,
+            "description": "Fired whenever this MousePickControl clicks the surface of an entity.",
+            "itemtype": "event",
+            "name": "clickedSurface",
+            "params": [
+                {
+                    "name": "hit",
+                    "description": ""
+                }
+            ],
+            "class": "MousePickControl",
+            "module": "xeogl",
+            "submodule": "controls"
+        },
+        {
+            "file": "examples/js/controls/mousePickControl.js",
+            "line": 160,
+            "description": "Fired whenever this MousePickControl clicks empty space.",
+            "itemtype": "event",
+            "name": "clickedNothing",
+            "class": "MousePickControl",
+            "module": "xeogl",
+            "submodule": "controls"
+        },
+        {
+            "file": "examples/js/controls/mousePickControl.js",
+            "line": 189,
+            "description": "Fired whenever this MousePickControl double-clicks an entity.",
+            "itemtype": "event",
+            "name": "clickedSurface",
+            "params": [
+                {
+                    "name": "pickedEntityId",
+                    "description": ""
+                }
+            ],
+            "class": "MousePickControl",
+            "module": "xeogl",
+            "submodule": "controls"
+        },
+        {
+            "file": "examples/js/controls/mousePickControl.js",
+            "line": 197,
+            "description": "Fired whenever this MousePickControl double-clicks an entity surface.",
+            "itemtype": "event",
+            "name": "clickedSurface",
+            "params": [
+                {
+                    "name": "hit",
+                    "description": ""
+                }
+            ],
+            "class": "MousePickControl",
+            "module": "xeogl",
+            "submodule": "controls"
+        },
+        {
+            "file": "examples/js/controls/mousePickControl.js",
+            "line": 206,
+            "description": "Fired whenever this MousePickControl double-clicks empty space",
+            "itemtype": "event",
+            "name": "doubleClickedNothing",
+            "class": "MousePickControl",
+            "module": "xeogl",
+            "submodule": "controls"
+        },
+        {
+            "file": "examples/js/controls/mousePickControl.js",
+            "line": 222,
+            "description": "Flag which indicates whether this MousePickControl is active or not.\n\nFires an {{#crossLink \"MousePickControl/active:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "active",
+            "type": "Boolean",
+            "class": "MousePickControl",
+            "module": "xeogl",
+            "submodule": "controls"
+        },
+        {
+            "file": "examples/js/controls/mousePickControl.js",
+            "line": 242,
+            "description": "Fired whenever this MousePickControl's {{#crossLink \"MousePickControl/active:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "active",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "MousePickControl",
+            "module": "xeogl",
+            "submodule": "controls"
         },
         {
             "file": "examples/js/effects/cardboardEffect.js",
@@ -26301,10 +26973,24 @@
                     "type": "Object"
                 },
                 {
-                    "name": "basePath",
-                    "description": "Base path path to find external resources on, if any.",
-                    "type": "String",
-                    "optional": true
+                    "name": "options",
+                    "description": "Parsing options",
+                    "type": "Object",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "basePath",
+                            "description": "Base path path to find external resources on, if any.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "loadBuffer",
+                            "description": "Callback to load buffer files.",
+                            "type": "String",
+                            "optional": true
+                        }
+                    ]
                 }
             ],
             "class": "GLTFModel",
@@ -27272,7 +27958,7 @@
         },
         {
             "file": "examples/js/helpers/clipHelper.js",
-            "line": 164,
+            "line": 44,
             "description": "The {{#crossLink \"Clip\"}}Clip{{/crossLink}} attached to this ClipHelper.\n\nFires an {{#crossLink \"ClipHelper/Clip:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "clip",
@@ -27282,10 +27968,10 @@
         },
         {
             "file": "examples/js/helpers/clipHelper.js",
-            "line": 207,
-            "description": "The width and height of the ClipHelper plane indicator.\n\nWhen no value is specified, will automatically size to fit within the\n{{#crossLink \"Scene/worldBoundary:property\"}}Scene's worldBoundary{{/crossLink}}.\n\nFires an {{#crossLink \"ClipHelper/size:event\"}}{{/crossLink}} event on change.",
+            "line": 88,
+            "description": "The width and height of the ClipHelper plane indicator.\n\nWhen no value is specified, will automatically size to fit within the\n{{#crossLink \"Scene/worldBoundary:property\"}}Scene's worldBoundary{{/crossLink}}.\n\nFires an {{#crossLink \"ClipHelper/planeSize:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
-            "name": "size",
+            "name": "planeSize",
             "default": "Fitted to scene boundary",
             "type": "{Float32Array}",
             "class": "ClipHelper",
@@ -27293,10 +27979,10 @@
         },
         {
             "file": "examples/js/helpers/clipHelper.js",
-            "line": 234,
-            "description": "Fired whenever this ClipHelper's {{#crossLink \"ClipHelper/size:property\"}}{{/crossLink}} property changes.",
+            "line": 106,
+            "description": "Fired whenever this ClipHelper's {{#crossLink \"ClipHelper/planeSize:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
-            "name": "size",
+            "name": "planeSize",
             "params": [
                 {
                     "name": "value",
@@ -27309,7 +27995,34 @@
         },
         {
             "file": "examples/js/helpers/clipHelper.js",
-            "line": 247,
+            "line": 119,
+            "description": "Indicates whether this ClipHelper's {{#crossLink \"ClipHelper/planeSize:property\"}}{{/crossLink}} is automatically\ngenerated or not.\n\nWhen auto-generated, {{#crossLink \"ClipHelper/planeSize:property\"}}{{/crossLink}} will automatically size\nto fit within the {{#crossLink \"Scene/worldBoundary:property\"}}Scene's worldBoundary{{/crossLink}}.\n\nFires an {{#crossLink \"ClipHelper/autoPlaneSize:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "autoPlaneSize",
+            "default": "false",
+            "type": "{Boolean}",
+            "class": "ClipHelper",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/helpers/clipHelper.js",
+            "line": 138,
+            "description": "Fired whenever this ClipHelper's {{#crossLink \"ClipHelper/autoPlaneSize:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "autoPlaneSize",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value",
+                    "type": "Float32Array"
+                }
+            ],
+            "class": "ClipHelper",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/helpers/clipHelper.js",
+            "line": 151,
             "description": "Indicates whether this ClipHelper is visible or not.\n\nFires a {{#crossLink \"ClipHelper/active:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "visible",
@@ -27320,7 +28033,7 @@
         },
         {
             "file": "examples/js/helpers/clipHelper.js",
-            "line": 267,
+            "line": 167,
             "description": "Fired whenever this helper's {{#crossLink \"ClipHelper/visible:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "visible",
@@ -27335,15 +28048,186 @@
             "module": "xeogl"
         },
         {
+            "file": "examples/js/helpers/mousePickHelper.js",
+            "line": 21,
+            "description": "The {{#crossLink \"MousePickControl\"}}{{/crossLink}} attached to this MousePickHelper.\n\nFires an {{#crossLink \"mousePickControl/mousePickControl:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "mousePickControl",
+            "type": "mousePickControl",
+            "class": "PlaneHelper",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/helpers/planeHelper.js",
+            "line": 150,
+            "description": "World-space position of this PlaneHelper.\nFires an {{#crossLink \"PlaneHelper/pos:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "pos",
+            "default": "[0,0,0]",
+            "type": "{Float32Array}",
+            "class": "PlaneHelper",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/helpers/planeHelper.js",
+            "line": 167,
+            "description": "Fired whenever this PlaneHelper's {{#crossLink \"PlaneHelper/pos:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "pos",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value",
+                    "type": "Float32Array"
+                }
+            ],
+            "class": "PlaneHelper",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/helpers/planeHelper.js",
+            "line": 180,
+            "description": "World-space direction of this PlaneHelper.\nFires an {{#crossLink \"PlaneHelper/dir:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "dir",
+            "default": "[0,0,1]",
+            "type": "{Float32Array}",
+            "class": "PlaneHelper",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/helpers/planeHelper.js",
+            "line": 204,
+            "description": "Fired whenever this PlaneHelper's {{#crossLink \"PlaneHelper/dir:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "dir",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value",
+                    "type": "Float32Array"
+                }
+            ],
+            "class": "PlaneHelper",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/helpers/planeHelper.js",
+            "line": 218,
+            "description": "The width and height of the PlaneHelper plane indicator.\n\nValues assigned to this property will be overridden by an auto-computed value when\n{{#crossLink \"PlaneHelper/autoPlaneSize:property\"}}{{/crossLink}} is true.\n\nFires an {{#crossLink \"PlaneHelper/planeSize:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "planeSize",
+            "default": "[1,1]",
+            "type": "{Float32Array}",
+            "class": "PlaneHelper",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/helpers/planeHelper.js",
+            "line": 238,
+            "description": "Fired whenever this PlaneHelper's {{#crossLink \"PlaneHelper/planeSize:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "planeSize",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value",
+                    "type": "Float32Array"
+                }
+            ],
+            "class": "PlaneHelper",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/helpers/planeHelper.js",
+            "line": 251,
+            "description": "Indicates whether this PlaneHelper's {{#crossLink \"PlaneHelper/planeSize:property\"}}{{/crossLink}} is automatically\ngenerated or not.\n\nWhen auto-generated, {{#crossLink \"PlaneHelper/planeSize:property\"}}{{/crossLink}} will automatically size\nto fit within the {{#crossLink \"Scene/worldBoundary:property\"}}Scene's worldBoundary{{/crossLink}}.\n\nFires an {{#crossLink \"PlaneHelper/autoPlaneSize:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "autoPlaneSize",
+            "default": "false",
+            "type": "{Boolean}",
+            "class": "PlaneHelper",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/helpers/planeHelper.js",
+            "line": 291,
+            "description": "Fired whenever this PlaneHelper's {{#crossLink \"PlaneHelper/autoPlaneSize:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "autoPlaneSize",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value",
+                    "type": "Boolean"
+                }
+            ],
+            "class": "PlaneHelper",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/helpers/planeHelper.js",
+            "line": 304,
+            "description": "Emmissive color of this PlaneHelper.\n\nFires an {{#crossLink \"PlaneHelper/color:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "color",
+            "default": "[0.4,0.4,0.4]",
+            "type": "{Float32Array}",
+            "class": "PlaneHelper",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/helpers/planeHelper.js",
+            "line": 322,
+            "description": "Fired whenever this PlaneHelper's {{#crossLink \"PlaneHelper/color:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "color",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value",
+                    "type": "Float32Array"
+                }
+            ],
+            "class": "PlaneHelper",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/helpers/planeHelper.js",
+            "line": 335,
+            "description": "Indicates whether this PlaneHelper is visible or not.\n\nFires a {{#crossLink \"PlaneHelper/visible:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "visible",
+            "default": "true",
+            "type": "Boolean",
+            "class": "PlaneHelper",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/helpers/planeHelper.js",
+            "line": 355,
+            "description": "Fired whenever this helper's {{#crossLink \"PlaneHelper/visible:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "visible",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value",
+                    "type": "Boolean"
+                }
+            ],
+            "class": "PlaneHelper",
+            "module": "xeogl"
+        },
+        {
             "file": "examples/js/helpers/pointLightHelper.js",
-            "line": 53,
+            "line": 33,
             "description": "The {{#crossLink \"PointLight\"}}PointLight{{/crossLink}} attached to this PointLightHelper.\n\nFires an {{#crossLink \"PointLightHelper/pointLight:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "pointLight",
             "type": "PointLight",
-            "class": "PointLightHelper",
-            "module": "xeogl",
-            "submodule": "entities"
+            "class": "SplineCurveHelper",
+            "module": "xeogl"
         },
         {
             "file": "examples/js/helpers/splineCurveHelper.js",
@@ -27372,14 +28256,14 @@
         },
         {
             "file": "examples/js/helpers/viewCube.js",
-            "line": 346,
+            "line": 335,
             "params": [
                 {
                     "name": "visible",
                     "description": ""
                 }
             ],
-            "class": "ViewCube",
+            "class": "",
             "module": "entities"
         }
     ],
@@ -27434,91 +28318,91 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2088"
+            "line": " src/math/math.js:2136"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2121"
+            "line": " src/math/math.js:2169"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2154"
+            "line": " src/math/math.js:2202"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2187"
+            "line": " src/math/math.js:2235"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2219"
+            "line": " src/math/math.js:2267"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2257"
+            "line": " src/math/math.js:2305"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/component.js:361"
+            "line": " src/component.js:360"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/component.js:613"
+            "line": " src/component.js:623"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/component.js:910"
+            "line": " src/component.js:920"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/scene.js:1130"
+            "line": " src/scene.js:1154"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/scene.js:1479"
+            "line": " src/scene.js:1503"
         },
         {
             "message": "unknown tag: demo",
-            "line": " src/xeogl.js:490"
+            "line": " src/xeogl.js:491"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeogl.js:527"
+            "line": " src/xeogl.js:528"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeogl.js:537"
+            "line": " src/xeogl.js:538"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeogl.js:547"
+            "line": " src/xeogl.js:548"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeogl.js:557"
+            "line": " src/xeogl.js:558"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeogl.js:576"
+            "line": " src/xeogl.js:577"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeogl.js:586"
+            "line": " src/xeogl.js:587"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeogl.js:599"
+            "line": " src/xeogl.js:600"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeogl.js:676"
+            "line": " src/xeogl.js:677"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeogl.js:691"
+            "line": " src/xeogl.js:692"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeogl.js:704"
+            "line": " src/xeogl.js:705"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -28134,7 +29018,7 @@
         },
         {
             "message": "Missing item type\nInitializes a quaternion from Euler angles.",
-            "line": " src/math/math.js:2257"
+            "line": " src/math/math.js:2305"
         },
         {
             "message": "Missing item type\nBoundary math functions.",
@@ -28266,6 +29150,22 @@
         },
         {
             "message": "Missing item type\nBoundary math functions.",
+            "line": " src/math/mathGeometryBuild.2.js:1"
+        },
+        {
+            "message": "Missing item type\nBuilds normal vectors from positions and indices.",
+            "line": " src/math/mathGeometryBuild.2.js:10"
+        },
+        {
+            "message": "Missing item type\nBuilds vertex tangent vectors from positions, UVs and indices.",
+            "line": " src/math/mathGeometryBuild.2.js:200"
+        },
+        {
+            "message": "Missing item type\nBuilds vertex and index arrays needed by color-indexed triangle picking.",
+            "line": " src/math/mathGeometryBuild.2.js:275"
+        },
+        {
+            "message": "Missing item type\nBoundary math functions.",
             "line": " src/math/mathGeometryBuild.js:1"
         },
         {
@@ -28310,43 +29210,43 @@
         },
         {
             "message": "Missing item type\nInitializes this component",
-            "line": " src/component.js:402"
+            "line": " src/component.js:401"
         },
         {
             "message": "Missing item type\nCreates a clone of this component.\n\nThe clone will have the same properties as the original, except where\noverridden in the given optional configs.\n\nThe clone will share (by reference) the components of the original, unless overridden.\n\nFor example, if this component is an {{#crossLink \"Entity\"}}{{/crossLink}}, then the clone\nwill be attached to the **same** instances of {{#crossLink \"PhoneMaterial\"}}{{/crossLink}},\n{{#crossLink \"Camera\"}}{{/crossLink}} etc as this component, unless it supplies its own\ninstances for those via the configs.",
-            "line": " src/component.js:613"
+            "line": " src/component.js:623"
         },
         {
             "message": "Missing item type\nAdds a child component to this.\nWhen component not given, attaches the scene's default instance for the given name (if any).\nPublishes the new child component on this component, keyed to the given name.",
-            "line": " src/component.js:645"
+            "line": " src/component.js:655"
         },
         {
             "message": "Missing item type\nProtected method, called by sub-classes to queue a call to _update().",
-            "line": " src/component.js:981"
+            "line": " src/component.js:991"
         },
         {
             "message": "Missing item type",
-            "line": " src/component.js:997"
+            "line": " src/component.js:1007"
         },
         {
             "message": "Missing item type\nProtected virtual template method, optionally implemented\nby sub-classes to perform a scheduled task.",
-            "line": " src/component.js:1009"
+            "line": " src/component.js:1019"
         },
         {
             "message": "Missing item type\nProtected template method, implemented by sub-classes to compile\ntheir state into their Scene's xeogl.renderer.Renderer.",
-            "line": " src/component.js:1017"
+            "line": " src/component.js:1027"
         },
         {
             "message": "Missing item type\nProtected template method, implemented by sub-classes\nto clean up just before the component is destroyed.",
-            "line": " src/component.js:1234"
+            "line": " src/component.js:1244"
         },
         {
             "message": "Missing item type\nReleases a shared component instance that was got earlier\nwith {{#crossLink \"Scene/getSharedComponent:method\"}}{{/crossLink}}.",
-            "line": " src/scene.js:1593"
+            "line": " src/scene.js:1617"
         },
         {
             "message": "Missing item type\nCompiles and renders this Scene",
-            "line": " src/scene.js:1621"
+            "line": " src/scene.js:1645"
         },
         {
             "message": "Missing item type\nInformation about available WebGL support",
@@ -28354,67 +29254,67 @@
         },
         {
             "message": "Missing item type\nFor each component type, a list of its supertypes, ordered upwards in the hierarchy.",
-            "line": " src/xeogl.js:197"
+            "line": " src/xeogl.js:198"
         },
         {
             "message": "Missing item type\nTests if the given object is an array",
-            "line": " src/xeogl.js:519"
+            "line": " src/xeogl.js:520"
         },
         {
             "message": "Missing item type\nTests if the given value is a string",
-            "line": " src/xeogl.js:527"
+            "line": " src/xeogl.js:528"
         },
         {
             "message": "Missing item type\nTests if the given value is a number",
-            "line": " src/xeogl.js:537"
+            "line": " src/xeogl.js:538"
         },
         {
             "message": "Missing item type\nTests if the given value is an ID",
-            "line": " src/xeogl.js:547"
+            "line": " src/xeogl.js:548"
         },
         {
             "message": "Missing item type\nTests if the given components are the same, where the components can be either IDs or instances.",
-            "line": " src/xeogl.js:557"
+            "line": " src/xeogl.js:558"
         },
         {
             "message": "Missing item type\nTests if the given value is a function",
-            "line": " src/xeogl.js:576"
+            "line": " src/xeogl.js:577"
         },
         {
             "message": "Missing item type\nTests if the given value is a JavaScript JSON object, eg, ````{ foo: \"bar\" }````.",
-            "line": " src/xeogl.js:586"
+            "line": " src/xeogl.js:587"
         },
         {
             "message": "Missing item type\nTests if the given component type is a subtype of another component supertype.",
-            "line": " src/xeogl.js:599"
+            "line": " src/xeogl.js:600"
         },
         {
             "message": "Missing item type",
-            "line": " src/xeogl.js:629"
+            "line": " src/xeogl.js:630"
         },
         {
             "message": "Missing item type",
-            "line": " src/xeogl.js:635"
+            "line": " src/xeogl.js:636"
         },
         {
             "message": "Missing item type\nAdd non-null/defined properties of o to o2",
-            "line": " src/xeogl.js:646"
+            "line": " src/xeogl.js:647"
         },
         {
             "message": "Missing item type\nAdd properties of o to o2 where undefined or null on o2",
-            "line": " src/xeogl.js:661"
+            "line": " src/xeogl.js:662"
         },
         {
             "message": "Missing item type\nReturns true if the given map is empty.",
-            "line": " src/xeogl.js:676"
+            "line": " src/xeogl.js:677"
         },
         {
             "message": "Missing item type\nReturns the given ID as a string, in quotes if the ID was a string to begin with.\n\nThis is useful for logging IDs.",
-            "line": " src/xeogl.js:691"
+            "line": " src/xeogl.js:692"
         },
         {
             "message": "Missing item type\nReturns the concatenation of two typed arrays.",
-            "line": " src/xeogl.js:704"
+            "line": " src/xeogl.js:705"
         },
         {
             "message": "Missing item type\nAdds a frame to this CameraPath, given as the current position of a {{#crossLink \"Camera\"}}{{/crossLink}}.\n\nThe {{#crossLink \"Camera/property:view\"}}Camera's view transform{{/crossLink}} must be a {{#crossLink \"Lookat\"}}{{/crossLink}}.",
@@ -28439,6 +29339,18 @@
         {
             "message": "Missing item type\nRemoves all frames from this CameraPath.",
             "line": " examples/js/animation/cameraPath.js:227"
+        },
+        {
+            "message": "Missing item type",
+            "line": " examples/js/annotations/region.js:134"
+        },
+        {
+            "message": "Missing item type",
+            "line": " examples/js/annotations/ruler.js:147"
+        },
+        {
+            "message": "Missing item type\nMouse picking control.",
+            "line": " examples/js/controls/BIMPickingControl.js:1"
         },
         {
             "message": "Missing item type\nControls camera with mouse and keyboard, handles selection of entities and rotation point.",
@@ -28498,7 +29410,7 @@
         },
         {
             "message": "Missing item type",
-            "line": " examples/js/helpers/viewCube.js:346"
+            "line": " examples/js/helpers/viewCube.js:335"
         }
     ]
 }

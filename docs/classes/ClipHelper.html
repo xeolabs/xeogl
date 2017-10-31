@@ -84,6 +84,7 @@
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
+                                <li><a href="../classes/MousePickControl.html">MousePickControl</a></li>
                                 <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
@@ -96,12 +97,14 @@
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/Pin.html">Pin</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
+                                <li><a href="../classes/PlaneHelper.html">PlaneHelper</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
-                                <li><a href="../classes/PointLightHelper.html">PointLightHelper</a></li>
                                 <li><a href="../classes/PointMarkings.html">PointMarkings</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
+                                <li><a href="../classes/Region.html">Region</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
+                                <li><a href="../classes/Ruler.html">Ruler</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
@@ -121,7 +124,6 @@
                                 <li><a href="../classes/Transform.html">Transform</a></li>
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
-                                <li><a href="../classes/ViewCube.html">ViewCube</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
                                 <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
@@ -285,13 +287,25 @@ The helper works by tracking updates to the <a href="../classes/Clip.html" class
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[size]</code>
+                                            <code class="param-name optional">[planeSize]</code>
                                             <span class="type">Float32Array</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>The width and height of the ClipHelper plane indicator. When no value is specified,
-         will automatically size to fit within the <a href="../classes/Scene.html#property_worldBoundary" class="crosslink">Scene&#39;s worldBoundary</a>.</p>
+                                            <p>The width and height of the ClipHelper plane indicator.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[autoPlaneSize=false]</code>
+                                            <span class="type">Boolean</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Indicates whether or not this ClipHelper&#39;s
+         <a href="../classes/ClipHelper.html#property_planeSize" class="crosslink">planeSize</a> is automatically sized to fit within
+         the <a href="../classes/Scene.html#property_worldBoundary" class="crosslink">Scene&#39;s worldBoundary</a>.</p>
         
                                         </div>
         
@@ -324,11 +338,15 @@ The helper works by tracking updates to the <a href="../classes/Clip.html" class
 
                     <ul class="index-list properties">
                             <li class="index-item property">
+                                <a href="#property_autoPlaneSize">autoPlaneSize</a>
+
+                            </li>
+                            <li class="index-item property">
                                 <a href="#property_clip">clip</a>
 
                             </li>
                             <li class="index-item property">
-                                <a href="#property_size">size</a>
+                                <a href="#property_planeSize">planeSize</a>
 
                             </li>
                             <li class="index-item property">
@@ -344,7 +362,11 @@ The helper works by tracking updates to the <a href="../classes/Clip.html" class
 
                     <ul class="index-list events">
                             <li class="index-item event">
-                                <a href="#event_size">size</a>
+                                <a href="#event_autoPlaneSize">autoPlaneSize</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_planeSize">planeSize</a>
 
                             </li>
                             <li class="index-item event">
@@ -359,6 +381,36 @@ The helper works by tracking updates to the <a href="../classes/Clip.html" class
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
+                    <div id="property_autoPlaneSize" class="property item">
+                        <h3 class="name"><code>autoPlaneSize</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_helpers_clipHelper.js.html#l119"><code>examples&#x2F;js&#x2F;helpers&#x2F;clipHelper.js:119</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Indicates whether this ClipHelper&#39;s <a href="../classes/ClipHelper.html#property_planeSize" class="crosslink">planeSize</a> is automatically
+                    generated or not.</p>
+                    <p>When auto-generated, <a href="../classes/ClipHelper.html#property_planeSize" class="crosslink">planeSize</a> will automatically size
+                    to fit within the <a href="../classes/Scene.html#property_worldBoundary" class="crosslink">Scene&#39;s worldBoundary</a>.</p>
+                    <p>Fires an <a href="../classes/ClipHelper.html#event_autoPlaneSize" class="crosslink">autoPlaneSize</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> false</p>
+                    
+                    
+                    </div>
                     <div id="property_clip" class="property item">
                         <h3 class="name"><code>clip</code></h3>
                         <span class="type"><a href="../classes/Clip.html" class="crosslink">Clip</a></span>
@@ -370,7 +422,7 @@ The helper works by tracking updates to the <a href="../classes/Clip.html" class
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_helpers_clipHelper.js.html#l164"><code>examples&#x2F;js&#x2F;helpers&#x2F;clipHelper.js:164</code></a>
+                            <a href="../files/examples_js_helpers_clipHelper.js.html#l44"><code>examples&#x2F;js&#x2F;helpers&#x2F;clipHelper.js:44</code></a>
                             </p>
                     
                     
@@ -385,8 +437,8 @@ The helper works by tracking updates to the <a href="../classes/Clip.html" class
                     
                     
                     </div>
-                    <div id="property_size" class="property item">
-                        <h3 class="name"><code>size</code></h3>
+                    <div id="property_planeSize" class="property item">
+                        <h3 class="name"><code>planeSize</code></h3>
                         <span class="type">Float32Array</span>
                     
                     
@@ -396,7 +448,7 @@ The helper works by tracking updates to the <a href="../classes/Clip.html" class
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_helpers_clipHelper.js.html#l207"><code>examples&#x2F;js&#x2F;helpers&#x2F;clipHelper.js:207</code></a>
+                            <a href="../files/examples_js_helpers_clipHelper.js.html#l88"><code>examples&#x2F;js&#x2F;helpers&#x2F;clipHelper.js:88</code></a>
                             </p>
                     
                     
@@ -406,7 +458,7 @@ The helper works by tracking updates to the <a href="../classes/Clip.html" class
                             <p>The width and height of the ClipHelper plane indicator.</p>
                     <p>When no value is specified, will automatically size to fit within the
                     <a href="../classes/Scene.html#property_worldBoundary" class="crosslink">Scene&#39;s worldBoundary</a>.</p>
-                    <p>Fires an <a href="../classes/ClipHelper.html#event_size" class="crosslink">size</a> event on change.</p>
+                    <p>Fires an <a href="../classes/ClipHelper.html#event_planeSize" class="crosslink">planeSize</a> event on change.</p>
                     
                         </div>
                     
@@ -425,7 +477,7 @@ The helper works by tracking updates to the <a href="../classes/Clip.html" class
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_helpers_clipHelper.js.html#l247"><code>examples&#x2F;js&#x2F;helpers&#x2F;clipHelper.js:247</code></a>
+                            <a href="../files/examples_js_helpers_clipHelper.js.html#l151"><code>examples&#x2F;js&#x2F;helpers&#x2F;clipHelper.js:151</code></a>
                             </p>
                     
                     
@@ -447,8 +499,8 @@ The helper works by tracking updates to the <a href="../classes/Clip.html" class
             <div id="events" class="api-class-tabpanel">
                 <h2 class="off-left">Events</h2>
 
-                    <div id="event_size" class="events item">
-                        <h3 class="name"><code>size</code></h3>
+                    <div id="event_autoPlaneSize" class="events item">
+                        <h3 class="name"><code>autoPlaneSize</code></h3>
                         <span class="type"></span>
                     
                     
@@ -458,14 +510,56 @@ The helper works by tracking updates to the <a href="../classes/Clip.html" class
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_helpers_clipHelper.js.html#l234"><code>examples&#x2F;js&#x2F;helpers&#x2F;clipHelper.js:234</code></a>
+                            <a href="../files/examples_js_helpers_clipHelper.js.html#l138"><code>examples&#x2F;js&#x2F;helpers&#x2F;clipHelper.js:138</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this ClipHelper&#39;s <a href="../classes/ClipHelper.html#property_size" class="crosslink">size</a> property changes.</p>
+                            <p>Fired whenever this ClipHelper&#39;s <a href="../classes/ClipHelper.html#property_autoPlaneSize" class="crosslink">autoPlaneSize</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Float32Array</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_planeSize" class="events item">
+                        <h3 class="name"><code>planeSize</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_helpers_clipHelper.js.html#l106"><code>examples&#x2F;js&#x2F;helpers&#x2F;clipHelper.js:106</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this ClipHelper&#39;s <a href="../classes/ClipHelper.html#property_planeSize" class="crosslink">planeSize</a> property changes.</p>
                     
                         </div>
                     
@@ -500,7 +594,7 @@ The helper works by tracking updates to the <a href="../classes/Clip.html" class
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_helpers_clipHelper.js.html#l267"><code>examples&#x2F;js&#x2F;helpers&#x2F;clipHelper.js:267</code></a>
+                            <a href="../files/examples_js_helpers_clipHelper.js.html#l167"><code>examples&#x2F;js&#x2F;helpers&#x2F;clipHelper.js:167</code></a>
                             </p>
                     
                     

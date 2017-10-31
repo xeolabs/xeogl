@@ -265,10 +265,13 @@
      *
      * @param {Model} model Model to parse into.
      * @param {Object} gltf The glTF JSON.
-     * @param {String} [basePath] Base path path to find external resources on, if any.
+     * @param {Object} [options] Parsing options
+     * @param {String} [options.basePath] Base path path to find external resources on, if any.
+     * @param {String} [options.loadBuffer] Callback to load buffer files.
      */
-    xeogl.GLTFModel.parse = function (model, gltf, basePath) {
-        parseGLTF(gltf, "", basePath || "", model, function () {
+    xeogl.GLTFModel.parse = function (model, gltf, options) {
+        options = options || {};
+        parseGLTF(gltf, "", options, model, function () {
                 model.fire("loaded", true, true);
             },
             function (msg) {
@@ -286,17 +289,16 @@
         return function (model, src, ok, error) {
 
             loadJSON(src, function (response) { // OK
-
                     var json;
                     try {
                         json = JSON.parse(response);
                     } catch (e) {
                         error(e);
                     }
-
-                    var basePath = getBasePath(src);
-
-                    parseGLTF(json, src, basePath, model, ok, error);
+                    var options = {
+                        basePath: getBasePath(src)
+                    };
+                    parseGLTF(json, src, options, model, ok, error);
                 },
                 error);
         };
@@ -354,11 +356,12 @@
             'MAT4': 16
         };
 
-        return function (json, src, basePath, model, ok) {
+        return function (json, src, options, model, ok) {
 
             var ctx = {
                 src: src,
-                basePath: basePath,
+                loadBuffer: options.loadBuffer,
+                basePath: options.basePath,
                 json: json,
                 scene: model.scene,
                 model: model
@@ -446,19 +449,26 @@
                     }, 0);
                 }
             } else {
-                var request = new XMLHttpRequest();
-                request.responseType = 'arraybuffer';
-                request.open('GET', ctx.basePath + url, true);
-                request.onreadystatechange = function () {
-                    if (request.readyState == 4) {
-                        if (request.status == "200") {
-                            ok(request.response);
-                        } else {
-                            err('loadArrayBuffer error : ' + request.response);
+
+                if (ctx.loadBuffer) {
+                    ctx.loadBuffer(url, ok, err);
+
+                } else {
+
+                    var request = new XMLHttpRequest();
+                    request.responseType = 'arraybuffer';
+                    request.open('GET', ctx.basePath + url, true);
+                    request.onreadystatechange = function () {
+                        if (request.readyState == 4) {
+                            if (request.status == "200") {
+                                ok(request.response);
+                            } else {
+                                err('loadArrayBuffer error : ' + request.response);
+                            }
                         }
-                    }
-                };
-                request.send(null);
+                    };
+                    request.send(null);
+                }
             }
         }
 
@@ -956,13 +966,12 @@
                     var entityId;
                     var entity;
                     var numMeshes = meshes.length;
-                    var manyMeshes = numMeshes > 1;
 
                     for (var i = 0, len = numMeshes; i < len; i++) {
 
                         mesh = meshes[i];
 
-                        entityId = makeEntityId(ctx, nodeInfo, nodeIdx, manyMeshes);
+                        entityId = makeEntityId(ctx, nodeInfo, nodeIdx);
 
                         var meta = nodeInfo.extra || {};
                         meta.name = nodeInfo.name;
@@ -1005,11 +1014,8 @@
             }
         }
 
-        function makeEntityId(ctx, nodeInfo, nodeIdx, manyMeshes) {
+        function makeEntityId(ctx, nodeInfo, nodeIdx) {
             var id = makeID(ctx, nodeInfo.name || nodeIdx);
-            if (!manyMeshes && !ctx.model.entities[id]) {
-                return id;
-            }
             var id2;
             var i = 0;
             while (true) {

@@ -19,7 +19,7 @@
 
 <script>
 
-    const src = "models/gltf/GearboxAssy/glTF-Embedded/GearboxAssy.gltf";
+    const src = "models/gltf/GearboxAssy/glTF/GearboxAssy.gltf";
 
     var model = new xeogl.Model();
 
@@ -36,27 +36,51 @@
 
                 var basePath = getBasePath(src);
 
-                xeogl.GLTFModel.parse(model, json, basePath);
+                var options = {
+                    basePath: basePath,
+                    loadBuffer: function(url, ok, err) {
+                        loadBuffer(basePath + url, ok, err);
+                    }
+                };
+
+                xeogl.GLTFModel.parse(model, json, options);
 
                 model.scene.canvas.spinner.processes--;
             },
-            function(err) {
+            function (err) {
                 model.error(err);
             });
 
 
     function loadJSON(src, ok) {
-        var request = new XMLHttpRequest();
-        request.overrideMimeType("application/json");
-        request.open('GET', src, true);
-        request.onreadystatechange = function () {
-            if (request.readyState == 4 && // Request finished, response ready
-                    request.status == "200") { // Status OK
-                ok(request.responseText, this);
+        var req = new XMLHttpRequest();
+        req.overrideMimeType("application/json");
+        req.open('GET', src, true);
+        req.onreadystatechange = function () {
+            if (req.readyState == 4 && // Request finished, response ready
+                    req.status == "200") { // Status OK
+                ok(req.responseText, this);
             }
         };
-        request.send(null);
+        req.send(null);
     }
+
+    var loadBuffer = function (src, ok, err) {
+        var req = new XMLHttpRequest();
+        req.responseType = 'arraybuffer';
+        req.open('GET', src, true);
+        req.onreadystatechange = function () {
+            if (req.readyState == 4) {
+                if (req.status == "200") {
+                    ok(req.response);
+                } else {
+                    err('loadBuffer error : ' + req.response);
+                }
+                ok(null, req.response, null);
+            }
+        };
+        req.send(null);
+    };
 
     function getBasePath(src) {
         var i = src.lastIndexOf("/");

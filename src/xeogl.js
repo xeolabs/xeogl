@@ -145,6 +145,7 @@
             //},
             components: {
                 scenes: 0,
+                models: 0,
                 entities: 0
             },
             memory: {

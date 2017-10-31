@@ -368,6 +368,8 @@
 
             this.alphaMode = cfg.alphaMode;
             this.alphaCutoff = cfg.alphaCutoff;
+            this.backfaces = cfg.backfaces;
+            this.frontface = cfg.frontface;
         },
 
         _props: {

@@ -27,7 +27,7 @@
         }),
 
         project: new xeogl.Perspective({
-            fovy: 60,
+            fovy: 50,
             near: 0.1,
             far: 1000
         })
@@ -47,7 +47,7 @@
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Perspective.
  @param [cfg.parent] {String|Transform} ID or instance of a parent {{#crossLink "Transform"}}{{/crossLink}} within the same {{#crossLink "Scene"}}Scene{{/crossLink}}.
- @param [cfg.fovy=60.0] {Number} Field-of-view angle, in degrees, on Y-axis.
+ @param [cfg.fovy=50.0] {Number} Field-of-view angle, in degrees, on Y-axis.
  @param [cfg.near=0.1] {Number} Position of the near plane on the View-space Z-axis.
  @param [cfg.far=10000] {Number} Position of the far plane on the View-space Z-axis.
  @extends Transform
@@ -65,7 +65,7 @@
             this._super(cfg);
 
             this._dirty = false;
-            this._fovy = 60.0;
+            this._fovy = 50.0;
             this._near = 0.1;
             this._far = 10000.0;
 
@@ -93,14 +93,14 @@
              * Fires a {{#crossLink "Perspective/fovy:event"}}{{/crossLink}} event on change.
              *
              * @property fovy
-             * @default 60.0
+             * @default 50.0
              * @type Number
              */
             fovy: {
 
                 set: function (value) {
 
-                    this._fovy = (value !== undefined && value !== null) ? value : 60.0;
+                    this._fovy = (value !== undefined && value !== null) ? value : 50.0;
 
                     this._renderer.imageDirty = true;
 
