@@ -523,7 +523,7 @@
                 this.ambientColor[2] = 0;
             }
 
-            frameCtx.backfaces = true;
+            frameCtx.backfaces = false;
             frameCtx.frontface = true; // true == "ccw" else "cw"
             frameCtx.textureUnit = 0;
             frameCtx.ambientColor = this.ambientColor;
@@ -543,7 +543,7 @@
 
             gl.enable(gl.DEPTH_TEST);
             gl.frontFace(gl.CCW);
-            gl.disable(gl.CULL_FACE);
+            gl.enable(gl.CULL_FACE);
             gl.depthMask(true);
             gl.colorMask(true, true, true, false);
 
