@@ -254,6 +254,15 @@
              */
             this.entities = {};
 
+            /**
+             * The {{#crossLink "Model"}}{{/crossLink}}s within
+             * this Scene, mapped to their IDs.
+             *
+             * @property entities
+             * @type {String:xeogl.Model}
+             */
+            this.models = {};
+
             // Map of components created with #getSharedComponent, mapped to their "share IDs"
             this._sharedComponents = {};
 
@@ -442,6 +451,16 @@
                 xeogl.stats.components.entities++;
             }
 
+            if (c.isType("xeogl.Model")) {
+
+                this.models[c.id] = c;
+
+                // Update scene statistics
+
+                xeogl.stats.components.models++;
+            }
+
+
             /**
              * Fired whenever a component has been created within this Scene.
              * @event componentCreated
@@ -482,6 +501,15 @@
                 delete this.entities[c.id];
 
                 delete this._dirtyEntities[c.id];
+            }
+
+            if (c.isType("xeogl.Model")) {
+
+                // Component is a xeogl.Model, or a subtype thereof
+
+                xeogl.stats.components.models--;
+
+                delete this.models[c.id];
             }
 
             /**
@@ -880,10 +908,6 @@
                                 //    id: "default.light0",
                                 //    color: [0.55, 0.55, 0.6],
                                 //    intensity: 1.0
-                                //}),
-
-                                //new xeogl.AmbientLight(this, {
-                                //    color: [0.5, 0.5, 0.55]
                                 //}),
 
                                 //new xeogl.SpotLight(this, {
