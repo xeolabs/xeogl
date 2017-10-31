@@ -84,6 +84,7 @@
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
+                                <li><a href="../classes/MousePickControl.html">MousePickControl</a></li>
                                 <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
@@ -96,12 +97,14 @@
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/Pin.html">Pin</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
+                                <li><a href="../classes/PlaneHelper.html">PlaneHelper</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
-                                <li><a href="../classes/PointLightHelper.html">PointLightHelper</a></li>
                                 <li><a href="../classes/PointMarkings.html">PointMarkings</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
+                                <li><a href="../classes/Region.html">Region</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
+                                <li><a href="../classes/Ruler.html">Ruler</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
@@ -121,7 +124,6 @@
                                 <li><a href="../classes/Transform.html">Transform</a></li>
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
-                                <li><a href="../classes/ViewCube.html">ViewCube</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
                                 <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
@@ -2241,6 +2243,54 @@
             var m15 = m[15];
 
             for (i = 0; i &lt; len; i += 3) {
+
+                x = p[i + 0];
+                y = p[i + 1];
+                z = p[i + 2];
+
+                p2[i + 0] = (m0 * x) + (m4 * y) + (m8 * z) + m12;
+                p2[i + 1] = (m1 * x) + (m5 * y) + (m9 * z) + m13;
+                p2[i + 2] = (m2 * x) + (m6 * y) + (m10 * z) + m14;
+                p2[i + 3] = (m3 * x) + (m7 * y) + (m11 * z) + m15;
+            }
+
+            return p2;
+        },
+
+        /**
+         * Transforms an array of positions by a 4x4 matrix.
+         * @method transformPositions4
+         * @static
+         */
+        transformPositions4: function (m, p, p2) {
+
+            p2 = p2 || p;
+
+            var i;
+            var len = p.length;
+
+            var x;
+            var y;
+            var z;
+
+            var m0 = m[0];
+            var m1 = m[1];
+            var m2 = m[2];
+            var m3 = m[3];
+            var m4 = m[4];
+            var m5 = m[5];
+            var m6 = m[6];
+            var m7 = m[7];
+            var m8 = m[8];
+            var m9 = m[9];
+            var m10 = m[10];
+            var m11 = m[11];
+            var m12 = m[12];
+            var m13 = m[13];
+            var m14 = m[14];
+            var m15 = m[15];
+
+            for (i = 0; i &lt; len; i += 4) {
 
                 x = p[i + 0];
                 y = p[i + 1];

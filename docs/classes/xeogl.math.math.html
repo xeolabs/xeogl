@@ -84,6 +84,7 @@
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
+                                <li><a href="../classes/MousePickControl.html">MousePickControl</a></li>
                                 <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
@@ -96,12 +97,14 @@
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/Pin.html">Pin</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
+                                <li><a href="../classes/PlaneHelper.html">PlaneHelper</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
-                                <li><a href="../classes/PointLightHelper.html">PointLightHelper</a></li>
                                 <li><a href="../classes/PointMarkings.html">PointMarkings</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
+                                <li><a href="../classes/Region.html">Region</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
+                                <li><a href="../classes/Ruler.html">Ruler</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
@@ -121,7 +124,6 @@
                                 <li><a href="../classes/Transform.html">Transform</a></li>
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
-                                <li><a href="../classes/ViewCube.html">ViewCube</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
                                 <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
@@ -644,6 +646,11 @@ public API and are therefore available for you to use within your application co
                             </li>
                             <li class="index-item method">
                                 <a href="#method_transformPositions3">transformPositions3</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_transformPositions4">transformPositions4</a>
 
                                     <span class="flag static">static</span>
                             </li>
@@ -2188,7 +2195,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l639"><code>src&#x2F;math&#x2F;math.js:639</code></a>
+        <a href="../files/src_math_math.js.html#l627"><code>src&#x2F;math&#x2F;math.js:627</code></a>
         </p>
 
 
@@ -2196,7 +2203,7 @@ public API and are therefore available for you to use within your application co
     </div>
 
     <div class="description">
-        <p>Returns the dot product of two two-element vectors.</p>
+        <p>Returns the dot product of two three-element vectors.</p>
 
     </div>
 
@@ -2269,7 +2276,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l627"><code>src&#x2F;math&#x2F;math.js:627</code></a>
+        <a href="../files/src_math_math.js.html#l639"><code>src&#x2F;math&#x2F;math.js:639</code></a>
         </p>
 
 
@@ -2277,7 +2284,7 @@ public API and are therefore available for you to use within your application co
     </div>
 
     <div class="description">
-        <p>Returns the dot product of two three-element vectors.</p>
+        <p>Returns the dot product of two two-element vectors.</p>
 
     </div>
 
@@ -2380,7 +2387,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2219"><code>src&#x2F;math&#x2F;math.js:2219</code></a>
+        <a href="../files/src_math_math.js.html#l2267"><code>src&#x2F;math&#x2F;math.js:2267</code></a>
         </p>
 
 
@@ -2882,7 +2889,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2204"><code>src&#x2F;math&#x2F;math.js:2204</code></a>
+        <a href="../files/src_math_math.js.html#l2252"><code>src&#x2F;math&#x2F;math.js:2252</code></a>
         </p>
 
 
@@ -4245,7 +4252,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2187"><code>src&#x2F;math&#x2F;math.js:2187</code></a>
+        <a href="../files/src_math_math.js.html#l2235"><code>src&#x2F;math&#x2F;math.js:2235</code></a>
         </p>
 
 
@@ -4413,7 +4420,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2088"><code>src&#x2F;math&#x2F;math.js:2088</code></a>
+        <a href="../files/src_math_math.js.html#l2136"><code>src&#x2F;math&#x2F;math.js:2136</code></a>
         </p>
 
 
@@ -4523,7 +4530,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2121"><code>src&#x2F;math&#x2F;math.js:2121</code></a>
+        <a href="../files/src_math_math.js.html#l2169"><code>src&#x2F;math&#x2F;math.js:2169</code></a>
         </p>
 
 
@@ -4633,7 +4640,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2154"><code>src&#x2F;math&#x2F;math.js:2154</code></a>
+        <a href="../files/src_math_math.js.html#l2202"><code>src&#x2F;math&#x2F;math.js:2202</code></a>
         </p>
 
 
@@ -5050,7 +5057,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l833"><code>src&#x2F;math&#x2F;math.js:833</code></a>
+        <a href="../files/src_math_math.js.html#l824"><code>src&#x2F;math&#x2F;math.js:824</code></a>
         </p>
 
 
@@ -5083,7 +5090,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l824"><code>src&#x2F;math&#x2F;math.js:824</code></a>
+        <a href="../files/src_math_math.js.html#l833"><code>src&#x2F;math&#x2F;math.js:833</code></a>
         </p>
 
 
@@ -5766,7 +5773,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1936"><code>src&#x2F;math&#x2F;math.js:1936</code></a>
+        <a href="../files/src_math_math.js.html#l1952"><code>src&#x2F;math&#x2F;math.js:1952</code></a>
         </p>
 
 
@@ -5774,7 +5781,7 @@ public API and are therefore available for you to use within your application co
     </div>
 
     <div class="description">
-        <p>Transforms a three-element position by a 4x4 matrix.</p>
+        <p>Transforms a homogeneous coordinate by a 4x4 matrix.</p>
 
     </div>
 
@@ -5799,7 +5806,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1952"><code>src&#x2F;math&#x2F;math.js:1952</code></a>
+        <a href="../files/src_math_math.js.html#l1936"><code>src&#x2F;math&#x2F;math.js:1936</code></a>
         </p>
 
 
@@ -5807,7 +5814,7 @@ public API and are therefore available for you to use within your application co
     </div>
 
     <div class="description">
-        <p>Transforms a homogeneous coordinate by a 4x4 matrix.</p>
+        <p>Transforms a three-element position by a 4x4 matrix.</p>
 
     </div>
 
@@ -5881,6 +5888,39 @@ public API and are therefore available for you to use within your application co
 
 
 </div>
+<div id="method_transformPositions4" class="method item">
+    <h3 class="name"><code>transformPositions4</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+
+
+        <span class="flag static">static</span>
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_math_math.js.html#l2059"><code>src&#x2F;math&#x2F;math.js:2059</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Transforms an array of positions by a 4x4 matrix.</p>
+
+    </div>
+
+
+
+
+</div>
 <div id="method_transformVec3" class="method item">
     <h3 class="name"><code>transformVec3</code></h3>
 
@@ -5898,7 +5938,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2059"><code>src&#x2F;math&#x2F;math.js:2059</code></a>
+        <a href="../files/src_math_math.js.html#l2107"><code>src&#x2F;math&#x2F;math.js:2107</code></a>
         </p>
 
 
@@ -5931,7 +5971,7 @@ public API and are therefore available for you to use within your application co
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2073"><code>src&#x2F;math&#x2F;math.js:2073</code></a>
+        <a href="../files/src_math_math.js.html#l2121"><code>src&#x2F;math&#x2F;math.js:2121</code></a>
         </p>
 
 

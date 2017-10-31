@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>src/math/mathGeometryBuild.2.js - xeogl</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link href='https://fonts.googleapis.com/css?family=Exo+2:400,800,900,700,600,500|Roboto:100,300,400,500,700,900'  rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="icon" href="../assets/favicon.ico">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+
+                <h1 class="projectTitle"><a href="../../">xeogl</a> / <a href="../../docs">API Docs</a></h1>
+
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 1.0.0</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+                
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/AABBGeometry.html">AABBGeometry</a></li>
+                                <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Annotation.html">Annotation</a></li>
+                                <li><a href="../classes/AnnotationStory.html">AnnotationStory</a></li>
+                                <li><a href="../classes/AxisHelper.html">AxisHelper</a></li>
+                                <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
+                                <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
+                                <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
+                                <li><a href="../classes/BuildableModel.html">BuildableModel</a></li>
+                                <li><a href="../classes/Camera.html">Camera</a></li>
+                                <li><a href="../classes/CameraControl.html">CameraControl</a></li>
+                                <li><a href="../classes/CameraController.html">CameraController</a></li>
+                                <li><a href="../classes/CameraFlightAnimation.html">CameraFlightAnimation</a></li>
+                                <li><a href="../classes/CameraFollowAnimation.html">CameraFollowAnimation</a></li>
+                                <li><a href="../classes/CameraPath.html">CameraPath</a></li>
+                                <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
+                                <li><a href="../classes/Canvas.html">Canvas</a></li>
+                                <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
+                                <li><a href="../classes/Clip.html">Clip</a></li>
+                                <li><a href="../classes/ClipHelper.html">ClipHelper</a></li>
+                                <li><a href="../classes/Clips.html">Clips</a></li>
+                                <li><a href="../classes/Component.html">Component</a></li>
+                                <li><a href="../classes/Configs.html">Configs</a></li>
+                                <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
+                                <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
+                                <li><a href="../classes/Curve.html">Curve</a></li>
+                                <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
+                                <li><a href="../classes/DirLight.html">DirLight</a></li>
+                                <li><a href="../classes/Entity.html">Entity</a></li>
+                                <li><a href="../classes/Fog.html">Fog</a></li>
+                                <li><a href="../classes/Fresnel.html">Fresnel</a></li>
+                                <li><a href="../classes/Frustum.html">Frustum</a></li>
+                                <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
+                                <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
+                                <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
+                                <li><a href="../classes/Input.html">Input</a></li>
+                                <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
+                                <li><a href="../classes/Lights.html">Lights</a></li>
+                                <li><a href="../classes/Lookat.html">Lookat</a></li>
+                                <li><a href="../classes/Material.html">Material</a></li>
+                                <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
+                                <li><a href="../classes/Model.html">Model</a></li>
+                                <li><a href="../classes/MousePickControl.html">MousePickControl</a></li>
+                                <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
+                                <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
+                                <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
+                                <li><a href="../classes/OBJModel.html">OBJModel</a></li>
+                                <li><a href="../classes/Ortho.html">Ortho</a></li>
+                                <li><a href="../classes/Outline.html">Outline</a></li>
+                                <li><a href="../classes/Path.html">Path</a></li>
+                                <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
+                                <li><a href="../classes/Perspective.html">Perspective</a></li>
+                                <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
+                                <li><a href="../classes/Pin.html">Pin</a></li>
+                                <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
+                                <li><a href="../classes/PlaneHelper.html">PlaneHelper</a></li>
+                                <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/PointMarkings.html">PointMarkings</a></li>
+                                <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
+                                <li><a href="../classes/Quaternion.html">Quaternion</a></li>
+                                <li><a href="../classes/Region.html">Region</a></li>
+                                <li><a href="../classes/Rotate.html">Rotate</a></li>
+                                <li><a href="../classes/Ruler.html">Ruler</a></li>
+                                <li><a href="../classes/Scale.html">Scale</a></li>
+                                <li><a href="../classes/Scene.html">Scene</a></li>
+                                <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
+                                <li><a href="../classes/Shadow.html">Shadow</a></li>
+                                <li><a href="../classes/Skybox.html">Skybox</a></li>
+                                <li><a href="../classes/SpecularMaterial.html">SpecularMaterial</a></li>
+                                <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
+                                <li><a href="../classes/Spinner.html">Spinner</a></li>
+                                <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
+                                <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
+                                <li><a href="../classes/SpotLight.html">SpotLight</a></li>
+                                <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
+                                <li><a href="../classes/Story.html">Story</a></li>
+                                <li><a href="../classes/TeapotGeometry.html">TeapotGeometry</a></li>
+                                <li><a href="../classes/Texture.html">Texture</a></li>
+                                <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
+                                <li><a href="../classes/Transform.html">Transform</a></li>
+                                <li><a href="../classes/Translate.html">Translate</a></li>
+                                <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
+                                <li><a href="../classes/Viewport.html">Viewport</a></li>
+                                <li><a href="../classes/xeogl.html">xeogl</a></li>
+                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/XRay.html">XRay</a></li>
+                                <li><a href="../classes/ZSpaceEffect.html">ZSpaceEffect</a></li>
+                                <li><a href="../classes/ZSpaceStylusControl.html">ZSpaceStylusControl</a></li>
+                            </ul>
+                
+                            <ul id="api-modules" class="apis modules">
+                                <li><a href="..//modules/animation.html">animation</a></li>
+                                <li><a href="..//modules/annotations.html">annotations</a></li>
+                                <li><a href="..//modules/boundaries.html">boundaries</a></li>
+                                <li><a href="..//modules/camera.html">camera</a></li>
+                                <li><a href="..//modules/canvas.html">canvas</a></li>
+                                <li><a href="..//modules/clipping.html">clipping</a></li>
+                                <li><a href="..//modules/configs.html">configs</a></li>
+                                <li><a href="..//modules/controls.html">controls</a></li>
+                                <li><a href="..//modules/curves.html">curves</a></li>
+                                <li><a href="..//modules/effects.html">effects</a></li>
+                                <li><a href="..//modules/emphasis.html">emphasis</a></li>
+                                <li><a href="..//modules/entities.html">entities</a></li>
+                                <li><a href="..//modules/generation.html">generation</a></li>
+                                <li><a href="..//modules/geometry.html">geometry</a></li>
+                                <li><a href="..//modules/helpers.html">helpers</a></li>
+                                <li><a href="..//modules/input.html">input</a></li>
+                                <li><a href="..//modules/interaction.html">interaction</a></li>
+                                <li><a href="..//modules/lighting.html">lighting</a></li>
+                                <li><a href="..//modules/marking.html">marking</a></li>
+                                <li><a href="..//modules/materials.html">materials</a></li>
+                                <li><a href="..//modules/math.html">math</a></li>
+                                <li><a href="..//modules/models.html">models</a></li>
+                                <li><a href="..//modules/outline.html">outline</a></li>
+                                <li><a href="..//modules/rendering.html">rendering</a></li>
+                                <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
+                                <li><a href="..//modules/stories.html">stories</a></li>
+                                <li><a href="..//modules/transforms.html">transforms</a></li>
+                                <li><a href="..//modules/xeogl.html">xeogl</a></li>
+                                <li><a href="..//modules/zspace.html">zspace</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <!--<div id="api-options">-->
+                    <!--Show:-->
+                    <!--<label for="api-show-inherited">-->
+                        <!--<input type="checkbox" id="api-show-inherited" checked>-->
+                        <!--Inherited-->
+                    <!--</label>-->
+            
+                    <!--<label for="api-show-protected">-->
+                        <!--<input type="checkbox" id="api-show-protected">-->
+                        <!--Protected-->
+                    <!--</label>-->
+            
+                    <!--<label for="api-show-private">-->
+                        <!--<input type="checkbox" id="api-show-private">-->
+                        <!--Private-->
+                    <!--</label>-->
+                    <!--<label for="api-show-deprecated">-->
+                        <!--<input type="checkbox" id="api-show-deprecated">-->
+                        <!--Deprecated-->
+                    <!--</label>-->
+            
+                <!--</div>-->
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<h1 class="file-heading">File: src/math/mathGeometryBuild.2.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+ * Boundary math functions.
+ */
+(function () {
+
+    &quot;use strict&quot;;
+
+    var math = xeogl.math;
+
+    /**
+     * Builds normal vectors from positions and indices.
+     *
+     * @private
+     */
+    math.buildNormals = (function () {
+
+        var a = math.vec3();
+        var b = math.vec3();
+        var c = math.vec3();
+        var ab = math.vec3();
+        var ac = math.vec3();
+        var crossVec = math.vec3();
+
+        return function (positions, indices, normals) {
+
+            var i;
+            var len;
+            var nvecs = new Array(positions.length / 3);
+            var j0;
+            var j1;
+            var j2;
+
+            for (i = 0, len = indices.length; i &lt; len; i += 3) {
+
+                j0 = indices[i];
+                j1 = indices[i + 1];
+                j2 = indices[i + 2];
+
+                a[0] = positions[j0 * 3];
+                a[1] = positions[j0 * 3 + 1];
+                a[2] = positions[j0 * 3 + 2];
+
+                b[0] = positions[j1 * 3];
+                b[1] = positions[j1 * 3 + 1];
+                b[2] = positions[j1 * 3 + 2];
+
+                c[0] = positions[j2 * 3];
+                c[1] = positions[j2 * 3 + 1];
+                c[2] = positions[j2 * 3 + 2];
+
+                math.subVec3(b, a, ab);
+                math.subVec3(c, a, ac);
+
+                var normVec = math.vec3();
+
+                math.normalizeVec3(math.cross3Vec3(ab, ac, crossVec), normVec);
+
+                if (!nvecs[j0]) {
+                    nvecs[j0] = [];
+                }
+                if (!nvecs[j1]) {
+                    nvecs[j1] = [];
+                }
+                if (!nvecs[j2]) {
+                    nvecs[j2] = [];
+                }
+
+                nvecs[j0].push(normVec);
+                nvecs[j1].push(normVec);
+                nvecs[j2].push(normVec);
+            }
+
+            normals = (normals &amp;&amp; normals.length === positions.length) ? normals : new Float32Array(positions.length);
+
+            var count;
+            var x;
+            var y;
+            var z;
+
+            for (i = 0, len = nvecs.length; i &lt; len; i++) {  // Now go through and average out everything
+
+                count = nvecs[i].length;
+
+                x = 0;
+                y = 0;
+                z = 0;
+
+                for (var j = 0; j &lt; count; j++) {
+                    x += nvecs[i][j][0];
+                    y += nvecs[i][j][1];
+                    z += nvecs[i][j][2];
+                }
+
+                normals[i * 3] = (x / count);
+                normals[i * 3 + 1] = (y / count);
+                normals[i * 3 + 2] = (z / count);
+            }
+
+            return normals;
+        };
+    })();
+
+    math.buildVertexNormals = (function() {
+
+        //  https://github.com/mrdoob/three.js/blob/dev/src/core/Geometry.js
+
+        return function (indices, positions) {
+
+            var areaWeighted = true;
+
+            var v, vl, f, fl, face, positions;
+
+            positions2 = new Float32Array( this.positions.length );
+
+            for ( v = 0, vl = this.positions.length; v &lt; vl; v ++ ) {
+
+                positions2[ v ] = new Vector3();
+
+            }
+
+            if ( areaWeighted ) {
+
+                // vertex normals weighted by triangle areas
+                // http://www.iquilezles.org/www/articles/normals/normals.htm
+
+                var vA, vB, vC;
+                var cb = new Vector3(), ab = new Vector3();
+
+                for ( f = 0, fl = indices.length; f &lt; fl; f ++ ) {
+
+                    face = indices[ f ];
+
+                    vA = this.positions[ face.a ];
+                    vB = this.positions[ face.b ];
+                    vC = this.positions[ face.c ];
+
+                    cb.subVectors( vC, vB );
+                    ab.subVectors( vA, vB );
+                    cb.cross( ab );
+
+                    positions2[ face.a ].add( cb );
+                    positions2[ face.b ].add( cb );
+                    positions2[ face.c ].add( cb );
+
+                }
+
+            } else {
+
+                this.computeFaceNormals();
+
+                for ( f = 0, fl = this.indices.length; f &lt; fl; f ++ ) {
+
+                    face = this.indices[ f ];
+
+                    positions2[ face.a ].add( face.normal );
+                    positions2[ face.b ].add( face.normal );
+                    positions2[ face.c ].add( face.normal );
+
+                }
+
+            }
+
+            for ( v = 0, vl = this.positions.length; v &lt; vl; v ++ ) {
+
+                positions2[ v ].normalize();
+
+            }
+
+            for ( f = 0, fl = this.indices.length; f &lt; fl; f ++ ) {
+
+                face = this.indices[ f ];
+
+                var vertexNormals = face.vertexNormals;
+
+                if ( vertexNormals.length === 3 ) {
+
+                    vertexNormals[ 0 ].copy( positions2[ face.a ] );
+                    vertexNormals[ 1 ].copy( positions2[ face.b ] );
+                    vertexNormals[ 2 ].copy( positions2[ face.c ] );
+
+                } else {
+
+                    vertexNormals[ 0 ] = positions2[ face.a ].clone();
+                    vertexNormals[ 1 ] = positions2[ face.b ].clone();
+                    vertexNormals[ 2 ] = positions2[ face.c ].clone();
+
+                }
+
+            }
+
+            if ( this.indices.length &gt; 0 ) {
+
+                this.normalsNeedUpdate = true;
+
+            }
+
+        };
+    })();
+
+    /**
+     * Builds vertex tangent vectors from positions, UVs and indices.
+     *
+     * @private
+     */
+    math.buildTangents = (function () {
+
+        var tempVec3 = new Float32Array(3);
+        var tempVec3b = new Float32Array(3);
+        var tempVec3c = new Float32Array(3);
+        var tempVec3d = new Float32Array(3);
+        var tempVec3e = new Float32Array(3);
+        var tempVec3f = new Float32Array(3);
+        var tempVec3g = new Float32Array(3);
+
+        return function (positions, indices, uv) {
+
+            var tangents = new Float32Array(positions.length);
+
+            // The vertex arrays needs to be calculated
+            // before the calculation of the tangents
+
+            for (var location = 0; location &lt; indices.length; location += 3) {
+
+                // Recontructing each vertex and UV coordinate into the respective vectors
+
+                var index = indices[location];
+
+                var v0 = positions.subarray(index * 3, index * 3 + 3);
+                var uv0 = uv.subarray(index * 2, index * 2 + 2);
+
+                index = indices[location + 1];
+
+                var v1 = positions.subarray(index * 3, index * 3 + 3);
+                var uv1 = uv.subarray(index * 2, index * 2 + 2);
+
+                index = indices[location + 2];
+
+                var v2 = positions.subarray(index * 3, index * 3 + 3);
+                var uv2 = uv.subarray(index * 2, index * 2 + 2);
+
+                var deltaPos1 = math.subVec3(v1, v0, tempVec3);
+                var deltaPos2 = math.subVec3(v2, v0, tempVec3b);
+
+                var deltaUV1 = math.subVec2(uv1, uv0, tempVec3c);
+                var deltaUV2 = math.subVec2(uv2, uv0, tempVec3d);
+
+                var r = 1 / ((deltaUV1[0] * deltaUV2[1]) - (deltaUV1[1] * deltaUV2[0]));
+
+                var tangent = math.mulVec3Scalar(
+                    math.subVec3(
+                        math.mulVec3Scalar(deltaPos1, deltaUV2[1], tempVec3e),
+                        math.mulVec3Scalar(deltaPos2, deltaUV1[1], tempVec3f),
+                        tempVec3g
+                    ),
+                    r,
+                    tempVec3f
+                );
+
+                // Average the value of the vectors
+
+                var addTo;
+
+                for (var v = 0; v &lt; 3; v++) {
+                    addTo = indices[location + v] * 3;
+                    tangents[addTo] += tangent[0];
+                    tangents[addTo + 1] += tangent[1];
+                    tangents[addTo + 2] += tangent[2];
+                }
+            }
+
+            return tangents;
+        };
+    })();
+
+    /**
+     * Builds vertex and index arrays needed by color-indexed triangle picking.
+     *
+     * @private
+     */
+    math.buildPickTriangles = function (positions, indices) {
+
+        var numIndices = indices.length;
+        var pickPositions = new Float32Array(numIndices * 30); // FIXME: Why do we need to extend size like this to make large meshes pickable?
+        var pickColors = new Float32Array(numIndices * 40);
+        var primIndex = 0;
+        var vi;// Positions array index
+        var pvi;// Picking positions array index
+        var pci; // Picking color array index
+
+        // Triangle indices
+        var i;
+        var r;
+        var g;
+        var b;
+        var a;
+
+        for (var location = 0; location &lt; numIndices; location += 3) {
+
+            pvi = location * 3;
+            pci = location * 4;
+
+            // Primitive-indexed triangle pick color
+
+            a = (primIndex &gt;&gt; 24 &amp; 0xFF) / 255.0;
+            b = (primIndex &gt;&gt; 16 &amp; 0xFF) / 255.0;
+            g = (primIndex &gt;&gt; 8 &amp; 0xFF) / 255.0;
+            r = (primIndex &amp; 0xFF) / 255.0;
+
+            // A
+
+            i = indices[location];
+            vi = i * 3;
+
+            pickPositions[pvi] = positions[vi];
+            pickPositions[pvi + 1] = positions[vi + 1];
+            pickPositions[pvi + 2] = positions[vi + 2];
+
+            pickColors[pci] = r;
+            pickColors[pci + 1] = g;
+            pickColors[pci + 2] = b;
+            pickColors[pci + 3] = a;
+
+            // B
+
+            i = indices[location + 1];
+            vi = i * 3;
+
+            pickPositions[pvi + 3] = positions[vi];
+            pickPositions[pvi + 4] = positions[vi + 1];
+            pickPositions[pvi + 5] = positions[vi + 2];
+
+            pickColors[pci + 4] = r;
+            pickColors[pci + 5] = g;
+            pickColors[pci + 6] = b;
+            pickColors[pci + 7] = a;
+
+            // C
+
+            i = indices[location + 2];
+            vi = i * 3;
+
+            pickPositions[pvi + 6] = positions[vi];
+            pickPositions[pvi + 7] = positions[vi + 1];
+            pickPositions[pvi + 8] = positions[vi + 2];
+
+            pickColors[pci + 8] = r;
+            pickColors[pci + 9] = g;
+            pickColors[pci + 10] = b;
+            pickColors[pci + 11] = a;
+
+            primIndex++;
+        }
+
+        return {
+            positions: pickPositions,
+            colors: pickColors
+        };
+    };
+}());
+    </pre>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

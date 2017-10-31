@@ -84,6 +84,7 @@
                                 <li><a href="../classes/Material.html">Material</a></li>
                                 <li><a href="../classes/MetallicMaterial.html">MetallicMaterial</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
+                                <li><a href="../classes/MousePickControl.html">MousePickControl</a></li>
                                 <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
@@ -96,12 +97,14 @@
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/Pin.html">Pin</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
+                                <li><a href="../classes/PlaneHelper.html">PlaneHelper</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
-                                <li><a href="../classes/PointLightHelper.html">PointLightHelper</a></li>
                                 <li><a href="../classes/PointMarkings.html">PointMarkings</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
+                                <li><a href="../classes/Region.html">Region</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
+                                <li><a href="../classes/Ruler.html">Ruler</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
@@ -121,7 +124,6 @@
                                 <li><a href="../classes/Transform.html">Transform</a></li>
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
-                                <li><a href="../classes/ViewCube.html">ViewCube</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
                                 <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
@@ -503,6 +505,10 @@ cameraFlight.flyTo(aabb);
 
                             </li>
                             <li class="index-item method inherited">
+                                <a href="#method_hasSubs">hasSubs</a>
+
+                            </li>
+                            <li class="index-item method inherited">
                                 <a href="#method_isType">isType</a>
 
                             </li>
@@ -692,7 +698,7 @@ cameraFlight.flyTo(aabb);
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_create">Component</a>:
-        <a href="../files/src_component.js.html#l910"><code>src&#x2F;component.js:910</code></a>
+        <a href="../files/src_component.js.html#l920"><code>src&#x2F;component.js:920</code></a>
         </p>
 
 
@@ -827,7 +833,7 @@ component - you can specify the component ID in the <code>cfg</code> parameter.<
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_component.js.html#l1152"><code>src&#x2F;component.js:1152</code></a>
+        <a href="../files/src_component.js.html#l1162"><code>src&#x2F;component.js:1162</code></a>
         </p>
 
 
@@ -869,7 +875,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_error">Component</a>:
-        <a href="../files/src_component.js.html#l593"><code>src&#x2F;component.js:593</code></a>
+        <a href="../files/src_component.js.html#l603"><code>src&#x2F;component.js:603</code></a>
         </p>
 
 
@@ -933,7 +939,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_fire">Component</a>:
-        <a href="../files/src_component.js.html#l410"><code>src&#x2F;component.js:410</code></a>
+        <a href="../files/src_component.js.html#l409"><code>src&#x2F;component.js:409</code></a>
         </p>
 
 
@@ -984,6 +990,160 @@ any subsequent notifications on the event as they are made.</p>
 
                     </div>
 
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_flyTo" class="method item">
+    <h3 class="name"><code>flyTo</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>params</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_animation_cameraFlightAnimation.js.html#l404"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:404</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Jumps this CameraFlightAnimation&#39;s <a href="../classes/Camera.html" class="crosslink">Camera</a> to the given target.</p>
+<ul>
+<li>When the target is a boundary, this CameraFlightAnimation will position the <a href="../classes/Camera.html" class="crosslink">Camera</a>
+at where the target fills most of the canvas.</li>
+<li>When the target is an explicit <a href="../classes/Camera.html" class="crosslink">Camera</a> position, given as <code>eye</code>, <code>look</code> and <code>up</code>
+vectors, then this CameraFlightAnimation will jump the <a href="../classes/Camera.html" class="crosslink">Camera</a> to that target.</li>
+</ul>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">params</code>
+                        <span class="type"> | <a href="../classes/Component.html" class="crosslink">Component</a></span>
+
+
+                    <div class="param-description">
+                        <p>Either a parameters object or a <a href="../classes/Component.html" class="crosslink">Component</a> subtype that has a WorldBoundary.</p>
+
+                    </div>
+
+                        <ul class="params-list">
+                            <li class="param">
+                                    <code class="param-name optional">[arc=0]   Factor in range [0..1]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>indicating how much the
+Camera/eye:property position will
+swing away from its Camera/eye:property position as it flies to the target.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[component]</code>
+                                    <span class="type">Number | String | <a href="../classes/Component.html" class="crosslink">Component</a></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>ID or instance of a component to fly to.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[aabb]</code>
+                                    <span class="type"></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>World-space axis-aligned bounding box (AABB) target to fly to.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[eye]</code>
+                                    <span class="type">Float32Array</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Position to fly the eye position to.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[look]</code>
+                                    <span class="type">Float32Array</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Position to fly the look position to.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[up]</code>
+                                    <span class="type">Float32Array</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Position to fly the up vector to.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[fitFOV]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>How much of field-of-view, in degrees, that a target <a href="../classes/Entity.html" class="crosslink">Entity</a> or its AABB should
+fill the canvas on arrival. Overrides <a href="../classes/CameraFlightAnimation.html#property_fitFOV" class="crosslink">fitFOV</a>.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[fit]</code>
+                                    <span class="type">Boolean</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Whether to fit the target to the view volume. Overrides <a href="../classes/CameraFlightAnimation.html#property_fit" class="crosslink">fit</a>.</p>
+
+                                </div>
+
+                            </li>
+                        </ul>
                 </li>
             </ul>
         </div>
@@ -1187,17 +1347,20 @@ fill the canvas on arrival. Overrides <a href="../classes/CameraFlightAnimation.
 
 
 </div>
-<div id="method_flyTo" class="method item">
-    <h3 class="name"><code>flyTo</code></h3>
+<div id="method_hasSubs" class="method item inherited">
+    <h3 class="name"><code>hasSubs</code></h3>
 
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
                 <li class="arg">
-                        <code>params</code>
+                        <code>event</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
 
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
 
 
 
@@ -1207,9 +1370,9 @@ fill the canvas on arrival. Overrides <a href="../classes/CameraFlightAnimation.
 
 
     <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_animation_cameraFlightAnimation.js.html#l404"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:404</code></a>
+                <p>Inherited from
+                <a href="../classes/Component.html#method_hasSubs">Component</a>:
+        <a href="../files/src_component.js.html#l547"><code>src&#x2F;component.js:547</code></a>
         </p>
 
 
@@ -1217,13 +1380,7 @@ fill the canvas on arrival. Overrides <a href="../classes/CameraFlightAnimation.
     </div>
 
     <div class="description">
-        <p>Jumps this CameraFlightAnimation&#39;s <a href="../classes/Camera.html" class="crosslink">Camera</a> to the given target.</p>
-<ul>
-<li>When the target is a boundary, this CameraFlightAnimation will position the <a href="../classes/Camera.html" class="crosslink">Camera</a>
-at where the target fills most of the canvas.</li>
-<li>When the target is an explicit <a href="../classes/Camera.html" class="crosslink">Camera</a> position, given as <code>eye</code>, <code>look</code> and <code>up</code>
-vectors, then this CameraFlightAnimation will jump the <a href="../classes/Camera.html" class="crosslink">Camera</a> to that target.</li>
-</ul>
+        <p>Returns true if there are any subscribers to the given event on this component.</p>
 
     </div>
 
@@ -1232,112 +1389,28 @@ vectors, then this CameraFlightAnimation will jump the <a href="../classes/Camer
 
             <ul class="params-list">
                 <li class="param">
-                        <code class="param-name">params</code>
-                        <span class="type"> | <a href="../classes/Component.html" class="crosslink">Component</a></span>
+                        <code class="param-name">event</code>
+                        <span class="type">String</span>
 
 
                     <div class="param-description">
-                        <p>Either a parameters object or a <a href="../classes/Component.html" class="crosslink">Component</a> subtype that has a WorldBoundary.</p>
+                        <p>The event</p>
 
                     </div>
 
-                        <ul class="params-list">
-                            <li class="param">
-                                    <code class="param-name optional">[arc=0]   Factor in range [0..1]</code>
-                                    <span class="type">Number</span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-
-                                <div class="param-description">
-                                    <p>indicating how much the
-Camera/eye:property position will
-swing away from its Camera/eye:property position as it flies to the target.</p>
-
-                                </div>
-
-                            </li>
-                            <li class="param">
-                                    <code class="param-name optional">[component]</code>
-                                    <span class="type">Number | String | <a href="../classes/Component.html" class="crosslink">Component</a></span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-
-                                <div class="param-description">
-                                    <p>ID or instance of a component to fly to.</p>
-
-                                </div>
-
-                            </li>
-                            <li class="param">
-                                    <code class="param-name optional">[aabb]</code>
-                                    <span class="type"></span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-
-                                <div class="param-description">
-                                    <p>World-space axis-aligned bounding box (AABB) target to fly to.</p>
-
-                                </div>
-
-                            </li>
-                            <li class="param">
-                                    <code class="param-name optional">[eye]</code>
-                                    <span class="type">Float32Array</span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-
-                                <div class="param-description">
-                                    <p>Position to fly the eye position to.</p>
-
-                                </div>
-
-                            </li>
-                            <li class="param">
-                                    <code class="param-name optional">[look]</code>
-                                    <span class="type">Float32Array</span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-
-                                <div class="param-description">
-                                    <p>Position to fly the look position to.</p>
-
-                                </div>
-
-                            </li>
-                            <li class="param">
-                                    <code class="param-name optional">[up]</code>
-                                    <span class="type">Float32Array</span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-
-                                <div class="param-description">
-                                    <p>Position to fly the up vector to.</p>
-
-                                </div>
-
-                            </li>
-                            <li class="param">
-                                    <code class="param-name optional">[fitFOV]</code>
-                                    <span class="type">Number</span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-
-                                <div class="param-description">
-                                    <p>How much of field-of-view, in degrees, that a target <a href="../classes/Entity.html" class="crosslink">Entity</a> or its AABB should
-fill the canvas on arrival. Overrides <a href="../classes/CameraFlightAnimation.html#property_fitFOV" class="crosslink">fitFOV</a>.</p>
-
-                                </div>
-
-                            </li>
-                            <li class="param">
-                                    <code class="param-name optional">[fit]</code>
-                                    <span class="type">Boolean</span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-
-                                <div class="param-description">
-                                    <p>Whether to fit the target to the view volume. Overrides <a href="../classes/CameraFlightAnimation.html#property_fit" class="crosslink">fit</a>.</p>
-
-                                </div>
-
-                            </li>
-                        </ul>
                 </li>
             </ul>
         </div>
 
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type">Boolean</span>:
+                    <p>True if there are any subscribers to the given event on this component.</p>
+
+            </div>
+        </div>
 
 
 </div>
@@ -1366,7 +1439,7 @@ fill the canvas on arrival. Overrides <a href="../classes/CameraFlightAnimation.
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_isType">Component</a>:
-        <a href="../files/src_component.js.html#l361"><code>src&#x2F;component.js:361</code></a>
+        <a href="../files/src_component.js.html#l360"><code>src&#x2F;component.js:360</code></a>
         </p>
 
 
@@ -1444,7 +1517,7 @@ myRotate.isType(xeogl.Entity); // Returns false, because xeogl.Rotate does not (
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_log">Component</a>:
-        <a href="../files/src_component.js.html#l548"><code>src&#x2F;component.js:548</code></a>
+        <a href="../files/src_component.js.html#l558"><code>src&#x2F;component.js:558</code></a>
         </p>
 
 
@@ -1502,7 +1575,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_off">Component</a>:
-        <a href="../files/src_component.js.html#l502"><code>src&#x2F;component.js:502</code></a>
+        <a href="../files/src_component.js.html#l501"><code>src&#x2F;component.js:501</code></a>
         </p>
 
 
@@ -1567,7 +1640,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_on">Component</a>:
-        <a href="../files/src_component.js.html#l459"><code>src&#x2F;component.js:459</code></a>
+        <a href="../files/src_component.js.html#l458"><code>src&#x2F;component.js:458</code></a>
         </p>
 
 
@@ -1661,7 +1734,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_once">Component</a>:
-        <a href="../files/src_component.js.html#l527"><code>src&#x2F;component.js:527</code></a>
+        <a href="../files/src_component.js.html#l526"><code>src&#x2F;component.js:526</code></a>
         </p>
 
 
@@ -1773,7 +1846,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_warn">Component</a>:
-        <a href="../files/src_component.js.html#l573"><code>src&#x2F;component.js:573</code></a>
+        <a href="../files/src_component.js.html#l583"><code>src&#x2F;component.js:583</code></a>
         </p>
 
 
@@ -2018,7 +2091,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_json">Component</a>:
-                            <a href="../files/src_component.js.html#l1028"><code>src&#x2F;component.js:1028</code></a>
+                            <a href="../files/src_component.js.html#l1038"><code>src&#x2F;component.js:1038</code></a>
                             </p>
                     
                     
@@ -2098,7 +2171,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_component.js.html#l1055"><code>src&#x2F;component.js:1055</code></a>
+                            <a href="../files/src_component.js.html#l1065"><code>src&#x2F;component.js:1065</code></a>
                             </p>
                     
                     
@@ -2124,7 +2197,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_superTypes">Component</a>:
-                            <a href="../files/src_component.js.html#l342"><code>src&#x2F;component.js:342</code></a>
+                            <a href="../files/src_component.js.html#l341"><code>src&#x2F;component.js:341</code></a>
                             </p>
                     
                     
@@ -2261,7 +2334,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l1226"><code>src&#x2F;component.js:1226</code></a>
+                            <a href="../files/src_component.js.html#l1236"><code>src&#x2F;component.js:1236</code></a>
                             </p>
                     
                     
