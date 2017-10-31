@@ -16,40 +16,34 @@
 
         _init: function (cfg) {
 
-            var material = this.create({
-                type: "xeogl.PhongMaterial",
+            var material = new xeogl.PhongMaterial(this, {
                 emissive: [0.5, 1.0, 0.5],
                 diffuse: [0, 0, 0]
             });
 
-            var billboard = this.create({
-                type: "xeogl.Billboard"
-            });
-
-            this._label = this.create({
-                type: "xeogl.Entity",
-                geometry: {
-                    type: "xeogl.VectorTextGeometry",
+            this._label = new xeogl.Entity(this, {
+                geometry: new xeogl.VectorTextGeometry(this, {
                     text: "",
                     origin: [0, 0],
                     size: .1
-                },
-                transform: {
-                    type: "xeogl.Translate"
-                },
+                }),
+                transform: new xeogl.Translate(this, {
+                    parent: new xeogl.Translate(this)
+                }),
                 material: material,
-                billboard: billboard
+                billboard: "spherical"
+
             });
 
-            this._wire = this.create({
-                type: "xeogl.Entity",
-                geometry: {
+            this._wire = new xeogl.Entity(this, {
+                geometry: new xeogl.Geometry(this, {
                     primitive: "lines",
                     positions: [0.0, 0.0, 0.0, 0.0, -1.3, 0.0],
                     indices: [0, 1]
-                },
+                }),
                 material: material,
-                billboard: billboard
+                transform: new xeogl.Translate(this),
+                billboard: "spherical"
             });
 
             this.text = cfg.text;
@@ -74,7 +68,7 @@
                     this._label.geometry.size = value;
                 },
                 get: function () {
-                     return this._label.geometry.size;
+                    return this._label.geometry.size;
                 }
             },
 
@@ -102,14 +96,10 @@
         _update: (function () {
             var offset = new Float32Array(3);
             return function () {
-                offset[0] = this._pos[0] + this._offset[0];
-                offset[1] = this._pos[1] + this._offset[1];
-                offset[2] = this._pos[2] + this._offset[2];
-                this._wire.geometry.positions = [
-                    this._pos[0], this._pos[1], this._pos[2],
-                    offset[0], offset[1], offset[2]
-                ];
-                this._label.transform.xyz = offset;
+                this._wire.geometry.positions = [0, 0, 0, this._offset[0], this._offset[1], this._offset[2]];
+                this._wire.transform.xyz = this._pos;
+                this._label.transform.parent.xyz = this._pos;
+                this._label.transform.xyz = [this._offset[0], this._offset[1], this._offset[2]];
             };
         })()
     });

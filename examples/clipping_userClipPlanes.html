@@ -9,6 +9,9 @@
 
     <script src="../build/xeogl.js"></script>
     <script src="js/geometry/vectorTextGeometry.js"></script>
+
+    <script src="js/helpers/planeHelper.js"></script>
+    <script src="js/helpers/labelHelper.js"></script>
     <script src="js/helpers/clipHelper.js"></script>
 
     <link href="css/styles.css" rel="stylesheet"/>
@@ -87,7 +90,8 @@
     for (var i = 0, len = clips.clips.length; i < len; i++) {
         new xeogl.ClipHelper({
             clip: clips.clips[i],
-            size: [1.5, 1.5],
+            planeSize: [1.5, 1.5],
+            autoPlaneSize: false,
             visible: true
         });
     }
