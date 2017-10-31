@@ -20,7 +20,7 @@
 <script>
 
     var gearbox = new xeogl.GLTFModel({
-        src: "models/gltf/GearboxAssy/glTF/GearboxAssy.gltf"
+        src: "models/gltf/GearboxAssy/glTF-MaterialsCommon/GearboxAssy.gltf"
     });
 
     // Set initial camera position
@@ -81,7 +81,7 @@
     var rayOrigin = new Float32Array([169.20, 17.02, -10.0]);
     var rayDirection = new Float32Array([0, 10, 30]);
 
-    var xinc = -0.04;
+    var xinc = -0.03;
     var i = 0;
 
     gearbox.on("loaded", function () {
@@ -97,7 +97,7 @@
         });
 
         var lastEntity = null;
-        var lastEmissive = null;
+        var lastDiffuse = null;
 
         gearbox.scene.on("tick", function () {
 
@@ -109,7 +109,7 @@
 
             i++;
 
-            if (i < 0 || i > 500) {
+            if (i < 0 || i > 1000) {
                 xinc = -xinc;
                 i = 0;
             }
@@ -127,13 +127,13 @@
                 if (!lastEntity || hit.entity.id !== lastEntity.id) {
 
                     if (lastEntity) {
-                        lastEntity.material.emissive = lastEmissive;
+                        lastEntity.material.diffuse = lastDiffuse;
                     }
 
                     lastEntity = hit.entity;
-                    lastEmissive = hit.entity.material.emissive.slice();
+                    lastDiffuse = hit.entity.material.diffuse.slice();
 
-                    hit.entity.material.emissive = [0.5, 1, 0.5];
+                    hit.entity.material.diffuse = [0.0, 1, 0.0];
 
                     rayHelper.setHighlighted(true);
 
@@ -142,7 +142,7 @@
             } else {
 
                 if (lastEntity) {
-                    lastEntity.material.emissive = lastEmissive;
+                    lastEntity.material.diffuse = lastDiffuse;
                     lastEntity = null;
                 }
 

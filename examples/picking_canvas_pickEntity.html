@@ -22,7 +22,7 @@
 
     var gearbox = new xeogl.GLTFModel({
         id: "gearbox",
-        src: "models/gltf/GearboxAssy/glTF/GearboxAssy.gltf"
+        src: "models/gltf/GearboxAssy/glTF-MaterialsCommon/GearboxAssy.gltf"
     });
 
     // Set initial camera position
@@ -53,7 +53,7 @@
     var input = scene.input;
 
     var lastEntity = null;
-    var lastEmissive = null;
+    var lastDiffuse = null;
 
     input.on("mousemove", function (coords) {
 
@@ -66,18 +66,19 @@
             if (!lastEntity || hit.entity.id !== lastEntity.id) {
 
                 if (lastEntity) {
-                    lastEntity.material.emissive = lastEmissive;
+                    lastEntity.material.diffuse = lastDiffuse;
                 }
 
                 lastEntity = hit.entity;
                 lastEmissive = hit.entity.material.emissive.slice();
+                lastDiffuse = hit.entity.material.diffuse.slice();
 
-                hit.entity.material.emissive = [0.5, 1, 0.5];
+                hit.entity.material.diffuse = [0.0, 1.0, 0.0];
             }
         } else {
 
             if (lastEntity) {
-                lastEntity.material.emissive = lastEmissive;
+                lastEntity.material.diffuse = lastDiffuse;
                 lastEntity = null;
             }
         }

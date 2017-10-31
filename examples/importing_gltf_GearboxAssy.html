@@ -20,17 +20,9 @@
 
 <script>
 
-    //---------------------------------------------------
-    // Load the model
-    //---------------------------------------------------
-
     var model = new xeogl.GLTFModel({
-        src: "models/gltf/GearboxAssy/glTF/GearboxAssy.gltf"
+        src: "models/gltf/GearboxAssy/glTF-MaterialsCommon/GearboxAssy.gltf"
     });
-
-    //-----------------------------------------------------------------------------------------------------
-    // Camera animation and user control
-    //-----------------------------------------------------------------------------------------------------
 
     var view = xeogl.scene.camera.view;
 
@@ -38,16 +30,7 @@
     view.look = [159.20, 17.02, 3.21];
     view.up = [-0.15, 0.97, 0.13];
 
-    var spinning = true;
-
-    xeogl.scene.on("tick", function () { // Slowly orbit the camera
-        if (spinning) {
-            view.rotateEyeY(-0.05);
-        }
-    });
-
-    var cameraControl = new xeogl.CameraControl(); // User camera control
-
+    var cameraControl = new xeogl.CameraControl();
 
 
 </script>

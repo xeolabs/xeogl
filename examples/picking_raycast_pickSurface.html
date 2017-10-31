@@ -105,11 +105,11 @@
     var rayOrigin = new Float32Array([169.20, 17.02, -10.0]);
     var rayDirection = new Float32Array([0, 10, 30]);
 
-    var xinc = -0.04;
+    var xinc = -0.03;
     var i = 0;
 
     var lastEntity = null;
-    var lastEmissive = null;
+    var lastDiffuse = null;
 
     gearbox.on("loaded", function () {
 
@@ -134,7 +134,7 @@
 
             i++;
 
-            if (i < 0 || i > 500) {
+            if (i < 0 || i > 1000) {
                 xinc = -xinc;
                 i = 0;
             }
@@ -154,13 +154,13 @@
                 if (!lastEntity || hit.entity.id !== lastEntity.id) {
 
                     if (lastEntity) {
-                        lastEntity.material.emissive = lastEmissive;
+                        lastEntity.material.diffuse = lastDiffuse;
                     }
 
                     lastEntity = hit.entity;
-                    lastEmissive = hit.entity.material.emissive.slice();
+                    lastDiffuse = hit.entity.material.diffuse.slice();
 
-                    hit.entity.material.emissive = [0.4, 0.7, 0.4];
+                    hit.entity.material.diffuse = [0.0, 1.0, 0.0];
 
                     rayHelper.setHighlighted(true);
                 }
@@ -168,7 +168,7 @@
             } else {
 
                 if (lastEntity) {
-                    lastEntity.material.emissive = lastEmissive;
+                    lastEntity.material.diffuse = lastDiffuse;
                     lastEntity = null;
                 }
 
