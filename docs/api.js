@@ -2,6 +2,7 @@ YUI.add("yuidoc-meta", function(Y) {
    Y.YUIDoc = { meta: {
     "classes": [
         "AABBGeometry",
+        "AABBHelper",
         "AmbientLight",
         "Annotation",
         "AnnotationStory",
@@ -34,6 +35,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "Fresnel",
         "Frustum",
         "GLTFModel",
+        "GLTFObject",
         "Geometry",
         "GeometryBuilder",
         "HeightmapGeometry",
@@ -47,6 +49,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "MousePickControl",
         "Nintendo3DSGeometry",
         "OBBGeometry",
+        "OBBHelper",
         "OBJGeometry",
         "OBJModel",
         "Ortho",
@@ -59,6 +62,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "PlaneGeometry",
         "PlaneHelper",
         "PointLight",
+        "PointLightHelper",
         "PointMarkings",
         "QuadraticBezierCurve",
         "Quaternion",

@@ -6,12 +6,15 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
     <script src="../build/xeogl.min.js"></script>
+    <script src="js/helpers/aabbHelper.js"></script>
+
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="info">
-    <h1>a <a href="../docs/classes/Model.html" target="_parent">Model</a> containing
+    <h1>using an <a href="../docs/classes/AABBHelper.html" target="_parent">AABBHelper</a> to show the boundary of
+        <a href="../docs/classes/Model.html" target="_parent">Model</a> containing
         1000 animated <a href="../docs/classes/Entity.html" target="_parent">Entities</a></h1>
     <br>
       <pre id="log">
@@ -23,17 +26,11 @@
     // The Model
     var model = new xeogl.Model();
 
-    // Entity which shows the boundary of the Model
-    // as a wireframe box
-    new xeogl.Entity({
-        geometry: new xeogl.AABBGeometry({
-            boundary: model.worldBoundary
-        }),
-        material: new xeogl.PhongMaterial({
-            diffuse: [0.5, 1.0, 0.5],
-            emissive: [0.5, 1.0, 0.5],
-            lineWidth: 2
-        })
+    // Helper which shows the boundary of the Model as a wireframe box
+    var aabbHelper = new xeogl.AABBHelper({
+        boundary: model.worldBoundary,
+        color: [0, 1, 0],
+        visible: true
     });
 
     // Create 1000 moving Entities within the Model
