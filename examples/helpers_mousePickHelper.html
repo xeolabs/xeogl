@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.js"></script>
+    <script src="js/models/glTFModel.js"></script>
+
+    <script src="js/controls/mousePickControl.js"></script>
+    <script src="js/helpers/planeHelper.js"></script>
+    <script src="js/helpers/mousePickHelper.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - loading glTF 2.0</h1>
+    <pre id="log">model:  damaged helmet - [<a
+            href='https://github.com/xeolabs/xeogl/tree/master/examples/models/gltf/DamagedHelmet/README.md' target="_parent">model info</a>]</pre>
+</div>
+
+<div id="dat-gui-container">
+</div>
+
+<script>
+
+    var model = new xeogl.GLTFModel({
+        id: "gearbox",
+        src: "models/gltf/GearboxAssy/glTF-MaterialsCommon/GearboxAssy.gltf"
+    });
+
+    var view = xeogl.scene.camera.view;
+
+    view.eye = [184.21, 10.54, -7.03];
+    view.look = [159.20, 17.02, 3.21];
+    view.up = [-0.15, 0.97, 0.13];
+
+    var cameraControl = new xeogl.CameraControl();
+
+//    xeogl.scene.on("tick", function () { // Slowly orbit the camera
+//        view.rotateEyeY(-0.1);
+//    });
+
+    var mousePickControl = new xeogl.MousePickControl();
+
+    var mousePickHelper = new xeogl.MousePickHelper({
+        mousePickControl: mousePickControl
+    });
+
+</script>
+</body>
+</html>

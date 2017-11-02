@@ -722,6 +722,13 @@
             "fors": {},
             "namespaces": {}
         },
+        "src/math/mathKDTree.js": {
+            "name": "src/math/mathKDTree.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
         "src/math/mathRays.js": {
             "name": "src/math/mathRays.js",
             "modules": {},
@@ -1259,6 +1266,15 @@
             "fors": {},
             "namespaces": {}
         },
+        "examples/js/models/glTFObject.js": {
+            "name": "examples/js/models/glTFObject.js",
+            "modules": {},
+            "classes": {
+                "GLTFObject": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
         "examples/js/models/sceneJSModel.js": {
             "name": "examples/js/models/sceneJSModel.js",
             "modules": {},
@@ -1318,6 +1334,15 @@
             "fors": {},
             "namespaces": {}
         },
+        "examples/js/helpers/aabbHelper.js": {
+            "name": "examples/js/helpers/aabbHelper.js",
+            "modules": {},
+            "classes": {
+                "AABBHelper": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
         "examples/js/helpers/axisHelper.js": {
             "name": "examples/js/helpers/axisHelper.js",
             "modules": {},
@@ -1352,6 +1377,15 @@
             "fors": {},
             "namespaces": {}
         },
+        "examples/js/helpers/obbHelper.js": {
+            "name": "examples/js/helpers/obbHelper.js",
+            "modules": {},
+            "classes": {
+                "OBBHelper": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
         "examples/js/helpers/planeHelper.js": {
             "name": "examples/js/helpers/planeHelper.js",
             "modules": {},
@@ -1364,7 +1398,9 @@
         "examples/js/helpers/pointLightHelper.js": {
             "name": "examples/js/helpers/pointLightHelper.js",
             "modules": {},
-            "classes": {},
+            "classes": {
+                "PointLightHelper": 1
+            },
             "fors": {},
             "namespaces": {}
         },
@@ -1502,13 +1538,17 @@
                 "OBJModel": 1,
                 "BuildableModel": 1,
                 "GLTFModel": 1,
+                "GLTFObject": 1,
                 "SceneJSModel": 1,
                 "ZSpaceEffect": 1,
                 "ZSpaceStylusControl": 1,
+                "AABBHelper": 1,
                 "AxisHelper": 1,
                 "ClipHelper": 1,
                 "LabelHelper": 1,
-                "PlaneHelper": 1
+                "OBBHelper": 1,
+                "PlaneHelper": 1,
+                "PointLightHelper": 1
             },
             "fors": {},
             "namespaces": {
@@ -1516,7 +1556,7 @@
                 "xeogl": 1
             },
             "tag": "main",
-            "file": "examples/js/helpers/planeHelper.js",
+            "file": "examples/js/helpers/pointLightHelper.js",
             "line": 1,
             "description": "The xeogl namespace.",
             "is_constructor": 1,
@@ -1767,7 +1807,8 @@
             },
             "classes": {
                 "SplineCurveHelper": 1,
-                "Entity": 1
+                "Entity": 1,
+                "PointLightHelper": 1
             },
             "fors": {},
             "is_submodule": 1,
@@ -1961,6 +2002,7 @@
                 "OBJModel": 1,
                 "BuildableModel": 1,
                 "GLTFModel": 1,
+                "GLTFObject": 1,
                 "SceneJSModel": 1
             },
             "fors": {},
@@ -2411,7 +2453,7 @@
             "namespace": "",
             "file": "src/camera/camera.js",
             "line": 1,
-            "description": "A **Camera** defines viewing and projection transforms for attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n## Overview\n\n*  A Camera is composed of a viewing and projection {{#crossLink \"Transform\"}}{{/crossLink}}.\n* The viewing transform is usually a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}. Having the viewing transform as a\nseparate component from the Camera allows us to switch the Camera between multiple, existing viewpoints by simply re-attaching it to\ndifferent viewing transform components (ie. {{#crossLink \"Lookat\"}}Lookats{{/crossLink}}).\n*  By default, each Camera has its parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/view:property\"}}{{/crossLink}} transform,\n(which is a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}) and default\n{{#crossLink \"Scene/project:property\"}}{{/crossLink}} transform (which is a {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}).\nYou would override those with your own transform components as necessary.\n\n<img src=\"../../../assets/images/Camera.png\"></img>\n\n## Examples\n\n* [Perspective Camera](../../examples/#transforms_camera_project_perspective)\n* [Orthographic Camera](../../examples/#transforms_camera_project_ortho)\n* [Automatically following an Entity with a Camera](../../examples/#animation_camera_follow)\n* [Animating a Camera along a path](../../examples/#animation_camera_path_interpolation)\n\n## Usage\n\nThe example below defines an {{#crossLink \"Entity\"}}{{/crossLink}} that has a Camera with\na {{#crossLink \"Lookat\"}}{{/crossLink}} view transform and a {{#crossLink \"Perspective\"}}{{/crossLink}} projection transform.\n\n```` javascript\nvar entity = new xeogl.Entity({\n    camera: new xeogl.Camera({\n        view: new xeogl.Lookat({\n            eye: [0, 0, 10],\n            look: [0, 0, 0],\n            up: [0, 1, 0]\n        }),\n        project: new xeogl.Perspective({\n            fovy: 60,\n            near: 0.1,\n            far: 1000\n        })\n    }),\n    geometry: new xeogl.TorusGeometry()\n});\n\nentity.scene.on(\"tick\", function () {\n\n    var lookat = entity.camera.view;\n\n    lookat.rotateEyeY(0.5);\n    lookat.rotateEyeX(0.3);\n});\n````",
+            "description": "A **Camera** defines viewing and projection transforms for attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n## Overview\n\n*  A Camera is composed of a viewing and projection {{#crossLink \"Transform\"}}{{/crossLink}}.\n* The viewing transform is usually a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}. Having the viewing transform as a\nseparate component from the Camera allows us to switch the Camera between multiple, existing viewpoints by simply re-attaching it to\ndifferent viewing transform components (ie. {{#crossLink \"Lookat\"}}Lookats{{/crossLink}}).\n*  By default, each Camera has its parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/view:property\"}}{{/crossLink}} transform,\n(which is a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}) and default\n{{#crossLink \"Scene/project:property\"}}{{/crossLink}} transform (which is a {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}).\nYou would override those with your own transform components as necessary.\n\n<img src=\"../../../assets/images/Camera.png\"></img>\n\n## Examples\n\n* [Perspective Camera](../../examples/#transforms_camera_project_perspective)\n* [Orthographic Camera](../../examples/#transforms_camera_project_ortho)\n* [Automatically following an Entity with a Camera](../../examples/#animation_camera_follow)\n* [Animating a Camera along a path](../../examples/#animation_camera_path_interpolation)\n\n## Usage\n\nThe example below defines an {{#crossLink \"Entity\"}}{{/crossLink}} that has a Camera with\na {{#crossLink \"Lookat\"}}{{/crossLink}} view transform and a {{#crossLink \"Perspective\"}}{{/crossLink}} projection transform.\n\n```` javascript\nvar entity = new xeogl.Entity({\n    camera: new xeogl.Camera({\n        view: new xeogl.Lookat({\n            eye: [0, 0, 10],\n            look: [0, 0, 0],\n            up: [0, 1, 0]\n        }),\n        project: new xeogl.Perspective({\n            fov: 60,\n            near: 0.1,\n            far: 1000\n        })\n    }),\n    geometry: new xeogl.TorusGeometry()\n});\n\nentity.scene.on(\"tick\", function () {\n\n    var lookat = entity.camera.view;\n\n    lookat.rotateEyeY(0.5);\n    lookat.rotateEyeX(0.3);\n});\n````",
             "submodule": "camera",
             "is_constructor": 1,
             "params": [
@@ -2656,7 +2698,7 @@
             "namespace": "",
             "file": "src/controls/cameraControl.js",
             "line": 1,
-            "description": "A **CameraControl** pans, rotates and zooms a {{#crossLink \"Camera\"}}{{/crossLink}} with the mouse and keyboard,\nas well as switches it between preset left, right, anterior, posterior, superior and inferior views.\n\n## Overview\n\n* CameraControl requires that its pans both {{#crossLink \"Camera\"}}Camera{{/crossLink}} have a {{#crossLink \"Lookat\"}}{{/crossLink}} for its {{#crossLink \"Camera/view:property\"}}viewing transform{{/crossLink}}.\n* The table below shows what CameraControl does for various user input.\n<br>\n\n| Input | Result |\n|:--------:|:----:|\n| Mouse drag, arrow keys | orbits {{#crossLink \"Lookat/eye:property\"}}camera.view.eye{{/crossLink}} around {{#crossLink \"Lookat/look:property\"}}camera.view.look{{/crossLink}}|\n| Z,X keys | pans both {{#crossLink \"Lookat/eye:property\"}}camera.view.eye{{/crossLink}} and {{#crossLink \"Lookat/look:property\"}}camera.view.look{{/crossLink}} forwards and backwards  along the {{#crossLink \"Lookat/eye:property\"}}{{/crossLink}}->{{#crossLink \"Lookat/look:property\"}}look{{/crossLink}} vector. |\n| A,D keys | pans both {{#crossLink \"Lookat/eye:property\"}}camera.view.eye{{/crossLink}} and {{#crossLink \"Lookat/look:property\"}}camera.view.look{{/crossLink}} sideways, along the vector perpendicular to {{#crossLink \"Lookat/eye:property\"}}{{/crossLink}}->{{#crossLink \"Lookat/look:property\"}}look{{/crossLink}} and {{#crossLink \"Lookat/eye:property\"}}{{/crossLink}}->{{#crossLink \"Lookat/up:property\"}}up{{/crossLink}}. |\n| W,S keys | pans both {{#crossLink \"Lookat/eye:property\"}}camera.view.eye{{/crossLink}} and {{#crossLink \"Lookat/look:property\"}}camera.view.look{{/crossLink}} up and down, along the {{#crossLink \"Lookat/up:property\"}}up{{/crossLink}} vector. |\n| 1,2,3,4,5,6 keys | Align {{#crossLink \"Lookat\"}}camera.view{{/crossLink}} to look at center of entire {{#crossLink \"Scene\"}}{{/crossLink}} from vantage points on the -X, +X, -Z, +Z, -Y and +Y World-space axis. |\n| Click on {{#crossLink \"Entity\"}}{{/crossLink}} | Flies {{#crossLink \"Lookat\"}}camera.view{{/crossLink}} to look at {{#crossLink \"Entity\"}}{{/crossLink}}, stops when filling the canvas. |\n| Mouse wheel or '+' and '-' keys | moves {{#crossLink \"Lookat/eye:property\"}}camera.view.eye{{/crossLink}} towards and away from {{#crossLink \"Lookat/look:property\"}}camera.view.look{{/crossLink}}. |\n\n## Examples\n\n* [CameraControl example](../../examples/#interaction_camera_CameraControl)\n\n## Usage\n\n````Javascript\nvar camera = new xeogl.Camera({\n\n    view: new xeogl.Lookat({\n        eye: [0, 0, 10],\n        look: [0, 0, 0],\n        up: [0, 1, 0]\n    }),\n\n    project: new xeogl.Perspective({\n        fovy: 60,\n        near: 0.1,\n        far: 1000\n    })\n});\n\nvar entity = new xeogl.Entity({\n    camera: camera,\n    geometry: new xeogl.BoxGeometry()\n});\n\nvar cameraControl = new xeogl.CameraControl({\n    camera: camera,\n\n    // \"First person\" mode rotates look about eye.\n    // By default however, we orbit eye about look.\n    firstPerson: false\n});\n\n````",
+            "description": "A **CameraControl** pans, rotates and zooms a {{#crossLink \"Camera\"}}{{/crossLink}} with the mouse and keyboard,\nas well as switches it between preset left, right, anterior, posterior, superior and inferior views.\n\n## Overview\n\n* CameraControl requires that its pans both {{#crossLink \"Camera\"}}Camera{{/crossLink}} have a {{#crossLink \"Lookat\"}}{{/crossLink}} for its {{#crossLink \"Camera/view:property\"}}viewing transform{{/crossLink}}.\n* The table below shows what CameraControl does for various user input.\n<br>\n\n| Input | Result |\n|:--------:|:----:|\n| Mouse drag, arrow keys | orbits {{#crossLink \"Lookat/eye:property\"}}camera.view.eye{{/crossLink}} around {{#crossLink \"Lookat/look:property\"}}camera.view.look{{/crossLink}}|\n| Z,X keys | pans both {{#crossLink \"Lookat/eye:property\"}}camera.view.eye{{/crossLink}} and {{#crossLink \"Lookat/look:property\"}}camera.view.look{{/crossLink}} forwards and backwards  along the {{#crossLink \"Lookat/eye:property\"}}{{/crossLink}}->{{#crossLink \"Lookat/look:property\"}}look{{/crossLink}} vector. |\n| A,D keys | pans both {{#crossLink \"Lookat/eye:property\"}}camera.view.eye{{/crossLink}} and {{#crossLink \"Lookat/look:property\"}}camera.view.look{{/crossLink}} sideways, along the vector perpendicular to {{#crossLink \"Lookat/eye:property\"}}{{/crossLink}}->{{#crossLink \"Lookat/look:property\"}}look{{/crossLink}} and {{#crossLink \"Lookat/eye:property\"}}{{/crossLink}}->{{#crossLink \"Lookat/up:property\"}}up{{/crossLink}}. |\n| W,S keys | pans both {{#crossLink \"Lookat/eye:property\"}}camera.view.eye{{/crossLink}} and {{#crossLink \"Lookat/look:property\"}}camera.view.look{{/crossLink}} up and down, along the {{#crossLink \"Lookat/up:property\"}}up{{/crossLink}} vector. |\n| 1,2,3,4,5,6 keys | Align {{#crossLink \"Lookat\"}}camera.view{{/crossLink}} to look at center of entire {{#crossLink \"Scene\"}}{{/crossLink}} from vantage points on the -X, +X, -Z, +Z, -Y and +Y World-space axis. |\n| Click on {{#crossLink \"Entity\"}}{{/crossLink}} | Flies {{#crossLink \"Lookat\"}}camera.view{{/crossLink}} to look at {{#crossLink \"Entity\"}}{{/crossLink}}, stops when filling the canvas. |\n| Mouse wheel or '+' and '-' keys | moves {{#crossLink \"Lookat/eye:property\"}}camera.view.eye{{/crossLink}} towards and away from {{#crossLink \"Lookat/look:property\"}}camera.view.look{{/crossLink}}. |\n\n## Examples\n\n* [CameraControl example](../../examples/#interaction_camera_CameraControl)\n\n## Usage\n\n````Javascript\nvar camera = new xeogl.Camera({\n\n    view: new xeogl.Lookat({\n        eye: [0, 0, 10],\n        look: [0, 0, 0],\n        up: [0, 1, 0]\n    }),\n\n    project: new xeogl.Perspective({\n        fov: 60,\n        near: 0.1,\n        far: 1000\n    })\n});\n\nvar entity = new xeogl.Entity({\n    camera: camera,\n    geometry: new xeogl.BoxGeometry()\n});\n\nvar cameraControl = new xeogl.CameraControl({\n    camera: camera,\n\n    // \"First person\" mode rotates look about eye.\n    // By default however, we orbit eye about look.\n    firstPerson: false\n});\n\n````",
             "submodule": "controls",
             "is_constructor": 1,
             "params": [
@@ -5403,7 +5445,7 @@
             "namespace": "",
             "file": "src/transforms/lookat.js",
             "line": 1,
-            "description": "A **Lookat** is a {{#crossLink \"Transform\"}}{{/crossLink}} that defines a viewing transform as an {{#crossLink \"Lookat/eye:property\"}}eye{{/crossLink}} position, a\n{{#crossLink \"Lookat/look:property\"}}look{{/crossLink}} position and an {{#crossLink \"Lookat/up:property\"}}up{{/crossLink}}\nvector.\n\n## Overview\n\n* {{#crossLink \"Camera\"}}Camera{{/crossLink}} components pair these with projection transforms such as\n{{#crossLink \"Perspective\"}}Perspective{{/crossLink}}, to define viewpoints on attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n<img src=\"../../../assets/images/Lookat.png\"></img>\n\n## Examples\n\n* [Camera with Lookat and Perspective](../../examples/#transforms_camera_project_perspective)\n\n## Usage\n\n````Javascript\nnew xeogl.Entity({\n\n    camera: xeogl.Camera({\n\n       view: new xeogl.Lookat({\n           eye: [0, 0, 4],\n           look: [0, 0, 0],\n           up: [0, 1, 0]\n       }),\n\n       project: new xeogl.Perspective({\n           fovy: 60,\n           near: 0.1,\n           far: 1000\n       })\n    }),\n\n    geometry: new xeogl.BoxGeometry()\n});\n````",
+            "description": "A **Lookat** is a {{#crossLink \"Transform\"}}{{/crossLink}} that defines a viewing transform as an {{#crossLink \"Lookat/eye:property\"}}eye{{/crossLink}} position, a\n{{#crossLink \"Lookat/look:property\"}}look{{/crossLink}} position and an {{#crossLink \"Lookat/up:property\"}}up{{/crossLink}}\nvector.\n\n## Overview\n\n* {{#crossLink \"Camera\"}}Camera{{/crossLink}} components pair these with projection transforms such as\n{{#crossLink \"Perspective\"}}Perspective{{/crossLink}}, to define viewpoints on attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n<img src=\"../../../assets/images/Lookat.png\"></img>\n\n## Examples\n\n* [Camera with Lookat and Perspective](../../examples/#transforms_camera_project_perspective)\n\n## Usage\n\n````Javascript\nnew xeogl.Entity({\n\n    camera: xeogl.Camera({\n\n       view: new xeogl.Lookat({\n           eye: [0, 0, 4],\n           look: [0, 0, 0],\n           up: [0, 1, 0]\n       }),\n\n       project: new xeogl.Perspective({\n           fov: 60,\n           near: 0.1,\n           far: 1000\n       })\n    }),\n\n    geometry: new xeogl.BoxGeometry()\n});\n````",
             "submodule": "transforms",
             "is_constructor": 1,
             "params": [
@@ -5555,7 +5597,7 @@
             "namespace": "",
             "file": "src/transforms/perspective.js",
             "line": 1,
-            "description": "A **Perspective** is a {{#crossLink \"Transform\"}}{{/crossLink}} that defines a perspective projection transform.\n\n## Overview\n\n* {{#crossLink \"Camera\"}}Camera{{/crossLink}} components pair these with viewing transform components, such as\n{{#crossLink \"Lookat\"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n* Alternatively, use {{#crossLink \"Ortho\"}}{{/crossLink}} if you need a orthographic projection.\n\n<img src=\"../../../assets/images/Perspective.png\"></img>\n\n## Examples\n\n* [Camera with perspective projection](../../examples/#transforms_camera_project_perspective)\n\n## Usage\n\n````Javascript\nnew xeogl.Entity({\n\n    camera: xeogl.Camera({\n\n       view: new xeogl.Lookat({\n           eye: [0, 0, -4],\n           look: [0, 0, 0],\n           up: [0, 1, 0]\n       }),\n\n       project: new xeogl.Perspective({\n           fovy: 50,\n           near: 0.1,\n           far: 1000\n       })\n    }),\n\n    perspective: new xeogl.BoxGeometry()\n});\n````",
+            "description": "A **Perspective** is a {{#crossLink \"Transform\"}}{{/crossLink}} that defines a perspective projection transform.\n\n## Overview\n\n* {{#crossLink \"Camera\"}}Camera{{/crossLink}} components pair these with viewing transform components, such as\n{{#crossLink \"Lookat\"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n* Alternatively, use {{#crossLink \"Ortho\"}}{{/crossLink}} if you need a orthographic projection.\n\n<img src=\"../../../assets/images/Perspective.png\"></img>\n\n## Examples\n\n* [Camera with perspective projection](../../examples/#transforms_camera_project_perspective)\n\n## Usage\n\n````Javascript\nnew xeogl.Entity({\n\n    camera: xeogl.Camera({\n\n       view: new xeogl.Lookat({\n           eye: [0, 0, -4],\n           look: [0, 0, 0],\n           up: [0, 1, 0]\n       }),\n\n       project: new xeogl.Perspective({\n           fov: 50,\n           near: 0.1,\n           far: 1000\n       })\n    }),\n\n    perspective: new xeogl.BoxGeometry()\n});\n````",
             "submodule": "transforms",
             "is_constructor": 1,
             "params": [
@@ -5590,11 +5632,18 @@
                             "optional": true
                         },
                         {
-                            "name": "fovy",
-                            "description": "Field-of-view angle, in degrees, on Y-axis.",
+                            "name": "fov",
+                            "description": "Field-of-view angle, in degrees.",
                             "type": "Number",
                             "optional": true,
                             "optdefault": "50.0"
+                        },
+                        {
+                            "name": "fovAxis",
+                            "description": "The field-of-view axis: \"x\", \"y\", or \"min\" to use whichever is currently the minimum.",
+                            "type": "String",
+                            "optional": true,
+                            "optdefault": "\"min\""
                         },
                         {
                             "name": "near",
@@ -7886,6 +7935,23 @@
             ],
             "extends": "Model"
         },
+        "GLTFObject": {
+            "name": "GLTFObject",
+            "shortname": "GLTFObject",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "xeogl",
+            "namespace": "",
+            "file": "examples/js/models/glTFObject.js",
+            "line": 1,
+            "description": "An object within a {{#crossLink \"GLTFModel\"}}{{/crossLink}}.\n\n* A convenience component to make scripting {{#crossLink \"GLTFModel\"}}{{/crossLink}}s easier.\n* Corresponds to a glTF node in mesh.\n* Has an {{#crossLink \"Entity\"}}{{/crossLink}} for each primitive in that glTF mesh.\n* Has convenience properties through which you can set and get things on entities collectively, as if they were one object,",
+            "submodule": "models",
+            "is_constructor": 1,
+            "extends": "Component"
+        },
         "SceneJSModel": {
             "name": "SceneJSModel",
             "shortname": "SceneJSModel",
@@ -8100,6 +8166,50 @@
             ],
             "extends": "Component"
         },
+        "AABBHelper": {
+            "name": "AABBHelper",
+            "shortname": "AABBHelper",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "xeogl",
+            "namespace": "",
+            "file": "examples/js/helpers/aabbHelper.js",
+            "line": 1,
+            "description": "Helper that visualizes the axis-aligned boundary of a {{#crossLink \"Boundary3D\"}}{{/crossLink}}..",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "cfg",
+                    "description": "Configuration",
+                    "type": "*",
+                    "props": [
+                        {
+                            "name": "boundary",
+                            "description": "ID or instance of a {{#crossLink \"Boundary3D\"}}{{/crossLink}}.",
+                            "type": "Number|String|Boundary3D",
+                            "optional": true
+                        },
+                        {
+                            "name": "color",
+                            "description": "Emmissive color",
+                            "type": "Float32Array",
+                            "optional": true,
+                            "optdefault": "[0.4,0.4,0.4]"
+                        },
+                        {
+                            "name": "visible",
+                            "description": "Indicates whether or not this helper is visible.",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "true"
+                        }
+                    ]
+                }
+            ]
+        },
         "AxisHelper": {
             "name": "AxisHelper",
             "shortname": "AxisHelper",
@@ -8206,6 +8316,50 @@
                 }
             ]
         },
+        "OBBHelper": {
+            "name": "OBBHelper",
+            "shortname": "OBBHelper",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "xeogl",
+            "namespace": "",
+            "file": "examples/js/helpers/obbHelper.js",
+            "line": 1,
+            "description": "Helper that visualizes the object-aligned boundary of a {{#crossLink \"Boundary3D\"}}{{/crossLink}}..",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "cfg",
+                    "description": "Configuration",
+                    "type": "*",
+                    "props": [
+                        {
+                            "name": "boundary",
+                            "description": "ID or instance of a {{#crossLink \"Boundary3D\"}}{{/crossLink}}.",
+                            "type": "Number|String|Boundary3D",
+                            "optional": true
+                        },
+                        {
+                            "name": "color",
+                            "description": "Emmissive color",
+                            "type": "Float32Array",
+                            "optional": true,
+                            "optdefault": "[0.4,0.4,0.4]"
+                        },
+                        {
+                            "name": "visible",
+                            "description": "Indicates whether or not this helper is visible.",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "true"
+                        }
+                    ]
+                }
+            ]
+        },
         "PlaneHelper": {
             "name": "PlaneHelper",
             "shortname": "PlaneHelper",
@@ -8270,6 +8424,51 @@
                     ]
                 }
             ]
+        },
+        "PointLightHelper": {
+            "name": "PointLightHelper",
+            "shortname": "PointLightHelper",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "xeogl",
+            "namespace": "",
+            "file": "examples/js/helpers/pointLightHelper.js",
+            "line": 1,
+            "description": "A **PointLightHelper** shows a visual indicator for a {{#crossLink \"PointLight\"}}{{/crossLink}}.\n\n## Example\n\n````javascript\n\n````",
+            "submodule": "entities",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this PointLightHelper in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}},\ngenerated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this PointLightHelper.",
+                            "type": "String:Object",
+                            "optional": true
+                        }
+                    ]
+                }
+            ],
+            "extends": "Entity"
         },
         "SplineCurveHelper": {
             "name": "SplineCurveHelper",
@@ -12051,7 +12250,7 @@
         {
             "file": "src/geometry/aabbGeometry.js",
             "line": 128,
-            "description": "A {{#crossLink \"Boundary3D\"}}{{/crossLink}} whose {{#crossLink \"Boundary3D/aabb:property\"}}OBB{{/crossLink}} we'll\ndynamically fit this OBBGeometry to.\n\nThis property effectively replaces the {{#crossLink \"AABBGeometry/aabb:property\"}}{{/crossLink}} property.\n\nFires a {{#crossLink \"AABBGeometry/boundary:event\"}}{{/crossLink}} event on change.",
+            "description": "A {{#crossLink \"Boundary3D\"}}{{/crossLink}} whose {{#crossLink \"Boundary3D/aabb:property\"}}AABB{{/crossLink}} we'll\ndynamically fit this OBBGeometry to.\n\nThis property effectively replaces the {{#crossLink \"AABBGeometry/aabb:property\"}}{{/crossLink}} property.\n\nFires a {{#crossLink \"AABBGeometry/boundary:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "boundary",
             "type": "Boundary3D",
@@ -12596,7 +12795,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 973,
+            "line": 986,
             "description": "Set true to make this Geometry automatically generate {{#crossLink \"Geometry/normals:property\"}}{{/crossLink}} from\n{{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} and {{#crossLink \"Geometry/indices:property\"}}{{/crossLink}}.\n\nWhen true, causes this Geometry to auto-generate its {{#crossLink \"Geometry/normals:property\"}}{{/crossLink}} on the\nnext {{#crossLink \"Scene\"}}{{/crossLink}} {{#crossLink \"Scene/tick:event\"}}{{/crossLink}} event.\n\nFires an {{#crossLink \"Geometry/autoNormals:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "autoNormals",
@@ -12608,7 +12807,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 1005,
+            "line": 1018,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/autoNormals:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "autoNormals",
@@ -12625,7 +12824,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 1020,
+            "line": 1033,
             "description": "Sets this Geometry's {{#crossLink \"Geometry/positions:property\"}}{{/crossLink}}.",
             "params": [
                 {
@@ -12647,7 +12846,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 1078,
+            "line": 1091,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "positions",
@@ -12663,7 +12862,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 1085,
+            "line": 1098,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/localBoundary:property\"}}{{/crossLink}} property changes.\n\nNote that this event does not carry the value of the property. In order to avoid needlessly\ncalculating unused values for this property, it will be lazy-calculated next time it's referenced\non this Geometry.",
             "itemtype": "event",
             "name": "positions",
@@ -12679,7 +12878,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 1100,
+            "line": 1113,
             "description": "Fast method to insert elements into this Geometry's {{#crossLink \"Geometry/normals:property\"}}{{/crossLink}}.",
             "params": [
                 {
@@ -12697,7 +12896,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 1156,
+            "line": 1169,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/normals:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "normals",
@@ -12713,7 +12912,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 1166,
+            "line": 1179,
             "description": "Fast method to insert elements into this Geometry's {{#crossLink \"Geometry/uvs:property\"}}{{/crossLink}}.",
             "params": [
                 {
@@ -12731,7 +12930,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 1222,
+            "line": 1235,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/uvs:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "uvs",
@@ -12747,7 +12946,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 1232,
+            "line": 1245,
             "description": "Fast method to insert elements into this Geometry's {{#crossLink \"Geometry/colors:property\"}}{{/crossLink}}.",
             "params": [
                 {
@@ -12765,7 +12964,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 1288,
+            "line": 1301,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/colors:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "colors",
@@ -12781,7 +12980,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 1298,
+            "line": 1311,
             "description": "Sets this Geometry's {{#crossLink \"Geometry/indices:property\"}}{{/crossLink}}.",
             "params": [
                 {
@@ -12803,7 +13002,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 1367,
+            "line": 1380,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/indices:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "indices",
@@ -12819,7 +13018,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 1374,
+            "line": 1387,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/localBoundary:property\"}}{{/crossLink}} property changes.\n\nNote that this event does not carry the value of the property. In order to avoid needlessly\ncalculating unused values for this property, it will be lazy-calculated next time it's referenced\non this Geometry.",
             "itemtype": "event",
             "name": "indices",
@@ -16681,7 +16880,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 937,
+            "line": 938,
             "description": "Fired whenever this MetallicMaterial's {{#crossLink \"MetallicMaterial/alphaMode:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "alphaMode",
@@ -16698,7 +16897,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 951,
+            "line": 952,
             "description": "The alpha cutoff value.\n\nSpecifies the cutoff threshold when {{#crossLink \"MetallicMaterial/alphaMode:property\"}}{{/crossLink}}\nequals \"mask\". If the alpha is greater than or equal to this value then it is rendered as fully\nopaque, otherwise, it is rendered as fully transparent. A value greater than 1.0 will render the entire\nmaterial as fully transparent. This value is ignored for other modes.\n\nAlpha is the combined result of the\n{{#crossLink \"MetallicMaterial/alpha:property\"}}{{/crossLink}} and\n{{#crossLink \"MetallicMaterial/alphaMap:property\"}}{{/crossLink}} properties.\n\nFires an {{#crossLink \"MetallicMaterial/alphaCutoff:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "alphaCutoff",
@@ -16710,7 +16909,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 982,
+            "line": 983,
             "description": "Fired whenever this MetallicMaterial's {{#crossLink \"MetallicMaterial/look:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "alphaCutoff",
@@ -16727,7 +16926,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 995,
+            "line": 996,
             "description": "Whether backfaces are visible on attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nThe backfaces will belong to {{#crossLink \"Geometry\"}}{{/crossLink}} compoents that are also attached to\nthe {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nFires a {{#crossLink \"MetallicMaterial/backfaces:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "backfaces",
@@ -16739,7 +16938,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 1021,
+            "line": 1022,
             "description": "Fired whenever this MetallicMaterial' {{#crossLink \"MetallicMaterial/backfaces:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "backfaces",
@@ -16755,7 +16954,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 1035,
+            "line": 1036,
             "description": "Indicates the winding direction of front faces on attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nThe faces will belong to {{#crossLink \"Geometry\"}}{{/crossLink}} components that are also attached to\nthe {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nFires a {{#crossLink \"MetallicMaterial/frontface:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "frontface",
@@ -16767,7 +16966,7 @@
         },
         {
             "file": "src/materials/metallicMaterial.js",
-            "line": 1061,
+            "line": 1062,
             "description": "Fired whenever this MetallicMaterial' {{#crossLink \"MetallicMaterial/frontface:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "frontface",
@@ -17447,7 +17646,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 1124,
+            "line": 1125,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/alphaMode:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "alphaMode",
@@ -17464,7 +17663,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 1138,
+            "line": 1139,
             "description": "The alpha cutoff value.\n\nSpecifies the cutoff threshold when {{#crossLink \"PhongMaterial/alphaMode:property\"}}{{/crossLink}}\nequals \"mask\". If the alpha is greater than or equal to this value then it is rendered as fully\nopaque, otherwise, it is rendered as fully transparent. A value greater than 1.0 will render the entire\nmaterial as fully transparent. This value is ignored for other modes.\n\nAlpha is the combined result of the\n{{#crossLink \"PhongMaterial/alpha:property\"}}{{/crossLink}} and\n{{#crossLink \"PhongMaterial/alphaMap:property\"}}{{/crossLink}} properties.\n\nFires an {{#crossLink \"PhongMaterial/alphaCutoff:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "alphaCutoff",
@@ -17476,7 +17675,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 1169,
+            "line": 1170,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/look:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "alphaCutoff",
@@ -17493,7 +17692,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 1182,
+            "line": 1183,
             "description": "Whether backfaces are visible on attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nThe backfaces will belong to {{#crossLink \"Geometry\"}}{{/crossLink}} compoents that are also attached to\nthe {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nFires a {{#crossLink \"PhongMaterial/backfaces:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "backfaces",
@@ -17505,7 +17704,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 1208,
+            "line": 1209,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/backfaces:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "backfaces",
@@ -17521,7 +17720,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 1222,
+            "line": 1223,
             "description": "Indicates the winding direction of front faces on attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nThe faces will belong to {{#crossLink \"Geometry\"}}{{/crossLink}} components that are also attached to\nthe {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nFires a {{#crossLink \"PhongMaterial/frontface:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "frontface",
@@ -17533,7 +17732,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 1248,
+            "line": 1249,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/frontface:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "frontface",
@@ -17959,7 +18158,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 940,
+            "line": 941,
             "description": "Fired whenever this SpecularMaterial's {{#crossLink \"SpecularMaterial/alphaMode:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "alphaMode",
@@ -17976,7 +18175,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 954,
+            "line": 955,
             "description": "The alpha cutoff value.\n\nSpecifies the cutoff threshold when {{#crossLink \"SpecularMaterial/alphaMode:property\"}}{{/crossLink}}\nequals \"mask\". If the alpha is greater than or equal to this value then it is rendered as fully\nopaque, otherwise, it is rendered as fully transparent. A value greater than 1.0 will render the entire\nmaterial as fully transparent. This value is ignored for other modes.\n\nAlpha is the combined result of the\n{{#crossLink \"SpecularMaterial/alpha:property\"}}{{/crossLink}} and\n{{#crossLink \"SpecularMaterial/alphaMap:property\"}}{{/crossLink}} properties.\n\nFires an {{#crossLink \"SpecularMaterial/alphaCutoff:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "alphaCutoff",
@@ -17988,7 +18187,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 985,
+            "line": 986,
             "description": "Fired whenever this SpecularMaterial's {{#crossLink \"SpecularMaterial/look:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "alphaCutoff",
@@ -18005,7 +18204,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 999,
+            "line": 1000,
             "description": "Whether backfaces are visible on attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nThe backfaces will belong to {{#crossLink \"Geometry\"}}{{/crossLink}} compoents that are also attached to\nthe {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nFires a {{#crossLink \"PhongMaterial/backfaces:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "backfaces",
@@ -18017,7 +18216,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 1025,
+            "line": 1026,
             "description": "Fired whenever this SpecularMaterial's {{#crossLink \"SpecularMaterial/backfaces:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "backfaces",
@@ -18033,7 +18232,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 1039,
+            "line": 1040,
             "description": "Indicates the winding direction of front faces on attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nThe faces will belong to {{#crossLink \"Geometry\"}}{{/crossLink}} components that are also attached to\nthe {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nFires a {{#crossLink \"SpecularMaterial/frontface:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "frontface",
@@ -18045,7 +18244,7 @@
         },
         {
             "file": "src/materials/specularMaterial.js",
-            "line": 1065,
+            "line": 1066,
             "description": "Fired whenever this SpecularMaterial's {{#crossLink \"SpecularMaterial/frontface:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "frontface",
@@ -20908,6 +21107,24 @@
             "namespace": "xeogl.math"
         },
         {
+            "file": "src/math/mathKDTree.js",
+            "line": 1,
+            "description": "KD-tree functions",
+            "class": "Model",
+            "module": "xeogl",
+            "namespace": "xeogl.math"
+        },
+        {
+            "file": "src/math/mathKDTree.js",
+            "line": 13,
+            "description": "Returns a KD-tree that contains the triangles of the given mesh",
+            "access": "private",
+            "tagname": "",
+            "class": "Model",
+            "module": "xeogl",
+            "namespace": "xeogl.math"
+        },
+        {
             "file": "src/math/mathRays.js",
             "line": 1,
             "description": "Ray casting support functions.",
@@ -21742,10 +21959,10 @@
         },
         {
             "file": "src/transforms/perspective.js",
-            "line": 90,
-            "description": "The angle, in degrees on the Y-axis, of this Perspective's field-of-view.\n\nFires a {{#crossLink \"Perspective/fovy:event\"}}{{/crossLink}} event on change.",
+            "line": 101,
+            "description": "The field-of-view angle (FOV).\n\nFires a {{#crossLink \"Perspective/fov:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
-            "name": "fovy",
+            "name": "fov",
             "default": "50.0",
             "type": "Number",
             "class": "Perspective",
@@ -21754,10 +21971,10 @@
         },
         {
             "file": "src/transforms/perspective.js",
-            "line": 109,
-            "description": "Fired whenever this Perspective's {{#crossLink \"Perspective/fovy:property\"}}{{/crossLink}} property changes.",
+            "line": 120,
+            "description": "Fired whenever this Perspective's {{#crossLink \"Perspective/fov:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
-            "name": "fovy",
+            "name": "fov",
             "params": [
                 {
                     "name": "value",
@@ -21770,7 +21987,35 @@
         },
         {
             "file": "src/transforms/perspective.js",
-            "line": 123,
+            "line": 134,
+            "description": "The FOV axis.\n\nOptions are \"x\", \"y\" or \"min\", to use the minimum axis.\n\nFires a {{#crossLink \"Perspective/fov:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "fov",
+            "default": "\"min\"",
+            "type": "String",
+            "class": "Perspective",
+            "module": "xeogl",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/perspective.js",
+            "line": 166,
+            "description": "Fired whenever this Perspective's {{#crossLink \"Perspective/fovAxis:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "fovAxis",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Perspective",
+            "module": "xeogl",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/perspective.js",
+            "line": 180,
             "description": "Position of this Perspective's near plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"Perspective/near:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "near",
@@ -21782,7 +22027,7 @@
         },
         {
             "file": "src/transforms/perspective.js",
-            "line": 142,
+            "line": 199,
             "description": "Fired whenever this Perspective's   {{#crossLink \"Perspective/near:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "near",
@@ -21798,7 +22043,7 @@
         },
         {
             "file": "src/transforms/perspective.js",
-            "line": 155,
+            "line": 212,
             "description": "Position of this Perspective's far plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"Perspective/far:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "far",
@@ -21810,7 +22055,7 @@
         },
         {
             "file": "src/transforms/perspective.js",
-            "line": 174,
+            "line": 231,
             "description": "Fired whenever this Perspective's  {{#crossLink \"Perspective/far:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "far",
@@ -24483,7 +24728,7 @@
         },
         {
             "file": "examples/js/annotations/pin.js",
-            "line": 465,
+            "line": 466,
             "description": "Fired whenever this Pin's {{#crossLink \"Pin/occludable:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "occludable",
@@ -24499,7 +24744,7 @@
         },
         {
             "file": "examples/js/annotations/pin.js",
-            "line": 478,
+            "line": 479,
             "description": "Local-space 3D coordinates of this Pin.\n\nThis is read-only and is automatically calculated.\n\nFires a {{#crossLink \"Pin/localPos:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "localPos",
@@ -24512,7 +24757,7 @@
         },
         {
             "file": "examples/js/annotations/pin.js",
-            "line": 498,
+            "line": 499,
             "description": "World-space 3D coordinates of this Pin.\n\nThis is read-only and is automatically calculated.\n\nFires a {{#crossLink \"Pin/worldPos:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "worldPos",
@@ -24525,7 +24770,7 @@
         },
         {
             "file": "examples/js/annotations/pin.js",
-            "line": 518,
+            "line": 519,
             "description": "View-space 3D coordinates of this Pin.\n\nThis is read-only and is automatically calculated.",
             "itemtype": "property",
             "name": "viewPos",
@@ -24538,7 +24783,7 @@
         },
         {
             "file": "examples/js/annotations/pin.js",
-            "line": 537,
+            "line": 538,
             "description": "Canvas-space 2D coordinates of this Pin.\n\nThis is read-only and is automatically calculated.",
             "itemtype": "property",
             "name": "canvasPos",
@@ -24551,7 +24796,7 @@
         },
         {
             "file": "examples/js/annotations/pin.js",
-            "line": 570,
+            "line": 571,
             "description": "World-space normal vector of this Pin.\n\nThis is read-only and is automatically calculated.\n\nFires a {{#crossLink \"Pin/worldNormal:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "worldNormal",
@@ -24564,7 +24809,7 @@
         },
         {
             "file": "examples/js/annotations/pin.js",
-            "line": 590,
+            "line": 591,
             "description": "Indicates if this Pin is currently visible.\n\nThis is read-only and is automatically calculated.\n\nThe Pin is invisible whenever:\n\n* {{#crossLink \"Pin/canvasPos:property\"}}{{/crossLink}} is currently outside the canvas, or\n* {{#crossLink \"Pin/occludable:property\"}}{{/crossLink}} is true and the Pin is currently occluded by something in the 3D view.\n\nFires a {{#crossLink \"Pin/visible:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "visible",
@@ -24577,7 +24822,7 @@
         },
         {
             "file": "examples/js/annotations/pin.js",
-            "line": 662,
+            "line": 663,
             "description": "Fired whenever this Pin's {{#crossLink \"Pin/localPos:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "localPos",
@@ -24587,7 +24832,7 @@
         },
         {
             "file": "examples/js/annotations/pin.js",
-            "line": 671,
+            "line": 672,
             "description": "Fired whenever this Pin's {{#crossLink \"Pin/worldPos:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "worldPos",
@@ -24597,7 +24842,7 @@
         },
         {
             "file": "examples/js/annotations/pin.js",
-            "line": 677,
+            "line": 678,
             "description": "Fired whenever this Pin's {{#crossLink \"Pin/worldNormal:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "worldNormal",
@@ -24607,7 +24852,7 @@
         },
         {
             "file": "examples/js/annotations/pin.js",
-            "line": 786,
+            "line": 787,
             "description": "Fired whenever this Pin's {{#crossLink \"Pin/visible:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "visible",
@@ -26879,7 +27124,18 @@
         },
         {
             "file": "examples/js/models/glTFModel.js",
-            "line": 154,
+            "line": 150,
+            "description": "The {{#crossLink \"GLTFObjects\"}}Entity{{/crossLink}} instances within this GLTFModel.",
+            "itemtype": "property",
+            "name": "entities",
+            "type": "{{String:Entity}}",
+            "class": "GLTFModel",
+            "module": "xeogl",
+            "submodule": "models"
+        },
+        {
+            "file": "examples/js/models/glTFModel.js",
+            "line": 163,
             "description": "Path to a glTF file.\n\nYou can set this to a new file path at any time (except while loading), which will cause the GLTFModel to load components from\nthe new file (after first destroying any components loaded from a previous file path).\n\nFires a {{#crossLink \"GLTFModel/src:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "src",
@@ -26890,7 +27146,7 @@
         },
         {
             "file": "examples/js/models/glTFModel.js",
-            "line": 180,
+            "line": 189,
             "description": "Fired whenever this GLTFModel has finished loading components from the glTF file\nspecified by {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "loaded",
@@ -26900,7 +27156,7 @@
         },
         {
             "file": "examples/js/models/glTFModel.js",
-            "line": 195,
+            "line": 204,
             "description": "Fired whenever this GLTFModel's {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "src",
@@ -26916,7 +27172,7 @@
         },
         {
             "file": "examples/js/models/glTFModel.js",
-            "line": 222,
+            "line": 231,
             "description": "Loads glTF from a URL into a {{#crossLink \"Model\"}}{{/crossLink}}.",
             "params": [
                 {
@@ -26942,7 +27198,7 @@
         },
         {
             "file": "examples/js/models/glTFModel.js",
-            "line": 252,
+            "line": 261,
             "description": "Fired whenever this GLTFModel fails to load the glTF file\nspecified by {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "error",
@@ -26959,7 +27215,7 @@
         },
         {
             "file": "examples/js/models/glTFModel.js",
-            "line": 263,
+            "line": 272,
             "description": "Parses glTF JSON into a {{#crossLink \"Model\"}}{{/crossLink}}.",
             "params": [
                 {
@@ -26994,6 +27250,120 @@
                 }
             ],
             "class": "GLTFModel",
+            "module": "xeogl",
+            "submodule": "models"
+        },
+        {
+            "file": "examples/js/models/glTFObject.js",
+            "line": 17,
+            "description": "JavaScript class name for this xeogl.GLTFObject.",
+            "itemtype": "property",
+            "name": "type",
+            "type": "String",
+            "final": 1,
+            "class": "GLTFObject",
+            "module": "xeogl",
+            "submodule": "models"
+        },
+        {
+            "file": "examples/js/models/glTFObject.js",
+            "line": 52,
+            "description": "Adds a primitive entity to this GLTFObject",
+            "params": [
+                {
+                    "name": "mesh",
+                    "description": "",
+                    "type": "xeogl.Entity"
+                }
+            ],
+            "class": "GLTFObject",
+            "module": "xeogl",
+            "submodule": "models"
+        },
+        {
+            "file": "examples/js/models/glTFObject.js",
+            "line": 151,
+            "description": "The axis-aligned World-space boundary of this GLTFObject.\nDynamically encloses all the entities.",
+            "class": "GLTFObject",
+            "module": "xeogl",
+            "submodule": "models"
+        },
+        {
+            "file": "examples/js/models/glTFObject.js",
+            "line": 162,
+            "description": "The World-space center of this GLTFObject.",
+            "return": {
+                "description": "",
+                "type": "Float32Array"
+            },
+            "class": "GLTFObject",
+            "module": "xeogl",
+            "submodule": "models"
+        },
+        {
+            "file": "examples/js/models/glTFObject.js",
+            "line": 171,
+            "description": "Whether this GLTFObject is visible or not",
+            "class": "GLTFObject",
+            "module": "xeogl",
+            "submodule": "models"
+        },
+        {
+            "file": "examples/js/models/glTFObject.js",
+            "line": 186,
+            "description": "The opacity of this GLTFObject",
+            "class": "GLTFObject",
+            "module": "xeogl",
+            "submodule": "models"
+        },
+        {
+            "file": "examples/js/models/glTFObject.js",
+            "line": 204,
+            "description": "Whether or not this GLTFObject is clippable",
+            "class": "GLTFObject",
+            "module": "xeogl",
+            "submodule": "models"
+        },
+        {
+            "file": "examples/js/models/glTFObject.js",
+            "line": 219,
+            "description": "Whether or not this GLTFObject is pickable",
+            "class": "GLTFObject",
+            "module": "xeogl",
+            "submodule": "models"
+        },
+        {
+            "file": "examples/js/models/glTFObject.js",
+            "line": 234,
+            "description": "Whether or not this GLTFObject is outlined",
+            "class": "GLTFObject",
+            "module": "xeogl",
+            "submodule": "models"
+        },
+        {
+            "file": "examples/js/models/glTFObject.js",
+            "line": 249,
+            "description": "The entities in this GLTFObject",
+            "class": "GLTFObject",
+            "module": "xeogl",
+            "submodule": "models"
+        },
+        {
+            "file": "examples/js/models/glTFObject.js",
+            "line": 308,
+            "description": "Increments or decrements the translation of this GLTFObject.",
+            "params": [
+                {
+                    "name": "xyz",
+                    "description": "World-space translation vector.",
+                    "type": "[Number, Number, Number]"
+                }
+            ],
+            "return": {
+                "description": "this",
+                "type": "BIMObject"
+            },
+            "class": "GLTFObject",
             "module": "xeogl",
             "submodule": "models"
         },
@@ -27945,6 +28315,70 @@
             "submodule": "zspace"
         },
         {
+            "file": "examples/js/helpers/aabbHelper.js",
+            "line": 42,
+            "description": "A {{#crossLink \"Boundary3D\"}}{{/crossLink}} whose {{#crossLink \"Boundary3D/aabb:property\"}}AABB{{/crossLink}} we'll\ndynamically fit this OBBGeometry to.\n\nFires a {{#crossLink \"AABBHelper/boundary:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "boundary",
+            "type": "Boundary3D",
+            "class": "AABBHelper",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/helpers/aabbHelper.js",
+            "line": 62,
+            "description": "Emissive color of this AABBHelper.\n\nFires an {{#crossLink \"AABBHelper/color:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "color",
+            "default": "[0,1,0]",
+            "type": "{Float32Array}",
+            "class": "AABBHelper",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/helpers/aabbHelper.js",
+            "line": 77,
+            "description": "Fired whenever this AABBHelper's {{#crossLink \"AABBHelper/color:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "color",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value",
+                    "type": "Float32Array"
+                }
+            ],
+            "class": "AABBHelper",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/helpers/aabbHelper.js",
+            "line": 90,
+            "description": "Indicates whether this AABBHelper is visible or not.\n\nFires a {{#crossLink \"AABBHelper/visible:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "visible",
+            "default": "true",
+            "type": "Boolean",
+            "class": "AABBHelper",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/helpers/aabbHelper.js",
+            "line": 107,
+            "description": "Fired whenever this helper's {{#crossLink \"AABBHelper/visible:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "visible",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value",
+                    "type": "Boolean"
+                }
+            ],
+            "class": "AABBHelper",
+            "module": "xeogl"
+        },
+        {
             "file": "examples/js/helpers/axisHelper.js",
             "line": 346,
             "params": [
@@ -27958,7 +28392,7 @@
         },
         {
             "file": "examples/js/helpers/clipHelper.js",
-            "line": 44,
+            "line": 45,
             "description": "The {{#crossLink \"Clip\"}}Clip{{/crossLink}} attached to this ClipHelper.\n\nFires an {{#crossLink \"ClipHelper/Clip:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "clip",
@@ -27968,7 +28402,7 @@
         },
         {
             "file": "examples/js/helpers/clipHelper.js",
-            "line": 88,
+            "line": 89,
             "description": "The width and height of the ClipHelper plane indicator.\n\nWhen no value is specified, will automatically size to fit within the\n{{#crossLink \"Scene/worldBoundary:property\"}}Scene's worldBoundary{{/crossLink}}.\n\nFires an {{#crossLink \"ClipHelper/planeSize:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "planeSize",
@@ -27979,7 +28413,7 @@
         },
         {
             "file": "examples/js/helpers/clipHelper.js",
-            "line": 106,
+            "line": 107,
             "description": "Fired whenever this ClipHelper's {{#crossLink \"ClipHelper/planeSize:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "planeSize",
@@ -27995,7 +28429,7 @@
         },
         {
             "file": "examples/js/helpers/clipHelper.js",
-            "line": 119,
+            "line": 120,
             "description": "Indicates whether this ClipHelper's {{#crossLink \"ClipHelper/planeSize:property\"}}{{/crossLink}} is automatically\ngenerated or not.\n\nWhen auto-generated, {{#crossLink \"ClipHelper/planeSize:property\"}}{{/crossLink}} will automatically size\nto fit within the {{#crossLink \"Scene/worldBoundary:property\"}}Scene's worldBoundary{{/crossLink}}.\n\nFires an {{#crossLink \"ClipHelper/autoPlaneSize:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "autoPlaneSize",
@@ -28006,7 +28440,7 @@
         },
         {
             "file": "examples/js/helpers/clipHelper.js",
-            "line": 138,
+            "line": 139,
             "description": "Fired whenever this ClipHelper's {{#crossLink \"ClipHelper/autoPlaneSize:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "autoPlaneSize",
@@ -28022,7 +28456,7 @@
         },
         {
             "file": "examples/js/helpers/clipHelper.js",
-            "line": 151,
+            "line": 152,
             "description": "Indicates whether this ClipHelper is visible or not.\n\nFires a {{#crossLink \"ClipHelper/active:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "visible",
@@ -28033,7 +28467,7 @@
         },
         {
             "file": "examples/js/helpers/clipHelper.js",
-            "line": 167,
+            "line": 168,
             "description": "Fired whenever this helper's {{#crossLink \"ClipHelper/visible:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "visible",
@@ -28054,7 +28488,71 @@
             "itemtype": "property",
             "name": "mousePickControl",
             "type": "mousePickControl",
-            "class": "PlaneHelper",
+            "class": "OBBHelper",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/helpers/obbHelper.js",
+            "line": 42,
+            "description": "A {{#crossLink \"Boundary3D\"}}{{/crossLink}} whose {{#crossLink \"Boundary3D/aabb:property\"}}AABB{{/crossLink}} we'll\ndynamically fit this OBBGeometry to.\n\nFires a {{#crossLink \"OBBHelper/boundary:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "boundary",
+            "type": "Boundary3D",
+            "class": "OBBHelper",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/helpers/obbHelper.js",
+            "line": 62,
+            "description": "Emissive color of this OBBHelper.\n\nFires an {{#crossLink \"OBBHelper/color:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "color",
+            "default": "[0,1,0]",
+            "type": "{Float32Array}",
+            "class": "OBBHelper",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/helpers/obbHelper.js",
+            "line": 77,
+            "description": "Fired whenever this OBBHelper's {{#crossLink \"OBBHelper/color:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "color",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value",
+                    "type": "Float32Array"
+                }
+            ],
+            "class": "OBBHelper",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/helpers/obbHelper.js",
+            "line": 90,
+            "description": "Indicates whether this OBBHelper is visible or not.\n\nFires a {{#crossLink \"OBBHelper/visible:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "visible",
+            "default": "true",
+            "type": "Boolean",
+            "class": "OBBHelper",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/helpers/obbHelper.js",
+            "line": 107,
+            "description": "Fired whenever this helper's {{#crossLink \"OBBHelper/visible:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "visible",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value",
+                    "type": "Boolean"
+                }
+            ],
+            "class": "OBBHelper",
             "module": "xeogl"
         },
         {
@@ -28221,13 +28719,14 @@
         },
         {
             "file": "examples/js/helpers/pointLightHelper.js",
-            "line": 33,
+            "line": 53,
             "description": "The {{#crossLink \"PointLight\"}}PointLight{{/crossLink}} attached to this PointLightHelper.\n\nFires an {{#crossLink \"PointLightHelper/pointLight:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "pointLight",
             "type": "PointLight",
-            "class": "SplineCurveHelper",
-            "module": "xeogl"
+            "class": "PointLightHelper",
+            "module": "xeogl",
+            "submodule": "entities"
         },
         {
             "file": "examples/js/helpers/splineCurveHelper.js",
@@ -28463,6 +28962,14 @@
         {
             "message": "replacing incorrect tag: returns with return",
             "line": " examples/js/marking/pointMarkings.js:146"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " examples/js/models/glTFObject.js:162"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " examples/js/models/glTFObject.js:308"
         },
         {
             "message": "Missing item type\nA chunk of WebGL state changes to render a xeogl.renderer.State.",
@@ -28918,23 +29425,23 @@
         },
         {
             "message": "Missing item type\nSets this Geometry's {{#crossLink \"Geometry/positions:property\"}}{{/crossLink}}.",
-            "line": " src/geometry/geometry.js:1020"
+            "line": " src/geometry/geometry.js:1033"
         },
         {
             "message": "Missing item type\nFast method to insert elements into this Geometry's {{#crossLink \"Geometry/normals:property\"}}{{/crossLink}}.",
-            "line": " src/geometry/geometry.js:1100"
+            "line": " src/geometry/geometry.js:1113"
         },
         {
             "message": "Missing item type\nFast method to insert elements into this Geometry's {{#crossLink \"Geometry/uvs:property\"}}{{/crossLink}}.",
-            "line": " src/geometry/geometry.js:1166"
+            "line": " src/geometry/geometry.js:1179"
         },
         {
             "message": "Missing item type\nFast method to insert elements into this Geometry's {{#crossLink \"Geometry/colors:property\"}}{{/crossLink}}.",
-            "line": " src/geometry/geometry.js:1232"
+            "line": " src/geometry/geometry.js:1245"
         },
         {
             "message": "Missing item type\nSets this Geometry's {{#crossLink \"Geometry/indices:property\"}}{{/crossLink}}.",
-            "line": " src/geometry/geometry.js:1298"
+            "line": " src/geometry/geometry.js:1311"
         },
         {
             "message": "Missing item type\nImplement protected virtual template method {{#crossLink \"Geometry/method:_update\"}}{{/crossLink}},\nto generate geometry data arrays.",
@@ -29181,6 +29688,14 @@
             "line": " src/math/mathGeometryBuild.js:178"
         },
         {
+            "message": "Missing item type\nKD-tree functions",
+            "line": " src/math/mathKDTree.js:1"
+        },
+        {
+            "message": "Missing item type\nReturns a KD-tree that contains the triangles of the given mesh",
+            "line": " src/math/mathKDTree.js:13"
+        },
+        {
             "message": "Missing item type\nRay casting support functions.",
             "line": " src/math/mathRays.js:1"
         },
@@ -29398,11 +29913,51 @@
         },
         {
             "message": "Missing item type\nLoads glTF from a URL into a {{#crossLink \"Model\"}}{{/crossLink}}.",
-            "line": " examples/js/models/glTFModel.js:222"
+            "line": " examples/js/models/glTFModel.js:231"
         },
         {
             "message": "Missing item type\nParses glTF JSON into a {{#crossLink \"Model\"}}{{/crossLink}}.",
-            "line": " examples/js/models/glTFModel.js:263"
+            "line": " examples/js/models/glTFModel.js:272"
+        },
+        {
+            "message": "Missing item type\nAdds a primitive entity to this GLTFObject",
+            "line": " examples/js/models/glTFObject.js:52"
+        },
+        {
+            "message": "Missing item type\nThe axis-aligned World-space boundary of this GLTFObject.\nDynamically encloses all the entities.",
+            "line": " examples/js/models/glTFObject.js:151"
+        },
+        {
+            "message": "Missing item type\nThe World-space center of this GLTFObject.",
+            "line": " examples/js/models/glTFObject.js:162"
+        },
+        {
+            "message": "Missing item type\nWhether this GLTFObject is visible or not",
+            "line": " examples/js/models/glTFObject.js:171"
+        },
+        {
+            "message": "Missing item type\nThe opacity of this GLTFObject",
+            "line": " examples/js/models/glTFObject.js:186"
+        },
+        {
+            "message": "Missing item type\nWhether or not this GLTFObject is clippable",
+            "line": " examples/js/models/glTFObject.js:204"
+        },
+        {
+            "message": "Missing item type\nWhether or not this GLTFObject is pickable",
+            "line": " examples/js/models/glTFObject.js:219"
+        },
+        {
+            "message": "Missing item type\nWhether or not this GLTFObject is outlined",
+            "line": " examples/js/models/glTFObject.js:234"
+        },
+        {
+            "message": "Missing item type\nThe entities in this GLTFObject",
+            "line": " examples/js/models/glTFObject.js:249"
+        },
+        {
+            "message": "Missing item type\nIncrements or decrements the translation of this GLTFObject.",
+            "line": " examples/js/models/glTFObject.js:308"
         },
         {
             "message": "Missing item type",

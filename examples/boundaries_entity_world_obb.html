@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
     <script src="../build/xeogl.min.js"></script>
+    <script src="js/helpers/obbHelper.js"></script>
+
     <link href="css/styles.css" rel="stylesheet"/>
 
     <script src="js/animation/cameraFollowAnimation.js"></script>
@@ -14,7 +16,8 @@
 
 <div id="info">
     <h1>visualizing an <a href="../docs/classes/Entity.html" target="_parent">Entity's</a> World-space oriented <a
-        href="../docs/classes/Boundary3D.html" target="_parent">Boundary3D</a> (OBB) as we animate the Entity's transforms</h1>
+            href="../docs/classes/Boundary3D.html" target="_parent">Boundary3D</a> (OBB) as we animate the Entity's
+        transforms</h1>
 
     <pre id="log" style="text-align: left; color:#77FF77; border:0;"></pre>
 </div>
@@ -123,41 +126,24 @@
 
     rotate1.scene.on("tick",
             function () {
-            a+=4;
-            //    if (++i > 10) {
-                    i = 0;
-                    rotate0.angle = a * 0.2;
-              //  }
-               // rotate1.angle = a ;
+                a += 4;
+                //    if (++i > 10) {
+                i = 0;
+                rotate0.angle = a * 0.2;
+                //  }
+                // rotate1.angle = a ;
 
-             //   rotate1.scene.view.rotateEyeY(0.1);
+                //   rotate1.scene.view.rotateEyeY(0.1);
             });
 
 
-    // ------------------------------------------------------------------
-    // Show the torus' World-space oriented bounding box (OBB)
-    // ------------------------------------------------------------------
-
-    // Create a boundary entity that renders a snugly-fitted
+    // Create a helper that renders a snugly-fitted
     // oriented bounding box (OBB) around the torus entity.
 
-    // As the torus tumbles about, the geometry on the
-    // boundary entity will automatically update to the
-    // shape of the torus' World-space oriented boundary.
-
-    new xeogl.Entity({
-
-        geometry: new xeogl.OBBGeometry({
-            boundary: torus.worldBoundary
-        }),
-
-        material: new xeogl.PhongMaterial({
-            diffuse: [0.0, 0.0, 0.0],
-            specular: [0.0, 0.0, 0.0],
-            ambient: [0.0, 0.0, 0.0],
-            emissive: [0.6, 1.0, 0.6],
-            lineWidth: 2
-        })
+    var obbHelper = new xeogl.OBBHelper({
+        boundary: torus.worldBoundary,
+        color: [0,1,0],
+        visible: true
     });
 
     // Allow user camera control

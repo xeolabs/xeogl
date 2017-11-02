@@ -42,6 +42,7 @@
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AABBGeometry.html">AABBGeometry</a></li>
+                                <li><a href="../classes/AABBHelper.html">AABBHelper</a></li>
                                 <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
                                 <li><a href="../classes/Annotation.html">Annotation</a></li>
                                 <li><a href="../classes/AnnotationStory.html">AnnotationStory</a></li>
@@ -76,6 +77,7 @@
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
                                 <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
+                                <li><a href="../classes/GLTFObject.html">GLTFObject</a></li>
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
@@ -87,6 +89,7 @@
                                 <li><a href="../classes/MousePickControl.html">MousePickControl</a></li>
                                 <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
+                                <li><a href="../classes/OBBHelper.html">OBBHelper</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
                                 <li><a href="../classes/OBJModel.html">OBJModel</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -99,6 +102,7 @@
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PlaneHelper.html">PlaneHelper</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/PointLightHelper.html">PointLightHelper</a></li>
                                 <li><a href="../classes/PointMarkings.html">PointMarkings</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
@@ -237,7 +241,7 @@
        }),
 
        project: new xeogl.Perspective({
-           fovy: 50,
+           fov: 50,
            near: 0.1,
            far: 1000
        })
@@ -350,12 +354,23 @@
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[fovy=50.0]</code>
+                                            <code class="param-name optional">[fov=50.0]</code>
                                             <span class="type">Number</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Field-of-view angle, in degrees, on Y-axis.</p>
+                                            <p>Field-of-view angle, in degrees.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[fovAxis=&quot;min&quot;]</code>
+                                            <span class="type">String</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>The field-of-view axis: &quot;x&quot;, &quot;y&quot;, or &quot;min&quot; to use whichever is currently the minimum.</p>
         
                                         </div>
         
@@ -469,7 +484,11 @@
 
                             </li>
                             <li class="index-item property">
-                                <a href="#property_fovy">fovy</a>
+                                <a href="#property_fov">fov</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_fov">fov</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -537,7 +556,11 @@
 
                             </li>
                             <li class="index-item event">
-                                <a href="#event_fovy">fovy</a>
+                                <a href="#event_fov">fov</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_fovAxis">fovAxis</a>
 
                             </li>
                             <li class="index-item event inherited">
@@ -1393,7 +1416,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_transforms_perspective.js.html#l155"><code>src&#x2F;transforms&#x2F;perspective.js:155</code></a>
+                            <a href="../files/src_transforms_perspective.js.html#l212"><code>src&#x2F;transforms&#x2F;perspective.js:212</code></a>
                             </p>
                     
                     
@@ -1409,8 +1432,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_fovy" class="property item">
-                        <h3 class="name"><code>fovy</code></h3>
+                    <div id="property_fov" class="property item">
+                        <h3 class="name"><code>fov</code></h3>
                         <span class="type">Number</span>
                     
                     
@@ -1420,19 +1443,47 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_transforms_perspective.js.html#l90"><code>src&#x2F;transforms&#x2F;perspective.js:90</code></a>
+                            <a href="../files/src_transforms_perspective.js.html#l101"><code>src&#x2F;transforms&#x2F;perspective.js:101</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The angle, in degrees on the Y-axis, of this Perspective&#39;s field-of-view.</p>
-                    <p>Fires a <a href="../classes/Perspective.html#event_fovy" class="crosslink">fovy</a> event on change.</p>
+                            <p>The field-of-view angle (FOV).</p>
+                    <p>Fires a <a href="../classes/Perspective.html#event_fov" class="crosslink">fov</a> event on change.</p>
                     
                         </div>
                     
                             <p><strong>Default:</strong> 50.0</p>
+                    
+                    
+                    </div>
+                    <div id="property_fov" class="property item">
+                        <h3 class="name"><code>fov</code></h3>
+                        <span class="type">String</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_transforms_perspective.js.html#l134"><code>src&#x2F;transforms&#x2F;perspective.js:134</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The FOV axis.</p>
+                    <p>Options are "x", "y" or "min", to use the minimum axis.</p>
+                    <p>Fires a <a href="../classes/Perspective.html#event_fov" class="crosslink">fov</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> &quot;min&quot;</p>
                     
                     
                     </div>
@@ -1579,7 +1630,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_transforms_perspective.js.html#l123"><code>src&#x2F;transforms&#x2F;perspective.js:123</code></a>
+                            <a href="../files/src_transforms_perspective.js.html#l180"><code>src&#x2F;transforms&#x2F;perspective.js:180</code></a>
                             </p>
                     
                     
@@ -1807,7 +1858,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_transforms_perspective.js.html#l174"><code>src&#x2F;transforms&#x2F;perspective.js:174</code></a>
+                            <a href="../files/src_transforms_perspective.js.html#l231"><code>src&#x2F;transforms&#x2F;perspective.js:231</code></a>
                             </p>
                     
                     
@@ -1838,8 +1889,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_fovy" class="events item">
-                        <h3 class="name"><code>fovy</code></h3>
+                    <div id="event_fov" class="events item">
+                        <h3 class="name"><code>fov</code></h3>
                         <span class="type"></span>
                     
                     
@@ -1849,14 +1900,56 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_transforms_perspective.js.html#l109"><code>src&#x2F;transforms&#x2F;perspective.js:109</code></a>
+                            <a href="../files/src_transforms_perspective.js.html#l120"><code>src&#x2F;transforms&#x2F;perspective.js:120</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this Perspective&#39;s <a href="../classes/Perspective.html#property_fovy" class="crosslink">fovy</a> property changes.</p>
+                            <p>Fired whenever this Perspective&#39;s <a href="../classes/Perspective.html#property_fov" class="crosslink">fov</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_fovAxis" class="events item">
+                        <h3 class="name"><code>fovAxis</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_transforms_perspective.js.html#l166"><code>src&#x2F;transforms&#x2F;perspective.js:166</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Perspective&#39;s Perspective/fovAxis:property property changes.</p>
                     
                         </div>
                     
@@ -1933,7 +2026,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_transforms_perspective.js.html#l142"><code>src&#x2F;transforms&#x2F;perspective.js:142</code></a>
+                            <a href="../files/src_transforms_perspective.js.html#l199"><code>src&#x2F;transforms&#x2F;perspective.js:199</code></a>
                             </p>
                     
                     
