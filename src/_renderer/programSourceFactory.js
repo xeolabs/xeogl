@@ -1585,7 +1585,7 @@
 
                 if (phongMaterial) {
 
-                    add("ambientColor *= lightAmbient;");
+                    add("ambientColor *= (lightAmbient * lightAmbientIntensity);");
 
                     add("vec3 outgoingLight =  (shadow * occlusion * (ambientColor + reflectedLight.diffuse + reflectedLight.specular)) + emissiveColor;");
 
@@ -1599,7 +1599,7 @@
                 // NO SHADING - EMISSIVE and AMBIENT ONLY
                 //--------------------------------------------------------------------------------
 
-                add("ambientColor *= lightAmbient;");
+                add("ambientColor *= (lightAmbient * lightAmbientIntensity);");
 
                 add("vec3 outgoingLight = emissiveColor + ambientColor;");
             }

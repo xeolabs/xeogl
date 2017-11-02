@@ -15,6 +15,7 @@
     "src/math/mathGeometryBuild.js",
     "src/math/mathCurves.js",
     "src/math/mathRays.js",
+    "src/math/mathKDTree.js",
 
     "src/_renderer/renderer.js",
     "src/_renderer/webgl/webgl.js",
