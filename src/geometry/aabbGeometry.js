@@ -126,7 +126,7 @@
         _props: {
 
             /**
-             A {{#crossLink "Boundary3D"}}{{/crossLink}} whose {{#crossLink "Boundary3D/aabb:property"}}OBB{{/crossLink}} we'll
+             A {{#crossLink "Boundary3D"}}{{/crossLink}} whose {{#crossLink "Boundary3D/aabb:property"}}AABB{{/crossLink}} we'll
              dynamically fit this OBBGeometry to.
 
              This property effectively replaces the {{#crossLink "AABBGeometry/aabb:property"}}{{/crossLink}} property.

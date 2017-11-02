@@ -970,6 +970,19 @@
                 }
             },
 
+            kdtree: {
+                get: function () {
+                    if (!this._indices || !this._positions) {
+                        this.error("Can't provide a KD-tree: no indices/positions");
+                        return;
+                    }
+                    if (!this._kdtree) {
+                        this._kdtree = xeogl.math.buildKDTree(this._indices, this._positions);
+                    }
+                    return this._kdtree;
+                }
+            },
+
             /**
              * Set true to make this Geometry automatically generate {{#crossLink "Geometry/normals:property"}}{{/crossLink}} from
              * {{#crossLink "Geometry/positions:property"}}{{/crossLink}} and {{#crossLink "Geometry/indices:property"}}{{/crossLink}}.
@@ -1457,19 +1470,19 @@
             var vecToArray = xeogl.math.vecToArray;
 
             if (this._positions) {
-                json.positions =  vecToArray(this._positions);
+                json.positions = vecToArray(this._positions);
             }
 
             if (this._uvs) {
-                json.uv =  vecToArray(this._uvs);
+                json.uv = vecToArray(this._uvs);
             }
 
             if (this._colors) {
-                json.colors =  vecToArray(this._colors);
+                json.colors = vecToArray(this._colors);
             }
 
             if (this._indices) {
-                json.indices =  vecToArray(this._indices);
+                json.indices = vecToArray(this._indices);
             }
 
             if (this._state.autoNormals) {

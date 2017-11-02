@@ -1110,7 +1110,8 @@
                         var value = modes[alphaMode];
 
                         if (value === undefined) {
-                            this.error("Unsupported value for 'alphaMode': " + alphaMode);
+                            this.error("Unsupported value for 'alphaMode': " + alphaMode + " - defaulting to 'opaque'");
+                            value = "opaque";
                         }
 
                         if (this._state.alphaMode === value) {

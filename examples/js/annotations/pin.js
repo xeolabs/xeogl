@@ -460,6 +460,7 @@
                         if (this._visTester) {
                             this._visTester.removePin(this);
                         }
+                        this._setVisible(true);
                     }
 
                     /**

@@ -28,10 +28,11 @@
             // STYLE: Compose instead of extend, because we may want to add more helpers here
 
             this._planeHelper = new xeogl.PlaneHelper(this);
-            this._labelHelper = new xeogl.LabelHelper(this, {
-                offset: [1,1],
-                textSize: 0.1
-            });
+            //this._labelHelper = new xeogl.LabelHelper(this, {
+            //    offset: [1,1],
+            //    textSize: 0.1,
+            //    visible: false
+            //});
 
             this.clip = cfg.clip;
             this.planeSize = cfg.planeSize;
@@ -62,21 +63,21 @@
                         on: {
                             pos: function (pos) {
                                 self._planeHelper.pos = pos;
-                                self._labelHelper.pos = pos;
+                              //  self._labelHelper.pos = pos;
                             },
                             dir: function (dir) {
                                 self._planeHelper.dir = dir;
                             },
                             active: function (active) {
-                                var color = active ? [0.2, 0.2, 0.2] : [1.0, 0.2, 0.2];
+                                var color = active ? [0.2, 0.6, 0.2] : [1.0, 0.2, 0.2];
                                 self._planeHelper.color = color;
-                                self._labelHelper.color = color;
+                               // self._labelHelper.color = color;
                             }
                         }
                     });
 
                     if (this._attached.clip) {
-                        this._labelHelper.text = this._attached.clip.id;
+                      //  this._labelHelper.text = this._attached.clip.id;
                     }
                 },
 
@@ -162,7 +163,7 @@
                 set: function (value) {
 
                     this._planeHelper.visible = value;
-                    this._labelHelper.visible = value;
+                   // this._labelHelper.visible = value;
 
                     /**
                      Fired whenever this helper's {{#crossLink "ClipHelper/visible:property"}}{{/crossLink}} property changes.
