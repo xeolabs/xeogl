@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2017-10-31
+ * Built on 2017-11-02
  *
  * MIT License
  * Copyright 2017, Lindsay Kay
@@ -5267,6 +5267,132 @@ var Canvas2Image = (function () {
             math.transformVec3(modelMatInverse, worldRayDir, localRayDir);
         };
     })();
+})();;/**
+ * KD-tree functions
+ */
+(function () {
+
+    "use strict";
+
+    var KD_TREE_MAX_DEPTH = 10;
+    var KD_TREE_MIN_TRIANGLES = 20;
+
+    var math = xeogl.math;
+
+    /**
+     * Returns a KD-tree that contains the triangles of the given mesh
+     *
+     * @private
+     */
+    math.buildKDTree = function (indices, positions) {
+        var numTris = indices.length / 3;
+        var triangles = new Array(numTris);
+        for (var i = 0; i < numTris; ++i) {
+            triangles[i] = i;
+        }
+        return buildNode(triangles, indices, positions, 0);
+    };
+
+    var dimLength = new Float32Array();
+
+    function buildNode(triangles, indices, positions, depth) {
+
+        var aabb = new Float32Array(6);
+
+        var node = {
+            triangles: null,
+            left: null,
+            right: null,
+            leaf: false,
+            splitDim: 0,
+            aabb: aabb
+        };
+
+        aabb[0] = aabb[1] = aabb[2] = Number.POSITIVE_INFINITY;
+        aabb[3] = aabb[4] = aabb[5] = Number.NEGATIVE_INFINITY;
+
+        var t, i, len;
+
+        for (t = 0, len = triangles.length; t < len; ++t) {
+            var ii = triangles[t] * 3;
+            for (var j = 0; j < 3; ++j) {
+                var pi = indices[ii + j] * 3;
+                if (positions[pi] < aabb[0]) {
+                    aabb[0] = positions[pi]
+                }
+                if (positions[pi] > aabb[3]) {
+                    aabb[3] = positions[pi]
+                }
+                if (positions[pi + 1] < aabb[1]) {
+                    aabb[1] = positions[pi + 1]
+                }
+                if (positions[pi + 1] > aabb[4]) {
+                    aabb[4] = positions[pi + 1]
+                }
+                if (positions[pi + 2] < aabb[2]) {
+                    aabb[2] = positions[pi + 2]
+                }
+                if (positions[pi + 2] > aabb[5]) {
+                    aabb[5] = positions[pi + 2]
+                }
+            }
+        }
+
+        if (triangles.length < KD_TREE_MIN_TRIANGLES || depth > KD_TREE_MAX_DEPTH) {
+            node.triangles = triangles;
+            node.leaf = true;
+            return node;
+        }
+
+        dimLength[0] = aabb[3] - aabb[0];
+        dimLength[1] = aabb[4] - aabb[1];
+        dimLength[2] = aabb[5] - aabb[2];
+
+        var dim = 0;
+
+        if (dimLength[1] > dimLength[dim]) {
+            dim = 1;
+        }
+
+        if (dimLength[2] > dimLength[dim]) {
+            dim = 2;
+        }
+
+        node.splitDim = dim;
+
+        var mid = (aabb[dim] + aabb[dim + 3]) / 2;
+        var left = new Array(triangles.length);
+        var numLeft = 0;
+        var right = new Array(triangles.length);
+        var numRight = 0;
+
+        for (t = 0, len = triangles.length; t < len; ++t) {
+
+            var ii = triangles[t] * 3;
+            var i0 = indices[ii];
+            var i1 = indices[ii + 1];
+            var i2 = indices[ii + 2];
+
+            var pi0 = i0 * 3;
+            var pi1 = i1 * 3;
+            var pi2 = i2 * 3;
+
+            if (positions[pi0 + dim] <= mid || positions[pi1 + dim] <= mid || positions[pi2 + dim] <= mid) {
+                left[numLeft++] = triangles[t];
+            } else {
+                right[numRight++] = triangles[t];
+            }
+        }
+
+        left.length = numLeft;
+        right.length = numRight;
+
+        node.left = buildNode(left, indices, positions, depth + 1);
+        node.right = buildNode(right, indices, positions, depth + 1);
+
+        return node;
+    }
+
 })();;(function () {
 
     "use strict";
@@ -10057,7 +10183,7 @@ var Canvas2Image = (function () {
 
                 if (phongMaterial) {
 
-                    add("ambientColor *= lightAmbient;");
+                    add("ambientColor *= (lightAmbient * lightAmbientIntensity);");
 
                     add("vec3 outgoingLight =  (shadow * occlusion * (ambientColor + reflectedLight.diffuse + reflectedLight.specular)) + emissiveColor;");
 
@@ -10071,7 +10197,7 @@ var Canvas2Image = (function () {
                 // NO SHADING - EMISSIVE and AMBIENT ONLY
                 //--------------------------------------------------------------------------------
 
-                add("ambientColor *= lightAmbient;");
+                add("ambientColor *= (lightAmbient * lightAmbientIntensity);");
 
                 add("vec3 outgoingLight = emissiveColor + ambientColor;");
             }
@@ -16155,7 +16281,7 @@ var Canvas2Image = (function () {
              up: [0, 1, 0]
          }),
          project: new xeogl.Perspective({
-             fovy: 60,
+             fov: 60,
              near: 0.1,
              far: 1000
          })
@@ -18046,7 +18172,7 @@ var Canvas2Image = (function () {
      }),
 
      project: new xeogl.Perspective({
-         fovy: 60,
+         fov: 60,
          near: 0.1,
          far: 1000
      })
@@ -18551,7 +18677,7 @@ var Canvas2Image = (function () {
          up: [0, 1, 0]
      }),
      project: new xeogl.Perspective({
-         fovy: 60,
+         fov: 60,
          near: 0.1,
          far: 1000
      })
@@ -18865,7 +18991,7 @@ var Canvas2Image = (function () {
          up: [0, 1, 0]
      }),
      project: new xeogl.Perspective({
-         fovy: 60,
+         fov: 60,
          near: 0.1,
          far: 1000
      })
@@ -19182,7 +19308,7 @@ var Canvas2Image = (function () {
          up: [0, 1, 0]
      }),
      project: new xeogl.Perspective({
-         fovy: 60,
+         fov: 60,
          near: 0.1,
          far: 1000
      })
@@ -19451,7 +19577,7 @@ var Canvas2Image = (function () {
          up: [0, 1, 0]
      }),
      project: new xeogl.Perspective({
-         fovy: 60,
+         fov: 60,
          near: 0.1,
          far: 1000
      })
@@ -19706,7 +19832,7 @@ var Canvas2Image = (function () {
          up: [0, 1, 0]
      }),
      project: new xeogl.Perspective({
-         fovy: 60,
+         fov: 60,
          near: 0.1,
          far: 1000
      })
@@ -20095,7 +20221,7 @@ var Canvas2Image = (function () {
          up: [0, 1, 0]
      }),
      project: new xeogl.Perspective({
-         fovy: 60,
+         fov: 60,
          near: 0.1,
          far: 1000
      })
@@ -20627,7 +20753,7 @@ var Canvas2Image = (function () {
          up: [0, 1, 0]
      }),
      project: new xeogl.Perspective({
-         fovy: 60,
+         fov: 60,
          near: 0.1,
          far: 1000
      })
@@ -21877,6 +22003,19 @@ var Canvas2Image = (function () {
                 }
             },
 
+            kdtree: {
+                get: function () {
+                    if (!this._indices || !this._positions) {
+                        this.error("Can't provide a KD-tree: no indices/positions");
+                        return;
+                    }
+                    if (!this._kdtree) {
+                        this._kdtree = xeogl.math.buildKDTree(this._indices, this._positions);
+                    }
+                    return this._kdtree;
+                }
+            },
+
             /**
              * Set true to make this Geometry automatically generate {{#crossLink "Geometry/normals:property"}}{{/crossLink}} from
              * {{#crossLink "Geometry/positions:property"}}{{/crossLink}} and {{#crossLink "Geometry/indices:property"}}{{/crossLink}}.
@@ -22364,19 +22503,19 @@ var Canvas2Image = (function () {
             var vecToArray = xeogl.math.vecToArray;
 
             if (this._positions) {
-                json.positions =  vecToArray(this._positions);
+                json.positions = vecToArray(this._positions);
             }
 
             if (this._uvs) {
-                json.uv =  vecToArray(this._uvs);
+                json.uv = vecToArray(this._uvs);
             }
 
             if (this._colors) {
-                json.colors =  vecToArray(this._colors);
+                json.colors = vecToArray(this._colors);
             }
 
             if (this._indices) {
-                json.indices =  vecToArray(this._indices);
+                json.indices = vecToArray(this._indices);
             }
 
             if (this._state.autoNormals) {
@@ -24105,7 +24244,7 @@ var Canvas2Image = (function () {
         _props: {
 
             /**
-             A {{#crossLink "Boundary3D"}}{{/crossLink}} whose {{#crossLink "Boundary3D/aabb:property"}}OBB{{/crossLink}} we'll
+             A {{#crossLink "Boundary3D"}}{{/crossLink}} whose {{#crossLink "Boundary3D/aabb:property"}}AABB{{/crossLink}} we'll
              dynamically fit this OBBGeometry to.
 
              This property effectively replaces the {{#crossLink "AABBGeometry/aabb:property"}}{{/crossLink}} property.
@@ -32054,7 +32193,8 @@ TODO
                         var value = modes[alphaMode];
 
                         if (value === undefined) {
-                            this.error("Unsupported value for 'alphaMode': " + alphaMode);
+                            this.error("Unsupported value for 'alphaMode': " + alphaMode + " - defaulting to 'opaque'");
+                            value = "opaque";
                         }
 
                         if (this._state.alphaMode === value) {
@@ -33353,7 +33493,8 @@ TODO
                         var value = modes[alphaMode];
 
                         if (value === undefined) {
-                            this.error("Unsupported value for 'alphaMode': " + alphaMode);
+                            this.error("Unsupported value for 'alphaMode': " + alphaMode + " defaulting to 'opaque'");
+                            value = "opaque";
                         }
 
                         if (this._state.alphaMode === value) {
@@ -34585,7 +34726,8 @@ TODO
                         var value = modes[alphaMode];
 
                         if (value === undefined) {
-                            this.error("Unsupported value for 'alphaMode': " + alphaMode);
+                            this.error("Unsupported value for 'alphaMode': " + alphaMode + " defaulting to 'opaque'");
+                            value = "opaque";
                         }
 
                         if (this._state.alphaMode === value) {
@@ -39937,7 +40079,7 @@ TODO
         }),
 
         project: new xeogl.Perspective({
-            fovy: 60,
+            fov: 60,
             near: 0.1,
             far: 1000
         })
@@ -40566,7 +40708,7 @@ TODO
         }),
 
         project: new xeogl.Perspective({
-            fovy: 50,
+            fov: 50,
             near: 0.1,
             far: 1000
         })
@@ -40586,7 +40728,8 @@ TODO
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Perspective.
  @param [cfg.parent] {String|Transform} ID or instance of a parent {{#crossLink "Transform"}}{{/crossLink}} within the same {{#crossLink "Scene"}}Scene{{/crossLink}}.
- @param [cfg.fovy=50.0] {Number} Field-of-view angle, in degrees, on Y-axis.
+ @param [cfg.fov=50.0] {Number} Field-of-view angle, in degrees.
+ @param [cfg.fovAxis="min"] {String} The field-of-view axis: "x", "y", or "min" to use whichever is currently the minimum.
  @param [cfg.near=0.1] {Number} Position of the near plane on the View-space Z-axis.
  @param [cfg.far=10000] {Number} Position of the far plane on the View-space Z-axis.
  @extends Transform
@@ -40604,14 +40747,15 @@ TODO
             this._super(cfg);
 
             this._dirty = false;
-            this._fovy = 50.0;
+            this._fov = 50.0;
             this._near = 0.1;
             this._far = 10000.0;
 
             // Recompute aspect from change in canvas size
             this._canvasResized = this.scene.canvas.on("boundary", this._needUpdate, this);
 
-            this.fovy = cfg.fovy;
+            this.fov = cfg.fov;
+            this.fovAxis = cfg.fovAxis;
             this.near = cfg.near;
             this.far = cfg.far;
         },
@@ -40621,41 +40765,96 @@ TODO
             var canvas = this.scene.canvas.canvas;
             var aspect = canvas.clientWidth / canvas.clientHeight;
 
-            this.matrix = xeogl.math.perspectiveMat4(this._fovy * (Math.PI / 180.0), aspect, this._near, this._far, this._matrix);
+            var fov = this._fov;
+            var fovAxis = this._fovAxis;
+
+            if (fovAxis == "x" || (fovAxis == "min" && aspect < 1) || (fovAxis == "max" && aspect > 1)) {
+                fov = fov / aspect;
+            }
+
+            fov = Math.min(fov, 120);
+
+            this.matrix = xeogl.math.perspectiveMat4(fov * (Math.PI / 180.0), aspect, this._near, this._far, this._matrix);
         },
 
         _props: {
 
             /**
-             * The angle, in degrees on the Y-axis, of this Perspective's field-of-view.
+             * The field-of-view angle (FOV).
              *
-             * Fires a {{#crossLink "Perspective/fovy:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "Perspective/fov:event"}}{{/crossLink}} event on change.
              *
-             * @property fovy
+             * @property fov
              * @default 50.0
              * @type Number
              */
-            fovy: {
+            fov: {
 
                 set: function (value) {
 
-                    this._fovy = (value !== undefined && value !== null) ? value : 50.0;
+                    this._fov = (value !== undefined && value !== null) ? value : 50.0;
 
                     this._renderer.imageDirty = true;
 
                     this._needUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
-                     * Fired whenever this Perspective's {{#crossLink "Perspective/fovy:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this Perspective's {{#crossLink "Perspective/fov:property"}}{{/crossLink}} property changes.
                      *
-                     * @event fovy
+                     * @event fov
                      * @param value The property's new value
                      */
-                    this.fire("fovy", this._fovy);
+                    this.fire("fov", this._fov);
                 },
 
                 get: function () {
-                    return this._fovy;
+                    return this._fov;
+                }
+            },
+
+            /**
+             * The FOV axis.
+             *
+             * Options are "x", "y" or "min", to use the minimum axis.
+             *
+             * Fires a {{#crossLink "Perspective/fov:event"}}{{/crossLink}} event on change.
+             *
+             * @property fov
+             * @default "min"
+             * @type String
+             */
+            fovAxis: {
+
+                set: function (value) {
+
+                    value = value || "min";
+
+                    if (this._fovAxis === value) {
+                        return;
+                    }
+
+                    if (value !== "x" && value !== "y" && value !== "min") {
+                        this.error("Unsupported value for 'fovAxis': " + value + " - defaulting to 'min'");
+                        value = "min";
+                    }
+
+                    this._fovAxis = value;
+
+                    this._renderer.imageDirty = true;
+
+                    this._needUpdate(0); // Ensure matrix built on next "tick"
+
+                    /**
+                     * Fired whenever this Perspective's {{#crossLink "Perspective/fovAxis:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event fovAxis
+                     * @param value The property's new value
+                     */
+                    this.fire("fovAxis", this._fovAxis);
+                },
+
+                get: function () {
+                    return this._fovAxis;
                 }
             },
 
@@ -40727,7 +40926,8 @@ TODO
 
         _getJSON: function () {
             var json = {
-                fovy: this._fovy,
+                fov: this._fov,
+                fovAxis: this._fovAxis,
                 near: this._near,
                 far: this._far
             };
