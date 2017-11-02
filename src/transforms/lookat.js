@@ -28,7 +28,7 @@
         }),
 
         project: new xeogl.Perspective({
-            fovy: 60,
+            fov: 60,
             near: 0.1,
             far: 1000
         })
