@@ -40,8 +40,8 @@
     view.up = [-0.15, 0.97, 0.13];
 
     // Allow user camera control
-    var cameraControl = new xeogl.CameraControl();
-    cameraControl.mousePickEntity.active = false;
+    var inputControl = new xeogl.InputControl();
+    //inputControl.mousePickEntity.active = false;
 
     gearbox.on("loaded",
             function () {

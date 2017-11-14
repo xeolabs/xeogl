@@ -102,8 +102,8 @@ var gltfExplorer = function (menuId, files) {
         };
     })();
 
-    var cameraControl = new xeogl.CameraControl();
-    cameraControl.mousePickEntity.active = false;
+    var inputControl = new xeogl.InputControl();
+    inputControl.mousePickEntity.active = false;
 
     var mousePickEntity = new xeogl.MousePickEntity({
         pickSurface: true

@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.js"></script>
+    <script src="js/models/glTFModel.js"></script>
+
+    <script src="js/controls/mousePickControl.js"></script>
+
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <h1>raycasting to find position, UV and normal on <a href="../docs/classes/Entity.html" target="_parent">Entity</a>
+        surfaces</h1>
+    <br>
+
+
+</div>
+
+<div id="uvPos"
+     style="z-index: 20000000; position:absolute; width: 20px; height: 20px; border-radius: 10px; opacity: 0.7; border: 2px solid white; background: red;"></div>
+
+
+<script>
+
+    (function () {
+
+        var showUVPos = (function () {
+
+            const height = 360;
+            const width = height + (height / 3);
+            const scale = width / 24;
+
+            var uvPosDiv = document.getElementById("uvPos");
+            var left = 0;
+            var top = 0;
+
+            return function (uv) {
+                if (!uv) {
+                    uvPosDiv.style.left = -100 + "px";
+                    return;
+                }
+                uvPosDiv.style.left = Math.floor(left + uv[0] * width) + "px";
+                uvPosDiv.style.top = Math.floor(top + height - (uv[1] * height)) + "px"; // Correct for our texture Y-flipping
+            }
+        })();
+
+        var CubeMap = function () {
+
+            const height = 360;
+            const width = height + (height / 3);
+            const scale = width / 24;
+
+            // Create canvas
+
+            var canvasId = xeogl.math.createUUID();
+            var body = document.getElementsByTagName("body")[0];
+            var canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            var style = canvas.style;
+            style.width = width + "px";
+            style.height = height + "px";
+            style.padding = "0";
+            style.margin = "0";
+            style.background = "grey";
+            style.position = "absolute";
+            style.opacity = "1.0";
+            style.visibility = "visible";
+            style["z-index"] = 2000000;
+            body.appendChild(canvas);
+            this.canvas = document.getElementById(canvasId);
+
+            // Create 2D context
+
+            var ctx = canvas.getContext("2d");
+
+            var regions = {
+
+                // Faces
+
+                "left": {text: "LEFT", areas: [[1, 7, 4, 4]], dir: [0, 0, -1]},
+                "right": {text: "RIGHT", areas: [[7, 7, 4, 4]], dir: [0, 0, -1]},
+                "top": {text: "LEFT", areas: [[13, 7, 4, 4]], dir: [0, 0, -1]},
+                "bottom": {text: "LEFT", areas: [[19, 7, 4, 4]], dir: [0, 0, -1]},
+                "front": {text: "LEFT", areas: [[7, 1, 4, 4]], dir: [0, 0, -1]},
+                "back": {text: "LEFT", areas: [[7, 13, 4, 4]], dir: [0, 0, -1]},
+
+                // Edges
+
+                "leftFrontEdge": {areas: [[1, 6, 4, 1], [6, 1, 1, 4]], dir: [0, 0, -1]},
+                "leftBackEdge": {areas: [[1, 11, 4, 1], [6, 13, 1, 4]], dir: [0, 0, -1]},
+                "frontBackEdge": {areas: [[7, 0, 4, 1], [7, 17, 4, 1]], dir: [0, 0, -1]},
+                "frontRightEdge": {areas: [[7, 5, 4, 2]], dir: [0, 0, -1]},
+                "rightBackEdge": {areas: [[7, 11, 4, 2]], dir: [0, 0, -1]},
+                "leftRightEdge": {areas: [[5, 7, 2, 4]], dir: [0, 0, -1]},
+                "topRightEdge": {areas: [[11, 7, 2, 4]], dir: [0, 0, -1]},
+                "topBottomEdge": {areas: [[17, 7, 2, 4]], dir: [0, 0, -1]},
+                "leftBottomEdge": {areas: [[0, 7, 1, 4], [23, 7, 1, 4]], dir: [0, 0, -1]},
+                "frontTopEdge": {areas: [[13, 6, 4, 1], [11, 1, 1, 4]], dir: [0, 0, -1]},
+                "backTopEdge": {areas: [[13, 11, 4, 1], [11, 13, 1, 4]], dir: [0, 0, -1]},
+
+                // Corners
+
+                "leftRightBackCorner": {areas: [[5, 11, 2, 2]], dir: [0, 0, -1]},
+                "backRightTopCorner": {areas: [[11, 11, 2, 2]], dir: [0, 0, -1]}
+            };
+
+            this.clear = function () {
+                ctx.fillStyle = "grey";
+                ctx.fillRect(0, 0, width, height);
+
+                // TODO: draw wire frame
+            };
+
+            this.pickRegion = function (uv) {
+                var x = Math.floor((uv[0] * width) / scale);
+                var y = Math.floor((height - (uv[1] * height)) / scale); // Correct for our texture Y-flipping
+                var region;
+                var areas;
+                var area;
+                for (var regionId in regions) {
+                    if (regions.hasOwnProperty(regionId)) {
+                        region = regions[regionId];
+                        areas = region.areas;
+                        for (var i = 0, len = areas.length; i < len; i++) {
+                            area = areas[i];
+                            if (x >= area[0] && x <= (area[0] + area[2]) && y >= area[1] && y <= (area[1] + area[3])) {
+                                return regionId;
+                            }
+                        }
+                    }
+                }
+                return null;
+            };
+
+            this.setRegionHighlighted = function (regionId, highlighted) {
+                this.setRegionColor(regionId, highlighted ? "#FF0000" : "grey");
+            };
+
+            this.setRegionColor = function (regionId, color) {
+
+                var region = regions[regionId];
+
+                if (!region) {
+                    throw "Unknown region: " + regionId;
+                }
+
+                region.color = color;
+
+                var areas = region.areas;
+                var area;
+                var xmin;
+                var ymin;
+                var width;
+                var height;
+
+                for (var i = 0, len = areas.length; i < len; i++) {
+
+                    area = areas[i];
+
+                    xmin = Math.round(area[0] * scale);
+                    ymin = Math.round(area[1] * scale);
+                    width = Math.round(area[2] * scale);
+                    height = Math.round(area[3] * scale);
+
+                    ctx.fillStyle = color;
+                    ctx.fillRect(xmin, ymin, width, height);
+
+//                    var text = region.text;
+//                    if (text) {
+//                        ctx.fillStyle = "black";
+//                        ctx.font = '25px sans-serif';
+//                        ctx.fillText(text, xmin, ymin, 500);
+//                    }
+                }
+            };
+
+            this.getRegionColor = function(regionId) {
+                var region = regions[regionId];
+                if (!region) {
+                    throw "Unknown region: " + regionId;
+                }
+                return region.color;
+            };
+
+            this.getRegionDir = function (regionId) {
+                var region = regions[regionId];
+                if (!region) {
+                    throw "Unknown region: " + regionId;
+                }
+                return region.dir;
+            };
+
+            this.getImage = function () {
+                return canvas;
+                //return canvas.toDataURL();
+            };
+
+
+            this.clear();
+        };
+
+        var cubeMap = new CubeMap();
+
+        cubeMap.setRegionColor("left", "green");
+        cubeMap.setRegionColor("right", "green");
+        cubeMap.setRegionColor("top", "green");
+        cubeMap.setRegionColor("bottom", "green");
+        cubeMap.setRegionColor("front", "green");
+        cubeMap.setRegionColor("back", "green");
+
+        cubeMap.setRegionColor("leftFrontEdge", "pink");
+        cubeMap.setRegionColor("leftBackEdge", "red");
+        cubeMap.setRegionColor("frontBackEdge", "yellow");
+        cubeMap.setRegionColor("frontRightEdge", "blue");
+        cubeMap.setRegionColor("rightBackEdge", "purple");
+        cubeMap.setRegionColor("leftRightEdge", "orange");
+        cubeMap.setRegionColor("topRightEdge", "beige");
+        cubeMap.setRegionColor("topBottomEdge", "lightblue");
+        cubeMap.setRegionColor("leftBottomEdge", "lightgreen");
+        cubeMap.setRegionColor("frontTopEdge", "darkred");
+        cubeMap.setRegionColor("backTopEdge", "darkgreen");
+
+        cubeMap.setRegionColor("leftRightBackCorner", "darkblue");
+        cubeMap.setRegionColor("backRightTopCorner", "darkyellow");
+
+        var entity = new xeogl.Entity({
+            geometry: new xeogl.Geometry({
+                primitive: "triangles",
+                normals: [
+                    0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
+                    1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0,
+                    0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0,
+                    -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0,
+                    0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0,
+                    0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1
+                ],
+                positions: [
+                    1, 1, 1, -1, 1, 1, -1, -1, 1, 1, -1, 1, // v0-v1-v2-v3 front
+                    1, 1, 1, 1, -1, 1, 1, -1, -1, 1, 1, -1, // v0-v3-v4-v5 right
+                    1, 1, 1, 1, 1, -1, -1, 1, -1, -1, 1, 1, // v0-v5-v6-v1 top
+                    -1, 1, 1, -1, 1, -1, -1, -1, -1, -1, -1, 1, // v1-v6-v7-v2 left
+                    -1, -1, -1, 1, -1, -1, 1, -1, 1, -1, -1, 1, // v7-v4-v3-v2 bottom
+                    1, -1, -1, -1, -1, -1, -1, 1, -1, 1, 1, -1 // v4-v7-v6-v5 back
+                ],
+                uv: [
+                    0.5, 0.6666, 0.25, 0.6666, 0.25, 0.3333, 0.5, 0.3333,
+                    0.5, 0.6666, 0.5, 0.3333, 0.75, 0.3333, 0.75, 0.6666,
+                    0.5, 0.6666, 0.5, 1, 0.25, 1, 0.25, 0.6666,
+                    0.25, 0.6666, 0.0, 0.6666, 0.0, 0.3333, 0.25, 0.3333,
+                    0.25, 0, 0.50, 0, 0.50, 0.3333, 0.25, 0.3333,
+                    0.75, 0.3333, 1.0, 0.3333, 1.0, 0.6666,
+                    0.75, 0.6666
+                ],
+                indices: [
+                    0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7,
+                    8, 9, 10, 8, 10, 11, 12, 13, 14,
+                    12, 14, 15, 16, 17, 18, 16, 18, 19,
+                    20, 21, 22, 20, 22, 23
+                ]
+            }),
+            material: new xeogl.PhongMaterial({
+                diffuse: [0.3, 0.3, 0.3],
+                emissive: [1, 1, 1],
+                emissiveMap: new xeogl.Texture({
+                    image: cubeMap.getImage()
+                    ,
+                    flipY: true
+                })
+            })
+        });
+
+        var scene = entity.scene;
+
+        entity.scene.camera.view.zoom(10);
+
+        //    entity.scene.on("tick",
+        //            function () {
+        //
+        //                var view = entity.scene.camera.view;
+        //
+        //                view.rotateEyeY(0.6);
+        //                view.rotateEyeX(0.3);
+        //            });
+
+        new xeogl.InputControl();
+
+        var lastRegionId;
+        var lastColor;
+
+        scene.input.on("mousemove", function (coords) {
+
+            // Hide visual indicators
+
+
+            //showUVPos(null);
+
+            // Pick a primitive on some Entity
+
+            var hit = scene.pick({
+                canvasPos: coords,
+                pickSurface: true
+            });
+
+            if (hit) {
+
+                // Entity picked
+
+
+                if (hit.uv) {
+
+                    var regionId = cubeMap.pickRegion(hit.uv);
+                    if (regionId) {
+                        lastColor = cubeMap.getRegionColor(regionId);
+                        cubeMap.setRegionHighlighted(regionId, true);
+                        entity.material.emissiveMap.image = cubeMap.getImage();
+
+                        var dir = cubeMap.getRegionDir(regionId);
+                        if (dir) {
+//                            dir[0] *=10;
+//                            dir[1] *=10;
+//                            dir[2] *=10;
+//                            scene.camera.view.eye = dir;
+//                            scene.camera.view.look = [0, 0, 0];
+                        }
+                    }
+
+                    if (lastRegionId) {
+                        cubeMap.setRegionHighlighted(lastRegionId, false);
+                        cubeMap.setRegionColor(lastRegionId, lastColor);
+                    }
+
+                    lastRegionId = regionId;
+
+                    showUVPos(hit.uv);
+                }
+
+            } else {
+
+                // No Triangle picked
+            }
+
+        });
+    })();
+
+
+</script>
+</body>
+</html>

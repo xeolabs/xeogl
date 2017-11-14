@@ -42,7 +42,7 @@
  scene.camera.view.look = [0, 0, 0];
 
  // Allow camera control with keyboard and mouse
- var cameraControl = new xeogl.CameraControl();
+ var inputControl = new xeogl.InputControl();
 
  // Create a ZSpaceEffect
  var zspaceEffect = new xeogl.ZSpaceEffect({

@@ -114,30 +114,45 @@
          * @static
          * @return string The new UUID
          */
-        createUUID: function () {
-            // http://www.broofa.com/Tools/Math.uuid.htm
-            var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
-            var uuid = new Array(36);
-            var rnd = 0;
-            var r;
-            return function () {
-                for (var i = 0; i < 36; i++) {
-                    if (i === 8 || i === 13 || i === 18 || i === 23) {
-                        uuid[i] = '-';
-                    } else if (i === 14) {
-                        uuid[i] = '4';
-                    } else {
-                        if (rnd <= 0x02) {
-                            rnd = 0x2000000 + ( Math.random() * 0x1000000 ) | 0;
-                        }
-                        r = rnd & 0xf;
-                        rnd = rnd >> 4;
-                        uuid[i] = chars[( i === 19 ) ? ( r & 0x3 ) | 0x8 : r];
-                    }
-                }
-                return uuid.join('');
+        //createUUID: function () {
+        //    // http://www.broofa.com/Tools/Math.uuid.htm
+        //    var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
+        //    var uuid = new Array(36);
+        //    var rnd = 0;
+        //    var r;
+        //    return function () {
+        //        for (var i = 0; i < 36; i++) {
+        //            if (i === 8 || i === 13 || i === 18 || i === 23) {
+        //                uuid[i] = '-';
+        //            } else if (i === 14) {
+        //                uuid[i] = '4';
+        //            } else {
+        //                if (rnd <= 0x02) {
+        //                    rnd = 0x2000000 + ( Math.random() * 0x1000000 ) | 0;
+        //                }
+        //                r = rnd & 0xf;
+        //                rnd = rnd >> 4;
+        //                uuid[i] = chars[( i === 19 ) ? ( r & 0x3 ) | 0x8 : r];
+        //            }
+        //        }
+        //        return uuid.join('');
+        //    };
+        //}(),
+        //
+        createUUID: (function() {
+            var self = {};
+            var lut = []; for (var i=0; i<256; i++) { lut[i] = (i<16?'0':'')+(i).toString(16); }
+            return function() {
+                var d0 = Math.random()*0xffffffff|0;
+                var d1 = Math.random()*0xffffffff|0;
+                var d2 = Math.random()*0xffffffff|0;
+                var d3 = Math.random()*0xffffffff|0;
+                return lut[d0&0xff]+lut[d0>>8&0xff]+lut[d0>>16&0xff]+lut[d0>>24&0xff]+'-'+
+                    lut[d1&0xff]+lut[d1>>8&0xff]+'-'+lut[d1>>16&0x0f|0x40]+lut[d1>>24&0xff]+'-'+
+                    lut[d2&0x3f|0x80]+lut[d2>>8&0xff]+'-'+lut[d2>>16&0xff]+lut[d2>>24&0xff]+
+                    lut[d3&0xff]+lut[d3>>8&0xff]+lut[d3>>16&0xff]+lut[d3>>24&0xff];
             };
-        }(),
+        })(),
 
         /**
          * Clamps a value to the given range.
@@ -680,6 +695,13 @@
             return Math.sqrt(math.sqLenVec2(v));
         },
 
+        distVec2: (function() {
+            var vec = new Float32Array(2);
+            return function (v, w) {
+                return math.lenVec2(math.subVec2(v, w, vec));
+            };
+        })(),
+
         /**
          * @method rcpVec3
          * @static
@@ -724,6 +746,19 @@
         normalizeVec2: function (v, dest) {
             var f = 1.0 / math.lenVec2(v);
             return math.mulVec2Scalar(v, f, dest);
+        },
+
+        /**
+         * Gets the angle between two vectors
+         * @method angleVec3
+         * @param v
+         * @param w
+         * @returns {number}
+         */
+        angleVec3: function (v, w) {
+            var theta = xeogl.math.dotVec3(v, w) / ( Math.sqrt(xeogl.math.sqLenVec3(v) * xeogl.math.sqLenVec3(w)) );
+            theta = theta < -1  ? -1  : (theta > 1 ? 1 : theta);  // Clamp to handle numerical problems
+            return Math.acos(theta);
         },
 
         /**

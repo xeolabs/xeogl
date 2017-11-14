@@ -80,6 +80,7 @@
                                 <li><a href="../classes/GLTFObject.html">GLTFObject</a></li>
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
+                                <li><a href="../classes/InputControl.html">InputControl</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
@@ -128,6 +129,7 @@
                                 <li><a href="../classes/Transform.html">Transform</a></li>
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
+                                <li><a href="../classes/ViewCube.html">ViewCube</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
                                 <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
@@ -319,30 +321,45 @@
          * @static
          * @return string The new UUID
          */
-        createUUID: function () {
-            // http://www.broofa.com/Tools/Math.uuid.htm
-            var chars = &#x27;0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz&#x27;.split(&#x27;&#x27;);
-            var uuid = new Array(36);
-            var rnd = 0;
-            var r;
-            return function () {
-                for (var i = 0; i &lt; 36; i++) {
-                    if (i === 8 || i === 13 || i === 18 || i === 23) {
-                        uuid[i] = &#x27;-&#x27;;
-                    } else if (i === 14) {
-                        uuid[i] = &#x27;4&#x27;;
-                    } else {
-                        if (rnd &lt;= 0x02) {
-                            rnd = 0x2000000 + ( Math.random() * 0x1000000 ) | 0;
-                        }
-                        r = rnd &amp; 0xf;
-                        rnd = rnd &gt;&gt; 4;
-                        uuid[i] = chars[( i === 19 ) ? ( r &amp; 0x3 ) | 0x8 : r];
-                    }
-                }
-                return uuid.join(&#x27;&#x27;);
+        //createUUID: function () {
+        //    // http://www.broofa.com/Tools/Math.uuid.htm
+        //    var chars = &#x27;0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz&#x27;.split(&#x27;&#x27;);
+        //    var uuid = new Array(36);
+        //    var rnd = 0;
+        //    var r;
+        //    return function () {
+        //        for (var i = 0; i &lt; 36; i++) {
+        //            if (i === 8 || i === 13 || i === 18 || i === 23) {
+        //                uuid[i] = &#x27;-&#x27;;
+        //            } else if (i === 14) {
+        //                uuid[i] = &#x27;4&#x27;;
+        //            } else {
+        //                if (rnd &lt;= 0x02) {
+        //                    rnd = 0x2000000 + ( Math.random() * 0x1000000 ) | 0;
+        //                }
+        //                r = rnd &amp; 0xf;
+        //                rnd = rnd &gt;&gt; 4;
+        //                uuid[i] = chars[( i === 19 ) ? ( r &amp; 0x3 ) | 0x8 : r];
+        //            }
+        //        }
+        //        return uuid.join(&#x27;&#x27;);
+        //    };
+        //}(),
+        //
+        createUUID: (function() {
+            var self = {};
+            var lut = []; for (var i=0; i&lt;256; i++) { lut[i] = (i&lt;16?&#x27;0&#x27;:&#x27;&#x27;)+(i).toString(16); }
+            return function() {
+                var d0 = Math.random()*0xffffffff|0;
+                var d1 = Math.random()*0xffffffff|0;
+                var d2 = Math.random()*0xffffffff|0;
+                var d3 = Math.random()*0xffffffff|0;
+                return lut[d0&amp;0xff]+lut[d0&gt;&gt;8&amp;0xff]+lut[d0&gt;&gt;16&amp;0xff]+lut[d0&gt;&gt;24&amp;0xff]+&#x27;-&#x27;+
+                    lut[d1&amp;0xff]+lut[d1&gt;&gt;8&amp;0xff]+&#x27;-&#x27;+lut[d1&gt;&gt;16&amp;0x0f|0x40]+lut[d1&gt;&gt;24&amp;0xff]+&#x27;-&#x27;+
+                    lut[d2&amp;0x3f|0x80]+lut[d2&gt;&gt;8&amp;0xff]+&#x27;-&#x27;+lut[d2&gt;&gt;16&amp;0xff]+lut[d2&gt;&gt;24&amp;0xff]+
+                    lut[d3&amp;0xff]+lut[d3&gt;&gt;8&amp;0xff]+lut[d3&gt;&gt;16&amp;0xff]+lut[d3&gt;&gt;24&amp;0xff];
             };
-        }(),
+        })(),
 
         /**
          * Clamps a value to the given range.
@@ -885,6 +902,13 @@
             return Math.sqrt(math.sqLenVec2(v));
         },
 
+        distVec2: (function() {
+            var vec = new Float32Array(2);
+            return function (v, w) {
+                return math.lenVec2(math.subVec2(v, w, vec));
+            };
+        })(),
+
         /**
          * @method rcpVec3
          * @static
@@ -929,6 +953,19 @@
         normalizeVec2: function (v, dest) {
             var f = 1.0 / math.lenVec2(v);
             return math.mulVec2Scalar(v, f, dest);
+        },
+
+        /**
+         * Gets the angle between two vectors
+         * @method angleVec3
+         * @param v
+         * @param w
+         * @returns {number}
+         */
+        angleVec3: function (v, w) {
+            var theta = xeogl.math.dotVec3(v, w) / ( Math.sqrt(xeogl.math.sqLenVec3(v) * xeogl.math.sqLenVec3(w)) );
+            theta = theta &lt; -1  ? -1  : (theta &gt; 1 ? 1 : theta);  // Clamp to handle numerical problems
+            return Math.acos(theta);
         },
 
         /**

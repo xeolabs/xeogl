@@ -77,7 +77,7 @@
 
  entity.scene.camera.view.eye = [-200, 50, -200];   // Set initial Camera position
 
- new xeogl.CameraControl();                         // Allow camera interaction
+ new xeogl.InputControl();                         // Allow camera interaction
  ````
  @class GeometryBuilder
  @module xeogl

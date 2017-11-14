@@ -197,7 +197,7 @@
             }
 
             this._cameraFlight = new xeogl.CameraFlightAnimation(this, {duration: 1});
-            this._cameraControl = new xeogl.CameraControl(this);
+            this._inputControl = new xeogl.CameraControl(this);
 
             //-------------------------------------------------------------------
             // Authoring mode
@@ -216,7 +216,7 @@
                     switch (keyCode) {
                         case this.KEY_SHIFT:
                             shiftDown = true;
-                            self._cameraControl.mousePickEntity.active = false;
+                            self._inputControl.mousePickEntity.active = false;
                             break;
                         case this.KEY_ESCAPE:
                             self._clear();
@@ -231,7 +231,7 @@
                     switch (keyCode) {
                         case this.KEY_SHIFT:
                             shiftDown = false;
-                            self._cameraControl.mousePickEntity.active = true;
+                            self._inputControl.mousePickEntity.active = true;
                             break;
                     }
                 });

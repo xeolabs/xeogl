@@ -146,6 +146,15 @@
         _init: function (cfg) {
             this._super(cfg);
             this._src = null;
+
+            /**
+             * The {{#crossLink "GLTFObjects"}}Entity{{/crossLink}} instances within this GLTFModel.
+             *
+             * @property entities
+             * @type {{String:Entity}}
+             */
+            this.objects = {};
+
             this.src = cfg.src;
         },
 
@@ -364,7 +373,8 @@
                 basePath: options.basePath,
                 json: json,
                 scene: model.scene,
-                model: model
+                model: model,
+                numObjects: 0
             };
 
             loadBuffers(ctx, function () {
@@ -957,6 +967,14 @@
 
             if (nodeInfo.mesh !== undefined) {
 
+                var objectId = ctx.model.id + "#" + (nodeInfo.name || ctx.numObjects);
+
+                var object = {};
+
+                model.objects[objectId] = object;
+
+                ctx.numObjects++;
+
                 var meshInfo = json.meshes[nodeInfo.mesh];
 
                 if (meshInfo) {
@@ -971,7 +989,7 @@
 
                         mesh = meshes[i];
 
-                        entityId = makeEntityId(ctx, nodeInfo, nodeIdx);
+                        entityId = objectId + "." + i;
 
                         var meta = nodeInfo.extra || {};
                         meta.name = nodeInfo.name;
@@ -989,9 +1007,7 @@
                             loading: true // TODO: track loading state explicitely
                         });
 
-                        entity.on("loaded", function () {
-                            //alert("done");
-                        });
+                        object[entityId] = entity;
 
                         model.add(entity);
                     }
@@ -1012,23 +1028,6 @@
                     loadNode(ctx, nodeIdx, childNodeInfo, transform);
                 }
             }
-        }
-
-        function makeEntityId(ctx, nodeInfo, nodeIdx) {
-            var id = makeID(ctx, nodeInfo.name || nodeIdx);
-            var id2;
-            var i = 0;
-            while (true) {
-                id2 = id + "." + i;
-                if (!ctx.model.entities[id2]) {
-                    return id2;
-                }
-                i++;
-            }
-        }
-
-        function makeID(ctx, id) {
-            return ctx.model.id + "#" + id;
         }
 
         function error(ctx, msg) {

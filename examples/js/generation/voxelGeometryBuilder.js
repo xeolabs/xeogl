@@ -77,7 +77,7 @@
  view.up = [0, 1, 0];
 
  // Allow camera interaction
- new xeogl.CameraControl();
+ new xeogl.InputControl();
  ````
 
  @module xeogl

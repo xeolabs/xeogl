@@ -33,7 +33,7 @@
         })
     });
 
-    new xeogl.CameraControl();
+    new xeogl.InputControl();
 
     var view = gearbox.scene.camera.view;
 
@@ -41,7 +41,7 @@
     view.look = [159.20, 17.02, 3.21];
     view.up = [-0.15, 0.97, 0.13];
 
-    new xeogl.CameraControl();
+    new xeogl.InputControl();
 
     gearbox.scene.on("tick", function () {
         view.rotateEyeY(-0.1);
