@@ -99,7 +99,7 @@
 
     // Allow camera interaction
 
-    var cameraControl = new xeogl.CameraControl();
+    var inputControl = new xeogl.InputControl();
 
 
     // Whenever mouse moves, attempt to pick a triangle on a Entity,
@@ -114,12 +114,12 @@
         lastCoords = coords;
     });
 
-    cameraControl.cameraFlight.on("started", function () {
+    inputControl.cameraFlight.on("started", function () {
         showUVPos(null);
         xeogl.debug.hide("cone");
     });
 
-    cameraControl.cameraFlight.on("stopped", function () {
+    inputControl.cameraFlight.on("stopped", function () {
         if (lastCoords) {
             pick(lastCoords);
         }

@@ -154,9 +154,6 @@
             diffuse: [0.5, 0.5, 0.5]
         });
 
-        var billboard = new xeogl.Billboard(scene, { // Keeps axis labels oriented towards eye
-            spherical: true
-        });
 
         // ----------------- Entities ------------------------------
 
@@ -259,7 +256,7 @@
                 transform: new xeogl.Translate(scene, {
                     xyz: [-7, 0, 0]
                 }),
-                billboard: billboard
+                billboard: "spherical"
             }),
 
             // Y-axis arrow, shaft and label
@@ -295,7 +292,7 @@
                 transform: new xeogl.Translate(scene, {
                     xyz: [0, 7, 0]
                 }),
-                billboard: billboard
+                billboard: "spherical"
             }),
 
             // Z-axis arrow, shaft and label
@@ -339,7 +336,7 @@
                 transform: new xeogl.Translate(scene, {
                     xyz: [0, 0, 7]
                 }),
-                billboard: billboard
+                billboard: "spherical"
             })
         ];
 

@@ -407,7 +407,7 @@
             offset: {
 
                 set: function (value) {
-                    this._offset = value || 0.2;
+                    this._offset = value !== undefined ? value : 0.2;
                     this._setWorldPosDirty();
 
                     /**

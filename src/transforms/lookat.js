@@ -382,6 +382,21 @@
                 get: function () {
                     return this._up;
                 }
+            },
+
+            /**
+             * Distance from "look" to "eye".
+             * @property eyeLookDist
+             * @type Number
+             */
+            eyeLookDist: {
+
+                get: (function () {
+                    var vec = new Float32Array(3);
+                    return function () {
+                        return xeogl.math.lenVec3(xeogl.math.subVec3(this._look, this._eye, vec));
+                    };
+                })()
             }
         },
 

@@ -76,7 +76,7 @@
 
  // Allow user control of the Camera with mouse and keyboard
  // (zooming will be overridden by the auto-fitting configured on our CameraFollowAnimation)
- new xeogl.CameraControl();
+ new xeogl.InputControl();
  ````
 
  @class CameraFollowAnimation

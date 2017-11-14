@@ -80,6 +80,7 @@
                                 <li><a href="../classes/GLTFObject.html">GLTFObject</a></li>
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
+                                <li><a href="../classes/InputControl.html">InputControl</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
@@ -128,6 +129,7 @@
                                 <li><a href="../classes/Transform.html">Transform</a></li>
                                 <li><a href="../classes/Translate.html">Translate</a></li>
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
+                                <li><a href="../classes/ViewCube.html">ViewCube</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
                                 <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
@@ -359,9 +361,6 @@
             diffuse: [0.5, 0.5, 0.5]
         });
 
-        var billboard = new xeogl.Billboard(scene, { // Keeps axis labels oriented towards eye
-            spherical: true
-        });
 
         // ----------------- Entities ------------------------------
 
@@ -464,7 +463,7 @@
                 transform: new xeogl.Translate(scene, {
                     xyz: [-7, 0, 0]
                 }),
-                billboard: billboard
+                billboard: &quot;spherical&quot;
             }),
 
             // Y-axis arrow, shaft and label
@@ -500,7 +499,7 @@
                 transform: new xeogl.Translate(scene, {
                     xyz: [0, 7, 0]
                 }),
-                billboard: billboard
+                billboard: &quot;spherical&quot;
             }),
 
             // Z-axis arrow, shaft and label
@@ -544,7 +543,7 @@
                 transform: new xeogl.Translate(scene, {
                     xyz: [0, 0, 7]
                 }),
-                billboard: billboard
+                billboard: &quot;spherical&quot;
             })
         ];
 

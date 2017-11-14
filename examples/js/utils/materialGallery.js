@@ -157,7 +157,7 @@ function materialGallery(menuId, cfg) {
     // Camera control and animation
     //-----------------------------------------------------------------------------------------------------
 
-    new xeogl.CameraControl();
+    new xeogl.InputControl();
 
     var cameraFlight = new xeogl.CameraFlightAnimation();
 

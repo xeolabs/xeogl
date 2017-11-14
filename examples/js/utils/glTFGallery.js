@@ -80,7 +80,7 @@ function glTFGallery(models) {
         }
     });
 
-    new xeogl.CameraControl();
+    new xeogl.InputControl();
 
     //---------------------------------------------------
     // glTF model

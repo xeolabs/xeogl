@@ -38,7 +38,7 @@ TODO
  });
 
  // Allow user camera control
- new xeogl.CameraControl();
+ new xeogl.InputControl();
  ````
 
  ````javascript
