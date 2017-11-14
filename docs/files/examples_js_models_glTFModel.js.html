@@ -353,15 +353,6 @@
         _init: function (cfg) {
             this._super(cfg);
             this._src = null;
-
-            /**
-             * The {{#crossLink &quot;GLTFObjects&quot;}}Entity{{/crossLink}} instances within this GLTFModel.
-             *
-             * @property entities
-             * @type {{String:Entity}}
-             */
-            this.objects = {};
-
             this.src = cfg.src;
         },
 
@@ -1177,8 +1168,6 @@
                 var objectId = ctx.model.id + &quot;#&quot; + (nodeInfo.name || ctx.numObjects);
 
                 var object = {};
-
-                model.objects[objectId] = object;
 
                 ctx.numObjects++;
 
