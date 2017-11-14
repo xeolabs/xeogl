@@ -772,12 +772,12 @@
                                         self.fire("doublePickedSurface", hit);
                                     }
                                     if (self._doublePickFlyTo) {
-                                        self._entityPicked(hit);
+                                        self._flyTo(hit);
                                     }
                                 } else {
                                     self.fire("doublePickedNothing");
                                     if (self._doublePickFlyTo) {
-
+                                        self._flyTo();
                                     }
                                 }
                                 clicks = 0;
@@ -864,12 +864,12 @@
                                             self.fire("doublePickedSurface", hit);
                                         }
                                         if (self._doublePickFlyTo) {
-                                            self._entityPicked(hit);
+                                            self._flyTo(hit);
                                         }
                                     } else {
                                         self.fire("doublePickedNothing");
                                         if (self._doublePickFlyTo) {
-
+                                            self._flyTo();
                                         }
                                     }
 
@@ -963,15 +963,15 @@
             })();
         },
 
-        _entityPicked: function (hit) {
+        _flyTo: function (hit) {
 
             var pos;
 
-            if (hit.worldPos) {
+            if (hit && hit.worldPos) {
                 pos = hit.worldPos
             }
 
-            var worldBoundary = hit.entity.worldBoundary;
+            var worldBoundary = hit ? hit.entity.worldBoundary : this.scene.worldBoundary;
             var aabb = worldBoundary.aabb;
 
             this._boundaryHelper.geometry.aabb = aabb;
@@ -1005,7 +1005,7 @@
         },
 
         _hideBoundary: function () {
-        //    this._boundaryHelper.visible = false;
+            //    this._boundaryHelper.visible = false;
         }
     });
 

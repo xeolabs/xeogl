@@ -2835,7 +2835,7 @@
             "namespace": "",
             "file": "src/controls/inputControl.js",
             "line": 1,
-            "description": "A **InputControl** pans, rotates and zooms a {{#crossLink \"Camera\"}}{{/crossLink}} with the mouse and keyboard,\nas well as switches it between preset left, right, anterior, posterior, superior and inferior views.\n\n## Overview\n\n* InputControl requires that its pans both {{#crossLink \"Camera\"}}Camera{{/crossLink}} have a {{#crossLink \"Lookat\"}}{{/crossLink}} for its {{#crossLink \"Camera/view:property\"}}viewing transform{{/crossLink}}.\n* The table below shows what InputControl does for various user input.\n<br>\n\n| Input | Result |\n|:--------:|:----:|\n| Mouse drag, arrow keys | orbits {{#crossLink \"Lookat/eye:property\"}}camera.view.eye{{/crossLink}} around {{#crossLink \"Lookat/look:property\"}}camera.view.look{{/crossLink}}|\n| Z,X keys | pans both {{#crossLink \"Lookat/eye:property\"}}camera.view.eye{{/crossLink}} and {{#crossLink \"Lookat/look:property\"}}camera.view.look{{/crossLink}} forwards and backwards  along the {{#crossLink \"Lookat/eye:property\"}}{{/crossLink}}->{{#crossLink \"Lookat/look:property\"}}look{{/crossLink}} vector. |\n| A,D keys | pans both {{#crossLink \"Lookat/eye:property\"}}camera.view.eye{{/crossLink}} and {{#crossLink \"Lookat/look:property\"}}camera.view.look{{/crossLink}} sideways, along the vector perpendicular to {{#crossLink \"Lookat/eye:property\"}}{{/crossLink}}->{{#crossLink \"Lookat/look:property\"}}look{{/crossLink}} and {{#crossLink \"Lookat/eye:property\"}}{{/crossLink}}->{{#crossLink \"Lookat/up:property\"}}up{{/crossLink}}. |\n| W,S keys | pans both {{#crossLink \"Lookat/eye:property\"}}camera.view.eye{{/crossLink}} and {{#crossLink \"Lookat/look:property\"}}camera.view.look{{/crossLink}} up and down, along the {{#crossLink \"Lookat/up:property\"}}up{{/crossLink}} vector. |\n| 1,2,3,4,5,6 keys | Align {{#crossLink \"Lookat\"}}camera.view{{/crossLink}} to look at center of entire {{#crossLink \"Scene\"}}{{/crossLink}} from vantage points on the -X, +X, -Z, +Z, -Y and +Y World-space axis. |\n| Click on {{#crossLink \"Entity\"}}{{/crossLink}} | Flies {{#crossLink \"Lookat\"}}camera.view{{/crossLink}} to look at {{#crossLink \"Entity\"}}{{/crossLink}}, stops when filling the canvas. |\n| Mouse wheel or '+' and '-' keys | moves {{#crossLink \"Lookat/eye:property\"}}camera.view.eye{{/crossLink}} towards and away from {{#crossLink \"Lookat/look:property\"}}camera.view.look{{/crossLink}}. |\n\n## Examples\n\n* [InputControl example](../../examples/#interaction_camera_CameraControl)\n\n## Usage\n\n````Javascript\nvar camera = new xeogl.Camera({\n\n    view: new xeogl.Lookat({\n        eye: [0, 0, 10],\n        look: [0, 0, 0],\n        up: [0, 1, 0]\n    }),\n\n    project: new xeogl.Perspective({\n        fov: 60,\n        near: 0.1,\n        far: 1000\n    })\n});\n\nvar entity = new xeogl.Entity({\n    camera: camera,\n    geometry: new xeogl.BoxGeometry()\n});\n\nvar InputControl = new xeogl.InputControl({\n    camera: camera,\n\n    // \"First person\" mode rotates look about eye.\n    // By default however, we orbit eye about look.\n    firstPerson: false\n});\n\n````",
+            "description": "TODO",
             "submodule": "controls",
             "is_constructor": 1,
             "params": [
@@ -2877,6 +2877,13 @@
                     "type": "Boolean",
                     "optional": true,
                     "optdefault": "false"
+                },
+                {
+                    "name": "doublePickFlyTo",
+                    "description": "Whether to fly the camera to each {{#crossLink \"Entity\"}}{{/crossLink}} that's double-clicked.",
+                    "type": "Boolean",
+                    "optional": true,
+                    "optdefault": "true"
                 }
             ],
             "extends": "Component"
@@ -6217,7 +6224,7 @@
             "namespace": "",
             "file": "examples/js/animation/cameraFollowAnimation.js",
             "line": 1,
-            "description": "A **CameraFollowAnimation** makes a {{#crossLink \"Camera\"}}{{/crossLink}} dynamically follow a\nWorld-space {{#crossLink \"Boundary3D\"}}{{/crossLink}} in order to keep it entirely in view.\n\n<a href=\"../../examples/#animation_camera_follow_entity\"><img src=\"http://i.giphy.com/l0HlHcuzAjhMQ8YSY.gif\"></img></a>\n\n## Overview\n\n* Attaches to a {{#crossLink \"Camera\"}}{{/crossLink}}, which by default is the {{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Camera\"}}{{/crossLink}} when none is specified.\n* Requires that the {{#crossLink \"Camera\"}}{{/crossLink}} have a {{#crossLink \"Lookat\"}}{{/crossLink}} for its {{#crossLink \"Camera/view:property\"}}view{{/crossLink}} transform.\n* Also attaches to a {{#crossLink \"Boundary3D\"}}{{/crossLink}}, which by default will be the {{#crossLink \"Scene\"}}Scene's{{/crossLink}} World-space boundary, {{#crossLink \"Scene/worldBoundary:property\"}}{{/crossLink}}.\n* Can be configured to either fly or jump to each updated position of the target {{#crossLink \"Boundary3D\"}}{{/crossLink}}.\n* Can be configured to automatically adjust the distance between the {{#crossLink \"Camera\"}}{{/crossLink}}'s {{#crossLink \"Lookat\"}}{{/crossLink}}'s {{#crossLink \"Lookat/eye:property\"}}{{/crossLink}} and {{#crossLink \"Lookat/look:property\"}}{{/crossLink}} to keep the target {{#crossLink \"Boundary3D\"}}{{/crossLink}} fitted to the view volume.\n\n<img src=\"../../../assets/images/CameraFollowAnimation.png\"></img>\n\n## Examples\n\n* [Following an Entity with a Camera](../../examples/#animation_camera_follow_entity)\n* [Following an Entity with a Camera, keeping Entity fitted to view volume](../../examples/#animation_camera_follow_entity_fitToView)\n\n## Usage\n\nIn the example below, we'll use a CameraFollowAnimation to automatically follow an {{#crossLink \"Entity\"}}{{/crossLink}}'s World-space\n{{#crossLink \"Boundary3D\"}}{{/crossLink}} with the default {{#crossLink \"Camera\"}}{{/crossLink}}. Our CameraFollowAnimation's\n{{#crossLink \"CameraFollowAnimation/fit:property\"}}{{/crossLink}} property is set ````true````, which causes it to automatically\nkeep the {{#crossLink \"Boundary3D\"}}{{/crossLink}} fitted to the view volume. Although we can orbit the\n{{#crossLink \"Entity\"}}{{/crossLink}} using the {{#crossLink \"CameraControl\"}}{{/crossLink}}, we you can't control the\ndistance of the {{#crossLink \"Camera\"}}{{/crossLink}} from the {{#crossLink \"Entity\"}}{{/crossLink}} because our CameraFollowAnimation\nautomatically controls that distance in order to do the automatic fitting.\n\n````javascript\n// Create a red torus Entity with a Translate modelling transform\n// that allows it to move around in World-space\nvar entity = new xeogl.Entity({\n    geometry: new xeogl.TorusGeometry(),\n    material: new xeogl.PhongMaterial({\n         diffuse: [1, 0.3, 0.3]\n    }),\n    transform: new xeogl.Translate({\n        xyz: [0,0,0]\n    })\n});\n\n// Create a CameraFollowAnimation that makes the (Scene's default) Camera's Lookat follow the Entity's World-space\n// Boundary3D, while keeping the Boundary3D fitted to the view volume. The CameraFollowAnimation\n// will jump to each updated Boundary3D extents, and since an update will occur on every frame,\n// the effect will be as if we're smoothly flying after the Boundary3D. If the updates occur sporadically,\n// then we would probably instead configure it to fly to each update, to keep the animation smooth.\nvar cameraFollowAnimation = new xeogl.CameraFollowAnimation({\n    worldBoundary: entity.worldBoundary,\n    fit: true,   // Fit target to view volume\n    fitFOV: 35,  // Target will occupy 35 degrees of the field-of-view\n    fly: false // Jump to each updated boundary extents\n});\n\n// Create a SplineCurve along which we'll animate our Entity\nvar curve = new xeogl.SplineCurve({\n    points: [\n        [-10, 0, 0],\n        [-5, 15, 0],\n        [20, 15, 0],\n        [10, 0, 0]\n    ]\n});\n\n// Bind the Entity Translate to a point on the SplineCurve\ncurve.on(\"point\", function(point) {\n    entity.transform.xyz = point;\n});\n\n// Animate the point along the SplineCurve using the Scene clock\ncurve.scene.on(\"tick\", function(e) {\n    curve.t = (e.time - e.startTime) * 0.01;\n});\n\n// Allow user control of the Camera with mouse and keyboard\n// (zooming will be overridden by the auto-fitting configured on our CameraFollowAnimation)\nnew xeogl.CameraControl();\n````",
+            "description": "A **CameraFollowAnimation** makes a {{#crossLink \"Camera\"}}{{/crossLink}} dynamically follow a\nWorld-space {{#crossLink \"Boundary3D\"}}{{/crossLink}} in order to keep it entirely in view.\n\n<a href=\"../../examples/#animation_camera_follow_entity\"><img src=\"http://i.giphy.com/l0HlHcuzAjhMQ8YSY.gif\"></img></a>\n\n## Overview\n\n* Attaches to a {{#crossLink \"Camera\"}}{{/crossLink}}, which by default is the {{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Camera\"}}{{/crossLink}} when none is specified.\n* Requires that the {{#crossLink \"Camera\"}}{{/crossLink}} have a {{#crossLink \"Lookat\"}}{{/crossLink}} for its {{#crossLink \"Camera/view:property\"}}view{{/crossLink}} transform.\n* Also attaches to a {{#crossLink \"Boundary3D\"}}{{/crossLink}}, which by default will be the {{#crossLink \"Scene\"}}Scene's{{/crossLink}} World-space boundary, {{#crossLink \"Scene/worldBoundary:property\"}}{{/crossLink}}.\n* Can be configured to either fly or jump to each updated position of the target {{#crossLink \"Boundary3D\"}}{{/crossLink}}.\n* Can be configured to automatically adjust the distance between the {{#crossLink \"Camera\"}}{{/crossLink}}'s {{#crossLink \"Lookat\"}}{{/crossLink}}'s {{#crossLink \"Lookat/eye:property\"}}{{/crossLink}} and {{#crossLink \"Lookat/look:property\"}}{{/crossLink}} to keep the target {{#crossLink \"Boundary3D\"}}{{/crossLink}} fitted to the view volume.\n\n<img src=\"../../../assets/images/CameraFollowAnimation.png\"></img>\n\n## Examples\n\n* [Following an Entity with a Camera](../../examples/#animation_camera_follow_entity)\n* [Following an Entity with a Camera, keeping Entity fitted to view volume](../../examples/#animation_camera_follow_entity_fitToView)\n\n## Usage\n\nIn the example below, we'll use a CameraFollowAnimation to automatically follow an {{#crossLink \"Entity\"}}{{/crossLink}}'s World-space\n{{#crossLink \"Boundary3D\"}}{{/crossLink}} with the default {{#crossLink \"Camera\"}}{{/crossLink}}. Our CameraFollowAnimation's\n{{#crossLink \"CameraFollowAnimation/fit:property\"}}{{/crossLink}} property is set ````true````, which causes it to automatically\nkeep the {{#crossLink \"Boundary3D\"}}{{/crossLink}} fitted to the view volume. Although we can orbit the\n{{#crossLink \"Entity\"}}{{/crossLink}} using the {{#crossLink \"CameraControl\"}}{{/crossLink}}, we you can't control the\ndistance of the {{#crossLink \"Camera\"}}{{/crossLink}} from the {{#crossLink \"Entity\"}}{{/crossLink}} because our CameraFollowAnimation\nautomatically controls that distance in order to do the automatic fitting.\n\n````javascript\n// Create a red torus Entity with a Translate modelling transform\n// that allows it to move around in World-space\nvar entity = new xeogl.Entity({\n    geometry: new xeogl.TorusGeometry(),\n    material: new xeogl.PhongMaterial({\n         diffuse: [1, 0.3, 0.3]\n    }),\n    transform: new xeogl.Translate({\n        xyz: [0,0,0]\n    })\n});\n\n// Create a CameraFollowAnimation that makes the (Scene's default) Camera's Lookat follow the Entity's World-space\n// Boundary3D, while keeping the Boundary3D fitted to the view volume. The CameraFollowAnimation\n// will jump to each updated Boundary3D extents, and since an update will occur on every frame,\n// the effect will be as if we're smoothly flying after the Boundary3D. If the updates occur sporadically,\n// then we would probably instead configure it to fly to each update, to keep the animation smooth.\nvar cameraFollowAnimation = new xeogl.CameraFollowAnimation({\n    worldBoundary: entity.worldBoundary,\n    fit: true,   // Fit target to view volume\n    fitFOV: 35,  // Target will occupy 35 degrees of the field-of-view\n    fly: false // Jump to each updated boundary extents\n});\n\n// Create a SplineCurve along which we'll animate our Entity\nvar curve = new xeogl.SplineCurve({\n    points: [\n        [-10, 0, 0],\n        [-5, 15, 0],\n        [20, 15, 0],\n        [10, 0, 0]\n    ]\n});\n\n// Bind the Entity Translate to a point on the SplineCurve\ncurve.on(\"point\", function(point) {\n    entity.transform.xyz = point;\n});\n\n// Animate the point along the SplineCurve using the Scene clock\ncurve.scene.on(\"tick\", function(e) {\n    curve.t = (e.time - e.startTime) * 0.01;\n});\n\n// Allow user control of the Camera with mouse and keyboard\n// (zooming will be overridden by the auto-fitting configured on our CameraFollowAnimation)\nnew xeogl.InputControl();\n````",
             "submodule": "animation",
             "is_constructor": 1,
             "params": [
@@ -7278,7 +7285,7 @@
             "namespace": "",
             "file": "examples/js/generation/geometryBuilder.js",
             "line": 1,
-            "description": "A **GeometryBuilder** is a builder that you can use to procedurally generate {{#crossLink \"Geometry\"}}Geometries{{/crossLink}}.\n\n<a href=\"../../examples/#geometry_generation_wavyBlocks\"><img src=\"http://i.giphy.com/26gJAMkOxAW5fWlb2.gif\"></img></a>\n\n## Overview\n\n* Implements the [Builder pattern](https://en.wikipedia.org/wiki/Builder_pattern).\n* Helps us improve WebGL performance by combining many shapes into the same {{#crossLink \"Geometry\"}}Geometries{{/crossLink}},\nthus reducing the number of draw calls.\n* A plain JavaScript class, ie. not a xeogl {{#crossLink \"Component\"}}{{/crossLink}} subclass.\n\n## Examples\n\n* [Generating a 3D sine wave from boxes](../../examples/#geometry_generation_wavyBlocks)\n\n## Usage\n\n* Works by accumulating additions to an internal buffer of geometry vertex and index arrays.\n* Call {{#crossLink \"GeometryBuilder/setShape:method\"}}setShape(){{/crossLink}} to set its current mesh, and\n{{#crossLink \"GeometryBuilder/setMatrix:method\"}}setMatrix(){{/crossLink}} to set its current modelling transform.\n* Then, whenever you call {{#crossLink \"GeometryBuilder/addShape:method\"}}addShape(){{/crossLink}}, it appends the shape, transformed\nby the matrix, to its internal buffer.\n* Finally, call {{#crossLink \"GeometryBuilder/build:method\"}}build(){{/crossLink}} to dump its buffer into a target {{#crossLink \"Geometry\"}}{{/crossLink}}.\n* Retains its buffer so that you can call {{#crossLink \"GeometryBuilder/build:method\"}}build(){{/crossLink}} again, to dump its\n buffer into other {{#crossLink \"Geometry\"}}Geometries{{/crossLink}} as needed.\n* Call {{#crossLink \"GeometryBuilder/reset:method\"}}reset(){{/crossLink}} to empty its buffer.\n\nIn the example below we'll use a GeometryBuilder to create something like the screen capture shown above.\n\n````javascript\n// Intatiate a GeometryBuilder; note that it's a\n// plain JavaScript object, not a xeogl Component subtype\nvar geometryBuilder = new xeogl.GeometryBuilder();\n\n// Set the current shape we'll be adding to our GeometryBuilder;\n// this can be a Geometry, or just an object containing vertex and indices arrays.\ngeometryBuilder.setShape(new xeogl.BoxGeometry());\n\n// Now add that shape many times, each time setting a different modelling matrix\n// on the GeometryBuilder. As we do this, we are accumulating geometry in a buffer\n// within the GeometryBuilder.\n\nvar matrix = xeogl.math.mat4();\nvar height = 3;\nvar height2 = height * 2;\nvar x;\nvar y;\nvar z;\nvar size = 200;\n\nfor (x = -size; x <= size; x += 2) {\n    for (z = -size; z <= size; z += 2) {\n\n       y = ((Math.sin(x * 0.05) * height + Math.sin(z * 0.05) * height)) + height2;\n\n       xeogl.math.identityMat4(matrix);            // Fresh matrix\n       xeogl.math.scaleMat4c(.90, y, .90, matrix); // Post-concatenate scaling\n       xeogl.math.translateMat4c(x, y, z, matrix); // Post-concatenate translation\n\n       geometryBuilder.setMatrix(matrix);          // Set the current modeling transform matrix\n\n       geometryBuilder.addShape();                 // Add current shape to the buffer, transformed by the matrix\n    }\n}\n\nvar geometry = new xeogl.Geometry();               // Dump the buffer into a Geometry component\n\ngeometryBuilder.build(geometry);\n\nvar entity = new xeogl.Entity({                    // Create an Entity with our Geometry attached\n   geometry: geometry,\n   material: new xeogl.PhongMaterial({\n       diffuse: [0.6, 0.6, 0.7]\n   })\n});\n\nentity.scene.camera.view.eye = [-200, 50, -200];   // Set initial Camera position\n\nnew xeogl.CameraControl();                         // Allow camera interaction\n````",
+            "description": "A **GeometryBuilder** is a builder that you can use to procedurally generate {{#crossLink \"Geometry\"}}Geometries{{/crossLink}}.\n\n<a href=\"../../examples/#geometry_generation_wavyBlocks\"><img src=\"http://i.giphy.com/26gJAMkOxAW5fWlb2.gif\"></img></a>\n\n## Overview\n\n* Implements the [Builder pattern](https://en.wikipedia.org/wiki/Builder_pattern).\n* Helps us improve WebGL performance by combining many shapes into the same {{#crossLink \"Geometry\"}}Geometries{{/crossLink}},\nthus reducing the number of draw calls.\n* A plain JavaScript class, ie. not a xeogl {{#crossLink \"Component\"}}{{/crossLink}} subclass.\n\n## Examples\n\n* [Generating a 3D sine wave from boxes](../../examples/#geometry_generation_wavyBlocks)\n\n## Usage\n\n* Works by accumulating additions to an internal buffer of geometry vertex and index arrays.\n* Call {{#crossLink \"GeometryBuilder/setShape:method\"}}setShape(){{/crossLink}} to set its current mesh, and\n{{#crossLink \"GeometryBuilder/setMatrix:method\"}}setMatrix(){{/crossLink}} to set its current modelling transform.\n* Then, whenever you call {{#crossLink \"GeometryBuilder/addShape:method\"}}addShape(){{/crossLink}}, it appends the shape, transformed\nby the matrix, to its internal buffer.\n* Finally, call {{#crossLink \"GeometryBuilder/build:method\"}}build(){{/crossLink}} to dump its buffer into a target {{#crossLink \"Geometry\"}}{{/crossLink}}.\n* Retains its buffer so that you can call {{#crossLink \"GeometryBuilder/build:method\"}}build(){{/crossLink}} again, to dump its\n buffer into other {{#crossLink \"Geometry\"}}Geometries{{/crossLink}} as needed.\n* Call {{#crossLink \"GeometryBuilder/reset:method\"}}reset(){{/crossLink}} to empty its buffer.\n\nIn the example below we'll use a GeometryBuilder to create something like the screen capture shown above.\n\n````javascript\n// Intatiate a GeometryBuilder; note that it's a\n// plain JavaScript object, not a xeogl Component subtype\nvar geometryBuilder = new xeogl.GeometryBuilder();\n\n// Set the current shape we'll be adding to our GeometryBuilder;\n// this can be a Geometry, or just an object containing vertex and indices arrays.\ngeometryBuilder.setShape(new xeogl.BoxGeometry());\n\n// Now add that shape many times, each time setting a different modelling matrix\n// on the GeometryBuilder. As we do this, we are accumulating geometry in a buffer\n// within the GeometryBuilder.\n\nvar matrix = xeogl.math.mat4();\nvar height = 3;\nvar height2 = height * 2;\nvar x;\nvar y;\nvar z;\nvar size = 200;\n\nfor (x = -size; x <= size; x += 2) {\n    for (z = -size; z <= size; z += 2) {\n\n       y = ((Math.sin(x * 0.05) * height + Math.sin(z * 0.05) * height)) + height2;\n\n       xeogl.math.identityMat4(matrix);            // Fresh matrix\n       xeogl.math.scaleMat4c(.90, y, .90, matrix); // Post-concatenate scaling\n       xeogl.math.translateMat4c(x, y, z, matrix); // Post-concatenate translation\n\n       geometryBuilder.setMatrix(matrix);          // Set the current modeling transform matrix\n\n       geometryBuilder.addShape();                 // Add current shape to the buffer, transformed by the matrix\n    }\n}\n\nvar geometry = new xeogl.Geometry();               // Dump the buffer into a Geometry component\n\ngeometryBuilder.build(geometry);\n\nvar entity = new xeogl.Entity({                    // Create an Entity with our Geometry attached\n   geometry: geometry,\n   material: new xeogl.PhongMaterial({\n       diffuse: [0.6, 0.6, 0.7]\n   })\n});\n\nentity.scene.camera.view.eye = [-200, 50, -200];   // Set initial Camera position\n\nnew xeogl.InputControl();                         // Allow camera interaction\n````",
             "submodule": "generation",
             "is_constructor": 1
         },
@@ -7796,7 +7803,7 @@
             "namespace": "",
             "file": "examples/js/marking/pointMarkings.js",
             "line": 1,
-            "description": "A **PointMarkings** is used to draw persistable markings on Entities.\n\n## Examples\n\nTODO\n\n## Usage\n\n````javascript\n// Load a gearbox model to draw marks on\nvar gearbox = new xeogl.GLTFModel({\n        src: \"models/gltf/GearboxAssy/glTF/GearboxAssy.gltf\"\n});\n\n// Set initial camera position\nvar view = gearbox.scene.camera.view;\nview.eye = [184.21, 10.54, -7.03];\nview.look = [159.20, 17.02, 3.21];\nview.up = [-0.15, 0.97, 0.13];\n\n// Create marks wherever we draw on the surface of our gearbox\n\nvar scene = gearbox.scene; // Using default scene for this example\nvar input = scene.input;\nvar pointMarkings = new xeogl.PointMarkings();\n\ninput.on(\"mousemove\", function (coords) {\n\n    var hit = scene.pick({\n        canvasPos: coords,\n        pickSurface: true\n    });\n\n    if (hit) {\n        pointMarkings.draw(hit);\n    }\n});\n\n// Allow user camera control\nnew xeogl.CameraControl();\n````\n\n````javascript\nvar data = pointMarkings.save();\n\npointMarkings.clear();\n\npointMarkings.load(data);\n````",
+            "description": "A **PointMarkings** is used to draw persistable markings on Entities.\n\n## Examples\n\nTODO\n\n## Usage\n\n````javascript\n// Load a gearbox model to draw marks on\nvar gearbox = new xeogl.GLTFModel({\n        src: \"models/gltf/GearboxAssy/glTF/GearboxAssy.gltf\"\n});\n\n// Set initial camera position\nvar view = gearbox.scene.camera.view;\nview.eye = [184.21, 10.54, -7.03];\nview.look = [159.20, 17.02, 3.21];\nview.up = [-0.15, 0.97, 0.13];\n\n// Create marks wherever we draw on the surface of our gearbox\n\nvar scene = gearbox.scene; // Using default scene for this example\nvar input = scene.input;\nvar pointMarkings = new xeogl.PointMarkings();\n\ninput.on(\"mousemove\", function (coords) {\n\n    var hit = scene.pick({\n        canvasPos: coords,\n        pickSurface: true\n    });\n\n    if (hit) {\n        pointMarkings.draw(hit);\n    }\n});\n\n// Allow user camera control\nnew xeogl.InputControl();\n````\n\n````javascript\nvar data = pointMarkings.save();\n\npointMarkings.clear();\n\npointMarkings.load(data);\n````",
             "submodule": "marking",
             "is_constructor": 1,
             "params": [
@@ -8192,7 +8199,7 @@
             "namespace": "",
             "file": "examples/js/zspace/zSpaceStylusControlV2.js",
             "line": 1,
-            "description": "A **ZSpaceStylusControl** component works in conjunction with a {{#crossLink \"ZSpaceEffect\"}}{{/crossLink}} to drag\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} around with a zSpace stylus input device.\n\n<img src=\"../../../assets/images/ZSpaceStylusControl.png\"></img>\n\n## Examples\n\n<ul>\n<li>[zSpace cube](../../examples/effects_zspace_cube.html)</li>\n<li>[zSpace with random geometries](../../examples/effects_zspace_geometries.html)</li>\n<li>[zSpace with glTF gearbox model](../../examples/effects_zspace_gearbox.html)</li>\n<li>[zSpace with glTF gearbox model and entity explorer](../../examples/effects_zspace_gearbox_explorer.html)</li>\n<li>[zSpace with glTF reciprocating saw model](../../examples/effects_zspace_ReciprocatingSaw.html)</li>\n</ul>\n\n## Usage\n\n````javascript\n// Create a textured cube entity\nvar entity = new xeogl.Entity({\n    geometry: new xeogl.BoxGeometry({\n        xSize: .6,\n        ySize: .6,\n        zSize: .6\n    }),\n    material: new xeogl.PhongMaterial({\n        diffuseMap: new xeogl.Texture({\n            src: \"textures/diffuse/UVCheckerMap11-1024.png\"\n        }),\n        backfaces: true\n    }),\n    transform: new xeogl.Rotate({\n        xyz: [0, 1, 0],\n        angle: 0\n    })\n});\n\n// Set initial camera position\nvar scene = entity.scene;\nscene.camera.view.eye = [0, 2, -10];\nscene.camera.view.look = [0, 0, 0];\n\n// Allow camera control with keyboard and mouse\nvar cameraControl = new xeogl.CameraControl();\n\n// Create a ZSpaceEffect\nvar zspaceEffect = new xeogl.ZSpaceEffect({\n    canvasOffset: [330, 0]\n});\n\n// Create a ZSpaceStylusControl\nvar zspaceStylusControl = new xeogl.ZSpaceStylusControl();\n\n// Handle missing zSpace support\nzspaceEffect.on(\"supported\", function (supported) {\n    if (!supported) {\n        document.getElementById(\"log\").innerText = \"(zSpace not detected) \";\n    }\n});\n````",
+            "description": "A **ZSpaceStylusControl** component works in conjunction with a {{#crossLink \"ZSpaceEffect\"}}{{/crossLink}} to drag\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} around with a zSpace stylus input device.\n\n<img src=\"../../../assets/images/ZSpaceStylusControl.png\"></img>\n\n## Examples\n\n<ul>\n<li>[zSpace cube](../../examples/effects_zspace_cube.html)</li>\n<li>[zSpace with random geometries](../../examples/effects_zspace_geometries.html)</li>\n<li>[zSpace with glTF gearbox model](../../examples/effects_zspace_gearbox.html)</li>\n<li>[zSpace with glTF gearbox model and entity explorer](../../examples/effects_zspace_gearbox_explorer.html)</li>\n<li>[zSpace with glTF reciprocating saw model](../../examples/effects_zspace_ReciprocatingSaw.html)</li>\n</ul>\n\n## Usage\n\n````javascript\n// Create a textured cube entity\nvar entity = new xeogl.Entity({\n    geometry: new xeogl.BoxGeometry({\n        xSize: .6,\n        ySize: .6,\n        zSize: .6\n    }),\n    material: new xeogl.PhongMaterial({\n        diffuseMap: new xeogl.Texture({\n            src: \"textures/diffuse/UVCheckerMap11-1024.png\"\n        }),\n        backfaces: true\n    }),\n    transform: new xeogl.Rotate({\n        xyz: [0, 1, 0],\n        angle: 0\n    })\n});\n\n// Set initial camera position\nvar scene = entity.scene;\nscene.camera.view.eye = [0, 2, -10];\nscene.camera.view.look = [0, 0, 0];\n\n// Allow camera control with keyboard and mouse\nvar inputControl = new xeogl.InputControl();\n\n// Create a ZSpaceEffect\nvar zspaceEffect = new xeogl.ZSpaceEffect({\n    canvasOffset: [330, 0]\n});\n\n// Create a ZSpaceStylusControl\nvar zspaceStylusControl = new xeogl.ZSpaceStylusControl();\n\n// Handle missing zSpace support\nzspaceEffect.on(\"supported\", function (supported) {\n    if (!supported) {\n        document.getElementById(\"log\").innerText = \"(zSpace not detected) \";\n    }\n});\n````",
             "submodule": "zspace",
             "is_constructor": 1,
             "params": [
@@ -10725,7 +10732,7 @@
         },
         {
             "file": "src/controls/inputControl.js",
-            "line": 79,
+            "line": 26,
             "description": "JavaScript class name for this Component.",
             "itemtype": "property",
             "name": "type",
@@ -10737,7 +10744,7 @@
         },
         {
             "file": "src/controls/inputControl.js",
-            "line": 88,
+            "line": 35,
             "description": "Indicates that only one instance of a InputControl may be active within\nits {{#crossLink \"Scene\"}}{{/crossLink}} at a time. When a InputControl is activated, that has\na true value for this flag, then any other active InputControl will be deactivated first.",
             "itemtype": "property",
             "name": "exclusive",
@@ -10749,7 +10756,7 @@
         },
         {
             "file": "src/controls/inputControl.js",
-            "line": 139,
+            "line": 86,
             "description": "Flag which indicates whether this InputControl is in \"first person\" mode.\n\nIn \"first person\" mode (disabled by default) the look position rotates about the eye position. Otherwise,\nthe eye rotates about the look.\n\nFires a {{#crossLink \"KeyboardRotateCamera/firstPerson:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "firstPerson",
@@ -10761,7 +10768,7 @@
         },
         {
             "file": "src/controls/inputControl.js",
-            "line": 161,
+            "line": 108,
             "description": "Fired whenever this InputControl's {{#crossLink \"InputControl/firstPerson:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "firstPerson",
@@ -10777,7 +10784,7 @@
         },
         {
             "file": "src/controls/inputControl.js",
-            "line": 174,
+            "line": 121,
             "description": "TODO\nFires a {{#crossLink \"KeyboardRotateCamera/doublePickFlyTo:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "doublePickFlyTo",
@@ -10789,7 +10796,7 @@
         },
         {
             "file": "src/controls/inputControl.js",
-            "line": 190,
+            "line": 137,
             "description": "Fired whenever this InputControl's {{#crossLink \"InputControl/doublePickFlyTo:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "doublePickFlyTo",
@@ -10805,7 +10812,7 @@
         },
         {
             "file": "src/controls/inputControl.js",
-            "line": 203,
+            "line": 150,
             "description": "The {{#crossLink \"Camera\"}}{{/crossLink}} being controlled by this InputControl.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this InputControl. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}} when set to\na null or undefined value.",
             "itemtype": "property",
             "name": "camera",
@@ -10816,7 +10823,7 @@
         },
         {
             "file": "src/controls/inputControl.js",
-            "line": 217,
+            "line": 164,
             "description": "Fired whenever this InputControl's {{#crossLink \"InputControl/camera:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "camera",
@@ -27374,18 +27381,7 @@
         },
         {
             "file": "examples/js/models/glTFModel.js",
-            "line": 150,
-            "description": "The {{#crossLink \"GLTFObjects\"}}Entity{{/crossLink}} instances within this GLTFModel.",
-            "itemtype": "property",
-            "name": "entities",
-            "type": "{{String:Entity}}",
-            "class": "GLTFModel",
-            "module": "xeogl",
-            "submodule": "models"
-        },
-        {
-            "file": "examples/js/models/glTFModel.js",
-            "line": 163,
+            "line": 154,
             "description": "Path to a glTF file.\n\nYou can set this to a new file path at any time (except while loading), which will cause the GLTFModel to load components from\nthe new file (after first destroying any components loaded from a previous file path).\n\nFires a {{#crossLink \"GLTFModel/src:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "src",
@@ -27396,7 +27392,7 @@
         },
         {
             "file": "examples/js/models/glTFModel.js",
-            "line": 189,
+            "line": 180,
             "description": "Fired whenever this GLTFModel has finished loading components from the glTF file\nspecified by {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "loaded",
@@ -27406,7 +27402,7 @@
         },
         {
             "file": "examples/js/models/glTFModel.js",
-            "line": 204,
+            "line": 195,
             "description": "Fired whenever this GLTFModel's {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "src",
@@ -27422,7 +27418,7 @@
         },
         {
             "file": "examples/js/models/glTFModel.js",
-            "line": 231,
+            "line": 222,
             "description": "Loads glTF from a URL into a {{#crossLink \"Model\"}}{{/crossLink}}.",
             "params": [
                 {
@@ -27448,7 +27444,7 @@
         },
         {
             "file": "examples/js/models/glTFModel.js",
-            "line": 261,
+            "line": 252,
             "description": "Fired whenever this GLTFModel fails to load the glTF file\nspecified by {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "error",
@@ -27465,7 +27461,7 @@
         },
         {
             "file": "examples/js/models/glTFModel.js",
-            "line": 272,
+            "line": 263,
             "description": "Parses glTF JSON into a {{#crossLink \"Model\"}}{{/crossLink}}.",
             "params": [
                 {
@@ -30174,11 +30170,11 @@
         },
         {
             "message": "Missing item type\nLoads glTF from a URL into a {{#crossLink \"Model\"}}{{/crossLink}}.",
-            "line": " examples/js/models/glTFModel.js:231"
+            "line": " examples/js/models/glTFModel.js:222"
         },
         {
             "message": "Missing item type\nParses glTF JSON into a {{#crossLink \"Model\"}}{{/crossLink}}.",
-            "line": " examples/js/models/glTFModel.js:272"
+            "line": " examples/js/models/glTFModel.js:263"
         },
         {
             "message": "Missing item type\nAdds a primitive entity to this GLTFObject",

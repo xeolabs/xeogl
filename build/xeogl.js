@@ -18172,61 +18172,7 @@ var Canvas2Image = (function () {
  * @module xeogl
  * @submodule controls
  */;/**
- A **InputControl** pans, rotates and zooms a {{#crossLink "Camera"}}{{/crossLink}} with the mouse and keyboard,
- as well as switches it between preset left, right, anterior, posterior, superior and inferior views.
-
- ## Overview
-
- * InputControl requires that its pans both {{#crossLink "Camera"}}Camera{{/crossLink}} have a {{#crossLink "Lookat"}}{{/crossLink}} for its {{#crossLink "Camera/view:property"}}viewing transform{{/crossLink}}.
- * The table below shows what InputControl does for various user input.
- <br>
-
- | Input | Result |
- |:--------:|:----:|
- | Mouse drag, arrow keys | orbits {{#crossLink "Lookat/eye:property"}}camera.view.eye{{/crossLink}} around {{#crossLink "Lookat/look:property"}}camera.view.look{{/crossLink}}|
- | Z,X keys | pans both {{#crossLink "Lookat/eye:property"}}camera.view.eye{{/crossLink}} and {{#crossLink "Lookat/look:property"}}camera.view.look{{/crossLink}} forwards and backwards  along the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}->{{#crossLink "Lookat/look:property"}}look{{/crossLink}} vector. |
- | A,D keys | pans both {{#crossLink "Lookat/eye:property"}}camera.view.eye{{/crossLink}} and {{#crossLink "Lookat/look:property"}}camera.view.look{{/crossLink}} sideways, along the vector perpendicular to {{#crossLink "Lookat/eye:property"}}{{/crossLink}}->{{#crossLink "Lookat/look:property"}}look{{/crossLink}} and {{#crossLink "Lookat/eye:property"}}{{/crossLink}}->{{#crossLink "Lookat/up:property"}}up{{/crossLink}}. |
- | W,S keys | pans both {{#crossLink "Lookat/eye:property"}}camera.view.eye{{/crossLink}} and {{#crossLink "Lookat/look:property"}}camera.view.look{{/crossLink}} up and down, along the {{#crossLink "Lookat/up:property"}}up{{/crossLink}} vector. |
- | 1,2,3,4,5,6 keys | Align {{#crossLink "Lookat"}}camera.view{{/crossLink}} to look at center of entire {{#crossLink "Scene"}}{{/crossLink}} from vantage points on the -X, +X, -Z, +Z, -Y and +Y World-space axis. |
- | Click on {{#crossLink "Entity"}}{{/crossLink}} | Flies {{#crossLink "Lookat"}}camera.view{{/crossLink}} to look at {{#crossLink "Entity"}}{{/crossLink}}, stops when filling the canvas. |
- | Mouse wheel or '+' and '-' keys | moves {{#crossLink "Lookat/eye:property"}}camera.view.eye{{/crossLink}} towards and away from {{#crossLink "Lookat/look:property"}}camera.view.look{{/crossLink}}. |
-
- ## Examples
-
- * [InputControl example](../../examples/#interaction_camera_CameraControl)
-
- ## Usage
-
- ````Javascript
- var camera = new xeogl.Camera({
-
-     view: new xeogl.Lookat({
-         eye: [0, 0, 10],
-         look: [0, 0, 0],
-         up: [0, 1, 0]
-     }),
-
-     project: new xeogl.Perspective({
-         fov: 60,
-         near: 0.1,
-         far: 1000
-     })
- });
-
- var entity = new xeogl.Entity({
-     camera: camera,
-     geometry: new xeogl.BoxGeometry()
- });
-
- var InputControl = new xeogl.InputControl({
-     camera: camera,
-
-     // "First person" mode rotates look about eye.
-     // By default however, we orbit eye about look.
-     firstPerson: false
- });
-
- ````
+ TODO
 
  @class InputControl
  @module xeogl
@@ -18240,6 +18186,7 @@ var Canvas2Image = (function () {
  Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this InputControl. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
  @param [firstPerson=false] {Boolean} Whether or not this InputControl is in "first person" mode.
+ @param [doublePickFlyTo=true] {Boolean} Whether to fly the camera to each {{#crossLink "Entity"}}{{/crossLink}} that's double-clicked.
  @extends Component
  */
 (function () {
@@ -18998,12 +18945,12 @@ var Canvas2Image = (function () {
                                         self.fire("doublePickedSurface", hit);
                                     }
                                     if (self._doublePickFlyTo) {
-                                        self._entityPicked(hit);
+                                        self._flyTo(hit);
                                     }
                                 } else {
                                     self.fire("doublePickedNothing");
                                     if (self._doublePickFlyTo) {
-
+                                        self._flyTo();
                                     }
                                 }
                                 clicks = 0;
@@ -19090,12 +19037,12 @@ var Canvas2Image = (function () {
                                             self.fire("doublePickedSurface", hit);
                                         }
                                         if (self._doublePickFlyTo) {
-                                            self._entityPicked(hit);
+                                            self._flyTo(hit);
                                         }
                                     } else {
                                         self.fire("doublePickedNothing");
                                         if (self._doublePickFlyTo) {
-
+                                            self._flyTo();
                                         }
                                     }
 
@@ -19189,15 +19136,15 @@ var Canvas2Image = (function () {
             })();
         },
 
-        _entityPicked: function (hit) {
+        _flyTo: function (hit) {
 
             var pos;
 
-            if (hit.worldPos) {
+            if (hit && hit.worldPos) {
                 pos = hit.worldPos
             }
 
-            var worldBoundary = hit.entity.worldBoundary;
+            var worldBoundary = hit ? hit.entity.worldBoundary : this.scene.worldBoundary;
             var aabb = worldBoundary.aabb;
 
             this._boundaryHelper.geometry.aabb = aabb;
@@ -19231,7 +19178,7 @@ var Canvas2Image = (function () {
         },
 
         _hideBoundary: function () {
-        //    this._boundaryHelper.visible = false;
+            //    this._boundaryHelper.visible = false;
         }
     });
 
