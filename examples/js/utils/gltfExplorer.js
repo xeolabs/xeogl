@@ -103,18 +103,6 @@ var gltfExplorer = function (menuId, files) {
     })();
 
     var inputControl = new xeogl.InputControl();
-    inputControl.mousePickEntity.active = false;
-
-    var mousePickEntity = new xeogl.MousePickEntity({
-        pickSurface: true
-    });
-    mousePickEntity.on("pick", function (e) {
-        flyTo(e.entity.id);
-    });
-
-    mousePickEntity.on("nopick", function () {
-        flyTo();
-    });
 
     model.on("loaded", function () {
 

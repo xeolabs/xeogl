@@ -48,6 +48,7 @@
             frontface: "cw"
         }),
         collidable: false,
+        pickable: false,
         transform: new xeogl.Scale({  // Reflection transform
             xyz: [0.01, -0.01, 0.01],
             parent: new xeogl.Translate({
@@ -71,6 +72,7 @@
             backfaces: true
         }),
         collidable: false,
+        pickable: false,
         transform: new xeogl.Translate({
             xyz: [0, -1.185, 0]
         })
@@ -84,11 +86,13 @@
 
     // Orbit the camera
     city.scene.on("tick", function () {
-        view.rotateEyeY(-0.1);
+      //  view.rotateEyeY(-0.1);
     });
 
     // Camera interaction
-    new xeogl.InputControl();
+    var inputControl = new xeogl.InputControl();
+    inputControl.firstPerson = true;
+  //  inputControl.walking = true;
 
 </script>
 </body>
