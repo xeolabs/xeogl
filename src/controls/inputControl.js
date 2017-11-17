@@ -305,7 +305,7 @@
 
                 var mouseHoverDelay = 500;
                 var mouseOrbitRate = 0.4;
-                var mousePanRate = 0.3;
+                var mousePanRate = 0.2;
                 var mouseZoomRate = 0.8;
                 var keyboardOrbitRate = 140;
                 var keyboardPanRate = 40;

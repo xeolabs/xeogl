@@ -18507,7 +18507,7 @@ var Canvas2Image = (function () {
 
                 var mouseHoverDelay = 500;
                 var mouseOrbitRate = 0.4;
-                var mousePanRate = 0.3;
+                var mousePanRate = 0.2;
                 var mouseZoomRate = 0.8;
                 var keyboardOrbitRate = 140;
                 var keyboardPanRate = 40;
@@ -18980,10 +18980,13 @@ var Canvas2Image = (function () {
                 (function () {
 
                     overlay.addEventListener("mousemove", function (e) {
+
                         //if (down) {
                         //    return;
                         //}
+
                         getCoordsWithinElement(e, cursorPos);
+
                         if (self.hasSubs("hover") || self.hasSubs("hoverOut") || self.hasSubs("hoverOff") || self.hasSubs("hoverSurface")) {
                             needPick = true;
                         }
