@@ -305,8 +305,8 @@
 
                 var mouseHoverDelay = 500;
                 var mouseOrbitRate = 0.4;
-                var mousePanRate = 0.2;
-                var mouseZoomRate = 0.5;
+                var mousePanRate = 0.3;
+                var mouseZoomRate = 0.8;
                 var keyboardOrbitRate = 140;
                 var keyboardPanRate = 40;
                 var keyboardZoomRate = 15;
@@ -778,11 +778,16 @@
                 (function () {
 
                     overlay.addEventListener("mousemove", function (e) {
+
                         //if (down) {
                         //    return;
                         //}
+
                         getCoordsWithinElement(e, cursorPos);
-                        needPick = true;
+
+                        if (self.hasSubs("hover") || self.hasSubs("hoverOut") || self.hasSubs("hoverOff") || self.hasSubs("hoverSurface")) {
+                            needPick = true;
+                        }
                     });
 
                     var downX;
