@@ -278,6 +278,10 @@
             var lenLook = Math.abs(math.lenVec3(vec, tempVec3b));    // Get len of that vector
             var newLenLook = Math.abs(lenLook + delta);         // Get new len after zoom
 
+            if (newLenLook < 0.5) {
+                return;
+            }
+
             var dir = math.normalizeVec3(vec, tempVec3c);  // Get normalised vector
 
             this.eye = math.addVec3(this._look, math.mulVec3Scalar(dir, newLenLook), tempVec3d);
