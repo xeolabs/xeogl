@@ -16423,7 +16423,6 @@ var Canvas2Image = (function () {
                         type: "xeogl.Transform",
                         component: value,
                         sceneDefault: true,
-                        recompiles: false,
                         on: {
                             matrix: {
                                 callback: function () {
@@ -16466,7 +16465,6 @@ var Canvas2Image = (function () {
                         type: "xeogl.Transform",
                         component: value,
                         sceneDefault: true,
-                        recompiles: false,
                         on: {
                             matrix: {
                                 callback: function () {
@@ -18510,7 +18508,7 @@ var Canvas2Image = (function () {
                 var mouseHoverDelay = 500;
                 var mouseOrbitRate = 0.4;
                 var mousePanRate = 0.2;
-                var mouseZoomRate = 0.1;
+                var mouseZoomRate = 0.5;
                 var keyboardOrbitRate = 140;
                 var keyboardPanRate = 40;
                 var keyboardZoomRate = 15;
@@ -18628,6 +18626,7 @@ var Canvas2Image = (function () {
                     max = (zsize > max ? zsize : max);
                     return max/30;
                 }
+
                 document.addEventListener("keydown", function (e) {
                     if (e.target.tagName !== "INPUT" && e.target.tagName !== "TEXTAREA") {
                         ctrlDown = e.ctrlKey || e.keyCode === 17 || e.metaKey; // !important, treat Windows or Mac Command Key as ctrl
@@ -18771,7 +18770,7 @@ var Canvas2Image = (function () {
                     overlay.addEventListener("wheel", function (e) {
                         var delta = Math.max(-1, Math.min(1, -e.deltaY * 40));
                         var d = delta / Math.abs(delta);
-                        vZoom = -d * getZoomRate();
+                        vZoom = -d * getZoomRate() * mouseZoomRate;
                     });
 
                 })();
@@ -18879,7 +18878,7 @@ var Canvas2Image = (function () {
                             if (!panning && checkMode(MODE_ZOOM)) {
                                 var d1 = math.distVec2([touch0.pageX, touch0.pageY], [touch1.pageX, touch1.pageY]);
                                 var d2 = math.distVec2(lastTouches[0], lastTouches[1]);
-                                vZoom = (d2 - d1) * getZoomRate() * 0.1;
+                                vZoom = (d2 - d1) * getZoomRate() * touchZoomRate;
                             }
                         }
 
@@ -37631,7 +37630,6 @@ TODO
                         type: "xeogl.Camera",
                         component: value,
                         sceneDefault: true,
-                        recompiles: true, // FIXME: Why does this need to be true, otherwise updating "project" to a different component doesn't have any effect?
                         on: {
                             viewMatrix: {
                                 callback: this._setViewBoundaryDirty,
@@ -37878,7 +37876,6 @@ TODO
                         type: "xeogl.Transform",
                         component: value,
                         sceneDefault: true,
-                        recompiles: false,
                         on: {
                             updated: {
 
@@ -37935,7 +37932,6 @@ TODO
                         name: "viewport",
                         type: "xeogl.Viewport",
                         component: value,
-                        recompiles: false,
                         sceneDefault: true
                     });
                 },

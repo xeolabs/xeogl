@@ -62,12 +62,14 @@ body {
     height: auto;
     text-align: left;
     /*border: solid 1px #bdbcbc;*/
+    pointer-events: none;
 }
 
 #info a {
     z-index: 200000;
     /*text-decoration: none;*/
     color: #ffffff;
+    pointer-events: all;
 }
 
 #info a:hover {

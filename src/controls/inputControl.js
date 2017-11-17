@@ -1,5 +1,22 @@
 /**
- TODO
+
+ * "hoverEnter" - Hover enters a new object
+ * "hover" -  Hover continues over an object - fired continuously as mouse moves over an object
+ * "hoverSurface" - Hover continues over an object surface - fired continuously as mouse moves over an object
+ * "hoverLeave"  - Hover has left the last object we were hovering over
+ * "hoverOff" - Hover continues over empty space - fired continuously as mouse moves over nothing
+ * "pickedObject" - Clicked or tapped object
+ * "pickedSurface" -  Clicked or tapped object, with event containing surface intersection details
+ * "doublePickedObject" - Double-clicked or double-tapped object
+ * "doublePickedSurface" - Double-clicked or double-tapped object, with event containing surface intersection details
+ * "pickedNothing" - Clicked or tapped, but not on any objects
+ * "doublePickedNothing" - Double-clicked or double-tapped, but not on any objects
+
+ InputControl only fires "hover" events when the mouse is up.
+
+ For efficiency, InputControl only does surface intersection picking when you subscribe to "doublePickedObject" and
+ "doublePickedSurface" events. Therefore, only subscribe to those when you're OK with the overhead incurred by the
+ surface intersection tests.
 
  @class InputControl
  @module xeogl
@@ -13,6 +30,7 @@
  Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this InputControl. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
  @param [firstPerson=false] {Boolean} Whether or not this InputControl is in "first person" mode.
+ @param [walking=false] {Boolean} Whether or not this InputControl is in "walking" mode.
  @param [doublePickFlyTo=true] {Boolean} Whether to fly the camera to each {{#crossLink "Entity"}}{{/crossLink}} that's double-clicked.
  @extends Component
  */
@@ -75,6 +93,7 @@
             });
 
             this.firstPerson = cfg.firstPerson;
+            this.walking = cfg.walking;
             this.doublePickFlyTo = cfg.doublePickFlyTo;
             this.camera = cfg.camera;
 
@@ -103,8 +122,6 @@
 
                     this._firstPerson = value;
 
-                    // ..
-
                     /**
                      * Fired whenever this InputControl's {{#crossLink "InputControl/firstPerson:property"}}{{/crossLink}} property changes.
                      * @event firstPerson
@@ -115,6 +132,42 @@
 
                 get: function () {
                     return this._firstPerson;
+                }
+            },
+
+            /**
+             * Flag which indicates whether this InputControl is in "walking" mode.
+             *
+             * When set true, this constrains eye movement to the horizontal X-Z plane. When doing a walkthrough,
+             * this is useful to allow us to look upwards or downwards as we move, while keeping us moving in the
+             * horizontal plane.
+             *
+             * This only has an effect when also in "first person" mode.
+             *
+             * Fires a {{#crossLink "KeyboardRotateCamera/walking:event"}}{{/crossLink}} event on change.
+             *
+             * @property walking
+             * @default false
+             * @type Boolean
+             */
+            walking: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    this._walking = value;
+
+                    /**
+                     * Fired whenever this InputControl's {{#crossLink "InputControl/walking:property"}}{{/crossLink}} property changes.
+                     * @event walking
+                     * @param value The property's new value
+                     */
+                    this.fire('walking', this._walking);
+                },
+
+                get: function () {
+                    return this._walking;
                 }
             },
 
@@ -194,6 +247,7 @@
 
             var json = {
                 firstPerson: this._firstPerson,
+                walking: this._walking,
                 doublePickFlyTo: this._doublePickFlyTo
             };
 
@@ -256,7 +310,7 @@
                 var keyboardOrbitRate = 140;
                 var keyboardPanRate = 40;
                 var keyboardZoomRate = 15;
-                var touchOrbitRate = 0.3;
+                var touchRotateRate = 0.3;
                 var touchPanRate = 0.2;
                 var touchZoomRate = 0.05;
                 var cameraFriction = 0.85;
@@ -299,7 +353,7 @@
 
                     if (rotateVx !== 0) {
                         if (self._firstPerson) {
-                            lookat.rotateLookX(rotateVx);
+                            lookat.rotateLookX(-rotateVx);
                         } else {
                             lookat.rotateEyeX(rotateVx);
                         }
@@ -326,7 +380,15 @@
 
                     if (panVx !== 0 || panVy !== 0) {
                         var f = getEyeLookDist() / 80;
-                        lookat.pan([panVx * f, panVy * f, 0]);
+                        if (self._firstPerson && self._walking) {
+                            var y = lookat.eye[1];
+                            lookat.pan([panVx * f, panVy * f, 0]);
+                            var eye = lookat.eye;
+                            eye[1] = y;
+                            lookat.eye = eye;
+                        } else {
+                            lookat.pan([panVx * f, panVy * f, 0]);
+                        }
                     }
 
                     vZoom *= cameraFriction;
@@ -336,9 +398,32 @@
                     }
 
                     if (vZoom !== 0) {
-                        lookat.zoom(vZoom);
+                        if (self._firstPerson) {
+                            var y;
+                            if (self._walking) {
+                                y = lookat.eye[1];
+                            }
+                            lookat.pan([0, 0, vZoom]);
+                            if (self._walking) {
+                                var eye = lookat.eye;
+                                eye[1] = y;
+                                lookat.eye = eye;
+                            }
+                        } else {
+                            lookat.zoom(vZoom);
+                        }
                     }
                 });
+
+                function getZoomRate() {
+                    var aabb = scene.worldBoundary.aabb;
+                    var xsize = aabb[3]-aabb[0];
+                    var ysize = aabb[4]-aabb[1];
+                    var zsize = aabb[5]-aabb[2];
+                    var max = (xsize > ysize ? xsize : ysize);
+                    max = (zsize > max ? zsize : max);
+                    return max/30;
+                }
 
                 document.addEventListener("keydown", function (e) {
                     if (e.target.tagName !== "INPUT" && e.target.tagName !== "TEXTAREA") {
@@ -483,7 +568,7 @@
                     overlay.addEventListener("wheel", function (e) {
                         var delta = Math.max(-1, Math.min(1, -e.deltaY * 40));
                         var d = delta / Math.abs(delta);
-                        vZoom = -d * mouseZoomRate;
+                        vZoom = -d * getZoomRate() * mouseZoomRate;
                     });
 
                 })();
@@ -566,8 +651,8 @@
                             if (checkMode(MODE_ROTATE)) {
                                 var deltaX = touch0.pageX - lastTouches[0][0];
                                 var deltaY = touch0.pageY - lastTouches[0][1];
-                                var rotateX = deltaX * touchOrbitRate;
-                                var rotateY = deltaY * touchOrbitRate;
+                                var rotateX = deltaX * touchRotateRate;
+                                var rotateY = deltaY * touchRotateRate;
                                 rotateVx = rotateY;
                                 rotateVy = -rotateX;
                             }
@@ -591,7 +676,7 @@
                             if (!panning && checkMode(MODE_ZOOM)) {
                                 var d1 = math.distVec2([touch0.pageX, touch0.pageY], [touch1.pageX, touch1.pageY]);
                                 var d2 = math.distVec2(lastTouches[0], lastTouches[1]);
-                                vZoom = (d2 - d1) * touchZoomRate;
+                                vZoom = (d2 - d1) * getZoomRate() * touchZoomRate;
                             }
                         }
 
