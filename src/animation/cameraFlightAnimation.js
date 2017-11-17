@@ -158,7 +158,7 @@
                         lineWidth: 2
                     })
                 }),
-               visible: false,
+                visible: false,
                 collidable: false // Effectively has no boundary
             });
 
@@ -172,6 +172,9 @@
 
             this._flying = false;
             this._flyEyeLookUp = false;
+            this._flyingEye = false;
+            this._flyingLook = false;
+            this._flyingUp = false;
 
             this._callback = null;
             this._callbackScope = null;
@@ -274,10 +277,16 @@
                 } else if (params.length === 6) {
                     aabb = params;
 
-                } else if (params.eye || params.look || params.up) {
+                } else if ((params.eye && params.look) || params.up) {
                     eye = params.eye;
                     look = params.look;
                     up = params.up;
+
+                } else if (params.eye) {
+                    eye = params.eye;
+
+                } else if (params.look) {
+                    look = params.look;
 
                 } else {
 
@@ -371,23 +380,27 @@
 
                 } else if (eye || look || up) {
 
-                    look = look || this._look1;
-                    eye = eye || this._eye1;
-                    up = up || this._up1;
-
-                    this._look2[0] = look[0];
-                    this._look2[1] = look[1];
-                    this._look2[2] = look[2];
-
-                    this._eye2[0] = eye[0];
-                    this._eye2[1] = eye[1];
-                    this._eye2[2] = eye[2];
-
-                    this._up2[0] = up[0];
-                    this._up2[1] = up[1];
-                    this._up2[2] = up[2];
-
                     this._flyEyeLookUp = true;
+                    this._flyingEye = !!eye && !look;
+                    this._flyingLook = !!look && !eye;
+
+                    if (look) {
+                        this._look2[0] = look[0];
+                        this._look2[1] = look[1];
+                        this._look2[2] = look[2];
+                    }
+
+                    if (eye) {
+                        this._eye2[0] = eye[0];
+                        this._eye2[1] = eye[1];
+                        this._eye2[2] = eye[2];
+                    }
+
+                    if (up) {
+                        this._up2[0] = up[0];
+                        this._up2[1] = up[1];
+                        this._up2[2] = up[2];
+                    }
                 }
 
                 this.fire("started", params, true);
@@ -586,9 +599,25 @@
 
                 if (this._flyEyeLookUp) {
 
-                    view.eye = math.lerpVec3(t, 0, 1, this._eye1, this._eye2, newEye);
-                    view.look = math.lerpVec3(t, 0, 1, this._look1, this._look2, newLook);
-                    view.up = math.lerpVec3(t, 0, 1, this._up1, this._up2, newUp);
+                    if (this._flyingEye || this._flyingLook) {
+
+                        math.subVec3(view.eye, view.look, newLookEyeVec);
+
+                        if (this._flyingEye) {
+                            view.eye = math.lerpVec3(t, 0, 1, this._eye1, this._eye2, newEye);
+                            view.look = math.subVec3(newEye, newLookEyeVec, newLook);
+
+                        } else if (this._flyingLook) {
+                            view.look = math.lerpVec3(t, 0, 1, this._look1, this._look2, newLook);
+                            view.eye = math.addVec3(newLook, newLookEyeVec, newEye);
+                        }
+
+                    } else {
+
+                        view.eye = math.lerpVec3(t, 0, 1, this._eye1, this._eye2, newEye);
+                        view.look = math.lerpVec3(t, 0, 1, this._look1, this._look2, newLook);
+                        view.up = math.lerpVec3(t, 0, 1, this._up1, this._up2, newUp);
+                    }
 
                 } else {
 
