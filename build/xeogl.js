@@ -18507,8 +18507,8 @@ var Canvas2Image = (function () {
 
                 var mouseHoverDelay = 500;
                 var mouseOrbitRate = 0.4;
-                var mousePanRate = 0.2;
-                var mouseZoomRate = 0.5;
+                var mousePanRate = 0.3;
+                var mouseZoomRate = 0.8;
                 var keyboardOrbitRate = 140;
                 var keyboardPanRate = 40;
                 var keyboardZoomRate = 15;
@@ -18984,7 +18984,9 @@ var Canvas2Image = (function () {
                         //    return;
                         //}
                         getCoordsWithinElement(e, cursorPos);
-                        needPick = true;
+                        if (self.hasSubs("hover") || self.hasSubs("hoverOut") || self.hasSubs("hoverOff") || self.hasSubs("hoverSurface")) {
+                            needPick = true;
+                        }
                     });
 
                     var downX;
@@ -41489,6 +41491,10 @@ TODO
             var vec = math.subVec3(this._eye, this._look, tempVec3); // Get vector from eye to look
             var lenLook = Math.abs(math.lenVec3(vec, tempVec3b));    // Get len of that vector
             var newLenLook = Math.abs(lenLook + delta);         // Get new len after zoom
+
+            if (newLenLook < 0.5) {
+                return;
+            }
 
             var dir = math.normalizeVec3(vec, tempVec3c);  // Get normalised vector
 
