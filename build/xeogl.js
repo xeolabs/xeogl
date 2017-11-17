@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2017-11-14
+ * Built on 2017-11-17
  *
  * MIT License
  * Copyright 2017, Lindsay Kay
@@ -15556,7 +15556,7 @@ var Canvas2Image = (function () {
                         lineWidth: 2
                     })
                 }),
-               visible: false,
+                visible: false,
                 collidable: false // Effectively has no boundary
             });
 
@@ -15570,6 +15570,9 @@ var Canvas2Image = (function () {
 
             this._flying = false;
             this._flyEyeLookUp = false;
+            this._flyingEye = false;
+            this._flyingLook = false;
+            this._flyingUp = false;
 
             this._callback = null;
             this._callbackScope = null;
@@ -15672,10 +15675,16 @@ var Canvas2Image = (function () {
                 } else if (params.length === 6) {
                     aabb = params;
 
-                } else if (params.eye || params.look || params.up) {
+                } else if ((params.eye && params.look) || params.up) {
                     eye = params.eye;
                     look = params.look;
                     up = params.up;
+
+                } else if (params.eye) {
+                    eye = params.eye;
+
+                } else if (params.look) {
+                    look = params.look;
 
                 } else {
 
@@ -15769,23 +15778,27 @@ var Canvas2Image = (function () {
 
                 } else if (eye || look || up) {
 
-                    look = look || this._look1;
-                    eye = eye || this._eye1;
-                    up = up || this._up1;
-
-                    this._look2[0] = look[0];
-                    this._look2[1] = look[1];
-                    this._look2[2] = look[2];
-
-                    this._eye2[0] = eye[0];
-                    this._eye2[1] = eye[1];
-                    this._eye2[2] = eye[2];
-
-                    this._up2[0] = up[0];
-                    this._up2[1] = up[1];
-                    this._up2[2] = up[2];
-
                     this._flyEyeLookUp = true;
+                    this._flyingEye = !!eye && !look;
+                    this._flyingLook = !!look && !eye;
+
+                    if (look) {
+                        this._look2[0] = look[0];
+                        this._look2[1] = look[1];
+                        this._look2[2] = look[2];
+                    }
+
+                    if (eye) {
+                        this._eye2[0] = eye[0];
+                        this._eye2[1] = eye[1];
+                        this._eye2[2] = eye[2];
+                    }
+
+                    if (up) {
+                        this._up2[0] = up[0];
+                        this._up2[1] = up[1];
+                        this._up2[2] = up[2];
+                    }
                 }
 
                 this.fire("started", params, true);
@@ -15984,9 +15997,25 @@ var Canvas2Image = (function () {
 
                 if (this._flyEyeLookUp) {
 
-                    view.eye = math.lerpVec3(t, 0, 1, this._eye1, this._eye2, newEye);
-                    view.look = math.lerpVec3(t, 0, 1, this._look1, this._look2, newLook);
-                    view.up = math.lerpVec3(t, 0, 1, this._up1, this._up2, newUp);
+                    if (this._flyingEye || this._flyingLook) {
+
+                        math.subVec3(view.eye, view.look, newLookEyeVec);
+
+                        if (this._flyingEye) {
+                            view.eye = math.lerpVec3(t, 0, 1, this._eye1, this._eye2, newEye);
+                            view.look = math.subVec3(newEye, newLookEyeVec, newLook);
+
+                        } else if (this._flyingLook) {
+                            view.look = math.lerpVec3(t, 0, 1, this._look1, this._look2, newLook);
+                            view.eye = math.addVec3(newLook, newLookEyeVec, newEye);
+                        }
+
+                    } else {
+
+                        view.eye = math.lerpVec3(t, 0, 1, this._eye1, this._eye2, newEye);
+                        view.look = math.lerpVec3(t, 0, 1, this._look1, this._look2, newLook);
+                        view.up = math.lerpVec3(t, 0, 1, this._up1, this._up2, newUp);
+                    }
 
                 } else {
 
@@ -16394,6 +16423,7 @@ var Canvas2Image = (function () {
                         type: "xeogl.Transform",
                         component: value,
                         sceneDefault: true,
+                        recompiles: false,
                         on: {
                             matrix: {
                                 callback: function () {
@@ -16436,6 +16466,7 @@ var Canvas2Image = (function () {
                         type: "xeogl.Transform",
                         component: value,
                         sceneDefault: true,
+                        recompiles: false,
                         on: {
                             matrix: {
                                 callback: function () {
@@ -18172,7 +18203,24 @@ var Canvas2Image = (function () {
  * @module xeogl
  * @submodule controls
  */;/**
- TODO
+
+ * "hoverEnter" - Hover enters a new object
+ * "hover" -  Hover continues over an object - fired continuously as mouse moves over an object
+ * "hoverSurface" - Hover continues over an object surface - fired continuously as mouse moves over an object
+ * "hoverLeave"  - Hover has left the last object we were hovering over
+ * "hoverOff" - Hover continues over empty space - fired continuously as mouse moves over nothing
+ * "pickedObject" - Clicked or tapped object
+ * "pickedSurface" -  Clicked or tapped object, with event containing surface intersection details
+ * "doublePickedObject" - Double-clicked or double-tapped object
+ * "doublePickedSurface" - Double-clicked or double-tapped object, with event containing surface intersection details
+ * "pickedNothing" - Clicked or tapped, but not on any objects
+ * "doublePickedNothing" - Double-clicked or double-tapped, but not on any objects
+
+ InputControl only fires "hover" events when the mouse is up.
+
+ For efficiency, InputControl only does surface intersection picking when you subscribe to "doublePickedObject" and
+ "doublePickedSurface" events. Therefore, only subscribe to those when you're OK with the overhead incurred by the
+ surface intersection tests.
 
  @class InputControl
  @module xeogl
@@ -18186,6 +18234,7 @@ var Canvas2Image = (function () {
  Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this InputControl. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
  @param [firstPerson=false] {Boolean} Whether or not this InputControl is in "first person" mode.
+ @param [walking=false] {Boolean} Whether or not this InputControl is in "walking" mode.
  @param [doublePickFlyTo=true] {Boolean} Whether to fly the camera to each {{#crossLink "Entity"}}{{/crossLink}} that's double-clicked.
  @extends Component
  */
@@ -18248,6 +18297,7 @@ var Canvas2Image = (function () {
             });
 
             this.firstPerson = cfg.firstPerson;
+            this.walking = cfg.walking;
             this.doublePickFlyTo = cfg.doublePickFlyTo;
             this.camera = cfg.camera;
 
@@ -18276,8 +18326,6 @@ var Canvas2Image = (function () {
 
                     this._firstPerson = value;
 
-                    // ..
-
                     /**
                      * Fired whenever this InputControl's {{#crossLink "InputControl/firstPerson:property"}}{{/crossLink}} property changes.
                      * @event firstPerson
@@ -18288,6 +18336,42 @@ var Canvas2Image = (function () {
 
                 get: function () {
                     return this._firstPerson;
+                }
+            },
+
+            /**
+             * Flag which indicates whether this InputControl is in "walking" mode.
+             *
+             * When set true, this constrains eye movement to the horizontal X-Z plane. When doing a walkthrough,
+             * this is useful to allow us to look upwards or downwards as we move, while keeping us moving in the
+             * horizontal plane.
+             *
+             * This only has an effect when also in "first person" mode.
+             *
+             * Fires a {{#crossLink "KeyboardRotateCamera/walking:event"}}{{/crossLink}} event on change.
+             *
+             * @property walking
+             * @default false
+             * @type Boolean
+             */
+            walking: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    this._walking = value;
+
+                    /**
+                     * Fired whenever this InputControl's {{#crossLink "InputControl/walking:property"}}{{/crossLink}} property changes.
+                     * @event walking
+                     * @param value The property's new value
+                     */
+                    this.fire('walking', this._walking);
+                },
+
+                get: function () {
+                    return this._walking;
                 }
             },
 
@@ -18367,6 +18451,7 @@ var Canvas2Image = (function () {
 
             var json = {
                 firstPerson: this._firstPerson,
+                walking: this._walking,
                 doublePickFlyTo: this._doublePickFlyTo
             };
 
@@ -18425,11 +18510,11 @@ var Canvas2Image = (function () {
                 var mouseHoverDelay = 500;
                 var mouseOrbitRate = 0.4;
                 var mousePanRate = 0.2;
-                var mouseZoomRate = 0.5;
+                var mouseZoomRate = 0.1;
                 var keyboardOrbitRate = 140;
                 var keyboardPanRate = 40;
                 var keyboardZoomRate = 15;
-                var touchOrbitRate = 0.3;
+                var touchRotateRate = 0.3;
                 var touchPanRate = 0.2;
                 var touchZoomRate = 0.05;
                 var cameraFriction = 0.85;
@@ -18472,7 +18557,7 @@ var Canvas2Image = (function () {
 
                     if (rotateVx !== 0) {
                         if (self._firstPerson) {
-                            lookat.rotateLookX(rotateVx);
+                            lookat.rotateLookX(-rotateVx);
                         } else {
                             lookat.rotateEyeX(rotateVx);
                         }
@@ -18499,7 +18584,15 @@ var Canvas2Image = (function () {
 
                     if (panVx !== 0 || panVy !== 0) {
                         var f = getEyeLookDist() / 80;
-                        lookat.pan([panVx * f, panVy * f, 0]);
+                        if (self._firstPerson && self._walking) {
+                            var y = lookat.eye[1];
+                            lookat.pan([panVx * f, panVy * f, 0]);
+                            var eye = lookat.eye;
+                            eye[1] = y;
+                            lookat.eye = eye;
+                        } else {
+                            lookat.pan([panVx * f, panVy * f, 0]);
+                        }
                     }
 
                     vZoom *= cameraFriction;
@@ -18509,10 +18602,32 @@ var Canvas2Image = (function () {
                     }
 
                     if (vZoom !== 0) {
-                        lookat.zoom(vZoom);
+                        if (self._firstPerson) {
+                            var y;
+                            if (self._walking) {
+                                y = lookat.eye[1];
+                            }
+                            lookat.pan([0, 0, vZoom]);
+                            if (self._walking) {
+                                var eye = lookat.eye;
+                                eye[1] = y;
+                                lookat.eye = eye;
+                            }
+                        } else {
+                            lookat.zoom(vZoom);
+                        }
                     }
                 });
 
+                function getZoomRate() {
+                    var aabb = scene.worldBoundary.aabb;
+                    var xsize = aabb[3]-aabb[0];
+                    var ysize = aabb[4]-aabb[1];
+                    var zsize = aabb[5]-aabb[2];
+                    var max = (xsize > ysize ? xsize : ysize);
+                    max = (zsize > max ? zsize : max);
+                    return max/30;
+                }
                 document.addEventListener("keydown", function (e) {
                     if (e.target.tagName !== "INPUT" && e.target.tagName !== "TEXTAREA") {
                         ctrlDown = e.ctrlKey || e.keyCode === 17 || e.metaKey; // !important, treat Windows or Mac Command Key as ctrl
@@ -18656,7 +18771,7 @@ var Canvas2Image = (function () {
                     overlay.addEventListener("wheel", function (e) {
                         var delta = Math.max(-1, Math.min(1, -e.deltaY * 40));
                         var d = delta / Math.abs(delta);
-                        vZoom = -d * mouseZoomRate;
+                        vZoom = -d * getZoomRate();
                     });
 
                 })();
@@ -18739,8 +18854,8 @@ var Canvas2Image = (function () {
                             if (checkMode(MODE_ROTATE)) {
                                 var deltaX = touch0.pageX - lastTouches[0][0];
                                 var deltaY = touch0.pageY - lastTouches[0][1];
-                                var rotateX = deltaX * touchOrbitRate;
-                                var rotateY = deltaY * touchOrbitRate;
+                                var rotateX = deltaX * touchRotateRate;
+                                var rotateY = deltaY * touchRotateRate;
                                 rotateVx = rotateY;
                                 rotateVy = -rotateX;
                             }
@@ -18764,7 +18879,7 @@ var Canvas2Image = (function () {
                             if (!panning && checkMode(MODE_ZOOM)) {
                                 var d1 = math.distVec2([touch0.pageX, touch0.pageY], [touch1.pageX, touch1.pageY]);
                                 var d2 = math.distVec2(lastTouches[0], lastTouches[1]);
-                                vZoom = (d2 - d1) * touchZoomRate;
+                                vZoom = (d2 - d1) * getZoomRate() * 0.1;
                             }
                         }
 
@@ -37516,6 +37631,7 @@ TODO
                         type: "xeogl.Camera",
                         component: value,
                         sceneDefault: true,
+                        recompiles: true, // FIXME: Why does this need to be true, otherwise updating "project" to a different component doesn't have any effect?
                         on: {
                             viewMatrix: {
                                 callback: this._setViewBoundaryDirty,
@@ -37762,6 +37878,7 @@ TODO
                         type: "xeogl.Transform",
                         component: value,
                         sceneDefault: true,
+                        recompiles: false,
                         on: {
                             updated: {
 
@@ -37818,6 +37935,7 @@ TODO
                         name: "viewport",
                         type: "xeogl.Viewport",
                         component: value,
+                        recompiles: false,
                         sceneDefault: true
                     });
                 },
@@ -41186,13 +41304,13 @@ TODO
 
         _update: (function () {
 
-            var lookatMat = math.mat4();
+            var mat = math.mat4();
 
             return function () {
 
-                math.lookAtMat4v(this._eye, this._look, this._up, lookatMat);
+                math.lookAtMat4v(this._eye, this._look, this._up, mat);
 
-                this.matrix = lookatMat;
+                this.matrix = mat;
             };
         })(),
 
@@ -41202,47 +41320,57 @@ TODO
          *
          * @param {Number} angle Angle of rotation in degrees
          */
-        rotateEyeY: function (angle) {
+        rotateEyeY: (function () {
 
-            // Get 'look' -> 'eye' vector
-            var eye2 = math.subVec3(this._eye, this._look, tempVec3);
+            var mat = math.mat4();
 
-            var mat = math.rotationMat4v(angle * 0.0174532925, this._gimbalLockY ? math.vec3([0, 1, 0]) : this._up);
-            eye2 = math.transformPoint3(mat, eye2, tempVec3b);
+            return function (angle) {
 
-            // Set eye position as 'look' plus 'eye' vector
-            this.eye = math.addVec3(eye2, this._look, tempVec3c);
+                // Get 'look' -> 'eye' vector
+                var eye2 = math.subVec3(this._eye, this._look, tempVec3);
 
-            if (this._gimbalLockY) {
+                math.rotationMat4v(angle * 0.0174532925, this._gimbalLockY ? math.vec3([0, 1, 0]) : this._up, mat);
+                eye2 = math.transformPoint3(mat, eye2, tempVec3b);
 
-                // Rotate 'up' vector about orthogonal vector
-                this.up = math.transformPoint3(mat, this._up, tempVec3d);
-            }
-        },
+                // Set eye position as 'look' plus 'eye' vector
+                this.eye = math.addVec3(eye2, this._look, tempVec3c);
+
+                if (this._gimbalLockY) {
+
+                    // Rotate 'up' vector about orthogonal vector
+                    this.up = math.transformPoint3(mat, this._up, tempVec3d);
+                }
+            };
+        })(),
 
         /**
          * Rotate 'eye' about 'look' around the X-axis
          *
          * @param {Number} angle Angle of rotation in degrees
          */
-        rotateEyeX: function (angle) {
+        rotateEyeX: (function () {
 
-            // Get 'look' -> 'eye' vector
-            var eye2 = math.subVec3(this._eye, this._look, tempVec3);
+            var mat = math.mat4();
 
-            // Get orthogonal vector from 'eye' and 'up'
-            var left = math.cross3Vec3(math.normalizeVec3(eye2, tempVec3b), math.normalizeVec3(this._up, tempVec3c));
+            return function (angle) {
 
-            // Rotate 'eye' vector about orthogonal vector
-            var mat = math.rotationMat4v(angle * 0.0174532925, left);
-            eye2 = math.transformPoint3(mat, eye2, tempVec3d);
+                // Get 'look' -> 'eye' vector
+                var eye2 = math.subVec3(this._eye, this._look, tempVec3);
 
-            // Set eye position as 'look' plus 'eye' vector
-            this.eye = math.addVec3(eye2, this._look, tempVec3e);
+                // Get orthogonal vector from 'eye' and 'up'
+                var left = math.cross3Vec3(math.normalizeVec3(eye2, tempVec3b), math.normalizeVec3(this._up, tempVec3c));
 
-            // Rotate 'up' vector about orthogonal vector
-            this.up = math.transformPoint3(mat, this._up, tempVec3f);
-        },
+                // Rotate 'eye' vector about orthogonal vector
+                math.rotationMat4v(angle * 0.0174532925, left, mat);
+                eye2 = math.transformPoint3(mat, eye2, tempVec3d);
+
+                // Set eye position as 'look' plus 'eye' vector
+                this.eye = math.addVec3(eye2, this._look, tempVec3e);
+
+                // Rotate 'up' vector about orthogonal vector
+                this.up = math.transformPoint3(mat, this._up, tempVec3f);
+            };
+        })(),
 
         /**
          * Rotate 'look' about 'eye', around the 'up' vector
@@ -41251,42 +41379,58 @@ TODO
          *
          * @param {Number} angle Angle of rotation in degrees
          */
-        rotateLookY: function (angle) {
+        rotateLookY: (function () {
 
-            // Get 'look' -> 'eye' vector
-            var look2 = math.subVec3(this._look, this._eye, tempVec3);
+            var mat = math.mat4();
 
-            // Rotate 'look' vector about 'up' vector
-            var mat = math.rotationMat4v(angle * 0.0174532925, this._up);
-            look2 = math.transformPoint3(mat, look2, tempVec3b);
+            return function (angle) {
 
-            // Set look position as 'look' plus 'eye' vector
-            this.look = math.addVec3(look2, this._eye, tempVec3c);
-        },
+                // Get 'look' -> 'eye' vector
+                var look2 = math.subVec3(this._look, this._eye, tempVec3);
+
+                // Rotate 'look' vector about 'up' vector
+                math.rotationMat4v(angle * 0.0174532925, this._gimbalLockY ? math.vec3([0, 1, 0]) : this._up, mat);
+                look2 = math.transformPoint3(mat, look2, tempVec3b);
+
+                // Set look position as 'look' plus 'eye' vector
+                this.look = math.addVec3(look2, this._eye, tempVec3c);
+
+                if (this._gimbalLockY) {
+
+                    // Rotate 'up' vector about orthogonal vector
+                    this.up = math.transformPoint3(mat, this._up, tempVec3d);
+                }
+            };
+        })(),
 
         /**
          * Rotate 'eye' about 'look' around the X-axis
          *
          * @param {Number} angle Angle of rotation in degrees
          */
-        rotateLookX: function (angle) {
+        rotateLookX: (function () {
 
-            // Get 'look' -> 'eye' vector
-            var look2 = math.subVec3(this._look, this._eye, tempVec3);
+            var mat = math.mat4();
 
-            // Get orthogonal vector from 'eye' and 'up'
-            var left = math.cross3Vec3(math.normalizeVec3(look2, tempVec3b), math.normalizeVec3(this._up, tempVec3c));
+            return function (angle) {
 
-            // Rotate 'look' vector about orthogonal vector
-            var mat = math.rotationMat4v(angle * 0.0174532925, left);
-            look2 = math.transformPoint3(mat, look2, tempVec3d);
+                // Get 'look' -> 'eye' vector
+                var look2 = math.subVec3(this._look, this._eye, tempVec3);
 
-            // Set eye position as 'look' plus 'eye' vector
-            this.look = math.addVec3(look2, this._eye, tempVec3e);
+                // Get orthogonal vector from 'eye' and 'up'
+                var left = math.cross3Vec3(math.normalizeVec3(look2, tempVec3b), math.normalizeVec3(this._up, tempVec3c));
 
-            // Rotate 'up' vector about orthogonal vector
-            this.up = math.transformPoint3(mat, this._up, tempVecf);
-        },
+                // Rotate 'look' vector about orthogonal vector
+                math.rotationMat4v(angle * 0.0174532925, left, mat);
+                look2 = math.transformPoint3(mat, look2, tempVec3d);
+
+                // Set eye position as 'look' plus 'eye' vector
+                this.look = math.addVec3(look2, this._eye, tempVec3e);
+
+                // Rotate 'up' vector about orthogonal vector
+                this.up = math.transformPoint3(mat, this._up, tempVec3f);
+            };
+        })(),
 
         /**
          * Pans the camera along X and Y axis.
@@ -41492,14 +41636,14 @@ TODO
                 get: (function () {
                     var vec = new Float32Array(3);
                     return function () {
-                        return xeogl.math.lenVec3(xeogl.math.subVec3(this._look, this._eye, vec));
+                        return math.lenVec3(math.subVec3(this._look, this._eye, vec));
                     };
                 })()
             }
         },
 
         _getJSON: function () {
-            var vecToArray = xeogl.math.vecToArray;
+            var vecToArray = math.vecToArray;
             var json = {
                 eye: vecToArray(this._eye),
                 look: vecToArray(this._look),

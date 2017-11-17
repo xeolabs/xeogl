@@ -95,29 +95,29 @@
                 // Use the helper utility to visualise the point and tangent
                 // as they move along the curve
 
-                xeogl.debug
-                        .id("line")
-                        .lineWidth(4)
-                        .color([0.5, 1.0, 0.5])
-                        .pos(point)
-                        .pos([point[0] + tangent[0] * 2, point[1] + tangent[1] * 2, point[2] + tangent[2] * 2])
-                        .line();
-
-                xeogl.debug
-                        .id("point")
-                        .fillColor([1.0, 0.6, 0.6])
-                        .color([0, 0, 0])
-                        .text("point")
-                        .pos(point)
-                        .label();
-
-                xeogl.debug
-                        .id("tangent")
-                        .fillColor([0.6, 0.6, 1.0])
-                        .color([0, 0, 0])
-                        .text("tangent")
-                        .pos([point[0] + tangent[0] * 2, point[1] + tangent[1] * 2, point[2] + tangent[2] * 2])
-                        .label();
+//                xeogl.debug
+//                        .id("line")
+//                        .lineWidth(4)
+//                        .color([0.5, 1.0, 0.5])
+//                        .pos(point)
+//                        .pos([point[0] + tangent[0] * 2, point[1] + tangent[1] * 2, point[2] + tangent[2] * 2])
+//                        .line();
+//
+//                xeogl.debug
+//                        .id("point")
+//                        .fillColor([1.0, 0.6, 0.6])
+//                        .color([0, 0, 0])
+//                        .text("point")
+//                        .pos(point)
+//                        .label();
+//
+//                xeogl.debug
+//                        .id("tangent")
+//                        .fillColor([0.6, 0.6, 1.0])
+//                        .color([0, 0, 0])
+//                        .text("tangent")
+//                        .pos([point[0] + tangent[0] * 2, point[1] + tangent[1] * 2, point[2] + tangent[2] * 2])
+//                        .label();
 
 
                 // Slowly orbit the camera

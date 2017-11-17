@@ -37,18 +37,6 @@
 
     model.on("loaded", function () {
 
-        var material = model.entities["saw#0.0"].material;
-//        material.alpha = 0.4;
-//        material.alphaMode = "blend";
-
-        material = model.entities["saw#1.0"].material;
-//        material.alpha = 0.4;
-//        material.alphaMode = "blend";
-
-        var object = new xeogl.GLTFObject(model, {
-            entities: model.objects["saw#8"]
-        });
-        object.outlined=true;
     });
 
     //-----------------------------------------------------------------------------------------------------
