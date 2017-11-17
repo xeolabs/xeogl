@@ -88,13 +88,13 @@
 
         _update: (function () {
 
-            var lookatMat = math.mat4();
+            var mat = math.mat4();
 
             return function () {
 
-                math.lookAtMat4v(this._eye, this._look, this._up, lookatMat);
+                math.lookAtMat4v(this._eye, this._look, this._up, mat);
 
-                this.matrix = lookatMat;
+                this.matrix = mat;
             };
         })(),
 
@@ -104,47 +104,57 @@
          *
          * @param {Number} angle Angle of rotation in degrees
          */
-        rotateEyeY: function (angle) {
+        rotateEyeY: (function () {
 
-            // Get 'look' -> 'eye' vector
-            var eye2 = math.subVec3(this._eye, this._look, tempVec3);
+            var mat = math.mat4();
 
-            var mat = math.rotationMat4v(angle * 0.0174532925, this._gimbalLockY ? math.vec3([0, 1, 0]) : this._up);
-            eye2 = math.transformPoint3(mat, eye2, tempVec3b);
+            return function (angle) {
 
-            // Set eye position as 'look' plus 'eye' vector
-            this.eye = math.addVec3(eye2, this._look, tempVec3c);
+                // Get 'look' -> 'eye' vector
+                var eye2 = math.subVec3(this._eye, this._look, tempVec3);
 
-            if (this._gimbalLockY) {
+                math.rotationMat4v(angle * 0.0174532925, this._gimbalLockY ? math.vec3([0, 1, 0]) : this._up, mat);
+                eye2 = math.transformPoint3(mat, eye2, tempVec3b);
 
-                // Rotate 'up' vector about orthogonal vector
-                this.up = math.transformPoint3(mat, this._up, tempVec3d);
-            }
-        },
+                // Set eye position as 'look' plus 'eye' vector
+                this.eye = math.addVec3(eye2, this._look, tempVec3c);
+
+                if (this._gimbalLockY) {
+
+                    // Rotate 'up' vector about orthogonal vector
+                    this.up = math.transformPoint3(mat, this._up, tempVec3d);
+                }
+            };
+        })(),
 
         /**
          * Rotate 'eye' about 'look' around the X-axis
          *
          * @param {Number} angle Angle of rotation in degrees
          */
-        rotateEyeX: function (angle) {
+        rotateEyeX: (function () {
 
-            // Get 'look' -> 'eye' vector
-            var eye2 = math.subVec3(this._eye, this._look, tempVec3);
+            var mat = math.mat4();
 
-            // Get orthogonal vector from 'eye' and 'up'
-            var left = math.cross3Vec3(math.normalizeVec3(eye2, tempVec3b), math.normalizeVec3(this._up, tempVec3c));
+            return function (angle) {
 
-            // Rotate 'eye' vector about orthogonal vector
-            var mat = math.rotationMat4v(angle * 0.0174532925, left);
-            eye2 = math.transformPoint3(mat, eye2, tempVec3d);
+                // Get 'look' -> 'eye' vector
+                var eye2 = math.subVec3(this._eye, this._look, tempVec3);
 
-            // Set eye position as 'look' plus 'eye' vector
-            this.eye = math.addVec3(eye2, this._look, tempVec3e);
+                // Get orthogonal vector from 'eye' and 'up'
+                var left = math.cross3Vec3(math.normalizeVec3(eye2, tempVec3b), math.normalizeVec3(this._up, tempVec3c));
 
-            // Rotate 'up' vector about orthogonal vector
-            this.up = math.transformPoint3(mat, this._up, tempVec3f);
-        },
+                // Rotate 'eye' vector about orthogonal vector
+                math.rotationMat4v(angle * 0.0174532925, left, mat);
+                eye2 = math.transformPoint3(mat, eye2, tempVec3d);
+
+                // Set eye position as 'look' plus 'eye' vector
+                this.eye = math.addVec3(eye2, this._look, tempVec3e);
+
+                // Rotate 'up' vector about orthogonal vector
+                this.up = math.transformPoint3(mat, this._up, tempVec3f);
+            };
+        })(),
 
         /**
          * Rotate 'look' about 'eye', around the 'up' vector
@@ -153,42 +163,58 @@
          *
          * @param {Number} angle Angle of rotation in degrees
          */
-        rotateLookY: function (angle) {
+        rotateLookY: (function () {
 
-            // Get 'look' -> 'eye' vector
-            var look2 = math.subVec3(this._look, this._eye, tempVec3);
+            var mat = math.mat4();
 
-            // Rotate 'look' vector about 'up' vector
-            var mat = math.rotationMat4v(angle * 0.0174532925, this._up);
-            look2 = math.transformPoint3(mat, look2, tempVec3b);
+            return function (angle) {
 
-            // Set look position as 'look' plus 'eye' vector
-            this.look = math.addVec3(look2, this._eye, tempVec3c);
-        },
+                // Get 'look' -> 'eye' vector
+                var look2 = math.subVec3(this._look, this._eye, tempVec3);
+
+                // Rotate 'look' vector about 'up' vector
+                math.rotationMat4v(angle * 0.0174532925, this._gimbalLockY ? math.vec3([0, 1, 0]) : this._up, mat);
+                look2 = math.transformPoint3(mat, look2, tempVec3b);
+
+                // Set look position as 'look' plus 'eye' vector
+                this.look = math.addVec3(look2, this._eye, tempVec3c);
+
+                if (this._gimbalLockY) {
+
+                    // Rotate 'up' vector about orthogonal vector
+                    this.up = math.transformPoint3(mat, this._up, tempVec3d);
+                }
+            };
+        })(),
 
         /**
          * Rotate 'eye' about 'look' around the X-axis
          *
          * @param {Number} angle Angle of rotation in degrees
          */
-        rotateLookX: function (angle) {
+        rotateLookX: (function () {
 
-            // Get 'look' -> 'eye' vector
-            var look2 = math.subVec3(this._look, this._eye, tempVec3);
+            var mat = math.mat4();
 
-            // Get orthogonal vector from 'eye' and 'up'
-            var left = math.cross3Vec3(math.normalizeVec3(look2, tempVec3b), math.normalizeVec3(this._up, tempVec3c));
+            return function (angle) {
 
-            // Rotate 'look' vector about orthogonal vector
-            var mat = math.rotationMat4v(angle * 0.0174532925, left);
-            look2 = math.transformPoint3(mat, look2, tempVec3d);
+                // Get 'look' -> 'eye' vector
+                var look2 = math.subVec3(this._look, this._eye, tempVec3);
 
-            // Set eye position as 'look' plus 'eye' vector
-            this.look = math.addVec3(look2, this._eye, tempVec3e);
+                // Get orthogonal vector from 'eye' and 'up'
+                var left = math.cross3Vec3(math.normalizeVec3(look2, tempVec3b), math.normalizeVec3(this._up, tempVec3c));
 
-            // Rotate 'up' vector about orthogonal vector
-            this.up = math.transformPoint3(mat, this._up, tempVecf);
-        },
+                // Rotate 'look' vector about orthogonal vector
+                math.rotationMat4v(angle * 0.0174532925, left, mat);
+                look2 = math.transformPoint3(mat, look2, tempVec3d);
+
+                // Set eye position as 'look' plus 'eye' vector
+                this.look = math.addVec3(look2, this._eye, tempVec3e);
+
+                // Rotate 'up' vector about orthogonal vector
+                this.up = math.transformPoint3(mat, this._up, tempVec3f);
+            };
+        })(),
 
         /**
          * Pans the camera along X and Y axis.
@@ -394,14 +420,14 @@
                 get: (function () {
                     var vec = new Float32Array(3);
                     return function () {
-                        return xeogl.math.lenVec3(xeogl.math.subVec3(this._look, this._eye, vec));
+                        return math.lenVec3(math.subVec3(this._look, this._eye, vec));
                     };
                 })()
             }
         },
 
         _getJSON: function () {
-            var vecToArray = xeogl.math.vecToArray;
+            var vecToArray = math.vecToArray;
             var json = {
                 eye: vecToArray(this._eye),
                 look: vecToArray(this._look),
