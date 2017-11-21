@@ -8,6 +8,7 @@
  @param [cfg.pos=[0,0,0]] {Float32Array} World-space position.
  @param [cfg.dir=[0,0,1]] {Float32Array} World-space direction vector.
  @param [cfg.color=[0.4,0.4,0.4]] {Float32Array} Emmissive color
+ @param [cfg.solid=true] {Boolean} Indicates whether or not this helper is filled with color or just wireframe.
  @param [cfg.visible=true] {Boolean} Indicates whether or not this helper is visible.
  @param [cfg.planeSize] {Float32Array} The width and height of the PlaneHelper plane indicator.
  @param [cfg.autoPlaneSize=false] {Boolean} Indicates whether or not this PlaneHelper's
@@ -23,6 +24,9 @@
         type: "xeogl.PlaneHelper",
 
         _init: function (cfg) {
+
+            this._solid = false;
+            this._visible = false;
 
             var transform = this._planeScale = new xeogl.Scale(this, {
                 worldPos: [10, 10, 0],
@@ -100,28 +104,29 @@
                 clippable: false
             });
 
-            //this._label = new xeogl.Entity(this, {
-            //    geometry: new xeogl.VectorTextGeometry(this, {
-            //        text: this.id,
-            //        size: 0.07,
-            //        origin: [0.02, 0.02, 0.0]
-            //    }),
-            //    material: new xeogl.PhongMaterial(this, {
-            //        emissive: [0.3, 1, 0.3],
-            //        lineWidth: 2
-            //    }),
-            //    transform: transform, // Shares transform with plane
-            //    pickable: false,
-            //    collidable: false,
-            //    clippable: false,
-            //    billboard: "spherical"
-            //});
+            this._label = new xeogl.Entity(this, {
+                geometry: new xeogl.VectorTextGeometry(this, {
+                    text: this.id,
+                    size: 0.07,
+                    origin: [0.02, 0.02, 0.0]
+                }),
+                material: new xeogl.PhongMaterial(this, {
+                    emissive: [0.3, 1, 0.3],
+                    lineWidth: 2
+                }),
+                transform: transform, // Shares transform with plane
+                pickable: false,
+                collidable: false,
+                clippable: false,
+                billboard: "spherical"
+            });
 
             this.planeSize = cfg.planeSize;
             this.autoPlaneSize = cfg.autoPlaneSize;
             this.pos = cfg.pos;
             this.dir = cfg.dir;
             this.color = cfg.color;
+            this.solid = cfg.solid;
             this.visible = cfg.visible;
         },
 
@@ -149,8 +154,8 @@
 
             /**
              * World-space position of this PlaneHelper.
-             * Fires an {{#crossLink "PlaneHelper/pos:event"}}{{/crossLink}} event on change.
-             * @property pos
+             * Fires an {{#crossLink "PlaneHelper/worldPos:event"}}{{/crossLink}} event on change.
+             * @property worldPos
              * @default [0,0,0]
              * @type {Float32Array}
              */
@@ -333,6 +338,37 @@
             },
 
             /**
+             Indicates whether this PlaneHelper is filled with color or just wireframe.
+
+             Fires a {{#crossLink "PlaneHelper/active:event"}}{{/crossLink}} event on change.
+
+             @property solid
+             @default true
+             @type Boolean
+             */
+            solid: {
+
+                set: function (value) {
+
+                    this._solid = value !== false;
+
+                    this._planeSolid.visible = this._solid && this._visible;
+
+                    /**
+                     Fired whenever this helper's {{#crossLink "PlaneHelper/solid:property"}}{{/crossLink}} property changes.
+
+                     @event solid
+                     @param value {Boolean} The property's new value
+                     */
+                    this.fire("solid", this._solid);
+                },
+
+                get: function () {
+                    return this._solid;
+                }
+            },
+            
+            /**
              Indicates whether this PlaneHelper is visible or not.
 
              Fires a {{#crossLink "PlaneHelper/visible:event"}}{{/crossLink}} event on change.
@@ -345,12 +381,12 @@
 
                 set: function (value) {
 
-                    value = value !== false;
+                    this._visible = value !== false;
 
-                    this._planeWire.visible = value;
-                    this._planeSolid.visible = value;
-                    this._arrow.visible = value;
-                    //this._label.visible = value;
+                    this._planeWire.visible = this._visible;
+                    this._planeSolid.visible = this._solid && this._visible;
+                    this._arrow.visible = this._visible;
+                    this._label.visible = this._visible;
 
                     /**
                      Fired whenever this helper's {{#crossLink "PlaneHelper/visible:property"}}{{/crossLink}} property changes.
@@ -358,11 +394,11 @@
                      @event visible
                      @param value {Boolean} The property's new value
                      */
-                    this.fire("visible", this._planeWire.visible);
+                    this.fire("visible", this._visible);
                 },
 
                 get: function () {
-                    return this._planeWire.visible;
+                    return this._visible;
                 }
             }
         },

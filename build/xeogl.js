@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2017-11-17
+ * Built on 2017-11-21
  *
  * MIT License
  * Copyright 2017, Lindsay Kay
@@ -5975,7 +5975,7 @@ var Canvas2Image = (function () {
             gl.frontFace(gl.CCW);
             gl.enable(gl.CULL_FACE);
             gl.depthMask(true);
-            gl.colorMask(true, true, true, false);
+            gl.colorMask(true, true, true, true);
 
             var i;
             var len;
@@ -16685,6 +16685,8 @@ var Canvas2Image = (function () {
              */
             this.contextAttr = cfg.contextAttr || {};
             this.contextAttr.alpha = this.transparent;
+            this.contextAttr.alpha = true;
+       //     this.contextAttr.premultipliedAlpha = false;
 
             //if (this.contextAttr.alpha === undefined || this.contextAttr.alpha === null) {
             //    this.contextAttr.alpha = this.transparent;
@@ -16694,7 +16696,6 @@ var Canvas2Image = (function () {
                 this.contextAttr.preserveDrawingBuffer = false;
             }
 
-           // this.contextAttr.alpha = true;
             this.contextAttr.stencil = true;
 
             if (!cfg.canvas) {
@@ -18507,7 +18508,7 @@ var Canvas2Image = (function () {
 
                 var mouseHoverDelay = 500;
                 var mouseOrbitRate = 0.4;
-                var mousePanRate = 0.3;
+                var mousePanRate = 0.2;
                 var mouseZoomRate = 0.8;
                 var keyboardOrbitRate = 140;
                 var keyboardPanRate = 40;
@@ -18769,6 +18770,9 @@ var Canvas2Image = (function () {
 
                     overlay.addEventListener("wheel", function (e) {
                         var delta = Math.max(-1, Math.min(1, -e.deltaY * 40));
+                        if (delta === 0) {
+                            return;
+                        }
                         var d = delta / Math.abs(delta);
                         vZoom = -d * getZoomRate() * mouseZoomRate;
                     });
@@ -18980,10 +18984,13 @@ var Canvas2Image = (function () {
                 (function () {
 
                     overlay.addEventListener("mousemove", function (e) {
+
                         //if (down) {
                         //    return;
                         //}
+
                         getCoordsWithinElement(e, cursorPos);
+
                         if (self.hasSubs("hover") || self.hasSubs("hoverOut") || self.hasSubs("hoverOff") || self.hasSubs("hoverSurface")) {
                             needPick = true;
                         }
@@ -27607,257 +27614,6 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
                 });
             })();
 
-
-            // Touch events
-
-            //(function () {
-            //
-            //    var processTap = false;
-            //
-            //    function getCoordinates (touches) {
-            //        var coordinates = [];
-            //        for (var i = 0, length = touches.length; i < length; i++) {
-            //            var touch = touches[i];
-            //            coordinates.push({ x: touch.pageX, y: touch.pageY });
-            //        }
-            //        return coordinates;
-            //    }
-            //
-            //    function _onTouchEvent(e) {
-            //
-            //        // prevent bubble up
-            //        e.preventDefault();
-            //        e.stopPropagation();
-            //
-            //        // dispatch messages
-            //        var subs = [];
-            //        var tap = false;
-            //        var dblTap = false;
-            //        var xDelta = 0;
-            //        var yDelta = 0;
-            //        var elapse = 0;
-            //        var xSpeed = 0;
-            //        var ySpeed = 0;
-            //
-            //        // normalize touch coordiantes
-            //        var touches = e.touches;
-            //        var changedTouches = e.changedTouches;
-            //        var coordinates = getCoordinates(touches);
-            //        currentTouches = coordinates;
-            //
-            //        // locals
-            //        var currentTime = Date.now();
-            //        var i;
-            //
-            //        var getEventParams = function () {
-            //            return {
-            //                touches: coordinates,
-            //                xDelta: xDelta,
-            //                yDelta: yDelta,
-            //                distanceX: distanceX,
-            //                distanceY: distanceY,
-            //                elapse: elapse,
-            //                xSpeed: xSpeed,
-            //                ySpeed: ySpeed
-            //            };
-            //        };
-            //
-            //        var dispatch = function (subs, params) {
-            //            params = params || getEventParams();
-            //            for (var i = 0; i < subs.length; i++) {
-            //                subs[i](params);
-            //            }
-            //        };
-            //
-            //        // throttle touch move
-            //        if (e.type === "touchmove" && multiTouchTime) {
-            //            var elapsed = currentTime - multiTouchTime;
-            //            if (elapsed <= 25) {
-            //                return;
-            //            }
-            //        }
-            //
-            //        switch (e.type) {
-            //            case "touchstart":
-            //
-            //                processTap = e.touches.length === 1 && changedTouches.length === 1;
-            //
-            //                if (processTap) {
-            //                    tapStartTime = currentTime;
-            //                    multiTouchTime = null;
-            //                } else {
-            //                    tapStartTime = null;
-            //                }
-            //
-            //                touchStartTime = currentTime;
-            //                //tapStartTime = touches.length === 1 && multiCoordinates.length <= 1 ? touchStartTime : null;
-            //                multiTouchTime = touches.length === 2 ? currentTime : null;
-            //
-            //                downTouches.length = 0;
-            //                downTouches = downTouches.concat(coordinates);
-            //                startPosition = coordinates[0];
-            //                stopPosition = coordinates[0];
-            //                // pinch-zoom start
-            //                var multiTouch = coordinates.length > 1;
-            //                if (multiTouch) {
-            //                    multiCoordinates = coordinates;
-            //                }
-            //                else {
-            //                    subs.push(touchStartSubs);
-            //                    multiCoordinates = [];
-            //                }
-            //                break;
-            //
-            //            case "touchmove":
-            //
-            //                // pinch-zoom active
-            //                var twoFingerAction = coordinates.length === 2 && multiCoordinates.length === 2;
-            //
-            //                if (twoFingerAction) {
-            //                    multiTouchTime = currentTime;
-            //                    // compare to prev action
-            //                    var deltaOneX = Math.abs(multiCoordinates[0].x - multiCoordinates[1].x);
-            //                    var deltaOneY = Math.abs(multiCoordinates[0].y - multiCoordinates[1].y);
-            //                    var deltaTwoX = Math.abs(coordinates[0].x - coordinates[1].x);
-            //                    var deltaTwoY = Math.abs(coordinates[0].y - coordinates[1].y);
-            //                    //xDelta = coordinates[0].x - multiCoordinates[0].x;
-            //                    //yDelta = coordinates[0].y - multiCoordinates[0].y;
-            //                    var xDeltaOne = coordinates[0].x - multiCoordinates[0].x;
-            //                    var yDeltaOne = coordinates[0].y - multiCoordinates[0].y;
-            //                    var xDeltaTwo = coordinates[1].x - multiCoordinates[1].x;
-            //                    var yDeltaTwo = coordinates[1].y - multiCoordinates[1].y;
-            //                    xDelta = (xDeltaOne + xDeltaTwo) / 2;
-            //                    yDelta = (yDeltaOne + yDeltaTwo) / 2;
-            //                    //xDelta = deltaOneX - deltaTwoX;
-            //                    //yDelta = deltaOneY - deltaTwoY;
-            //                    distanceX = Math.abs(coordinates[0].x - coordinates[1].x);
-            //                    distanceY = Math.abs(coordinates[0].y - coordinates[1].y);
-            //                    var distanceOne = Math.sqrt(Math.pow(deltaOneX, 2) + Math.pow(deltaOneY, 2));
-            //                    var distanceTwo = Math.sqrt(Math.pow(deltaTwoX, 2) + Math.pow(deltaTwoY, 2));
-            //                    // angle in degrees
-            //                    //var angleDeg = Math.atan2(deltaTwoY, deltaTwoX) * 180 / Math.PI;
-            //                    // determine panning
-            //                    //panning = angleDeg <= TOUCH_PAN_ANGLE || angleDeg >= 90 - TOUCH_PAN_ANGLE;
-            //                    var deltaDistance = Math.abs(distanceOne - distanceTwo);
-            //                    panning = deltaDistance <= 5;
-            //                    // compare finger direction
-            //
-            //                    var xChange = xDeltaOne < 0 && xDeltaTwo > 0 || xDeltaOne > 0 && xDeltaTwo < 0;
-            //                    var yChange = yDeltaOne < 0 && yDeltaTwo > 0 || yDeltaOne > 0 && yDeltaTwo < 0;
-            //
-            //                    // panning
-            //                    if (panning) { // panning
-            //                        xDelta = (xDeltaOne + xDeltaTwo) / 2;
-            //                        yDelta = (yDeltaOne + yDeltaTwo) / 2;
-            //                        // determine panning/pinch/zoom
-            //                        subs.push(touchPanSubs);
-            //
-            //                        // update multi position
-            //                        //  multiCoordinates = coordinates.concat([]);
-            //                    } else if (xChange || yChange) {
-            //                        // pinch
-            //                        if (deltaTwoX < deltaOneX && deltaTwoY < deltaOneY) {
-            //                            subs.push(touchPinchSubs);
-            //                        }
-            //                        // zoom
-            //                        else if (deltaTwoX > deltaOneX && deltaTwoY > deltaOneY) {
-            //                            subs.push(touchZoomSubs);
-            //                        }
-            //                    }
-            //
-            //                    // update multi position
-            //                    multiCoordinates = coordinates.concat([]);
-            //                } else {
-            //
-            //                    // standard cursor move
-            //
-            //                    xDelta = coordinates[0].x - stopPosition.x;
-            //                    yDelta = coordinates[0].y - stopPosition.y;
-            //
-            //                    if (multiTouchTime) {
-            //
-            //                        var multiTouchElapsed = currentTime - multiTouchTime;
-            //
-            //                        // delay move event
-            //                        if (multiTouchElapsed > 250) {
-            //                            subs.push(touchMoveSubs);
-            //                        }
-            //                    } else {
-            //                        subs.push(touchMoveSubs);
-            //                    }
-            //
-            //                    multiCoordinates = [];
-            //                    multiTouchTime = null;
-            //                }
-            //                stopPosition = coordinates[0];
-            //                break;
-            //
-            //            case "touchend":
-            //                processTap = processTap && e.touches.length === 0 && changedTouches.length === 1;
-            //                tap = false;
-            //                dblTap = false;
-            //                // process tap
-            //                if (processTap) {
-            //                    tap = (currentTime - tapStartTime) < TAP_INTERVAL;
-            //                    if (tap) {
-            //                        // check for dbl tap
-            //                        if (lastTapTime) {
-            //                            dblTap = (tapStartTime - lastTapTime) < DBL_TAP_INTERVAL;
-            //                        }
-            //                        // update last single tap
-            //                        if (!dblTap) {
-            //                            lastTapTime = currentTime;
-            //                        }
-            //                    }
-            //                }
-            //                else {
-            //                    tap = false;
-            //                    dblTap = false;
-            //                    tapStartTime = null;
-            //                    lastTapTime = null;
-            //                }
-            //                elapse = currentTime - touchStartTime;
-            //                // track touch end
-            //                if (multiCoordinates.length <= 1) {
-            //                    subs.push(touchEndSubs);
-            //                }
-            //
-            //                // check speed
-            //                ///if (multiCoordinates.length && multiCoordinates.length !== 2) {
-            //                // update deltas
-            //                xDelta = stopPosition.x - startPosition.x;
-            //                yDelta = stopPosition.y - startPosition.y;
-            //                // s = d/t
-            //                xSpeed = Math.abs(xDelta) / elapse;
-            //                ySpeed = Math.abs(yDelta) / elapse;
-            //                break;
-            //            default:
-            //                break;
-            //        }
-            //
-            //        // dispatch std events
-            //        for (i = 0; i < subs.length; i++) {
-            //            var _subs = subs[i];
-            //            // dispatch messages
-            //            for (var j = 0; j < _subs.length; j++) {
-            //                dispatch(_subs);
-            //            }
-            //        }
-            //
-            //        // dispatch tap events
-            //        if (tap || dblTap) {
-            //            var tapParams = getEventParams();
-            //            tapParams.touches = downTouches;
-            //            if (tap) {
-            //                dispatch(touchTapSubs, tapParams);
-            //            }
-            //            if (dblTap) {
-            //                dispatch(touchDoubleTapSubs, tapParams);
-            //            }
-            //        }
-            //    }
-            //
-            //})();
 
             // VR
 
@@ -41497,8 +41253,9 @@ TODO
             }
 
             var dir = math.normalizeVec3(vec, tempVec3c);  // Get normalised vector
+            math.mulVec3Scalar(dir, newLenLook);
 
-            this.eye = math.addVec3(this._look, math.mulVec3Scalar(dir, newLenLook), tempVec3d);
+            this.eye = math.addVec3(this._look, dir, tempVec3d);
         },
 
         _props: {
