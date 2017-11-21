@@ -457,8 +457,8 @@
                 } else {
 
                     var request = new XMLHttpRequest();
-                    request.responseType = 'arraybuffer';
                     request.open('GET', ctx.basePath + url, true);
+                    request.responseType = 'arraybuffer';
                     request.onreadystatechange = function () {
                         if (request.readyState == 4) {
                             if (request.status == "200") {
