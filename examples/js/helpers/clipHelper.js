@@ -9,6 +9,7 @@
  @constructor
  @param cfg {*} Configuration
  @param cfg.clip {Clip} A {{#crossLink "Clip"}}{{/crossLink}} to visualize.
+ @param [cfg.solid=true] {Boolean} Indicates whether or not this helper is filled with color or just wireframe.
  @param [cfg.visible=true] {Boolean} Indicates whether or not this helper is visible.
  @param [cfg.planeSize] {Float32Array} The width and height of the ClipHelper plane indicator.
  @param [cfg.autoPlaneSize=false] {Boolean} Indicates whether or not this ClipHelper's
@@ -28,15 +29,11 @@
             // STYLE: Compose instead of extend, because we may want to add more helpers here
 
             this._planeHelper = new xeogl.PlaneHelper(this);
-            //this._labelHelper = new xeogl.LabelHelper(this, {
-            //    offset: [1,1],
-            //    textSize: 0.1,
-            //    visible: false
-            //});
 
             this.clip = cfg.clip;
             this.planeSize = cfg.planeSize;
             this.autoPlaneSize = cfg.autoPlaneSize;
+            this.solid = cfg.solid;
             this.visible = cfg.visible;
         },
 
@@ -63,21 +60,18 @@
                         on: {
                             pos: function (pos) {
                                 self._planeHelper.pos = pos;
-                              //  self._labelHelper.pos = pos;
                             },
                             dir: function (dir) {
                                 self._planeHelper.dir = dir;
                             },
                             active: function (active) {
-                                var color = active ? [0.2, 0.6, 0.2] : [1.0, 0.2, 0.2];
-                                self._planeHelper.color = color;
-                               // self._labelHelper.color = color;
+                                self._planeHelper.color = active ? [0.2, 0.2, 0.2] : [1.0, 0.2, 0.2];
                             }
                         }
                     });
 
                     if (this._attached.clip) {
-                      //  this._labelHelper.text = this._attached.clip.id;
+                        //this._label.geometry.text = this._attached.clip.id;
                     }
                 },
 
@@ -150,6 +144,35 @@
             },
 
             /**
+             Indicates whether this ClipHelper's plane is filled or just wireframe.
+
+             Fires a {{#crossLink "ClipHelper/active:event"}}{{/crossLink}} event on change.
+
+             @property solid
+             @default true
+             @type Boolean
+             */
+            solid: {
+
+                set: function (value) {
+
+                    this._planeHelper.solid = value;
+
+                    /**
+                     Fired whenever this helper's {{#crossLink "ClipHelper/solid:property"}}{{/crossLink}} property changes.
+
+                     @event solid
+                     @param value {Boolean} The property's new value
+                     */
+                    this.fire("solid", this._planeHelper.solid);
+                },
+
+                get: function () {
+                    return this._planeHelper.solid;
+                }
+            },
+            
+            /**
              Indicates whether this ClipHelper is visible or not.
 
              Fires a {{#crossLink "ClipHelper/active:event"}}{{/crossLink}} event on change.
@@ -163,7 +186,6 @@
                 set: function (value) {
 
                     this._planeHelper.visible = value;
-                   // this._labelHelper.visible = value;
 
                     /**
                      Fired whenever this helper's {{#crossLink "ClipHelper/visible:property"}}{{/crossLink}} property changes.
