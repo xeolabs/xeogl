@@ -2835,7 +2835,7 @@
             "namespace": "",
             "file": "src/controls/inputControl.js",
             "line": 1,
-            "description": "TODO",
+            "description": "* \"hoverEnter\" - Hover enters a new object\n * \"hover\" -  Hover continues over an object - fired continuously as mouse moves over an object\n * \"hoverSurface\" - Hover continues over an object surface - fired continuously as mouse moves over an object\n * \"hoverLeave\"  - Hover has left the last object we were hovering over\n * \"hoverOff\" - Hover continues over empty space - fired continuously as mouse moves over nothing\n * \"pickedObject\" - Clicked or tapped object\n * \"pickedSurface\" -  Clicked or tapped object, with event containing surface intersection details\n * \"doublePickedObject\" - Double-clicked or double-tapped object\n * \"doublePickedSurface\" - Double-clicked or double-tapped object, with event containing surface intersection details\n * \"pickedNothing\" - Clicked or tapped, but not on any objects\n * \"doublePickedNothing\" - Double-clicked or double-tapped, but not on any objects\nInputControl only fires \"hover\" events when the mouse is up.\nFor efficiency, InputControl only does surface intersection picking when you subscribe to \"doublePickedObject\" and\n \"doublePickedSurface\" events. Therefore, only subscribe to those when you're OK with the overhead incurred by the\n surface intersection tests.",
             "submodule": "controls",
             "is_constructor": 1,
             "params": [
@@ -2865,7 +2865,7 @@
                         },
                         {
                             "name": "camera",
-                            "description": "ID or instance of a {{#crossLink \"Camera\"}}Camera{{/crossLink}} to control.\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this InputControl. Defaults to the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default instance, {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}}.",
+                            "description": "ID or instance of a {{#crossLink \"Camera\"}}Camera{{/crossLink}} to control.\n Must be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this InputControl. Defaults to the\n parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default instance, {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}}.",
                             "type": "String|Camera",
                             "optional": true
                         }
@@ -2874,6 +2874,13 @@
                 {
                     "name": "firstPerson",
                     "description": "Whether or not this InputControl is in \"first person\" mode.",
+                    "type": "Boolean",
+                    "optional": true,
+                    "optdefault": "false"
+                },
+                {
+                    "name": "walking",
+                    "description": "Whether or not this InputControl is in \"walking\" mode.",
                     "type": "Boolean",
                     "optional": true,
                     "optdefault": "false"
@@ -8350,6 +8357,13 @@
                             "type": "Clip"
                         },
                         {
+                            "name": "solid",
+                            "description": "Indicates whether or not this helper is filled with color or just wireframe.",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "true"
+                        },
+                        {
                             "name": "visible",
                             "description": "Indicates whether or not this helper is visible.",
                             "type": "Boolean",
@@ -8479,6 +8493,13 @@
                             "type": "Float32Array",
                             "optional": true,
                             "optdefault": "[0.4,0.4,0.4]"
+                        },
+                        {
+                            "name": "solid",
+                            "description": "Indicates whether or not this helper is filled with color or just wireframe.",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "true"
                         },
                         {
                             "name": "visible",
@@ -9511,7 +9532,7 @@
         },
         {
             "file": "src/animation/cameraFlightAnimation.js",
-            "line": 193,
+            "line": 196,
             "description": "Begins flying this CameraFlightAnimation's {{#crossLink \"Camera\"}}{{/crossLink}} to the given target.\n\n\n * When the target is a boundary, the {{#crossLink \"Camera\"}}{{/crossLink}} will fly towards the target\n   and stop when the target fills most of the canvas.\n * When the target is an explicit {{#crossLink \"Camera\"}}{{/crossLink}} position, given as ````eye````, ````look```` and ````up````\n   vectors, then this CameraFlightAnimation will interpolate the {{#crossLink \"Camera\"}}{{/crossLink}} to that target and stop there.",
             "itemtype": "method",
             "name": "flyTo",
@@ -9600,7 +9621,7 @@
         },
         {
             "file": "src/animation/cameraFlightAnimation.js",
-            "line": 404,
+            "line": 417,
             "description": "Jumps this CameraFlightAnimation's {{#crossLink \"Camera\"}}{{/crossLink}} to the given target.\n\n * When the target is a boundary, this CameraFlightAnimation will position the {{#crossLink \"Camera\"}}{{/crossLink}}\n at where the target fills most of the canvas.\n * When the target is an explicit {{#crossLink \"Camera\"}}{{/crossLink}} position, given as ````eye````, ````look```` and ````up````\n vectors, then this CameraFlightAnimation will jump the {{#crossLink \"Camera\"}}{{/crossLink}} to that target.",
             "itemtype": "method",
             "name": "flyTo",
@@ -9668,7 +9689,7 @@
         },
         {
             "file": "src/animation/cameraFlightAnimation.js",
-            "line": 633,
+            "line": 662,
             "description": "Stops an earlier flyTo, fires arrival callback.",
             "itemtype": "method",
             "name": "stop",
@@ -9678,7 +9699,7 @@
         },
         {
             "file": "src/animation/cameraFlightAnimation.js",
-            "line": 666,
+            "line": 695,
             "description": "Cancels an earlier flyTo without calling the arrival callback.",
             "itemtype": "method",
             "name": "cancel",
@@ -9688,7 +9709,7 @@
         },
         {
             "file": "src/animation/cameraFlightAnimation.js",
-            "line": 692,
+            "line": 721,
             "description": "The {{#crossLink \"Camera\"}}{{/crossLink}} being controlled by this CameraFlightAnimation.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this CameraFlightAnimation. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}} when set to\na null or undefined value.\n\nFires a {{#crossLink \"CameraFlightAnimation/camera:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "camera",
@@ -9699,7 +9720,7 @@
         },
         {
             "file": "src/animation/cameraFlightAnimation.js",
-            "line": 708,
+            "line": 737,
             "description": "Fired whenever this CameraFlightAnimation's {{#crossLink \"CameraFlightAnimation/camera:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "camera",
@@ -9715,7 +9736,7 @@
         },
         {
             "file": "src/animation/cameraFlightAnimation.js",
-            "line": 732,
+            "line": 761,
             "description": "Flight duration, in seconds, when calling {{#crossLink \"CameraFlightAnimation/flyTo:method\"}}{{/crossLink}}.\n\nStops any flight currently in progress.\n\nFires a {{#crossLink \"CameraFlightAnimation/duration:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "duration",
@@ -9727,7 +9748,7 @@
         },
         {
             "file": "src/animation/cameraFlightAnimation.js",
-            "line": 749,
+            "line": 778,
             "description": "Fired whenever this CameraFlightAnimation's {{#crossLink \"CameraFlightAnimation/duration:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "duration",
@@ -9744,7 +9765,7 @@
         },
         {
             "file": "src/animation/cameraFlightAnimation.js",
-            "line": 765,
+            "line": 794,
             "description": "When true, will ensure that this CameraFlightAnimation is flying to a boundary it will always adjust the distance between the\n{{#crossLink \"CameraFlightAnimation/camera:property\"}}camera{{/crossLink}}'s {{#crossLink \"Lookat/eye:property\"}}eye{{/crossLink}}\nand {{#crossLink \"Lookat/look:property\"}}{{/crossLink}}\nso as to ensure that the target boundary is always filling the view volume.\n\nWhen false, the eye will remain at its current distance from the look position.\n\nFires a {{#crossLink \"CameraFlightAnimation/fit:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "fit",
@@ -9756,7 +9777,7 @@
         },
         {
             "file": "src/animation/cameraFlightAnimation.js",
-            "line": 785,
+            "line": 814,
             "description": "Fired whenever this CameraFlightAnimation's\n{{#crossLink \"CameraFlightAnimation/fit:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "fit",
@@ -9772,7 +9793,7 @@
         },
         {
             "file": "src/animation/cameraFlightAnimation.js",
-            "line": 800,
+            "line": 829,
             "description": "How much of field-of-view, in degrees, that a target {{#crossLink \"Entity\"}}{{/crossLink}} or its AABB should\nfill the canvas when calling {{#crossLink \"CameraFlightAnimation/flyTo:method\"}}{{/crossLink}} or {{#crossLink \"CameraFlightAnimation/jumpTo:method\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"CameraFlightAnimation/fitFOV:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "fitFOV",
@@ -9784,7 +9805,7 @@
         },
         {
             "file": "src/animation/cameraFlightAnimation.js",
-            "line": 816,
+            "line": 845,
             "description": "Fired whenever this CameraFlightAnimation's {{#crossLink \"CameraFlightAnimation/fitFOV:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "fitFOV",
@@ -9801,7 +9822,7 @@
         },
         {
             "file": "src/animation/cameraFlightAnimation.js",
-            "line": 830,
+            "line": 859,
             "description": "When true, will cause this CameraFlightAnimation to point the {{#crossLink \"CameraFlightAnimation/camera:property\"}}{{/crossLink}}\nin the direction that it is travelling.\n\nFires a {{#crossLink \"CameraFlightAnimation/trail:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "trail",
@@ -9813,7 +9834,7 @@
         },
         {
             "file": "src/animation/cameraFlightAnimation.js",
-            "line": 846,
+            "line": 875,
             "description": "Fired whenever this CameraFlightAnimation's {{#crossLink \"CameraFlightAnimation/trail:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "trail",
@@ -10100,7 +10121,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 247,
+            "line": 248,
             "description": "Boundary of the Canvas in absolute browser window coordinates.\n\n### Usage:\n\n````javascript\nvar boundary = myScene.canvas.boundary;\n\nvar xmin = boundary[0];\nvar ymin = boundary[1];\nvar width = boundary[2];\nvar height = boundary[3];\n````",
             "itemtype": "property",
             "name": "boundary",
@@ -10112,7 +10133,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 284,
+            "line": 285,
             "description": "Fired whenever the WebGL context has been lost",
             "itemtype": "event",
             "name": "webglContextLost",
@@ -10122,7 +10143,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 297,
+            "line": 298,
             "description": "Fired whenever the WebGL context has been restored again after having previously being lost",
             "itemtype": "event",
             "name": "webglContextRestored",
@@ -10138,7 +10159,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 359,
+            "line": 360,
             "description": "Fired whenever this Canvas's {{#crossLink \"Canvas/boundary:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "boundary",
@@ -10154,7 +10175,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 396,
+            "line": 397,
             "description": "Creates a default canvas in the DOM.",
             "access": "private",
             "tagname": "",
@@ -10164,7 +10185,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 426,
+            "line": 427,
             "description": "Creates a image element behind the canvas, for purpose of showing a custom background.",
             "access": "private",
             "tagname": "",
@@ -10174,7 +10195,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 453,
+            "line": 454,
             "description": "Creates an invisible DIV over the canvas, for purpose of catching\ninput events without interfering with app-lever UI bits floating underneath.",
             "access": "private",
             "tagname": "",
@@ -10184,7 +10205,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 480,
+            "line": 481,
             "access": "private",
             "tagname": "",
             "class": "Canvas",
@@ -10193,7 +10214,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 510,
+            "line": 511,
             "description": "Initialises the WebGL context",
             "access": "private",
             "tagname": "",
@@ -10203,7 +10224,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 543,
+            "line": 544,
             "description": "Fired whenever the canvas failed to get a WebGL context, which probably means that WebGL\nis either unsupported or has been disabled.",
             "itemtype": "event",
             "name": "webglContextFailed",
@@ -10213,7 +10234,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 552,
+            "line": 553,
             "description": "Returns a snapshot of this Canvas as a Base64-encoded image.\n\nWhen a callback is given, this method will capture the snapshot asynchronously, on the next animation frame,\nand return it via the callback.\n\nWhen no callback is given, this method captures and returns the snapshot immediately. Note that is only\npossible when you have configured the Canvas's {{#crossLink \"Scene\"}}Scene{{/crossLink}} to preserve the\nWebGL drawing buffer, which has a performance overhead.\n\n#### Usage:\n\n````javascript\n// Get snapshot asynchronously\nmyScene.canvas.getSnapshot({\n    width: 500, // Defaults to size of canvas\n    height: 500,\n    format: \"png\" // Options are \"jpeg\" (default), \"png\" and \"bmp\"\n}, function(imageDataURL) {\n    imageElement.src = imageDataURL;\n});\n\n// Get snapshot synchronously, requires that Scene be\n// configured with preserveDrawingBuffer; true\nimageElement.src = myScene.canvas.getSnapshot({\n    width: 500,\n    height: 500,\n    format: \"png\"\n});\n````",
             "itemtype": "method",
             "name": "getSnapshot",
@@ -10262,7 +10283,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 633,
+            "line": 634,
             "description": "Reads colors of pixels from the last rendered frame.\n\n<p>Call this method like this:</p>\n\n````JavaScript\n\n// Ignore transparent pixels (default is false)\nvar opaqueOnly = true;\n\nvar colors = new Float32Array(8);\n\nmyCanvas.readPixels([ 100, 22, 12, 33 ], colors, 2, opaqueOnly);\n````\n\nThen the r,g,b components of the colors will be set to the colors at those pixels.",
             "params": [
                 {
@@ -10292,7 +10313,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 661,
+            "line": 662,
             "description": "A background color for the canvas. This is overridden by {{#crossLink \"Canvas/backgroundImage:property\"}}{{/crossLink}}.\n\nYou can set this to a new color at any time.\n\nFires a {{#crossLink \"Canvas/backgroundColor:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "backgroundColor",
@@ -10304,7 +10325,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 690,
+            "line": 691,
             "description": "Fired whenever this Canvas's {{#crossLink \"Canvas/backgroundColor:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "backgroundColor",
@@ -10320,7 +10341,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 703,
+            "line": 704,
             "description": "URL of a background image for the canvas. This is overrided by {{#crossLink \"Canvas/backgroundColor/property\"}}{{/crossLink}}.\n\nYou can set this to a new file path at any time.\n\nFires a {{#crossLink \"Canvas/background:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "backgroundImage",
@@ -10331,7 +10352,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 738,
+            "line": 739,
             "description": "Fired whenever this Canvas's {{#crossLink \"Canvas/backgroundImage:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "backgroundImage",
@@ -10347,7 +10368,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 751,
+            "line": 752,
             "description": "The busy {{#crossLink \"Spinner\"}}{{/crossLink}} for this Canvas.",
             "itemtype": "property",
             "name": "spinner",
@@ -10732,7 +10753,7 @@
         },
         {
             "file": "src/controls/inputControl.js",
-            "line": 26,
+            "line": 44,
             "description": "JavaScript class name for this Component.",
             "itemtype": "property",
             "name": "type",
@@ -10744,7 +10765,7 @@
         },
         {
             "file": "src/controls/inputControl.js",
-            "line": 35,
+            "line": 53,
             "description": "Indicates that only one instance of a InputControl may be active within\nits {{#crossLink \"Scene\"}}{{/crossLink}} at a time. When a InputControl is activated, that has\na true value for this flag, then any other active InputControl will be deactivated first.",
             "itemtype": "property",
             "name": "exclusive",
@@ -10756,7 +10777,7 @@
         },
         {
             "file": "src/controls/inputControl.js",
-            "line": 86,
+            "line": 105,
             "description": "Flag which indicates whether this InputControl is in \"first person\" mode.\n\nIn \"first person\" mode (disabled by default) the look position rotates about the eye position. Otherwise,\nthe eye rotates about the look.\n\nFires a {{#crossLink \"KeyboardRotateCamera/firstPerson:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "firstPerson",
@@ -10768,7 +10789,7 @@
         },
         {
             "file": "src/controls/inputControl.js",
-            "line": 108,
+            "line": 125,
             "description": "Fired whenever this InputControl's {{#crossLink \"InputControl/firstPerson:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "firstPerson",
@@ -10784,7 +10805,35 @@
         },
         {
             "file": "src/controls/inputControl.js",
-            "line": 121,
+            "line": 138,
+            "description": "Flag which indicates whether this InputControl is in \"walking\" mode.\n\nWhen set true, this constrains eye movement to the horizontal X-Z plane. When doing a walkthrough,\nthis is useful to allow us to look upwards or downwards as we move, while keeping us moving in the\nhorizontal plane.\n\nThis only has an effect when also in \"first person\" mode.\n\nFires a {{#crossLink \"KeyboardRotateCamera/walking:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "walking",
+            "default": "false",
+            "type": "Boolean",
+            "class": "InputControl",
+            "module": "xeogl",
+            "submodule": "controls"
+        },
+        {
+            "file": "src/controls/inputControl.js",
+            "line": 161,
+            "description": "Fired whenever this InputControl's {{#crossLink \"InputControl/walking:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "walking",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "InputControl",
+            "module": "xeogl",
+            "submodule": "controls"
+        },
+        {
+            "file": "src/controls/inputControl.js",
+            "line": 174,
             "description": "TODO\nFires a {{#crossLink \"KeyboardRotateCamera/doublePickFlyTo:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "doublePickFlyTo",
@@ -10796,7 +10845,7 @@
         },
         {
             "file": "src/controls/inputControl.js",
-            "line": 137,
+            "line": 190,
             "description": "Fired whenever this InputControl's {{#crossLink \"InputControl/doublePickFlyTo:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "doublePickFlyTo",
@@ -10812,7 +10861,7 @@
         },
         {
             "file": "src/controls/inputControl.js",
-            "line": 150,
+            "line": 203,
             "description": "The {{#crossLink \"Camera\"}}{{/crossLink}} being controlled by this InputControl.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this InputControl. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}} when set to\na null or undefined value.",
             "itemtype": "property",
             "name": "camera",
@@ -10823,7 +10872,7 @@
         },
         {
             "file": "src/controls/inputControl.js",
-            "line": 164,
+            "line": 217,
             "description": "Fired whenever this InputControl's {{#crossLink \"InputControl/camera:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "camera",
@@ -14274,7 +14323,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 748,
+            "line": 497,
             "description": "Fired when the orientation of the device has changed.",
             "itemtype": "event",
             "name": "orientationchange",
@@ -14294,7 +14343,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 790,
+            "line": 539,
             "description": "Fires on a regular interval and returns data about the rotation\n(in degrees per second) and acceleration (in meters per second squared) of the device, at that moment in\ntime. Some devices do not have the hardware to exclude the effect of gravity.",
             "itemtype": "event",
             "name": "devicemotion",
@@ -14322,7 +14371,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 814,
+            "line": 563,
             "description": "Fired when fresh data is available from an orientation sensor about the current orientation\nof the device as compared to the Earth coordinate frame. This data is gathered from a\nmagnetometer inside the device. See\n<a href=\"https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Orientation_and_motion_data_explained\">Orientation and motion data explained</a> for more info.",
             "itemtype": "event",
             "name": "deviceorientation",
@@ -14350,7 +14399,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 856,
+            "line": 605,
             "description": "Enable or disable all input handlers",
             "params": [
                 {
@@ -14364,7 +14413,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 869,
+            "line": 618,
             "description": "Code for the BACKSPACE key.",
             "itemtype": "property",
             "name": "KEY_BACKSPACE",
@@ -14376,7 +14425,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 877,
+            "line": 626,
             "description": "Code for the TAB key.",
             "itemtype": "property",
             "name": "KEY_TAB",
@@ -14388,7 +14437,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 885,
+            "line": 634,
             "description": "Code for the ENTER key.",
             "itemtype": "property",
             "name": "KEY_ENTER",
@@ -14400,7 +14449,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 893,
+            "line": 642,
             "description": "Code for the SHIFT key.",
             "itemtype": "property",
             "name": "KEY_SHIFT",
@@ -14412,7 +14461,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 901,
+            "line": 650,
             "description": "Code for the CTRL key.",
             "itemtype": "property",
             "name": "KEY_CTRL",
@@ -14424,7 +14473,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 909,
+            "line": 658,
             "description": "Code for the ALT key.",
             "itemtype": "property",
             "name": "KEY_ALT",
@@ -14436,7 +14485,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 917,
+            "line": 666,
             "description": "Code for the PAUSE_BREAK key.",
             "itemtype": "property",
             "name": "KEY_PAUSE_BREAK",
@@ -14448,7 +14497,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 925,
+            "line": 674,
             "description": "Code for the CAPS_LOCK key.",
             "itemtype": "property",
             "name": "KEY_CAPS_LOCK",
@@ -14460,7 +14509,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 933,
+            "line": 682,
             "description": "Code for the ESCAPE key.",
             "itemtype": "property",
             "name": "KEY_ESCAPE",
@@ -14472,7 +14521,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 941,
+            "line": 690,
             "description": "Code for the PAGE_UP key.",
             "itemtype": "property",
             "name": "KEY_PAGE_UP",
@@ -14484,7 +14533,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 949,
+            "line": 698,
             "description": "Code for the PAGE_DOWN key.",
             "itemtype": "property",
             "name": "KEY_PAGE_DOWN",
@@ -14496,7 +14545,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 957,
+            "line": 706,
             "description": "Code for the END key.",
             "itemtype": "property",
             "name": "KEY_END",
@@ -14508,7 +14557,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 965,
+            "line": 714,
             "description": "Code for the HOME key.",
             "itemtype": "property",
             "name": "KEY_HOME",
@@ -14520,7 +14569,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 973,
+            "line": 722,
             "description": "Code for the LEFT_ARROW key.",
             "itemtype": "property",
             "name": "KEY_LEFT_ARROW",
@@ -14532,7 +14581,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 981,
+            "line": 730,
             "description": "Code for the UP_ARROW key.",
             "itemtype": "property",
             "name": "KEY_UP_ARROW",
@@ -14544,7 +14593,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 989,
+            "line": 738,
             "description": "Code for the RIGHT_ARROW key.",
             "itemtype": "property",
             "name": "KEY_RIGHT_ARROW",
@@ -14556,7 +14605,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 997,
+            "line": 746,
             "description": "Code for the DOWN_ARROW key.",
             "itemtype": "property",
             "name": "KEY_DOWN_ARROW",
@@ -14568,7 +14617,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1005,
+            "line": 754,
             "description": "Code for the INSERT key.",
             "itemtype": "property",
             "name": "KEY_INSERT",
@@ -14580,7 +14629,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1013,
+            "line": 762,
             "description": "Code for the DELETE key.",
             "itemtype": "property",
             "name": "KEY_DELETE",
@@ -14592,7 +14641,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1021,
+            "line": 770,
             "description": "Code for the 0 key.",
             "itemtype": "property",
             "name": "KEY_NUM_0",
@@ -14604,7 +14653,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1029,
+            "line": 778,
             "description": "Code for the 1 key.",
             "itemtype": "property",
             "name": "KEY_NUM_1",
@@ -14616,7 +14665,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1037,
+            "line": 786,
             "description": "Code for the 2 key.",
             "itemtype": "property",
             "name": "KEY_NUM_2",
@@ -14628,7 +14677,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1045,
+            "line": 794,
             "description": "Code for the 3 key.",
             "itemtype": "property",
             "name": "KEY_NUM_3",
@@ -14640,7 +14689,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1053,
+            "line": 802,
             "description": "Code for the 4 key.",
             "itemtype": "property",
             "name": "KEY_NUM_4",
@@ -14652,7 +14701,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1061,
+            "line": 810,
             "description": "Code for the 5 key.",
             "itemtype": "property",
             "name": "KEY_NUM_5",
@@ -14664,7 +14713,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1069,
+            "line": 818,
             "description": "Code for the 6 key.",
             "itemtype": "property",
             "name": "KEY_NUM_6",
@@ -14676,7 +14725,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1077,
+            "line": 826,
             "description": "Code for the 7 key.",
             "itemtype": "property",
             "name": "KEY_NUM_7",
@@ -14688,7 +14737,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1085,
+            "line": 834,
             "description": "Code for the 8 key.",
             "itemtype": "property",
             "name": "KEY_NUM_8",
@@ -14700,7 +14749,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1093,
+            "line": 842,
             "description": "Code for the 9 key.",
             "itemtype": "property",
             "name": "KEY_NUM_9",
@@ -14712,7 +14761,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1101,
+            "line": 850,
             "description": "Code for the A key.",
             "itemtype": "property",
             "name": "KEY_A",
@@ -14724,7 +14773,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1109,
+            "line": 858,
             "description": "Code for the B key.",
             "itemtype": "property",
             "name": "KEY_B",
@@ -14736,7 +14785,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1117,
+            "line": 866,
             "description": "Code for the C key.",
             "itemtype": "property",
             "name": "KEY_C",
@@ -14748,7 +14797,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1125,
+            "line": 874,
             "description": "Code for the D key.",
             "itemtype": "property",
             "name": "KEY_D",
@@ -14760,7 +14809,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1133,
+            "line": 882,
             "description": "Code for the E key.",
             "itemtype": "property",
             "name": "KEY_E",
@@ -14772,7 +14821,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1141,
+            "line": 890,
             "description": "Code for the F key.",
             "itemtype": "property",
             "name": "KEY_F",
@@ -14784,7 +14833,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1149,
+            "line": 898,
             "description": "Code for the G key.",
             "itemtype": "property",
             "name": "KEY_G",
@@ -14796,7 +14845,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1157,
+            "line": 906,
             "description": "Code for the H key.",
             "itemtype": "property",
             "name": "KEY_H",
@@ -14808,7 +14857,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1165,
+            "line": 914,
             "description": "Code for the I key.",
             "itemtype": "property",
             "name": "KEY_I",
@@ -14820,7 +14869,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1173,
+            "line": 922,
             "description": "Code for the J key.",
             "itemtype": "property",
             "name": "KEY_J",
@@ -14832,7 +14881,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1181,
+            "line": 930,
             "description": "Code for the K key.",
             "itemtype": "property",
             "name": "KEY_K",
@@ -14844,7 +14893,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1189,
+            "line": 938,
             "description": "Code for the L key.",
             "itemtype": "property",
             "name": "KEY_L",
@@ -14856,7 +14905,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1197,
+            "line": 946,
             "description": "Code for the M key.",
             "itemtype": "property",
             "name": "KEY_M",
@@ -14868,7 +14917,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1205,
+            "line": 954,
             "description": "Code for the N key.",
             "itemtype": "property",
             "name": "KEY_N",
@@ -14880,7 +14929,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1213,
+            "line": 962,
             "description": "Code for the O key.",
             "itemtype": "property",
             "name": "KEY_O",
@@ -14892,7 +14941,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1221,
+            "line": 970,
             "description": "Code for the P key.",
             "itemtype": "property",
             "name": "KEY_P",
@@ -14904,7 +14953,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1229,
+            "line": 978,
             "description": "Code for the Q key.",
             "itemtype": "property",
             "name": "KEY_Q",
@@ -14916,7 +14965,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1237,
+            "line": 986,
             "description": "Code for the R key.",
             "itemtype": "property",
             "name": "KEY_R",
@@ -14928,7 +14977,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1245,
+            "line": 994,
             "description": "Code for the S key.",
             "itemtype": "property",
             "name": "KEY_S",
@@ -14940,7 +14989,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1253,
+            "line": 1002,
             "description": "Code for the T key.",
             "itemtype": "property",
             "name": "KEY_T",
@@ -14952,7 +15001,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1261,
+            "line": 1010,
             "description": "Code for the U key.",
             "itemtype": "property",
             "name": "KEY_U",
@@ -14964,7 +15013,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1269,
+            "line": 1018,
             "description": "Code for the V key.",
             "itemtype": "property",
             "name": "KEY_V",
@@ -14976,7 +15025,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1277,
+            "line": 1026,
             "description": "Code for the W key.",
             "itemtype": "property",
             "name": "KEY_W",
@@ -14988,7 +15037,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1285,
+            "line": 1034,
             "description": "Code for the X key.",
             "itemtype": "property",
             "name": "KEY_X",
@@ -15000,7 +15049,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1293,
+            "line": 1042,
             "description": "Code for the Y key.",
             "itemtype": "property",
             "name": "KEY_Y",
@@ -15012,7 +15061,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1301,
+            "line": 1050,
             "description": "Code for the Z key.",
             "itemtype": "property",
             "name": "KEY_Z",
@@ -15024,7 +15073,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1309,
+            "line": 1058,
             "description": "Code for the LEFT_WINDOW key.",
             "itemtype": "property",
             "name": "KEY_LEFT_WINDOW",
@@ -15036,7 +15085,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1317,
+            "line": 1066,
             "description": "Code for the RIGHT_WINDOW key.",
             "itemtype": "property",
             "name": "KEY_RIGHT_WINDOW",
@@ -15048,7 +15097,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1325,
+            "line": 1074,
             "description": "Code for the SELECT key.",
             "itemtype": "property",
             "name": "KEY_SELECT",
@@ -15060,7 +15109,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1333,
+            "line": 1082,
             "description": "Code for the number pad 0 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_0",
@@ -15072,7 +15121,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1341,
+            "line": 1090,
             "description": "Code for the number pad 1 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_1",
@@ -15084,7 +15133,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1349,
+            "line": 1098,
             "description": "Code for the number pad 2 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD 2",
@@ -15096,7 +15145,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1357,
+            "line": 1106,
             "description": "Code for the number pad 3 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_3",
@@ -15108,7 +15157,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1365,
+            "line": 1114,
             "description": "Code for the number pad 4 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_4",
@@ -15120,7 +15169,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1373,
+            "line": 1122,
             "description": "Code for the number pad 5 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_5",
@@ -15132,7 +15181,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1381,
+            "line": 1130,
             "description": "Code for the number pad 6 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_6",
@@ -15144,7 +15193,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1389,
+            "line": 1138,
             "description": "Code for the number pad 7 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_7",
@@ -15156,7 +15205,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1397,
+            "line": 1146,
             "description": "Code for the number pad 8 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_8",
@@ -15168,7 +15217,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1405,
+            "line": 1154,
             "description": "Code for the number pad 9 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_9",
@@ -15180,7 +15229,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1413,
+            "line": 1162,
             "description": "Code for the MULTIPLY key.",
             "itemtype": "property",
             "name": "KEY_MULTIPLY",
@@ -15192,7 +15241,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1421,
+            "line": 1170,
             "description": "Code for the ADD key.",
             "itemtype": "property",
             "name": "KEY_ADD",
@@ -15204,7 +15253,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1429,
+            "line": 1178,
             "description": "Code for the SUBTRACT key.",
             "itemtype": "property",
             "name": "KEY_SUBTRACT",
@@ -15216,7 +15265,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1437,
+            "line": 1186,
             "description": "Code for the DECIMAL POINT key.",
             "itemtype": "property",
             "name": "KEY_DECIMAL_POINT",
@@ -15228,7 +15277,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1445,
+            "line": 1194,
             "description": "Code for the DIVIDE key.",
             "itemtype": "property",
             "name": "KEY_DIVIDE",
@@ -15240,7 +15289,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1453,
+            "line": 1202,
             "description": "Code for the F1 key.",
             "itemtype": "property",
             "name": "KEY_F1",
@@ -15252,7 +15301,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1461,
+            "line": 1210,
             "description": "Code for the F2 key.",
             "itemtype": "property",
             "name": "KEY_F2",
@@ -15264,7 +15313,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1469,
+            "line": 1218,
             "description": "Code for the F3 key.",
             "itemtype": "property",
             "name": "KEY_F3",
@@ -15276,7 +15325,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1477,
+            "line": 1226,
             "description": "Code for the F4 key.",
             "itemtype": "property",
             "name": "KEY_F4",
@@ -15288,7 +15337,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1485,
+            "line": 1234,
             "description": "Code for the F5 key.",
             "itemtype": "property",
             "name": "KEY_F5",
@@ -15300,7 +15349,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1493,
+            "line": 1242,
             "description": "Code for the F6 key.",
             "itemtype": "property",
             "name": "KEY_F6",
@@ -15312,7 +15361,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1501,
+            "line": 1250,
             "description": "Code for the F7 key.",
             "itemtype": "property",
             "name": "KEY_F7",
@@ -15324,7 +15373,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1509,
+            "line": 1258,
             "description": "Code for the F8 key.",
             "itemtype": "property",
             "name": "KEY_F8",
@@ -15336,7 +15385,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1517,
+            "line": 1266,
             "description": "Code for the F9 key.",
             "itemtype": "property",
             "name": "KEY_F9",
@@ -15348,7 +15397,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1525,
+            "line": 1274,
             "description": "Code for the F10 key.",
             "itemtype": "property",
             "name": "KEY_F10",
@@ -15360,7 +15409,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1533,
+            "line": 1282,
             "description": "Code for the F11 key.",
             "itemtype": "property",
             "name": "KEY_F11",
@@ -15372,7 +15421,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1541,
+            "line": 1290,
             "description": "Code for the F12 key.",
             "itemtype": "property",
             "name": "KEY_F12",
@@ -15384,7 +15433,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1549,
+            "line": 1298,
             "description": "Code for the NUM_LOCK key.",
             "itemtype": "property",
             "name": "KEY_NUM_LOCK",
@@ -15396,7 +15445,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1557,
+            "line": 1306,
             "description": "Code for the SCROLL_LOCK key.",
             "itemtype": "property",
             "name": "KEY_SCROLL_LOCK",
@@ -15408,7 +15457,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1565,
+            "line": 1314,
             "description": "Code for the SEMI_COLON key.",
             "itemtype": "property",
             "name": "KEY_SEMI_COLON",
@@ -15420,7 +15469,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1573,
+            "line": 1322,
             "description": "Code for the EQUAL_SIGN key.",
             "itemtype": "property",
             "name": "KEY_EQUAL_SIGN",
@@ -15432,7 +15481,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1581,
+            "line": 1330,
             "description": "Code for the COMMA key.",
             "itemtype": "property",
             "name": "KEY_COMMA",
@@ -15444,7 +15493,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1589,
+            "line": 1338,
             "description": "Code for the DASH key.",
             "itemtype": "property",
             "name": "KEY_DASH",
@@ -15456,7 +15505,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1597,
+            "line": 1346,
             "description": "Code for the PERIOD key.",
             "itemtype": "property",
             "name": "KEY_PERIOD",
@@ -15468,7 +15517,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1605,
+            "line": 1354,
             "description": "Code for the FORWARD_SLASH key.",
             "itemtype": "property",
             "name": "KEY_FORWARD_SLASH",
@@ -15480,7 +15529,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1613,
+            "line": 1362,
             "description": "Code for the GRAVE_ACCENT key.",
             "itemtype": "property",
             "name": "KEY_GRAVE_ACCENT",
@@ -15492,7 +15541,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1621,
+            "line": 1370,
             "description": "Code for the OPEN_BRACKET key.",
             "itemtype": "property",
             "name": "KEY_OPEN_BRACKET",
@@ -15504,7 +15553,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1629,
+            "line": 1378,
             "description": "Code for the BACK_SLASH key.",
             "itemtype": "property",
             "name": "KEY_BACK_SLASH",
@@ -15516,7 +15565,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1637,
+            "line": 1386,
             "description": "Code for the CLOSE_BRACKET key.",
             "itemtype": "property",
             "name": "KEY_CLOSE_BRACKET",
@@ -15528,7 +15577,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1645,
+            "line": 1394,
             "description": "Code for the SINGLE_QUOTE key.",
             "itemtype": "property",
             "name": "KEY_SINGLE_QUOTE",
@@ -15540,7 +15589,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1653,
+            "line": 1402,
             "description": "Code for the SPACE key.",
             "itemtype": "property",
             "name": "KEY_SPACE",
@@ -21936,7 +21985,7 @@
         },
         {
             "file": "src/transforms/lookat.js",
-            "line": 125,
+            "line": 130,
             "description": "Rotate 'eye' about 'look' around the X-axis",
             "params": [
                 {
@@ -21951,7 +22000,7 @@
         },
         {
             "file": "src/transforms/lookat.js",
-            "line": 149,
+            "line": 159,
             "description": "Rotate 'look' about 'eye', around the 'up' vector\n\n<p>Applies constraints added with {@link #addConstraint}.</p>",
             "params": [
                 {
@@ -21966,7 +22015,7 @@
         },
         {
             "file": "src/transforms/lookat.js",
-            "line": 169,
+            "line": 190,
             "description": "Rotate 'eye' about 'look' around the X-axis",
             "params": [
                 {
@@ -21981,7 +22030,7 @@
         },
         {
             "file": "src/transforms/lookat.js",
-            "line": 193,
+            "line": 219,
             "description": "Pans the camera along X and Y axis.",
             "params": [
                 {
@@ -21995,7 +22044,7 @@
         },
         {
             "file": "src/transforms/lookat.js",
-            "line": 245,
+            "line": 271,
             "description": "Increments/decrements zoom factor, ie. distance between eye and look.",
             "params": [
                 {
@@ -22009,7 +22058,7 @@
         },
         {
             "file": "src/transforms/lookat.js",
-            "line": 262,
+            "line": 293,
             "description": "Effectively whether Y-axis rotation is about the World-space Y-axis or the View-space Y-axis.\n\nFires a {{#crossLink \"Lookat/gimbalLockY:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "gimbalLockY",
@@ -22021,7 +22070,7 @@
         },
         {
             "file": "src/transforms/lookat.js",
-            "line": 279,
+            "line": 310,
             "description": "Fired whenever this Lookat's  {{#crossLink \"Lookat/gimbalLockY:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "gimbalLockY",
@@ -22037,7 +22086,7 @@
         },
         {
             "file": "src/transforms/lookat.js",
-            "line": 293,
+            "line": 324,
             "description": "Position of this Lookat's eye.\n\nFires an {{#crossLink \"Lookat/eye:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "eye",
@@ -22049,7 +22098,7 @@
         },
         {
             "file": "src/transforms/lookat.js",
-            "line": 311,
+            "line": 342,
             "description": "Fired whenever this Lookat's  {{#crossLink \"Lookat/eye:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "eye",
@@ -22065,7 +22114,7 @@
         },
         {
             "file": "src/transforms/lookat.js",
-            "line": 325,
+            "line": 356,
             "description": "Position of this Lookat's point-of-interest.\n\nFires a {{#crossLink \"Lookat/look:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "look",
@@ -22077,7 +22126,7 @@
         },
         {
             "file": "src/transforms/lookat.js",
-            "line": 343,
+            "line": 374,
             "description": "Fired whenever this Lookat's  {{#crossLink \"Lookat/look:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "look",
@@ -22093,7 +22142,7 @@
         },
         {
             "file": "src/transforms/lookat.js",
-            "line": 357,
+            "line": 388,
             "description": "Direction of the \"up\" vector.\nFires an {{#crossLink \"Lookat/up:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "up",
@@ -22105,7 +22154,7 @@
         },
         {
             "file": "src/transforms/lookat.js",
-            "line": 373,
+            "line": 404,
             "description": "Fired whenever this Lookat's  {{#crossLink \"Lookat/up:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "up",
@@ -22121,7 +22170,7 @@
         },
         {
             "file": "src/transforms/lookat.js",
-            "line": 387,
+            "line": 418,
             "description": "Distance from \"look\" to \"eye\".",
             "itemtype": "property",
             "name": "eyeLookDist",
@@ -28638,7 +28687,7 @@
         },
         {
             "file": "examples/js/helpers/clipHelper.js",
-            "line": 45,
+            "line": 42,
             "description": "The {{#crossLink \"Clip\"}}Clip{{/crossLink}} attached to this ClipHelper.\n\nFires an {{#crossLink \"ClipHelper/Clip:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "clip",
@@ -28648,7 +28697,7 @@
         },
         {
             "file": "examples/js/helpers/clipHelper.js",
-            "line": 89,
+            "line": 83,
             "description": "The width and height of the ClipHelper plane indicator.\n\nWhen no value is specified, will automatically size to fit within the\n{{#crossLink \"Scene/worldBoundary:property\"}}Scene's worldBoundary{{/crossLink}}.\n\nFires an {{#crossLink \"ClipHelper/planeSize:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "planeSize",
@@ -28659,7 +28708,7 @@
         },
         {
             "file": "examples/js/helpers/clipHelper.js",
-            "line": 107,
+            "line": 101,
             "description": "Fired whenever this ClipHelper's {{#crossLink \"ClipHelper/planeSize:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "planeSize",
@@ -28675,7 +28724,7 @@
         },
         {
             "file": "examples/js/helpers/clipHelper.js",
-            "line": 120,
+            "line": 114,
             "description": "Indicates whether this ClipHelper's {{#crossLink \"ClipHelper/planeSize:property\"}}{{/crossLink}} is automatically\ngenerated or not.\n\nWhen auto-generated, {{#crossLink \"ClipHelper/planeSize:property\"}}{{/crossLink}} will automatically size\nto fit within the {{#crossLink \"Scene/worldBoundary:property\"}}Scene's worldBoundary{{/crossLink}}.\n\nFires an {{#crossLink \"ClipHelper/autoPlaneSize:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "autoPlaneSize",
@@ -28686,7 +28735,7 @@
         },
         {
             "file": "examples/js/helpers/clipHelper.js",
-            "line": 139,
+            "line": 133,
             "description": "Fired whenever this ClipHelper's {{#crossLink \"ClipHelper/autoPlaneSize:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "autoPlaneSize",
@@ -28702,7 +28751,34 @@
         },
         {
             "file": "examples/js/helpers/clipHelper.js",
-            "line": 152,
+            "line": 146,
+            "description": "Indicates whether this ClipHelper's plane is filled or just wireframe.\n\nFires a {{#crossLink \"ClipHelper/active:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "solid",
+            "default": "true",
+            "type": "Boolean",
+            "class": "ClipHelper",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/helpers/clipHelper.js",
+            "line": 161,
+            "description": "Fired whenever this helper's {{#crossLink \"ClipHelper/solid:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "solid",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value",
+                    "type": "Boolean"
+                }
+            ],
+            "class": "ClipHelper",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/helpers/clipHelper.js",
+            "line": 175,
             "description": "Indicates whether this ClipHelper is visible or not.\n\nFires a {{#crossLink \"ClipHelper/active:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "visible",
@@ -28713,7 +28789,7 @@
         },
         {
             "file": "examples/js/helpers/clipHelper.js",
-            "line": 168,
+            "line": 190,
             "description": "Fired whenever this helper's {{#crossLink \"ClipHelper/visible:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "visible",
@@ -28803,10 +28879,10 @@
         },
         {
             "file": "examples/js/helpers/planeHelper.js",
-            "line": 150,
-            "description": "World-space position of this PlaneHelper.\nFires an {{#crossLink \"PlaneHelper/pos:event\"}}{{/crossLink}} event on change.",
+            "line": 155,
+            "description": "World-space position of this PlaneHelper.\nFires an {{#crossLink \"PlaneHelper/worldPos:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
-            "name": "pos",
+            "name": "worldPos",
             "default": "[0,0,0]",
             "type": "{Float32Array}",
             "class": "PlaneHelper",
@@ -28814,7 +28890,7 @@
         },
         {
             "file": "examples/js/helpers/planeHelper.js",
-            "line": 167,
+            "line": 172,
             "description": "Fired whenever this PlaneHelper's {{#crossLink \"PlaneHelper/pos:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "pos",
@@ -28830,7 +28906,7 @@
         },
         {
             "file": "examples/js/helpers/planeHelper.js",
-            "line": 180,
+            "line": 185,
             "description": "World-space direction of this PlaneHelper.\nFires an {{#crossLink \"PlaneHelper/dir:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "dir",
@@ -28841,7 +28917,7 @@
         },
         {
             "file": "examples/js/helpers/planeHelper.js",
-            "line": 204,
+            "line": 209,
             "description": "Fired whenever this PlaneHelper's {{#crossLink \"PlaneHelper/dir:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "dir",
@@ -28857,7 +28933,7 @@
         },
         {
             "file": "examples/js/helpers/planeHelper.js",
-            "line": 218,
+            "line": 223,
             "description": "The width and height of the PlaneHelper plane indicator.\n\nValues assigned to this property will be overridden by an auto-computed value when\n{{#crossLink \"PlaneHelper/autoPlaneSize:property\"}}{{/crossLink}} is true.\n\nFires an {{#crossLink \"PlaneHelper/planeSize:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "planeSize",
@@ -28868,7 +28944,7 @@
         },
         {
             "file": "examples/js/helpers/planeHelper.js",
-            "line": 238,
+            "line": 243,
             "description": "Fired whenever this PlaneHelper's {{#crossLink \"PlaneHelper/planeSize:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "planeSize",
@@ -28884,7 +28960,7 @@
         },
         {
             "file": "examples/js/helpers/planeHelper.js",
-            "line": 251,
+            "line": 256,
             "description": "Indicates whether this PlaneHelper's {{#crossLink \"PlaneHelper/planeSize:property\"}}{{/crossLink}} is automatically\ngenerated or not.\n\nWhen auto-generated, {{#crossLink \"PlaneHelper/planeSize:property\"}}{{/crossLink}} will automatically size\nto fit within the {{#crossLink \"Scene/worldBoundary:property\"}}Scene's worldBoundary{{/crossLink}}.\n\nFires an {{#crossLink \"PlaneHelper/autoPlaneSize:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "autoPlaneSize",
@@ -28895,7 +28971,7 @@
         },
         {
             "file": "examples/js/helpers/planeHelper.js",
-            "line": 291,
+            "line": 296,
             "description": "Fired whenever this PlaneHelper's {{#crossLink \"PlaneHelper/autoPlaneSize:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "autoPlaneSize",
@@ -28911,7 +28987,7 @@
         },
         {
             "file": "examples/js/helpers/planeHelper.js",
-            "line": 304,
+            "line": 309,
             "description": "Emmissive color of this PlaneHelper.\n\nFires an {{#crossLink \"PlaneHelper/color:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "color",
@@ -28922,7 +28998,7 @@
         },
         {
             "file": "examples/js/helpers/planeHelper.js",
-            "line": 322,
+            "line": 327,
             "description": "Fired whenever this PlaneHelper's {{#crossLink \"PlaneHelper/color:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "color",
@@ -28938,7 +29014,34 @@
         },
         {
             "file": "examples/js/helpers/planeHelper.js",
-            "line": 335,
+            "line": 340,
+            "description": "Indicates whether this PlaneHelper is filled with color or just wireframe.\n\nFires a {{#crossLink \"PlaneHelper/active:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "solid",
+            "default": "true",
+            "type": "Boolean",
+            "class": "PlaneHelper",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/helpers/planeHelper.js",
+            "line": 357,
+            "description": "Fired whenever this helper's {{#crossLink \"PlaneHelper/solid:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "solid",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value",
+                    "type": "Boolean"
+                }
+            ],
+            "class": "PlaneHelper",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/helpers/planeHelper.js",
+            "line": 371,
             "description": "Indicates whether this PlaneHelper is visible or not.\n\nFires a {{#crossLink \"PlaneHelper/visible:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "visible",
@@ -28949,7 +29052,7 @@
         },
         {
             "file": "examples/js/helpers/planeHelper.js",
-            "line": 355,
+            "line": 391,
             "description": "Fired whenever this helper's {{#crossLink \"PlaneHelper/visible:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "visible",
@@ -29022,7 +29125,7 @@
     "warnings": [
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/canvas/canvas.js:552"
+            "line": " src/canvas/canvas.js:553"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -29646,27 +29749,27 @@
         },
         {
             "message": "Missing item type\nCreates a default canvas in the DOM.",
-            "line": " src/canvas/canvas.js:396"
+            "line": " src/canvas/canvas.js:397"
         },
         {
             "message": "Missing item type\nCreates a image element behind the canvas, for purpose of showing a custom background.",
-            "line": " src/canvas/canvas.js:426"
+            "line": " src/canvas/canvas.js:427"
         },
         {
             "message": "Missing item type\nCreates an invisible DIV over the canvas, for purpose of catching\ninput events without interfering with app-lever UI bits floating underneath.",
-            "line": " src/canvas/canvas.js:453"
+            "line": " src/canvas/canvas.js:454"
         },
         {
             "message": "Missing item type",
-            "line": " src/canvas/canvas.js:480"
+            "line": " src/canvas/canvas.js:481"
         },
         {
             "message": "Missing item type\nInitialises the WebGL context",
-            "line": " src/canvas/canvas.js:510"
+            "line": " src/canvas/canvas.js:511"
         },
         {
             "message": "Missing item type\nReads colors of pixels from the last rendered frame.\n\n<p>Call this method like this:</p>\n\n````JavaScript\n\n// Ignore transparent pixels (default is false)\nvar opaqueOnly = true;\n\nvar colors = new Float32Array(8);\n\nmyCanvas.readPixels([ 100, 22, 12, 33 ], colors, 2, opaqueOnly);\n````\n\nThen the r,g,b components of the colors will be set to the colors at those pixels.",
-            "line": " src/canvas/canvas.js:633"
+            "line": " src/canvas/canvas.js:634"
         },
         {
             "message": "Missing item type\nImplement protected virtual template method {{#crossLink \"Geometry/method:_update\"}}{{/crossLink}},\nto generate geometry data arrays.",
@@ -29750,7 +29853,7 @@
         },
         {
             "message": "Missing item type\nEnable or disable all input handlers",
-            "line": " src/input/input.js:856"
+            "line": " src/input/input.js:605"
         },
         {
             "message": "Missing item type\nClamps a value to the given range.",
@@ -29962,23 +30065,23 @@
         },
         {
             "message": "Missing item type\nRotate 'eye' about 'look' around the X-axis",
-            "line": " src/transforms/lookat.js:125"
+            "line": " src/transforms/lookat.js:130"
         },
         {
             "message": "Missing item type\nRotate 'look' about 'eye', around the 'up' vector\n\n<p>Applies constraints added with {@link #addConstraint}.</p>",
-            "line": " src/transforms/lookat.js:149"
+            "line": " src/transforms/lookat.js:159"
         },
         {
             "message": "Missing item type\nRotate 'eye' about 'look' around the X-axis",
-            "line": " src/transforms/lookat.js:169"
+            "line": " src/transforms/lookat.js:190"
         },
         {
             "message": "Missing item type\nPans the camera along X and Y axis.",
-            "line": " src/transforms/lookat.js:193"
+            "line": " src/transforms/lookat.js:219"
         },
         {
             "message": "Missing item type\nIncrements/decrements zoom factor, ie. distance between eye and look.",
-            "line": " src/transforms/lookat.js:245"
+            "line": " src/transforms/lookat.js:271"
         },
         {
             "message": "Missing item type\nInitializes this component",
