@@ -77,7 +77,6 @@
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
                                 <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
-                                <li><a href="../classes/GLTFObject.html">GLTFObject</a></li>
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/InputControl.html">InputControl</a></li>
@@ -394,12 +393,6 @@
              */
             this.contextAttr = cfg.contextAttr || {};
             this.contextAttr.alpha = this.transparent;
-            this.contextAttr.alpha = true;
-       //     this.contextAttr.premultipliedAlpha = false;
-
-            //if (this.contextAttr.alpha === undefined || this.contextAttr.alpha === null) {
-            //    this.contextAttr.alpha = this.transparent;
-            //}
 
             if (this.contextAttr.preserveDrawingBuffer === undefined || this.contextAttr.preserveDrawingBuffer === null) {
                 this.contextAttr.preserveDrawingBuffer = false;

@@ -1269,17 +1269,15 @@
         "examples/js/models/glTFModel.js": {
             "name": "examples/js/models/glTFModel.js",
             "modules": {},
-            "classes": {
-                "GLTFModel": 1
-            },
+            "classes": {},
             "fors": {},
             "namespaces": {}
         },
-        "examples/js/models/glTFObject.js": {
-            "name": "examples/js/models/glTFObject.js",
+        "examples/js/models/glTFModel2.js": {
+            "name": "examples/js/models/glTFModel2.js",
             "modules": {},
             "classes": {
-                "GLTFObject": 1
+                "GLTFModel": 1
             },
             "fors": {},
             "namespaces": {}
@@ -1550,7 +1548,6 @@
                 "OBJModel": 1,
                 "BuildableModel": 1,
                 "GLTFModel": 1,
-                "GLTFObject": 1,
                 "SceneJSModel": 1,
                 "ZSpaceEffect": 1,
                 "ZSpaceStylusControl": 1,
@@ -2016,7 +2013,6 @@
                 "OBJModel": 1,
                 "BuildableModel": 1,
                 "GLTFModel": 1,
-                "GLTFObject": 1,
                 "SceneJSModel": 1
             },
             "fors": {},
@@ -7974,7 +7970,7 @@
             "extension_for": [],
             "module": "xeogl",
             "namespace": "",
-            "file": "examples/js/models/glTFModel.js",
+            "file": "examples/js/models/glTFModel2.js",
             "line": 1,
             "description": "A **GLTFModel** is a {{#crossLink \"Model\"}}{{/crossLink}} loaded from a <a href=\"https://github.com/KhronosGroup/glTF\" target = \"_other\">glTF</a> file.\n\n<a href=\"../../examples/#importing_gltf_gearbox\"><img src=\"../../../assets/images/gltf/glTF_gearbox_squashed.png\"></img></a>\n\n## Overview\n\n* A GLTFModel is a container of {{#crossLink \"Component\"}}Components{{/crossLink}} that loads itself from a glTF file.\n* It begins loading as soon as you set its {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}\nproperty to the location of a valid glTF file.\n* You can set {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}} to a new file path at any time, which causes\nthe GLTFModel to clear itself and load components from the new file.\n\nIt inherits these capabilities from its {{#crossLink \"Model\"}}{{/crossLink}} base class:\n\n* Allows you to access and manipulate the components within it.\n* Can be transformed within World-space by attaching it to a {{#crossLink \"Transform\"}}{{/crossLink}}.\n* Provides its World-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}}.\n\n<img src=\"../../../assets/images/GLTFModel.png\"></img>\n\n## Supported glTF 2.0 features\n\nSo far, GLTFModel loads only geometry, materials and modeling transform hierarchies, without animations. It does not\nload cameras or lights because its purpose is to import models into environments that have already been created using\nthe xeogl API.\n\nIn addition to glTF's core metal-roughness material workflow, GLTFModel also supports two material extensions:\n\n* [KHR_materials_pbrSpecularGlossiness](https://github.com/KhronosGroup/glTF/blob/master/extensions/Khronos/KHR_materials_pbrSpecularGlossiness/README.md)\n* [KHR_materials_common](https://github.com/KhronosGroup/glTF/blob/master/extensions/Khronos/KHR_materials_common/README.md)\n\n## Usage\n\n### Loading glTF\n\nLoad a glTF file by creating a GLTFModel:\n\n````javascript\nvar gearbox = new xeogl.GLTFModel({\n  id: \"gearbox\",\n  src: \"models/gltf/gearbox/gearbox_assy.gltf\"\n});\n````\n\nA GLTFModel prefixes its own ID to those of its components. Its ID is optional and defaults to\nthe value of {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}. In this example we're providing our own short ID,\nhowever, in order to keep the component IDs short and easy to use.\n\nThe GLTFModel begins loading the glTF file immediately. Bind a callback to be notified when the file has loaded (which\nfires immediately if already loaded):\n\n````javascript\ngearbox.on(\"loaded\", function() {\n       // GLTFModel has loaded!\n   });\n````\n\nYou can also bind a callback to fire if loading fails:\n\n````javascript\ngearbox.on(\"error\", function(msg) {\n       // Error occurred\n   });\n````\n\nTo switch to a different glTF file, simply update {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}:\n\n````javascript\ngearbox.src = \"models/gltf/Buggy/glTF/Buggy.gltf\"\n````\n\n### Accessing components\n\nOnce the GLTFModel has loaded, its {{#crossLink \"Scene\"}}{{/crossLink}} will contain various components that represent the elements of the glTF file.\nWe'll now access some of those components by ID, to query and update them programmatically.\n\n**Transforms**\n\nLet's reposition one of the {{#crossLink \"Entity\"}}Entities{{/crossLink}} in our GLTFModel. We'll get the {{#crossLink \"Transform\"}}{{/crossLink}} that\npositions our target {{#crossLink \"Entity\"}}{{/crossLink}}, in this case a gear. Then we'll update its matrix to translate it ten units along the negative Z-axis.\n\n````javascript\nvar transform = gearbox.scene.components[\"gearbox#n274017_gear_53t-node.transform\"];\n\ntransform.matrix = xeogl.math.translationMat4v([0,0,-10]);\n````\n\nNote the format of the {{#crossLink \"Transform\"}}{{/crossLink}}'s ID:\n\n````<GLTFModel ID>#<glTF node ID>.transform````\n\nFrom left to right, the format contains the GLTFModel's ID, the ID of the glTF node that contains the transform, then\n\"transform\", to distinguish it from the IDs of any other components loaded from elements on the same glTF node.\n\n**Entities**\n\nLet's make our gear {{#crossLink \"Entity\"}}{{/crossLink}} invisible:\n\n````javascript\nvar gear53 = gearbox.scene.components[\"gearbox#n274017_gear_53.entity.0\"];\n\ngear53.visible = false;\n````\n\nNote the format of the {{#crossLink \"Entity\"}}{{/crossLink}}'s ID: ````<GLTFModel ID>#<glTF node ID>.entity.<glTF mesh index>````\n\nA glTF scene node may contain multiple meshes, and for each of those xeogl will create an individual {{#crossLink \"Entity\"}}{{/crossLink}}. As\nbefore, the part before the hash is the ID of the GLTFModel, which is then followed by the ID of the glTF node, then \"entity\"\nto signify that this is an Entity ID, then finally an index to differentiate the Entity from those loaded from other\nmeshes on the same glTF node.\n\n## Examples\n\n* [Damaged Helmet with metal/rough PBR materials](../../examples/#importing_gltf_pbr_metallic_helmet)\n* [Gearbox with entity explorer](../../examples/#importing_gltf_explorer)\n* [Ensuring individual materials on GLTFModel entities](../../examples/#models_filter_uniqueMaterials)\n* [Baking transform hierarchies in a GLTFModel](../../examples/#models_filter_bakeTransforms)",
             "submodule": "models",
@@ -8020,23 +8016,6 @@
                 }
             ],
             "extends": "Model"
-        },
-        "GLTFObject": {
-            "name": "GLTFObject",
-            "shortname": "GLTFObject",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "module": "xeogl",
-            "namespace": "",
-            "file": "examples/js/models/glTFObject.js",
-            "line": 1,
-            "description": "An object within a {{#crossLink \"GLTFModel\"}}{{/crossLink}}.\n\n* A convenience component to make scripting {{#crossLink \"GLTFModel\"}}{{/crossLink}}s easier.\n* Corresponds to a glTF node in mesh.\n* Has an {{#crossLink \"Entity\"}}{{/crossLink}} for each primitive in that glTF mesh.\n* Has convenience properties through which you can set and get things on entities collectively, as if they were one object,",
-            "submodule": "models",
-            "is_constructor": 1,
-            "extends": "Component"
         },
         "SceneJSModel": {
             "name": "SceneJSModel",
@@ -9461,13 +9440,13 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 692,
+            "line": 691,
             "description": "Attempts to pick an object.",
             "class": "CameraFlightAnimation"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 894,
+            "line": 893,
             "description": "Reads the colors of some pixels in the current image.",
             "class": "CameraFlightAnimation"
         },
@@ -10121,7 +10100,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 248,
+            "line": 242,
             "description": "Boundary of the Canvas in absolute browser window coordinates.\n\n### Usage:\n\n````javascript\nvar boundary = myScene.canvas.boundary;\n\nvar xmin = boundary[0];\nvar ymin = boundary[1];\nvar width = boundary[2];\nvar height = boundary[3];\n````",
             "itemtype": "property",
             "name": "boundary",
@@ -10133,7 +10112,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 285,
+            "line": 279,
             "description": "Fired whenever the WebGL context has been lost",
             "itemtype": "event",
             "name": "webglContextLost",
@@ -10143,7 +10122,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 298,
+            "line": 292,
             "description": "Fired whenever the WebGL context has been restored again after having previously being lost",
             "itemtype": "event",
             "name": "webglContextRestored",
@@ -10159,7 +10138,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 360,
+            "line": 354,
             "description": "Fired whenever this Canvas's {{#crossLink \"Canvas/boundary:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "boundary",
@@ -10175,7 +10154,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 397,
+            "line": 391,
             "description": "Creates a default canvas in the DOM.",
             "access": "private",
             "tagname": "",
@@ -10185,7 +10164,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 427,
+            "line": 421,
             "description": "Creates a image element behind the canvas, for purpose of showing a custom background.",
             "access": "private",
             "tagname": "",
@@ -10195,7 +10174,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 454,
+            "line": 448,
             "description": "Creates an invisible DIV over the canvas, for purpose of catching\ninput events without interfering with app-lever UI bits floating underneath.",
             "access": "private",
             "tagname": "",
@@ -10205,7 +10184,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 481,
+            "line": 475,
             "access": "private",
             "tagname": "",
             "class": "Canvas",
@@ -10214,7 +10193,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 511,
+            "line": 505,
             "description": "Initialises the WebGL context",
             "access": "private",
             "tagname": "",
@@ -10224,7 +10203,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 544,
+            "line": 538,
             "description": "Fired whenever the canvas failed to get a WebGL context, which probably means that WebGL\nis either unsupported or has been disabled.",
             "itemtype": "event",
             "name": "webglContextFailed",
@@ -10234,7 +10213,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 553,
+            "line": 547,
             "description": "Returns a snapshot of this Canvas as a Base64-encoded image.\n\nWhen a callback is given, this method will capture the snapshot asynchronously, on the next animation frame,\nand return it via the callback.\n\nWhen no callback is given, this method captures and returns the snapshot immediately. Note that is only\npossible when you have configured the Canvas's {{#crossLink \"Scene\"}}Scene{{/crossLink}} to preserve the\nWebGL drawing buffer, which has a performance overhead.\n\n#### Usage:\n\n````javascript\n// Get snapshot asynchronously\nmyScene.canvas.getSnapshot({\n    width: 500, // Defaults to size of canvas\n    height: 500,\n    format: \"png\" // Options are \"jpeg\" (default), \"png\" and \"bmp\"\n}, function(imageDataURL) {\n    imageElement.src = imageDataURL;\n});\n\n// Get snapshot synchronously, requires that Scene be\n// configured with preserveDrawingBuffer; true\nimageElement.src = myScene.canvas.getSnapshot({\n    width: 500,\n    height: 500,\n    format: \"png\"\n});\n````",
             "itemtype": "method",
             "name": "getSnapshot",
@@ -10283,7 +10262,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 634,
+            "line": 628,
             "description": "Reads colors of pixels from the last rendered frame.\n\n<p>Call this method like this:</p>\n\n````JavaScript\n\n// Ignore transparent pixels (default is false)\nvar opaqueOnly = true;\n\nvar colors = new Float32Array(8);\n\nmyCanvas.readPixels([ 100, 22, 12, 33 ], colors, 2, opaqueOnly);\n````\n\nThen the r,g,b components of the colors will be set to the colors at those pixels.",
             "params": [
                 {
@@ -10313,7 +10292,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 662,
+            "line": 656,
             "description": "A background color for the canvas. This is overridden by {{#crossLink \"Canvas/backgroundImage:property\"}}{{/crossLink}}.\n\nYou can set this to a new color at any time.\n\nFires a {{#crossLink \"Canvas/backgroundColor:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "backgroundColor",
@@ -10325,7 +10304,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 691,
+            "line": 685,
             "description": "Fired whenever this Canvas's {{#crossLink \"Canvas/backgroundColor:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "backgroundColor",
@@ -10341,7 +10320,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 704,
+            "line": 698,
             "description": "URL of a background image for the canvas. This is overrided by {{#crossLink \"Canvas/backgroundColor/property\"}}{{/crossLink}}.\n\nYou can set this to a new file path at any time.\n\nFires a {{#crossLink \"Canvas/background:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "backgroundImage",
@@ -10352,7 +10331,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 739,
+            "line": 733,
             "description": "Fired whenever this Canvas's {{#crossLink \"Canvas/backgroundImage:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "backgroundImage",
@@ -10368,7 +10347,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 752,
+            "line": 746,
             "description": "The busy {{#crossLink \"Spinner\"}}{{/crossLink}} for this Canvas.",
             "itemtype": "property",
             "name": "spinner",
@@ -22058,7 +22037,7 @@
         },
         {
             "file": "src/transforms/lookat.js",
-            "line": 293,
+            "line": 292,
             "description": "Effectively whether Y-axis rotation is about the World-space Y-axis or the View-space Y-axis.\n\nFires a {{#crossLink \"Lookat/gimbalLockY:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "gimbalLockY",
@@ -22070,7 +22049,7 @@
         },
         {
             "file": "src/transforms/lookat.js",
-            "line": 310,
+            "line": 309,
             "description": "Fired whenever this Lookat's  {{#crossLink \"Lookat/gimbalLockY:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "gimbalLockY",
@@ -22086,7 +22065,7 @@
         },
         {
             "file": "src/transforms/lookat.js",
-            "line": 324,
+            "line": 323,
             "description": "Position of this Lookat's eye.\n\nFires an {{#crossLink \"Lookat/eye:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "eye",
@@ -22098,7 +22077,7 @@
         },
         {
             "file": "src/transforms/lookat.js",
-            "line": 342,
+            "line": 341,
             "description": "Fired whenever this Lookat's  {{#crossLink \"Lookat/eye:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "eye",
@@ -22114,7 +22093,7 @@
         },
         {
             "file": "src/transforms/lookat.js",
-            "line": 356,
+            "line": 355,
             "description": "Position of this Lookat's point-of-interest.\n\nFires a {{#crossLink \"Lookat/look:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "look",
@@ -22126,7 +22105,7 @@
         },
         {
             "file": "src/transforms/lookat.js",
-            "line": 374,
+            "line": 373,
             "description": "Fired whenever this Lookat's  {{#crossLink \"Lookat/look:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "look",
@@ -22142,7 +22121,7 @@
         },
         {
             "file": "src/transforms/lookat.js",
-            "line": 388,
+            "line": 387,
             "description": "Direction of the \"up\" vector.\nFires an {{#crossLink \"Lookat/up:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "up",
@@ -22154,7 +22133,7 @@
         },
         {
             "file": "src/transforms/lookat.js",
-            "line": 404,
+            "line": 403,
             "description": "Fired whenever this Lookat's  {{#crossLink \"Lookat/up:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "up",
@@ -22170,7 +22149,7 @@
         },
         {
             "file": "src/transforms/lookat.js",
-            "line": 418,
+            "line": 417,
             "description": "Distance from \"look\" to \"eye\".",
             "itemtype": "property",
             "name": "eyeLookDist",
@@ -27549,116 +27528,122 @@
             "submodule": "models"
         },
         {
-            "file": "examples/js/models/glTFObject.js",
-            "line": 17,
-            "description": "JavaScript class name for this xeogl.GLTFObject.",
+            "file": "examples/js/models/glTFModel2.js",
+            "line": 154,
+            "description": "Path to a glTF file.\n\nYou can set this to a new file path at any time (except while loading), which will cause the GLTFModel to load components from\nthe new file (after first destroying any components loaded from a previous file path).\n\nFires a {{#crossLink \"GLTFModel/src:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
-            "name": "type",
+            "name": "src",
             "type": "String",
-            "final": 1,
-            "class": "GLTFObject",
+            "class": "GLTFModel",
             "module": "xeogl",
             "submodule": "models"
         },
         {
-            "file": "examples/js/models/glTFObject.js",
-            "line": 52,
-            "description": "Adds a primitive entity to this GLTFObject",
+            "file": "examples/js/models/glTFModel2.js",
+            "line": 180,
+            "description": "Fired whenever this GLTFModel has finished loading components from the glTF file\nspecified by {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}.",
+            "itemtype": "event",
+            "name": "loaded",
+            "class": "GLTFModel",
+            "module": "xeogl",
+            "submodule": "models"
+        },
+        {
+            "file": "examples/js/models/glTFModel2.js",
+            "line": 195,
+            "description": "Fired whenever this GLTFModel's {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "src",
             "params": [
                 {
-                    "name": "mesh",
-                    "description": "",
-                    "type": "xeogl.Entity"
+                    "name": "value",
+                    "description": "The property's new value"
                 }
             ],
-            "class": "GLTFObject",
+            "class": "GLTFModel",
             "module": "xeogl",
             "submodule": "models"
         },
         {
-            "file": "examples/js/models/glTFObject.js",
-            "line": 151,
-            "description": "The axis-aligned World-space boundary of this GLTFObject.\nDynamically encloses all the entities.",
-            "class": "GLTFObject",
-            "module": "xeogl",
-            "submodule": "models"
-        },
-        {
-            "file": "examples/js/models/glTFObject.js",
-            "line": 162,
-            "description": "The World-space center of this GLTFObject.",
-            "return": {
-                "description": "",
-                "type": "Float32Array"
-            },
-            "class": "GLTFObject",
-            "module": "xeogl",
-            "submodule": "models"
-        },
-        {
-            "file": "examples/js/models/glTFObject.js",
-            "line": 171,
-            "description": "Whether this GLTFObject is visible or not",
-            "class": "GLTFObject",
-            "module": "xeogl",
-            "submodule": "models"
-        },
-        {
-            "file": "examples/js/models/glTFObject.js",
-            "line": 186,
-            "description": "The opacity of this GLTFObject",
-            "class": "GLTFObject",
-            "module": "xeogl",
-            "submodule": "models"
-        },
-        {
-            "file": "examples/js/models/glTFObject.js",
-            "line": 204,
-            "description": "Whether or not this GLTFObject is clippable",
-            "class": "GLTFObject",
-            "module": "xeogl",
-            "submodule": "models"
-        },
-        {
-            "file": "examples/js/models/glTFObject.js",
-            "line": 219,
-            "description": "Whether or not this GLTFObject is pickable",
-            "class": "GLTFObject",
-            "module": "xeogl",
-            "submodule": "models"
-        },
-        {
-            "file": "examples/js/models/glTFObject.js",
-            "line": 234,
-            "description": "Whether or not this GLTFObject is outlined",
-            "class": "GLTFObject",
-            "module": "xeogl",
-            "submodule": "models"
-        },
-        {
-            "file": "examples/js/models/glTFObject.js",
-            "line": 249,
-            "description": "The entities in this GLTFObject",
-            "class": "GLTFObject",
-            "module": "xeogl",
-            "submodule": "models"
-        },
-        {
-            "file": "examples/js/models/glTFObject.js",
-            "line": 308,
-            "description": "Increments or decrements the translation of this GLTFObject.",
+            "file": "examples/js/models/glTFModel2.js",
+            "line": 222,
+            "description": "Loads glTF from a URL into a {{#crossLink \"Model\"}}{{/crossLink}}.",
             "params": [
                 {
-                    "name": "xyz",
-                    "description": "World-space translation vector.",
-                    "type": "[Number, Number, Number]"
+                    "name": "model",
+                    "description": "Model to load into.",
+                    "type": "Model"
+                },
+                {
+                    "name": "src",
+                    "description": "Path to glTF file.",
+                    "type": "String"
+                },
+                {
+                    "name": "ok",
+                    "description": "Completion callback.",
+                    "type": "Function",
+                    "optional": true
                 }
             ],
-            "return": {
-                "description": "this",
-                "type": "BIMObject"
-            },
-            "class": "GLTFObject",
+            "class": "GLTFModel",
+            "module": "xeogl",
+            "submodule": "models"
+        },
+        {
+            "file": "examples/js/models/glTFModel2.js",
+            "line": 252,
+            "description": "Fired whenever this GLTFModel fails to load the glTF file\nspecified by {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}.",
+            "itemtype": "event",
+            "name": "error",
+            "params": [
+                {
+                    "name": "msg",
+                    "description": "Description of the error",
+                    "type": "String"
+                }
+            ],
+            "class": "GLTFModel",
+            "module": "xeogl",
+            "submodule": "models"
+        },
+        {
+            "file": "examples/js/models/glTFModel2.js",
+            "line": 263,
+            "description": "Parses glTF JSON into a {{#crossLink \"Model\"}}{{/crossLink}}.",
+            "params": [
+                {
+                    "name": "model",
+                    "description": "Model to parse into.",
+                    "type": "Model"
+                },
+                {
+                    "name": "gltf",
+                    "description": "The glTF JSON.",
+                    "type": "Object"
+                },
+                {
+                    "name": "options",
+                    "description": "Parsing options",
+                    "type": "Object",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "basePath",
+                            "description": "Base path path to find external resources on, if any.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "loadBuffer",
+                            "description": "Callback to load buffer files.",
+                            "type": "String",
+                            "optional": true
+                        }
+                    ]
+                }
+            ],
+            "class": "GLTFModel",
             "module": "xeogl",
             "submodule": "models"
         },
@@ -29125,7 +29110,7 @@
     "warnings": [
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/canvas/canvas.js:553"
+            "line": " src/canvas/canvas.js:547"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -29322,14 +29307,6 @@
         {
             "message": "replacing incorrect tag: returns with return",
             "line": " examples/js/marking/pointMarkings.js:146"
-        },
-        {
-            "message": "replacing incorrect tag: returns with return",
-            "line": " examples/js/models/glTFObject.js:162"
-        },
-        {
-            "message": "replacing incorrect tag: returns with return",
-            "line": " examples/js/models/glTFObject.js:308"
         },
         {
             "message": "Missing item type\nA chunk of WebGL state changes to render a xeogl.renderer.State.",
@@ -29717,11 +29694,11 @@
         },
         {
             "message": "Missing item type\nAttempts to pick an object.",
-            "line": " src/_renderer/renderer.js:692"
+            "line": " src/_renderer/renderer.js:691"
         },
         {
             "message": "Missing item type\nReads the colors of some pixels in the current image.",
-            "line": " src/_renderer/renderer.js:894"
+            "line": " src/_renderer/renderer.js:893"
         },
         {
             "message": "Missing item type\nRenderer states",
@@ -29749,27 +29726,27 @@
         },
         {
             "message": "Missing item type\nCreates a default canvas in the DOM.",
-            "line": " src/canvas/canvas.js:397"
+            "line": " src/canvas/canvas.js:391"
         },
         {
             "message": "Missing item type\nCreates a image element behind the canvas, for purpose of showing a custom background.",
-            "line": " src/canvas/canvas.js:427"
+            "line": " src/canvas/canvas.js:421"
         },
         {
             "message": "Missing item type\nCreates an invisible DIV over the canvas, for purpose of catching\ninput events without interfering with app-lever UI bits floating underneath.",
-            "line": " src/canvas/canvas.js:454"
+            "line": " src/canvas/canvas.js:448"
         },
         {
             "message": "Missing item type",
-            "line": " src/canvas/canvas.js:481"
+            "line": " src/canvas/canvas.js:475"
         },
         {
             "message": "Missing item type\nInitialises the WebGL context",
-            "line": " src/canvas/canvas.js:511"
+            "line": " src/canvas/canvas.js:505"
         },
         {
             "message": "Missing item type\nReads colors of pixels from the last rendered frame.\n\n<p>Call this method like this:</p>\n\n````JavaScript\n\n// Ignore transparent pixels (default is false)\nvar opaqueOnly = true;\n\nvar colors = new Float32Array(8);\n\nmyCanvas.readPixels([ 100, 22, 12, 33 ], colors, 2, opaqueOnly);\n````\n\nThen the r,g,b components of the colors will be set to the colors at those pixels.",
-            "line": " src/canvas/canvas.js:634"
+            "line": " src/canvas/canvas.js:628"
         },
         {
             "message": "Missing item type\nImplement protected virtual template method {{#crossLink \"Geometry/method:_update\"}}{{/crossLink}},\nto generate geometry data arrays.",
@@ -30280,44 +30257,12 @@
             "line": " examples/js/models/glTFModel.js:263"
         },
         {
-            "message": "Missing item type\nAdds a primitive entity to this GLTFObject",
-            "line": " examples/js/models/glTFObject.js:52"
+            "message": "Missing item type\nLoads glTF from a URL into a {{#crossLink \"Model\"}}{{/crossLink}}.",
+            "line": " examples/js/models/glTFModel2.js:222"
         },
         {
-            "message": "Missing item type\nThe axis-aligned World-space boundary of this GLTFObject.\nDynamically encloses all the entities.",
-            "line": " examples/js/models/glTFObject.js:151"
-        },
-        {
-            "message": "Missing item type\nThe World-space center of this GLTFObject.",
-            "line": " examples/js/models/glTFObject.js:162"
-        },
-        {
-            "message": "Missing item type\nWhether this GLTFObject is visible or not",
-            "line": " examples/js/models/glTFObject.js:171"
-        },
-        {
-            "message": "Missing item type\nThe opacity of this GLTFObject",
-            "line": " examples/js/models/glTFObject.js:186"
-        },
-        {
-            "message": "Missing item type\nWhether or not this GLTFObject is clippable",
-            "line": " examples/js/models/glTFObject.js:204"
-        },
-        {
-            "message": "Missing item type\nWhether or not this GLTFObject is pickable",
-            "line": " examples/js/models/glTFObject.js:219"
-        },
-        {
-            "message": "Missing item type\nWhether or not this GLTFObject is outlined",
-            "line": " examples/js/models/glTFObject.js:234"
-        },
-        {
-            "message": "Missing item type\nThe entities in this GLTFObject",
-            "line": " examples/js/models/glTFObject.js:249"
-        },
-        {
-            "message": "Missing item type\nIncrements or decrements the translation of this GLTFObject.",
-            "line": " examples/js/models/glTFObject.js:308"
+            "message": "Missing item type\nParses glTF JSON into a {{#crossLink \"Model\"}}{{/crossLink}}.",
+            "line": " examples/js/models/glTFModel2.js:263"
         },
         {
             "message": "Missing item type",

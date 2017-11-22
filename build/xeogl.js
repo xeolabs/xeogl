@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2017-11-21
+ * Built on 2017-11-22
  *
  * MIT License
  * Copyright 2017, Lindsay Kay
@@ -5975,7 +5975,6 @@ var Canvas2Image = (function () {
             gl.frontFace(gl.CCW);
             gl.enable(gl.CULL_FACE);
             gl.depthMask(true);
-            gl.colorMask(true, true, true, true);
 
             var i;
             var len;
@@ -6076,7 +6075,7 @@ var Canvas2Image = (function () {
                     gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
                 }
 
-                gl.colorMask(true, true, true, true);
+                //gl.colorMask(true, true, true, true);
 
                 numOutlinedObjects = 0;
 
@@ -6094,7 +6093,7 @@ var Canvas2Image = (function () {
                 // Transparent outlined objects are not supported yet
 
                 gl.disable(gl.BLEND);
-                gl.colorMask(true, true, true, false);
+                //gl.colorMask(true, true, true, false);
             }
 
             var endTime = Date.now();
@@ -16685,12 +16684,6 @@ var Canvas2Image = (function () {
              */
             this.contextAttr = cfg.contextAttr || {};
             this.contextAttr.alpha = this.transparent;
-            this.contextAttr.alpha = true;
-       //     this.contextAttr.premultipliedAlpha = false;
-
-            //if (this.contextAttr.alpha === undefined || this.contextAttr.alpha === null) {
-            //    this.contextAttr.alpha = this.transparent;
-            //}
 
             if (this.contextAttr.preserveDrawingBuffer === undefined || this.contextAttr.preserveDrawingBuffer === null) {
                 this.contextAttr.preserveDrawingBuffer = false;
@@ -41253,9 +41246,8 @@ TODO
             }
 
             var dir = math.normalizeVec3(vec, tempVec3c);  // Get normalised vector
-            math.mulVec3Scalar(dir, newLenLook);
 
-            this.eye = math.addVec3(this._look, dir, tempVec3d);
+            this.eye = math.addVec3(this._look, math.mulVec3Scalar(dir, newLenLook), tempVec3d);
         },
 
         _props: {
