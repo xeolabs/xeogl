@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2017-11-21
+ * Built on 2017-11-22
  *
  * MIT License
  * Copyright 2017, Lindsay Kay
@@ -5975,7 +5975,7 @@ var Canvas2Image = (function () {
             gl.frontFace(gl.CCW);
             gl.enable(gl.CULL_FACE);
             gl.depthMask(true);
-            gl.colorMask(true, true, true, true);
+            gl.colorMask(true, true, true, false);
 
             var i;
             var len;
@@ -16684,13 +16684,8 @@ var Canvas2Image = (function () {
              * @type {{}|*}
              */
             this.contextAttr = cfg.contextAttr || {};
-            this.contextAttr.alpha = this.transparent;
+       //     this.contextAttr.alpha = this.transparent;
             this.contextAttr.alpha = true;
-       //     this.contextAttr.premultipliedAlpha = false;
-
-            //if (this.contextAttr.alpha === undefined || this.contextAttr.alpha === null) {
-            //    this.contextAttr.alpha = this.transparent;
-            //}
 
             if (this.contextAttr.preserveDrawingBuffer === undefined || this.contextAttr.preserveDrawingBuffer === null) {
                 this.contextAttr.preserveDrawingBuffer = false;
@@ -17045,6 +17040,14 @@ var Canvas2Image = (function () {
                  * @event webglContextFailed
                  */
                 this.fire("webglContextFailed", true, true);
+
+            } else {
+
+                if (this.transparent) {
+                    // Clear the back buffer
+                    this.gl.clearColor(1, 1, 1, 1);
+                    this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+                }
             }
         },
 
@@ -41253,9 +41256,8 @@ TODO
             }
 
             var dir = math.normalizeVec3(vec, tempVec3c);  // Get normalised vector
-            math.mulVec3Scalar(dir, newLenLook);
 
-            this.eye = math.addVec3(this._look, dir, tempVec3d);
+            this.eye = math.addVec3(this._look, math.mulVec3Scalar(dir, newLenLook), tempVec3d);
         },
 
         _props: {

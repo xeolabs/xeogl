@@ -35,7 +35,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "Fresnel",
         "Frustum",
         "GLTFModel",
-        "GLTFObject",
         "Geometry",
         "GeometryBuilder",
         "HeightmapGeometry",
