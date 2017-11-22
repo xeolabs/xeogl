@@ -392,8 +392,7 @@
              * @type {{}|*}
              */
             this.contextAttr = cfg.contextAttr || {};
-       //     this.contextAttr.alpha = this.transparent;
-            this.contextAttr.alpha = true;
+            this.contextAttr.alpha = this.transparent;
 
             if (this.contextAttr.preserveDrawingBuffer === undefined || this.contextAttr.preserveDrawingBuffer === null) {
                 this.contextAttr.preserveDrawingBuffer = false;
@@ -748,14 +747,6 @@
                  * @event webglContextFailed
                  */
                 this.fire(&quot;webglContextFailed&quot;, true, true);
-
-            } else {
-
-                if (this.transparent) {
-                    // Clear the back buffer
-                    this.gl.clearColor(1, 1, 1, 1);
-                    this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-                }
             }
         },
 
