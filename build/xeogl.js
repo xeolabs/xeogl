@@ -5975,7 +5975,6 @@ var Canvas2Image = (function () {
             gl.frontFace(gl.CCW);
             gl.enable(gl.CULL_FACE);
             gl.depthMask(true);
-            gl.colorMask(true, true, true, false);
 
             var i;
             var len;
@@ -6076,7 +6075,7 @@ var Canvas2Image = (function () {
                     gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
                 }
 
-                gl.colorMask(true, true, true, true);
+                //gl.colorMask(true, true, true, true);
 
                 numOutlinedObjects = 0;
 
@@ -6094,7 +6093,7 @@ var Canvas2Image = (function () {
                 // Transparent outlined objects are not supported yet
 
                 gl.disable(gl.BLEND);
-                gl.colorMask(true, true, true, false);
+                //gl.colorMask(true, true, true, false);
             }
 
             var endTime = Date.now();
@@ -16684,8 +16683,7 @@ var Canvas2Image = (function () {
              * @type {{}|*}
              */
             this.contextAttr = cfg.contextAttr || {};
-       //     this.contextAttr.alpha = this.transparent;
-            this.contextAttr.alpha = true;
+            this.contextAttr.alpha = this.transparent;
 
             if (this.contextAttr.preserveDrawingBuffer === undefined || this.contextAttr.preserveDrawingBuffer === null) {
                 this.contextAttr.preserveDrawingBuffer = false;
@@ -17040,14 +17038,6 @@ var Canvas2Image = (function () {
                  * @event webglContextFailed
                  */
                 this.fire("webglContextFailed", true, true);
-
-            } else {
-
-                if (this.transparent) {
-                    // Clear the back buffer
-                    this.gl.clearColor(1, 1, 1, 1);
-                    this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-                }
             }
         },
 
