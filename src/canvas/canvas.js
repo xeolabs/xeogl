@@ -72,9 +72,9 @@
 
  ```` javascript
  // Create a Scene, this time configuring it with the
- // ID of an existing DOM canvas element
+ // ID of an existing DOM canvas element (has to be canvas)
  var scene = new xeogl.Scene({
-          canvasId: "myCanvas"
+          canvas: "myCanvas"
      });
 
  // ..and the rest of this example can be the same as the previous example.
@@ -86,7 +86,7 @@
 
  ```` javascript
  var scene = new xeogl.Scene({
-          canvasId: "myCanvas",
+          canvas: "myCanvas",
           webgl2 : true
      });
 
@@ -596,7 +596,7 @@
                     self.scene.render(true); // Force-render a frame
                     ok(self._getSnapshot(params));
                 });
-            } else { 
+            } else {
                 return this._getSnapshot(params);
             }
         },
