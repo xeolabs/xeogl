@@ -9,7 +9,6 @@
 
     "src/math/_module.js",
     "src/math/math.js",
-    "src/math/mathTransforms.js",
     "src/math/mathBoundaries.js",
     "src/math/mathGeometry.js",
     "src/math/mathGeometryBuild.js",
@@ -39,8 +38,6 @@
     "src/_renderer/chunks/chunk.js",
     "src/_renderer/chunks/chunkFactory.js",
     "src/_renderer/chunks/clipsChunk.js",
-    "src/_renderer/chunks/colorBufferChunk.js",
-    "src/_renderer/chunks/depthBufferChunk.js",
     "src/_renderer/chunks/drawChunk.js",
     "src/_renderer/chunks/geometryChunk.js",
     "src/_renderer/chunks/lightsChunk.js",
@@ -53,9 +50,6 @@
     "src/_renderer/chunks/specularMaterialChunk.js",
     "src/_renderer/chunks/programChunk.js",
     "src/_renderer/chunks/projTransformChunk.js",
-    "src/_renderer/chunks/renderTargetChunk.js",
-    "src/_renderer/chunks/shaderChunk.js",
-    "src/_renderer/chunks/shaderParamsChunk.js",
     "src/_renderer/chunks/viewTransformChunk.js",
     "src/_renderer/chunks/viewportChunk.js",
 
