@@ -72,9 +72,13 @@
 
  ```` javascript
  // Create a Scene, this time configuring it with the
- // ID of an existing DOM canvas element
+ // ID of an existing DOM canvas element (has to be canvas)
+ // Note: The parent of the canvas has to have positioning other than
+ //       static: Background and overlay divs are created as siblings of canvas
+ //       to capture input. These have position "absolute" and 100%, so can
+ //       take over the screen (and eat all input events) if positioning is wrong
  var scene = new xeogl.Scene({
-          canvasId: "myCanvas"
+          canvas: "myCanvas"
      });
 
  // ..and the rest of this example can be the same as the previous example.
@@ -86,7 +90,7 @@
 
  ```` javascript
  var scene = new xeogl.Scene({
-          canvasId: "myCanvas",
+          canvas: "myCanvas",
           webgl2 : true
      });
 
@@ -596,7 +600,7 @@
                     self.scene.render(true); // Force-render a frame
                     ok(self._getSnapshot(params));
                 });
-            } else { 
+            } else {
                 return this._getSnapshot(params);
             }
         },
