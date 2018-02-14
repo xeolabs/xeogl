@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="../build/xeogl.js"></script>
+    <script src="js/geometry/teapotGeometry.js"></script>
+
+    <script src="js/libs/dat.gui.min.js"></script>
+
+
+<body>
+
+<div id="info">
+    <h1>ghost effect applied to an <a href="../docs/classes/Entity.html" target="_parent">Entity</a> with a custom <a
+            href="../docs/classes/GhostMaterial.html" target="_parent">GhostMaterial</a></h1>
+</div>
+
+<div id="dat-gui-container">
+</div>
+
+<script>
+
+    var entity = new xeogl.Entity({
+        geometry: new xeogl.TeapotGeometry({
+            ghostEdgeThreshold: 1
+        }),
+        material: new xeogl.PhongMaterial({
+            diffuse: [0.2, 0.2, 1.0]
+        }),
+        ghostMaterial: new xeogl.GhostMaterial({
+            edges: true,
+            edgeAlpha: 1.0,
+            edgeColor: [0.2, 1.0, 0.2],
+            edgeWidth: 2,
+            vertices: true,
+            vertexAlpha: 1.0,
+            vertexColor: [0.6, 1.0, 0.6],
+            vertexSize: 8,
+            fill: true,
+            fillColor: [0, 0, 0],
+            fillAlpha: 0.7
+        }),
+        transform: new xeogl.Rotate({
+            xyz: [1, 0, 0],
+            angle: -90,
+            parent: new xeogl.Translate({
+                xyz: [0, -20, 0]
+            })
+        }),
+        ghost: true
+    });
+
+    var camera = entity.scene.camera;
+
+    camera.eye = [0, 0, -100];
+
+    entity.scene.on("tick", function () {
+        camera.orbitYaw(0.2);
+    });
+
+    new xeogl.CameraControl();
+
+    //------------------------------------------------------------------------------------------------------------------
+    // GUI
+    //------------------------------------------------------------------------------------------------------------------
+
+    var Menu = function () {
+
+        var ghostMaterial = entity.ghostMaterial;
+
+        this["ghost"] = true;
+        this["ghostMaterial.preset"] = "vectorscope";
+        this["ghostMaterial.edges"] = ghostMaterial.edges;
+        this["ghostMaterial.fill"] = ghostMaterial.fill;
+        this["ghostMaterial.vertices"] = ghostMaterial.vertices;
+        this["ghostMaterial.edgeColor"] = typedToJS(ghostMaterial.edgeColor);
+        this["ghostMaterial.edgeAlpha"] = ghostMaterial.edgeAlpha;
+        this["ghostMaterial.edgeWidth"] = ghostMaterial.edgeWidth;
+        this["ghostMaterial.vertexColor"] = typedToJS(ghostMaterial.vertexColor);
+        this["ghostMaterial.vertexAlpha"] = ghostMaterial.vertexAlpha;
+        this["ghostMaterial.vertexSize"] = ghostMaterial.vertexSize;
+        this["ghostMaterial.fillColor"] = typedToJS(ghostMaterial.fillColor);
+        this["ghostMaterial.fillAlpha"] = ghostMaterial.fillAlpha;
+
+        var self = this;
+
+        var lastGhostMaterialPreset;
+
+        var update = function () {
+
+            entity.ghost = !!self["ghost"];
+
+            var preset = self["ghostMaterial.preset"];
+            if (lastGhostMaterialPreset !== preset) {
+                ghostMaterial.preset = preset;
+                lastGhostMaterialPreset = preset;
+                self["ghostMaterial.edges"] = ghostMaterial.edges;
+                self["ghostMaterial.fill"] = ghostMaterial.fill;
+                self["ghostMaterial.vertices"] = ghostMaterial.vertices;
+                self["ghostMaterial.edgeColor"] = typedToJS(ghostMaterial.edgeColor);
+                self["ghostMaterial.edgeAlpha"] = ghostMaterial.edgeAlpha;
+                self["ghostMaterial.edgeWidth"] = ghostMaterial.edgeWidth;
+                self["ghostMaterial.vertexColor"] = typedToJS(ghostMaterial.vertexColor);
+                self["ghostMaterial.vertexAlpha"] = ghostMaterial.vertexAlpha;
+                self["ghostMaterial.vertexSize"] = ghostMaterial.vertexSize;
+                self["ghostMaterial.fillColor"] = typedToJS(ghostMaterial.fillColor);
+                self["ghostMaterial.fillAlpha"] = ghostMaterial.fillAlpha;
+            } else {
+                ghostMaterial.vertices = !!self["ghostMaterial.vertices"];
+                ghostMaterial.edges = !!self["ghostMaterial.edges"];
+                ghostMaterial.fill = !!self["ghostMaterial.fill"];
+                ghostMaterial.edgeColor = JSToTyped(self["ghostMaterial.edgeColor"]);
+                ghostMaterial.edgeAlpha = self["ghostMaterial.edgeAlpha"];
+                ghostMaterial.edgeWidth = self["ghostMaterial.edgeWidth"];
+                ghostMaterial.vertexColor = JSToTyped(self["ghostMaterial.vertexColor"]);
+                ghostMaterial.vertexAlpha = self["ghostMaterial.vertexAlpha"];
+                ghostMaterial.vertexSize = self["ghostMaterial.vertexSize"];
+                ghostMaterial.fillColor = JSToTyped(self["ghostMaterial.fillColor"]);
+                ghostMaterial.fillAlpha = self["ghostMaterial.fillAlpha"];
+            }
+
+            requestAnimationFrame(update);
+        };
+
+        update();
+    };
+
+    var gui = new dat.GUI({autoPlace: false, top: 0, width: 400});
+
+    document.getElementById('dat-gui-container').appendChild(gui.domElement);
+
+    var menu = new Menu();
+
+    var ghostFolder = gui.addFolder('ghost');
+    ghostFolder.add(menu, 'ghost', true);
+    ghostFolder.add(menu, 'ghostMaterial.preset', Object.keys(xeogl.GhostMaterial.presets));
+    ghostFolder.add(menu, 'ghostMaterial.edges', true).listen();
+    ghostFolder.addColor(menu, 'ghostMaterial.edgeColor', [255, 255, 255]).listen();
+    ghostFolder.add(menu, 'ghostMaterial.edgeAlpha', 0.0, 1.0).listen();
+    ghostFolder.add(menu, 'ghostMaterial.edgeWidth', 1, 10).listen();
+    ghostFolder.add(menu, 'ghostMaterial.vertices', true).listen();
+    ghostFolder.addColor(menu, 'ghostMaterial.vertexColor', [255, 255, 255]).listen();
+    ghostFolder.add(menu, 'ghostMaterial.vertexAlpha', 0.0, 1.0).listen();
+    ghostFolder.add(menu, 'ghostMaterial.vertexSize', 1, 10).listen();
+    ghostFolder.add(menu, 'ghostMaterial.fill', true).listen();
+    ghostFolder.addColor(menu, 'ghostMaterial.fillColor', [255, 255, 255]).listen();
+    ghostFolder.add(menu, 'ghostMaterial.fillAlpha', 0.0, 1.0).listen();
+    ghostFolder.open();
+
+    function typedToJS(arry) {
+        return [arry[0] * 255, arry[1] * 255, arry[2] * 255];
+    }
+
+    function JSToTyped(arry) {
+        return [arry[0] / 255, arry[1] / 255, arry[2] / 255];
+    }
+
+</script>
+</body>
+</html>

@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
 
     <script src="js/geometry/k3d.js"></script>
     <script src="js/geometry/objGeometry.js"></script>
@@ -25,17 +25,35 @@
 <script>
 
     var miamiGeometry = new xeogl.OBJGeometry({
-        src: "models/obj/CyberCity3D/Miami_Sample.obj"
+        src: "models/obj/CyberCity3D/Miami_Sample.obj",
+        ghostEdgeThreshold: 20
     });
 
     // Entity on top of the "water", instancing the geometry
     var city = new xeogl.Entity({
         geometry: miamiGeometry,
         material: new xeogl.PhongMaterial({
-            diffuse: [0.890196, 0.882353, 0.870588]
+            diffuse: [0.890196, 0.882353, 0.870588],
+            pointSize: 5
         }),
         transform: new xeogl.Scale({
             xyz: [0.01, 0.01, 0.01]
+        }),
+
+        ghost: false,
+
+        ghostMaterial: new xeogl.GhostMaterial({
+            edges: true,
+            edgeAlpha: 1.0,
+            edgeColor: [0.2, 1.0, 0.2],
+            edgeWidth: 2,
+            vertices: true,
+            vertexAlpha: 1.0,
+            vertexColor: [0.6, 1.0, 0.6],
+            vertexSize: 8,
+            fill: true,
+            fillColor: [0, 0, 0],
+            fillAlpha: 0.7
         })
     });
 
@@ -79,20 +97,18 @@
     });
 
     // Initial camera pose
-    var view = city.camera.view;
-    view.look = [0, -1.5, 0];
-    view.eye = [0, -1.5, -10];
-    view.rotateEyeX(20);
+    var camera = city.scene.camera;
+    camera.look = [0, -1.5, 0];
+    camera.eye = [0, -1.5, -10];
+    camera.orbitPitch(20);
 
     // Orbit the camera
     city.scene.on("tick", function () {
-      //  view.rotateEyeY(-0.1);
+      //  camera.orbitYaw(-0.1);
     });
 
     // Camera interaction
-    var inputControl = new xeogl.InputControl();
-    inputControl.firstPerson = true;
-  //  inputControl.walking = true;
+    var cameraControl = new xeogl.CameraControl();
 
 </script>
 </body>

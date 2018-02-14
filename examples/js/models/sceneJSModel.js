@@ -111,10 +111,10 @@
      });
 
  // Set camera position
- var view = pojoModel.scene.camera.view;
- view.eye = [0, 0, -25];
- view.look = [0, 0, 0];
- view.up = [0, 1, 0];
+ var camera = pojoModel.scene.camera;
+ camera.eye = [0, 0, -25];
+ camera.look = [0, 0, 0];
+ camera.up = [0, 1, 0];
  ````
 
  #### Finding components
@@ -182,10 +182,10 @@
         tankModel.components["tankModel.gunDir"].angle = gunDir;
 
         // Set camera position
-        var view = tankModel.scene.camera.view;
-        view.eye = [0, 0, -70];
-        view.look = [0, 0, 0];
-        view.up = [0, 1, 0];
+        var camera = tankModel.scene.camera;
+        camera.eye = [0, 0, -70];
+        camera.look = [0, 0, 0];
+        camera.up = [0, 1, 0];
     });
  ````
 
@@ -542,7 +542,8 @@
                         translate: node.translate ? [node.translate.x || 0, node.translate.y || 1] : undefined,
                         rotate: node.rotate,
                         minFilter: node.minFilter,
-                        maxFilter: node.maxFilter
+                        maxFilter: node.maxFilter,
+                        encoding: "sRGB"
                     });
 
                     switch (node.applyTo) {

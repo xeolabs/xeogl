@@ -30,19 +30,19 @@
         })
     });
 
-    var view = xeogl.scene.camera.view;
+    var camera = xeogl.scene.camera;
 
-    view.eye = [-58.023033142089844, 34.3411750793457, -25.53963851928711];
-    view.look = [27.641752243041992, 20.933584213256836, -19.75855827331543];
-    view.up = [0.12662741541862488, 0.9919988512992859, 0.015218700282275677];
+    camera.eye = [-58.023033142089844, 34.3411750793457, -25.53963851928711];
+    camera.look = [27.641752243041992, 20.933584213256836, -19.75855827331543];
+    camera.up = [0.12662741541862488, 0.9919988512992859, 0.015218700282275677];
 
     model.on("loaded", function () {
     });
 
-    var inputControl = new xeogl.InputControl();
+    var cameraControl = new xeogl.CameraControl();
 
-    inputControl.firstPerson = true;
-    inputControl.walking = true;
+    cameraControl.firstPerson = true;
+    cameraControl.walking = true;
 
     //-----------------------------------------------------------------------------------------------------
     // Customize lighting

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.js"></script>
+    <script src="js/models/glTFModel.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - importing glTF with <i>lambertMaterials</i> option</h1>
+    <pre id="log">model:  reciprocating saw - [<a
+            href='https://github.com/xeolabs/xeogl/tree/master/examples/models/gltf/ReciprocatingSaw/README.md'
+            target="_parent">model info</a>]</pre>
+</div>
+
+<script>
+
+    var model = new xeogl.GLTFModel({
+        id: "saw",
+        src: "models/gltf/ReciprocatingSaw/glTF-MaterialsCommon/ReciprocatingSaw.gltf",
+
+        lambertMaterials: true, // Default is false
+
+        transform: new xeogl.Rotate({
+            xyz: [1, 0, 0],
+            angle: 90
+        })
+    });
+
+    var camera = xeogl.scene.camera;
+
+    camera.eye = [-110.8940200805664, -44.85665512084961, 276.6570739746094];
+    camera.look = [-110.8940200805664, -44.85665512084961, -0.46092796325683594];
+    camera.up = [0, 1, 0];
+
+    camera.zoom(50);
+
+    new xeogl.CameraControl();
+
+
+</script>
+</body>
+</html>

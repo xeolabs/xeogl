@@ -5,14 +5,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="info">
     <h1><a href="../docs/classes/AmbientLight.html"
-                                                      target="_parent">AmbientLight</a></h1>
+           target="_parent">AmbientLight</a></h1>
 </div>
 
 <script>
@@ -33,23 +33,20 @@
         space: "view"
     });
 
-    var lights = new xeogl.Lights({
-        lights: [
-            ambientLight,
-            dirLight
-        ]
-    });
+    xeogl.scene.lights.lights = [
+        ambientLight,
+        dirLight
+    ];
 
     var entity = new xeogl.Entity({
-        lights: lights,
         geometry: new xeogl.BoxGeometry(),
         material: material
     });
 
     entity.scene.on("tick",
             function () {
-                entity.scene.view.rotateEyeY(0.6);
-                entity.scene.view.rotateEyeX(0.3);
+                entity.scene.camera.orbitYaw(0.6);
+                entity.scene.camera.orbitPitch(0.3);
             });
 </script>
 </body>

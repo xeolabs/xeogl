@@ -58,6 +58,10 @@
 
     var xeogl = function () {
 
+        this._debug = {
+            forceHighShaderPrecision: false
+        };
+
         /**
          * Semantic version number. The value for this is set by an expression that's concatenated to
          * the end of the built binary by the xeogl build script.
@@ -158,10 +162,11 @@
                 positions: 0,
                 colors: 0,
                 normals: 0,
-                tangents: 0,
                 uvs: 0,
                 indices: 0,
                 textures: 0,
+                transforms: 0,
+                materials: 0,
                 programs: 0
             },
             frame: {
@@ -171,6 +176,7 @@
                 bindTexture: 0,
                 bindArray: 0,
                 drawElements: 0,
+                drawArrays: 0,
                 tasksRun: 0,
                 tasksScheduled: 0
             }

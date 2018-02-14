@@ -7,7 +7,7 @@
 
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
 
     <script src="js/geometry/k3d.js"></script>
     <script src="js/geometry/objGeometry.js"></script>
@@ -28,15 +28,18 @@
 
         material: new xeogl.PhongMaterial({
 
+            pointSize: 5,
+
             diffuseMap: new xeogl.Texture({
-                src: "models/obj/raptor/raptor.jpg"
+                src: "models/obj/raptor/raptor.jpg",
+                encoding: "sRGB"
             }),
 
             specularFresnel: new xeogl.Fresnel({
                 edgeBias: 0.2,
                 centerBias: 0.8,
-                power: 0.5,
-                edgeColor: [0.7, 0.7, 0.7],
+                power: 0.2,
+                edgeColor: [0.4, 0.4, 0.4],
                 centerColor: [0.0, 0.0, 0.0]
             }),
 
@@ -45,15 +48,15 @@
             emissiveFresnel: new xeogl.Fresnel({
                 edgeBias: 0.3,
                 centerBias: 0.8,
-                edgeColor: [0.3, 0.3, 0.4],
+                edgeColor: [0.3, 0.3, 0.3],
                 centerColor: [0.0, 0.0, 0.0],
                 power: 0.3
             })
         }),
 
         transform: new xeogl.Rotate({
-            xyz: [1, 0, 0],
-            angle: 0,
+            xyz: [0, 1, 0],
+            angle: 120,
 
             parent: new xeogl.Translate({
                 xyz: [10, 3, 10]
@@ -62,7 +65,7 @@
     });
 
     // Allow user camera control
-    new xeogl.InputControl();
+    new xeogl.CameraControl();
 
     // Fit to view as soon as the OBJ is loaded
 
@@ -71,14 +74,9 @@
         var cameraFlight = new xeogl.CameraFlightAnimation();
 
         cameraFlight.jumpTo({
-            worldBoundary: entity.worldBoundary,
+            aabb: entity.aabb,
             fit: true,
             fitFOV: 45
-        });
-
-        // Start orbiting thecamera
-        entity.scene.on("tick", function () {
-            entity.scene.camera.view.rotateEyeY(-0.2);
         });
     });
 

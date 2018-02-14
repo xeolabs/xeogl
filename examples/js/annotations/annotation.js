@@ -1,7 +1,7 @@
 /**
  An **Annotation** is a labeled {{#crossLink "Pin"}}{{/crossLink}} that's attached to the surface of an {{#crossLink "Entity"}}{{/crossLink}}.
 
- <a href="../../examples/#presentation_annotations_tronTank"><img src="../../assets/images/screenshots/annotationsTank.png"></img></a>
+ <a href="../../examples/#annotations_tronTank"><img src="../../assets/images/screenshots/annotationsTank.png"></img></a>
 
  ## Overview
 
@@ -47,8 +47,8 @@
 
  ## Examples
 
- * [Annotation demo](../../examples/#presentation_annotations_tronTank)
- * [AnnotationStory demo](../../examples/#presentation_annotationStory_tronTank)
+ * [Annotation demo](../../examples/#annotations_tronTank)
+ * [AnnotationStory demo](../../examples/#annotations_annotationStory_tronTank)
 
  ## Usage
 
@@ -58,7 +58,7 @@
  each Annotation, so that when you click its {{#crossLink "Pin"}}{{/crossLink}}, its label is shown and the {{#crossLink "Camera"}}{{/crossLink}} is positioned at its vantage point.
 
  ````javascript
- <script src="../build/xeogl.min.js"></script>
+ <script src="../build/xeogl.js"></script>
  <script src="js/annotations/pin.js"></script>
  <script src="js/annotations/annotation.js"></script>
 
@@ -78,11 +78,11 @@
 
     // Position the camera to look at the model
 
-    var view = model.scene.camera.view;
-    view.eye = [-110.89, -44.85, 276.65];
-    view.look = [-110.89, -44.85, -0.46];
-    view.up = [0, 1, 0];
-    view.zoom(20);
+    var camera = model.scene.camera;
+    camera.eye = [-110.89, -44.85, 276.65];
+    camera.look = [-110.89, -44.85, -0.46];
+    camera.up = [0, 1, 0];
+    camera.zoom(20);
 
     // Create three annotations on entities
     // within the model
@@ -181,7 +181,7 @@
  {{#crossLink "Geometry/indices:property"}}{{/crossLink}}, this is the index of the first
  element for that triangle.
  @param [cfg.offset=0.2] {Number} How far the Annotation is lifted out of its triangle, along the surface normal vector. This is used when occlusion culling, to ensure that the Annotation is not lost inside the surface it's attached to.
- @param [cfg.occludable=true] {Boolean} Indicates whether occlusion testing is performed for the Annotation, where it will be flagged invisible whenever it's hidden by something else in the 3D view.
+ @param [cfg.occludable=true] {Boolean} Indicates whether occlusion testing is performed for the Annotation, where it will be flagged invisible whenever it's hidden by something else in the 3D camera.
  @param [cfg.glyph=""] {String} Short piece of text to show inside the pin for the Annotation. Automatically truncated to 2 characters.
  @param [cfg.title=""] {String} Title text for the Annotation's label. Automatically truncated to 64 characters.
  @param [cfg.desc=""] {String} Description text for the Annotation's label. Automatically truncated to 1025 characters.

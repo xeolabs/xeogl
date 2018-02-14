@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <h1><a href="../docs/classes/Camera.html" target="_parent">Camera</a> with perspective projection</h1>
+</div>
+
+<script>
+
+    var entity = new xeogl.Entity({
+        geometry: new xeogl.BoxGeometry(),
+        material: new xeogl.PhongMaterial({
+            diffuseMap: new xeogl.Texture({
+                src: "textures/diffuse/uvGrid2.jpg"
+            })
+        })
+    });
+
+    var scene = entity.scene;
+    var camera = scene.camera;
+
+    camera.projection = "perspective";
+
+    scene.on("tick", function () {
+        camera.orbitYaw(0.5);
+        camera.orbitPitch(0.3);
+    });
+
+</script>
+</body>
+</html>

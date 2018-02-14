@@ -57,14 +57,14 @@
 
     // Enable camera interaction
 
-    new xeogl.InputControl();
+    new xeogl.CameraControl();
 
     // Orbit camera
 
-    var view = confRoom.scene.camera.view;
-    view.rotateEyeX(10);
+    var camera = confRoom.scene.camera;
+    camera.orbitPitch(10);
     confRoom.scene.on("tick", function () {
-        view.rotateEyeY(0.1);
+        camera.orbitYaw(0.1);
     });
 
 </script>

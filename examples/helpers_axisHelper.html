@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.js"></script>
+    <script src="js/geometry/vectorTextGeometry.js"></script>
+    <script src="js/helpers/axisHelper.js"></script>
+    <script src="js/geometry/k3d.js"></script>
+    <script src="js/geometry/objGeometry.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <h1><a href="js/helpers/axisHelper.js" target="_parent">AxisHelper</a> (bottom left of canvas) showing the
+        directions of the World-space axis</h1>
+</div>
+
+<script>
+
+    var entity = new xeogl.Entity({
+
+        geometry: new xeogl.OBJGeometry({
+            src: "models/obj/raptor/raptor.obj"
+        }),
+
+        material: new xeogl.PhongMaterial({
+
+            diffuseMap: new xeogl.Texture({
+                src: "models/obj/raptor/raptor.jpg"
+            }),
+
+            specularFresnel: new xeogl.Fresnel({
+                edgeBias: 0.2,
+                centerBias: 0.8,
+                power: 0.2,
+                edgeColor: [0.4, 0.4, 0.4],
+                centerColor: [0.0, 0.0, 0.0]
+            }),
+
+            emissive: [1, 1, 1],
+
+            emissiveFresnel: new xeogl.Fresnel({
+                edgeBias: 0.3,
+                centerBias: 0.8,
+                edgeColor: [0.3, 0.3, 0.3],
+                centerColor: [0.0, 0.0, 0.0],
+                power: 0.3
+            })
+        }),
+
+        transform: new xeogl.Rotate({
+            xyz: [0, 1, 0],
+            angle: 120,
+
+            parent: new xeogl.Translate({
+                xyz: [10, 3, 10]
+            })
+        })
+    });
+
+    entity.geometry.on("loaded", function () {
+        var cameraFlight = new xeogl.CameraFlightAnimation();
+        cameraFlight.jumpTo({
+            aabb: entity.aabb,
+            fit: true,
+            fitFOV: 45
+        });
+    });
+
+    var scene = entity.scene;
+    var camera = scene.camera;
+
+    new xeogl.AxisHelper({
+        lookat: camera,
+        visible: true,
+        size: [200, 200]
+    });
+
+    new xeogl.CameraControl();
+
+</script>
+</body>
+</html>

@@ -4,7 +4,7 @@
 
     /**
 
-     Controls camera with mouse and keyboard, handles selection of entities and rotation point.
+     Controls the scene camera with mouse and keyboard, handles selection of entities and rotation point.
 
      */
     xeogl.BIMCameraControl = xeogl.Component.extend({
@@ -28,8 +28,7 @@
 
             var pitchMat = math.mat4();
 
-            var camera = cfg.camera;
-            var view = camera.view;
+            var camera = this.scene.camera;
             var project = camera.project;
             var scene = this.scene;
             var input = scene.input;
@@ -70,7 +69,7 @@
                 var inverseViewMat = math.mat4();
                 return function () {
                     if (viewMatDirty) {
-                        math.inverseMat4(view.matrix, inverseViewMat);
+                        math.inverseMat4(camera.matrix, inverseViewMat);
                     }
                     return inverseViewMat;
                 }
@@ -79,7 +78,7 @@
             // Returns the inverse of the camera's current projection transform matrix
             var getInverseProjectMat = (function () {
                 var projMatDirty = true;
-                camera.on("projectMatrix", function () {
+                camera.on("projMatrix", function () {
                     projMatDirty = true;
                 });
                 var inverseProjectMat = math.mat4();
@@ -94,7 +93,7 @@
             // Returns the transposed copy the camera's current projection transform matrix
             var getTransposedProjectMat = (function () {
                 var projMatDirty = true;
-                camera.on("projectMatrix", function () {
+                camera.on("projMatrix", function () {
                     projMatDirty = true;
                 });
                 var transposedProjectMat = math.mat4();
@@ -110,12 +109,12 @@
             var getSceneDiagSize = (function () {
                 var sceneSizeDirty = true;
                 var diag = 1; // Just in case
-                scene.worldBoundary.on("updated", function () {
+                scene.on("boundary", function () {
                     sceneSizeDirty = true;
                 });
                 return function () {
                     if (sceneSizeDirty) {
-                        diag = math.getAABB3Diag(scene.worldBoundary.aabb);
+                        diag = math.getAABB3Diag(scene.aabb);
                     }
                     return diag;
                 };
@@ -213,15 +212,15 @@
                 rotationDeltas[0] = 0;
                 rotationDeltas[1] = 0;
 
-                rotateStartEye = view.eye.slice();
-                rotateStartLook = view.look.slice();
-                math.addVec3(rotateStartEye, view.up, rotateStartUp);
+                rotateStartEye = camera.eye.slice();
+                rotateStartLook = camera.look.slice();
+                math.addVec3(rotateStartEye, camera.up, rotateStartUp);
 
                 setOrbitPitchAxis();
             }
 
             function setOrbitPitchAxis() {
-                math.cross3Vec3(math.normalizeVec3(math.subVec3(view.eye, view.look, math.vec3())), view.up, orbitPitchAxis);
+                math.cross3Vec3(math.normalizeVec3(math.subVec3(camera.eye, camera.look, math.vec3())), camera.up, orbitPitchAxis);
             }
 
             var setCursor = (function () {
@@ -263,9 +262,9 @@
 
                     setOrbitPitchAxis();
 
-                    rotateStartEye = view.eye.slice();
-                    rotateStartLook = view.look.slice();
-                    math.addVec3(rotateStartEye, view.up, rotateStartUp);
+                    rotateStartEye = camera.eye.slice();
+                    rotateStartLook = camera.look.slice();
+                    math.addVec3(rotateStartEye, camera.up, rotateStartUp);
 
                     pickHit = scene.pick({
                         canvasPos: canvasPos,
@@ -354,7 +353,7 @@
                     setCursor("pointer", true);
                     if (hit.worldPos) {
                         // TODO: This should be somehow hit.viewPos.z, but doesn't seem to be
-                        lastHoverDistance = math.lenVec3(math.subVec3(hit.worldPos, view.eye, tempVecHover));
+                        lastHoverDistance = math.lenVec3(math.subVec3(hit.worldPos, camera.eye, tempVecHover));
                     }
                 } else {
                     setCursor("auto", true);
@@ -427,12 +426,12 @@
                     var panning = input.keyDown[input.KEY_SHIFT] || input.mouseDownMiddle || (input.mouseDownLeft && input.mouseDownRight);
 
                     if (panning) {
-                        // TODO: view.pan is in view space? We have a world coord vector.
+                        // TODO: camera.pan is in view space? We have a world coord vector.
 
                         // Subtract model space unproject points
                         math.subVec3(A[1], B[1], tempVecHover);
-                        view.eye = math.addVec3(view.eye, tempVecHover);
-                        view.look = math.addVec3(view.look, tempVecHover);
+                        camera.eye = math.addVec3(camera.eye, tempVecHover);
+                        camera.look = math.addVec3(camera.look, tempVecHover);
                     } else {
                         // If not panning, we are orbiting                        
 
@@ -448,9 +447,9 @@
 
                         math.rotationMat4v(rotationDeltas[1] * math.DEGTORAD, orbitPitchAxis, pitchMat);
 
-                        view.eye = rotate(rotateStartEye);
-                        view.look = rotate(rotateStartLook);
-                        view.up = math.subVec3(rotate(rotateStartUp), view.eye, math.vec3());
+                        camera.eye = rotate(rotateStartEye);
+                        camera.look = rotate(rotateStartLook);
+                        camera.up = math.subVec3(rotate(rotateStartUp), camera.eye, math.vec3());
                     }
 
                     lastCanvasPos[0] = canvasPos[0];
@@ -585,9 +584,9 @@
 
                             math.rotationMat4v(rotationDeltas[1] * math.DEGTORAD, orbitPitchAxis, pitchMat);
 
-                            view.eye = rotate(rotateStartEye);
-                            view.look = rotate(rotateStartLook);
-                            view.up = math.subVec3(rotate(rotateStartUp), view.eye, math.vec3());
+                            camera.eye = rotate(rotateStartEye);
+                            camera.look = rotate(rotateStartLook);
+                            camera.up = math.subVec3(rotate(rotateStartUp), camera.eye, math.vec3());
                         }
                     }
                 });
@@ -639,15 +638,15 @@
                                     delta = -elapsed * rate;
                                 }
 
-                                var eye = view.eye;
-                                var look = view.look;
+                                var eye = camera.eye;
+                                var look = camera.look;
 
                                 // Get vector from eye to center of rotation
                                 math.mulVec3Scalar(math.normalizeVec3(math.subVec3(eye, rotatePos, tempVec3a), tempVec3b), delta, eyePivotVec);
 
                                 // Move eye and look along the vector
-                                view.eye = math.addVec3(eye, eyePivotVec, tempVec3c);
-                                view.look = math.addVec3(look, eyePivotVec, tempVec3c);
+                                camera.eye = math.addVec3(eye, eyePivotVec, tempVec3c);
+                                camera.look = math.addVec3(look, eyePivotVec, tempVec3c);
 
                                 if (project.isType("xeogl.Ortho")) {
                                     project.scale += delta * orthoScaleRate;
@@ -753,10 +752,10 @@
 
                             if (targeting) {
 
-                                var eye = view.eye;
-                                var look = view.look;
+                                var eye = camera.eye;
+                                var look = camera.look;
 
-                                math.mulVec3Scalar(xeogl.math.transposeMat4(view.matrix).slice(8), f, eyePivotVec);
+                                math.mulVec3Scalar(xeogl.math.transposeMat4(camera.matrix).slice(8), f, eyePivotVec);
                                 math.addVec3(eye, eyePivotVec, newEye);
                                 math.addVec3(look, eyePivotVec, newLook);
 
@@ -766,8 +765,8 @@
                                 // if (lenEyePivotVec < currentEyePivotDist - 10) {
 
                                 // Move eye and look along the vector
-                                view.eye = newEye;
-                                view.look = newLook;
+                                camera.eye = newEye;
+                                camera.look = newLook;
 
                                 if (project.isType("xeogl.Ortho")) {
                                     project.scale += delta * orthoScaleRate;
@@ -789,7 +788,6 @@
 
                 var flight = self.create({
                     type:"xeogl.CameraFlightAnimation",
-                    camera: camera,
                     duration: 1.0 // One second to fly to each new target
                 });
 
@@ -833,9 +831,8 @@
                             return;
                         }
 
-                        var boundary = scene.worldBoundary;
-                        var aabb = boundary.aabb;
-                        var center = boundary.center;
+                        var aabb = scene.aabb;
+                        var center = math.getAABB3Center(aabb);
                         var diag = math.getAABB3Diag(aabb);
                         var fitFOV = 55;
                         var dist = Math.abs((diag) / Math.tan(fitFOV/2));
@@ -937,7 +934,7 @@
                             tempVec3[1] = y;
                             tempVec3[2] = z;
 
-                            view.pan(tempVec3);
+                            camera.pan(tempVec3);
 
                             resetRotate();
                         }

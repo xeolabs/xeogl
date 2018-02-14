@@ -8,7 +8,7 @@
     <link href="css/styles.css" rel="stylesheet"/>
 
     <script src="js/libs/csg.js"></script>
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
 
 <body>
 
@@ -67,17 +67,58 @@
 
     var entity = new xeogl.Entity({
         geometry: geometry,
-        material: new xeogl.PhongMaterial({
-            diffuse: [0.3, 0.3, 0.6]
+        material: new xeogl.MetallicMaterial({
+            baseColor: [0.8, 0.8, 0.82],
+            metallic: 0.9,
+            roughness: 0.6
         })
     });
 
     // Orbit the camera
 
     entity.scene.on('tick', function () {
-        entity.camera.view.rotateEyeY(0.2);
-        entity.camera.view.rotateEyeX(0.1);
+        entity.scene.camera.orbitYaw(0.2);
+        entity.scene.camera.orbitPitch(0.02);
     });
+
+    var lights = entity.scene.lights;
+
+    lights.reflectionMap = new xeogl.CubeTexture({
+        src: [
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
+        ]
+    });
+
+    lights.lights = [
+        new xeogl.DirLight({
+            id: "keyLight",
+            dir: [0.8, -0.6, -0.8],
+            color: [0.8, 0.8, 0.8],
+            intensity: 1.0,
+            space: "world"
+        }),
+
+        new xeogl.DirLight({
+            id: "fillLight",
+            dir: [-0.8, -0.4, -0.4],
+            color: [0.4, 0.4, 0.5],
+            intensity: 1.0,
+            space: "world"
+        }),
+
+        new xeogl.DirLight({
+            id: "rimLight",
+            dir: [0.2, -0.8, 0.8],
+            color: [0.8, 0.8, 0.8],
+            intensity: 1.0,
+            space: "world"
+        })
+    ];
 
     // Utility function to convert a csg.js shape to a xeogl.Geometry
     function shapeToGeometry(shape) {
@@ -120,7 +161,7 @@
         });
     }
 
-    new xeogl.InputControl();
+    new xeogl.CameraControl();
 
 </script>
 </body>

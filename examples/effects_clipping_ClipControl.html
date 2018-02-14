@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="../build/xeogl.js"></script>
+    <script src="js/geometry/vectorTextGeometry.js"></script>
+
+    <script src="js/controls/clipControl.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <h1>user-defined clipping planes</h1>
+    <ul>
+        <li>using <a href="../docs/classes/Clip.html" target="_parent">Clip</a> components to create eight arbitrary
+            clipping planes
+        </li>
+        <li>visualizing each plane with a <a href="../docs/classes/ClipHelper.html" target="_parent">ClipHelper</a></li>
+    </ul>
+</div>
+
+<script>
+
+    // Create custom clipping planes
+
+    var scene = xeogl.scene;
+    var clips = scene.clips;
+    var camera = scene.camera;
+
+    clips.clips = [
+        new xeogl.Clip({
+            id: "clip0",
+            pos: [0.8, 0.8, -0.8],
+            dir: [-1, -1, 1],
+            active: true
+        })
+    ];
+
+    var clip = clips.clips[0];
+
+    var clipControl = new xeogl.ClipControl({
+        clip: clip,
+        visible: true
+    });
+
+    var outerSphere = new xeogl.Entity({
+        geometry: new xeogl.SphereGeometry({
+            radius: 1.5,
+            heightSegments: 60,
+            widthSegments: 60
+        }),
+        material: new xeogl.PhongMaterial({
+            ambient: [0.9, 0.3, 0.9],
+            shininess: 30,
+            diffuseMap: new xeogl.Texture({
+                src: "textures/diffuse/uvGrid2.jpg"
+            })
+        }),
+        clippable: true // (default value)
+    });
+
+    var innerSphere = new xeogl.Entity({
+        geometry: new xeogl.SphereGeometry({
+            radius: 1.2,
+            heightSegments: 60,
+            widthSegments: 60
+        }),
+        material: new xeogl.PhongMaterial({
+            ambient: [0.9, 0.3, 0.9],
+            shininess: 30,
+            diffuseMap: new xeogl.Texture({
+                src: "textures/diffuse/UVCheckerMap11-1024.png"
+            })
+        }),
+        clippable: false
+    });
+
+    camera.eye = [5, 0, -3];
+
+    var cameraControl = new xeogl.CameraControl();
+    cameraControl.active = false;
+
+    cameraControl.on("picked", function(e) {
+        if (e.entity) {
+            console.log(e.entity.id);
+        }
+    });
+
+</script>
+</body>
+</html>

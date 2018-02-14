@@ -15,9 +15,7 @@
 
  * Allows you to access and manipulate the components within it.
  * Can be transformed within World-space by attaching it to a {{#crossLink "Transform"}}{{/crossLink}}.
- * Provides its World-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}}.
-
- <img src="../../../assets/images/GLTFModel.png"></img>
+ * Provides its dynamic World-space axis-aligned boundary.
 
  ## Supported glTF 2.0 features
 
@@ -70,6 +68,45 @@
  gearbox.src = "models/gltf/Buggy/glTF/Buggy.gltf"
  ````
 
+ ### Loading options
+
+ The following options may be specified when loading glTF:
+
+ | Option | Type | Range | Default Value | Description |
+ |:--------:|:----:|:-----:|:-------------:|:-----:|:-----------:|
+ | flattenTransforms | Boolean |  | true | Flattens transform hierarchies to improve rendering performance. |
+ | lambertMaterials | Boolean |  | false | When true, gives each {{#crossLink "Entity"}}{{/crossLink}} the same {{#crossLink "LambertMaterial"}}{{/crossLink}} and a {{#crossLink "Entity/colorize:property"}}{{/crossLink}} set the to diffuse color extracted from the glTF material. This is typically used for CAD models with huge amounts of objects, and will ignore textures.|
+ | compressGeometry | Boolean |  | true | When true, quantizes geometry to reduce memory and GPU bus usage (see {{#crossLink "Geometry"}}{{/crossLink}}). |
+ | combineGeometry | Boolean |  | true | When true, combines geometry vertex buffers to improve rendering performance (see {{#crossLink "Geometry"}}{{/crossLink}}). |
+ | backfaces | Boolean |  | true | When true, allows visible backfaces, wherever specified in the glTF. When false, ignores backfaces. |
+ | ghost | Boolean |  | false | When true, ghosts all the model's Entities (see {{#crossLink "Entity"}}{{/crossLink}} and {{#crossLink "GhostMaterial"}}{{/crossLink}}). |
+ | outline | Boolean |  | false | When true, outlines all the model's Entities (see {{#crossLink "Entity"}}{{/crossLink}} and {{#crossLink "OutlineMaterial"}}{{/crossLink}}). |
+ | highlight | Boolean |  | false | When true, highlights all the model's Entities (see {{#crossLink "Entity"}}{{/crossLink}} and {{#crossLink "HighlightMaterial"}}{{/crossLink}}). |
+ | ghostEdgeThreshold | Number | [0..180] | 2 | When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn. |
+ | maxEntities | Number | | | Optional maximum number of {{#crossLink "Entity"}}{{/crossLink}}'s to load. |
+ | included | Function(entityId) | | null | Optional callback to mask which {{#crossLink "Entity"}}{{/crossLink}}'s are loaded. Entity will only be loaded when this callback returns ````true``` for the given Entity ID. |
+
+ Using the ````flattenTransforms```` option to load a glTF model while flattening its transform hierarchy:
+
+ ````javascript
+ var gearbox = new xeogl.GLTFModel({
+   id: "gearbox",
+   src: "models/gltf/gearbox/gearbox_assy.gltf",
+   flattenTransforms: true // Default
+ });
+ ````
+
+ Using the ````included```` option to load all entities except for those with IDs "gear78" and "gear98":
+
+ ````javascript
+ var gearbox = new xeogl.GLTFModel({
+   id: "gearbox",
+   src: "models/gltf/gearbox/gearbox_assy.gltf",
+   included: function(entityId) {
+        return id !== ("gearbox#gear78") &&  (id !== "gearbox#gear98");
+ });
+ ````
+
  ### Accessing components
 
  Once the GLTFModel has loaded, its {{#crossLink "Scene"}}{{/crossLink}} will contain various components that represent the elements of the glTF file.
@@ -115,7 +152,7 @@
  * [Damaged Helmet with metal/rough PBR materials](../../examples/#importing_gltf_pbr_metallic_helmet)
  * [Gearbox with entity explorer](../../examples/#importing_gltf_explorer)
  * [Ensuring individual materials on GLTFModel entities](../../examples/#models_filter_uniqueMaterials)
- * [Baking transform hierarchies in a GLTFModel](../../examples/#models_filter_bakeTransforms)
+ * [Baking transform hierarchies in a GLTFModel](../../examples/#models_filter_flattenTransforms)
 
  @class GLTFModel
  @module xeogl
@@ -128,6 +165,17 @@
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this GLTFModel.
  @param [cfg.src] {String} Path to a glTF file. You can set this to a new file path at any time, which will cause the
+ @param [flattenTransforms=true] {Boolean} Flattens transform hierarchies to improve rendering performance.
+ @param [lambertMaterials | Boolean |  | false | When true, gives each {{#crossLink "Entity"}}{{/crossLink}} the same {{#crossLink "LambertMaterial"}}{{/crossLink}} and a {{#crossLink "Entity/colorize:property"}}{{/crossLink}} set the to diffuse color extracted from the glTF material. This is typically used for CAD models with huge amounts of objects, and will ignore textures.|
+ @param [compressGeometry | Boolean |  | true | When true, quantizes geometry to reduce memory and GPU bus usage. |
+ @param [combineGeometry | Boolean |  | true | When true, combines geometry vertex buffers to improve rendering performance. |
+ @param [backfaces | Boolean |  | true | When true, allows visible backfaces, wherever specified in the glTF. When false, ignores backfaces. |
+ @param [ghost=false] {Boolean} When true, sets all the Model's Entities initially ghosted. |
+ @param [highlight=false] {Boolean} When true, sets all the Model's Entities initially highlighted. |
+ @param [outline=false] {Boolean} When true, sets all the Model's Entities initially outlined. |
+ @param [ghostEdgeThreshold=2] {Number} When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn. |
+ @param [maxEntities] {Number} Optional maximum number of {{#crossLink "Entity"}}{{/crossLink}}'s to load. |
+ @param [included] {Function} Optional callback to mask which {{#crossLink "Entity"}}{{/crossLink}}'s are loaded. Entity will only be loaded when this callback returns ````true``` for the given Entity ID. |
  GLTFModel to load components from the new file (after first destroying any components loaded from a previous file path).
  @param [cfg.transform] {Number|String|Transform} A Local-to-World-space (modelling) {{#crossLink "Transform"}}{{/crossLink}} to attach to this GLTFModel.
  Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this GLTFModel. Internally, the given
@@ -146,6 +194,16 @@
         _init: function (cfg) {
             this._super(cfg);
             this._src = null;
+            this._options = {
+                flattenTransforms: cfg.flattenTransforms !== false,
+                ignoreMaterials: !!cfg.ignoreMaterials,
+                combineGeometry: cfg.combineGeometry !== false,
+                compressGeometry: cfg.compressGeometry !== false,
+                ghostEdgeThreshold: cfg.ghostEdgeThreshold,
+                lambertMaterials: !!cfg.lambertMaterials,
+                maxEntities: cfg.maxEntities,
+                included: cfg.included
+            };
             this.src = cfg.src;
         },
 
@@ -157,7 +215,7 @@
              You can set this to a new file path at any time (except while loading), which will cause the GLTFModel to load components from
              the new file (after first destroying any components loaded from a previous file path).
 
-             Fires a {{#crossLink "GLTFModel/src:event"}}{{/crossLink}} event on change.
+             Fires a {{#crossLink "GLTFModel/loaded:event"}}{{/crossLink}} event when the glTF has loaded.
 
              @property src
              @type String
@@ -190,28 +248,13 @@
 
                     this._src = value;
 
-                    xeogl.GLTFModel.load(this, this._src);
-
-                    /**
-                     Fired whenever this GLTFModel's {{#crossLink "GLTFModel/src:property"}}{{/crossLink}} property changes.
-                     @event src
-                     @param value The property's new value
-                     */
-                    this.fire("src", this._src);
+                    xeogl.GLTFModel.load(this, this._src, this._options);
                 },
 
                 get: function () {
                     return this._src;
                 }
             }
-        },
-
-        _getJSON: function () {
-            var json = {};
-            if (this.src) {
-                json.src = this._src;
-            }
-            return json;
         },
 
         _destroy: function () {
@@ -224,14 +267,15 @@
      *
      * @param {Model} model Model to load into.
      * @param {String} src Path to glTF file.
+     * @param {Object} options Loading options.
      * @param {Function} [ok] Completion callback.
      */
-    xeogl.GLTFModel.load = function (model, src, ok) {
+    xeogl.GLTFModel.load = function (model, src, options, ok) {
 
         var spinner = model.scene.canvas.spinner;
         spinner.processes++;
 
-        loadGLTF(model, src, function () {
+        loadGLTF(model, src, options, function () {
 
                 spinner.processes--;
 
@@ -270,11 +314,18 @@
      * @param {String} [options.loadBuffer] Callback to load buffer files.
      */
     xeogl.GLTFModel.parse = function (model, gltf, options) {
+
         options = options || {};
+
+        var spinner = model.scene.canvas.spinner;
+        spinner.processes++;
+
         parseGLTF(gltf, "", options, model, function () {
+                spinner.processes--;
                 model.fire("loaded", true, true);
             },
             function (msg) {
+                spinner.processes--;
                 model.error(msg);
                 model.fire("error", msg);
             });
@@ -286,7 +337,7 @@
 
     var loadGLTF = (function () {
 
-        return function (model, src, ok, error) {
+        return function (model, src, options, ok, error) {
 
             loadJSON(src, function (response) { // OK
                     var json;
@@ -295,10 +346,18 @@
                     } catch (e) {
                         error(e);
                     }
-                    var options = {
-                        basePath: getBasePath(src)
+                    var options2 = { // TODO: Remove this temp cfg object
+                        basePath: getBasePath(src),
+                        flattenTransforms: options.flattenTransforms,
+                        ignoreMaterials: options.ignoreMaterials,
+                        combineGeometry: options.combineGeometry,
+                        compressGeometry: options.compressGeometry,
+                        ghostEdgeThreshold: options.ghostEdgeThreshold,
+                        lambertMaterials: options.lambertMaterials,
+                        maxEntities: options.maxEntities,
+                        included: options.included
                     };
-                    parseGLTF(json, src, options, model, ok, error);
+                    parseGLTF(json, src, options2, model, ok, error);
                 },
                 error);
         };
@@ -362,20 +421,41 @@
                 src: src,
                 loadBuffer: options.loadBuffer,
                 basePath: options.basePath,
+                flattenTransforms: !!options.flattenTransforms,
+                ignoreMaterials: !!options.ignoreMaterials,
+                combineGeometry: !!options.combineGeometry,
+                compressGeometry: !!options.compressGeometry,
+                ghostEdgeThreshold: options.ghostEdgeThreshold,
+                lambertMaterials: !!options.lambertMaterials,
+                maxEntities: options.maxEntities,
+                included: options.included,
                 json: json,
                 scene: model.scene,
                 model: model,
                 numObjects: 0
             };
 
+            // model.log("Loading glTF (flattenTransforms=" + ctx.flattenTransforms +
+            //     ", combineGeometry=" + ctx.combineGeometry +
+            //     ", compressGeometry=" + ctx.compressGeometry +
+            //     ", lambertMaterials=" + ctx.lambertMaterials + ")");
+
+            model.scene.loading++; // Disables (re)compilation
+
             loadBuffers(ctx, function () {
 
                 loadBufferViews(ctx);
                 loadAccessors(ctx);
-                loadTextures(ctx);
-                loadMaterials(ctx);
+                if (!ctx.lambertMaterials) {
+                    loadTextures(ctx);
+                }
+                if (!ctx.ignoreMaterials) {
+                    loadMaterials(ctx);
+                }
                 loadMeshes(ctx);
                 loadDefaultScene(ctx);
+
+                model.scene.loading--; // Re-enables (re)compilation
 
                 ok();
             });
@@ -500,7 +580,7 @@
                 bufferViewInfo._typedArray = new Float32Array(bufferViewInfo._buffer);
 
             } else {
-                console.log(bufferViewInfo._typedArray)
+                //ctx.model.log(bufferViewInfo._typedArray)
             }
         }
 
@@ -561,8 +641,13 @@
                 var material;
                 for (var i = 0, len = materialsInfo.length; i < len; i++) {
                     materialInfo = materialsInfo[i];
-                    material = loadMaterial(ctx, materialInfo);
-                    ctx.model.add(material);
+                    if (ctx.lambertMaterials) {
+                        // Substitute RGBA for material, to use fast flat shading instead
+                        material = loadMaterialColorize(ctx, materialInfo);
+                    } else {
+                        material = loadMaterial(ctx, materialInfo);
+                        ctx.model.add(material);
+                    }
                     materialInfo._material = material;
                 }
             }
@@ -581,6 +666,7 @@
                 textureInfo = json.textures[normalTexture.index];
                 if (textureInfo) {
                     cfg.normalMap = textureInfo._texture;
+                    cfg.normalMap.encoding = "linear";
                 }
             }
 
@@ -597,6 +683,7 @@
                 textureInfo = json.textures[emissiveTexture.index];
                 if (textureInfo) {
                     cfg.emissiveMap = textureInfo._texture;
+                    cfg.emissiveMap.encoding = "sRGB";
                 }
             }
 
@@ -645,6 +732,7 @@
                         textureInfo = json.textures[diffuseTexture.index];
                         if (textureInfo) {
                             cfg.diffuseMap = textureInfo._texture;
+                            cfg.diffuseMap.encoding = "sRGB";
                         }
                     }
 
@@ -663,6 +751,7 @@
                         textureInfo = json.textures[specularGlossinessTexture.index];
                         if (textureInfo) {
                             cfg.specularGlossinessMap = textureInfo._texture;
+                            cfg.specularGlossinessMap.encoding = "linear";
                         }
                     }
 
@@ -695,6 +784,7 @@
                             texture = ctx.textures[diffuse];
                             if (texture) {
                                 cfg.diffuseMap = texture;
+                                cfg.diffuseMap.encoding = "sRGB";
                             }
                         } else {
                             cfg.diffuse = diffuse.slice(0, 3);
@@ -765,6 +855,7 @@
                     textureInfo = json.textures[baseColorTexture.index];
                     if (textureInfo) {
                         cfg.baseColorMap = textureInfo._texture;
+                        cfg.baseColorMap.encoding = "sRGB";
                     }
                 }
 
@@ -783,6 +874,7 @@
                     textureInfo = json.textures[metallicRoughnessTexture.index];
                     if (textureInfo) {
                         cfg.metallicRoughnessMap = textureInfo._texture;
+                        cfg.metallicRoughnessMap.encoding = "linear";
                     }
                 }
 
@@ -792,6 +884,70 @@
             // Default material
 
             return new xeogl.PhongMaterial(ctx.scene, cfg);
+        }
+
+        // Extract diffuse/baseColor and alpha into RGBA Entity 'colorize' property
+        function loadMaterialColorize(ctx, materialInfo) {
+
+            var json = ctx.json;
+            var colorize = new Float32Array([1, 1, 1, 1]);
+
+            var extensions = materialInfo.extensions;
+            if (extensions) {
+
+                // Specular PBR material
+
+                var specularPBR = extensions["KHR_materials_pbrSpecularGlossiness"];
+                if (specularPBR) {
+                    var diffuseFactor = specularPBR.diffuseFactor;
+                    if (diffuseFactor !== null && diffuseFactor !== undefined) {
+                        colorize.set(diffuseFactor);
+                    }
+                }
+
+                // Common Phong, Blinn, Lambert or Constant materials
+
+                var common = extensions["KHR_materials_common"];
+                if (common) {
+
+                    var technique = common.technique;
+                    var values = common.values || {};
+
+                    var blinn = technique === "BLINN";
+                    var phong = technique === "PHONG";
+                    var lambert = technique === "LAMBERT";
+                    var constant = technique === "CONSTANT";
+
+                    var diffuse = values.diffuse;
+                    if (diffuse && (blinn || phong || lambert)) {
+                        if (!xeogl._isString(diffuse)) {
+                            colorize.set(diffuse);
+                        }
+                    }
+
+                    var transparency = values.transparency;
+                    if (transparency !== null && transparency !== undefined) {
+                        colorize[3] = transparency;
+                    }
+
+                    var transparent = values.transparent;
+                    if (transparent !== null && transparent !== undefined) {
+                        colorize[3] = transparent;
+                    }
+                }
+            }
+
+            // Metallic PBR naterial
+
+            var metallicPBR = materialInfo.pbrMetallicRoughness;
+            if (metallicPBR) {
+                var baseColorFactor = metallicPBR.baseColorFactor;
+                if (baseColorFactor) {
+                    colorize.set(baseColorFactor);
+                }
+            }
+
+            return colorize;
         }
 
         function loadMeshes(ctx) {
@@ -827,7 +983,10 @@
                 for (var i = 0, len = primitivesInfo.length; i < len; i++) {
 
                     geometryCfg = {
-                        primitive: "triangles"
+                        primitive: "triangles",
+                        combined: ctx.combineGeometry,
+                        compressed: ctx.compressGeometry,
+                        ghostEdgeThreshold: ctx.ghostEdgeThreshold
                     };
 
                     primitiveInfo = primitivesInfo[i];
@@ -871,6 +1030,7 @@
                     meshCfg = {};
 
                     geometry = new xeogl.Geometry(ctx.scene, geometryCfg);
+
                     ctx.model.add(geometry);
                     meshCfg.geometry = geometry;
 
@@ -919,48 +1079,83 @@
         function loadNode(ctx, nodeIdx, nodeInfo, transform) {
             var json = ctx.json;
             var model = ctx.model;
+            var math = xeogl.math;
+            var matrix;
 
             if (nodeInfo.matrix) {
-                var matrix = nodeInfo.matrix;
-                transform = new xeogl.Transform(model, {
-                    matrix: matrix,
-                    parent: transform
-                });
-                model.add(transform);
+                matrix = nodeInfo.matrix;
+                if (ctx.flattenTransforms) {
+                    if (transform) {
+                        transform = xeogl.math.mulMat4(transform, matrix, xeogl.math.mat4());
+                    } else {
+                        transform = matrix;
+                    }
+                } else {
+                    transform = new xeogl.Transform(model, {
+                        matrix: matrix,
+                        parent: transform
+                    });
+                    model.add(transform);
+                }
             }
 
             if (nodeInfo.translation) {
                 var translation = nodeInfo.translation;
-                transform = new xeogl.Translate(model, {
-                    xyz: [translation[0], translation[1], translation[2]],
-                    parent: transform
-                });
-                model.add(transform);
+                if (ctx.flattenTransforms) {
+                    matrix = math.translationMat4v(translation);
+                    if (transform) {
+                        transform = xeogl.math.mulMat4(transform, matrix, matrix);
+                    } else {
+                        transform = matrix;
+                    }
+                } else {
+                    transform = new xeogl.Translate(model, {
+                        xyz: [translation[0], translation[1], translation[2]],
+                        parent: transform
+                    });
+                    model.add(transform);
+                }
             }
 
             if (nodeInfo.rotation) {
                 var rotation = nodeInfo.rotation;
-                transform = new xeogl.Quaternion(model, {
-                    xyzw: rotation,
-                    parent: transform
-                });
-                model.add(transform);
+                if (ctx.flattenTransforms) {
+                    matrix = math.quaternionToMat4(rotation);
+                    if (transform) {
+                        transform = xeogl.math.mulMat4(transform, matrix, matrix);
+                    } else {
+                        transform = matrix;
+                    }
+                } else {
+                    transform = new xeogl.Quaternion(model, {
+                        xyzw: rotation,
+                        parent: transform
+                    });
+                    model.add(transform);
+                }
             }
 
             if (nodeInfo.scale) {
                 var scale = nodeInfo.scale;
-                transform = new xeogl.Scale(model, {
-                    xyz: [scale[0], scale[1], scale[2]],
-                    parent: transform
-                });
-                model.add(transform);
+                if (ctx.flattenTransforms) {
+                    matrix = math.scalingMat4v(scale);
+                    if (transform) {
+                        transform = xeogl.math.mulMat4(transform, matrix, matrix);
+                    } else {
+                        transform = matrix;
+                    }
+                } else {
+                    transform = new xeogl.Scale(model, {
+                        xyz: [scale[0], scale[1], scale[2]],
+                        parent: transform
+                    });
+                    model.add(transform);
+                }
             }
 
             if (nodeInfo.mesh !== undefined) {
 
                 var objectId = ctx.model.id + "#" + (nodeInfo.name || ctx.numObjects);
-
-                var object = {};
 
                 ctx.numObjects++;
 
@@ -974,6 +1169,17 @@
                     var entity;
                     var numMeshes = meshes.length;
 
+                    var transform2 = null;
+                    if (transform) {
+                        if (ctx.flattenTransforms) {
+                            transform2 = new xeogl.Transform(model, {
+                                matrix: transform
+                            });
+                        } else {
+                            transform2 = transform;
+                        }
+                    }
+
                     for (var i = 0, len = numMeshes; i < len; i++) {
 
                         mesh = meshes[i];
@@ -983,22 +1189,50 @@
                         var meta = nodeInfo.extra || {};
                         meta.name = nodeInfo.name;
 
-                        entity = new xeogl.Entity(model, {
-                            id: entityId,
-                            meta: meta,
-                            material: mesh.material,
-                            geometry: mesh.geometry,
-                            transform: transform,
+                        if (window.numEntities === undefined) {
+                            window.numEntities = 0;
+                        }
 
-                            // Indicates that this Entity is freshly loaded -  increments the xeogl.Spinner#processes
-                            // count on the Scene Canvas, which will decrement again as soon as Entity is compiled
-                            // into the render graph, causing the Spinner to show until this Entity is visible
-                            loading: true // TODO: track loading state explicitely
-                        });
+                        window.numEntities++;
 
-                        object[entityId] = entity;
+                        if (!ctx.maxEntities || (window.numEntities < ctx.maxEntities)) {
 
-                        model.add(entity);
+                            if (ctx.included && !ctx.included(entityId)) { // Entity masked in
+                                continue;
+                            }
+
+                            var entityCfg = {
+                                id: entityId,
+                                meta: meta,
+                                geometry: mesh.geometry,
+                                transform: transform2,
+                                // Indicates that this Entity is freshly loaded -  increments the xeogl.Spinner#processes
+                                // count on the Scene Canvas, which will decrement again as soon as Entity is compiled
+                                // into the render graph, causing the Spinner to show until this Entity is visible
+                                loading: true
+                            };
+
+                            if (ctx.lambertMaterials) {
+                                if (!model.material) {
+                                    model.material = new xeogl.LambertMaterial(model, {
+                                        backfaces: true
+                                    });
+                                }
+                                entityCfg.material = model.material;
+                                entityCfg.colorize = mesh.material; // [R,G,B,A]
+                            } else if (!ctx.ignoreMaterials) {
+                                entityCfg.material = mesh.material;
+                            }
+
+                            //model.log("Loading object ");
+
+                            entityCfg.receiveShadow = true;
+                            entityCfg.castShadow = true;
+
+                            entity = new xeogl.Entity(model, entityCfg);
+
+                            model.add(entity);
+                        }
                     }
                 }
             }

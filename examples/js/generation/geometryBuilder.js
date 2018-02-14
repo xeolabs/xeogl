@@ -23,7 +23,7 @@
  by the matrix, to its internal buffer.
  * Finally, call {{#crossLink "GeometryBuilder/build:method"}}build(){{/crossLink}} to dump its buffer into a target {{#crossLink "Geometry"}}{{/crossLink}}.
  * Retains its buffer so that you can call {{#crossLink "GeometryBuilder/build:method"}}build(){{/crossLink}} again, to dump its
-  buffer into other {{#crossLink "Geometry"}}Geometries{{/crossLink}} as needed.
+ buffer into other {{#crossLink "Geometry"}}Geometries{{/crossLink}} as needed.
  * Call {{#crossLink "GeometryBuilder/reset:method"}}reset(){{/crossLink}} to empty its buffer.
 
  In the example below we'll use a GeometryBuilder to create something like the screen capture shown above.
@@ -75,9 +75,9 @@
     })
  });
 
- entity.scene.camera.view.eye = [-200, 50, -200];   // Set initial Camera position
+ entity.scene.camera.eye = [-200, 50, -200];   // Set initial Camera position
 
- new xeogl.InputControl();                         // Allow camera interaction
+ new xeogl.CameraControl();                         // Allow camera interaction
  ````
  @class GeometryBuilder
  @module xeogl
@@ -212,24 +212,24 @@
     })();
 
     /**
-     * Adds the accumulated state from previous calls to {{#crossLink "GeometryBuilder/setMatrix:method"}}setMatrix(){{/crossLink}} and
-     * {{#crossLink "GeometryBuilder/setShape:method"}}setShape(){{/crossLink}} to a target {{#crossLink "Geometry"}}{{/crossLink}}.
+     * Returns the accumulated state from previous calls to {{#crossLink "GeometryBuilder/setMatrix:method"}}setMatrix(){{/crossLink}} and
+     * {{#crossLink "GeometryBuilder/setShape:method"}}setShape(){{/crossLink}}.
      *
      * Retains all that state afterwards, so that you can continue to call this method to add the state to
      * other {{#crossLink "Geometry"}}Geometries{{/crossLink}}.
      *
      * @method build
-     * @param {Geometry} geometry The target {{#crossLink "Geometry"}}{{/crossLink}}.
-     * @returns this
+     * @returns {Object}
      */
     xeogl.GeometryBuilder.prototype.build = function (geometry) {
-        geometry.primitive = this.primitive || "triangles";
-        geometry.positions = this._positions;
-        geometry.normals = this._normals;
-        geometry.uv = this._uv;
-        geometry.colors = this._colors;
-        geometry.indices = this._indices;
-        return this;
+        return {
+            primitive: this.primitive || "triangles",
+            positions: this._positions,
+            normals: this._normals,
+            uv: this._uv,
+            colors: this._colors,
+            indices: this._indices
+        };
     };
 
     /**

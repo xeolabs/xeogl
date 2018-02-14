@@ -91,6 +91,7 @@
             this._scale = xeogl.math.vec3([1, 1, 1]);
             this._angles = xeogl.math.vec3([0, 0, 0]);
             this._axis = [0, 1, 2];
+            this._colorize = xeogl.math.vec3([1, 1, 1]);
             this._assetCfgs = {};
             this._assets = {};
         },
@@ -237,6 +238,29 @@
         },
 
         /**
+         * Sets the RGBA colorize factors each {{#crossLink "Entity"}}{{/crossLink}} subsequently created
+         * with {{#crossLink "BuildableModel/entity:method"}}entity(){{/crossLink}}.
+         *
+         * #### Usage
+         *
+         * ````Javascript
+         * buildableModel.colorize(0.4, 0.4, 0.4, 1.0);
+         * ````
+         *
+         * @method axis
+         * @param {Number} r Indicates the amount of red.
+         * @param {Number} g Indicates the amount of green.
+         * @param {Number} b Indicates the amount of blue.
+         * @param {Number} z Indicates the alpha.
+         */
+        colorize: function (r, g, b, a) {
+            this._colorize[0] = r;
+            this._colorize[1] = g;
+            this._colorize[2] = b;
+            this._colorize[3] = a;
+        },
+
+        /**
          * Creates an {{#crossLink "Entity"}}{{/crossLink}} with whatever assets and states are currently
          * set on this BuildableModel.
          *
@@ -256,7 +280,8 @@
                         type: "xeogl.Translate",
                         xyz: this._pos
                     })
-                }
+                },
+                colorize: this._colorize
             });
         },
 
@@ -296,15 +321,9 @@
             this.scale(1, 1, 1);
             this.angles(0, 0, 0);
             this.axis(0, 1, 2);
+            this.colorize(1,1,1,1);
             this.material(null);
             this.geometry(null);
-        },
-
-        _getJSON: function () {
-            var json = this._super();
-            // json.assets = this._assetCfgs;
-            // json.entities = this._entities;
-            return json;
         }
     });
 })();

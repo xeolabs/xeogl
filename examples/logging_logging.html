@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <h1>demonstrates how to log messages on components</h1>
+    <pre id="log"></pre>
+</div>
+
+<script>
+
+    var buf = [];
+
+    // Logs text to the page
+    function log(event, params) {
+        var txt = event;
+        if (params) {
+            txt += ": " + JSON.stringify(params)
+        }
+        buf.push(txt);
+        if (buf.length > 30) {
+            buf.shift();
+        }
+        document.getElementById("log").innerText = buf.join("\n");
+    }
+
+    // Create a Entity
+    var entity = new xeogl.Entity({
+        id: "myObject"
+    });
+
+    var scene = entity.scene;
+
+    scene.on("log", log);
+    scene.on("warn", log);
+    scene.on("error", log);
+
+    // Log a message in context of this Entity
+    // Message will appear in console as "[LOG] myObject: Everything is fine, situation normal."
+    entity.log("Everything is fine, situation normal.");
+
+    // Attach a new Material to the Entity.
+    entity.material = new xeogl.PhongMaterial({
+        id: "myMaterial",
+        diffuse: [1.0, 1.0, 0.0]
+    });
+
+    // Log a warning message in context of the Material
+    // Message will appear in console as "[WARN] myMaterial: Wait, what's that red light?."
+    entity.material.warn("Wait, what's that red light?");
+
+    // Log an error message in context of the Material
+    // Message will appear in console as "[ERROR] myMaterial: Aw, snap!."
+    entity.material.error("Aw, snap!");
+
+
+</script>
+</body>
+</html>

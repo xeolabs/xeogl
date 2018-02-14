@@ -409,11 +409,7 @@
                  * @param delta {Number} The mouse wheel delta,
                  */
                 self.fire("mousewheel", delta, true);
-
-                if (self.mouseover) {
-                    e.preventDefault();
-                }
-            });
+            }, {passive: true});
 
             // mouseclicked
 

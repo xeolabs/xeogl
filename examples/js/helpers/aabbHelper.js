@@ -1,11 +1,11 @@
 /**
 
- Helper that visualizes the axis-aligned boundary of a {{#crossLink "Boundary3D"}}{{/crossLink}}.
+ Helper that visualizes the boundary of a target {{#crossLink "Component"}}{{/crossLink}} subtype with a World-space axis-aligned boundary (AABB).
 
  @class AABBHelper
  @constructor
  @param cfg {*} Configuration
- @param [cfg.boundary] {Number|String|Boundary3D} ID or instance of a {{#crossLink "Boundary3D"}}{{/crossLink}}.
+ @param [cfg.target] {Number|String|Component} ID or instance of a {{#crossLink "Component"}}{{/crossLink}} subtype with a World-space axis-aligned boundary (AABB).
  @param [cfg.color=[0.4,0.4,0.4]] {Float32Array} Emmissive color
  @param [cfg.visible=true] {Boolean} Indicates whether or not this helper is visible.
 
@@ -32,7 +32,7 @@
                 clippable: false
             });
 
-            this.boundary = cfg.boundary;
+            this.target = cfg.target;
             this.color = cfg.color;
             this.visible = cfg.visible;
         },
@@ -40,22 +40,22 @@
         _props: {
 
             /**
-             A {{#crossLink "Boundary3D"}}{{/crossLink}} whose {{#crossLink "Boundary3D/aabb:property"}}AABB{{/crossLink}} we'll
-             dynamically fit this OBBGeometry to.
-
-             Fires a {{#crossLink "AABBHelper/boundary:event"}}{{/crossLink}} event on change.
-
-             @property boundary
-             @type Boundary3D
+             * The target {{#crossLink "Component"}}{{/crossLink}} subtype.
+             *
+             * Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this CameraFollowAnimation. Defaults to the parent
+             * {{#crossLink "Scene"}}Scene{{/crossLink}} when set to a null or undefined value.
+             *
+             * @property target
+             * @type Component
              */
-            boundary: {
+            target: {
 
-                set: function (boundary) {
-                    this._box.geometry.boundary = boundary;
+                set: function (target) {
+                  this._box.geometry.target = target;
                 },
 
                 get: function () {
-                    return this._box.geometry.boundary;
+                    return this._box.geometry.target;
                 }
             },
 

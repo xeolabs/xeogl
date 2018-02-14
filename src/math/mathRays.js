@@ -30,7 +30,7 @@
             var canvas = camera.scene.canvas.canvas;
 
             var viewMat = camera.view.matrix;
-            var projMat = camera.project.matrix;
+            var projMat = camera.projection === "ortho" ? camera.ortho.matrix : camera.perspective.matrix;
 
             var pvMat = math.mulMat4(projMat, viewMat, tempMat4b);
             var pvMatInverse = math.inverseMat4(pvMat, tempMat4c);

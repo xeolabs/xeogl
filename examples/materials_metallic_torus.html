@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="../build/xeogl.js"></script>
+
+<body>
+
+<div id="info">
+    <h1><a href="../docs/classes/Entity.html" target="_parent">Entity</a> with <a
+            href="../docs/classes/TorusGeometry.html" target="_parent">TorusGeometry</a> and <a
+            href="../docs/classes/MetallicMaterial.html" target="_parent">MetallicMaterial</a></h1>
+</div>
+
+<script>
+
+    var geometry = new xeogl.TorusGeometry({
+        radius: 1.0,
+        tube: 0.3,
+        radialSegments: 120,
+        tubeSegments: 60
+    });
+
+    var material = new xeogl.MetallicMaterial({
+        baseColorMap: new xeogl.Texture({
+            src: "textures/diffuse/uvGrid2.jpg"
+        }),
+        roughnessMap: new xeogl.Texture({
+            src: "textures/roughness/goldRoughness.jpg",
+            encoding: "sRGB"
+        })
+    });
+
+    var entity = new xeogl.Entity({
+        geometry: geometry,
+        material: material
+    });
+
+    entity.scene.camera.eye = [0, 0, -4];
+
+    entity.scene.on("tick", function () {
+        entity.scene.camera.orbitYaw(0.2);
+    });
+
+    new xeogl.CameraControl();
+</script>
+</body>
+</html>

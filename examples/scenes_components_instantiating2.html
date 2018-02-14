@@ -9,7 +9,7 @@
 
 
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
 
 <body>
 
@@ -69,15 +69,15 @@
     };
 
     // Allow user camera control
-    new xeogl.InputControl();
+    new xeogl.CameraControl();
 
     // Orbit the eye position about the look position.
     entity.scene.on("tick", function () {
 
-        var view = entity.camera.view;
+        var camera = entity.scene.camera;
 
-        view.rotateEyeY(-0.15);
-        view.rotateEyeX(0.05);
+        camera.orbitYaw(-0.15);
+        camera.orbitPitch(0.05);
     });
 
 </script>

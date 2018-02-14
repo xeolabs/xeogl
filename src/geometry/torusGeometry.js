@@ -10,7 +10,7 @@
  {{#crossLink "TorusGeometry/arc:property"}}{{/crossLink}} properties.
  * Dynamically switch its primitive type between ````"points"````, ````"lines"```` and ````"triangles"```` at any time by
  updating its {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} property.
- 
+
  ## Examples
 
 
@@ -28,7 +28,7 @@
      geometry: new xeogl.TorusGeometry({
          center: [0,0,0],
          radius: 1.0,
-         tube: 0.3,
+         tube: 0.5,
          radialSegments: 32,
          tubeSegments: 24,
          arc: Math.PI * 2.0
@@ -58,8 +58,7 @@
  @param [cfg.tube=0.3] {Number} The tube radius of the TorusGeometry.
  @param [cfg.radialSegments=32] {Number} The number of radial segments that make up the TorusGeometry.
  @param [cfg.tubeSegments=24] {Number} The number of tubular segments that make up the TorusGeometry.
- @param [cfg.arc=Math.PI / 2.0] {Number} The length of the TorusGeometry's arc in in radians, where Math.PI*2 is a closed torus.
- @param [cfg.lod=1] {Number} Level-of-detail, in range [0..1].
+ @param [cfg.arc=Math.PI / 2.0] {Number} The length of the TorusGeometry's arc in radians, where Math.PI*2 is a closed torus.
  @extends Geometry
  */
 (function () {
@@ -72,42 +71,50 @@
 
         _init: function (cfg) {
 
-            this._super(cfg);
+            var radius = cfg.radius || 1;
+            if (radius < 0) {
+                this.error("negative radius not allowed - will invert");
+                radius *= -1;
+            }
+            radius *= 0.5;
 
-            this.lod = cfg.lod;
-            this.center = cfg.center;
-            this.radius = cfg.radius;
-            this.tube = cfg.tube;
-            this.radialSegments = cfg.radialSegments;
-            this.tubeSegments = cfg.tubeSegments;
-            this.arc = cfg.arc;
-        },
+            var tube = cfg.tube || 0.3;
+            if (tube < 0) {
+                this.error("negative tube not allowed - will invert");
+                tube *= -1;
+            }
 
-        /**
-         * Implement protected virtual template method {{#crossLink "Geometry/method:_update"}}{{/crossLink}},
-         * to generate geometry data arrays.
-         *
-         * @protected
-         */
-        _update: function () {
-
-            var xCenter = this._center[0];
-            var yCenter = this._center[1];
-            var zCenter = this._center[2];
-
-            var radius = this._radius;
-            var tube = this._tube;
-            var radialSegments = Math.floor(this._radialSegments * this._lod);
-            var tubeSegments = Math.floor(this._tubeSegments * this._lod);
-            var arc = this._arc;
-
+            var radialSegments = cfg.radialSegments || 32;
+            if (radialSegments < 0) {
+                this.error("negative radialSegments not allowed - will invert");
+                radialSegments *= -1;
+            }
             if (radialSegments < 4) {
                 radialSegments = 4;
             }
 
+            var tubeSegments = cfg.tubeSegments || 24;
+            if (tubeSegments < 0) {
+                this.error("negative tubeSegments not allowed - will invert");
+                tubeSegments *= -1;
+            }
             if (tubeSegments < 4) {
                 tubeSegments = 4;
             }
+
+            var arc = cfg.arc || Math.PI * 2;
+            if (arc < 0) {
+                this.warn("negative arc not allowed - will invert");
+                arc *= -1;
+            }
+            if (arc > 360) {
+                arc = 360;
+            }
+
+            var center = cfg.center;
+            var centerX = center ? center[0] : 0;
+            var centerY = center ? center[1] : 0;
+            var centerZ = center ? center[2] : 0;
 
             var positions = [];
             var normals = [];
@@ -116,9 +123,6 @@
 
             var u;
             var v;
-            var centerX;
-            var centerY;
-            var centerZ = 0;
             var x;
             var y;
             var z;
@@ -127,11 +131,11 @@
             var i;
             var j;
 
-            for (j = 0; j <= radialSegments; j++) {
-                for (i = 0; i <= tubeSegments; i++) {
+            for (j = 0; j <= tubeSegments; j++) {
+                for (i = 0; i <= radialSegments; i++) {
 
-                    u = i / tubeSegments * arc;
-                    v = j / radialSegments * Math.PI * 2;
+                    u = i / radialSegments * arc;
+                    v = j / tubeSegments * Math.PI * 2;
 
                     centerX = radius * Math.cos(u);
                     centerY = radius * Math.sin(u);
@@ -140,12 +144,12 @@
                     y = (radius + tube * Math.cos(v) ) * Math.sin(u);
                     z = tube * Math.sin(v);
 
-                    positions.push(x + xCenter);
-                    positions.push(y + yCenter);
-                    positions.push(z + zCenter);
+                    positions.push(x + centerX);
+                    positions.push(y + centerY);
+                    positions.push(z + centerZ);
 
-                    uvs.push(1 - (i / tubeSegments));
-                    uvs.push((j / radialSegments));
+                    uvs.push(1 - (i / radialSegments));
+                    uvs.push((j / tubeSegments));
 
                     vec = xeogl.math.normalizeVec3(xeogl.math.subVec3([x, y, z], [centerX, centerY, centerZ], []), []);
 
@@ -160,13 +164,13 @@
             var c;
             var d;
 
-            for (j = 1; j <= radialSegments; j++) {
-                for (i = 1; i <= tubeSegments; i++) {
+            for (j = 1; j <= tubeSegments; j++) {
+                for (i = 1; i <= radialSegments; i++) {
 
-                    a = ( tubeSegments + 1 ) * j + i - 1;
-                    b = ( tubeSegments + 1 ) * ( j - 1 ) + i - 1;
-                    c = ( tubeSegments + 1 ) * ( j - 1 ) + i;
-                    d = ( tubeSegments + 1 ) * j + i;
+                    a = ( radialSegments + 1 ) * j + i - 1;
+                    b = ( radialSegments + 1 ) * ( j - 1 ) + i - 1;
+                    c = ( radialSegments + 1 ) * ( j - 1 ) + i;
+                    d = ( radialSegments + 1 ) * j + i;
 
                     indices.push(a);
                     indices.push(b);
@@ -178,309 +182,12 @@
                 }
             }
 
-            this.positions = positions;
-            this.normals = normals;
-            this.uv = uvs;
-            this.indices = indices;
-        },
-
-        _props: {
-
-            /**
-             * The TorusGeometry's level-of-detail factor.
-             *
-             * Fires a {{#crossLink "TorusGeometry/lod:event"}}{{/crossLink}} event on change.
-             *
-             * @property lod
-             * @default 1
-             * @type Number
-             */
-            lod: {
-
-                set: function (value) {
-
-                    value = value !== undefined ? value : 1;
-
-                    if (this._lod === value) {
-                        return;
-                    }
-
-                    if (value < 0 || value > 1) {
-                        this.warn("clamping lod to [0..1]");
-                        value = value < 0 ? 0 : 1;
-                    }
-
-                    this._lod = value;
-
-                    this._needUpdate();
-
-                    /**
-                     * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/lod:property"}}{{/crossLink}} property changes.
-                     * @event lod
-                     * @type Number
-                     * @param value The property's new value
-                     */
-                    this.fire("lod", this._lod);
-                },
-
-                get: function () {
-                    return this._lod;
-                }
-            },
-
-            /**
-             * 3D point indicating the center position of this TorusGeometry.
-             *
-             * Fires an {{#crossLink "TorusGeometry/center:event"}}{{/crossLink}} event on change.
-             *
-             * @property center
-             * @default [0,0,0]
-             * @type {Float32Array}
-             */
-            center: {
-
-                set: function (value) {
-
-                    (this._center = this._center || new xeogl.math.vec3()).set(value || [0, 0, 0]);
-
-                    this._needUpdate();
-
-                    /**
-                     Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/center:property"}}{{/crossLink}} property changes.
-                     @event center
-                     @param value {Float32Array} The property's new value
-                     */
-                    this.fire("center", this._center);
-                },
-
-                get: function () {
-                    return this._center;
-                }
-            },
-
-            /**
-             * The overall radius of the TorusGeometry.
-             *
-             * Fires a {{#crossLink "TorusGeometry/radius:event"}}{{/crossLink}} event on change.
-             *
-             * @property radius
-             * @default 1
-             * @type Number
-             */
-            radius: {
-
-                set: function (value) {
-
-                    value = value || 1;
-
-                    if (this._radius === value) {
-                        return;
-                    }
-
-                    if (value < 0) {
-                        this.warn("negative radius not allowed - will invert");
-                        value = value * -1;
-                    }
-
-                    this._radius = value;
-
-                    this._needUpdate();
-
-                    /**
-                     * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/radius:property"}}{{/crossLink}} property changes.
-                     * @event radius
-                     * @type Number
-                     * @param value The property's new value
-                     */
-                    this.fire("radius", this._radius);
-                },
-
-                get: function () {
-                    return this._radius;
-                }
-            },
-
-
-            /**
-             * The tube radius of the TorusGeometry.
-             *
-             * Fires a {{#crossLink "TorusGeometry/tube:event"}}{{/crossLink}} event on change.
-             *
-             * @property tube
-             * @default 0.3
-             * @type Number
-             */
-            tube: {
-
-                set: function (value) {
-
-                    value = value || 0.3;
-
-                    if (this._tube === value) {
-                        return;
-                    }
-
-                    if (value < 0) {
-                        this.warn("negative tube not allowed - will invert");
-                        value = value * -1;
-                    }
-
-                    this._tube = value;
-
-                    this._needUpdate();
-
-                    /**
-                     * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/tube:property"}}{{/crossLink}} property changes.
-                     * @event tube
-                     * @type Number
-                     * @param value The property's new value
-                     */
-                    this.fire("tube", this._tube);
-                },
-
-                get: function () {
-                    return this._tube;
-                }
-            },
-
-            /**
-             * The number of radial segments that make up the TorusGeometry.
-             *
-             * Fires a {{#crossLink "TorusGeometry/radialSegments:event"}}{{/crossLink}} event on change.
-             *
-             * @property radialSegments
-             * @default 32
-             * @type Number
-             */
-            radialSegments: {
-
-                set: function (value) {
-
-                    value = value || 32;
-
-                    if (this._radialSegments === value) {
-                        return;
-                    }
-
-                    if (value < 0) {
-                        this.warn("negative radialSegments not allowed - will invert");
-                        value = value * -1;
-                    }
-
-                    this._radialSegments = value;
-
-                    this._needUpdate();
-
-                    /**
-                     * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/radialSegments:property"}}{{/crossLink}} property changes.
-                     * @event radialSegments
-                     * @type Number
-                     * @param value The property's new value
-                     */
-                    this.fire("radialSegments", this._radialSegments);
-                },
-
-                get: function () {
-                    return this._radialSegments;
-                }
-            },
-
-
-            /**
-             * The number of tubular segments that make up the TorusGeometry.
-             *
-             * Fires a {{#crossLink "TorusGeometry/tubeSegments:event"}}{{/crossLink}} event on change.
-             *
-             * @property tubeSegments
-             * @default 24
-             * @type Number
-             */
-            tubeSegments: {
-
-                set: function (value) {
-
-                    value = value || 24;
-
-                    if (this._tubeSegments === value) {
-                        return;
-                    }
-
-                    if (value < 0) {
-                        this.warn("negative tubeSegments not allowed - will invert");
-                        value = value * -1;
-                    }
-
-                    this._tubeSegments = value;
-
-                    this._needUpdate();
-
-                    /**
-                     * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/tubeSegments:property"}}{{/crossLink}} property changes.
-                     * @event tubeSegments
-                     * @type Number
-                     * @param value The property's new value
-                     */
-                    this.fire("tubeSegments", this._tubeSegments);
-                },
-
-                get: function () {
-                    return this._tubeSegments;
-                }
-            },
-
-            /**
-             * The length of the TorusGeometry's arc in radians, where Math.PI*2 is a closed torus.
-             *
-             * Fires a {{#crossLink "TorusGeometry/arc:event"}}{{/crossLink}} event on change.
-             *
-             * @property arc
-             * @default Math.PI * 2
-             * @type Number
-             */
-            arc: {
-
-                set: function (value) {
-
-                    value = value || Math.PI * 2;
-
-                    if (this._arc === value) {
-                        return;
-                    }
-
-                    if (value < 0) {
-                        this.warn("negative arc not allowed - will invert");
-                        value = value * -1;
-                    }
-
-                    this._arc = value;
-
-                    this._needUpdate();
-
-                    /**
-                     * Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/arc:property"}}{{/crossLink}} property changes.
-                     * @event arc
-                     * @type Number
-                     * @param value The property's new value
-                     */
-                    this.fire("arc", this._arc);
-                },
-
-                get: function () {
-                    return this._arc;
-                }
-            }
-        },
-
-        _getJSON: function () {
-            return {
-                // Don't save lod
-                center: xeogl.math.vecToArray(this._center),
-                radius: this._radius,
-                tube: this._tube,
-                radialSegments: this._radialSegments,
-                tubeSegments: this._tubeSegments,
-                arc: this._arc
-            };
+            this._super(xeogl._apply(cfg, {
+                positions: positions,
+                normals: normals,
+                uv: uvs,
+                indices: indices
+            }));
         }
     });
 

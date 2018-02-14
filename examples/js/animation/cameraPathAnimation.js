@@ -1,30 +1,24 @@
 /**
- A **CameraPathAnimation** animates a {{#crossLink "Camera"}}{{/crossLink}} along a {{#crossLink "CameraPath"}}{{/crossLink}}.
-
- ## Overview
-
- * Animates a {{#crossLink "Camera"}}{{/crossLink}} along a {{#crossLink "CameraPath"}}{{/crossLink}}
- * Attaches to a {{#crossLink "Camera"}}{{/crossLink}}, which by default is the {{#crossLink "Scene"}}Scene's{{/crossLink}} default {{#crossLink "Camera"}}{{/crossLink}} when none is specified.
- * Requires that the {{#crossLink "Camera"}}{{/crossLink}} have a {{#crossLink "Lookat"}}{{/crossLink}} for its {{#crossLink "Camera/view:property"}}view{{/crossLink}} transform.
+ A **CameraPathAnimation** animates the {{#crossLink "Scene"}}{{/crossLink}}'s {{#crossLink "Camera"}}{{/crossLink}} along a {{#crossLink "CameraPath"}}{{/crossLink}}.
 
  <img src="../../../assets/images/CameraPathAnimation.png"></img>
 
  ## Examples
 
- * [Interpolating a Camera along a path](../../examples/#animation_camera_path_interpolation)
- * [Flying directly to each frame on a path](../../examples/#animation_camera_path_flyToFrame)
- * [Jumping directly to each frame on a path](../../examples/#animation_camera_path_scrubToFrame)
- * [A menu of Camera waypoints to fly to](../../examples/#animation_camera_path_frameMenu)
+ * [Interpolating the Camera along a path](../../examples/#camera_path_interpolation)
+ * [Flying directly to each frame on a path](../../examples/#camera_path_flyToFrame)
+ * [Jumping directly to each frame on a path](../../examples/#camera_path_scrubToFrame)
+ * [A menu of Camera waypoints to fly to](../../examples/#camera_path_frameMenu)
 
  ## Usage
 
- ### 1. Interpolating a Camera along a path
+ ### 1. Interpolating the Camera along a path
 
  In this example we'll use the CameraPathAnimation's
  {{#crossLink "CameraPathAnimation/play"}}{{/crossLink}} method to smoothly <b>interpolate</b>
- the default {{#crossLink "Camera"}}{{/crossLink}} along a {{#crossLink "CameraPath"}}{{/crossLink}}:
+ the {{#crossLink "Camera"}}{{/crossLink}}'s {{#crossLink "Camera"}}{{/crossLink}} along a {{#crossLink "CameraPath"}}{{/crossLink}}:
 
- <a href="../../examples/#animation_camera_path_interpolation"><img src="http://i.giphy.com/l0MYDGMYzdFf6TqRW.gif"></img></a>
+ <a href="../../examples/#camera_path_interpolation"><img src="http://i.giphy.com/l0MYDGMYzdFf6TqRW.gif"></img></a>
 
  ````Javascript
  // Load a model from glTF
@@ -88,7 +82,7 @@
  In this example, we'll use the CameraPathAnimation's {{#crossLink "CameraPathAnimation/flyToFrame"}}{{/crossLink}} method
  to <b>fly</b> the {{#crossLink "Camera"}}{{/crossLink}} directly to each frame on the {{#crossLink "CameraPath"}}{{/crossLink}}:
 
- <a href="../../examples/#animation_camera_path_flyToFrame"><img src="http://i.giphy.com/l3vQYNjsnAQwPBeYU.gif"></img></a>
+ <a href="../../examples/#camera_path_flyToFrame"><img src="http://i.giphy.com/l3vQYNjsnAQwPBeYU.gif"></img></a>
 
  ````javascript
  var i = 0;
@@ -111,7 +105,7 @@
  In this example, we'll use the CameraPathAnimation's {{#crossLink "CameraPathAnimation/scrubToFrame"}}{{/crossLink}} method
  to <b>jump</b> the {{#crossLink "Camera"}}{{/crossLink}} directly to each frame on the {{#crossLink "CameraPath"}}{{/crossLink}}:
 
- <a href="../../examples/#animation_camera_path_scrubToFrame"><img src="http://i.giphy.com/l0Hlyqk7kewTjSBZ6.gif"></img></a>
+ <a href="../../examples/#camera_path_scrubToFrame"><img src="http://i.giphy.com/l0Hlyqk7kewTjSBZ6.gif"></img></a>
 
  ````javascript
  var i = 0;
@@ -138,12 +132,8 @@
  @param [cfg] {*} Configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to CameraPathAnimation.
- @param [cfg.camera] {Number|String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to control.
- Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as CameraPathAnimation. Defaults to the
- parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
  @param [cfg.cameraPath] {Number|String|CameraPath} ID or instance of a {{#crossLink "CameraPath"}}{{/crossLink}} to animate the {{#crossLink "Camera"}}{{/crossLink}} along.
- Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as CameraPathAnimation. Defaults to the
- parent {{#crossLink "Scene"}}{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
+ Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as CameraPathAnimation. .
  @extends Component
  */
 (function () {
@@ -178,8 +168,6 @@
 
             this.cameraPath = cfg.cameraPath;
 
-            this.camera = cfg.camera;
-
             this._tick = this.scene.on("tick", this._updateT, this);
         },
 
@@ -191,14 +179,8 @@
                 return;
             }
 
-            var camera = this.camera;
-
-            if (!camera) {
-                return;
-            }
-
-           var f = 0.002;
-           //var f = 1.0;
+            var f = 0.002;
+            //var f = 1.0;
 
             switch (this.state) {
 
@@ -209,7 +191,14 @@
 
                     this._t += this._playingRate * f;
 
-                    cameraPath.loadFrame(this._t, camera);
+                    var numFrames = this.cameraPath.frames.length;
+                    if (numFrames === 0 || (this._playingDir < 0 && this._t <= 0) || (this._playingDir > 0 && this._t >= this.cameraPath.frames[numFrames-1].t)) {
+                        this.state = this.SCRUBBING;
+                        this._t = this.cameraPath.frames[numFrames-1].t;
+                        return;
+                    }
+
+                    cameraPath.loadFrame(this._t);
 
                     break;
 
@@ -226,7 +215,7 @@
 
                     this._t = t;
 
-                    cameraPath.loadFrame(this._t, camera);
+                    cameraPath.loadFrame(this._t);
 
                     break;
             }
@@ -272,34 +261,6 @@
             },
 
             /**
-             The {{#crossLink "Camera"}}{{/crossLink}} for this CameraPathAnimation.
-
-             When set to a null or undefined value, will default to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s
-             default {{#crossLink "Scene/camera:property"}}{{/crossLink}}.
-
-             Fires a {{#crossLink "CameraPathAnimation/camera:event"}}{{/crossLink}} event on change.
-
-             @property camera
-             @type Camera
-             */
-            camera: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this CameraPathAnimation's {{#crossLink "CameraPathAnimation/camera:property"}}{{/crossLink}} property changes.
-                     * @event camera
-                     * @param value The property's new value
-                     */
-                    this._cameraFlightAnimation.camera = value;
-                },
-
-                get: function () {
-                    return this._cameraFlightAnimation.camera;
-                }
-            },
-
-            /**
              The rate at which this CameraPathAnimation plays.
 
              @property rate
@@ -323,7 +284,7 @@
          */
         play: function () {
 
-            if (!this._attached.cameraPath || !this.camera) {
+            if (!this._attached.cameraPath) {
                 return;
             }
 
@@ -340,7 +301,7 @@
 
             var cameraPath = this._attached.cameraPath;
 
-            if (!cameraPath || !this.camera) {
+            if (!cameraPath) {
                 return;
             }
 
@@ -361,7 +322,7 @@
 
             var cameraPath = this._attached.cameraPath;
 
-            if (!cameraPath || !this.camera) {
+            if (!cameraPath) {
                 return;
             }
 
@@ -388,7 +349,7 @@
 
             var cameraPath = this._attached.cameraPath;
 
-            if (!cameraPath || !this.camera) {
+            if (!cameraPath) {
                 return;
             }
 
@@ -417,7 +378,7 @@
                 return;
             }
 
-            var camera = this.camera;
+            var camera = this.scene.camera;
 
             if (!camera) {
                 return;
@@ -427,7 +388,7 @@
 
             cameraPath.loadFrame(this._t, camera);
 
-            this._state = this.SCRUBBING;
+            this.state = this.SCRUBBING;
         },
 
         /**
@@ -440,11 +401,11 @@
 
             var cameraPath = this._attached.cameraPath;
 
-            if (!cameraPath || !this.camera) {
+            if (!cameraPath) {
                 return;
             }
 
-            var camera = this.camera;
+            var camera = this.scene.camera;
 
             if (!camera) {
                 return;
@@ -461,7 +422,7 @@
 
             cameraPath.loadFrame(this._t, camera);
 
-            this._state = this.SCRUBBING;
+            this.state = this.SCRUBBING;
         },
 
         /**
@@ -470,15 +431,7 @@
          * @method stop
          */
         stop: function () {
-            this._state = this.SCRUBBING;
-        },
-
-        _getJSON: function () {
-            var json = {};
-            //if (this._attached.camera) {
-            //    json.cameraPath = this._attached.cameraPath.id;
-            //}
-            return json;
+            this.state = this.SCRUBBING;
         },
 
         _destroy: function () {

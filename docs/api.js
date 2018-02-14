@@ -7,13 +7,10 @@ YUI.add("yuidoc-meta", function(Y) {
         "Annotation",
         "AnnotationStory",
         "AxisHelper",
-        "Boundary2D",
-        "Boundary3D",
         "BoxGeometry",
         "BuildableModel",
         "Camera",
         "CameraControl",
-        "CameraController",
         "CameraFlightAnimation",
         "CameraFollowAnimation",
         "CameraPath",
@@ -21,6 +18,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "Canvas",
         "CardboardEffect",
         "Clip",
+        "ClipControl",
         "ClipHelper",
         "Clips",
         "Component",
@@ -31,29 +29,29 @@ YUI.add("yuidoc-meta", function(Y) {
         "CylinderGeometry",
         "DirLight",
         "Entity",
-        "Fog",
         "Fresnel",
         "Frustum",
         "GLTFModel",
         "Geometry",
         "GeometryBuilder",
+        "GhostMaterial",
         "HeightmapGeometry",
         "Input",
         "InputControl",
         "LabelHelper",
+        "LambertMaterial",
         "Lights",
         "Lookat",
         "Material",
         "MetallicMaterial",
         "Model",
-        "MousePickControl",
         "Nintendo3DSGeometry",
         "OBBGeometry",
         "OBBHelper",
         "OBJGeometry",
         "OBJModel",
         "Ortho",
-        "Outline",
+        "OutlineMaterial",
         "Path",
         "PathGeometry",
         "Perspective",
@@ -63,7 +61,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "PlaneHelper",
         "PointLight",
         "PointLightHelper",
-        "PointMarkings",
+        "Progress",
         "QuadraticBezierCurve",
         "Quaternion",
         "Region",
@@ -88,18 +86,13 @@ YUI.add("yuidoc-meta", function(Y) {
         "Transform",
         "Translate",
         "VectorTextGeometry",
-        "ViewCube",
         "Viewport",
-        "XRay",
-        "ZSpaceEffect",
-        "ZSpaceStylusControl",
         "xeogl",
         "xeogl.math.math"
     ],
     "modules": [
         "animation",
         "annotations",
-        "boundaries",
         "camera",
         "canvas",
         "clipping",
@@ -107,25 +100,20 @@ YUI.add("yuidoc-meta", function(Y) {
         "controls",
         "curves",
         "effects",
-        "emphasis",
         "entities",
         "generation",
         "geometry",
         "helpers",
         "input",
-        "interaction",
         "lighting",
-        "marking",
         "materials",
         "math",
         "models",
-        "outline",
         "rendering",
         "skyboxes",
         "stories",
         "transforms",
-        "xeogl",
-        "zspace"
+        "xeogl"
     ],
     "allModules": [
         {
@@ -137,11 +125,6 @@ YUI.add("yuidoc-meta", function(Y) {
             "displayName": "annotations",
             "name": "annotations",
             "description": "Components for annotating entities."
-        },
-        {
-            "displayName": "boundaries",
-            "name": "boundaries",
-            "description": "Components to support spatial queries (eg. collisions etc)."
         },
         {
             "displayName": "camera",
@@ -179,11 +162,6 @@ YUI.add("yuidoc-meta", function(Y) {
             "description": "Components for viewing effects."
         },
         {
-            "displayName": "emphasis",
-            "name": "emphasis",
-            "description": "Emphasis effect components."
-        },
-        {
             "displayName": "entities",
             "name": "entities",
             "description": "Shows the shape and control points of {{#crossLink \"SplineCurve\"}}{{/crossLink}}"
@@ -209,19 +187,9 @@ YUI.add("yuidoc-meta", function(Y) {
             "description": "Components for capturing user input."
         },
         {
-            "displayName": "interaction",
-            "name": "interaction",
-            "description": "A **CameraController** is the base class for components that control Cameras."
-        },
-        {
             "displayName": "lighting",
             "name": "lighting",
             "description": "Components for defining light sources."
-        },
-        {
-            "displayName": "marking",
-            "name": "marking",
-            "description": "Components for drawing marks on entities."
         },
         {
             "displayName": "materials",
@@ -237,11 +205,6 @@ YUI.add("yuidoc-meta", function(Y) {
             "displayName": "models",
             "name": "models",
             "description": "Models are units of xeogl content."
-        },
-        {
-            "displayName": "outline",
-            "name": "outline",
-            "description": "An outline rendering effect for emphasis."
         },
         {
             "displayName": "rendering",
@@ -267,11 +230,6 @@ YUI.add("yuidoc-meta", function(Y) {
             "displayName": "xeogl",
             "name": "xeogl",
             "description": "The xeogl namespace."
-        },
-        {
-            "displayName": "zspace",
-            "name": "zspace",
-            "description": "Components for zSpace integration"
         }
     ]
 } };

@@ -7,10 +7,7 @@
 
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="js/libs/dat.gui.min.js"></script>
-
-
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
 
 <body>
 
@@ -18,99 +15,33 @@
     <h1><a href="../docs/classes/PlaneGeometry.html" target="_parent">PlaneGeometry</a></h1>
 </div>
 
-<div id="dat-gui-container">
-</div>
-
 <script>
 
-    //------------------ Scene definition --------------------
-
-    var plane = new xeogl.PlaneGeometry({
-        primitive: "triangles",
-        xSize: 2,
-        zSize: 2,
-        xSegments: 10,
-        zSegments: 10,
-        lod: 1.0 // Default
-    });
-
-    var material = new xeogl.PhongMaterial({
-        diffuseMap: new xeogl.Texture({
-            src: "textures/diffuse/uvGrid2.jpg"
-        }),
-        backfaces: true
-    });
-
     var entity = new xeogl.Entity({
-        geometry: plane,
-        material: material
+        geometry: new xeogl.PlaneGeometry({
+            primitive: "triangles",
+            xSize: 2,
+            zSize: 2,
+            xSegments: 10,
+            zSegments: 10,
+            lod: 1.0 // Default
+        }),
+        material: new xeogl.PhongMaterial({
+            diffuseMap: new xeogl.Texture({
+                src: "textures/diffuse/uvGrid2.jpg"
+            }),
+            backfaces: true
+        })
     });
 
-    // Position camera
+    var camera = entity.scene.camera;
 
-    var view = entity.scene.camera.view;
+    camera.zoom(-5);
 
-    view.zoom(-7);
-
-
-    entity.scene.on("tick",
-            function () {
-
-                var view = entity.scene.camera.view;
-
-                view.rotateEyeY(0.6);
-                view.rotateEyeX(0.3);
-            });
-
-    //------------------ GUI ---------------------------------
-
-    var Menu = function () {
-
-        this.message = "xeogl.PlaneGeometry";
-
-        this["primitive"] = plane.primitive;
-        this["xSize"] = plane.xSize;
-        this["zSize"] = plane.zSize;
-        this["xSegments"] = plane.xSegments;
-        this["zSegments"] = plane.zSegments;
-        this["lod"] = plane.lod;
-
-        var self = this;
-
-        // This is actually quite inefficient because it continually updates
-        // the scene graph, forcing frames to continually re-render.
-        // Your GPU's not going to like it, but it's just for a quick and dirty demo.
-
-        var update = function () {
-
-            plane.primitive = self["primitive"];
-            plane.xSize = self["xSize"];
-            plane.zSize = self["zSize"];
-            plane.xSegments = self["xSegments"];
-            plane.zSegments = self["zSegments"];
-            plane.lod = self["lod"];
-
-            requestAnimationFrame(update);
-        };
-
-        update();
-    };
-
-    var gui = new dat.GUI({autoPlace: false});
-
-    document.getElementById('dat-gui-container').appendChild(gui.domElement);
-
-    var menu = new Menu();
-
-    var folder = gui.addFolder('plane');
-    folder.add(menu, 'primitive', ["triangles", "lines", "points"]);
-    folder.add(menu, 'xSize', 0.1, 10.0);
-    folder.add(menu, 'zSize', 0.1, 10.0);
-    folder.add(menu, 'xSegments', 1, 50);
-    folder.add(menu, 'zSegments', 1, 50);
-    folder.add(menu, 'lod', 0.1, 1.0);
-
-    folder.open();
+    entity.scene.on("tick", function () {
+        camera.orbitYaw(0.6);
+        camera.orbitPitch(0.3);
+    });
 
 </script>
 </body>

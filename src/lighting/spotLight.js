@@ -1,12 +1,13 @@
 /**
- A **SpotLight** defines a positional light source that originates from a single point and eminates in a given direction, to illuminate attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **SpotLight** defines a positional light source that originates from a single point and eminates in a given direction,
+ to illuminate {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
 TODO
 
  ## Overview
 
- * SpotLights are grouped, along with other light source types, within {{#crossLink "Lights"}}Lights{{/crossLink}} components,
- which are attached to {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ * SpotLights are grouped, along with other light source types, within a {{#crossLink "Lights"}}Lights{{/crossLink}} component,
+ which belongs to a {{#crossLink "Scene"}}{{/crossLink}}.
  * SpotLights have a position and direction.
  * SpotLights may be defined in either **World** or **View** coordinate space. When in World-space, their positions
  are relative to the World coordinate system, and will appear to move as the {{#crossLink "Camera"}}{{/crossLink}} moves.
@@ -68,8 +69,7 @@ TODO
  @param [cfg.linearAttenuation=0] {Number} Linear attenuation factor.
  @param [cfg.quadraticAttenuation=0] {Number} Quadratic attenuation factor.
  @param [cfg.space="view"] {String} The coordinate system this SpotLight is defined in - "view" or "world".
- @param [cfg.shadows=false] {Boolean} Set true if this SpotLight casts shadows.
- @param [cfg.shadow=undefined] {Shadow} Defines a {{#crossLink "Shadow"}}{{/crossLink}} that is cast by this DirLight. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this DirLight.
+ @param [cfg.shadow=false] {Boolean} Flag which indicates if this SpotLight casts a shadow.
  */
 (function () {
 
@@ -85,36 +85,58 @@ TODO
 
             var self = this;
 
-            this._state = {
+            this._shadowRenderBuf = null;
+            this._shadowViewMatrix = null;
+            this._shadowProjMatrix = null;
+            this._shadowViewMatrixDirty = true;
+            this._shadowProjMatrixDirty = true;
+
+            this._state = new xeogl.renderer.Light({
                 type: "spot",
                 pos: math.vec3([1.0, 1.0, 1.0]),
                 dir: math.vec3([0.0, -1.0, 0.0]),
                 color: math.vec3([0.7, 0.7, 0.8]),
                 intensity: 1.0,
-
-                // Packaging constant, linear and quadratic attenuation terms
-                // into an array for easy insertion into shaders as a vec3
                 attenuation: [0.0, 0.0, 0.0],
                 space: "view",
-
-                shadow: null, // Shadow state, describes how to apply shadows
-
-                // Set true whenever the shadow map needs re-rendering as a result of
-                // associated Entities having moved or changed shape
+                shadow: false,
                 shadowDirty: true,
 
-                getShadowViewMatrix: function () {
-                    return self._getShadowViewMatrix();
-                },
+                getShadowViewMatrix: (function () {
+                    var look = math.vec3();
+                    var up = math.vec3([0, 1, 0]);
+                    return function () {
+                        if (self._shadowViewMatrixDirty) {
+                            if (!self._shadowViewMatrix) {
+                                self._shadowViewMatrix = math.identityMat4();
+                            }
+                            math.addVec3(self._state.pos, self._state.dir, look);
+                            math.lookAtMat4v(self._state.pos, look, up, self._shadowViewMatrix);
+                            self._shadowViewMatrixDirty = false;
+                        }
+                        return self._shadowViewMatrix;
+                    };
+                })(),
 
                 getShadowProjMatrix: function () {
-                    return self._getShadowProjMatrix();
+                    if (self._shadowProjMatrixDirty) { // TODO: Set when canvas resizes
+                        if (!self._shadowProjMatrix) {
+                            self._shadowProjMatrix = math.identityMat4();
+                        }
+                        var canvas = self.scene.canvas.canvas;
+                        math.perspectiveMat4(60 *(Math.PI / 180.0), canvas.clientWidth / canvas.clientHeight, 0.1, 400.0, self._shadowProjMatrix);
+                        self._shadowProjMatrixDirty = false;
+                    }
+                    return self._shadowProjMatrix;
                 },
 
                 getShadowRenderBuf: function () {
-                    return self._getShadowRenderBuf();
+                    if (!self._shadowRenderBuf) {
+                        self._shadowRenderBuf = new xeogl.renderer.RenderBuffer(self.scene.canvas.canvas, self.scene.canvas.gl);
+                    }
+                    return self._shadowRenderBuf;
                 }
-            };
+            });
 
             this.pos = cfg.pos;
             this.color = cfg.color;
@@ -124,42 +146,6 @@ TODO
             this.quadraticAttenuation = cfg.quadraticAttenuation;
             this.space = cfg.space;
             this.shadow = cfg.shadow;
-        },
-
-        _getShadowViewMatrix: (function () {
-            var look = math.vec3();
-            var up = math.vec3([0, 1, 0]);
-            return function () {
-                if (!this._shadowViewMatrix) {
-                    this._shadowViewMatrix = math.identityMat4();
-                }
-               // if (this._shadowViewMatrixDirty) {
-                    math.addVec3(this._state.pos, this._state.dir, look);
-                    math.lookAtMat4v(this._state.pos, look, up, this._shadowViewMatrix);
-               // math.lookAtMat4v([0,-100, 0], [0,0,0], up, this._shadowViewMatrix);
-                    this._shadowViewMatrixDirty = false;
-             //   }
-                return this._shadowViewMatrix;
-            };
-        })(),
-
-        _getShadowProjMatrix: function () {
-            if (!this._shadowProjMatrix) {
-                this._shadowProjMatrix = math.identityMat4();
-            }
-            //if (this._shadowProjMatrixDirty) { // TODO: Set when canvas resizes
-                var canvas = this.scene.canvas.canvas;
-                math.perspectiveMat4(45, canvas.clientWidth / canvas.clientHeight, 0.1, 1000.0, this._shadowProjMatrix);
-                this._shadowProjMatrixDirty = false;
-           // }
-            return this._shadowProjMatrix;
-        },
-
-        _getShadowRenderBuf: function () {
-            if (!this._shadowRenderBuf) {
-                this._shadowRenderBuf = new xeogl.renderer.webgl.RenderBuffer(this.scene.canvas.canvas, this.scene.canvas.gl);
-            }
-            return this._shadowRenderBuf;
         },
 
         _props: {
@@ -181,8 +167,8 @@ TODO
 
                     this._state.pos.set(value || [1.0, 1.0, 1.0]);
 
-                    this._shadowViewMatrixDirty = false;
-                    this._renderer.imageDirty = true;
+                    this._shadowViewMatrixDirty = true;
+                    this._renderer.imageDirty();
 
                     /**
                      Fired whenever this SpotLight's  {{#crossLink "SpotLight/pos:property"}}{{/crossLink}} property changes.
@@ -212,8 +198,8 @@ TODO
 
                     this._state.dir.set(value || [1.0, 1.0, 1.0]);
 
-                    this._shadowViewMatrixDirty = false;
-                    this._renderer.imageDirty = true;
+                    this._shadowViewMatrixDirty = true;
+                    this._renderer.imageDirty();
 
                     /**
                      * Fired whenever this SpotLight's  {{#crossLink "SpotLight/dir:property"}}{{/crossLink}} property changes.
@@ -243,7 +229,7 @@ TODO
 
                     this._state.color.set(value || [0.7, 0.7, 0.8]);
 
-                    this._renderer.imageDirty = true;
+                    this._renderer.imageDirty();
 
                     /**
                      Fired whenever this SpotLight's  {{#crossLink "SpotLight/color:property"}}{{/crossLink}} property changes.
@@ -275,7 +261,7 @@ TODO
 
                     this._state.intensity = value;
 
-                    this._renderer.imageDirty = true;
+                    this._renderer.imageDirty();
 
                     /**
                      * Fired whenever this SpotLight's  {{#crossLink "SpotLight/intensity:property"}}{{/crossLink}} property changes.
@@ -305,7 +291,7 @@ TODO
 
                     this._state.attenuation[0] = value || 0.0;
 
-                    this._renderer.imageDirty = true;
+                    this._renderer.imageDirty();
 
                     /**
                      Fired whenever this SpotLight's {{#crossLink "SpotLight/constantAttenuation:property"}}{{/crossLink}} property changes.
@@ -336,7 +322,7 @@ TODO
 
                     this._state.attenuation[1] = value || 0.0;
 
-                    this._renderer.imageDirty = true;
+                    this._renderer.imageDirty();
 
                     /**
                      Fired whenever this SpotLight's  {{#crossLink "SpotLight/linearAttenuation:property"}}{{/crossLink}} property changes.
@@ -367,7 +353,7 @@ TODO
 
                     this._state.attenuation[2] = value || 0.0;
 
-                    this._renderer.imageDirty = true;
+                    this._renderer.imageDirty();
 
                     /**
                      Fired whenever this SpotLight's {{#crossLink "SpotLight/quadraticAttenuation:property"}}{{/crossLink}} property changes.
@@ -422,73 +408,44 @@ TODO
             },
 
             /**
-
-             Defines a {{#crossLink "Shadow"}}{{/crossLink}} that is cast by this SpotLight.
-
-             Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this SpotLight.
+             Flag which indicates if this SpotLight casts a shadow.
 
              Fires a {{#crossLink "SpotLight/shadow:event"}}{{/crossLink}} event on change.
 
              @property shadow
-             @default undefined
-             @type {Shadow}
+             @default false
+             @type Boolean
              */
             shadow: {
 
-                set: function (texture) {
+                set: function (value) {
+
+                    value = !!value;
+
+                    if (this._state.shadow === value) {
+                        return;
+                    }
+
+                    this._state.shadow = value;
+
+                    this._shadowViewMatrixDirty = true;
+
+                    this._renderer.imageDirty();
 
                     /**
-                     Fired whenever this SpotLight's {{#crossLink "SpotLight/shadow:property"}}{{/crossLink}} property changes.
-
-                     @event shadow
-                     @param value Number The property's new value
+                     * Fired whenever this SpotLight's {{#crossLink "SpotLight/shadow:property"}}{{/crossLink}} property changes.
+                     * @event shadow
+                     * @param value The property's new value
                      */
-                    this._attachComponent("xeogl.Shadow", "shadow", texture);
+                    this.fire("shadow", this._state.shadow);
+
+                    this.fire("dirty", true);
                 },
 
                 get: function () {
-                    return this._attached.shadow;
+                    return this._state.shadow;
                 }
             }
-        },
-
-        _attachComponent: function (expectedType, name, component) {
-            component = this._attach({
-                name: name,
-                type: expectedType,
-                component: component,
-                sceneDefault: false,
-                on: {
-                    destroyed: {
-                        callback: function () {
-                            this._state[name] = null;
-                            this._hashDirty = true;
-                        },
-                        scope: this
-                    }
-                }
-            });
-            this._state[name] = component ? component._state : null; // FIXME: Accessing _state breaks encapsulation
-            this._hashDirty = true;
-        },
-
-        _getJSON: function () {
-            var vecToArray = xeogl.math.vecToArray;
-            var json = {
-                type: this._state.type,
-                pos: vecToArray(this._state.pos),
-                dir: vecToArray(this._state.dir),
-                color: vecToArray(this._state.color),
-                intensity: this._state.intensity,
-                constantAttenuation: this._state.attenuation[0],
-                linearAttenuation: this._state.attenuation[1],
-                quadraticAttenuation: this._state.attenuation[2],
-                space: this._state.space
-            };
-            if (this._attached.shadow) {
-                json.shadow = this._attached.shadow.id
-            }
-            return json;
         },
 
         _destroy: function () {

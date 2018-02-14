@@ -143,7 +143,7 @@
                         onDeviceOrientation = input.on("deviceorientation",
                             function (e) {
 
-                                var lookat = self.camera.view;
+                                var lookat = self.camera;
 
                                 var alpha = e.gamma ? math.DEGTORAD * e.alpha : 0; // Z
                                 var beta = e.beta ? math.DEGTORAD * e.beta : 0; // X'

@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
 
     <script src="js/geometry/k3d.js"></script>
     <script src="js/skyboxes/skybox.js"></script>
@@ -71,7 +71,8 @@
             "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png",
             "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png",
             "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png"
-        ]
+        ],
+        encoding:"linear"
     });
 
     var reflectionMap = new xeogl.CubeTexture({
@@ -82,7 +83,8 @@
             "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
             "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
             "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
-        ]
+        ],
+        encoding: "sRGB"
     });
 
     var lights = xeogl.scene.lights;
@@ -91,7 +93,8 @@
     lights.reflectionMap = reflectionMap;
 
     var baseColorMap = new xeogl.Texture({
-        src: "models/obj/fireHydrant/fire_hydrant_Base_Color.png"
+        src: "models/obj/fireHydrant/fire_hydrant_Base_Color.png",
+        encoding: "sRGB"
     });
 
     var normalMap = new xeogl.Texture({
@@ -122,7 +125,8 @@
     var hydrant = new xeogl.Entity({
 
         geometry: new xeogl.OBJGeometry({
-            src: "models/obj/fireHydrant/FireHydrantMesh.obj"
+            src: "models/obj/fireHydrant/FireHydrantMesh.obj",
+            combineVBOs: true
         }),
 
         material: new xeogl.MetallicMaterial({
@@ -134,7 +138,8 @@
             roughnessMap: roughnessMap,
             metallicMap: metallicMap,
             //metallicRoughnessMap: metallicRoughnessMap,
-            occlusionMap: occlusionMap
+            occlusionMap: occlusionMap,
+            specularF0: 0.7
         }),
 
         transform: new xeogl.Scale({
@@ -142,30 +147,30 @@
         })
     });
 
-    hydrant.camera.view.rotateEyeX(20); // Orbit camera a bit
-    hydrant.camera.view.rotateEyeY(300); // Orbit camera a bit
+    xeogl.scene.camera.orbitPitch(20); // Orbit camera a bit
+    xeogl.scene.camera.orbitYaw(300); // Orbit camera a bit
 
     var spinning = true;
 
     hydrant.geometry.on("loaded", function () { // Fit to view as soon as OBJ is loaded
 
         (new xeogl.CameraFlightAnimation()).jumpTo({
-            worldBoundary: hydrant.worldBoundary,
+            aabb: hydrant.aabb,
             fit: true,
             fitFOV: 45
         });
 
-        hydrant.scene.camera.view.rotateEyeY(180);
+        hydrant.scene.camera.orbitYaw(180);
 
         hydrant.scene.on("tick", function () { // Start orbiting the camera
             if (spinning) {
-                hydrant.scene.camera.view.rotateEyeY(-0.1);
-                //    hydrant.scene.camera.view.zoom(-.05);
+                hydrant.scene.camera.orbitYaw(-0.1);
+                //    hydrant.scene.camera.zoom(-.05);
             }
         });
     });
 
-    var inputControl = new xeogl.InputControl(); // Allow user camera control
+    var cameraControl = new xeogl.CameraControl(); // Allow user camera control
 
     //------------------ GUI ---------------------------------
 
@@ -189,12 +194,15 @@
         this["normalMap"] = !!material.normalMap;
         this["occlusionMap"] = !!material.occlusionMap;
         this["alphaMap"] = !!material.alphaMap;
-
+        this["ghost"] = hydrant.ghost;
         this["lightMap"] = !!lights.lightMap;
         this["reflectionMap"] = !!lights.reflectionMap;
         this["dirLights"] = !!(lights.lights && lights.lights.length > 0);
         this["skybox"] = !!skybox.active;
         this["spinning"] = true;
+
+        this["scene.gammaOutput"] = hydrant.scene.gammaOutput;
+        this["scene.gammaFactor"] = hydrant.scene.gammaFactor;
 
         var self = this;
 
@@ -240,6 +248,10 @@
                 lights.reflectionMap = self["reflectionMap"] ? reflectionMap : null;
             }
 
+            if (self["ghost"] !== !!hydrant.ghost) {
+                hydrant.ghost = self["ghost"];
+            }
+
             if (self["alphaMap"] !== !!material.alphaMap) {
                 if (self["alphaMap"]) {
                     material.alphaMap = alphaMap;
@@ -273,6 +285,9 @@
                 spinning = self["spinning"];
             }
 
+            hydrant.scene.gammaOutput = self["scene.gammaOutput"];
+            hydrant.scene.gammaFactor = self["scene.gammaFactor"];
+
             requestAnimationFrame(update);
         };
 
@@ -298,6 +313,7 @@
     materialFolder.add(menu, 'normalMap', true);
     materialFolder.add(menu, 'occlusionMap', true);
     materialFolder.add(menu, 'alphaMap', true);
+    materialFolder.add(menu, 'ghost', false);
     materialFolder.open();
 
     var lightsFolder = gui.addFolder('Lights');
@@ -307,6 +323,11 @@
     lightsFolder.add(menu, 'skybox', true);
     lightsFolder.add(menu, 'spinning', true);
     lightsFolder.open();
+
+    var gammaFolder = gui.addFolder('gamma');
+    gammaFolder.add(menu, 'scene.gammaOutput', true).listen();
+    gammaFolder.add(menu, 'scene.gammaFactor', 0.0, 3.0).listen();
+    gammaFolder.open();
 
     function typedToJS(arry) {
         return [arry[0] * 255, arry[1] * 255, arry[2] * 255];

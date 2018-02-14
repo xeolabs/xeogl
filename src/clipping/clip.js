@@ -146,7 +146,7 @@
 
                     this._state.pos.set(value || [0, 0, 0]);
 
-                    this._renderer.imageDirty = true;
+                    this._renderer.imageDirty();
 
                     /**
                      Fired whenever this Clip's {{#crossLink "Clip/pos:property"}}{{/crossLink}} property changes.
@@ -180,7 +180,7 @@
 
                     this._state.dir.set(value || [0, 0, -1]);
 
-                    this._renderer.imageDirty = true;
+                    this._renderer.imageDirty();
 
                     /**
                      Fired whenever this Clip's {{#crossLink "Clip/dir:property"}}{{/crossLink}} property changes.
@@ -195,14 +195,6 @@
                     return this._state.dir;
                 }
             }
-        },
-
-        _getJSON: function () {
-            return {
-                active: this._state.active,
-                dir: xeogl.math.vecToArray(this._state.dir),
-                pos: xeogl.math.vecToArray(this._state.pos)
-            };
         }
     });
 })();

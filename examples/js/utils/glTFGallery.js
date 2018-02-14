@@ -72,15 +72,15 @@ function glTFGallery(models) {
 
     var spinning = true;
 
-    var view = xeogl.scene.camera.view;
+    var camera = xeogl.scene.camera;
 
     xeogl.scene.on("tick", function () { // Slowly orbit the camera
         if (spinning) {
-            view.rotateEyeY(-0.1);
+            camera.orbitYaw(-0.1);
         }
     });
 
-    new xeogl.InputControl();
+    new xeogl.CameraControl();
 
     //---------------------------------------------------
     // glTF model
@@ -92,7 +92,7 @@ function glTFGallery(models) {
 
     model.on("loaded", function () { // Auto-fit model to view
         cameraFlight.jumpTo({
-            worldBoundary: model.worldBoundary,
+            aabb: model.aabb,
             fit: true,
             fitFOV: 50
         });
@@ -150,9 +150,9 @@ function glTFGallery(models) {
             log.innerHTML = html.join("");
             //var viewInfo = modelInfo.view;
             //if (viewInfo) {
-            //    view.eye = viewInfo.eye;
-            //    view.look = viewInfo.look;
-            //    view.up = viewInfo.up;
+            //    camera.eye = viewInfo.eye;
+            //    camera.look = viewInfo.look;
+            //    camera.up = viewInfo.up;
             //}
 
             model.transform = modelInfo.transform ? modelInfo.transform : null;

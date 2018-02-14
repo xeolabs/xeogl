@@ -39,16 +39,14 @@
 
                 var entity = entities[id];
 
-               // entity.visible = false;
-
                 new xeogl.OBBHelper({
-                    boundary: entity.worldBoundary,
+                    target: entity,
                     color: [0, 1, 0],
                     visible: true
                 });
 
                 new xeogl.AABBHelper({
-                    boundary: entity.worldBoundary,
+                    target: entity,
                     color: [1, 0, 0],
                     visible: true
                 });
@@ -56,23 +54,20 @@
         }
 
         new xeogl.AABBHelper({
-            boundary: model.worldBoundary,
+            target: model,
             color: [0, 0, 1],
             visible: true
         });
     });
 
-    var view = xeogl.scene.camera.view;
+    var camera = xeogl.scene.camera;
 
-    view.eye = [184.21, 10.54, -7.03];
-    view.look = [159.20, 17.02, 3.21];
-    view.up = [-0.15, 0.97, 0.13];
+    camera.eye = [184.21, 10.54, -7.03];
+    camera.look = [159.20, 17.02, 3.21];
+    camera.up = [-0.15, 0.97, 0.13];
 
-    var inputControl = new xeogl.InputControl();
+    new xeogl.CameraControl();
 
-    xeogl.scene.on("tick", function () { // Slowly orbit the camera
-        view.rotateEyeY(-0.7);
-    });
 
 </script>
 </body>

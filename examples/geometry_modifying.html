@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
@@ -18,7 +18,7 @@
 <script>
 
     // Allow user camera control
-    new xeogl.InputControl();
+    new xeogl.CameraControl();
 
     // The Geometry we'll dynamically modify
     var geometry = new xeogl.Geometry({
@@ -40,7 +40,7 @@
 
     // Spin the Camera
     entity.scene.on("tick", function () {
-        entity.camera.view.rotateEyeY(1.0);
+        entity.scene.camera.orbitYaw(1.0);
     });
 
     // The current torus construction parameters

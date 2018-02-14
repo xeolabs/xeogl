@@ -55,7 +55,7 @@
      entity.geometry.on("loaded", function () {
 
              cameraFlight.flyTo({
-                 aabb: entity.worldBoundary.aabb
+                 aabb: entity.aabb
              });
          });
      ````

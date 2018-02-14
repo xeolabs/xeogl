@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.js"></script>
+    <script src="js/models/glTFModel.js"></script>
+
+    <script src="js/geometry/vectorTextGeometry.js"></script>
+    <script src="js/helpers/axisHelper.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+
+<body>
+
+<div id="info">
+    <h1>
+        <ul>
+            <li>camera for a World-space coordinate system in which the +Y axis is considered "up"</li>
+            <li>causes camera rotation in the horizontal plane to pivot about the World +Y axis</li>
+        </ul>
+        <pre id="log">model: <a href="https://sketchfab.com/bimcc"
+                                target="_parent">https://sketchfab.com/bimcc</a></pre>
+    </h1>
+</div>
+
+<script>
+
+    var model = new xeogl.GLTFModel({
+        src: "models/gltf/vianney_house_2/scene.gltf",
+
+        transform: new xeogl.Rotate({ // <----- Model was made for Z axis up, so we'll rotate it so that it works with Y axis up
+            xyz: [1, 0, 0],
+            angle: -90
+        })
+    });
+
+    var scene = model.scene;
+    var camera = scene.camera;
+
+    // Position camera with camera's "up" direction pointing along World +Y axis
+
+    camera.eye = [1.8160498142242432, 37.38420486450195, 251.0963897705078];
+    camera.look = [0, -0.0011444091796875, 11.182900428771973];
+    camera.up = [0, 1, 0];
+
+    // Configure camera for a World-space in which +Y is considered "up"
+
+    camera.worldAxis = [
+        1, 0, 0,    // Right
+        0, 1, 0,    // Up
+        0, 0, -1     // Forward
+    ];
+
+    // Gimbal lock camera yaw rotation to World +Y axis
+
+    camera.gimbalLock = true;
+
+    // Orbit/zoom/pan control
+
+    new xeogl.CameraControl();
+
+    // Customize lighting
+
+    scene.lights.lights = [
+
+        new xeogl.DirLight({
+            dir: [-1116.85791015625, -4015.44873046875, -1726.414306640625],
+            color: [1, 1, 1],
+            intensity: 0.8,
+            space: "world"
+        }),
+        new xeogl.DirLight({
+            dir: [0.6, -0.4, -0.2],
+            color: [0.90, 0.90, 0.90],
+            intensity: 0.6,
+            space: "world"
+        }),
+        new xeogl.DirLight({
+            dir: [-0.4, -0.1, -0.6],
+            color: [0.75, 0.75, 0.7],
+            intensity: 0.4,
+            space: "world"
+        }),
+        new xeogl.DirLight({
+            dir: [0.6, -0.6, 0.6],
+            color: [0.70, 0.70, 0.93],
+            intensity: 0.3,
+            space: "world"
+        })
+    ];
+
+    scene.lights.reflectionMap = new xeogl.CubeTexture({
+        src: [
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
+        ]
+    });
+
+    new xeogl.AxisHelper({
+        lookat: scene.camera,
+        visible: true,
+        size: [200, 200]
+    });
+
+</script>
+</body>
+</html>

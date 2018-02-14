@@ -139,18 +139,21 @@
         //    };
         //}(),
         //
-        createUUID: (function() {
+        createUUID: (function () {
             var self = {};
-            var lut = []; for (var i=0; i<256; i++) { lut[i] = (i<16?'0':'')+(i).toString(16); }
-            return function() {
-                var d0 = Math.random()*0xffffffff|0;
-                var d1 = Math.random()*0xffffffff|0;
-                var d2 = Math.random()*0xffffffff|0;
-                var d3 = Math.random()*0xffffffff|0;
-                return lut[d0&0xff]+lut[d0>>8&0xff]+lut[d0>>16&0xff]+lut[d0>>24&0xff]+'-'+
-                    lut[d1&0xff]+lut[d1>>8&0xff]+'-'+lut[d1>>16&0x0f|0x40]+lut[d1>>24&0xff]+'-'+
-                    lut[d2&0x3f|0x80]+lut[d2>>8&0xff]+'-'+lut[d2>>16&0xff]+lut[d2>>24&0xff]+
-                    lut[d3&0xff]+lut[d3>>8&0xff]+lut[d3>>16&0xff]+lut[d3>>24&0xff];
+            var lut = [];
+            for (var i = 0; i < 256; i++) {
+                lut[i] = (i < 16 ? '0' : '') + (i).toString(16);
+            }
+            return function () {
+                var d0 = Math.random() * 0xffffffff | 0;
+                var d1 = Math.random() * 0xffffffff | 0;
+                var d2 = Math.random() * 0xffffffff | 0;
+                var d3 = Math.random() * 0xffffffff | 0;
+                return lut[d0 & 0xff] + lut[d0 >> 8 & 0xff] + lut[d0 >> 16 & 0xff] + lut[d0 >> 24 & 0xff] + '-' +
+                    lut[d1 & 0xff] + lut[d1 >> 8 & 0xff] + '-' + lut[d1 >> 16 & 0x0f | 0x40] + lut[d1 >> 24 & 0xff] + '-' +
+                    lut[d2 & 0x3f | 0x80] + lut[d2 >> 8 & 0xff] + '-' + lut[d2 >> 16 & 0xff] + lut[d2 >> 24 & 0xff] +
+                    lut[d3 & 0xff] + lut[d3 >> 8 & 0xff] + lut[d3 >> 16 & 0xff] + lut[d3 >> 24 & 0xff];
             };
         })(),
 
@@ -695,7 +698,7 @@
             return Math.sqrt(math.sqLenVec2(v));
         },
 
-        distVec2: (function() {
+        distVec2: (function () {
             var vec = new Float32Array(2);
             return function (v, w) {
                 return math.lenVec2(math.subVec2(v, w, vec));
@@ -757,7 +760,7 @@
          */
         angleVec3: function (v, w) {
             var theta = xeogl.math.dotVec3(v, w) / ( Math.sqrt(xeogl.math.sqLenVec3(v) * xeogl.math.sqLenVec3(w)) );
-            theta = theta < -1  ? -1  : (theta > 1 ? 1 : theta);  // Clamp to handle numerical problems
+            theta = theta < -1 ? -1 : (theta > 1 ? 1 : theta);  // Clamp to handle numerical problems
             return Math.acos(theta);
         },
 
@@ -800,11 +803,12 @@
          */
         vecToArray: (function () {
             function trunc(v) {
-                return Math.round(v * 100) / 100
+                return Math.round(v * 100000) / 100000
             }
+
             return function (v) {
                 v = Array.prototype.slice.call(v);
-                for (var i =0,len = v.length; i < len; i++) {
+                for (var i = 0, len = v.length; i < len; i++) {
                     v[i] = trunc(v[i]);
                 }
                 return v;
@@ -925,6 +929,30 @@
             mat[13] = 0.0;
             mat[14] = 0.0;
             mat[15] = 1.0;
+
+            return mat;
+        },
+
+        /**
+         * Returns a 3x3 identity matrix.
+         * @method identityMat3
+         * @static
+         */
+        identityMat3: function (mat) {
+
+            mat = mat || new Float32Array(9);
+
+            mat[0] = 1.0;
+            mat[1] = 0.0;
+            mat[2] = 0.0;
+
+            mat[3] = 0.0;
+            mat[4] = 1.0;
+            mat[5] = 0.0;
+
+            mat[6] = 0.0;
+            mat[7] = 0.0;
+            mat[8] = 1.0;
 
             return mat;
         },
@@ -1163,6 +1191,40 @@
         },
 
         /**
+         * Multiplies the two given 3x3 matrices by each other.
+         * @method mulMat4
+         * @static
+         */
+        mulMat3: function (a, b, dest) {
+
+            if (!dest) {
+                dest = new Float32Array(9);
+            }
+
+            var a11 = a[0], a12 = a[3], a13 = a[6];
+            var a21 = a[1], a22 = a[4], a23 = a[7];
+            var a31 = a[2], a32 = a[5], a33 = a[8];
+
+            var b11 = b[0], b12 = b[3], b13 = b[6];
+            var b21 = b[1], b22 = b[4], b23 = b[7];
+            var b31 = b[2], b32 = b[5], b33 = b[8];
+
+            dest[0] = a11 * b11 + a12 * b21 + a13 * b31;
+            dest[3] = a11 * b12 + a12 * b22 + a13 * b32;
+            dest[6] = a11 * b13 + a12 * b23 + a13 * b33;
+
+            dest[1] = a21 * b11 + a22 * b21 + a23 * b31;
+            dest[4] = a21 * b12 + a22 * b22 + a23 * b32;
+            dest[7] = a21 * b13 + a22 * b23 + a23 * b33;
+
+            dest[2] = a31 * b11 + a32 * b21 + a33 * b31;
+            dest[5] = a31 * b12 + a32 * b22 + a33 * b32;
+            dest[8] = a31 * b13 + a32 * b23 + a33 * b33;
+
+            return dest;
+        },
+
+        /**
          * Multiplies each element of the given 4x4 matrix by the given scalar.
          * @method mulMat4Scalar
          * @static
@@ -1343,6 +1405,18 @@
         },
 
         /**
+         * Returns 3x3 translation matrix.
+         * @method translationMat3
+         * @static
+         */
+        translationMat3v: function (v, dest) {
+            var m = dest || math.identityMat3();
+            m[6] = v[0];
+            m[7] = v[1];
+            return m;
+        },
+
+        /**
          * Returns 4x4 translation matrix.
          * @method translationMat4c
          * @static
@@ -1502,6 +1576,18 @@
             m[0] = v[0];
             m[5] = v[1];
             m[10] = v[2];
+            return m;
+        },
+
+        /**
+         * Returns 3x3 scale matrix.
+         * @method scalingMat3v
+         * @static
+         */
+        scalingMat3v: function (v, m) {
+            m = m || math.identityMat3();
+            m[0] = v[0];
+            m[4] = v[1];
             return m;
         },
 
@@ -2690,6 +2776,73 @@
             }
             angleAxis[3] = angle; // * 57.295779579;
             return angleAxis;
+        },
+
+        decompressPosition: function (position, decodeMatrix, dest) {
+            dest[0] = position[0] * decodeMatrix[0] + decodeMatrix[12];
+            dest[1] = position[1] * decodeMatrix[5] + decodeMatrix[13];
+            dest[2] = position[2] * decodeMatrix[10] + decodeMatrix[14];
+        },
+
+        decompressPositions: function (positions, decodeMatrix, dest) {
+            dest = dest || new Float32Array(positions.length);
+            for (var i = 0, len = positions.length; i < len; i += 3) {
+                dest[i + 0] = positions[i + 0] * decodeMatrix[0] + decodeMatrix[12];
+                dest[i + 1] = positions[i + 1] * decodeMatrix[5] + decodeMatrix[13];
+                dest[i + 2] = positions[i + 2] * decodeMatrix[10] + decodeMatrix[14];
+            }
+            return dest;
+        },
+
+        decompressUV: function (uv, decodeMatrix, dest) {
+            dest[0] = uv[0] * decodeMatrix[0] + decodeMatrix[6];
+            dest[1] = uv[1] * decodeMatrix[4] + decodeMatrix[7];
+        },
+
+        decompressUVs: function (uvs, decodeMatrix, dest) {
+            dest = dest || new Float32Array(uvs.length);
+            for (var i = 0, len = uvs.length; i < len; i += 3) {
+                dest[i + 0] = uvs[i + 0] * decodeMatrix[0] + decodeMatrix[6];
+                dest[i + 1] = uvs[i + 1] * decodeMatrix[4] + decodeMatrix[7];
+            }
+            return dest;
+        },
+
+        octDecodeVec2: function (oct, result) {
+            var x = oct[0];
+            var y = oct[1];
+            x = (2 * x + 1) / 255;
+            y = (2 * y + 1) / 255;
+            var z = 1 - Math.abs(x) - Math.abs(y);
+            if (z < 0) {
+                x = (1 - Math.abs(y)) * (x >= 0 ? 1 : -1);
+                y = (1 - Math.abs(x)) * (y >= 0 ? 1 : -1);
+            }
+            var length = Math.sqrt(x * x + y * y + z * z);
+            result[0] = x / length;
+            result[1] = y / length;
+            result[2] = z / length;
+            return result;
+        },
+
+        octDecodeVec2s: function (octs, result) {
+            for (var i = 0, j = 0, len = octs.length; i < len; i += 2) {
+                var x = octs[i + 0];
+                var y = octs[i + 1];
+                x = (2 * x + 1) / 255;
+                y = (2 * y + 1) / 255;
+                var z = 1 - Math.abs(x) - Math.abs(y);
+                if (z < 0) {
+                    x = (1 - Math.abs(y)) * (x >= 0 ? 1 : -1);
+                    y = (1 - Math.abs(x)) * (y >= 0 ? 1 : -1);
+                }
+                var length = Math.sqrt(x * x + y * y + z * z);
+                result[j + 0] = x / length;
+                result[j + 1] = y / length;
+                result[j + 2] = z / length;
+                j += 3;
+            }
+            return result;
         }
     };
 

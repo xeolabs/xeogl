@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <a href="http://xeogl.org" target="_parent">xeogl</a>
+    <br><br>
+    1000 spherically-billboarded <a href="../docs/classes/Entity.html" target="_parent">Entities</a>
+</div>
+
+<script>
+
+    var geometry = new xeogl.Geometry({
+        primitive: "triangles",
+        positions: [3, 3, 0, -3, 3, 0, -3, -3, 0, 3, -3, 0],
+        normals: [-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0],
+        uv: [1, -1, 0, -1, 0, 0, 1, 0],
+        indices: [0, 1, 2, 0, 2, 3] // Ensure these will be front-faces
+    });
+
+    var material = new xeogl.PhongMaterial({
+        diffuseMap: new xeogl.Texture({
+            src: "textures/diffuse/teapot.jpg",
+            encoding: "sRGB"
+        })
+    });
+
+    for (var i = 0; i < 300; i++) {
+
+        new xeogl.Entity({
+            geometry: geometry,
+            material: material,
+            billboard: "spherical",
+            transform: new xeogl.Translate({
+                xyz: [Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50]
+            })
+        });
+    }
+
+    var scene = xeogl.scene;
+
+    // Move the camera back a bit
+    scene.camera.zoom(120);
+
+    // Orbit the eye position about the look position.
+    scene.on("tick", function () {
+
+        var camera = scene.camera;
+
+        camera.orbitYaw(0.2);
+        camera.orbitPitch(0.1);
+    });
+
+    var cameraControl = new xeogl.CameraControl();
+
+</script>
+</body>
+</html>
