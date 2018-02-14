@@ -13,7 +13,7 @@
 <body>
 
 <div id="info">
-    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - loading glTF 2.0</h1>
+    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - importing glTF</h1>
     <pre id="log">model:  2 cylinder engine - [<a
             href='https://github.com/xeolabs/xeogl/tree/master/examples/models/gltf/2CylinderEngine/README.md' target="_parent">model info</a>]</pre>
 </div>
@@ -32,21 +32,21 @@
     // Camera animation and user control
     //-----------------------------------------------------------------------------------------------------
 
-    var view = xeogl.scene.camera.view;
+    var camera = xeogl.scene.camera;
 
-    view.eye = [-0.8, -36.51, -871.64];
-    view.look = [-0.8,-36.51,-2.37];
-    view.up = [0,1,0 ];
+    camera.eye = [-0.8, -36.51, -871.64];
+    camera.look = [-0.8,-36.51,-2.37];
+    camera.up = [0,1,0 ];
 
     var spinning = true;
 
     xeogl.scene.on("tick", function () { // Slowly orbit the camera
         if (spinning) {
-            view.rotateEyeY(-0.05);
+            camera.orbitYaw(-0.05);
         }
     });
 
-    new xeogl.InputControl();
+    new xeogl.CameraControl();
 
 </script>
 </body>

@@ -13,7 +13,7 @@
 <body>
 
 <div id="info">
-    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - loading glTF 2.0 triangle meshes with positions, normals and indices
+    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - importing glTF triangle meshes with positions, normals and indices
         but no normals</h1>
     <pre id="log">model: SimpleMeshes - [<a
             href='https://github.com/xeolabs/xeogl/tree/master/examples/models/gltf/SimpleMeshes/README.md'
@@ -28,13 +28,13 @@
 
     model.scene.lights.lights = []; // glTF file doesn't have lights and this is a test
 
-    var view = model.scene.camera.view;
+    var camera = model.scene.camera;
 
-    view.eye = [1, 0, 3];
-    view.look = [1, 0, 0];
-    view.up = [0, 1, 0];
+    camera.eye = [1, 0, 3];
+    camera.look = [1, 0, 0];
+    camera.up = [0, 1, 0];
 
-    var inputControl = new xeogl.InputControl(); // User camera control
+    new xeogl.CameraControl(); // User camera control
 
 </script>
 </body>

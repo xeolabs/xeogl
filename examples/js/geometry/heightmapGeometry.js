@@ -317,7 +317,7 @@
                     // Keep self._src because that's where we loaded the image
                     // from, and we may need to save that in JSON later
 
-                    self._image = xeogl.renderer.webgl.ensureImageSizePowerOfTwo(image);
+                    self._image = xeogl.renderer.ensureImageSizePowerOfTwo(image);
 
                     self._srcDirty = false;
                     self._imageDirty = true;
@@ -432,7 +432,7 @@
 
                 set: function (value) {
 
-                    this._image = value ? xeogl.renderer.webgl.ensureImageSizePowerOfTwo(value) : value;
+                    this._image = value ? xeogl.renderer.ensureImageSizePowerOfTwo(value) : value;
                     this._src = null;
 
                     this._srcDirty = false;

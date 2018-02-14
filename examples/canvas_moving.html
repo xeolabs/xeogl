@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
     <style>
@@ -53,20 +53,22 @@
         canvas: "myCanvas"
     });
 
-    new xeogl.Entity(scene, {
-        geometry: new xeogl.SphereGeometry(scene),
-        material: new xeogl.PhongMaterial(scene, {
-            diffuseMap: new xeogl.Texture(scene, {
-                src: "textures/diffuse/uvGrid2.jpg"
-            })
+    var material = new xeogl.PhongMaterial(scene, {
+        XdiffuseMap: new xeogl.Texture(scene, {
+            src: "textures/diffuse/uvGrid2.jpg"
         })
     });
 
-    scene.camera.view.eye = [0, 0, -5];
+    new xeogl.Entity(scene, {
+        geometry: new xeogl.SphereGeometry(scene),
+        material: material
+    });
+
+    scene.camera.eye = [0, 0, -5];
 
     scene.on("tick", function () {
-        this.camera.view.rotateEyeY(0.5);
-        this.camera.view.rotateEyeX(0.3);
+        this.camera.orbitYaw(0.5);
+        this.camera.orbitPitch(0.3);
     });
 
     new xeogl.CameraControl(scene);

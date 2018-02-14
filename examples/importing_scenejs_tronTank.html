@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
     <script src="js/curves/curve.js"></script>
     <script src="js/curves/splineCurve.js"></script>
     <script src="js/models/sceneJSModel.js"></script>
@@ -53,8 +53,8 @@
         this.flyto = function (target) {
             target = find(target);
             if (target) {
-                cameraFollow.worldBoundary = null;
-                cameraFlight.flyTo({worldBoundary: target.worldBoundary});
+                cameraFollow.target = null;
+                cameraFlight.flyTo({aabb: target.aabb});
             }
         };
 
@@ -63,14 +63,14 @@
             target = find(target);
             if (target) {
                 cameraFlight.stop();
-                cameraFollow.worldBoundary = target.worldBoundary;
+                cameraFollow.target = target;
             }
         };
 
         // Finds a target
         function find(target) {
             target = target.id ? target : xeogl.scene.components[target.id];
-            if (target && target.worldBoundary) {
+            if (target && target.aabb) {
                 return target;
             }
             return xeogl.scene;
@@ -106,23 +106,23 @@
         ]
     });
 
-    //        scene.lights.reflectionMap = new xeogl.CubeTexture({
-    //            src: [
-    //                "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
-    //                "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
-    //                "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
-    //                "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
-    //                "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
-    //                "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
-    //            ]
-    //        });
+//            scene.lights.reflectionMap = new xeogl.CubeTexture({
+//                src: [
+//                    "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
+//                    "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
+//                    "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
+//                    "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
+//                    "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
+//                    "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
+//                ]
+//            });
 
     // Set initial camera position
-    var view = scene.camera.view;
-    view.eye = [0, 0, -70];
-    view.look = [0, 0, 0];
-    view.up = [0, 1, 0];
-    view.rotateEyeX(90);
+    var camera = scene.camera;
+    camera.eye = [0, 0, -70];
+    camera.look = [0, 0, 0];
+    camera.up = [0, 1, 0];
+    camera.orbitPitch(90);
 
     //---------------------------------------------------------------------------------
     // Tank, animation path and camera follow behaviour
@@ -132,9 +132,7 @@
     var tankModel = new xeogl.SceneJSModel({
         id: "tank",
         src: "models/scenejs/tronTank.min.json",
-
-        // Convert SceneJS Phong materials to xeogl PBR materials
-        materialWorkflow: "SpecularMaterial", // "PhongMaterial" (default) | "MetallicMaterial" | "SpecularMaterial"
+        materialWorkflow: "MetallicMaterial", // "PhongMaterial" (default) | "MetallicMaterial" | "SpecularMaterial"
         transform: new xeogl.Rotate({ // Tank direction
             xyz: [0, 1, 0],
             angle: 0,
@@ -143,12 +141,6 @@
             })
         })
     });
-
-//    new xeogl.OBBHelper({
-//        boundary: tankModel.worldBoundary,
-//        color: [0,1,0],
-//        visible: true
-//    });
 
     // Add a shadow under the tank
     // insert it into the SceneJSModel so it rotates with the tank
@@ -225,7 +217,7 @@
 
     // Allow user camera control;
     // camera will always point at tank, but this lets us orbit and zoom
-    new xeogl.InputControl();
+    new xeogl.CameraControl();
 
     //---------------------------------------------------------------------------------
     // Procedurally-generated canyons
@@ -270,12 +262,11 @@
         box(560, -10, 1);
         box(560, -400, 0);
 
-        var geometry = new xeogl.Geometry();
 
-        geometryBuilder.build(geometry);
+
 
         new xeogl.Entity({
-            geometry: geometry,
+            geometry: new xeogl.Geometry(geometryBuilder.build()),
             material: {
                 type: "xeogl.SpecularMaterial",
                 diffuse: [0.7, 0.7, 0.7],
@@ -286,7 +277,8 @@
                     src: "textures/diffuse/UVCheckerMap11-1024.png",
                     wrapS: "repeat",
                     wrapT: "repeat",
-                    scale: [1, 1]
+                    scale: [1, 1],
+                    format: "gamma"
                 },
                 backfaces: false // Don't show backfaces, so that if camera gets buried in a box we can still see out
             },
@@ -314,7 +306,8 @@
                     src: "textures/diffuse/UVCheckerMap11-1024.png",
                     wrapS: "repeat",
                     wrapT: "repeat",
-                    scale: [30, 30]
+                    scale: [30, 30],
+                    format: "gamma"
                 },
                 backfaces: true // Show backfaces
             },
@@ -355,11 +348,11 @@
             // Slowly orbit and zoom camera
             zoom -= 0.1;
             if (zoom > 60) {
-                view.rotateEyeY(-0.1);
-                view.rotateEyeX(-0.20);
-                view.zoom(-0.1);
+                camera.orbitYaw(-0.1);
+                camera.orbitPitch(-0.20);
+                camera.zoom(-0.1);
             } else {
-                view.rotateEyeY(0.3);
+                camera.orbitYaw(0.3);
             }
 
         });

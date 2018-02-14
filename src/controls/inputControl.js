@@ -1,20 +1,22 @@
 /**
+ * Rotates, pans and zooms the {{#crossLink "Scene"}}{{/crossLink}}'s {{#crossLink "Camera"}}{{/crossLink}} with keyboard, mouse and touch input.
 
- * "hoverEnter" - Hover enters a new object
- * "hover" -  Hover continues over an object - fired continuously as mouse moves over an object
+ InputControl fires these events:
+
+ * "hover" - Hover enters a new object
  * "hoverSurface" - Hover continues over an object surface - fired continuously as mouse moves over an object
  * "hoverLeave"  - Hover has left the last object we were hovering over
  * "hoverOff" - Hover continues over empty space - fired continuously as mouse moves over nothing
- * "pickedObject" - Clicked or tapped object
+ * "picked" - Clicked or tapped object
  * "pickedSurface" -  Clicked or tapped object, with event containing surface intersection details
- * "doublePickedObject" - Double-clicked or double-tapped object
+ * "doublePicked" - Double-clicked or double-tapped object
  * "doublePickedSurface" - Double-clicked or double-tapped object, with event containing surface intersection details
  * "pickedNothing" - Clicked or tapped, but not on any objects
  * "doublePickedNothing" - Double-clicked or double-tapped, but not on any objects
 
  InputControl only fires "hover" events when the mouse is up.
 
- For efficiency, InputControl only does surface intersection picking when you subscribe to "doublePickedObject" and
+ For efficiency, InputControl only does surface intersection picking when you subscribe to "doublePicked" and
  "doublePickedSurface" events. Therefore, only subscribe to those when you're OK with the overhead incurred by the
  surface intersection tests.
 
@@ -26,11 +28,9 @@
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this InputControl.
- @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to control.
- Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this InputControl. Defaults to the
- parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
  @param [firstPerson=false] {Boolean} Whether or not this InputControl is in "first person" mode.
  @param [walking=false] {Boolean} Whether or not this InputControl is in "walking" mode.
+ @param [keyboardLayout="qwerty"] {String} Keyboard layout.
  @param [doublePickFlyTo=true] {Boolean} Whether to fly the camera to each {{#crossLink "Entity"}}{{/crossLink}} that's double-clicked.
  @extends Component
  */
@@ -64,7 +64,6 @@
         _init: function (cfg) {
 
             this._boundaryHelper = new xeogl.Entity(this, {
-                camera: cfg.camera,
                 geometry: new xeogl.AABBGeometry(this),
                 material: new xeogl.PhongMaterial({
                     diffuse: [0, 0, 0],
@@ -77,25 +76,14 @@
                 collidable: false
             });
 
-            //this.mousePickEntity.on("nopick", function () {
-            //    var aabb = this.scene.worldBoundary.aabb;
-            //    this._boundaryHelper.geometry.aabb = aabb;
-            //    this._cameraFlight.flyTo({
-            //            aabb: aabb,
-            //            fitFOV: 45
-            //        },
-            //        this._hideBoundary, this);
-            //}, this);
-
             this._cameraFlight = new xeogl.CameraFlightAnimation(this, {
-                camera: cfg.camera,
                 duration: 0.5
             });
 
             this.firstPerson = cfg.firstPerson;
             this.walking = cfg.walking;
+            this.keyboardLayout = cfg.keyboardLayout;
             this.doublePickFlyTo = cfg.doublePickFlyTo;
-            this.camera = cfg.camera;
 
             this._initEvents(); // Set up all the mouse/touch/kb handlers
         },
@@ -201,61 +189,33 @@
             },
 
             /**
-             * The {{#crossLink "Camera"}}{{/crossLink}} being controlled by this InputControl.
+             * TODO
+             * Fires a {{#crossLink "KeyboardRotateCamera/keyboardLayout:event"}}{{/crossLink}} event on change.
              *
-             * Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this InputControl. Defaults to the parent
-             * {{#crossLink "Scene"}}Scene's{{/crossLink}} default {{#crossLink "Scene/camera:property"}}camera{{/crossLink}} when set to
-             * a null or undefined value.
-             *
-             * @property camera
-             * @type Camera
+             * @property keyboardLayout
+             * @default "qwerty"
+             * @type String
              */
-            camera: {
+            keyboardLayout: {
 
                 set: function (value) {
 
+                    this._keyboardLayout = value || "qwerty";
+
+                    // ..
+
                     /**
-                     * Fired whenever this InputControl's {{#crossLink "InputControl/camera:property"}}{{/crossLink}}
-                     * property changes.
-                     *
-                     * @event camera
+                     * Fired whenever this InputControl's {{#crossLink "InputControl/keyboardLayout:property"}}{{/crossLink}} property changes.
+                     * @event keyboardLayout
                      * @param value The property's new value
                      */
-                    this._attach({
-                        name: "camera",
-                        type: "xeogl.Camera",
-                        component: value,
-                        sceneDefault: true,
-                        onAdded: this._transformUpdated,
-                        onAddedScope: this
-                    });
-
-                    // Update camera on child components
-
-                    var camera = this._attached.camera;
-
-                    this._boundaryHelper.camera = camera;
+                    this.fire('keyboardLayout', this._keyboardLayout);
                 },
 
                 get: function () {
-                    return this._attached.camera;
+                    return this._keyboardLayout;
                 }
             }
-        },
-
-        _getJSON: function () {
-
-            var json = {
-                firstPerson: this._firstPerson,
-                walking: this._walking,
-                doublePickFlyTo: this._doublePickFlyTo
-            };
-
-            if (this._attached.camera) {
-                json.camera = this._attached.camera.id;
-            }
-
-            return json;
         },
 
         _destroy: function () {
@@ -266,10 +226,25 @@
 
             var self = this;
             var scene = this.scene;
+            var input = scene.input;
+            var camera = scene.camera;
             var math = xeogl.math;
-            var overlay = this.scene.canvas.overlay;
+            var canvas = this.scene.canvas.canvas;
+            var over = false;
+            var mouseHoverDelay = 500;
+            var mouseOrbitRate = 0.4;
+            var mousePanRate = 0.4;
+            var mouseZoomRate = 0.8;
+            var mouseWheelPanRate = 1.4;
+            var keyboardOrbitRate = .02;
+            var keyboardPanRate = .02;
+            var keyboardZoomRate = .02;
+            var touchRotateRate = 0.3;
+            var touchPanRate = 0.2;
+            var touchZoomRate = 0.05;
+            var cameraFriction = 0.85;
 
-            overlay.oncontextmenu = function (e) {
+            canvas.oncontextmenu = function (e) {
                 e.preventDefault();
             };
 
@@ -303,22 +278,11 @@
 
             (function () {
 
-                var mouseHoverDelay = 500;
-                var mouseOrbitRate = 0.4;
-                var mousePanRate = 0.2;
-                var mouseZoomRate = 0.8;
-                var keyboardOrbitRate = 140;
-                var keyboardPanRate = 40;
-                var keyboardZoomRate = 15;
-                var touchRotateRate = 0.3;
-                var touchPanRate = 0.2;
-                var touchZoomRate = 0.05;
-                var cameraFriction = 0.85;
-
                 var rotateVx = 0;
                 var rotateVy = 0;
                 var panVx = 0;
                 var panVy = 0;
+                var panVz = 0;
                 var vZoom = 0;
 
                 var ctrlDown = false;
@@ -331,14 +295,11 @@
                 var getEyeLookDist = (function () {
                     var vec = new Float32Array(3);
                     return function () {
-                        var lookat = self.camera.view;
-                        return math.lenVec3(math.subVec3(lookat.look, lookat.eye, vec));
+                        return math.lenVec3(math.subVec3(camera.look, camera.eye, vec));
                     };
                 })();
 
                 scene.on("tick", function () {
-
-                    var lookat = self.camera.view;
 
                     rotateVx *= cameraFriction;
                     rotateVy *= cameraFriction;
@@ -353,22 +314,23 @@
 
                     if (rotateVx !== 0) {
                         if (self._firstPerson) {
-                            lookat.rotateLookX(-rotateVx);
+                            camera.pitch(-rotateVx);
                         } else {
-                            lookat.rotateEyeX(rotateVx);
+                            camera.orbitPitch(rotateVx);
                         }
                     }
 
                     if (rotateVy !== 0) {
                         if (self._firstPerson) {
-                            lookat.rotateLookY(rotateVy);
+                            camera.yaw(rotateVy);
                         } else {
-                            lookat.rotateEyeY(rotateVy);
+                            camera.orbitYaw(rotateVy);
                         }
                     }
 
                     panVx *= cameraFriction;
                     panVy *= cameraFriction;
+                    panVz *= cameraFriction;
 
                     if (Math.abs(panVx) < EPSILON) {
                         panVx = 0;
@@ -378,18 +340,23 @@
                         panVy = 0;
                     }
 
-                    if (panVx !== 0 || panVy !== 0) {
+                    if (Math.abs(panVz) < EPSILON) {
+                        panVz = 0;
+                    }
+
+                    if (panVx !== 0 || panVy !== 0 || panVz !== 0) {
                         var f = getEyeLookDist() / 80;
-                        if (self._firstPerson && self._walking) {
-                            var y = lookat.eye[1];
-                            lookat.pan([panVx * f, panVy * f, 0]);
-                            var eye = lookat.eye;
+                        if (self._walking) {
+                            var y = camera.eye[1];
+                            camera.pan([panVx * f, panVy * f, panVz * f]);
+                            var eye = camera.eye;
                             eye[1] = y;
-                            lookat.eye = eye;
+                            camera.eye = eye;
                         } else {
-                            lookat.pan([panVx * f, panVy * f, 0]);
+                            camera.pan([panVx * f, panVy * f, panVz * f]);
                         }
                     }
+
 
                     vZoom *= cameraFriction;
 
@@ -401,31 +368,33 @@
                         if (self._firstPerson) {
                             var y;
                             if (self._walking) {
-                                y = lookat.eye[1];
+                                y = camera.eye[1];
                             }
-                            lookat.pan([0, 0, vZoom]);
+                            camera.pan([0, 0, vZoom]);
                             if (self._walking) {
-                                var eye = lookat.eye;
+                                var eye = camera.eye;
                                 eye[1] = y;
-                                lookat.eye = eye;
+                                camera.eye = eye;
                             }
                         } else {
-                            lookat.zoom(vZoom);
+                            // Do both zoom and ortho scale so that we can switch projections without weird scale jumps
+                            camera.zoom(vZoom);
+                            camera.ortho.scale = camera.ortho.scale + vZoom;
                         }
                     }
                 });
 
                 function getZoomRate() {
-                    var aabb = scene.worldBoundary.aabb;
-                    var xsize = aabb[3]-aabb[0];
-                    var ysize = aabb[4]-aabb[1];
-                    var zsize = aabb[5]-aabb[2];
+                    var aabb = scene.aabb;
+                    var xsize = aabb[3] - aabb[0];
+                    var ysize = aabb[4] - aabb[1];
+                    var zsize = aabb[5] - aabb[2];
                     var max = (xsize > ysize ? xsize : ysize);
                     max = (zsize > max ? zsize : max);
-                    return max/30;
+                    return max / 30;
                 }
 
-                document.addEventListener("keydown", function (e) {
+                document.addEventListener("keyDown", function (e) {
                     if (e.target.tagName !== "INPUT" && e.target.tagName !== "TEXTAREA") {
                         ctrlDown = e.ctrlKey || e.keyCode === 17 || e.metaKey; // !important, treat Windows or Mac Command Key as ctrl
                         altDown = e.altKey || e.keyCode === 18;
@@ -458,18 +427,17 @@
                     var xDelta = 0;
                     var yDelta = 0;
                     var down = false;
-                    var over = false;
+
                     var mouseDownLeft;
                     var mouseDownMiddle;
                     var mouseDownRight;
 
-                    overlay.addEventListener("mousedown", function (e) {
+                    canvas.addEventListener("mousedown", function (e) {
                         if (!over) {
                             return;
                         }
                         switch (e.which) {
                             case 1: // Left button
-                                mouseDownLeft = true;
                                 mouseDownLeft = true;
                                 down = true;
                                 xDelta = 0;
@@ -483,13 +451,20 @@
                                 break;
                             case 3: // Right button
                                 mouseDownRight = true;
+                                down = true;
+                                xDelta = 0;
+                                yDelta = 0;
+                                var coords = getClickCoordsWithinElement(e);
+                                lastX = coords[0];
+                                lastY = coords[1];
+                                break;
                                 break;
                             default:
                                 break;
                         }
                     });
 
-                    overlay.addEventListener("mouseup", function (e) {
+                    canvas.addEventListener("mouseup", function (e) {
                         switch (e.which) {
                             case 1: // Left button
                                 mouseDownLeft = false;
@@ -508,19 +483,19 @@
                         yDelta = 0;
                     });
 
-                    overlay.addEventListener("mouseenter", function () {
+                    canvas.addEventListener("mouseenter", function () {
                         over = true;
                         xDelta = 0;
                         yDelta = 0;
                     });
 
-                    overlay.addEventListener("mouseleave", function () {
+                    canvas.addEventListener("mouseleave", function () {
                         over = false;
                         xDelta = 0;
                         yDelta = 0;
                     });
 
-                    overlay.addEventListener("mousemove", function (e) {
+                    canvas.addEventListener("mousemove", function (e) {
                         if (!over) {
                             return;
                         }
@@ -542,7 +517,7 @@
                             return;
                         }
 
-                        var panning = shiftDown || mouseDownMiddle || (mouseDownLeft && mouseDownRight);
+                        var panning = shiftDown || mouseDownRight;
 
                         if (panning) {
 
@@ -565,15 +540,89 @@
 
                     // Mouse wheel zoom
 
-                    overlay.addEventListener("wheel", function (e) {
+                    canvas.addEventListener("wheel", function (e) {
                         var delta = Math.max(-1, Math.min(1, -e.deltaY * 40));
                         if (delta === 0) {
                             return;
                         }
                         var d = delta / Math.abs(delta);
-                        vZoom = -d * getZoomRate() * mouseZoomRate;
+                        if (self._firstPerson) {
+                            panVz += -d * mouseWheelPanRate;
+                        } else {
+                            vZoom = -d * getZoomRate() * mouseZoomRate;
+                        }
+                        e.preventDefault();
                     });
 
+                    // Keyboard zoom
+
+                    scene.on("tick", function (e) {
+                        if (!over) {
+                            return;
+                        }
+                        var elapsed = e.deltaTime;
+                        if (!self.ctrlDown && !self.altDown) {
+                            var wkey = input.keyDown[input.KEY_ADD];
+                            var skey = input.keyDown[input.KEY_SUBTRACT];
+                            if (wkey || skey) {
+                                if (skey) {
+                                    vZoom = elapsed * getZoomRate() * keyboardZoomRate;
+                                } else if (wkey) {
+                                    vZoom = -elapsed * getZoomRate() * keyboardZoomRate;
+                                }
+                            }
+                        }
+                    });
+
+                    // Keyboard panning
+
+                    (function () {
+
+                        scene.on("tick", function (e) {
+
+                            if (!over) {
+                                return;
+                            }
+
+                            var elapsed = e.deltaTime;
+
+                            // if (!self.ctrlDown && !self.altDown) {
+                            var front, back, left, right, up, down;
+                            if (self._keyboardLayout == 'azerty') {
+                                front = input.keyDown[input.KEY_Z];
+                                back = input.keyDown[input.KEY_S];
+                                left = input.keyDown[input.KEY_Q];
+                                right = input.keyDown[input.KEY_D];
+                                up = input.keyDown[input.KEY_W];
+                                down = input.keyDown[input.KEY_X];
+                            } else {
+                                front = input.keyDown[input.KEY_W];
+                                back = input.keyDown[input.KEY_S];
+                                left = input.keyDown[input.KEY_A];
+                                right = input.keyDown[input.KEY_D];
+                                up = input.keyDown[input.KEY_Z];
+                                down = input.keyDown[input.KEY_X];
+                            }
+                            if (front || back || left || right || up || down) {
+                                if (down) {
+                                    panVy += elapsed * keyboardPanRate;
+                                } else if (up) {
+                                    panVy -= -elapsed * keyboardPanRate;
+                                }
+                                if (right) {
+                                    panVx += -elapsed * keyboardPanRate;
+                                } else if (left) {
+                                    panVx = elapsed * keyboardPanRate;
+                                }
+                                if (back) {
+                                    panVz = elapsed * keyboardPanRate;
+                                } else if (front) {
+                                    panVz = -elapsed * keyboardPanRate;
+                                }
+                            }
+                            //          }
+                        });
+                    })();
                 })();
 
                 // Touch camera rotate, pan and zoom
@@ -612,7 +661,7 @@
                         return false;
                     }
 
-                    overlay.addEventListener("touchstart", function (event) {
+                    canvas.addEventListener("touchstart", function (event) {
 
                         var touches = event.touches;
                         var changedTouches = event.changedTouches;
@@ -639,11 +688,10 @@
                         currentMode = MODE_NONE;
                         numTouches = touches.length;
 
-                        event.preventDefault();
                         event.stopPropagation();
-                    });
+                    }, {passive: true});
 
-                    overlay.addEventListener("touchmove", function (event) {
+                    canvas.addEventListener("touchmove", function (event) {
 
                         var touches = event.touches;
 
@@ -688,12 +736,69 @@
                             lastTouches[i][1] = touches[i].pageY;
                         }
 
-                        event.preventDefault();
                         event.stopPropagation();
-                    });
+                    }, {passive: true});
 
                 })();
 
+                // Keyboard rotation
+
+                (function () {
+
+                    scene.on("tick", function (e) {
+                        if (!over) {
+                            return;
+                        }
+                        var elapsed = e.deltaTime;
+                        var left = input.keyDown[input.KEY_LEFT_ARROW];
+                        var right = input.keyDown[input.KEY_RIGHT_ARROW];
+                        var up = input.keyDown[input.KEY_UP_ARROW];
+                        var down = input.keyDown[input.KEY_DOWN_ARROW];
+                        if (left || right || up || down) {
+                            if (right) {
+                                rotateVy += -elapsed * keyboardOrbitRate;
+
+                            } else if (left) {
+                                rotateVy += elapsed * keyboardOrbitRate;
+                            }
+                            if (down) {
+                                rotateVx += elapsed * keyboardOrbitRate;
+
+                            } else if (up) {
+                                rotateVx += -elapsed * keyboardOrbitRate;
+                            }
+                        }
+                    });
+                })();
+
+                // First-person rotation about vertical axis with A and E keys for AZERTY layout
+
+                (function () {
+
+                    scene.on("tick", function (e) {
+                        if (!over) {
+                            return;
+                        }
+                        var elapsed = e.deltaTime;
+                        var rotateLeft;
+                        var rotateRight;
+                        if (self._keyboardLayout == 'azerty') {
+                            rotateLeft = input.keyDown[input.KEY_A];
+                            rotateRight = input.keyDown[input.KEY_E];
+                        } else {
+                            rotateLeft = input.keyDown[input.KEY_Q];
+                            rotateRight = input.keyDown[input.KEY_E];
+                        }
+                        if (rotateRight || rotateLeft) {
+                            if (rotateLeft) {
+                                rotateVy += elapsed * keyboardOrbitRate;
+                            } else if (rotateRight) {
+                                rotateVy += -elapsed * keyboardOrbitRate;
+                            }
+                        }
+                    });
+
+                })();
             })();
 
             //------------------------------------------------------------------------------------
@@ -731,7 +836,15 @@
                         var pickedEntityId = hit.entity.id;
                         if (lastPickedEntityId !== pickedEntityId) {
                             if (lastPickedEntityId !== undefined) {
-                                self.fire("hoverOut", hit);
+
+                                /**
+                                 * Fired whenever the pointer hovers out of an {{#crossLink "Entity"}}{{/crossLink}}.
+                                 * @event hoverOut
+                                 * @param entity The Entity
+                                 */
+                                self.fire("hoverOut", {
+                                    entity: scene.entities[lastPickedEntityId]
+                                });
                             }
                             self.fire("hover", hit);
                             lastPickedEntityId = pickedEntityId;
@@ -742,7 +855,9 @@
                         }
                     } else {
                         if (lastPickedEntityId !== undefined) {
-                            self.fire("hoverOut", hit);
+                            self.fire("hoverOut", {
+                                entity: scene.entities[lastPickedEntityId]
+                            });
                             lastPickedEntityId = undefined;
                         }
                         self.fire("hoverOff", {
@@ -780,7 +895,7 @@
 
                 (function () {
 
-                    overlay.addEventListener("mousemove", function (e) {
+                    canvas.addEventListener("mousemove", function (e) {
 
                         //if (down) {
                         //    return;
@@ -796,12 +911,12 @@
                     var downX;
                     var downY;
 
-                    overlay.addEventListener('mousedown', function (e) {
+                    canvas.addEventListener('mousedown', function (e) {
                         downX = e.clientX;
                         downY = e.clientY;
                     });
 
-                    overlay.addEventListener('mouseup', (function (e) {
+                    canvas.addEventListener('mouseup', (function (e) {
                         var clicks = 0;
                         var timeout;
                         return function (e) {
@@ -810,7 +925,7 @@
                                 return;
                             }
 
-                            if (!self._doublePickFlyTo && !self.hasSubs("doublePickedObject") && !self.hasSubs("doublePickedSurface") && !self.hasSubs("doublePickedNothing")) {
+                            if (!self._doublePickFlyTo && !self.hasSubs("doublePicked") && !self.hasSubs("doublePickedSurface") && !self.hasSubs("doublePickedNothing")) {
 
                                 //  Avoid the single/double click differentiation timeout
 
@@ -819,7 +934,7 @@
                                 update();
 
                                 if (hit) {
-                                    self.fire("pickedObject", hit);
+                                    self.fire("picked", hit);
                                     if (pickedSurface) {
                                         self.fire("pickedSurface", hit);
                                     }
@@ -835,12 +950,13 @@
                             if (clicks == 1) {
                                 timeout = setTimeout(function () {
 
-                                    needPickSurface = !!self.hasSubs("pickedSurface");
+                                    needPick = self._doublePickFlyTo;
+                                    needPickSurface = needPick || !!self.hasSubs("pickedSurface");
 
                                     update();
 
                                     if (hit) {
-                                        self.fire("pickedObject", hit);
+                                        self.fire("picked", hit);
                                         if (pickedSurface) {
                                             self.fire("pickedSurface", hit);
                                         }
@@ -849,18 +965,19 @@
                                     }
 
                                     clicks = 0;
-                                }, 250);
+                                }, 250);  // FIXME: Too short for track pads
 
                             } else {
 
                                 clearTimeout(timeout);
 
-                                needPickSurface = !!self.hasSubs("doublePickedSurface");
+                                needPick = self._doublePickFlyTo;
+                                needPickSurface = needPick || !!self.hasSubs("doublePickedSurface");
 
                                 update();
 
                                 if (hit) {
-                                    self.fire("doublePickedObject", hit);
+                                    self.fire("doublePicked", hit);
                                     if (pickedSurface) {
                                         self.fire("doublePickedSurface", hit);
                                     }
@@ -894,7 +1011,7 @@
                     var tapStartTime = -1;
                     var lastTapTime = -1;
 
-                    overlay.addEventListener("touchstart", function (event) {
+                    canvas.addEventListener("touchstart", function (event) {
 
                         var touches = event.touches;
                         var changedTouches = event.changedTouches;
@@ -920,16 +1037,15 @@
 
                         activeTouches.length = touches.length;
 
-                        event.preventDefault();
                         event.stopPropagation();
-                    });
+                    }, {passive: true});
 
-                    //overlay.addEventListener("touchmove", function (event) {
+                    //canvas.addEventListener("touchmove", function (event) {
                     //    event.preventDefault();
                     //    event.stopPropagation();
                     //});
 
-                    overlay.addEventListener("touchend", function (event) {
+                    canvas.addEventListener("touchend", function (event) {
                         var currentTime = Date.now();
                         var touches = event.touches;
                         var changedTouches = event.changedTouches;
@@ -952,7 +1068,7 @@
                                     update();
 
                                     if (hit) {
-                                        self.fire("doublePickedObject", hit);
+                                        self.fire("doublePicked", hit);
                                         if (pickedSurface) {
                                             self.fire("doublePickedSurface", hit);
                                         }
@@ -980,7 +1096,7 @@
                                     update();
 
                                     if (hit) {
-                                        self.fire("pickedObject", hit);
+                                        self.fire("picked", hit);
                                         if (pickedSurface) {
                                             self.fire("pickedSurface", hit);
                                         }
@@ -1002,9 +1118,8 @@
                             activeTouches[i][1] = touches[i].pageY;
                         }
 
-                        event.preventDefault();
                         event.stopPropagation();
-                    });
+                    }, {passive: true});
                 })();
             })();
 
@@ -1021,38 +1136,102 @@
                 var KEY_NUM_5 = 53;
                 var KEY_NUM_6 = 54;
 
+                var center = new math.vec3();
+                var tempVec3a = new math.vec3();
+                var tempVec3b = new math.vec3();
+                var tempVec3c = new math.vec3();
+
+                var cameraTarget = {
+                    eye: new Float32Array(3),
+                    look: new Float32Array(3),
+                    up: new Float32Array(3)
+                };
+
                 document.addEventListener("keydown", function (e) {
+
+                    if (!over) {
+                        return;
+                    }
+
                     var keyCode = e.keyCode;
+
+                    if (keyCode !== KEY_NUM_1 &&
+                        keyCode !== KEY_NUM_2 &&
+                        keyCode !== KEY_NUM_3 &&
+                        keyCode !== KEY_NUM_4 &&
+                        keyCode !== KEY_NUM_5 &&
+                        keyCode !== KEY_NUM_6) {
+                        return;
+                    }
+
+                    var aabb = scene.aabb;
+                    var diag = math.getAABB3Diag(aabb);
+                    center[0] = aabb[0] + aabb[3] / 2.0;
+                    center[1] = aabb[1] + aabb[4] / 2.0;
+                    center[2] = aabb[2] + aabb[5] / 2.0;
+                    var dist = Math.abs((diag) / Math.tan(self._cameraFlight.fitFOV / 2));
+
                     switch (keyCode) {
 
-                        case KEY_NUM_1:
-                            viewer.viewFitRight();
+                        case KEY_NUM_1: // Right
+
+                            cameraTarget.eye.set(math.mulVec3Scalar(camera.worldRight, dist, tempVec3a));
+                            cameraTarget.look.set(center);
+                            cameraTarget.up.set(camera.worldUp);
+
                             break;
 
-                        case KEY_NUM_2:
-                            viewer.viewFitBack();
+                        case KEY_NUM_2: // Back
+
+                            cameraTarget.eye.set(math.mulVec3Scalar(camera.worldForward, dist, tempVec3a));
+                            cameraTarget.look.set(center);
+                            cameraTarget.up.set(camera.worldUp);
+
                             break;
 
-                        case KEY_NUM_3:
-                            viewer.viewFitLeft();
+                        case KEY_NUM_3: // Left
+
+                            cameraTarget.eye.set(math.mulVec3Scalar(camera.worldRight, -dist, tempVec3a));
+                            cameraTarget.look.set(center);
+                            cameraTarget.up.set(camera.worldUp);
+
                             break;
 
-                        case KEY_NUM_4:
-                            viewer.viewFitFront();
+                        case KEY_NUM_4: // Front
+
+                            cameraTarget.eye.set(math.mulVec3Scalar(camera.worldForward, -dist, tempVec3a));
+                            cameraTarget.look.set(center);
+                            cameraTarget.up.set(camera.worldUp);
+
                             break;
 
-                        case KEY_NUM_5:
-                            viewer.viewFitTop();
+                        case KEY_NUM_5: // Top
+
+                            cameraTarget.eye.set(math.mulVec3Scalar(camera.worldUp, dist, tempVec3a));
+                            cameraTarget.look.set(center);
+                            cameraTarget.up.set(math.normalizeVec3(math.mulVec3Scalar(camera.worldForward, 1, tempVec3b), tempVec3c));
+
                             break;
 
-                        case KEY_NUM_6:
-                            viewer.viewFitBottom();
+                        case KEY_NUM_6: // Bottom
+
+                            cameraTarget.eye.set(math.mulVec3Scalar(camera.worldUp, -dist, tempVec3a));
+                            cameraTarget.look.set(center);
+                            cameraTarget.up.set(math.normalizeVec3(math.mulVec3Scalar(camera.worldForward, -1, tempVec3b)));
+
                             break;
 
                         default:
                             return;
                     }
+
+                    if (self._cameraFlight.duration > 0) {
+                        self._cameraFlight.flyTo(cameraTarget);
+                    } else {
+                        self._cameraFlight.jumpTo(cameraTarget);
+                    }
                 });
+
             })();
         },
 
@@ -1064,22 +1243,22 @@
                 pos = hit.worldPos
             }
 
-            var worldBoundary = hit ? hit.entity.worldBoundary : this.scene.worldBoundary;
-            var aabb = worldBoundary.aabb;
+            var aabb = hit ? hit.entity.aabb : this.scene.aabb;
 
-            this._boundaryHelper.geometry.aabb = aabb;
+            this._boundaryHelper.geometry.targetAABB = aabb;
             //    this._boundaryHelper.visible = true;
 
             if (pos) {
 
                 // Fly to look at point, don't change eye->look dist
 
-                var view = this.camera.view;
-                var diff = xeogl.math.subVec3(view.eye, view.look, []);
+                var camera = this.scene.camera;
+                var diff = xeogl.math.subVec3(camera.eye, camera.look, []);
 
                 this._cameraFlight.flyTo({
-                        look: pos,
-                        //eye: xeogl.math.addVec3(pos, diff, [])
+                        // look: pos,
+                        // eye: xeogl.math.addVec3(pos, diff, []),
+                        // up: camera.up,
                         aabb: aabb
                     },
                     this._hideBoundary, this);

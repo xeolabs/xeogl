@@ -72,45 +72,48 @@
 
         _init: function (cfg) {
 
-            this._super(cfg);
-            this.center = cfg.center;
-            this.lod = cfg.lod;
-            this.center = cfg.center;
-            this.radiusTop = cfg.radiusTop;
-            this.radiusBottom = cfg.radiusBottom;
-            this.height = cfg.height;
-            this.radialSegments = cfg.radialSegments;
-            this.heightSegments = cfg.heightSegments;
-            this.openEnded = cfg.openEnded;
-        },
+            var radiusTop = cfg.radiusTop || 1;
+            if (radiusTop < 0) {
+                this.error("negative radiusTop not allowed - will invert");
+                radiusTop *= -1;
+            }
 
-        /**
-         * Implement protected virtual template method {{#crossLink "Geometry/method:_update"}}{{/crossLink}},
-         * to generate geometry data arrays.
-         *
-         * @protected
-         */
-        _update: function () {
+            var radiusBottom = cfg.radiusBottom || 1;
+            if (radiusBottom < 0) {
+                this.error("negative radiusBottom not allowed - will invert");
+                radiusBottom *= -1;
+            }
 
-            var centerX = this._center[0];
-            var centerY = this._center[1];
-            var centerZ = this._center[2];
+            var height = cfg.height || 1;
+            if (height < 0) {
+                this.error("negative height not allowed - will invert");
+                height *= -1;
+            }
 
-            var radiusTop = this._radiusTop;
-            var radiusBottom = this._radiusBottom;
-            var height = this._height;
-            var radialSegments = Math.floor(this._radialSegments * this._lod);
-            var heightSegments = Math.floor(this._heightSegments * this._lod);
-
+            var radialSegments = cfg.radialSegments || 32;
+            if (radialSegments < 0) {
+                this.error("negative radialSegments not allowed - will invert");
+                radialSegments *= -1;
+            }
             if (radialSegments < 3) {
                 radialSegments = 3;
             }
 
+            var heightSegments = cfg.heightSegments || 1;
+            if (heightSegments < 0) {
+                this.error("negative heightSegments not allowed - will invert");
+                heightSegments *= -1;
+            }
             if (heightSegments < 1) {
                 heightSegments = 1;
             }
 
-            var openEnded = this._openEnded;
+            var openEnded = !!cfg.openEnded;
+
+            var center = cfg.center;
+            var centerX = center ? center[0] : 0;
+            var centerY = center ? center[1] : 0;
+            var centerZ = center ? center[2] : 0;
 
             var heightHalf = height / 2;
             var heightLength = height / heightSegments;
@@ -133,7 +136,6 @@
             var currentRadius;
             var currentHeight;
 
-            var center;
             var first;
             var second;
 
@@ -276,346 +278,12 @@
                 }
             }
 
-            this.positions = positions;
-            this.normals = normals;
-            this.uv = uvs;
-            this.indices = indices;
-        },
-
-        _props: {
-
-            /**
-             * The CylinderGeometry's level-of-detail factor.
-             *
-             * Fires a {{#crossLink "CylinderGeometry/lod:event"}}{{/crossLink}} event on change.
-             *
-             * @property lod
-             * @default 1
-             * @type Number
-             */
-            lod: {
-
-                set: function (value) {
-
-                    value = value !== undefined ? value : 1;
-
-                    if (this._lod === value) {
-                        return;
-                    }
-
-                    if (value < 0 || value > 1) {
-                        this.warn("clamping lod to [0..1]");
-                        value = value < 0 ? 0 : 1;
-                    }
-
-                    this._lod = value;
-
-                    this._needUpdate();
-
-                    /**
-                     * Fired whenever this CylinderGeometry's {{#crossLink "CylinderGeometry/lod:property"}}{{/crossLink}} property changes.
-                     * @event lod
-                     * @type Number
-                     * @param value The property's new value
-                     */
-                    this.fire("lod", this._lod);
-                },
-
-                get: function () {
-                    return this._lod;
-                }
-            },
-
-            /**
-             * 3D point indicating the center position of this CylinderGeometry.
-             *
-             * Fires an {{#crossLink "CylinderGeometry/center:event"}}{{/crossLink}} event on change.
-             *
-             * @property center
-             * @default [0,0,0]
-             * @type {Float32Array}
-             */
-            center: {
-
-                set: function (value) {
-
-                    (this._center = this._center || new xeogl.math.vec3()).set(value || [0, 0, 0]);
-
-                    this._needUpdate();
-
-                    /**
-                     Fired whenever this CylinderGeometry's {{#crossLink "CylinderGeometry/center:property"}}{{/crossLink}} property changes.
-                     @event center
-                     @param value {Float32Array} The property's new value
-                     */
-                    this.fire("center", this._center);
-                },
-
-                get: function () {
-                    return this._center;
-                }
-            },
-
-            /**
-             * The CylinderGeometry's top radius.
-             *
-             * Fires a {{#crossLink "CylinderGeometry/radiusTop:event"}}{{/crossLink}} event on change.
-             *
-             * @property radiusTop
-             * @default 1
-             * @type Number
-             */
-            radiusTop: {
-
-                set: function (value) {
-
-                    value = value !== undefined ? value : 1;
-
-                    if (this._radiusTop === value) {
-                        return;
-                    }
-
-                    if (value < 0) {
-                        this.warn("negative radiusTop not allowed - will invert");
-                        value = value * -1;
-                    }
-
-                    this._radiusTop = value;
-
-                    this._needUpdate();
-
-                    /**
-                     * Fired whenever this CylinderGeometry's {{#crossLink "CylinderGeometry/radiusTop:property"}}{{/crossLink}} property changes.
-                     * @event radiusTop
-                     * @type Number
-                     * @param value The property's new value
-                     */
-                    this.fire("radiusTop", this._radiusTop);
-                },
-
-                get: function () {
-                    return this._radiusTop;
-                }
-            },
-
-            /**
-             * The CylinderGeometry's bottom radius.
-             *
-             * Fires a {{#crossLink "CylinderGeometry/radiusBottom:event"}}{{/crossLink}} event on change.
-             *
-             * @property radiusBottom
-             * @default 1
-             * @type Number
-             */
-            radiusBottom: {
-
-                set: function (value) {
-
-                    value = value !== undefined ? value : 1;
-
-                    if (this._radiusBottom === value) {
-                        return;
-                    }
-
-                    if (value < 0) {
-                        this.warn("negative radiusBottom not allowed - will invert");
-                        value = value * -1;
-                    }
-
-                    this._radiusBottom = value;
-
-                    this._needUpdate();
-
-                    /**
-                     * Fired whenever this CylinderGeometry's {{#crossLink "CylinderGeometry/radiusBottom:property"}}{{/crossLink}} property changes.
-                     * @event radiusBottom
-                     * @type Number
-                     * @param value The property's new value
-                     */
-                    this.fire("radiusBottom", this._radiusBottom);
-                },
-
-                get: function () {
-                    return this._radiusBottom;
-                }
-            },
-
-            /**
-             * The CylinderGeometry's height.
-             *
-             * Fires a {{#crossLink "CylinderGeometry/height:event"}}{{/crossLink}} event on change.
-             *
-             * @property height
-             * @default 1
-             * @type Number
-             */
-            height: {
-
-                set: function (value) {
-
-                    value = value || 1;
-
-                    if (this._height === value) {
-                        return;
-                    }
-
-                    if (value < 0) {
-                        this.warn("negative height not allowed - will invert");
-                        value = value * -1;
-                    }
-
-                    this._height = value;
-
-                    this._needUpdate();
-
-                    /**
-                     * Fired whenever this CylinderGeometry's {{#crossLink "CylinderGeometry/height:property"}}{{/crossLink}} property changes.
-                     * @event height
-                     * @type Number
-                     * @param value The property's new value
-                     */
-                    this.fire("height", this._height);
-                },
-
-                get: function () {
-                    return this._height;
-                }
-            },
-
-            /**
-             * The CylinderGeometry's radial segments.
-             *
-             * Fires a {{#crossLink "CylinderGeometry/radialSegments:event"}}{{/crossLink}} event on change.
-             *
-             * @property radialSegments
-             * @default 60
-             * @type Number
-             */
-            radialSegments: {
-
-                set: function (value) {
-
-                    value = value || 60;
-
-                    if (this._radialSegments === value) {
-                        return;
-                    }
-
-                    if (value < 0) {
-                        this.warn("negative radialSegments not allowed - will invert");
-                        value = value * -1;
-                    }
-
-                    this._radialSegments = value;
-
-                    this._needUpdate();
-
-                    /**
-                     * Fired whenever this CylinderGeometry's {{#crossLink "CylinderGeometry/radialSegments:property"}}{{/crossLink}} property changes.
-                     * @event radialSegments
-                     * @type Number
-                     * @param value The property's new value
-                     */
-                    this.fire("radialSegments", this._radialSegments);
-                },
-
-                get: function () {
-                    return this._radialSegments;
-                }
-            },
-
-            /**
-             * The CylinderGeometry's height segments.
-             *
-             * Fires a {{#crossLink "CylinderGeometry/heightSegments:event"}}{{/crossLink}} event on change.
-             *
-             * @property heightSegments
-             * @default 1
-             * @type Number
-             */
-            heightSegments: {
-
-                set: function (value) {
-
-                    value = value || 1;
-
-                    if (this._heightSegments === value) {
-                        return;
-                    }
-
-                    if (value < 0) {
-                        this.warn("negative heightSegments not allowed - will invert");
-                        value = value * -1;
-                    }
-
-                    this._heightSegments = value;
-
-                    this._needUpdate();
-
-                    /**
-                     * Fired whenever this CylinderGeometry's {{#crossLink "CylinderGeometry/heightSegments:property"}}{{/crossLink}} property changes.
-                     * @event heightSegments
-                     * @type Number
-                     * @param value The property's new value
-                     */
-                    this.fire("heightSegments", this._heightSegments);
-                },
-
-                get: function () {
-                    return this._heightSegments;
-                }
-            },
-
-            /**
-             * Indicates whether this CylinderGeometry's is open-ended.
-             *
-             * Fires a {{#crossLink "CylinderGeometry/openEnded:event"}}{{/crossLink}} event on change.
-             *
-             * @property openEnded
-             * @default false
-             * @type Boolean
-             */
-            openEnded: {
-
-                set: function (value) {
-
-                    value = value === undefined ? false : value;
-
-                    if (this._openEnded === value) {
-                        return;
-                    }
-
-                    this._openEnded = value;
-
-                    this._needUpdate();
-
-                    /**
-                     * Fired whenever this CylinderGeometry's {{#crossLink "CylinderGeometry/openEnded:property"}}{{/crossLink}} property changes.
-                     * @event openEnded
-                     * @type Boolean
-                     * @param value The property's new value
-                     */
-                    this.fire("openEnded", this._openEnded);
-                },
-
-                get: function () {
-                    return this._openEnded;
-                }
-            }
-        },
-
-
-        _getJSON: function () {
-            return {
-                // Don't save lod
-                center: xeogl.math.vecToArray(this._center),
-                radiusTop: this._radiusTop,
-                radiusBottom: this._radiusBottom,
-                height: this._height,
-                radialSegments: this._radialSegments,
-                heightSegments: this._heightSegments,
-                openEnded: this._openEnded
-            };
+            this._super(xeogl._apply(cfg, {
+                positions: positions,
+                normals: normals,
+                uv: uvs,
+                indices: indices
+            }));
         }
     });
 

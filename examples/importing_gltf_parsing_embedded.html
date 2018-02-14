@@ -65,12 +65,12 @@
         return (i !== 0) ? src.substring(0, i + 1) : "";
     }
 
-    var view = xeogl.scene.camera.view;
-    view.eye = [10.15, 28.75, -60.93];
-    view.look = [21.66, 10.49, -6.8];
-    view.up = [0.07, 0.95, 0.31];
+    var camera = xeogl.scene.camera;
+    camera.eye = [10.15, 28.75, -60.93];
+    camera.look = [21.66, 10.49, -6.8];
+    camera.up = [0.07, 0.95, 0.31];
 
-    var inputControl = new xeogl.InputControl();
+    new xeogl.CameraControl();
 
     model.on("loaded", function () {
         var cameraFlight = new xeogl.CameraFlightAnimation();
@@ -79,7 +79,7 @@
 
     // Start orbiting thecamera
     model.scene.on("tick", function () {
-        model.scene.camera.view.rotateEyeY(-0.2);
+        model.scene.camera.orbitYaw(-0.2);
     });
 
 </script>

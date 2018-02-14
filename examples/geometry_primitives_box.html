@@ -8,9 +8,7 @@
 
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="js/libs/dat.gui.min.js"></script>
-
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
 
 <body>
 
@@ -18,19 +16,14 @@
     <h1><a href="../docs/classes/BoxGeometry.html" target="_parent">BoxGeometry</a></h1>
 </div>
 
-<div id="dat-gui-container">
-</div>
-
 <script>
 
-    var box = new xeogl.BoxGeometry({
-        xSize: 1,
-        ySize: 1,
-        zSize: 1
-    });
-
     var entity = new xeogl.Entity({
-        geometry: box,
+        geometry: new xeogl.BoxGeometry({
+            xSize: 1,
+            ySize: 1,
+            zSize: 1
+        }),
         material: new xeogl.PhongMaterial({
             ambient: [0.3, 0.3, 0.3],
             shininess: 30,
@@ -41,62 +34,13 @@
         })
     });
 
-    entity.scene.camera.view.zoom(-5);
+    var camera = entity.scene.camera;
+    camera.zoom(-5);
 
-    entity.scene.on("tick",
-            function () {
-
-                var view = entity.scene.camera.view;
-
-                view.rotateEyeY(0.6);
-                view.rotateEyeX(0.3);
-            });
-
-    // GUI
-
-    var Menu = function () {
-
-        this.message = "xeogl.BoxGeometry";
-
-        this["primitive"] = box.primitive;
-        this["xSize"] = box.xSize;
-        this["ySize"] = box.ySize;
-        this["zSize"] = box.zSize;
-
-        var self = this;
-
-        // This is actually quite inefficient because it continually updates
-        // the scene graph, forcing frames to continually re-render.
-        // Your GPU's not going to like it, but it's just for a quick and dirty demo.
-
-        var update = function () {
-
-            box.primitive = self["primitive"];
-            box.xSize = self["xSize"];
-            box.ySize = self["ySize"];
-            box.zSize = self["zSize"];
-
-            requestAnimationFrame(update);
-        };
-
-        update();
-    };
-
-    var gui = new dat.GUI();
-
-    document.getElementById('dat-gui-container').appendChild(gui.domElement);
-
-    var menu = new Menu();
-
-    var folder = gui.addFolder('xeogl.BoxGeometry');
-
-    folder.add(menu, 'primitive', ["triangles", "lines", "points"]);
-    folder.add(menu, 'xSize', 0.1, 5.0);
-    folder.add(menu, 'ySize', 0.1, 5.0);
-    folder.add(menu, 'zSize', 0.1, 5.0);
-
-    folder.open();
-
+    entity.scene.on("tick", function () {
+        camera.orbitYaw(0.6);
+        camera.orbitPitch(0.3);
+    });
 
 </script>
 </body>

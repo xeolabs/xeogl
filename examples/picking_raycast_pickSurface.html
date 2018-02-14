@@ -24,10 +24,10 @@
     });
 
     // Set initial camera position
-    var view = gearbox.scene.camera.view;
-    view.eye = [174.46, 16.91, -21.92];
-    view.look = [159.2, 17.02, 3.21];
-    view.up = [-0.17, 0.89, 0.4];
+    var camera = gearbox.scene.camera;
+    camera.eye = [174.46, 16.91, -21.92];
+    camera.look = [159.2, 17.02, 3.21];
+    camera.up = [-0.17, 0.89, 0.4];
 
     // Zoom camera out a bit
 
@@ -35,7 +35,7 @@
 
     // Set initial camera position
     // Allow user camera control
-    new xeogl.InputControl();
+    new xeogl.CameraControl();
 
     //--------------------------------------------
     // Create helper to show the ray
@@ -109,25 +109,15 @@
     var i = 0;
 
     var lastEntity = null;
-    var lastDiffuse = null;
+    var lastColorize = null;
 
     gearbox.on("loaded", function () {
-
-        // Ensure entities in our gearbox have unique materials
-        // so we can highlight the entities separately
-
-        gearbox.iterate(function (c) {
-            if (c.isType("xeogl.Entity")) {
-                c.material = c.material.clone();
-                gearbox.add(c.material); // Ensure new materials get destroyed with gearbox
-            }
-        });
-
+        
         gearbox.scene.on("tick", function () {
 
             // Orbit the camera
-            //view.rotateEyeY(xinc < 0 ? 0.2 : -0.2);
-            // view.rotateEyeX(xinc < 0 ? 0.1 : -0.1);
+            //camera.orbitYaw(xinc < 0 ? 0.2 : -0.2);
+            // camera.orbitPitch(xinc < 0 ? 0.1 : -0.1);
 
             rayOrigin[0] += xinc;
             rayOrigin[1] = 12 - Math.sin(rayOrigin[0] * 2.0) * 5;
@@ -154,13 +144,13 @@
                 if (!lastEntity || hit.entity.id !== lastEntity.id) {
 
                     if (lastEntity) {
-                        lastEntity.material.diffuse = lastDiffuse;
+                        lastEntity.colorize = lastColorize;
                     }
 
                     lastEntity = hit.entity;
-                    lastDiffuse = hit.entity.material.diffuse.slice();
+                    lastColorize = hit.entity.colorize.slice();
 
-                    hit.entity.material.diffuse = [0.0, 1.0, 0.0];
+                    hit.entity.colorize = [0.0, 1.0, 0.0, 1.0];
 
                     rayHelper.setHighlighted(true);
                 }
@@ -168,7 +158,7 @@
             } else {
 
                 if (lastEntity) {
-                    lastEntity.material.diffuse = lastDiffuse;
+                    lastEntity.colorize = lastColorize;
                     lastEntity = null;
                 }
 

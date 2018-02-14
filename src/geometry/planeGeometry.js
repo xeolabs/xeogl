@@ -29,8 +29,7 @@
          xSize: 2,
          zSize: 2,
          xSegments: 10,
-         zSegments: 10,
-         lod: 1.0 // Default
+         zSegments: 10
      }),
 
      material: new xeogl.PhongMaterial({
@@ -57,8 +56,6 @@
  @param [cfg.zSize=1] {Number} Dimension on the Z-axis.
  @param [cfg.xSegments=1] {Number} Number of segments on the X-axis.
  @param [cfg.zSegments=1] {Number} Number of segments on the Z-axis.
-
- @param [cfg.lod=1] {Number} Level-of-detail, in range [0..1].
  @extends Geometry
  */
 (function () {
@@ -71,49 +68,43 @@
 
         _init: function (cfg) {
 
-            this._super(cfg);
+            var xSize = cfg.xSize || 1;
+            if (xSize < 0) {
+                this.error("negative xSize not allowed - will invert");
+                xSize *= -1;
+            }
 
-            this.center = cfg.center;
-            
-            this.xSize = cfg.xSize;
-            this.zSize = cfg.zSize;
+            var zSize = cfg.zSize || 1;
+            if (zSize < 0) {
+                this.error("negative zSize not allowed - will invert");
+                zSize *= -1;
+            }
 
-            this.xSegments = cfg.xSegments;
-            this.zSegments = cfg.zSegments;
+            var xSegments = cfg.xSegments || 1;
+            if (xSegments < 0) {
+                this.error("negative xSegments not allowed - will invert");
+                xSegments *= -1;
+            }
+            if (xSegments < 1) {
+                xSegments = 1;
+            }
 
-            this.lod = cfg.lod;
-
-            this.autoNormals = cfg.autoNormals !== false;
-        },
-
-        /**
-         * Implement protected virtual template method {{#crossLink "Geometry/method:_update"}}{{/crossLink}},
-         * to generate geometry data arrays.
-         *
-         * @protected
-         */
-        _update: function () {
-
-            var centerX = this._center[0];
-            var centerY = this._center[1];
-            var centerZ = this._center[2];
-
-            var width = this._xSize;
-            var height = this._zSize;
-
-            var xSegments = Math.floor(this._lod * this._xSegments);
-            var zSegments = Math.floor(this._lod * this._zSegments);
-
+            var zSegments = cfg.xSegments || 1;
+            if (zSegments < 0) {
+                this.error("negative zSegments not allowed - will invert");
+                zSegments *= -1;
+            }
             if (zSegments < 1) {
                 zSegments = 1;
             }
 
-            if (zSegments < 1) {
-                zSegments = 1;
-            }
+            var center = cfg.center;
+            var centerX = center ? center[0] : 0;
+            var centerY = center ? center[1] : 0;
+            var centerZ = center ? center[2] : 0;
 
-            var halfWidth = width / 2;
-            var halfHeight = height / 2;
+            var halfWidth = xSize / 2;
+            var halfHeight = zSize / 2;
 
             var planeX = Math.floor(xSegments) || 1;
             var planeZ = Math.floor(zSegments) || 1;
@@ -121,8 +112,8 @@
             var planeX1 = planeX + 1;
             var planeZ1 = planeZ + 1;
 
-            var segmentWidth = width / planeX;
-            var segmentHeight = height / planeZ;
+            var segmentWidth = xSize / planeX;
+            var segmentHeight = zSize / planeZ;
 
             var positions = new Float32Array(planeX1 * planeZ1 * 3);
             var normals = new Float32Array(planeX1 * planeZ1 * 3);
@@ -186,264 +177,12 @@
                 }
             }
 
-            this.positions = positions;
-            this.normals = normals;
-            this.uv = uvs;
-            this.indices = indices;
-        },
-
-
-        _props: {
-
-            /**
-             * The PlaneGeometry's level-of-detail factor.
-             *
-             * Fires a {{#crossLink "PlaneGeometry/lod:event"}}{{/crossLink}} event on change.
-             *
-             * @property lod
-             * @default 1
-             * @type Number
-             */
-            lod: {
-
-                set: function (value) {
-
-                    value = value !== undefined ? value : 1;
-
-                    if (this._lod === value) {
-                        return;
-                    }
-
-                    if (value < 0 || value > 1) {
-                        this.warn("clamping lod to [0..1]");
-                        value = value < 0 ? 0 : 1;
-                    }
-
-                    this._lod = value;
-
-                    this._needUpdate();
-
-                    /**
-                     * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/lod:property"}}{{/crossLink}} property changes.
-                     * @event lod
-                     * @type Number
-                     * @param value The property's new value
-                     */
-                    this.fire("lod", this._lod);
-                },
-
-                get: function () {
-                    return this._lod;
-                }
-            },
-
-            /**
-             * 3D point indicating the center position of this PlaneGeometry.
-             *
-             * Fires an {{#crossLink "PlaneGeometry/center:event"}}{{/crossLink}} event on change.
-             *
-             * @property center
-             * @default [0,0,0]
-             * @type {Float32Array}
-             */
-            center: {
-
-                set: function (value) {
-
-                    (this._center = this._center || new xeogl.math.vec3()).set(value || [0, 0, 0]);
-
-                    this._needUpdate();
-
-                    /**
-                     Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/center:property"}}{{/crossLink}} property changes.
-                     @event center
-                     @param value {Float32Array} The property's new value
-                     */
-                    this.fire("center", this._center);
-                },
-
-                get: function () {
-                    return this._center;
-                }
-            },
-
-            /**
-             * The PlaneGeometry's dimension on the X-axis.
-             *
-             * Fires a {{#crossLink "PlaneGeometry/xSize:event"}}{{/crossLink}} event on change.
-             *
-             * @property xSize
-             * @default 1
-             * @type Number
-             */
-            xSize: {
-
-                set: function (value) {
-
-                    value = value || 1;
-
-                    if (this._xSize === value) {
-                        return;
-                    }
-
-                    if (value < 0) {
-                        this.warn("negative xSize not allowed - will invert");
-                        value = value * -1;
-                    }
-
-                    this._xSize = value;
-
-                    this._needUpdate();
-
-                    /**
-                     * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/xSize:property"}}{{/crossLink}} property changes.
-                     * @event xSize
-                     * @type Number
-                     * @param value The property's new value
-                     */
-                    this.fire("xSize", this._xSize);
-                },
-
-                get: function () {
-                    return this._xSize;
-                }
-            },
-
-            /**
-             * The PlaneGeometry's dimension on the Y-axis.
-             *
-             * Fires a {{#crossLink "PlaneGeometry/zSize:event"}}{{/crossLink}} event on change.
-             *
-             * @property zSize
-             * @default 1.0
-             * @type Number
-             */
-            zSize: {
-
-                set: function (value) {
-
-                    value = value || 1.0;
-
-                    if (this._zSize === value) {
-                        return;
-                    }
-
-                    if (value < 0) {
-                        this.warn("negative zSize not allowed - will invert");
-                        value = value * -1;
-                    }
-
-                    this._zSize = value;
-
-                    this._needUpdate();
-
-                    /**
-                     * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/zSize:property"}}{{/crossLink}} property changes.
-                     * @event zSize
-                     * @type Number
-                     * @param value The property's new value
-                     */
-                    this.fire("zSize", this._zSize);
-                },
-
-                get: function () {
-                    return this._zSize;
-                }
-            },
-
-            /**
-             * The PlaneGeometry's number of segments on the X-axis.
-             *
-             * Fires a {{#crossLink "PlaneGeometry/xSegments:event"}}{{/crossLink}} event on change.
-             *
-             * @property xSegments
-             * @default 1
-             * @type Number
-             */
-            xSegments: {
-
-                set: function (value) {
-
-                    value = value || 1;
-
-                    if (this._xSegments === value) {
-                        return;
-                    }
-
-                    if (value < 0) {
-                        this.warn("negative xSegments not allowed - will invert");
-                        value = value * -1;
-                    }
-
-                    this._xSegments = value;
-
-                    this._needUpdate();
-
-                    /**
-                     * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/xSegments:property"}}{{/crossLink}} property changes.
-                     * @event xSegments
-                     * @type Number
-                     * @param value The property's new value
-                     */
-                    this.fire("xSegments", this._xSegments);
-                },
-
-                get: function () {
-                    return this._xSegments;
-                }
-            },
-
-            /**
-             * The PlaneGeometry's number of segments on the Y-axis.
-             *
-             * Fires a {{#crossLink "PlaneGeometry/zSegments:event"}}{{/crossLink}} event on change.
-             *
-             * @property zSegments
-             * @default 1
-             * @type Number
-             */
-            zSegments: {
-
-                set: function (value) {
-
-                    value = value || 1;
-
-                    if (this._zSegments === value) {
-                        return;
-                    }
-
-                    if (value < 0) {
-                        this.warn("negative zSegments not allowed - will invert");
-                        value = value * -1;
-                    }
-
-                    this._zSegments = value;
-
-                    this._needUpdate();
-
-                    /**
-                     * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/zSegments:property"}}{{/crossLink}} property changes.
-                     * @event zSegments
-                     * @type Number
-                     * @param value The property's new value
-                     */
-                    this.fire("zSegments", this._zSegments);
-                },
-
-                get: function () {
-                    return this._zSegments;
-                }
-            }
-        },
-
-        _getJSON: function () {
-            return {
-                center: xeogl.math.vecToArray(this._center),
-                xSize: this._xSize,
-                zSize: this._zSize,
-                xSegments: this._xSegments,
-                zSegments: this._zSegments
-            };
+            this._super(xeogl._apply(cfg, {
+                positions: positions,
+                normals: normals,
+                uv: uvs,
+                indices: indices
+            }));
         }
     });
 

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="../build/xeogl.js"></script>
+
+    <script src="js/models/sceneJSModel.js"></script>
+
+    <script src="js/annotations/pin.js"></script>
+    <script src="js/annotations/annotation.js"></script>
+    <link href="js/annotations/annotation-style.css" rel="stylesheet"/>
+
+    <script src="js/libs/dat.gui.min.js"></script>
+<body>
+
+<div id="info">
+    <h1><a href="../docs/classes/Annotation.html"
+           target="_parent">Annotations</a> on a <a href="../docs/classes/SceneJSModel.html"
+                                                    target="_parent">SceneJSModel</a></h1>
+    <pre id="log">model:  SceneJS Tron Tank - [<a
+            href='https://github.com/xeolabs/xeogl/tree/master/examples/models/scenejs/tronTank/README.md'
+            target="_parent">model info</a>]</pre>
+</div>
+<div id="dat-gui-container">
+</div>
+
+<script>
+
+    //---------------------------------------------------------------------------------
+    // Load a Tron tank program model from SceneJS format
+    //---------------------------------------------------------------------------------
+
+    var model = new xeogl.SceneJSModel({
+        id: "tank",
+        src: "models/scenejs/tronTank/tronTank.json",
+        materialWorkflow: "MetallicMaterial"
+    });
+
+    //---------------------------------------------------------------------------------
+    // Set initial camera position
+    //---------------------------------------------------------------------------------
+
+    model.scene.camera.eye = [15, 20, -25];
+
+    //---------------------------------------------------------------------------------
+    // When the model has loaded, create a story with annotations, based on the model
+    //---------------------------------------------------------------------------------
+
+    var annotations = [];
+
+    model.on("loaded", function () {
+
+        //----------------------------------
+        // Annotations
+        //----------------------------------
+
+        annotations = [
+
+            new xeogl.Annotation({
+                type: "xeogl.Annotation",
+                primIndex: 468,
+                bary: [0.05, 0.16, 0.79],
+                occludable: true,
+                glyph: "A",
+                title: "Cannon",
+                desc: "Fires chevron-shaped bolts of de-rezzing energy",
+                eye: [-0.66, 20.84, -21.59],
+                look: [-0.39, 6.84, -9.18],
+                up: [0.01, 0.97, 0.24],
+                pinShown: true,
+                labelShown: true,
+                entity: "tank.entity9"
+            }),
+            new xeogl.Annotation({
+                type: "xeogl.Annotation",
+                primIndex: 204,
+                bary: [0.05, 0.16, 0.79],
+                occludable: true,
+                glyph: "B",
+                title: "Orange tracks",
+                desc: "Indicates that the pilot is the rebel hacker, CLU",
+                eye: [14.69, 17.89, -26.88],
+                look: [5.35, 4.14, -15.44],
+                up: [-0.09, 0.99, 0.11],
+                pinShown: true,
+                labelShown: false,
+                entity: "tank.entity2"
+            }),
+            new xeogl.Annotation({
+                type: "xeogl.Annotation",
+                primIndex: 216,
+                bary: [0.05, 0.16, 0.79],
+                occludable: true,
+                glyph: "C",
+                title: "Pilot hatch",
+                desc: "CLU hops in and out of the tank program here",
+                eye: [1.48, 11.79, -15.13],
+                look: [1.62, 5.04, -9.14],
+                up: [0.01, 0.97, 0.24],
+                pinShown: true,
+                labelShown: false,
+                entity: "tank.entity6"
+            }), new xeogl.Annotation({
+                type: "xeogl.Annotation",
+                primIndex: 4464,
+                bary: [0.05, 0.16, 0.79],
+                occludable: true,
+                glyph: "D",
+                title: "Antenna",
+                desc: "Links the tank program to the Master Control Program",
+                eye: [13.63, 16.79, 13.87],
+                look: [1.08, 7.72, 3.07],
+                up: [0.08, 0.99, 0.07],
+                pinShown: true,
+                labelShown: false,
+                entity: "tank.entity9"
+            })];
+
+        var cameraFlight = new xeogl.CameraFlightAnimation({
+            duration: 1
+        });
+
+        //----------------------------------
+        // Faux shadow under the tank
+        //----------------------------------
+
+        model.add({
+            type: "xeogl.Entity",
+            geometry: {
+                type: "xeogl.PlaneGeometry",
+                xSize: 16,
+                zSize: 22
+            },
+            material: {
+                type: "xeogl.PhongMaterial",
+                diffuse: [0.0, 0.0, 0.0],
+                specular: [0, 0, 0],
+                alpha: 0.3,
+                alphaMode: "blend"
+            },
+            transform: {
+                type: "xeogl.Translate",
+                xyz: [-1, 0.1, -4]
+            }
+        });
+
+        //---------------------------------------------------------------------------------
+        // Horrendously inefficient menu to play with annotations
+        //---------------------------------------------------------------------------------
+
+        var gui = new dat.GUI({autoPlace: false, top: 0, right: 10, width: 350});
+
+        document.getElementById('dat-gui-container').appendChild(gui.domElement);
+
+        var Menu = function () {
+
+            this.message = "xeogl.Annotation";
+
+            for (var i = 0; i < annotations.length; i++) {
+                var annotation = annotations[i];
+                this["annotation" + i + ".title"] = annotation.title;
+                this["annotation" + i + ".desc"] = annotation.desc;
+                this["annotation" + i + ".pinShown"] = annotation.pinShown;
+                this["annotation" + i + ".labelShown"] = annotation.labelShown;
+                this["annotation" + i + ".occludable"] = annotation.occludable;
+            }
+
+            var self = this;
+
+            var update = function () {
+                for (var i = 0; i < annotations.length; i++) {
+                    var annotation = annotations[i];
+                    annotation.title = self["annotation" + i + ".title"];
+                    annotation.desc = self["annotation" + i + ".desc"];
+                    annotation.pinShown = self["annotation" + i + ".pinShown"];
+                    annotation.labelShown = self["annotation" + i + ".labelShown"];
+                    annotation.occludable = self["annotation" + i + ".occludable"];
+                }
+                requestAnimationFrame(update);
+            };
+
+            update();
+        };
+
+        var menu = new Menu();
+
+        for (var i = 0; i < annotations.length; i++) {
+            var annotation = annotations[i];
+            var folder = gui.addFolder('Annotation ' + i);
+            folder.add(menu, "annotation" + i + ".title", annotation.title);
+            folder.add(menu, "annotation" + i + ".desc", annotation.desc);
+            folder.add(menu, "annotation" + i + ".pinShown", annotation.pinShown);
+            folder.add(menu, "annotation" + i + ".labelShown", annotation.labelShown);
+            folder.add(menu, "annotation" + i + ".occludable", annotation.occludable);
+            folder.add({
+                "Look At": (function () {
+                    var i2 = i;
+                    return function () {
+                        var annotation;
+                        var selected;
+                        for (var i = 0; i < annotations.length; i++) {
+                            annotation = annotations[i];
+                            selected = i == i2;
+                            if (selected) {
+                                cameraFlight.flyTo(annotation);
+                            }
+                            annotation.labelShown = selected;
+                            menu["annotation" + i + ".labelShown"] = selected;
+                        }
+
+                    };
+                })()
+            }, 'Look At');
+            if (i === 0) {
+                folder.open();
+            }
+        }
+
+        function flyTo() {
+            var annotation;
+            var selected;
+            for (var i = 0; i < annotations.length; i++) {
+                annotation = annotations[i];
+                selected = annotation.id === this.id;
+                if (selected) {
+                    cameraFlight.flyTo(annotation);
+                }
+                annotation.labelShown = selected;
+                menu["annotation" + i + ".labelShown"] = selected;
+            }
+        }
+
+        for (var i = 0, len = annotations.length; i < len; i++) {
+            annotations[i].on("pinClicked", flyTo);
+        }
+
+    });
+
+    //---------------------------------------------------------------------------------
+    // Game loop - swing the gun
+    //---------------------------------------------------------------------------------
+
+    model.on("loaded", function () {
+        var gunDir = 0;
+        var gunDirInc = -0.15;
+        model.scene.on("tick", function () {
+            gunDir += gunDirInc;
+            if (gunDir < -50 || gunDir > 10) {
+                gunDirInc *= -1;
+            }
+            model.components["tank.gunDir"].angle = gunDir;
+        });
+    });
+
+    //---------------------------------------------------------------------------------
+    // Ground plane
+    //---------------------------------------------------------------------------------
+
+    new xeogl.Entity({
+        geometry: {
+            type: "xeogl.PlaneGeometry",
+            xSize: 3000,
+            zSize: 3000
+        },
+        material: {
+            type: "xeogl.PhongMaterial",
+            diffuseMap: {
+                src: "textures/diffuse/UVCheckerMap11-1024.png",
+                wrapS: "repeat",
+                wrapT: "repeat",
+                scale: [30, 30],
+                encoding: "sRGB"
+            },
+            backfaces: true
+        },
+        pickable: false, // Can't be picked
+        collidable: false // Does not contribute to overall scene boundary
+    });
+
+    //---------------------------------------------------------------------------------
+    // User camera control
+    //---------------------------------------------------------------------------------
+
+    new xeogl.CameraControl();
+
+
+</script>
+</body>
+</html>

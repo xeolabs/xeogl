@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
 
     <link href="css/styles.css" rel="stylesheet"/>
 
@@ -92,12 +92,12 @@
 
     // User camera control
 
-    new xeogl.InputControl();
+    new xeogl.CameraControl();
 
     // Orbit camera
 
     xeogl.scene.on("tick", function () {
-        xeogl.scene.camera.view.rotateEyeY(0.3);
+        xeogl.scene.camera.orbitYaw(0.3);
     });
 
 </script>

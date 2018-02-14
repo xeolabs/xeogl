@@ -159,7 +159,7 @@
 
             function deviceOrientation(e) {
 
-                var lookat = self.camera.view;
+                var lookat = self.camera;
 
                 var alpha = e.alpha ? math.DEGTORAD * e.alpha : 0; // Z
                 var beta = e.beta ? math.DEGTORAD * e.beta : 0; // X'
@@ -211,7 +211,7 @@
 
                 math.inverseQuaternion(quaternion, inverseQuat);
                 math.vec3ApplyQuaternion(inverseQuat, zed, vec);
-                math.lookAtMat4v(vec, zero, self.camera.view.up, lookatMat);
+                math.lookAtMat4v(vec, zero, self.camera.up, lookatMat);
                 math.mat4ToQuaternion(lookatMat, quat);
                 math.quaternionToEuler(quat, "YXZ", euler2);
 

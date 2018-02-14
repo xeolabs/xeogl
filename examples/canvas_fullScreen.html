@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <style>
+        #container {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            border: 1px white solid;
+            /*pointer-events: none;*/
+        }
+
+        #container:-webkit-full-screen {
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            border: 5px yellow solid;
+        }
+
+        #container:-moz-full-screen {
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            border: 5px yellow solid;
+        }
+
+        #container:-ms-fullscreen {
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            border: 5px yellow solid;
+        }
+
+        #container:full-screen { /*pre-spec */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            border: 5px yellow solid;
+        }
+
+        #container:fullscreen { /* spec */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            border: 5px yellow solid;
+        }
+
+        /* styling the backdrop*/
+        #container::backdrop {
+            /* properties */
+        }
+        ::-ms-backdrop {
+            /* properties */
+        }
+
+    </style>
+
+
+</head>
+<body>
+
+
+<div id="container">
+    <div id="info">
+        <h1>using xeogl with the fullscreen API</h1>
+        <ul>
+            <li><a href="javascript:fullscreen()" target="_parent">fullscreen</a> (press ESC to restore)</li>
+        </ul>
+    </div>
+</div>
+
+
+<script>
+
+    var entity = new xeogl.Entity({
+        geometry: new xeogl.TorusGeometry({
+            radius: 1.0,
+            tube: 0.3,
+            radialSegments: 32,
+            tubeSegments: 24,
+            arc: Math.PI * 2.0
+        }),
+        material: new xeogl.PhongMaterial({
+            ambient: [0.9, 0.3, 0.9],
+            shininess: 30,
+            diffuseMap: new xeogl.Texture({
+                src: "textures/diffuse/uvGrid2.jpg"
+            })
+        })
+    });
+
+    var scene = entity.scene;
+    var canvas = scene.canvas;
+
+    var container = document.getElementById("container");
+    container.appendChild(canvas.canvas);
+
+    scene.camera.eye = [0, 0, -4];
+
+    scene.on("tick", function () {
+        var camera = scene.camera;
+        camera.orbitYaw(0.2);
+        camera.orbitPitch(0.1);
+    });
+
+    new xeogl.CameraControl();
+
+    function fullscreen() {
+
+        if (Document.fullScreen) {
+            return;
+        }
+
+        canvas.log("entering fullscreen");
+
+        if (container.requestFullScreen) {
+            container.requestFullScreen();
+        } else if (container.webkitRequestFullScreen) {
+            container.webkitRequestFullScreen();
+        } else if (container.mozRequestFullScreen) {
+            container.mozRequestFullScreen();
+        }
+    }
+
+    function restore() {
+
+        if (!Document.fullScreen) {
+            return;
+        }
+
+        canvas.log("exiting fullscreen");
+
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        }
+
+    }
+
+</script>
+</body>
+</html>

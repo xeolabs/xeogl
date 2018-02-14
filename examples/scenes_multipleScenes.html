@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
     <script src="js/models/glTFModel.js"></script>
 
     <link href="css/styles.css" rel="stylesheet"/>
@@ -86,14 +86,14 @@
         })
     });
 
-    xeogl.scene.camera.view.eye = [0, 0, -4];
+    xeogl.scene.camera.eye = [0, 0, -4];
 
     xeogl.scene.on("tick", function () {
-        this.camera.view.rotateEyeY(0.5);
-        this.camera.view.rotateEyeX(0.3);
+        this.camera.orbitYaw(0.5);
+        this.camera.orbitPitch(0.3);
     });
 
-    new xeogl.InputControl();
+    new xeogl.CameraControl();
 
     //-----------------------------
     // Scene 2
@@ -112,14 +112,14 @@
         })
     });
 
-    xeogl.scene.camera.view.eye = [0, 0, -5];
+    xeogl.scene.camera.eye = [0, 0, -5];
 
     xeogl.scene.on("tick", function () {
-        this.camera.view.rotateEyeY(0.2);
-        this.camera.view.rotateEyeX(-0.1);
+        this.camera.orbitYaw(0.2);
+        this.camera.orbitPitch(-0.1);
     });
 
-    new xeogl.InputControl();
+    new xeogl.CameraControl();
 
     //-----------------------------
     // Scene 3
@@ -129,22 +129,22 @@
         canvas: "myCanvas3"
     });
 
-    var view = xeogl.scene.camera.view;
+    var camera = xeogl.scene.camera;
 
-    view.eye = [184.21, 10.54, -7.03];
-    view.look = [159.20, 17.02, 3.21];
-    view.up = [-0.15, 0.97, 0.13];
+    camera.eye = [184.21, 10.54, -7.03];
+    camera.look = [159.20, 17.02, 3.21];
+    camera.up = [-0.15, 0.97, 0.13];
 
     var gearbox = new xeogl.GLTFModel({
             src: "models/gltf/GearboxAssy/glTF/GearboxAssy.gltf"
     });
 
     xeogl.scene.on("tick", function () {
-        this.camera.view.rotateEyeY(-0.2);
-        this.camera.view.rotateEyeX(0.1);
+        this.camera.orbitYaw(-0.2);
+        this.camera.orbitPitch(0.1);
     });
 
-    new xeogl.InputControl();
+    new xeogl.CameraControl();
 
 
 </script>

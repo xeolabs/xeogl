@@ -166,8 +166,8 @@
             this._onParentDestroyed = null;
 
             this._matrix = xeogl.math.identityMat4(xeogl.math.mat4());
-            this._leafMatrix = xeogl.math.mat4();
-            this._leafNormalMatrix = xeogl.math.mat4();
+            this._leafMatrix = null;
+            this._leafNormalMatrix = null;
 
             this._leafMatrixDirty = true;
             this._leafNormalMatrixDirty = true;
@@ -197,6 +197,8 @@
             this.parent = cfg.parent;
             this.matrix = cfg.matrix;
             this.postMultiply = cfg.postMultiply;
+
+            xeogl.stats.memory.transforms++;
         },
 
         _parentUpdated: function () {
@@ -224,6 +226,10 @@
                 return;
             }
 
+            if (!this._leafMatrix) {
+                this._leafMatrix = xeogl.math.mat4();
+            }
+
             if (this._build && this._buildScheduled) {
                 this._build();
                 this._buildScheduled = false;
@@ -249,7 +255,7 @@
                 }
             }
 
-            this._renderer.imageDirty = true;
+            this._renderer.imageDirty();
 
             this._leafMatrixDirty = false;
             this._leafNormalMatrixDirty = true;
@@ -261,10 +267,14 @@
                 this._buildLeafMatrix();
             }
 
+            if (!this._leafNormalMatrix) {
+                this._leafNormalMatrix = xeogl.math.mat4();
+            }
+
             xeogl.math.inverseMat4(this._leafMatrix, this._leafNormalMatrix);
             xeogl.math.transposeMat4(this._leafNormalMatrix);
 
-            this._renderer.imageDirty = true;
+            // this._renderer.imageDirty();
 
             this._leafNormalMatrixDirty = false;
         },
@@ -273,8 +283,6 @@
 
             /**
              * The parent Transform.
-             *
-             * Fires a {{#crossLink "Transform/parent:event"}}{{/crossLink}} event on change.
              *
              * @property parent
              * @type Transform
@@ -307,13 +315,6 @@
 
                     this._parent = value;
 
-                    /**
-                     * Fired whenever this Transform's {{#crossLink "Transform/parent:property"}}{{/crossLink}} property changes.
-                     * @event parent
-                     * @param value The property's new value
-                     */
-                    this.fire("parent", this._parent);
-
                     if (this._parent) {
                         this._onParentUpdated = this._parent.on("updated", this._parentUpdated, this);
                         this._onParentDestroyed = this._parent.on("destroyed", this._parentUpdated, this);
@@ -330,8 +331,6 @@
             /**
              * Flag that indicates whether this Transform is post-multiplied (default) or pre-multiplied by
              * its {{#crossLink "Transform/parent:property"}}{{/crossLink}} Transform.
-             *
-             * Fires an {{#crossLink "Transform/postMultiply:event"}}{{/crossLink}} event on change.
              *
              * @property postMultiply
              * @default true
@@ -351,16 +350,9 @@
 
                     this._leafMatrixDirty = true;
 
-                    this._renderer.imageDirty = true;
+                    this._renderer.imageDirty();
 
                     this.fire("updated", true);
-
-                    /**
-                     * Fired whenever this Transform's {{#crossLink "Transform/postMultiply:property"}}{{/crossLink}} property changes.
-                     * @event postMultiply
-                     * @param value The property's new value
-                     */
-                    this.fire('postMultiply', this._postMultiply);
                 },
 
                 get: function () {
@@ -385,7 +377,7 @@
 
                     this._leafMatrixDirty = true;
 
-                    this._renderer.imageDirty = true;
+                    this._renderer.imageDirty();
 
                     /**
                      * Fired whenever this Transform's {{#crossLink "Transform/matrix:property"}}{{/crossLink}} property changes.
@@ -416,7 +408,7 @@
              * on the path receives an update for its {{#crossLink "Transform/matrix:property"}}{{/crossLink}} or
              * {{#crossLink "Transform/matrix:property"}}{{/crossLink}} property.
              *
-             * @property matrix
+             * @property leafMatrix
              * @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
              * @type {Float32Array}
              */
@@ -430,18 +422,32 @@
 
                     return this._leafMatrix;
                 }
-            }
-        },
+            },
 
-        _getJSON: function () {
-            var json = {
-                matrix: xeogl.math.vecToArray(this._matrix),
-                postMultiply: this._postMultiply
-            };
-            if (this._parent) {
-                json.parent = this._parent.id;
+            /**
+             * Returns the product of all {{#crossLink "Transform/normalMatrix:property"}}{{/crossLink}}'s on Transforms
+             * on the path via {{#crossLink "Transform/parent:property"}}{{/crossLink}} up to the root.
+             *
+             * The value of this property will have a fresh value after each
+             * {{#crossLink "Transform/updated:property"}}{{/crossLink}} event, which is fired whenever any Transform
+             * on the path receives an update for its {{#crossLink "Transform/matrix:property"}}{{/crossLink}} or
+             * {{#crossLink "Transform/matrix:property"}}{{/crossLink}} property.
+             *
+             * @property leafNormalMatrix
+             * @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+             * @type {Float32Array}
+             */
+            leafNormalMatrix: {
+
+                get: function () {
+
+                    if (this._leafMatrixDirty) {
+                        this._buildLeafNormalMatrix();
+                    }
+
+                    return this._leafNormalMatrix;
+                }
             }
-            return json;
         },
 
         _destroy: function () {
@@ -449,6 +455,7 @@
                 this._parent.off(this._onParentUpdated);
                 this._parent.off(this._onParentDestroyed);
             }
+            xeogl.stats.memory.transforms--;
         }
     });
 

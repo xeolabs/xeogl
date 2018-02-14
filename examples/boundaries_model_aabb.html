@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.js"></script>
+    <script src="js/helpers/aabbHelper.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <h1>using an <a href="../docs/classes/AABBHelper.html" target="_parent">AABBHelper</a> to show the boundary of
+        a <a href="../docs/classes/Model.html" target="_parent">Model</a> containing
+        1000 animated <a href="../docs/classes/Entity.html" target="_parent">Entities</a></h1>
+    <br>
+      <pre id="log">
+    </pre>
+</div>
+
+<script>
+
+    // The Model
+    var model = new xeogl.Model();
+
+    // Helper which shows the boundary of the Model as a wireframe box
+    var aabbHelper = new xeogl.AABBHelper({
+        target: model,
+        color: [0, 1, 0],
+        visible: true
+    });
+
+    // Create 1000 moving Entities within the Model
+
+    var boxGeometry = new xeogl.BoxGeometry({
+        xSize: 6,
+        ySize: 6,
+        zSize: 6
+    });
+
+    var material = new xeogl.PhongMaterial({
+        diffuseMap: new xeogl.Texture({
+            src: "textures/diffuse/uvGrid2.jpg",
+            encoding: "sRGB"
+        })
+    });
+
+    for (var i = 0; i < 1000; i++) {
+
+        var r = (Math.random() + 0.1 ) * 50;
+        var halfr = r / 2;
+
+        (function () {
+
+            // Create a randomly-positioned box
+
+            var entity = new xeogl.Entity({
+                geometry: boxGeometry,
+                material: material,
+                transform: new xeogl.Rotate({
+                    xyz: [Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1],
+                    angle: 0,
+                    parent: new xeogl.Translate({
+                        xyz: [
+                            Math.random() * r - halfr,
+                            Math.random() * r - halfr,
+                            Math.random() * r - halfr
+                        ]
+                    })
+                })
+            });
+
+            var count = 0;
+
+            var trajectory = [
+                Math.random() * 2.0 - 1.0,
+                Math.random() * 2.0 - 1.0,
+                Math.random() * 2.0 - 1.0
+            ];
+
+            var spin = Math.random();
+
+            entity.scene.on("tick",
+                    function () {
+
+                        var dir = ((count++ % 300) > 150) ? 1.0 : -1.0;
+
+                        var xyz = entity.transform.parent.xyz;
+
+                        entity.transform.parent.xyz = [
+                            xyz[0] + trajectory[0] * dir,
+                            xyz[1] + trajectory[1] * dir,
+                            xyz[2] + trajectory[2] * dir
+                        ];
+
+                        entity.transform.angle += 0.5 + spin;
+                    });
+
+            // Add the Entity to the Model
+
+            model.add(entity);
+
+        })();
+    }
+
+
+    // Move the camera back a bit
+
+    var scene = xeogl.scene;
+
+    scene.camera.zoom(320);
+
+    // Orbit the camera
+
+    scene.on("tick", function () {
+        var camera = scene.camera;
+        camera.orbitYaw(0.2);
+
+        logJSON(xeogl.stats.frame);
+    });
+
+    // Permit user camera control
+
+    var cameraControl = new xeogl.CameraControl();
+
+
+    function logJSON(json) {
+        document.getElementById("log").innerHTML = "xeogl.stats.frame = " + JSON.stringify(json, null, 4);
+    }
+
+
+</script>
+</body>
+</html>

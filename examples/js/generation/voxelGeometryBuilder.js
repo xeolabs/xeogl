@@ -71,13 +71,13 @@
  });
 
  // Set initial camera position
- var view = entity.camera.view;
- view.eye = [0, 0, -1600];
- view.look = [0, 0, 0];
- view.up = [0, 1, 0];
+ var camera = entity.scene.camera;
+ camera.eye = [0, 0, -1600];
+ camera.look = [0, 0, 0];
+ camera.up = [0, 1, 0];
 
  // Allow camera interaction
- new xeogl.InputControl();
+ new xeogl.CameraControl();
  ````
 
  @module xeogl

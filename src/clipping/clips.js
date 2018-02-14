@@ -27,26 +27,16 @@
 
         _init: function (cfg) {
 
-            // Renderer state contains the states of the child Clip components
             this._state = new xeogl.renderer.Clips({
-
                 clips: [],
-
                 hash: ""
             });
 
             this._dirty = true;
-
-            // Array of child Clip components
             this._clips = [];
-
-            // Subscriptions to "dirty" events from child Clip components
             this._dirtySubs = [];
-
-            // Subscriptions to "destroyed" events from child Clip components
             this._destroyedSubs = [];
 
-            // Add initial Clip components
             this.clips = cfg.clips;
         },
 
@@ -162,58 +152,33 @@
             }
         },
 
-        _compile: function () {
-
+        _getState: function () {
             var state = this._state;
-
             if (this._dirty) {
-
                 state.clips = [];
-
                 for (var i = 0, len = this._clips.length; i < len; i++) {
                     state.clips.push(this._clips[i]._state);
                 }
-
                 this._makeHash();
-
                 this._dirty = false;
             }
-
-            this._renderer.clips = state;
+            return state;
         },
 
         _makeHash: function () {
-
             var clips = this._state.clips;
-
             if (clips.length === 0) {
-                return ";";
+                this._state.hash = ";";
+                return;
             }
-
             var clip;
             var hash = [];
-
             for (var i = 0, len = clips.length; i < len; i++) {
                 clip = clips[i];
                 hash.push("cp");
             }
-
             hash.push(";");
-
             this._state.hash = hash.join("");
-        },
-
-        _getJSON: function () {
-
-            var clipIds = [];
-
-            for (var i = 0, len = this._clips.length; i < len; i++) {
-                clipIds.push(this._clips[i].id);
-            }
-
-            return {
-                clips: clipIds
-            };
         },
 
         _destroy: function () {

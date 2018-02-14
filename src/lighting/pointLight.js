@@ -1,12 +1,13 @@
 /**
- A **PointLight** defines a positional light source that originates from a single point and spreads outward in all directions, to illuminate attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **PointLight** defines a positional light source that originates from a single point and spreads outward in all directions,
+ to illuminate {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  <a href="../../examples/#lights_point_world_normalMap"><img src="http://i.giphy.com/3o6ZsZoFGIOJ2nlmN2.gif"></img></a>
 
  ## Overview
 
- * PointLights are grouped, along with other light source types, within {{#crossLink "Lights"}}Lights{{/crossLink}} components,
- which are attached to {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ * PointLights are grouped, along with other light source types, within a {{#crossLink "Lights"}}Lights{{/crossLink}} component,
+ which belongs to a {{#crossLink "Scene"}}{{/crossLink}}.
  * PointLights have a position, but no direction.
  * PointLights may be defined in either **World** or **View** coordinate space. When in World-space, their positions
  are relative to the World coordinate system, and will appear to move as the {{#crossLink "Camera"}}{{/crossLink}} moves.
@@ -14,8 +15,6 @@
  head as the {{#crossLink "Camera"}}{{/crossLink}} moves.
  * PointLights have {{#crossLink "PointLight/constantAttenuation:property"}}{{/crossLink}}, {{#crossLink "PointLight/linearAttenuation:property"}}{{/crossLink}} and
  {{#crossLink "PointLight/quadraticAttenuation:property"}}{{/crossLink}} factors, which indicate how their intensity attenuates over distance.
-
- <img src="../../../assets/images/PointLight.png"></img>
 
  ## Examples
 
@@ -25,30 +24,51 @@
 
  ## Usage
 
- ```` javascript
- var entity = new xeogl.Entity(scene, {
+ In the example below we'll customize the default Scene's light sources, defining an AmbientLight and a couple of
+ PointLights, then create a Phong-shaded box entity.
 
-        lights: new xeogl.Lights({
-            lights: [
-                new xeogl.PointLight({
-                    pos: [0, 100, 100],
-                    color: [0.5, 0.7, 0.5],
-                    intensity: 1
-                    constantAttenuation: 0,
-                    linearAttenuation: 0,
-                    quadraticAttenuation: 0,
-                    space: "view"
-                })
-            ]
-        }),
- ,
-        material: new xeogl.PhongMaterial({
-            diffuse: [0.5, 0.5, 0.0]
-        }),
+ ````javascript
 
-        geometry: new xeogl.BoxGeometry()
-  });
+ // We're using the default xeogl Scene
+ // Get Scene's Lights
+ var lights = xeogl.scene.lights;
+
+ // Customize the light sources
+ lights.lights = [
+    new xeogl.AmbientLight({
+        color: [0.8, 0.8, 0.8],
+        intensity: 0.5
+    }),
+    new xeogl.PointLight({
+        pos: [-100, 0, 100],
+        color: [0.3, 0.3, 0.5],
+        intensity: .7
+        constantAttenuation: 0,
+        linearAttenuation: 0,
+        quadraticAttenuation: 0,
+        space: "view"
+    }),
+    new xeogl.PointLight({
+        pos: [0, 100, 100],
+        color: [0.5, 0.7, 0.5],
+        intensity: 1
+        constantAttenuation: 0,
+        linearAttenuation: 0,
+        quadraticAttenuation: 0,
+        space: "view"
+    })
+ ];
+
+ // Create box entity
+ new xeogl.Entity({
+    material: new xeogl.PhongMaterial({
+        ambient: [0.5, 0.5, 0.5],
+        diffuse: [1,0.3,0.3]
+    }),
+    geometry: new xeogl.BoxGeometry()
+ });
  ````
+
 
  @class PointLight
  @module xeogl
@@ -62,15 +82,18 @@
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this PointLight.
  @param [cfg.pos=[ 1.0, 1.0, 1.0 ]] {Float32Array} Position, in either World or View space, depending on the value of the **space** parameter.
  @param [cfg.color=[0.7, 0.7, 0.8 ]] {Float32Array} Color of this PointLight.
- @param [cfg.intensity=1.0] {Number} Intensity of this PointLight.
+ @param [cfg.intensity=1.0] {Number} Intensity of this PointLight, as a factor in range ````[0..1]````.
  @param [cfg.constantAttenuation=0] {Number} Constant attenuation factor.
  @param [cfg.linearAttenuation=0] {Number} Linear attenuation factor.
  @param [cfg.quadraticAttenuation=0] {Number} Quadratic attenuation factor.
  @param [cfg.space="view"] {String} The coordinate system this PointLight is defined in - "view" or "world".
+ @param [cfg.shadow=false] {Boolean} Flag which indicates if this PointLight casts a shadow.
  */
 (function () {
 
     "use strict";
+
+    var math = xeogl.math;
 
     xeogl.PointLight = xeogl.Component.extend({
 
@@ -78,17 +101,57 @@
 
         _init: function (cfg) {
 
-            this._state = {
+            var self = this;
+
+            this._shadowRenderBuf = null;
+            this._shadowViewMatrix = null;
+            this._shadowProjMatrix = null;
+            this._shadowViewMatrixDirty = true;
+            this._shadowProjMatrixDirty = true;
+
+            this._state = new xeogl.renderer.Light({
                 type: "point",
                 pos: xeogl.math.vec3([1.0, 1.0, 1.0]),
                 color: xeogl.math.vec3([0.7, 0.7, 0.8]),
-                intensity: 1.0,
+                intensity: 1.0,attenuation: [0.0, 0.0, 0.0],
+                space: "view",
+                shadow: false,
+                shadowDirty: true,
 
-                // Packaging constant, linear and quadratic attenuation terms
-                // into an array for easy insertion into shaders as a vec3
-                attenuation: [0.0, 0.0, 0.0],
-                space: "view"
-            };
+                getShadowViewMatrix: (function () {
+                    var look = math.vec3([0,0,0]);
+                    var up = math.vec3([0, 1, 0]);
+                    return function () {
+                        if (self._shadowViewMatrixDirty) {
+                            if (!self._shadowViewMatrix) {
+                                self._shadowViewMatrix = math.identityMat4();
+                            }
+                            math.lookAtMat4v(self._state.pos, look, up, self._shadowViewMatrix);
+                            self._shadowViewMatrixDirty = false;
+                        }
+                        return self._shadowViewMatrix;
+                    };
+                })(),
+
+                getShadowProjMatrix: function () {
+                    if (self._shadowProjMatrixDirty) { // TODO: Set when canvas resizes
+                        if (!self._shadowProjMatrix) {
+                            self._shadowProjMatrix = math.identityMat4();
+                        }
+                        var canvas = self.scene.canvas.canvas;
+                        math.perspectiveMat4(70 *(Math.PI / 180.0), canvas.clientWidth / canvas.clientHeight, 0.1, 500.0, self._shadowProjMatrix);
+                        self._shadowProjMatrixDirty = false;
+                    }
+                    return self._shadowProjMatrix;
+                },
+
+                getShadowRenderBuf: function () {
+                    if (!self._shadowRenderBuf) {
+                        self._shadowRenderBuf = new xeogl.renderer.RenderBuffer(self.scene.canvas.canvas, self.scene.canvas.gl);
+                    }
+                    return self._shadowRenderBuf;
+                }
+            });
 
             this.pos = cfg.pos;
             this.color = cfg.color;
@@ -97,6 +160,7 @@
             this.linearAttenuation = cfg.linearAttenuation;
             this.quadraticAttenuation = cfg.quadraticAttenuation;
             this.space = cfg.space;
+            this.shadow = cfg.shadow;
         },
 
         _props: {
@@ -118,7 +182,9 @@
 
                     this._state.pos.set(value || [1.0, 1.0, 1.0]);
 
-                    this._renderer.imageDirty = true;
+                    this._shadowViewMatrixDirty = true;
+
+                    this._renderer.imageDirty();
 
                     /**
                      Fired whenever this PointLight's  {{#crossLink "PointLight/pos:property"}}{{/crossLink}} property changes.
@@ -148,7 +214,7 @@
 
                     this._state.color.set(value || [0.7, 0.7, 0.8]);
 
-                    this._renderer.imageDirty = true;
+                    this._renderer.imageDirty();
 
                     /**
                      Fired whenever this PointLight's  {{#crossLink "PointLight/color:property"}}{{/crossLink}} property changes.
@@ -180,7 +246,7 @@
 
                     this._state.intensity = value;
 
-                    this._renderer.imageDirty = true;
+                    this._renderer.imageDirty();
 
                     /**
                      * Fired whenever this PointLight's  {{#crossLink "PointLight/intensity:property"}}{{/crossLink}} property changes.
@@ -210,7 +276,7 @@
 
                     this._state.attenuation[0] = value || 0.0;
 
-                    this._renderer.imageDirty = true;
+                    this._renderer.imageDirty();
 
                     /**
                      Fired whenever this PointLight's {{#crossLink "PointLight/constantAttenuation:property"}}{{/crossLink}} property changes.
@@ -241,7 +307,7 @@
 
                     this._state.attenuation[1] = value || 0.0;
 
-                    this._renderer.imageDirty = true;
+                    this._renderer.imageDirty();
 
                     /**
                      Fired whenever this PointLight's  {{#crossLink "PointLight/linearAttenuation:property"}}{{/crossLink}} property changes.
@@ -272,7 +338,7 @@
 
                     this._state.attenuation[2] = value || 0.0;
 
-                    this._renderer.imageDirty = true;
+                    this._renderer.imageDirty();
 
                     /**
                      Fired whenever this PointLight's {{#crossLink "PointLight/quadraticAttenuation:property"}}{{/crossLink}} property changes.
@@ -324,21 +390,53 @@
                 get: function () {
                     return this._state.space;
                 }
+            },
+
+            /**
+             Flag which indicates if this PointLight casts a shadow.
+
+             Fires a {{#crossLink "PointLight/shadow:event"}}{{/crossLink}} event on change.
+
+             @property shadow
+             @default false
+             @type Boolean
+             */
+            shadow: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    if (this._state.shadow === value) {
+                        return;
+                    }
+
+                    this._state.shadow = value;
+
+                    this._shadowViewMatrixDirty = true;
+
+                    this._renderer.imageDirty();
+
+                    /**
+                     * Fired whenever this PointLight's {{#crossLink "PointLight/shadow:property"}}{{/crossLink}} property changes.
+                     * @event shadow
+                     * @param value The property's new value
+                     */
+                    this.fire("shadow", this._state.shadow);
+
+                    this.fire("dirty", true);
+                },
+
+                get: function () {
+                    return this._state.shadow;
+                }
             }
         },
 
-        _getJSON: function () {
-            var vecToArray = xeogl.math.vecToArray;
-            return {
-                type: this._state.type,
-                pos: vecToArray(this._state.pos),
-                color: vecToArray(this._state.color),
-                intensity: this._state.intensity,
-                constantAttenuation: this._state.attenuation[0],
-                linearAttenuation: this._state.attenuation[1],
-                quadraticAttenuation: this._state.attenuation[2],
-                space: this._state.space
-            };
+        _destroy: function () {
+            if (this._shadowRenderBuf) {
+                this._shadowRenderBuf.destroy();
+            }
         }
     });
 

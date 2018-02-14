@@ -7,7 +7,7 @@
 
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
 
     <!-- ZSpaceEffect is insulated from changes to the zSpace WebVR API by
      the "ZSpace" utility class provided by zSpace, which depends on glmatrix. -->
@@ -73,13 +73,13 @@
     //createBox([5,5,5], [-10,0,0]);
     createBox([-5, -2.5, 5], [10, 0, 0]);
 
-    scene.camera.view.eye = [0, 0, -100];
+    scene.camera.eye = [0, 0, -100];
 
     //----------------------------------------------------------------------------
     // Allow camera control with keyboard and mouse
     //----------------------------------------------------------------------------
 
-    var inputControl = new xeogl.InputControl();
+    var cameraControl = new xeogl.CameraControl();
 
     //---------------------------------------------------
     // Create a zSpace effect and stylus control

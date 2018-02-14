@@ -778,13 +778,13 @@
 
                     case 'map_kd':
                         if (!materialCfg.diffuseMap) {
-                            materialCfg.diffuseMap = createTexture(model, basePath, value);
+                            materialCfg.diffuseMap = createTexture(model, basePath, value, "sRGB");
                         }
                         break;
 
                     case 'map_ks':
                         if (!materialCfg.specularMap) {
-                            materialCfg.specularMap = createTexture(model, basePath, value);
+                            materialCfg.specularMap = createTexture(model, basePath, value,"linear");
                         }
                         break;
 
@@ -825,7 +825,7 @@
             }
         };
 
-        function createTexture(model, basePath, value) {
+        function createTexture(model, basePath, value, encoding) {
             var textureCfg = {};
             var items = value.split(/\s+/);
             var pos = items.indexOf('-bm');
@@ -845,6 +845,7 @@
             }
             textureCfg.src = basePath + items.join(' ').trim();
             textureCfg.flipY = true;
+            textureCfg.encoding = encoding || "linear";
             //textureCfg.wrapS = self.wrap;
             //textureCfg.wrapT = self.wrap;
             var texture = new xeogl.Texture(model, textureCfg);

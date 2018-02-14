@@ -13,7 +13,6 @@
  ## Examples
 
  * [Modeling transform hierarchy](../../examples/#transforms_entity_hierarchy)
- * [Projection transform hierarchy](../../examples/#transforms_camera_project_hierarchy)
 
  ## Usage
 
@@ -99,21 +98,14 @@
         type: "xeogl.Scale",
 
         _init: function (cfg) {
-
             this._super(cfg);
-
             this.xyz = cfg.xyz;
-        },
-
-        _update: function () {
-            this.matrix = xeogl.math.scalingMat4v(this._xyz, this._matrix);
         },
 
         _props: {
 
             /**
              * Vector indicating a scale factor for each axis.
-             * Fires an {{#crossLink "Scale/xyz:event"}}{{/crossLink}} event on change.
              * @property xyz
              * @default [1,1,1]
              * @type {Float32Array}
@@ -121,34 +113,14 @@
             xyz: {
 
                 set: function (value) {
-
                     (this._xyz = this._xyz || new xeogl.math.vec3()).set(value || [1, 1, 1]);
-
-                    this._needUpdate(0);
-
-                    /**
-                     Fired whenever this Scale's {{#crossLink "Scale/xyz:property"}}{{/crossLink}} property changes.
-
-                     @event xyz
-                     @param value {Float32Array} The property's new value
-                     */
-                    this.fire("xyz", this._xyz);
+                    this.matrix = xeogl.math.scalingMat4v(this._xyz, this._matrix);
                 },
 
                 get: function () {
                     return this._xyz;
                 }
             }
-        },
-
-        _getJSON: function () {
-            var json = {
-                xyz: xeogl.math.vecToArray(this._xyz)
-            };
-            if (this._parent) {
-                json.parent = this._parent.id;
-            }
-            return json;
         }
     });
 

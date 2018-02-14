@@ -99,7 +99,7 @@
 
                     this._state.resolution.set(value || [1000.0, 1000.0]);
 
-                    this._renderer.imageDirty = true;
+                    this._renderer.imageDirty();
 
                     /**
                      Fired whenever this Shadow's  {{#crossLink "Shadow/resolution:property"}}{{/crossLink}} property changes.
@@ -131,7 +131,7 @@
 
                     this._state.intensity = value;
 
-                    this._renderer.imageDirty = true;
+                    this._renderer.imageDirty();
 
                     /**
                      * Fired whenever this Shadow's  {{#crossLink "Shadow/intensity:property"}}{{/crossLink}} property changes.
@@ -145,13 +145,6 @@
                     return this._state.intensity;
                 }
             }
-        },
-
-        _getJSON: function () {
-            return {
-                resolution: this._state.resolution,
-                intensity: this._state.intensity
-            };
         }
     });
 

@@ -118,7 +118,7 @@
  torus.material.alphaMode = "mask";
  torus.material.alphaCutoff = 0.2;
  ````
-*TODO: Screenshot*
+ *TODO: Screenshot*
 
 
  @class PhongMaterial
@@ -169,9 +169,11 @@
 
         _init: function (cfg) {
 
+            this._super(cfg);
+
             this._state = new xeogl.renderer.PhongMaterial({
 
-                type: "phongMaterial",
+                type: "PhongMaterial",
 
                 ambient: xeogl.math.vec3([1.0, 1.0, 1.0]),
                 diffuse: xeogl.math.vec3([1.0, 1.0, 1.0]),
@@ -281,8 +283,6 @@
             /**
              The PhongMaterial's ambient color.
 
-             Fires a {{#crossLink "PhongMaterial/ambient:event"}}{{/crossLink}} event on change.
-
              @property ambient
              @default [0.3, 0.3, 0.3]
              @type Float32Array
@@ -311,15 +311,7 @@
                         ambient[2] = .2;
                     }
 
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     * Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/ambient:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event ambient
-                     * @param value {Float32Array} The property's new value
-                     */
-                    this.fire("ambient", this._state.ambient);
+                    this._renderer.imageDirty();
                 },
 
                 get: function () {
@@ -331,8 +323,6 @@
              The PhongMaterial's diffuse color.
 
              Multiplies by {{#crossLink "PhongMaterial/diffuseMap:property"}}{{/crossLink}}.
-
-             Fires a {{#crossLink "PhongMaterial/diffuse:event"}}{{/crossLink}} event on change.
 
              @property diffuse
              @default [1.0, 1.0, 1.0]
@@ -362,15 +352,7 @@
                         diffuse[2] = 1;
                     }
 
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     * Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event diffuse
-                     * @param value {Float32Array} The property's new value
-                     */
-                    this.fire("diffuse", this._state.diffuse);
+                    this._renderer.imageDirty();
                 },
 
                 get: function () {
@@ -382,8 +364,6 @@
              The material's specular color.
 
              Multiplies by {{#crossLink "PhongMaterial/specularMap:property"}}{{/crossLink}}.
-
-             Fires a {{#crossLink "PhongMaterial/specular:event"}}{{/crossLink}} event on change.
 
              @property specular
              @default [1.0, 1.0, 1.0]
@@ -413,15 +393,7 @@
                         specular[2] = 1;
                     }
 
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}} property changes.
-
-                     @event specular
-                     @param value {Float32Array} The property's new value
-                     */
-                    this.fire("specular", this._state.specular);
+                    this._renderer.imageDirty();
                 },
 
                 get: function () {
@@ -433,8 +405,6 @@
              The PhongMaterial's emissive color.
 
              Multiplies by {{#crossLink "PhongMaterial/emissiveMap:property"}}{{/crossLink}}.
-
-             Fires a {{#crossLink "PhongMaterial/emissive:event"}}{{/crossLink}} event on change.
 
              @property emissive
              @default [0.0, 0.0, 0.0]
@@ -464,15 +434,7 @@
                         emissive[2] = 0;
                     }
 
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}} property changes.
-
-                     @event emissive
-                     @param value {Float32Array} The property's new value
-                     */
-                    this.fire("emissive", this._state.emissive);
+                    this._renderer.imageDirty();
                 },
 
                 get: function () {
@@ -486,8 +448,6 @@
              A value of 0.0 indicates fully transparent, 1.0 is fully opaque.
 
              Multiplies by {{#crossLink "PhongMaterial/alphaMap:property"}}{{/crossLink}}.
-
-             Fires an {{#crossLink "PhongMaterial/alpha:event"}}{{/crossLink}} event on change.
 
              @property alpha
              @default 1.0
@@ -505,15 +465,7 @@
 
                     this._state.alpha = value;
 
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     * Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/alpha:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event alpha
-                     * @param value {Number} The property's new value
-                     */
-                    this.fire("alpha", this._state.alpha);
+                    this._renderer.imageDirty();
                 },
 
                 get: function () {
@@ -528,8 +480,6 @@
              desirable. Try values close to 10 for a larger, fuzzier highlight and values of 100 or more for a small, sharp
              highlight.
 
-             Fires a {{#crossLink "PhongMaterial/shininess:event"}}{{/crossLink}} event on change.
-
              @property shininess
              @default 80.0
              @type Number
@@ -540,15 +490,7 @@
 
                     this._state.shininess = value !== undefined ? value : 80;
 
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/shininess:property"}}{{/crossLink}} property changes.
-
-                     @event shininess
-                     @param value Number The property's new value
-                     */
-                    this.fire("shininess", this._state.shininess);
+                    this._renderer.imageDirty();
                 },
 
                 get: function () {
@@ -558,8 +500,6 @@
 
             /**
              The PhongMaterial's line width.
-
-             Fires a {{#crossLink "PhongMaterial/lineWidth:event"}}{{/crossLink}} event on change.
 
              @property lineWidth
              @default 1.0
@@ -571,15 +511,7 @@
 
                     this._state.lineWidth = value || 1.0;
 
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     * Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/lineWidth:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event lineWidth
-                     * @param value {Array(Number)} The property's new value
-                     */
-                    this.fire("lineWidth", this._state.lineWidth);
+                    this._renderer.imageDirty();
                 },
 
                 get: function () {
@@ -589,8 +521,6 @@
 
             /**
              The PhongMaterial's point size.
-
-             Fires a {{#crossLink "PhongMaterial/pointSize:event"}}{{/crossLink}} event on change.
 
              @property pointSize
              @default 1.0
@@ -602,15 +532,7 @@
 
                     this._state.pointSize = value || 1.0;
 
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     * Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/pointSize:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event pointSize
-                     * @param value {Array(Number)} The property's new value
-                     */
-                    this.fire("pointSize", this._state.pointSize);
+                    this._renderer.imageDirty();
                 },
 
                 get: function () {
@@ -625,8 +547,6 @@
 
              Multiplies by {{#crossLink "PhongMaterial/reflectivityMap:property"}}{{/crossLink}}.
 
-             Fires a {{#crossLink "PhongMaterial/reflectivity:event"}}{{/crossLink}} event on change.
-
              @property reflectivity
              @default 1.0
              @type Number
@@ -637,15 +557,7 @@
 
                     this._state.reflectivity = value !== undefined ? value : 1.0;
 
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/reflectivity:property"}}{{/crossLink}} property changes.
-
-                     @event reflectivity
-                     @param value Number The property's new value
-                     */
-                    this.fire("reflectivity", this._state.reflectivity);
+                    this._renderer.imageDirty();
                 },
 
                 get: function () {
@@ -657,8 +569,6 @@
              A normal {{#crossLink "Texture"}}{{/crossLink}} attached to this PhongMaterial.
 
              Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
-
-             Fires a {{#crossLink "PhongMaterial/normalMap:event"}}{{/crossLink}} event on change.
 
              @property normalMap
              @default undefined
@@ -689,8 +599,6 @@
 
              Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
 
-             Fires a {{#crossLink "PhongMaterial/ambientMap:event"}}{{/crossLink}} event on change.
-
              @property ambientMap
              @default undefined
              @type {Texture}
@@ -719,8 +627,6 @@
              This property multiplies by {{#crossLink "PhongMaterial/diffuseMap:property"}}{{/crossLink}} when not null or undefined.
 
              Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
-
-             Fires a {{#crossLink "PhongMaterial/diffuseMap:event"}}{{/crossLink}} event on change.
 
              @property diffuseMap
              @default undefined
@@ -751,8 +657,6 @@
 
              Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
 
-             Fires a {{#crossLink "PhongMaterial/specularMap:event"}}{{/crossLink}} event on change.
-
              @property specularMap
              @default undefined
              @type {Texture}
@@ -781,8 +685,6 @@
              This property multiplies by {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}} when not null or undefined.
 
              Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
-
-             Fires an {{#crossLink "PhongMaterial/emissiveMap:event"}}{{/crossLink}} event on change.
 
              @property emissiveMap
              @default undefined
@@ -813,8 +715,6 @@
 
              Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
 
-             Fires an {{#crossLink "PhongMaterial/alphaMap:event"}}{{/crossLink}} event on change.
-
              @property alphaMap
              @default undefined
              @type {Texture}
@@ -844,8 +744,6 @@
 
              Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
 
-             Fires a {{#crossLink "PhongMaterial/reflectivityMap:event"}}{{/crossLink}} event on change.
-
              @property reflectivityMap
              @default undefined
              @type {Texture}
@@ -872,8 +770,6 @@
              A reflection {{#crossLink "CubeMap"}}{{/crossLink}} attached to this PhongMaterial.
 
              Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
-
-             Fires a {{#crossLink "PhongMaterial/reflection:event"}}{{/crossLink}} event on change.
 
              @property reflection
              @default undefined
@@ -902,8 +798,6 @@
              An occlusion map {{#crossLink "Texture"}}{{/crossLink}} attached to this PhongMaterial.
 
              Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
-
-             Fires a {{#crossLink "PhongMaterial/occlusionMap:event"}}{{/crossLink}} event on change.
 
              @property occlusionMap
              @default undefined
@@ -934,8 +828,6 @@
 
              Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
 
-             Fires a {{#crossLink "PhongMaterial/diffuseFresnel:event"}}{{/crossLink}} event on change.
-
              @property diffuseFresnel
              @default undefined
              @type {Fresnel}
@@ -965,8 +857,6 @@
 
              Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
 
-             Fires a {{#crossLink "PhongMaterial/specularFresnel:event"}}{{/crossLink}} event on change.
-
              @property specularFresnel
              @default undefined
              @type {Fresnel}
@@ -974,13 +864,6 @@
             specularFresnel: {
 
                 set: function (fresnel) {
-
-                    /**
-                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/specularFresnel:property"}}{{/crossLink}} property changes.
-
-                     @event specularFresnel
-                     @param value Number The property's new value
-                     */
                     this._attachComponent("xeogl.Fresnel", "specularFresnel", fresnel);
                 },
 
@@ -996,8 +879,6 @@
 
              Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
 
-             Fires an {{#crossLink "PhongMaterial/emissiveFresnel:event"}}{{/crossLink}} event on change.
-
              @property emissiveFresnel
              @default undefined
              @type {Fresnel}
@@ -1005,13 +886,6 @@
             emissiveFresnel: {
 
                 set: function (fresnel) {
-
-                    /**
-                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/emissiveFresnel:property"}}{{/crossLink}} property changes.
-
-                     @event emissiveFresnel
-                     @param value Number The property's new value
-                     */
                     this._attachComponent("xeogl.Fresnel", "emissiveFresnel", fresnel);
                 },
 
@@ -1027,8 +901,6 @@
 
              Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
 
-             Fires an {{#crossLink "PhongMaterial/alphaFresnel:event"}}{{/crossLink}} event on change.
-
              @property alphaFresnel
              @default undefined
              @type {Fresnel}
@@ -1036,13 +908,6 @@
             alphaFresnel: {
 
                 set: function (fresnel) {
-
-                    /**
-                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/alphaFresnel:property"}}{{/crossLink}} property changes.
-
-                     @event alphaFresnel
-                     @param value Number The property's new value
-                     */
                     this._attachComponent("xeogl.Fresnel", "alphaFresnel", fresnel);
                 },
 
@@ -1058,8 +923,6 @@
 
              Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
 
-             Fires a {{#crossLink "PhongMaterial/reflectivityFresnel:event"}}{{/crossLink}} event on change.
-
              @property reflectivityFresnel
              @default undefined
              @type {Fresnel}
@@ -1067,13 +930,6 @@
             reflectivityFresnel: {
 
                 set: function (fresnel) {
-
-                    /**
-                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/reflectivityFresnel:property"}}{{/crossLink}} property changes.
-
-                     @event reflectivityFresnel
-                     @param value Number The property's new value
-                     */
                     this._attachComponent("xeogl.Fresnel", "reflectivityFresnel", fresnel);
                 },
 
@@ -1092,8 +948,6 @@
              * "opaque" - The alpha value is ignored and the rendered output is fully opaque.
              * "mask" - The rendered output is either fully opaque or fully transparent depending on the alpha value and the specified alpha cutoff value.
              * "blend" - The alpha value is used to composite the source and destination areas. The rendered output is combined with the background using the normal painting operation (i.e. the Porter and Duff over operator).
-
-             Fires an {{#crossLink "PhongMaterial/alphaMode:event"}}{{/crossLink}} event on change.
 
              @property alphaMode
              @default "opaque"
@@ -1120,15 +974,7 @@
 
                         this._state.alphaMode = value;
 
-                        this._renderer.imageDirty = true;
-
-                        /**
-                         Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/alphaMode:property"}}{{/crossLink}} property changes.
-
-                         @event alphaMode
-                         @param value {Number} The property's new value
-                         */
-                        this.fire("alphaMode", this._state.alphaMode);
+                        this._renderer.imageDirty();
                     },
                     get: function () {
                         return modeNames[this._state.alphaMode];
@@ -1148,8 +994,6 @@
              {{#crossLink "PhongMaterial/alpha:property"}}{{/crossLink}} and
              {{#crossLink "PhongMaterial/alphaMap:property"}}{{/crossLink}} properties.
 
-             Fires an {{#crossLink "PhongMaterial/alphaCutoff:event"}}{{/crossLink}} event on change.
-
              @property alphaCutoff
              @default 0.5
              @type {Number}
@@ -1166,14 +1010,6 @@
                     }
 
                     this._state.alphaCutoff = alphaCutoff;
-
-                    /**
-                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/look:property"}}{{/crossLink}} property changes.
-
-                     @event alphaCutoff
-                     @param value {Number} The property's new value
-                     */
-                    this.fire("alphaCutoff", this._state.alphaCutoff);
                 },
                 get: function () {
                     return this._state.alphaCutoff;
@@ -1185,8 +1021,6 @@
 
              The backfaces will belong to {{#crossLink "Geometry"}}{{/crossLink}} compoents that are also attached to
              the {{#crossLink "Entity"}}Entities{{/crossLink}}.
-
-             Fires a {{#crossLink "PhongMaterial/backfaces:event"}}{{/crossLink}} event on change.
 
              @property backfaces
              @default false
@@ -1204,15 +1038,7 @@
 
                     this._state.backfaces = value;
 
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/backfaces:property"}}{{/crossLink}} property changes.
-
-                     @event backfaces
-                     @param value The property's new value
-                     */
-                    this.fire("backfaces", this._state.backfaces);
+                    this._renderer.imageDirty();
                 },
 
                 get: function () {
@@ -1225,8 +1051,6 @@
 
              The faces will belong to {{#crossLink "Geometry"}}{{/crossLink}} components that are also attached to
              the {{#crossLink "Entity"}}Entities{{/crossLink}}.
-
-             Fires a {{#crossLink "PhongMaterial/frontface:event"}}{{/crossLink}} event on change.
 
              @property frontface
              @default "ccw"
@@ -1244,15 +1068,7 @@
 
                     this._state.frontface = value;
 
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/frontface:property"}}{{/crossLink}} property changes.
-
-                     @event frontface
-                     @param value The property's new value
-                     */
-                    this.fire("frontface", this._state.frontface ? "ccw" : "cw");
+                    this._renderer.imageDirty();
                 },
 
                 get: function () {
@@ -1281,14 +1097,12 @@
             this._hashDirty = true;
         },
 
-        _compile: function () {
-
+        _getState: function () {
             if (this._hashDirty) {
                 this._makeHash();
                 this._hashDirty = false;
             }
-
-            this._renderer.material = this._state;
+            return this._state;
         },
 
         _makeHash: function () {
@@ -1309,6 +1123,7 @@
                 if (state.ambientMap.matrix) {
                     hash.push("/mat");
                 }
+                hash.push("/" + state.ambientMap.encoding);
             }
 
             if (state.diffuseMap) {
@@ -1316,6 +1131,7 @@
                 if (state.diffuseMap.matrix) {
                     hash.push("/mat");
                 }
+                hash.push("/" + state.diffuseMap.encoding);
             }
 
             if (state.specularMap) {
@@ -1330,6 +1146,7 @@
                 if (state.emissiveMap.matrix) {
                     hash.push("/mat");
                 }
+                hash.push("/" + state.emissiveMap.encoding);
             }
 
             if (state.alphaMap) {
@@ -1378,106 +1195,8 @@
             state.hash = hash.join("");
         },
 
-        _getJSON: function () {
-
-            var vecToArray = xeogl.math.vecToArray;
-
-            var json = {
-
-                // Colors
-
-                ambient: vecToArray(this._state.ambient),
-                diffuse: vecToArray(this._state.diffuse),
-                specular: vecToArray(this._state.specular),
-                emissive: vecToArray(this._state.emissive),
-                alphaMode: this.alphaMode,
-                alphaCutoff: this._state.alphaCutoff,
-                backfaces: this._state.backfaces,
-                frontface: this.frontface // Save string value
-            };
-
-            if (this._state.alpha !== 1.0) {
-                json.alpha = this._state.alpha;
-            }
-
-            if (this._state.shininess !== 80.0) {
-                json.shininess = this._state.shininess;
-            }
-
-            if (this._state.reflectivity !== 1.0) {
-                json.reflectivity = this._state.reflectivity;
-            }
-
-            // Lines and points
-
-            if (this._state.lineWidth !== 1.0) {
-                json.lineWidth = this._state.lineWidth;
-            }
-
-            if (this._state.pointSize !== 1.0) {
-                json.pointSize = this._state.pointSize;
-            }
-
-            // Textures
-
-            var components = this._attached;
-
-            if (components.normalMap) {
-                json.normalMap = components.normalMap.id;
-            }
-
-            if (components.ambientMap) {
-                json.ambientMap = components.ambientMap.id;
-            }
-
-            if (components.diffuseMap) {
-                json.diffuseMap = components.diffuseMap.id;
-            }
-
-            if (components.specularMap) {
-                json.specularMap = components.specularMap.id;
-            }
-
-            if (components.emissiveMap) {
-                json.emissiveMap = components.emissiveMap.id;
-            }
-
-            if (components.alphaMap) {
-                json.alphaMap = components.alphaMap.id;
-            }
-
-            if (components.reflectivityMap) {
-                json.reflectivityMap = components.reflectivityMap.id;
-            }
-
-            if (components.occlusionMap) {
-                json.occlusionMap = components.occlusionMap.id;
-            }
-
-            if (components.diffuseFresnel) {
-                json.diffuseFresnel = components.diffuseFresnel.id;
-            }
-
-            if (components.specularFresnel) {
-                json.specularFresnel = components.specularFresnel.id;
-            }
-
-            if (components.emissiveFresnel) {
-                json.emissiveFresnel = components.emissiveFresnel.id;
-            }
-
-            if (components.alphaFresnel) {
-                json.alphaFresnel = components.alphaFresnel.id;
-            }
-
-            if (components.reflectivityFresnel) {
-                json.reflectivityFresnel = components.reflectivityFresnel.id;
-            }
-
-            return json;
-        },
-
         _destroy: function () {
+            this._super();
             this._state.destroy();
         }
     });

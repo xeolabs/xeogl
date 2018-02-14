@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
@@ -16,27 +16,42 @@
 
 <script>
 
-    var geometry = new xeogl.Geometry({
+    var entity = new xeogl.Entity({
 
-        // The primitive type - allowed values are
-        // "points", "lines", "line-loop", "line-strip",
-        // "triangles", "triangle-strip" and "triangle-fan".
-        //
-        // See the OpenGL/WebGL specification docs for
-        // how the coordinate arrays are supposed to be laid out
-        // for them.
-        primitive: "points",
+        geometry: new xeogl.Geometry({
 
-        // The vertices - eight for our cube, each
-        // one spanning three array elements for X,Y and Z
-        positions: createPoints(6000, 10),
+            // The primitive type - allowed values are
+            // "points", "lines", "line-loop", "line-strip",
+            // "triangles", "triangle-strip" and "triangle-fan".
+            //
+            // See the OpenGL/WebGL specification docs for
+            // how the coordinate arrays are supposed to be laid out
+            // for them.
+            primitive: "points",
 
-        // Indices - these organise the
-        // positions into geometric primitives in accordance
-        // with the "primitive" parameter,
-        // in this case an index for each point.
-        indices: createIndices(6000, 10)
+            // The vertices - eight for our cube, each
+            // one spanning three array elements for X,Y and Z
+            positions: createPoints(6000, 5),
+
+            // Indices - these organise the
+            // positions into geometric primitives in accordance
+            // with the "primitive" parameter,
+            // in this case an index for each point.
+            indices: createIndices(6000, 5)
+        }),
+
+        material: new xeogl.PhongMaterial({
+            emissive: [0.6, 0.6, 1.0],
+            pointSize: 5
+        })
     });
+
+    entity.scene.on("tick", function () {
+            entity.scene.camera.orbitYaw(0.3);
+            entity.scene.camera.orbitPitch(0.1);
+    });
+
+    var cameraControl = new xeogl.CameraControl();
 
     // Helper func to create random positions
     function createPoints(n, size) {
@@ -57,23 +72,6 @@
         }
         return p;
     }
-
-
-    var material = new xeogl.PhongMaterial({
-        emmissive: [0.6, 0.6, 1.0],
-        pointSize: 5
-    });
-
-    var entity = new xeogl.Entity({
-        geometry: geometry,
-        material: material
-    });
-
-    entity.scene.on("tick",
-            function () {
-                entity.camera.view.rotateEyeY(0.6);
-                entity.camera.view.rotateEyeX(0.3);
-            });
 
 </script>
 </body>

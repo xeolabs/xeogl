@@ -1,166 +1,268 @@
 /**
- A **Scene** models a 3D scene as a fully-editable and serializable <a href="http://gameprogrammingpatterns.com/component.html" target="_other">component-entity</a> graph.
-
- ## Scene Structure
-
- A Scene contains a soup of instances of various {{#crossLink "Component"}}Component{{/crossLink}} subtypes, such as
- {{#crossLink "Entity"}}Entity{{/crossLink}}, {{#crossLink "Camera"}}Camera{{/crossLink}}, {{#crossLink "Material"}}Material{{/crossLink}},
- {{#crossLink "Lights"}}Lights{{/crossLink}} etc.  Each {{#crossLink "Entity"}}Entity{{/crossLink}} has a link to one of each of the other types,
- and the same component instances can be shared among many {{#crossLink "Entity"}}Entities{{/crossLink}}.
-
- *** Under the hood:*** Within xeogl, each {{#crossLink "Entity"}}Entity{{/crossLink}} represents a draw call,
- while its components define all the WebGL state that will be bound for that call. To render a Scene, xeogl traverses
- the graph to bind the states and make the draw calls, while using many optimizations for efficiency (eg. draw list caching and GL state sorting).
-
- <img src="../../../assets/images/Scene.png"></img>
-
- #### Default Components
-
- A Scene provides its own default *flyweight* instance of each component type
- (except for {{#crossLink "Entity"}}Entity{{/crossLink}}). Each {{#crossLink "Entity"}}Entity{{/crossLink}} you create
- will implicitly link to a default instance for each type of component that you don't explicitly link it to. For example, when you create an {{#crossLink "Entity"}}Entity{{/crossLink}} without
- a {{#crossLink "Lights"}}Lights{{/crossLink}}, the {{#crossLink "Entity"}}Entity{{/crossLink}} will link to the
- {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/lights:property"}}{{/crossLink}}. This mechanism
- provides ***training wheels*** to help you learn the API, and also helps keep examples simple, where many of the examples in this
- documentation are implicitly using those defaults when they are not central to discussion.
-
- At the bottom of the diagram above, the blue {{#crossLink "Material"}}Material{{/crossLink}},
- {{#crossLink "Geometry"}}Geometry{{/crossLink}} and {{#crossLink "Camera"}}Camera{{/crossLink}} components
- represent some of the defaults provided by our Scene. For brevity, the diagram only shows those three
- types of component (there are actually around two dozen).
-
- Note that we did not link the second {{#crossLink "Entity"}}Entity{{/crossLink}} to a
- {{#crossLink "Material"}}Material{{/crossLink}}, causing it to be implicitly linked to our Scene's
- default {{#crossLink "Material"}}Material{{/crossLink}}. That {{#crossLink "Material"}}Material{{/crossLink}}
- is the only default our {{#crossLink "Entity"}}Entities{{/crossLink}} are falling back on in this example, with other
- default component types, such as the {{#crossLink "Geometry"}}Geometry{{/crossLink}} and the {{#crossLink "Camera"}}Camera{{/crossLink}},
- hanging around dormant until an {{#crossLink "Entity"}}Entity{{/crossLink}} is linked to them.
-
- Note also how the same {{#crossLink "Camera"}}Camera{{/crossLink}} is linked to both of our
- {{#crossLink "Entity"}}Entities{{/crossLink}}. Whenever we update that
- {{#crossLink "Camera"}}Camera{{/crossLink}}, it's going to affect both of those
- {{#crossLink "Entity"}}Entities{{/crossLink}} in one shot. Think of the defaults as the Scene's ***global*** component
- instances, which you may optionally override on a per-{{#crossLink "Entity"}}Entity{{/crossLink}} basis with your own
- component instances. In many Scenes, for example, you might not even bother to create your own {{#crossLink "Camera"}}Camera{{/crossLink}} and just
- let all your {{#crossLink "Entity"}}Entities{{/crossLink}} fall back on the default one.
+ A Scene represents a 3D world.
 
  ## Usage
 
- Here's the JavaScript for the diagram above. As mentioned earlier, note that we only provide components for our {{#crossLink "Entity"}}Entities{{/crossLink}} when we need to
- override the default components that the Scene would have provided them, and that the same component instances may be shared among multiple Entities.
+ * [Creating a Scene](#creating)
+ * [Creating entities](#creating-content)
+ * [Loading models](#loading-content)
+ * [Accessing content](#accessing-content)
+ * [Controlling the camera](#camera)
+ * [Taking snapshots](#snapshots)
+ * [Lighting](#lighting)
+ * [Clipping](#clipping)
+ * [Emphasis effects](#emphasis)
+ * [Picking](#picking)
+ * [Controlling the viewport](#viewport)
+ * [Controlling rendering](#rendering)
 
- ```` javascript
- var scene = new xeogl.Scene({
-       id: "myScene"   // ID is optional on all components
-  });
+ ### <a class="section"  name="creating">Creating a Scene</a>
 
- var material = new xeogl.PhongMaterial(myScene, {
-       id: "myMaterial",         // We'll use this ID to show how to find components by ID
-       diffuse: [ 0.6, 0.6, 0.7 ],
-       specular: [ 1.0, 1.0, 1.0 ]
-   });
-
- var geometry = new xeogl.Geometry(myScene, {
-       primitive: "triangles",
-       positions: [...],
-       normals: [...],
-       uvs: [...],
-       indices: [...]
-  });
-
- var camera = new xeogl.Camera(myScene);
-
- var entity1 = new xeogl.Entity(myScene, {
-       material: myMaterial,
-       geometry: myGeometry,
-       camera: myCamera
-  });
-
- // Second entity uses Scene's default Material
- var entity3 = new xeogl.Entity(myScene, {
-       geometry: myGeometry,
-       camera: myCamera
-  });
- ````
-
- ## <a name="sceneCanvas">The Scene Canvas</a>
-
- See the {{#crossLink "Canvas"}}{{/crossLink}} component.
-
- ## <a name="findingByID">Finding Scenes and Components by ID</a>
-
- We can have as many Scenes as we want, and can find them by ID on the {{#crossLink "xeogl"}}xeogl{{/crossLink}} entity's {{#crossLink "xeogl/scenes:property"}}scenes{{/crossLink}} map:
+ Creating a Scene with its own default canvas:
 
  ````javascript
- var theScene = xeogl.scenes["myScene"];
+ var scene = new Scene();
  ````
 
- Likewise we can find a Scene's components within the Scene itself, such as the {{#crossLink "Material"}}Material{{/crossLink}} we
- created earlier:
+ Creating a Scene with an existing canvas.
 
  ````javascript
- var theMaterial = myScene.components["myMaterial"];
- ````
-
- ## <a name="defaults">The Default Scene</a>
-
- When you create components without specifying a Scene for them, xeogl will put them in its default Scene.
-
- For example:
-
- ```` javascript
-
- var material2 = new xeogl.PhongMaterial({
-    diffuse: { r: 0.6, g: 0.6, b: 0.7 },
-    specular: { 1.0, 1.0, 1.0 }
+ var scene2 = new Scene({
+    canvas: "myCanvas"
  });
 
- var geometry2 = new xeogl.Geometry({
-     primitive: "triangles",
-     positions: [...],
-     normals: [...],
-     uvs: [...],
-     indices: [...]
- });
-
- var camera = new xeogl.Camera();
-
- var entity1 = new xeogl.Entity({
-     material: material2,
-     geometry: geometry2,
-     camera: camera2
+ var scene3 = new Scene({
+    canvas: document.getElementById("myCanvas");
  });
  ````
 
- You can then obtain the default Scene from the {{#crossLink "xeogl"}}xeogl{{/crossLink}} entity's
- {{#crossLink "xeogl/scene:property"}}scene{{/crossLink}} property:
+ ### <a class="section"  name="creating-content">Creating entities</a>
+
+ Creating an {{#crossLink "Entity"}}{{/crossLink}} within a Scene:
+
+ <a href="../../examples/#geometry_primitives_teapot"><img src="../../assets/images/screenshots/Scene/teapot.png"></img></a>
 
  ````javascript
- var theScene = xeogl.scene;
+ var entity = new xeogl.Entity(scene, {
+    geometry: new xeogl.TeapotGeometry(scene),
+    material: new xeogl.PhongMaterial(scene, {
+        diffuse: [0.2, 0.2, 1.0]
+    })
+ });
  ````
 
- or from one of the components we just created:
+ Creating an entity within the default Scene (which will be automatically created if not yet existing):
  ````javascript
- var theScene = material2.scene;
- ````
-
- ***Note:*** xeogl creates the default Scene as soon as you either
- create your first Sceneless {{#crossLink "Entity"}}Entity{{/crossLink}} or reference the
- {{#crossLink "xeogl"}}xeogl{{/crossLink}} entity's {{#crossLink "xeogl/scene:property"}}scene{{/crossLink}} property. Expect to
- see the HTML canvas for the default Scene magically appear in the page when you do that.
-
- ## <a name="webgl2">WebGL 2</a>
-
- By default, our Scene will attempt to use WebGL 2. If that's not supported then it will fall back on WebGL 1, if available.
- You can force the Scene to use WebGL 1 by supplying this property to teh Scene's constructor:
-
- ````javascript
- var scene = new xeogl.Scene({
-     webgl2: false // Default is true
+ entity = new xeogl.Entity({
+    geometry: new xeogl.TeapotGeometry(),
+    material: new xeogl.PhongMaterial({
+        diffuse: [0.2, 0.2, 1.0]
+    })
  });
 
- // We can then check this property on the Canvas to see if WebGL 2 is supported:
- var gotWebGL2 = scene.canvas.webgl2; // True if we have WebGL 2
+ entity.scene.camera.eye = [45, 45, 45];
+ ````
+
+ The default Scene can be got from either the Entity or the xeogl namespace:
+
+ ````javascript
+ scene = entity.scene;
+ scene = xeogl.scene;
+ ````
+
+ ### <a class="section"  name="loading-content">Loading models</a>
+
+ Use {{#crossLink "GLTFModel"}}{{/crossLink}} components to load glTF models into a Scene:
+
+ ````javascript
+ var model = new xeogl.GLTFModel(scene, { // If we don't provide the Scene, will create in default Scene
+    id: "gearbox",
+    src: "models/gltf/gearbox/gearbox_assy.gltf"
+ });
+ ````
+
+ ### <a class="section"  name="accessing-content">Accessing content</a>
+
+ Find components by ID in their Scene's {{#crossLink "Scene/components:property"}}{{/crossLink}} map:
+
+ ````javascript
+ var gear1 = scene.components["gearbox#gear99"];
+ gear1.visible = false;
+ //...
+ ````
+
+ A Scene also has a map of component instances for each {{#crossLink "Component"}}{{/crossLink}} subtype:
+
+ ````javascript
+ var entities = scene.types["xeogl.Entity"];
+ var gear = entities["gearbox#gear99"];
+ gear.ghost = true;
+ //...
+
+ var glTFModels = scene.types["xeogl.GLTFModel"];
+ var gearbox = glTFModels["gearbox"];
+ gearbox.visible = false;
+ //...
+ ````
+ a map containing just the {{#crossLink "Model"}}{{/crossLink}} instances:
+
+ ````javascript
+ gearbox = scene.models["gearbox"];
+ ````
+
+ and a map containing just the {{#crossLink "Entity"}}{{/crossLink}} instances:
+
+ ````javascript
+ gear = scene.entities["gearbox#gear99"];
+ ````
+
+ ### <a class="section"  name="camera">Controlling the camera</a>
+
+ Use the Scene's {{#crossLink "Camera"}}{{/crossLink}} to control the current viewpoint and projection:
+
+ ````javascript
+ var camera = myScene.camera;
+
+ camera.eye = [-10,0,0];
+ camera.look = [-10,0,0];
+ camera.up = [0,1,0];
+
+ camera.projection = "perspective";
+ camera.perspective.fov = 45;
+ //...
+ ````
+
+ ### <a class="section"  name="snapshots">Managing the canvas, taking snapshots</a>
+
+ The Scene's {{#crossLink "Canvas"}}{{/crossLink}} component provides various conveniences relevant to the WebGL canvas, such
+ as getting getting snapshots, firing resize events etc:
+
+ ````javascript
+ var canvas = scene.canvas;
+
+ canvas.on("boundary", function(boundary) {
+    //...
+ });
+
+ var imageData = canvas.getSnapshot({
+    width: 500,
+    height: 500,
+    format: "png"
+ });
+ ````
+
+ ### <a class="section"  name="lighting">Lighting</a>
+
+ The Scene's {{#crossLink "Lights"}}{{/crossLink}} component manages lighting:
+
+ ````javascript
+ var lights = scene.lights;
+ lights[1].color = [0.9, 0.9, 0.9];
+ //...
+ ````
+
+ ### <a class="section"  name="clipping">Clipping</a>
+
+ The Scene's {{#crossLink "Clips"}}{{/crossLink}} component manages clipping planes for custom cross-sections:
+
+ ````javascript
+ var clips = scene.clips;
+ clips.clips = [
+    new xeogl.Clip({  // Clip plane on negative diagonal
+        pos: [1.0, 1.0, 1.0],
+        dir: [-1.0, -1.0, -1.0],
+        active: true
+    }),
+    new xeogl.Clip({ // Clip plane on positive diagonal
+        pos: [-1.0, -1.0, -1.0],
+        dir: [1.0, 1.0, 1.0],
+        active: true
+    }),
+    //...
+ ];
+ ````
+
+ ### <a class="section" name="emphasis">Emphasis effects</a>
+
+ The Scene's {{#crossLink "GhostMaterial"}}{{/crossLink}} provides the default material for controlling ghost effects:
+
+ ````javascript
+ var ghostMaterial = scene.ghostMaterial;
+ ghostMaterial.edgeColor = [0.9, 0.9, 0.0];
+ //...
+ ````
+
+ The Scene's {{#crossLink "HighlightMaterial"}}{{/crossLink}} provides the default material for controlling highlight effects:
+
+ ````javascript
+ var highlightMaterial = scene.highlightMaterial;
+ highlightMaterial.color = [0.9, 0.9, 0.0];
+ //...
+ ````
+
+ The Scene's {{#crossLink "OutlineMaterial"}}{{/crossLink}} provides the default material for controlling outline effects:
+
+ ````javascript
+ var outlineMaterial = scene.outlineMaterial;
+ outlineMaterial.edgeWidth = 6;
+ ````
+
+ ### <a class="section" name="picking">Picking entities</a>
+
+ Use the Scene's {{#crossLink "Scene/pick:method"}}pick(){{/crossLink}} method to pick and raycast entities.
+
+ For example, to pick a point on the surface of the closest entity at the given canvas coordinates:
+
+ ````javascript
+ var hit = scene.pick({
+     pickSurface: true,
+     canvasPos: [23, 131]
+ });
+
+ if (hit) { // Picked an Entity
+
+      var entity = hit.entity;
+
+      var primitive = hit.primitive; // Type of primitive that was picked, usually "triangles"
+      var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array
+      var indices = hit.indices; // UInt32Array containing the triangle's vertex indices
+      var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle
+      var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle
+      var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle
+      var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle
+      var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle
+      var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle
+ }
+ ````
+
+ See {{#crossLink "Scene/pick:method"}}pick(){{/crossLink}} for more info.
+
+ ### <a class="section" name="boundary">Getting the World-space boundary</a>
+
+ Getting a Scene's World-space boundary as an AABB:
+
+ ````javascript
+ var aabb = scene.aabb; // [xmin, ymin, zmin, xmax, ymax, zmax]
+ ````
+
+ Subscribing to updates to the World-space boundary, which occur whenever Entities are Transformed, or their Geometries have been updated.
+
+ ````javascript
+ scene.on("boundary", function() {
+     var aabb = scene.aabb;
+     var obb = scene.obb;
+ });
+ ````
+
+ ### <a class="section"  name="rendering">Controlling rendering</a>
+
+ ### <a class="section"  name="viewport">Managing the viewport</a>
+
+ The Scene's {{#crossLink "Viewport"}}{{/crossLink}} component manages the WebGL viewport:
+
+ ````javascript
+ var viewport = scene.viewport
+ viewport.boundary = [0, 0, 500, 400];;
  ````
 
  @class Scene
@@ -173,13 +275,16 @@
  @param [cfg.webgl2=true] {Boolean} Set this false when we **don't** want to use WebGL 2 for our Scene; the Scene will fall
  back on WebGL 1 if not available. This property will be deprecated when WebGL 2 is supported everywhere.
  @param [cfg.components] {Array(Object)} JSON array containing parameters for {{#crossLink "Component"}}Component{{/crossLink}} subtypes to immediately create within the Scene.
- @param [cfg.ticksPerRender=1] {Number} The number of {{#crossLink "Scene/tick:property"}}{{/crossLink}} that happen between each render or this Scene.
+ @param [cfg.ticksPerRender=1] {Number} The number of {{#crossLink "Scene/tick:event"}}{{/crossLink}} that happen between each render or this Scene.
  @param [cfg.passes=1] {Number} The number of times this Scene renders per frame.
  @param [cfg.clearEachPass=false] {Boolean} When doing multiple passes per frame, specifies whether to clear the
  canvas before each pass (true) or just before the first pass (false).
  @param [cfg.transparent=false] {Boolean} Whether or not the canvas is transparent.
  @param [cfg.backgroundColor] {Float32Array} RGBA color for canvas background, when canvas is not transparent. Overridden by backgroundImage.
  @param [cfg.backgroundImage] {String} URL of an image to show as the canvas background, when canvas is not transparent. Overrides backgroundImage.
+ @param [cfg.gammaInput=false] {Boolean} When true, expects that all textures and colors are premultiplied gamma.
+ @param [cfg.gammaOutput=true] {Boolean} Whether or not to render with pre-multiplied gama.
+ @param [cfg.gammaFactor=2.2] {Number} The gamma factor to use when rendering with pre-multiplied gamma.
  @extends Component
  */
 (function () {
@@ -212,6 +317,14 @@
             var self = this;
 
             var transparent = !!cfg.transparent;
+
+            /**
+             * The number of models currently loading.
+             *
+             * @property loading
+             * @type {Number}
+             */
+            this.loading = 0;
 
             /**
              * The epoch time (in milliseconds since 1970) when this Scene was instantiated.
@@ -263,15 +376,6 @@
              */
             this.models = {};
 
-            // Map of components created with #getSharedComponent, mapped to their "share IDs"
-            this._sharedComponents = {};
-
-            // Map of components created with #getSharedComponent, mapped to thei component IDs
-            this._sharedComponentIDs = {};
-
-            // Count of references to components created with #getSharedComponent
-            this._sharedCounts = {};
-
             // Contains xeogl.Entities that need to be recompiled back into this._renderer
             this._dirtyEntities = {};
 
@@ -302,7 +406,7 @@
             // Redraw as canvas resized
             this.canvas.on("boundary",
                 function () {
-                    self._renderer.imageDirty = true;
+                    self._renderer.imageDirty();
                 });
 
             this.canvas.on("webglContextFailed",
@@ -322,7 +426,7 @@
              * @final
              */
             this.input = new xeogl.Input(this, {
-                element: this.canvas.overlay
+                element: this.canvas.canvas
             });
 
             // Register Scene on engine
@@ -330,26 +434,18 @@
             xeogl._addScene(this);
 
             // Add components specified as JSON
-            // This will also add the default components for this Scene,
-            // if this JSON was serialized from a xeogl.Scene instance.
 
             var componentJSONs = cfg.components;
 
             if (componentJSONs) {
-
                 var componentJSON;
                 var type;
                 var constr;
-
                 for (var i = 0, len = componentJSONs.length; i < len; i++) {
-
                     componentJSON = componentJSONs[i];
                     type = componentJSON.type;
-
                     if (type) {
-
                         constr = window[type];
-
                         if (constr) {
                             new constr(this, componentJSON);
                         }
@@ -357,14 +453,100 @@
                 }
             }
 
-            // Create the default components if not already created.
-            // These may have already been created in the JSON above.
+            // Init default components
 
             this._initDefaults();
+
+            // Global components
+
+            this._viewport = new xeogl.Viewport(this, {
+                id: "default.viewport",
+                autoBoundary: true
+            });
+
+            this._camera = new xeogl.Camera(this, {
+                id: "default.camera"
+            });
+
+            this._clips = new xeogl.Clips(this, {
+                id: "default.clips"
+            });
+
+            this._lights = new xeogl.Lights(this, {
+                id: "default.lights",
+                lights: [
+                    new xeogl.DirLight(this, {
+                        dir: [0.8, -0.6, -0.8],
+                        color: [1.0, 1.0, 1.0],
+                        intensity: 1.0,
+                        space: "view"
+                    }),
+
+                    new xeogl.DirLight(this, {
+                        dir: [-0.8, -0.4, -0.4],
+                        color: [1.0, 1.0, 1.0],
+                        intensity: 1.0,
+                        space: "view"
+                    }),
+
+                    new xeogl.DirLight(this, {
+                        dir: [0.2, -0.8, 0.8],
+                        color: [0.6, 0.6, 0.6],
+                        intensity: 1.0,
+                        space: "view"
+                    })
+                ]
+            });
+
+            // Plug global components into renderer
+
+            var viewport = this._viewport;
+            var renderer = this._renderer;
+            var camera = this._camera;
+            var clips = this._clips;
+            var lights = this._lights;
+
+            renderer.viewport = viewport._state;
+            renderer.projTransform = camera[camera.projection]._state;
+            renderer.viewTransform = camera._state;
+            renderer.lights = lights._getState();
+            renderer.clips = clips._getState();
+
+            camera.on("dirty", function () {
+                renderer.projTransform = camera.project._state;
+                renderer.viewTransform = camera._state;
+                renderer.imageDirty();
+            });
+
+            clips.on("dirty", function () { // TODO: Buffer so we're not doing for every light
+                renderer.clips = clips._getState();
+                for (var entityId in self.entities) {
+                    if (self.entities.hasOwnProperty(entityId)) {
+                        self._entityDirty(self.entities[entityId]);
+                    }
+                }
+            });
+
+            lights.on("dirty", function () {
+                renderer.lights = lights._getState();
+                var updated = false;
+                for (var entityId in self.entities) {
+                    if (self.entities.hasOwnProperty(entityId)) {
+                        self._entityDirty(self.entities[entityId]);
+                        updated = true;
+                    }
+                }
+                // if (!updated || self.loading > 0 || self.canvas.spinner.processes > 0) {
+                //     renderer.clear({}); // TODO: multiple passes
+                // }
+            });
 
             this.ticksPerRender = cfg.ticksPerRender;
             this.passes = cfg.passes;
             this.clearEachPass = cfg.clearEachPass;
+            this.gammaInput = cfg.gammaInput;
+            this.gammaOutput = cfg.gammaOutput;
+            this.gammaFactor = cfg.gammaFactor;
         },
 
         _initDefaults: function () {
@@ -373,22 +555,16 @@
 
             var dummy; // Keeps Codacy happy
 
-            dummy = this.view;
-            dummy = this.project;
-            dummy = this.camera;
-            dummy = this.clips;
             dummy = this.geometry;
-            dummy = this.lights;
             dummy = this.material;
-            dummy = this.morphTargets;
+            dummy = this.ghostMaterial;
+            dummy = this.outlineMaterial;
             dummy = this.transform;
-            dummy = this.viewport;
-            dummy = this.outline;
-            dummy = this.xray;
         },
 
         // Called by each component that is created with this Scene as parent.
         // Registers the component within this scene.
+
         _addComponent: function (c) {
 
             if (c.id) {
@@ -404,7 +580,11 @@
 
                 // Auto-generated ID
 
-                c.id = xeogl.math.createUUID();
+                if (window.nextID === undefined) {
+                    window.nextID = 0;
+                }
+                //c.id = xeogl.math.createUUID();
+                c.id = "_" + window.nextID++;
 
                 while (this.components[c.id]) {
                     c.id = xeogl.math.createUUID();
@@ -415,7 +595,6 @@
 
             // Register for class type
 
-            //var type = c.type.indexOf("xeogl.") > -1 ? c.type.substring(4) : c.type;
             var type = c.type;
 
             var types = this.types[c.type];
@@ -432,19 +611,16 @@
 
             if (c.isType("xeogl.Entity")) {
 
-                // Component is a xeogl.Entity, or a subtype thereof
+                // Component is a xeogl.Entity or subtype
 
                 c.on("dirty", this._entityDirty, this);
 
                 this.entities[c.id] = c;
 
-                if (this._worldBoundary) {
+                // If we currently have a World-space Scene boundary, then invalidate
+                // it whenever Entity's World-space boundary updates
 
-                    // If we currently have a World-space Scene boundary, then invalidate
-                    // it whenever Entity's World-space boundary updates
-
-                    c.worldBoundary.on("updated", this._setWorldBoundaryDirty, this);
-                }
+                c.on("boundary", this._setBoundaryDirty, this);
 
                 // Update scene statistics
 
@@ -459,14 +635,6 @@
 
                 xeogl.stats.components.models++;
             }
-
-
-            /**
-             * Fired whenever a component has been created within this Scene.
-             * @event componentCreated
-             * @param {Component} value The component that was created
-             */
-            this.fire("componentCreated", c, true);
 
             //self.log("Created " + c.type + " " + xeogl._inQuotes(c.id));
         },
@@ -490,69 +658,36 @@
 
             if (c.isType("xeogl.Entity")) {
 
-                // Component is a xeogl.Entity, or a subtype thereof
+                // Component is a xeogl.Entity or subtype
 
                 // Update scene statistics,
                 // Unschedule any pending recompilation of
                 // the Entity into the renderer
 
                 xeogl.stats.components.entities--;
-
                 delete this.entities[c.id];
-
                 delete this._dirtyEntities[c.id];
+                xeogl.stats.components.entities--;
             }
 
             if (c.isType("xeogl.Model")) {
-
-                // Component is a xeogl.Model, or a subtype thereof
-
-                xeogl.stats.components.models--;
-
                 delete this.models[c.id];
+                xeogl.stats.components.models--;
             }
-
-            /**
-             * Fired whenever a component within this Scene has been destroyed.
-             * @event componentDestroyed
-             * @param {Component} value The component that was destroyed
-             */
-            this.fire("componentDestroyed", c, true);
 
             //this.log("Destroyed " + c.type + " " + xeogl._inQuotes(c.id));
         },
 
         _entityDirty: function (entity) {
-
-            // Whenever the Entity signals dirty,
-            // schedule its recompilation into the renderer
-
-            var self = this;
-
-            if (!this._dirtyEntities[entity.id]) {
-
-                this._dirtyEntities[entity.id] = entity;
-
-                // TODO: Getting 'location is not from current program' when this is
-                // uncommented on chrome/windows
-
-                //xeogl.scheduleTask(function () {
-                //    if (self._dirtyEntities[entity.id]) {
-                //        if (entity._valid()) {
-                //            entity._compile();
-                //            delete self._dirtyEntities[entity.id];
-                //        }
-                //    }
-                //});
-            }
+            this._dirtyEntities[entity.id] = entity;
         },
 
         /**
          * Renders a single frame of this Scene.
          *
-         * The Scene will automatically call this method on itself to render after any updates, but you
-         * can call this method to force a render if required. This method is typically used when we want
-         * to synchronously take a snapshot of the canvas and need everything rendered right at that moment.
+         * The Scene will periodically render itself after any updates, but you can call this method to force a render
+         * if required. This method is typically used when we want to synchronously take a snapshot of the canvas and
+         * need everything rendered right at that moment.
          *
          * @method render
          * @param {Boolean} [forceRender=false] Forces a render when true, otherwise only renders if something has changed in this Scene
@@ -566,6 +701,26 @@
             };
 
             return function (forceRender) {
+
+                // The renderer is suspended while a model loads, and when a Scene is made to load something
+                // as soon as it's instantiated, that means that its lights may not get a chance to set the
+                // canvas background until the model is loaded and the renderer is unsuspended again. Therefore,
+                // we have a special imageForceDirty flag that bypasses the suspension, which lights set when
+                // their properties are updated.
+
+                var imageForceDirty = this._renderer.imageForceDirty;
+
+                if (this.loading > 0 && !forceRender && !imageForceDirty) {
+                    this._compileDirtyEntities(100);
+                    return;
+                }
+
+                if (this.canvas.spinner.processes > 0 && !imageForceDirty) {
+                    this._compileDirtyEntities(100);
+                    return;
+                }
+
+                this._compileDirtyEntities(15);
 
                 renderEvent.sceneId = this.id;
 
@@ -589,7 +744,7 @@
 
                     clear = clearEachPass || (pass === 0);
 
-                    this._compile(pass, clear, forceRender);
+                    this._renderer.render({pass: pass, clear: clear, force: forceRender});
 
                     /**
                      * Fired when we have just rendered a frame for a Scene.
@@ -600,15 +755,53 @@
                      */
                     this.fire("rendered", renderEvent, true);
                 }
+
+                this._saveAmbientColor();
             }
         })(),
+
+        _compileDirtyEntities: function (timeBudget) {
+            var time1 = (new Date()).getTime();
+            var entity;
+            for (var id in this._dirtyEntities) {
+                if (this._dirtyEntities.hasOwnProperty(id)) {
+                    entity = this._dirtyEntities[id];
+                    if (entity._valid()) {
+                        entity._compile();
+                        delete this._dirtyEntities[id];
+                    }
+                    var time2 = (new Date()).getTime();
+                    if (time2 - time1 > timeBudget) {
+                        return;
+                    }
+                }
+            }
+        },
+
+        _saveAmbientColor: function () {
+            var canvas = this.canvas;
+            if (!canvas.transparent && !canvas.backgroundImage && !canvas.backgroundColor) {
+                var ambientColor = this._renderer.getAmbientColor();
+                if (!this._lastAmbientColor ||
+                    this._lastAmbientColor[0] !== ambientColor[0] ||
+                    this._lastAmbientColor[1] !== ambientColor[1] ||
+                    this._lastAmbientColor[2] !== ambientColor[2] ||
+                    this._lastAmbientColor[3] !== ambientColor[3]) {
+                    canvas.backgroundColor = ambientColor;
+                    if (!this._lastAmbientColor) {
+                        this._lastAmbientColor = xeogl.math.vec4([0, 0, 0, 1]);
+                    }
+                    this._lastAmbientColor.set(ambientColor);
+                }
+            } else {
+                this._lastAmbientColor = null;
+            }
+        },
 
         _props: {
 
             /**
              * The number of {{#crossLink "Scene/tick:property"}}{{/crossLink}} that happen between each render or this Scene.
-             *
-             * Fires a {{#crossLink "Scene/ticksPerRender:event"}}{{/crossLink}} event on change.
              *
              * @property ticksPerRender
              * @default 1
@@ -634,14 +827,6 @@
                     }
 
                     this._ticksPerRender = value;
-
-                    /**
-                     Fired whenever this Scene's {{#crossLink "Scene/ticksPerRender:property"}}{{/crossLink}} property changes.
-
-                     @event ticksPerRender
-                     @param value {Boolean} The property's new value
-                     */
-                    this.fire("ticksPerRender", this._ticksPerRender);
                 },
 
                 get: function () {
@@ -651,8 +836,6 @@
 
             /**
              * The number of times this Scene renders per frame.
-             *
-             * Fires a {{#crossLink "Scene/passes:event"}}{{/crossLink}} event on change.
              *
              * @property passes
              * @default 1
@@ -679,15 +862,7 @@
 
                     this._passes = value;
 
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     Fired whenever this Scene's {{#crossLink "Scene/passes:property"}}{{/crossLink}} property changes.
-
-                     @event passes
-                     @param value {Boolean} The property's new value
-                     */
-                    this.fire("passes", this._passes);
+                    this._renderer.imageDirty();
                 },
 
                 get: function () {
@@ -698,8 +873,6 @@
             /**
              * When doing multiple passes per frame, specifies whether to clear the
              * canvas before each pass (true) or just before the first pass (false).
-             *
-             * Fires a {{#crossLink "Scene/clearEachPass:event"}}{{/crossLink}} event on change.
              *
              * @property clearEachPass
              * @default false
@@ -717,15 +890,7 @@
 
                     this._clearEachPass = value;
 
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     Fired whenever this Scene's {{#crossLink "Scene/clearEachPass:property"}}{{/crossLink}} property changes.
-
-                     @event clearEachPass
-                     @param value {Boolean} The property's new value
-                     */
-                    this.fire("clearEachPass", this._clearEachPass);
+                    this._renderer.imageDirty();
                 },
 
                 get: function () {
@@ -733,85 +898,97 @@
                 }
             },
 
-
             /**
-             * The default projection transform provided by this Scene, which is
-             * a {{#crossLink "Perspective"}}Perspective{{/crossLink}}.
+             * When true, expects all textures and colors are premultiplied gamma.
              *
-             * This {{#crossLink "Perspective"}}Perspective{{/crossLink}} has an
-             * {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to
-             * "default.project", with all other properties set to their default
-             * values.
-             *
-             * {{#crossLink "Camera"}}Cameras{{/crossLink}} within this Scene
-             * are attached to this {{#crossLink "Perspective"}}Perspective{{/crossLink}}
-             * by default.
-             *
-             * @property project
-             * @final
-             * @type Perspective
+             * @property gammaInput
+             * @default false
+             * @type Boolean
              */
-            project: {
+            gammaInput: {
+
+                set: function (value) {
+
+                    value = value !== false;
+
+                    if (value === this._renderer.gammaInput) {
+                        return;
+                    }
+
+                    this._renderer.gammaInput = value;
+
+                    for (var entityId in this.entities) { // Needs all shaders recompiled
+                        if (this.entities.hasOwnProperty(entityId)) {
+                            this._entityDirty(this.entities[entityId]);
+                        }
+                    }
+                },
 
                 get: function () {
-                    return this.components["default.project"] ||
-                        new xeogl.Perspective(this, {
-                            id: "default.project",
-                            isDefault: true
-                        });
+                    return this._renderer.gammaInput;
+                }
+            },
+            
+            /**
+             * Whether or not to render pixels with pre-multiplied gama.
+             *
+             * @property gammaOutput
+             * @default true
+             * @type Boolean
+             */
+            gammaOutput: {
+
+                set: function (value) {
+
+                    value = value !== false;
+
+                    if (value === this._renderer.gammaOutput) {
+                        return;
+                    }
+
+                    this._renderer.gammaOutput = value;
+
+                    for (var entityId in this.entities) { // Needs all shaders recompiled
+                        if (this.entities.hasOwnProperty(entityId)) {
+                            this._entityDirty(this.entities[entityId]);
+                        }
+                    }
+                },
+
+                get: function () {
+                    return this._renderer.gammaOutput;
                 }
             },
 
             /**
-             * The default viewing transform provided by this Scene, which is a {{#crossLink "Lookat"}}Lookat{{/crossLink}}.
+             * The gamma factor to use when {{#crossLink "Scene/property:gammaOutput"}}{{/crossLink}} is set true.
              *
-             * This {{#crossLink "Lookat"}}Lookat{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.view",
-             * with all other properties initialised to their default values.
-             *
-             * {{#crossLink "Camera"}}Cameras{{/crossLink}} within this Scene are attached to
-             * this {{#crossLink "Lookat"}}Lookat{{/crossLink}} by default.
-             * @property view
-             * @final
-             * @type Lookat
+             * @property gammaOutput
+             * @default 1.0
+             * @type Number
              */
-            view: {
+            gammaFactor: {
+
+                set: function (value) {
+
+                    value = (value === undefined || value === null) ? 2.2: value;
+
+                    if (value === this._renderer.gammaFactor) {
+                        return;
+                    }
+
+                    this._renderer.gammaFactor = value;
+
+                    this._renderer.imageDirty();
+                },
 
                 get: function () {
-                    return this.components["default.view"] ||
-                        new xeogl.Lookat(this, {
-                            id: "default.view",
-                            isDefault: true
-                        });
+                    return this._renderer.gammaFactor;
                 }
             },
 
             /**
-             * The default {{#crossLink "Camera"}}Camera{{/crossLink}} provided by this Scene.
-             *
-             * This {{#crossLink "Camera"}}Camera{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.camera",
-             * with all other properties initialised to their default values.
-             *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to
-             * this {{#crossLink "Camera"}}Camera{{/crossLink}} by default.
-             * @property camera
-             * @final
-             * @type Camera
-             */
-            camera: {
-
-                get: function () {
-                    return this.components["default.camera"] ||
-                        new xeogl.Camera(this, {
-                            id: "default.camera",
-                            isDefault: true,
-                            project: "default.project",
-                            view: "default.view"
-                        });
-                }
-            },
-
-            /**
-             * The default modelling {{#crossLink "Transform"}}{{/crossLink}} provided by this Scene.
+             * The default modelling {{#crossLink "Transform"}}{{/crossLink}} for this Scene.
              *
              * This {{#crossLink "Transform"}}{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.transform",
              * with all other properties initialised to their default values (ie. an identity matrix).
@@ -824,7 +1001,6 @@
              * @type Transform
              */
             transform: {
-
                 get: function () {
                     return this.components["default.transform"] ||
                         new xeogl.Transform(this, {
@@ -835,30 +1011,7 @@
             },
 
             /**
-             * The default {{#crossLink "Clips"}}Clips{{/crossLink}} provided by this Scene.
-             *
-             * This {{#crossLink "Clips"}}Clips{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.clips",
-             * with all other properties initialised to their default values.
-             *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "Clips"}}Clips{{/crossLink}} by default.
-             * @property clips
-             * @final
-             * @type Clips
-             */
-            clips: {
-
-                get: function () {
-                    return this.components["default.clips"] ||
-                        new xeogl.Clips(this, {
-                            id: "default.clips",
-                            isDefault: true
-                        });
-                }
-            },
-
-            /**
-             * The default geometry provided by this Scene, which is a {{#crossLink "BoxGeometry"}}BoxGeometry{{/crossLink}}.
+             * The default geometry for this Scene, which is a {{#crossLink "BoxGeometry"}}BoxGeometry{{/crossLink}}.
              *
              * This {{#crossLink "BoxGeometry"}}BoxGeometry{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.geometry".
              *
@@ -879,76 +1032,7 @@
             },
 
             /**
-             * The default {{#crossLink "Lights"}}Lights{{/crossLink}} provided
-             * by this Scene.
-             *
-             * This {{#crossLink "Lights"}}Lights{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to *````"default.lights"````*,
-             * with all other properties initialised to their default values (ie. the default set of light sources for a {{#crossLink "Lights"}}Lights{{/crossLink}}).
-             *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "Lights"}}Lights{{/crossLink}} by default.
-             *
-             * @property lights
-             * @final
-             * @type Lights
-             */
-            lights: {
-                get: function () {
-                    return this.components["default.lights"] ||
-                        new xeogl.Lights(this, {
-                            id: "default.lights",
-                            isDefault: true,
-
-                            // By default a xeogl.Lights has an empty lights
-                            // property, so we must provide some lights
-
-                            lights: [
-
-                                //new xeogl.AmbientLight(this, {
-                                //    id: "default.light0",
-                                //    color: [0.55, 0.55, 0.6],
-                                //    intensity: 1.0
-                                //}),
-
-                                //new xeogl.SpotLight(this, {
-                                //    id: "default.light1",
-                                //    pos: [0.8, -0.6, -0.8],
-                                //    dir: [0.8, -0.6, -0.8],
-                                //    color: [1.0, 1.0, 1.0],
-                                //    intensity: 1.0,
-                                //    space: "view"
-                                //}),
-
-                                new xeogl.DirLight(this, {
-                                    id: "default.light2",
-                                    dir: [0.8, -0.6, -0.8],
-                                    color: [1.0, 1.0, 1.0],
-                                    intensity: 1.0,
-                                    space: "view"
-                                }),
-
-                                new xeogl.DirLight(this, {
-                                    id: "default.light3",
-                                    dir: [-0.8, -0.3, -0.4],
-                                    color: [0.8, 0.8, 0.8],
-                                    intensity: 1.0,
-                                    space: "view"
-                                }),
-
-                                new xeogl.DirLight(this, {
-                                    id: "default.light4",
-                                    dir: [0.4, -0.4, 0.8],
-                                    color: [0.8, 1.0, 1.0],
-                                    intensity: 1.0,
-                                    space: "view"
-                                })
-                            ]
-                        });
-                }
-            },
-
-            /**
-             * The {{#crossLink "PhongMaterial"}}PhongMaterial{{/crossLink}} provided as the default material by this Scene.
+             * The default drawing material for this Scene, which is a {{#crossLink "PhongMaterial"}}PhongMaterial{{/crossLink}}.
              *
              * This {{#crossLink "PhongMaterial"}}PhongMaterial{{/crossLink}} has
              * an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.material", with all
@@ -972,37 +1056,78 @@
             },
 
             /**
-             * The default {{#crossLink "MorphTargets"}}MorphTargets{{/crossLink}} provided by this Scene.
+             * The default {{#crossLink "GhostMaterial"}}GhostMaterial{{/crossLink}} for this Scene.
              *
-             * This {{#crossLink "MorphTargets"}}MorphTargets{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.morphTargets",
-             * with all other properties initialised to their default values.
+             * This {{#crossLink "GhostMaterial"}}GhostMaterial{{/crossLink}} has
+             * an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.ghostMaterial", with all
+             * other properties initialised to their default values.
              *
              * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "MorphTargets"}}MorphTargets{{/crossLink}} by default.
-             * @property morphTargets
-             * @private
+             * {{#crossLink "GhostMaterial"}}GhostMaterial{{/crossLink}} by default.
+             * @property ghostMaterial
              * @final
-             * @type MorphTargets
+             * @type GhostMaterial
              */
-            morphTargets: {
+            ghostMaterial: {
                 get: function () {
-                    return this.components["default.morphTargets"] ||
-                        new xeogl.MorphTargets(this, {
-                            id: "default.morphTargets",
+                    return this.components["default.ghostMaterial"] ||
+                        new xeogl.GhostMaterial(this, {
+                            id: "default.ghostMaterial",
+                            preset:"sepia",
                             isDefault: true
                         });
                 }
             },
 
             /**
-             * The default {{#crossLink "Viewport"}}{{/crossLink}} provided by this Scene.
+             * The default {{#crossLink "HighlightMaterial"}}HighlightMaterial{{/crossLink}} for this Scene.
              *
-             * This {{#crossLink "Viewport"}}{{/crossLink}} has
-             * an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.viewport" and
-             * {{#crossLink "Viewport/autoBoundary:property"}}{{/crossLink}} set ````true````.
+             * This {{#crossLink "HighlightMaterial"}}HighlightMaterial{{/crossLink}} has
+             * an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.highlightMaterial", with all
+             * other properties initialised to their default values.
              *
              * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "Viewport"}}{{/crossLink}} by default.
+             * {{#crossLink "HighlightMaterial"}}HighlightMaterial{{/crossLink}} by default.
+             * @property highlightMaterial
+             * @final
+             * @type HighlightMaterial
+             */
+            highlightMaterial: {
+                get: function () {
+                    return this.components["default.highlightMaterial"] ||
+                        new xeogl.GhostMaterial(this, {
+                            id: "default.highlightMaterial",
+                            preset:"yellowHighlight",
+                            isDefault: true
+                        });
+                }
+            },
+
+            /**
+             * The default {{#crossLink "OutlineMaterial"}}OutlineMaterial{{/crossLink}} for this Scene.
+             *
+             * This {{#crossLink "OutlineMaterial"}}OutlineMaterial{{/crossLink}} has
+             * an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.outlineMaterial", with all
+             * other properties initialised to their default values.
+             *
+             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink "OutlineMaterial"}}OutlineMaterial{{/crossLink}} by default.
+             * @property outlineMaterial
+             * @final
+             * @type OutlineMaterial
+             */
+            outlineMaterial: {
+                get: function () {
+                    return this.components["default.outlineMaterial"] ||
+                        new xeogl.OutlineMaterial(this, {
+                            id: "default.outlineMaterial",
+                            isDefault: true
+                        });
+                }
+            },
+
+            /**
+             * The {{#crossLink "Viewport"}}{{/crossLink}} belonging to this Scene.
              *
              * @property viewport
              * @final
@@ -1010,144 +1135,137 @@
              */
             viewport: {
                 get: function () {
-                    return this.components["default.viewport"] ||
-                        new xeogl.Viewport(this, {
-                            id: "default.viewport",
-                            autoBoundary: true,
-                            isDefault: true
-                        });
+                    return this._viewport;
                 }
             },
 
             /**
-             * The default {{#crossLink "Outline"}}{{/crossLink}} provided by this Scene.
+             * The {{#crossLink "Lights"}}Lights{{/crossLink}} belonging to this Scene.
              *
-             * This {{#crossLink "Outline"}}{{/crossLink}} has
-             * an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.outline",
-             * a {{#crossLink "Outline/color:property"}}color{{/crossLink}} set to ````[1,1,0]````
-             * a {{#crossLink "Outline/thickness:property"}}thickness{{/crossLink}} set to ````15````.
-             *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "Outline"}}{{/crossLink}} by default.
-             *
-             * @property outline
+             * @property lights
              * @final
-             * @type Outline
+             * @type Lights
              */
-            outline: {
+            lights: {
                 get: function () {
-                    return this.components["default.outline"] ||
-                        new xeogl.Outline(this, {
-                            id: "default.outline",
-                            thickness: 15,
-                            color: [1,1,0]
-                        });
+                    return this._lights;
                 }
             },
 
             /**
-             * The default {{#crossLink "XRay"}}{{/crossLink}} provided by this Scene.
+             * The {{#crossLink "Camera"}}Camera{{/crossLink}} belonging to this Scene.
              *
-             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "XRay"}}{{/crossLink}} by default.
-             *
-             * @property xray
+             * @property camera
              * @final
-             * @type XRay
+             * @type Camera
              */
-            xray: {
+            camera: {
                 get: function () {
-                    return this.components["default.xray"] ||
-                        new xeogl.XRay(this, {
-                            id: "default.xray",
-
-                            // TODO: defaults
-                            foo: 1,
-                            bar: 2
-                        });
+                    return this._camera;
                 }
             },
 
             /**
-             * The World-space 3D boundary of this Scene.
+             * The {{#crossLink "Clips"}}Clips{{/crossLink}} belonging to this Scene.
              *
-             * The {{#crossLink "Boundary3D"}}{{/crossLink}} will be lazy-initialized the first time
-             * you reference this property, and will persist on this Scene until you
-             * call {{#crossLink "Component/destroy:method"}}{{/crossLink}} on the {{#crossLink "Boundary3D"}}{{/crossLink}}
-             * again. The property will then be set to a fresh {{#crossLink "Boundary3D"}}{{/crossLink}} instance
-             * next time you reference it.
-             *
-             * <h4>Performance</h4>
-             *
-             * To minimize performance overhead, only reference this property if you need it, and destroy
-             * the {{#crossLink "Boundary3D"}}{{/crossLink}} as soon as you don't need it anymore.
-             *
-             * @property worldBoundary
-             * @type Boundary3D
+             * @property clips
              * @final
+             * @type Clips
              */
-            worldBoundary: {
+            clips: {
+                get: function () {
+                    return this._clips;
+                }
+            },
+
+            /**
+             * World-space axis-aligned 3D boundary (AABB) of this Scene.
+             *
+             * The AABB is represented by a six-element Float32Array containing the min/max extents of the
+             * axis-aligned volume, ie. ````[xmin, ymin,zmin,xmax,ymax, zmax]````.
+             *
+             * @property aabb
+             * @final
+             * @type {Float32Array}
+             */
+            aabb: {
 
                 get: function () {
 
-                    if (!this._worldBoundary) {
+                    if (this._aabbDirty) {
 
-                        var self = this;
-                        var aabb = xeogl.math.AABB3();
+                        if (!this._aabb) {
+                            this._aabb = xeogl.math.AABB3();
+                        }
 
-                        this._worldBoundary = new xeogl.Boundary3D(this.scene, {
+                        var xmin = xeogl.math.MAX_DOUBLE;
+                        var ymin = xeogl.math.MAX_DOUBLE;
+                        var zmin = xeogl.math.MAX_DOUBLE;
+                        var xmax = -xeogl.math.MAX_DOUBLE;
+                        var ymax = -xeogl.math.MAX_DOUBLE;
+                        var zmax = -xeogl.math.MAX_DOUBLE;
 
-                            getDirty: function () {
-                                return self._worldBoundaryDirty;
-                            },
+                        var aabb;
 
-                            getAABB: function () {
+                        var entities = this.entities;
+                        var entity;
 
-                                xeogl.math.collapseAABB3(aabb);
+                        for (var entityId in entities) {
+                            if (entities.hasOwnProperty(entityId)) {
 
-                                var entities = self.entities;
-                                var entity;
+                                entity = entities[entityId];
 
-                                for (var entityId in entities) {
-                                    if (entities.hasOwnProperty(entityId)) {
-
-                                        entity = entities[entityId];
-
-                                        if (entity.collidable) {
-
-                                            // Only include boundaries of entities that are allowed
-                                            // to contribute to the size of an enclosing boundary
-
-                                            xeogl.math.expandAABB3(aabb, entity.worldBoundary.aabb);
-                                        }
-                                    }
+                                if (!entity.collidable) {
+                                    continue;
                                 }
 
-                                return aabb;
+                                aabb = entity.aabb;
+
+                                if (!aabb) {
+                                    this.error("internal error: entity without aabb: " + entityId);
+                                    continue;
+                                }
+
+                                if (aabb[0] < xmin) {
+                                    xmin = aabb[0];
+                                }
+                                if (aabb[1] < ymin) {
+                                    ymin = aabb[1];
+                                }
+                                if (aabb[2] < zmin) {
+                                    zmin = aabb[2];
+                                }
+                                if (aabb[3] > xmax) {
+                                    xmax = aabb[3];
+                                }
+                                if (aabb[4] > ymax) {
+                                    ymax = aabb[4];
+                                }
+                                if (aabb[5] > zmax) {
+                                    zmax = aabb[5];
+                                }
                             }
-                        });
+                        }
 
-                        this._worldBoundary.on("destroyed",
-                            function () {
+                        this._aabb[0] = xmin;
+                        this._aabb[1] = ymin;
+                        this._aabb[2] = zmin;
+                        this._aabb[3] = xmax;
+                        this._aabb[4] = ymax;
+                        this._aabb[5] = zmax;
 
-                                // Now #._setWorldBoundaryDirty won't fire "update"
-                                // events on the #._worldBoundary every time its called
-
-                                self._worldBoundary = null;
-                            });
-
-                        this._setWorldBoundaryDirty();
+                        this._aabbDirty = false;
                     }
 
-                    return this._worldBoundary;
+                    return this._aabb;
                 }
             }
         },
 
-        _setWorldBoundaryDirty: function () {
-            this._worldBoundaryDirty = true;
-            if (this._worldBoundary) {
-                this._worldBoundary.fire("updated", true);
+        _setBoundaryDirty: function () {
+            if (!this._aabbDirty) {
+                this._aabbDirty = true;
+                this.fire("boundary");
             }
         },
 
@@ -1305,9 +1423,9 @@
 
                         if (hit.primIndex !== undefined && hit.primIndex > -1) {
 
-                            var geometry = entity.geometry;
+                            var geometry = entity.geometry._state;
 
-                            if (geometry.primitive === "triangles") {
+                            if (geometry.primitiveName === "triangles") {
 
                                 // Triangle picked; this only happens when the
                                 // Entity has a Geometry that has primitives of type "triangle"
@@ -1318,7 +1436,7 @@
 
                                 var i = hit.primIndex; // Indicates the first triangle index in the indices array
 
-                                var indices = geometry.indices;
+                                var indices = geometry.indices; // Indices into geometry arrays, not into shared VertexBufs
                                 var positions = geometry.positions;
 
                                 var ia3;
@@ -1327,7 +1445,7 @@
 
                                 if (indices) {
 
-                                    var ia = indices[i];
+                                    var ia = indices[i + 0];
                                     var ib = indices[i + 1];
                                     var ic = indices[i + 2];
 
@@ -1348,28 +1466,38 @@
                                     ic3 = ib3 + 3;
                                 }
 
-                                a[0] = positions[ia3];
+                                a[0] = positions[ia3 + 0];
                                 a[1] = positions[ia3 + 1];
                                 a[2] = positions[ia3 + 2];
 
-                                b[0] = positions[ib3];
+                                b[0] = positions[ib3 + 0];
                                 b[1] = positions[ib3 + 1];
                                 b[2] = positions[ib3 + 2];
 
-                                c[0] = positions[ic3];
+                                c[0] = positions[ic3 + 0];
                                 c[1] = positions[ic3 + 1];
                                 c[2] = positions[ic3 + 2];
 
-                                // Attempt to ray-pick the triangle; in World-space, fire a ray
-                                // from the eye position through the mouse position
-                                // on the perspective projection plane
+                                if (geometry.compressed) {
+
+                                    // Decompress vertex positions
+
+                                    var positionsDecodeMatrix = geometry.positionsDecodeMatrix;
+                                    if (positionsDecodeMatrix) {
+                                        math.decompressPosition(a, positionsDecodeMatrix, a);
+                                        math.decompressPosition(b, positionsDecodeMatrix, b);
+                                        math.decompressPosition(c, positionsDecodeMatrix, c);
+                                    }
+                                }
+
+                                // Attempt to ray-pick the triangle in local space
 
                                 var canvasPos;
 
                                 if (params.canvasPos) {
                                     canvasPos = params.canvasPos;
                                     hit.canvasPos = params.canvasPos;
-                                    math.canvasPosToLocalRay(entity.camera, entity, canvasPos, localRayOrigin, localRayDir);
+                                    math.canvasPosToLocalRay(this.camera, entity, canvasPos, localRayOrigin, localRayDir);
 
                                 } else if (params.origin && params.direction) {
                                     math.worldRayToLocalRay(entity, params.origin, params.direction, localRayOrigin, localRayDir);
@@ -1404,7 +1532,7 @@
 
                                 // Get View-space cartesian coordinates of the ray-triangle intersection
 
-                                math.transformVec4(entity.camera.view.matrix, tempVec4b, tempVec4c);
+                                math.transformVec4(entity.scene.camera.matrix, tempVec4b, tempVec4c);
 
                                 viewPos[0] = tempVec4c[0];
                                 viewPos[1] = tempVec4c[1];
@@ -1424,24 +1552,39 @@
 
                                 if (normals) {
 
-                                    na[0] = normals[ia3];
-                                    na[1] = normals[ia3 + 1];
-                                    na[2] = normals[ia3 + 2];
+                                    if (geometry.compressed) {
 
-                                    nb[0] = normals[ib3];
-                                    nb[1] = normals[ib3 + 1];
-                                    nb[2] = normals[ib3 + 2];
+                                        // Decompress vertex normals
 
-                                    nc[0] = normals[ic3];
-                                    nc[1] = normals[ic3 + 1];
-                                    nc[2] = normals[ic3 + 2];
+                                        var ia2 = ia * 2;
+                                        var ib2 = ib * 2;
+                                        var ic2 = ic * 2;
+
+                                        math.octDecodeVec2(normals.subarray(ia2, ia2 + 2), na);
+                                        math.octDecodeVec2(normals.subarray(ib2, ib2 + 2), nb);
+                                        math.octDecodeVec2(normals.subarray(ic2, ic2 + 2), nc);
+
+                                    } else {
+
+                                        na[0] = normals[ia3];
+                                        na[1] = normals[ia3 + 1];
+                                        na[2] = normals[ia3 + 2];
+
+                                        nb[0] = normals[ib3];
+                                        nb[1] = normals[ib3 + 1];
+                                        nb[2] = normals[ib3 + 2];
+
+                                        nc[0] = normals[ic3];
+                                        nc[1] = normals[ic3 + 1];
+                                        nc[2] = normals[ic3 + 2];
+                                    }
 
                                     var normal = math.addVec3(math.addVec3(
                                         math.mulVec3Scalar(na, bary[0], tempVec3),
                                         math.mulVec3Scalar(nb, bary[1], tempVec3b), tempVec3c),
                                         math.mulVec3Scalar(nc, bary[2], tempVec3d), tempVec3e);
 
-                                    hit.normal = math.transformVec3(entity.transform.leafMatrix, normal, tempVec3f);
+                                    hit.normal = math.transformVec3(entity.transform.leafNormalMatrix, normal, tempVec3f);
                                 }
 
                                 // Get interpolated UV coordinates
@@ -1458,6 +1601,18 @@
 
                                     uvc[0] = uvs[(ic * 2)];
                                     uvc[1] = uvs[(ic * 2) + 1];
+
+                                    if (geometry.compressed) {
+
+                                        // Decompress vertex UVs
+
+                                        var uvDecodeMatrix = geometry.uvDecodeMatrix;
+                                        if (uvDecodeMatrix) {
+                                            math.decompressUV(uva, uvDecodeMatrix, uva);
+                                            math.decompressUV(uvb, uvDecodeMatrix, uvb);
+                                            math.decompressUV(uvc, uvDecodeMatrix, uvc);
+                                        }
+                                    }
 
                                     hit.uv = math.addVec3(
                                         math.addVec3(
@@ -1500,241 +1655,6 @@
             this._dirtyEntities = {};
         },
 
-        /**
-         * Convenience method for creating or reusing a Component within this Scene.
-         *
-         * You would typically use this method to conveniently instantiate components that you'd want to
-         * share (ie. "instance") among your {{#crossLink "Entity"}}Entities{{/crossLink}}.
-         *
-         * The method is given a component type, share ID and constructor attributes, like so:
-         *
-         * ````javascript
-         * var material = myScene.getComponent("xeogl.PhongMaterial", "myMaterial", { diffuse: [1,0,0] });
-         * ````
-         *
-         * The first time you call this method for the given ````type```` and ````instanceId````, this method will create the
-         * {{#crossLink "PhongMaterial"}}{{/crossLink}}, passing the given  attributes to the component's constructor.
-         *
-         * If you call this method again, specifying the same ````type```` and ````instanceId````, the method will return the same
-         * component instance that it returned the first time, and will ignore the attributes:
-         *
-         * ````javascript
-         * var material2 = myScene.getComponent("xeogl.PhongMaterial", "myMaterial", { specular: [1,1,0] });
-         * ````
-         *
-         * Each time you call this method with the same ````type```` and ````instanceId````, the Scene will internally increment a
-         * reference count for the component instance. You can release the shared component instance with a call to
-         * {{#crossLink "Scene/putSharedComponent:method"}}{{/crossLink}}, and once you have released it as many
-         * times as you got it, the Scene will destroy the component.
-         *
-         * @method _getSharedComponent
-         * @private
-         * @param {*} [cfg] Attributes for the component instance - only used if this is the first time you are getting
-         * the component, ignored when reusing an existing shared component.
-         * @param {String|Number} instanceId Identifies the shared component instance. Note that this is not used as the ID of the
-         * component - you can specify the component ID in the ````cfg```` parameter.
-         * @returns {*}
-         */
-        _getSharedComponent: function (cfg, instanceId) {
-
-            var type;
-            var claz;
-
-            if (xeogl._isObject(cfg)) { // Component config given
-
-                type = cfg.type || "xeogl.Component";
-                claz = xeogl[type.substring(6)];
-
-            } else if (xeogl._isString(cfg)) {
-
-                type = cfg;
-                claz = xeogl[type.substring(6)];
-
-            } else {
-
-                claz = cfg;
-                type = cfg.prototype.type;
-
-                // TODO: catch unknown component class
-            }
-
-            if (!claz) {
-                this.error("Component type not found: " + type);
-                return;
-            }
-
-            if (!xeogl._isComponentType(type, "xeogl.Component")) {
-                this.error("Expected a xeogl.Component type or subtype");
-                return;
-            }
-
-            var component;
-
-            var fullShareId;
-
-            if (instanceId !== undefined) {
-
-                fullShareId = "__shared." + type + "." + instanceId;
-
-                component = this._sharedComponents[fullShareId];
-
-                if (component) {
-
-                    // Component already exists;
-                    // ignore constructor attributes, bump share count and return component
-
-                    this._sharedCounts[fullShareId]++;
-                    return component;
-                }
-            }
-
-            // Component does not yet exist
-
-            if (cfg && cfg.id && this.components[cfg.id]) {
-                this.error("Component " + xeogl._inQuotes(cfg.id) + " already exists in Scene - ignoring ID, will randomly-generate instead");
-                //cfg.id = undefined;
-                return null;
-            }
-
-            component = new claz(this, cfg);
-
-            if (instanceId !== undefined) {
-
-                this._sharedComponents[fullShareId] = component;
-                this._sharedComponentIDs[component.id] = fullShareId;
-                this._sharedCounts[fullShareId] = 1;
-
-                component.on("destroyed", function () {
-                    if (this._sharedComponentIDs[component.id] !== undefined) {
-                        this._putSharedComponent(component);
-                    }
-                }, this);
-            }
-
-            return component;
-        },
-
-        /**
-         * Releases a shared component instance that was got earlier
-         * with {{#crossLink "Scene/getSharedComponent:method"}}{{/crossLink}}.
-         *
-         * @param {Component} component The shared component instance.
-         *
-         */
-        _putSharedComponent: function (component) {
-
-            var instanceId = this._sharedComponentIDs[component.id];
-
-            if (instanceId !== undefined) {
-
-                if (--this._sharedCounts[instanceId] > 0) {
-
-                    // Releasing a reference; other references remain
-
-                    return;
-                }
-
-                delete this._sharedComponents[instanceId];
-                delete this._sharedComponentIDs[component.id];
-                delete this._sharedCounts[instanceId];
-            }
-
-            component.destroy();
-        },
-
-        /**
-         * Compiles and renders this Scene
-         * @private
-         */
-        _compile: function (pass, clear, forceRender) {
-
-            // Compile dirty entities into this._renderer
-
-            var countCompiledEntities = 0;
-            var entity;
-
-            for (var id in this._dirtyEntities) {
-                if (this._dirtyEntities.hasOwnProperty(id)) {
-                    entity = this._dirtyEntities[id];
-                    if (entity._valid()) {
-                        entity._compileAsynch(); // FIXME: asynch compilation breaks when destroying xeogl.Clip components
-                        //entity._compile();
-                        delete this._dirtyEntities[id];
-                        countCompiledEntities++;
-                    }
-                }
-            }
-
-            if (countCompiledEntities > 0) {
-                //    this.log("Compiled " + countCompiledEntities + " xeogl.Entity" + (countCompiledEntities > 1 ? "s" : ""));
-            }
-
-            // Render a frame
-            // Only renders if there was a state update, or forced
-
-            this._renderer.render({
-                pass: pass,
-                clear: clear, // Clear buffers?
-                force: forceRender
-            });
-
-            // If the canvas is not transparent and has no background image or color assigned,
-            // then set its color to whatever ambient color the renderer just rendered
-
-            var canvas = this.canvas;
-
-            if (!canvas.transparent && !canvas.backgroundImage && !canvas.backgroundColor) {
-
-                var ambientColor = this._renderer.ambientColor;
-
-                if (!this._lastAmbientColor ||
-                    this._lastAmbientColor[0] !== ambientColor[0] ||
-                    this._lastAmbientColor[1] !== ambientColor[1] ||
-                    this._lastAmbientColor[2] !== ambientColor[2] ||
-                    this._lastAmbientColor[3] !== ambientColor[3]) {
-
-                    canvas.backgroundColor = ambientColor;
-
-                    if (!this._lastAmbientColor) {
-                        this._lastAmbientColor = xeogl.math.vec4();
-                    }
-
-                    this._lastAmbientColor.set(ambientColor);
-                }
-            } else {
-                this._lastAmbientColor = null;
-            }
-        },
-
-        _getJSON: function () {
-
-            // Get list of component JSONs, in ascending order of component
-            // creation. We need them in that order so that any dependencies
-            // that exist between them are resolved correctly as the
-            // components are instantiawhen when we load the JSON again.
-
-            var component;
-            var componentJSONs = [];
-
-            for (var id in this.components) {
-                if (this.components.hasOwnProperty(id)) {
-
-                    component = this.components[id];
-
-                    if (!component._getJSON) {
-                        continue;
-                    }
-
-                    componentJSONs.push(component.json);
-                }
-            }
-
-            return {
-                passes: this._passes,
-                clearEachPass: this._clearEachPass,
-                components: componentJSONs
-            };
-        },
 
         _destroy: function () {
             this.clear();

@@ -119,8 +119,6 @@
             /**
              * Vector indicating the axis of rotation.
              *
-             * Fires an {{#crossLink "Rotate/xyz:event"}}{{/crossLink}} event on change.
-             *
              * @property xyz
              * @default [0,1,0]
              * @type {Float32Array}
@@ -128,18 +126,8 @@
             xyz: {
 
                 set: function (value) {
-
                     (this._xyz = this._xyz || new xeogl.math.vec3()).set(value || [0, 1, 0]);
-
                     this._needUpdate(0);
-
-                    /**
-                     Fired whenever this Rotate's {{#crossLink "Rotate/xyz:property"}}{{/crossLink}} property changes.
-
-                     @event xyz
-                     @param value {Float32Array} The property's new value
-                     */
-                    this.fire("xyz", this._xyz);
                 },
 
                 get: function () {
@@ -150,8 +138,6 @@
             /**
              * Angle of rotation in degrees.
              *
-             * Fires an {{#crossLink "Rotate/angle:event"}}{{/crossLink}} event on change.
-             *
              * @property angle
              * @default 0
              * @type {Number}
@@ -159,35 +145,14 @@
             angle: {
 
                 set: function (value) {
-
                     this._angle = value || 0;
-
                     this._needUpdate(0);
-
-                    /**
-                     Fired whenever this Rotate's {{#crossLink "Rotate/angle:property"}}{{/crossLink}} property changes.
-
-                     @event angle
-                     @param value {Number} The property's new value
-                     */
-                    this.fire("angle", this._angle);
                 },
 
                 get: function () {
                     return this._angle;
                 }
             }
-        },
-
-        _getJSON: function () {
-            var json = {
-                xyz: xeogl.math.vecToArray(this._xyz),
-                angle: this._angle
-            };
-            if (this._parent) {
-                json.parent = this._parent.id;
-            }
-            return json;
         }
     });
 

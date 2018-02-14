@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
 
     <script src="js/models/sceneJSModel.js"></script>
 
@@ -41,11 +41,11 @@
     });
 
     // Set initial camera position
-    var view = model.scene.camera.view;
-    view.eye = [0, 0, -25];
-    view.look = [0, 0, 0];
-    view.up = [0, 1, 0];
-    view.rotateEyeX(30);
+    var camera = model.scene.camera;
+    camera.eye = [0, 0, -25];
+    camera.look = [0, 0, 0];
+    camera.up = [0, 1, 0];
+    camera.orbitPitch(30);
 
     // Spin the model when it has loaded;
     // we must wait for the model to load before we access its components
@@ -57,7 +57,7 @@
     });
 
     // Allow user camera control
-    new xeogl.InputControl();
+    new xeogl.CameraControl();
 
 </script>
 </body>

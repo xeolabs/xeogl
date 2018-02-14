@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
 
     <script src="js/debug/debug.js"></script>
 
@@ -65,7 +65,9 @@
     var geometry = new xeogl.SphereGeometry({
         radius: 1.0,
         heightSegments: 40,
-        widthSegments: 40
+        widthSegments: 40,
+        combined: true,
+        compressed: true
     });
 
     var material = new xeogl.PhongMaterial({
@@ -92,20 +94,9 @@
 
     var scene = xeogl.scene;
 
-
-    scene.camera.view.zoom(20);
-    scene.camera.view.rotateEyeY(45);
-    scene.camera.view.rotateEyeX(45);
-
-    // Allow camera interaction
-
-    var inputControl = new xeogl.InputControl();
-
-
-    // Whenever mouse moves, attempt to pick a triangle on a Entity,
-    // then show the cartesian coordinates at the picked position within
-    // the triangle, along with the interpolated normal vector and UV coordinates
-    // at the picked position.
+    scene.camera.zoom(20);
+    scene.camera.orbitYaw(45);
+    scene.camera.orbitPitch(45);
 
     var lastCoords;
 
@@ -114,35 +105,18 @@
         lastCoords = coords;
     });
 
-    inputControl.cameraFlight.on("started", function () {
-        showUVPos(null);
-        xeogl.debug.hide("cone");
-    });
-
-    inputControl.cameraFlight.on("stopped", function () {
-        if (lastCoords) {
-            pick(lastCoords);
-        }
-    });
-
     function pick(coords) {
 
-        // Hide visual indicators
-
         showUVPos(null);
-
-        xeogl.debug.hide("cone");
-
-        // Pick a primitive on some Entity
 
         var hit = scene.pick({
             canvasPos: coords,
             pickSurface: true
         });
 
-        if (hit) {
+        scene._renderer.imageDirty();
 
-            // Entity picked
+        if (hit) {
 
             if (hit.worldPos) {
                 showWorldPos(hit.worldPos, hit.normal);
@@ -157,6 +131,8 @@
             // No Triangle picked
         }
     }
+
+    new xeogl.CameraControl(); // Camera interaction only, picking not used
 
 </script>
 </body>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="js/libs/dat.gui.min.js"></script>
+<body>
+
+<div id="info">
+    <h1><a href="../docs/classes/CameraFlightAnimation.html" target="_parent">CameraFlightAnimation</a> - flying or
+        jumping to
+        random targets</h1>
+</div>
+
+<div id="dat-gui-container">
+</div>
+
+<script>
+
+    //------------------------------------------------------------------
+    // Create some random entities
+    //------------------------------------------------------------------
+
+    var numEntities = 400;
+    var entities = [];
+    var entity;
+
+    var cylinder = new xeogl.CylinderGeometry();
+
+    var material = new xeogl.PhongMaterial({
+        diffuseMap: new xeogl.Texture({
+            src: "textures/diffuse/uvGrid2.jpg"
+        })
+    });
+
+    for (var i = 0; i < numEntities; i++) {
+
+        var s = Math.random() * 5;
+
+        entity = new xeogl.Entity({
+            geometry: cylinder,
+            material: material,
+            transform: new xeogl.Scale({
+                xyz: [2, 1 + Math.random() * 3, 2],
+                parent: new xeogl.Rotate({
+                    xyz: [Math.random(), Math.random(), Math.random()], angle: Math.random() * 360,
+                    parent: new xeogl.Translate({
+                        xyz: [Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50]
+                    })
+                })
+            })
+        });
+
+        entities.push(entity)
+    }
+
+    //------------------------------------------------------------------
+    // Periodically fly or jump to next target
+    //------------------------------------------------------------------
+
+    var targetType = "entity";
+    var fly = true;
+    var duration = 2.0;
+    var fit = true;
+    var fitFOV = 45;
+    var spin = true;
+
+    var cameraFlight = new xeogl.CameraFlightAnimation();
+
+    function next() {
+
+        xeogl.scheduleTask(function () {
+
+            cameraFlight.duration = duration;
+            cameraFlight.fit = fit;
+            cameraFlight.fitFOV = fitFOV;
+
+            entity = entities[Math.floor(Math.random() * numEntities)];
+
+            if (fly) {
+
+                switch (targetType) {
+                    case "entity":
+                        cameraFlight.flyTo(entity); // Not using completion callback - using timeout below
+                        break;
+
+                    case "entity.aabb":
+                        cameraFlight.flyTo(entity.aabb); // Not using completion callback - using timeout below
+                        break;
+                }
+
+            } else {
+
+                switch (targetType) {
+                    case "entity":
+                        cameraFlight.jumpTo(entity);
+                        break;
+
+                    case "entity.aabb":
+                        cameraFlight.jumpTo(entity.aabb);
+                        break;
+                }
+            }
+
+            setTimeout(next, (duration + 1) * 1500);
+        });
+    }
+
+    next();
+
+    //------------------------------------------------------------------
+    // Slowly the eye position about the look position.
+    //------------------------------------------------------------------
+
+    entity.scene.on("tick", function () {
+        if (spin) {
+            var camera = entity.scene.camera;
+            camera.orbitYaw(0.1);
+            camera.orbitPitch(0.07);
+        }
+    });
+
+    //------------------------------------------------------------------
+    // Allow camera interaction, if permitted by CameraFlightAnimation
+    //------------------------------------------------------------------
+
+    new xeogl.CameraControl();
+
+    //------------------------------------------------------------------
+    // GUI
+    //------------------------------------------------------------------
+
+    var Menu = function () {
+
+        this.message = "xeogl.CameraFlightAnimation";
+
+        this["projection"] = entity.scene.camera.projection;
+        this["target"] = targetType;
+        this["fly"] = fly;
+        this["duration"] = duration;
+        this["fit"] = fit;
+        this["fitFOV"] = fitFOV;
+        this["spin"] = spin;
+
+        var self = this;
+
+        var update = function () {
+            entity.scene.camera.projection = self["projection"];
+            targetType = self["target"];
+            fly = !!self["fly"];
+            duration = self["duration"];
+            fit = !!self["fit"];
+            fitFOV = self["fitFOV"];
+            spin = self["spin"];
+            requestAnimationFrame(update);
+        };
+
+        update();
+    };
+
+    var gui = new dat.GUI({autoPlace: false});
+    document.getElementById('dat-gui-container').appendChild(gui.domElement);
+    var menu = new Menu();
+    var folder = gui.addFolder('xeogl.CameraFlightAnimation');
+    folder.add(menu, 'projection', ["perspective", "ortho", "frustum"]);
+    folder.add(menu, 'target', ["entity", "entity.aabb"]);
+    folder.add(menu, 'fly', fly);
+    folder.add(menu, 'duration', 0.1, 10.0);
+    folder.add(menu, 'fit', fit);
+    folder.add(menu, 'fitFOV', 5, 160);
+    folder.add(menu, 'spin', spin);
+    folder.open();
+
+</script>
+</body>
+</html>

@@ -14,7 +14,7 @@
  @param [cfg.planeSize] {Float32Array} The width and height of the ClipHelper plane indicator.
  @param [cfg.autoPlaneSize=false] {Boolean} Indicates whether or not this ClipHelper's
  {{#crossLink "ClipHelper/planeSize:property"}}{{/crossLink}} is automatically sized to fit within
- the {{#crossLink "Scene/worldBoundary:property"}}Scene's worldBoundary{{/crossLink}}.
+ the {{#crossLink "Scene/aabb:property"}}Scene's boundary{{/crossLink}}.
  */
 (function () {
 
@@ -84,7 +84,7 @@
              * The width and height of the ClipHelper plane indicator.
              *
              * When no value is specified, will automatically size to fit within the
-             * {{#crossLink "Scene/worldBoundary:property"}}Scene's worldBoundary{{/crossLink}}.
+             * {{#crossLink "Scene/aabb:property"}}Scene's boundary{{/crossLink}}.
              *
              * Fires an {{#crossLink "ClipHelper/planeSize:event"}}{{/crossLink}} event on change.
              *
@@ -116,7 +116,7 @@
              * generated or not.
              *
              * When auto-generated, {{#crossLink "ClipHelper/planeSize:property"}}{{/crossLink}} will automatically size
-             * to fit within the {{#crossLink "Scene/worldBoundary:property"}}Scene's worldBoundary{{/crossLink}}.
+             * to fit within the {{#crossLink "Scene/aabb:property"}}Scene's boundary{{/crossLink}}.
              *
              * Fires an {{#crossLink "ClipHelper/autoPlaneSize:event"}}{{/crossLink}} event on change.
              *

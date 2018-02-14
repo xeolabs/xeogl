@@ -106,15 +106,11 @@
             this.xyz = cfg.xyz;
         },
 
-        _update: function () {
-            this.matrix = xeogl.math.translationMat4v(this._xyz, this._matrix);
-        },
-
         _props: {
 
             /**
              * Vector indicating a translation amount for each axis.
-             * Fires an {{#crossLink "Translate/xyz:event"}}{{/crossLink}} event on change.
+             *
              * @property xyz
              * @default [0,0,0]
              * @type {Float32Array}
@@ -122,34 +118,14 @@
             xyz: {
 
                 set: function (value) {
-
                     (this._xyz = this._xyz || new xeogl.math.vec3()).set(value || [0, 0, 0]);
-
-                    this._needUpdate(0);
-
-                    /**
-                     Fired whenever this Translate's {{#crossLink "Translate/xyz:property"}}{{/crossLink}} property changes.
-                     @event xyz
-                     @param value {Float32Array} The property's new value
-                     */
-                    this.fire("xyz", this._xyz);
+                    this.matrix = xeogl.math.translationMat4v(this._xyz, this._matrix);
                 },
 
                 get: function () {
                     return this._xyz;
                 }
             }
-        },
-
-        _getJSON: function () {
-            var json = {
-                xyz: xeogl.math.vecToArray(this._xyz)
-            };
-            if (this._parent) {
-                json.parent = this._parent.id;
-            }
-            return json;
         }
     });
-
 })();

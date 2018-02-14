@@ -16,6 +16,7 @@
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this CubeTexture.
  @param [cfg.src=null] {Array of String} Paths to six image files to load into this CubeTexture.
  @param [cfg.flipY=false] {Boolean} Flips this CubeTexture's source data along its vertical axis when true.
+ @param [cfg.encoding="linear"] {String} Encoding format.  See the {{#crossLink "CubeTexture/encoding:property"}}{{/crossLink}} property for more info.
  @extends Component
  */
 (function () {
@@ -42,6 +43,7 @@
 
             this.flipY = cfg.flipY;
             this.src = cfg.src; // Image file}
+            this.encoding = cfg.encoding;
 
             xeogl.stats.memory.textures++;
         },
@@ -69,16 +71,13 @@
 
             if (this._imageDirty) {
                 this._createTexture();
-                this._renderer.imageDirty = true;
+                this._renderer.imageDirty();
             }
         },
 
         _loadSrc: function (src) {
 
             var self = this;
-
-            var spinner = this.scene.canvas.spinner;
-            var spinnerTextures = spinner.textures;
 
             this._images = [];
 
@@ -100,7 +99,7 @@
                             return;
                         }
 
-                        _image = xeogl.renderer.webgl.ensureImageSizePowerOfTwo(_image);
+                        _image = xeogl.renderer.ensureImageSizePowerOfTwo(_image);
 
                         self._images[index] = _image;
 
@@ -109,10 +108,6 @@
                         if (numLoaded === 6) {
 
                             self._imageDirty = true;
-
-                            if (spinnerTextures) {
-                                spinner.processes--;
-                            }
 
                             self._needUpdate();
 
@@ -129,9 +124,6 @@
 
                 image.onerror = function () {
                     loadFailed = true;
-                    if (spinnerTextures) {
-                        spinner.processes--;
-                    }
 
                 };
 
@@ -146,7 +138,7 @@
             var texture = this._state.texture;
 
             if (!texture) {
-                texture = new xeogl.renderer.webgl.Texture2D(gl, gl.TEXTURE_CUBE_MAP);
+                texture = new xeogl.renderer.Texture2D(gl, gl.TEXTURE_CUBE_MAP);
                 this._state.texture = texture;
             }
 
@@ -233,20 +225,42 @@
                 get: function () {
                     return this._state.flipY;
                 }
+            },
+
+            /**
+             The CubeTexture's encoding format.
+
+             Supported values are:
+
+             * "linear" (default)
+             * "sRGB"
+             * "gamma"
+
+             @property encoding
+             @default "linear"
+             @type String
+             */
+            encoding: {
+
+                set: function (value) {
+
+                    value = value || "linear";
+
+                    if (value !== "linear" && value !== "sRGB" && value !== "gamma") {
+                        this.error("Unsupported value for 'encoding': '" + value +  "' - supported values are 'linear', 'sRGB', 'gamma'. Defaulting to 'linear'.");
+
+                        value = "linear";
+                    }
+
+                    this._state.encoding = value;
+
+                    this.fire("dirty"); // Encoding/decoding is baked into shaders - need recompile of entities using this CubeTexture in their materials
+                },
+
+                get: function () {
+                    return this._state.encoding;
+                }
             }
-        },
-
-        _getJSON: function () {
-
-            var json =  {
-                src: this._src.slice()
-            };
-
-            if (this._state.flipY !== false) {
-                json.flipY = this._state.flipY;
-            }
-
-            return json;
         },
 
         _destroy: function () {

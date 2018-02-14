@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
@@ -31,7 +31,7 @@
         })
     });
 
-    entity.scene.camera.view.eye = [0, 0, -4];
+    entity.scene.camera.eye = [0, 0, -4];
 
     var s = .3;
     var inc = 0.05;
@@ -48,10 +48,10 @@
                     dir = -dir;
                 }
 
-                var view = entity.scene.camera.view;
+                var camera = entity.scene.camera;
 
-                view.rotateEyeY(0.6);
-                view.rotateEyeX(0.3);
+                camera.orbitYaw(0.6);
+                camera.orbitPitch(0.3);
             });
 
 

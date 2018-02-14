@@ -188,7 +188,6 @@
 
         __init: function () {
 
-
             var cfg = {};
 
             var arg1 = arguments[0];
@@ -203,53 +202,42 @@
              */
             this.scene = null;
 
+            var adopter = null;
+
             if (this.type === "xeogl.Scene") {
-
                 this.scene = this;
-
                 if (arg1) {
                     cfg = arg1;
                 }
 
             } else {
-
                 if (arg1) {
-
                     if (arg1.type === "xeogl.Scene") {
-
                         this.scene = arg1;
-                        this.owner = this.scene;
-
+                        adopter = this.scene;
                         if (arg2) {
                             cfg = arg2;
                         }
 
                     } else if (arg1.isType && arg1.isType("xeogl.Component")) {
-
                         this.scene = arg1.scene;
-                        this.owner = arg1;
-
+                        adopter = arg1;
                         if (arg2) {
                             cfg = arg2;
                         }
 
                     } else {
-
                         // Create this component within the default xeogl Scene
-
                         this.scene = xeogl.scene;
-                        this.owner = this.scene;
+                        adopter = this.scene;
 
                         cfg = arg1;
                     }
                 } else {
-
                     // Create this component within the default xeogl Scene
-
                     this.scene = xeogl.scene;
-                    this.owner = this.scene;
+                    adopter = this.scene;
                 }
-
                 this._renderer = this.scene._renderer;
             }
 
@@ -301,13 +289,11 @@
             this._eventCallDepth = 0; // Helps us catch stack overflows from recursive events
 
             // Components created with #create
-            this._sharedComponents = null; // Lazy-instantiated map
+            this._adoptees = null; // Lazy-instantiated map
 
             if (this.scene && this.type !== "xeogl.Scene") { // HACK: Don't add scene to itself
-
                 // Register this component on its scene
                 // Assigns this component an automatic ID if not yet assigned
-
                 this.scene._addComponent(this);
             }
 
@@ -319,8 +305,8 @@
                 this._init(cfg);
             }
 
-            if (this.owner) {
-                this.owner._adopt(this);
+            if (adopter) {
+                adopter._adopt(this);
             }
         },
 
@@ -384,17 +370,12 @@
          @returns {Boolean} True if this component is of given type or is subclass of the given type.
          */
         isType: function (type) {
-
             if (!xeogl._isString(type)) {
-
-                // Handle constructor arg
-
                 type = type.type;
                 if (!type) {
                     return false;
                 }
             }
-
             return xeogl._isComponentType(this.type, type);
         },
 
@@ -418,37 +399,27 @@
          * @param {Boolean} [forget=false] When true, does not retain for subsequent subscribers
          */
         fire: function (event, value, forget) {
-
             if (!this._events) {
                 this._events = {};
             }
-
             if (!this._eventSubs) {
                 this._eventSubs = {};
             }
-
             if (forget !== true) {
                 this._events[event] = value; // Save notification
             }
-
             var subs = this._eventSubs[event];
             var sub;
-
             if (subs) { // Notify subscriptions
-
                 for (var handle in subs) {
                     if (subs.hasOwnProperty(handle)) {
-
                         sub = subs[handle];
-
                         this._eventCallDepth++;
-
                         if (this._eventCallDepth < 300) {
                             sub.callback.call(sub.scope, value);
                         } else {
                             this.error("fire: potential stack overflow from recursive event '" + event + "' - dropping this event");
                         }
-
                         this._eventCallDepth--;
                     }
                 }
@@ -467,7 +438,6 @@
          * @return {String} Handle to the subscription, which may be used to unsubscribe with {@link #off}.
          */
         on: function (event, callback, scope) {
-
             if (!this._events) {
                 this._events = {};
             }
@@ -567,16 +537,12 @@
          * @param {String} message The message to log
          */
         log: function (message) {
-
             message = "[LOG]" + this._message(message);
-
             window.console.log(message);
-
             this.scene.fire("log", message);
         },
 
         _message: function (message) {
-            // return " [" + (this.type.indexOf("xeogl.") > -1 ? this.type.substring(4) : this.type) + " " + xeogl._inQuotes(this.id) + "]: " + message;
             return " [" + this.type + " " + xeogl._inQuotes(this.id) + "]: " + message;
         },
 
@@ -592,11 +558,8 @@
          * @param {String} message The message to log
          */
         warn: function (message) {
-
             message = "[WARN]" + this._message(message);
-
             window.console.warn(message);
-
             this.scene.fire("warn", message);
         },
 
@@ -612,44 +575,9 @@
          * @param {String} message The message to log
          */
         error: function (message) {
-
             message = "[ERROR]" + this._message(message);
-
             window.console.error(message);
-
             this.scene.fire("error", message);
-        },
-
-        /**
-         * Creates a clone of this component.
-         *
-         * The clone will have the same properties as the original, except where
-         * overridden in the given optional configs.
-         *
-         * The clone will share (by reference) the components of the original, unless overridden.
-         *
-         * For example, if this component is an {{#crossLink "Entity"}}{{/crossLink}}, then the clone
-         * will be attached to the **same** instances of {{#crossLink "PhoneMaterial"}}{{/crossLink}},
-         * {{#crossLink "Camera"}}{{/crossLink}} etc as this component, unless it supplies its own
-         * instances for those via the configs.
-         *
-         * @param {*} [cfg] Configurations to override.
-         * @returns {Component} The shallow clone
-         */
-        clone: function (cfg) {
-
-            if (this.destroyed) {
-                this.error("Clone failed - component has been destroyed");
-                return;
-            }
-
-            cfg = cfg || {};
-
-            var json = this.json;
-
-            delete json.id;
-
-            return new this.constructor(this.scene, xeogl._apply(cfg, json));
         },
 
         /**
@@ -920,10 +848,7 @@
         /**
          * Convenience method for creating a Component within this Component's {{#crossLink "Scene"}}{{/crossLink}}.
          *
-         * You would typically use this method to conveniently instantiate components that you'd want to
-         * share (ie. "instance") among your {{#crossLink "Entity"}}Entities{{/crossLink}}.
-         *
-         * The method is given a component type, configuration and optional instance ID, like so:
+         * The method is given a component configuration, like so:
          *
          * ````javascript
          * var material = myComponent.create({
@@ -933,36 +858,46 @@
          * }, "myMaterial");
          * ````
          *
-         * The first time you call this method for the given ````type```` and ````instanceId````, this method will create the
-         * {{#crossLink "PhongMaterial"}}{{/crossLink}}, passing the given  attributes to the component's constructor.
-         *
-         * If you call this method again, specifying the same ````type```` and ````instanceId````, the method will return the same
-         * component instance that it returned the first time, and will ignore the new configuration:
-         *
-         * ````javascript
-         * var material2 = component.create({ type: "xeogl.PhongMaterial", specular: [1,1,0] }, "myMaterial");
-         * ````
-         *
-         * So in this example, our {{#crossLink "PhongMaterial"}}{{/crossLink}} will continue to have the red specular
-         * and diffuse color that we specified the first time.
-         *
-         * Each time you call this method with the same ````type```` and ````instanceId````, the Scene will internally increment a
-         * reference count for the component instance.
-         *
          * @method create
-         * @param {*} [cfg] Configuration for the component instance - only used if this is the first time you are getting
-         * the component, ignored when reusing an existing instance.
-         * @param {String|Number} [instanceId] Identifies the shared component instance. Note that this is not used as the ID of the
-         * component - you can specify the component ID in the ````cfg```` parameter.
+         * @param {*} [cfg] Configuration for the component instance.
          * @returns {*}
          */
-        create: function (cfg, instanceId) {
+        create: function (cfg) {
 
-            // Create or reuse the component via this component's scene;
-            // reusing if instanceId given, else getting unique instance otherwise
+            var type;
+            var claz;
 
-            var component = this.scene._getSharedComponent(cfg, instanceId);
+            if (xeogl._isObject(cfg)) {
+                type = cfg.type || "xeogl.Component";
+                claz = xeogl[type.substring(6)];
 
+            } else if (xeogl._isString(cfg)) {
+                type = cfg;
+                claz = xeogl[type.substring(6)];
+
+            } else {
+                claz = cfg;
+                type = cfg.prototype.type;
+                // TODO: catch unknown component class
+            }
+
+            if (!claz) {
+                this.error("Component type not found: " + type);
+                return;
+            }
+
+            if (!xeogl._isComponentType(type, "xeogl.Component")) {
+                this.error("Expected a xeogl.Component type or subtype");
+                return;
+            }
+
+            if (cfg && cfg.id && this.components[cfg.id]) {
+                this.error("Component " + xeogl._inQuotes(cfg.id) + " already exists in Scene - ignoring ID, will randomly-generate instead");
+                cfg.id = undefined;
+                //return null;
+            }
+
+            var component = new claz(this, cfg);
             if (component) {
                 this._adopt(component);
             }
@@ -971,20 +906,14 @@
         },
 
         _adopt: function (component) {
-
-            // Register component on this component so that we can
-            // automatically destroy it when we destroy this component
-
-            if (!this._sharedComponents) {
-                this._sharedComponents = {};
+            if (!this._adoptees) {
+                this._adoptees = {};
             }
-
-            if (!this._sharedComponents[component.id]) {
-                this._sharedComponents[component.id] = component;
+            if (!this._adoptees[component.id]) {
+                this._adoptees[component.id] = component;
             }
-
             component.on("destroyed", function () {
-                delete this._sharedComponents[component.id];
+                delete this._adoptees[component.id];
             }, this);
         },
 
@@ -1009,10 +938,10 @@
          */
         _doUpdate: function () {
             if (this._updateScheduled) {
+                this._updateScheduled = false;
                 if (this._update) {
                     this._update();
                 }
-                this._updateScheduled = false;
             }
         },
 
@@ -1023,141 +952,6 @@
          * @protected
          */
         _update: null,
-
-        /**
-         * Protected template method, implemented by sub-classes to compile
-         * their state into their Scene's xeogl.renderer.Renderer.
-         *
-         * @protected
-         */
-        _compile: function () {
-        },
-
-        _props: {
-
-            /**
-             * JSON object containing the state of this Component.
-             *
-             * @property json
-             * @type JSON
-             * @final
-             */
-            json: {
-
-                get: function () {
-
-                    // Return component's type-specific properties,
-                    // augmented with the base component properties
-
-                    var json = {
-                        type: this.type,
-                        id: this.id // Only output user-defined IDs
-                    };
-
-                    if (!xeogl._isEmptyObject(this.meta)) {
-                        json.meta = this.meta;
-                    }
-
-                    return this._getJSON ? xeogl._apply(this._getJSON(), json) : json;
-                }
-            },
-
-            /**
-             * String containing the serialized JSON state of this Component.
-             *
-             * @property string
-             * @type String
-             * @final
-             */
-            string: {
-
-                get: (function () {
-
-                    // https://github.com/lydell/json-stringify-pretty-compact
-                    // Copyright 2014, 2016 Simon Lydell
-                    // X11 (“MIT”) Licensed. (See LICENSE.)
-
-                    function prettyStringify(obj, options) {
-                        options = options || {};
-                        var indent = JSON.stringify([1], null, get(options, 'indent', 2)).slice(2, -3);
-                        var maxLength = (indent === '' ? Infinity : get(options, 'maxLength', 80));
-                        return (function _stringify(obj, currentIndent, reserved) {
-                            if (obj && typeof obj.toJSON === 'function') {
-                                obj = obj.toJSON();
-                            }
-                            var string = JSON.stringify(obj);
-                            if (string === undefined) {
-                                return string;
-                            }
-                            var length = maxLength - currentIndent.length - reserved;
-                            if (string.length <= length) {
-                                var prettified = prettify(string);
-                                if (prettified.length <= length) {
-                                    return prettified;
-                                }
-                            }
-                            if (typeof obj === 'object' && obj !== null) {
-                                var nextIndent = currentIndent + indent;
-                                var items = [];
-                                var delimiters;
-                                var comma = function (array, index) {
-                                    return (index === array.length - 1 ? 0 : 1);
-                                };
-                                if (Array.isArray(obj)) {
-                                    for (var index = 0; index < obj.length; index++) {
-                                        items.push(_stringify(obj[index], nextIndent, comma(obj, index)) || 'null');
-                                    }
-                                    delimiters = '[]';
-                                } else {
-                                    Object.keys(obj).forEach(function (key, index, array) {
-                                        var keyPart = JSON.stringify(key) + ': ';
-                                        var value = _stringify(obj[key], nextIndent, keyPart.length + comma(array, index));
-                                        if (value !== undefined) {
-                                            items.push(keyPart + value);
-                                        }
-                                    });
-                                    delimiters = '{}';
-                                }
-                                if (items.length > 0) {
-                                    return [delimiters[0], indent + items.join(',\n' + nextIndent), delimiters[1]].join('\n' + currentIndent);
-                                }
-                            }
-                            return string;
-                        }(obj, '', 0));
-                    }
-
-                    var stringOrChar = /("(?:[^"]|\\.)*")|[:,]/g;
-
-                    function prettify(string) {
-                        return string.replace(stringOrChar, function (match, string) {
-                            return string ? match : match + ' ';
-                        })
-                    }
-
-                    function get(options, name, defaultValue) {
-                        return (name in options ? options[name] : defaultValue);
-                    }
-
-                    return function () {
-                        return prettyStringify(this.json, null, "\t");
-                    };
-                })()
-            },
-
-            /**
-             * Experimental: string containing a JavaScript expression that would instantiate this Component.
-             *
-             * @property string
-             * @type String
-             * @final
-             */
-            js: {
-
-                get: function () {
-                    return "new " + this.type + "(" + this.string + ");";
-                }
-            }
-        },
 
         /**
          * Destroys this component.
@@ -1177,7 +971,7 @@
                 return;
             }
 
-            // Unsubscribe from child components
+            // Unsubscribe from child components and destroy then
 
             var id;
             var attachment;
@@ -1189,23 +983,13 @@
             if (this._attachments) {
                 for (id in this._attachments) {
                     if (this._attachments.hasOwnProperty(id)) {
-
                         attachment = this._attachments[id];
                         component = attachment.component;
-
-                        // Unsubscribe from properties on the child
-
                         subs = attachment.subs;
-
                         for (i = 0, len = subs.length; i < len; i++) {
                             component.off(subs[i]);
                         }
-
                         if (attachment.managingLifecycle) {
-
-                            // Note that we just unsubscribed from all events fired by the child
-                            // component, so destroying it won't fire events back at us now.
-
                             component.destroy();
                         }
                     }
@@ -1214,15 +998,11 @@
 
             // Release components created with #create
 
-            if (this._sharedComponents) {
-                for (id in this._sharedComponents) {
-                    if (this._sharedComponents.hasOwnProperty(id)) {
-
-                        component = this._sharedComponents[id];
-
-                        delete this._sharedComponents[id];
-
-                        this.scene._putSharedComponent(component);
+            if (this._adoptees) {
+                for (id in this._adoptees) {
+                    if (this._adoptees.hasOwnProperty(id)) {
+                        component = this._adoptees[id];
+                        delete this._adoptees[id];
                     }
                 }
             }
@@ -1237,7 +1017,6 @@
              * Fired when this Component is destroyed.
              * @event destroyed
              */
-
             this.fire("destroyed", this.destroyed = true);
         },
 

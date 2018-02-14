@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
     <script src="js/geometry/vectorTextGeometry.js"></script>
 
     <link href="css/styles.css" rel="stylesheet"/>
@@ -35,9 +35,9 @@
         })
     });
 
-    entity.camera.view.zoom(90);
+    entity.scene.camera.zoom(90);
 
-    new xeogl.InputControl();
+    new xeogl.CameraControl();
 
 </script>
 </body>

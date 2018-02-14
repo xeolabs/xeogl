@@ -7,7 +7,7 @@
 
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
     <script src="js/models/buildableModel.js"></script>
     <script src="js/animation/cameraFollowAnimation.js"></script>
 
@@ -36,20 +36,20 @@
     });
 
     buildableModel.asset("asphalt", {
-        type: "xeogl.PhongMaterial",
+        type: "xeogl.LambertMaterial",
         diffuse: [0.2, 0.2, 0.2],
         ambient: [0.2, 0.2, 0.2],
         specular: [0.0, 0.0, 0.0]
     });
 
     buildableModel.asset("lightConcrete", {
-        type: "xeogl.PhongMaterial",
+        type: "xeogl.LambertMaterial",
         diffuse: [0.6, 0.6, 0.6],
         ambient: [0.2, 0.2, 0.2]
     });
 
     buildableModel.asset("grass", {
-        type: "xeogl.PhongMaterial",
+        type: "xeogl.LambertMaterial",
         diffuse: [0, 0.5, 0.2],
         ambient: [0.1, 0.1, 0.1]
     });
@@ -64,8 +64,10 @@
 
     // Generate the buildings
 
-    for (var x = -100; x <= 100; x += 60) {
-        for (var z = -100; z <= 100; z += 60) {
+    var extent = 1000;
+
+    for (var x = -extent; x <= extent; x += 60) {
+        for (var z = -extent; z <= extent; z += 60) {
             makeBuilding(x + 2, z + 2, x + 60 - 2, z + 60 - 2);
         }
     }
@@ -82,6 +84,7 @@
         buildableModel.material("grass");
         buildableModel.pos(xpos, ypos, zpos);
         buildableModel.scale((xmax - xmin) / 2.5, 0.5, (zmax - zmin) / 2.5);
+        buildableModel.colorize(0.3 + Math.random() * 0.5, 0.3 + Math.random() * 0.5, 0.3 + Math.random() * 0.5, 1.0);
         buildableModel.entity();
 
         // Now generate the building as a bunch of boxes
@@ -161,22 +164,22 @@
 
     // Automatically fit the view to the model
     new xeogl.CameraFollowAnimation({
-        worldBoundary: buildableModel.worldBoundary,
+        target: buildableModel,
         fit: true,
         fitFOV: 55
     });
 
     // Allow user camera control
-    new xeogl.InputControl();
+    new xeogl.CameraControl();
 
     // Slowly orbit camera about model
 
-    var lookat = buildableModel.scene.camera.view;
+    var lookat = buildableModel.scene.camera;
 
-    lookat.rotateEyeX(10);
+    lookat.orbitPitch(10);
 
     buildableModel.scene.on("tick", function () {
-        lookat.rotateEyeY(0.1);
+        lookat.orbitYaw(0.1);
 
     });
 

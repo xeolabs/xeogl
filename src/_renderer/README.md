@@ -1,1 +1,0 @@
-Private renderer at the core of xeogl

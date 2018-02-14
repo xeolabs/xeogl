@@ -20,7 +20,7 @@
 
  A Canvas also has
 
- * a {{#crossLink "Spinner"}}{{/crossLink}}, which shows a busy spinner when a {{#crossLink "Model"}}{{/crossLink}}
+ * a {{#crossLink "Progress"}}{{/crossLink}}, which shows a busy progress when a {{#crossLink "Model"}}{{/crossLink}}
  is loading, or when directed by application logic, and
 
  ## Examples
@@ -48,12 +48,9 @@
  var gl = canvas.gl;
 
  // Subscribe to Canvas size updates
- canvas.on("size", function(e) {
-        var width = e.width;
-        var height = e.height;
-        var aspect = e.aspect;
-        //...
-     });
+ canvas.on("boundary", function(boundary) {
+    //...
+ });
 
  // Subscribe to WebGL context loss events on the Canvas
  canvas.on("webglContextLost", function() {
@@ -72,13 +69,9 @@
 
  ```` javascript
  // Create a Scene, this time configuring it with the
- // ID of an existing DOM canvas element (has to be canvas)
- // Note: The parent of the canvas has to have positioning other than
- //       static: Background and overlay divs are created as siblings of canvas
- //       to capture input. These have position "absolute" and 100%, so can
- //       take over the screen (and eat all input events) if positioning is wrong
+ // ID of an existing DOM canvas element
  var scene = new xeogl.Scene({
-          canvas: "myCanvas"
+          canvasId: "myCanvas"
      });
 
  // ..and the rest of this example can be the same as the previous example.
@@ -90,7 +83,7 @@
 
  ```` javascript
  var scene = new xeogl.Scene({
-          canvas: "myCanvas",
+          canvasId: "myCanvas",
           webgl2 : true
      });
 
@@ -139,24 +132,6 @@
             this.canvas = null;
 
             /**
-             * A transparent HTML DIV overlaid over the {{#crossLink "Canvas/canvas:property"}}{{/crossLink}}, with a z-index
-             * of 100000.
-             *
-             * The parent {{#crossLink "Scene"}}{{/crossLink}}'s {{#crossLink "Input"}}{{/crossLink}} will relay mouse
-             * events from this DIV, instead of from the {{#crossLink "Canvas/canvas:property"}}{{/crossLink}}.
-             *
-             * When you need to have various HTML elements floating around over
-             * the {{#crossLink "Canvas/canvas:property"}}{{/crossLink}}, then if you give those a z-index that lies between
-             * that of the {{#crossLink "Canvas/canvas:property"}}{{/crossLink}} and this DIV, your elements will not
-             * interfere with those events.
-             *
-             * @property canvas
-             * @type {HTMLCanvasElement}
-             * @final
-             */
-            this.overlay = null;
-
-            /**
              * The WebGL rendering context.
              *
              * @property gl
@@ -197,6 +172,8 @@
             }
 
             this.contextAttr.stencil = true;
+            this.contextAttr.antialias = true;
+            this.contextAttr.premultipliedAlpha = this.contextAttr.premultipliedAlpha !== false;
 
             if (!cfg.canvas) {
 
@@ -267,7 +244,6 @@
             ];
 
             this._createBackground();
-            this._createOverlay();
 
             // Get WebGL context
 
@@ -314,27 +290,30 @@
             var lastCanvasOffsetLeft = null;
             var lastCanvasOffsetTop = null;
 
-            this._tick = this.scene.on("tick",
-                function () {
+            var lastParent = null;
 
-                    var canvas = self.canvas;
+            this._tick = this.scene.on("tick", function () {
 
-                    var newWindowSize = (window.innerWidth !== lastWindowWidth || window.innerHeight !== lastWindowHeight);
-                    var newCanvasSize = (canvas.clientWidth !== lastCanvasWidth || canvas.clientHeight !== lastCanvasHeight);
-                    var newCanvasPos = (canvas.offsetLeft !== lastCanvasOffsetLeft || canvas.offsetTop !== lastCanvasOffsetTop);
+                var canvas = self.canvas;
 
-                    if (newWindowSize || newCanvasSize || newCanvasPos) {
+                var newWindowSize = (window.innerWidth !== lastWindowWidth || window.innerHeight !== lastWindowHeight);
+                var newCanvasSize = (canvas.clientWidth !== lastCanvasWidth || canvas.clientHeight !== lastCanvasHeight);
+                var newCanvasPos = (canvas.offsetLeft !== lastCanvasOffsetLeft || canvas.offsetTop !== lastCanvasOffsetTop);
 
-                        self._spinner._adjustPosition();
+                var parent = canvas.parentElement;
+                var newParent = (parent !== lastParent);
 
-                        self._resizeOverlay();
+                if (newWindowSize || newCanvasSize || newCanvasPos || newParent) {
 
+                    self._spinner._adjustPosition();
+
+                    if (newCanvasSize || newCanvasPos) {
+
+                        var newWidth = canvas.clientWidth;
+                        var newHeight = canvas.clientHeight;
+
+                        // TODO: Wasteful to re-count pixel size of each canvas on each canvas' resize
                         if (newCanvasSize) {
-
-                            var newWidth = canvas.clientWidth;
-                            var newHeight = canvas.clientHeight;
-
-                            // TODO: Wasteful to re-count pixel size of each canvas on each canvas' resize
                             var countPixels = 0;
                             var scene;
                             for (var sceneId in xeogl.scenes) {
@@ -347,37 +326,40 @@
 
                             canvas.width = canvas.clientWidth;
                             canvas.height = canvas.clientHeight;
-
-                            var boundary = self.boundary;
-
-                            boundary[0] = canvas.offsetLeft;
-                            boundary[1] = canvas.offsetTop;
-                            boundary[2] = newWidth;
-                            boundary[3] = newHeight;
-
-                            /**
-                             * Fired whenever this Canvas's {{#crossLink "Canvas/boundary:property"}}{{/crossLink}} property changes.
-                             *
-                             * @event boundary
-                             * @param value The property's new value
-                             */
-                            self.fire("boundary", boundary);
-
-                            lastCanvasWidth = newWidth;
-                            lastCanvasHeight = newHeight;
                         }
 
-                        if (newWindowSize) {
-                            lastWindowWidth = window.innerWidth;
-                            lastWindowHeight = window.innerHeight;
-                        }
+                        var boundary = self.boundary;
 
-                        if (newCanvasPos) {
-                            lastCanvasOffsetLeft = canvas.offsetLeft;
-                            lastCanvasOffsetTop = canvas.offsetTop;
-                        }
+                        boundary[0] = canvas.offsetLeft;
+                        boundary[1] = canvas.offsetTop;
+                        boundary[2] = newWidth;
+                        boundary[3] = newHeight;
+
+                        /**
+                         * Fired whenever this Canvas's {{#crossLink "Canvas/boundary:property"}}{{/crossLink}} property changes.
+                         *
+                         * @event boundary
+                         * @param value The property's new value
+                         */
+                        self.fire("boundary", boundary);
+
+                        lastCanvasWidth = newWidth;
+                        lastCanvasHeight = newHeight;
                     }
-                });
+
+                    if (newWindowSize) {
+                        lastWindowWidth = window.innerWidth;
+                        lastWindowHeight = window.innerHeight;
+                    }
+
+                    if (newCanvasPos) {
+                        lastCanvasOffsetLeft = canvas.offsetLeft;
+                        lastCanvasOffsetTop = canvas.offsetTop;
+                    }
+
+                    lastParent = parent;
+                }
+            });
 
             this.canvas.oncontextmenu = function (e) {
                 e.preventDefault();
@@ -429,7 +411,6 @@
         _createBackground: function () {
 
             var div = document.createElement('div');
-
             var style = div.style;
             style.padding = "0";
             style.margin = "0";
@@ -447,53 +428,6 @@
             this.canvas.parentElement.appendChild(div);
 
             this._backgroundElement = div;
-        },
-
-        /**
-         * Creates an invisible DIV over the canvas, for purpose of catching
-         * input events without interfering with app-lever UI bits floating underneath.
-         * @private
-         */
-        _createOverlay: function () {
-
-            var div = document.createElement('div');
-
-            var style = div.style;
-            style.padding = "0";
-            style.margin = "0";
-            style.background = "black";
-            style.float = "left";
-            style.left = "0";
-            style.top = "0";
-            style.width = "100%";
-            style.height = "100%";
-            style.position = "absolute";
-            style.opacity = 0;
-            style["z-index"] = "100000";
-
-            this.canvas.parentElement.appendChild(div);
-
-            this.overlay = div;
-        },
-
-        /** (Re)sizes the overlay DIV to the canvas size
-         * @private
-         */
-        _resizeOverlay: function () {
-
-            if (!this.canvas || !this.overlay) {
-                return;
-            }
-
-            var canvas = this.canvas;
-            var overlay = this.overlay;
-            var overlayStyle = overlay.style;
-
-            var xy = this._getElementXY(canvas);
-            overlayStyle["left"] = xy.x + "px";
-            overlayStyle["top"] = xy.y + "px";
-            overlayStyle["width"] = canvas.clientWidth + "px";
-            overlayStyle["height"] = canvas.clientHeight + "px";
         },
 
         _getElementXY: function (e) {
@@ -514,7 +448,7 @@
 
             // Default context attribute values
 
-            if (cfg.webgl2) {
+            if (false && cfg.webgl2) {
                 try {
                     this.gl = this.canvas.getContext("webgl2", this.contextAttr);
                 } catch (e) { // Try with next context name
@@ -545,6 +479,12 @@
                  * @event webglContextFailed
                  */
                 this.fire("webglContextFailed", true, true);
+            }
+
+            if (this.gl) {
+                if (xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_standard_derivatives"]) { // For normal mapping
+                    this.gl.getExtension("OES_standard_derivatives");
+                }
             }
         },
 
@@ -613,7 +553,7 @@
             var image;
             switch (format) {
                 case "jpeg":
-                    image = Canvas2Image.saveAsJPEG(this.canvas, true, width, height);
+                    image = Canvas2Image.saveAsJPEG(this.canvas, false, width, height);
                     break;
                 case "png":
                     image = Canvas2Image.saveAsPNG(this.canvas, true, width, height);
@@ -662,8 +602,6 @@
 
              You can set this to a new color at any time.
 
-             Fires a {{#crossLink "Canvas/backgroundColor:event"}}{{/crossLink}} event on change.
-
              @property backgroundColor
              @type Float32Array
              @default null
@@ -685,13 +623,6 @@
                             this._backgroundElement.style.background = rgb;
                         }
                     }
-
-                    /**
-                     Fired whenever this Canvas's {{#crossLink "Canvas/backgroundColor:property"}}{{/crossLink}} property changes.
-                     @event backgroundColor
-                     @param value The property's new value
-                     */
-                    this.fire("backgroundColor", this._backgroundColor);
                 },
 
                 get: function () {
@@ -703,8 +634,6 @@
              URL of a background image for the canvas. This is overrided by {{#crossLink "Canvas/backgroundColor/property"}}{{/crossLink}}.
 
              You can set this to a new file path at any time.
-
-             Fires a {{#crossLink "Canvas/background:event"}}{{/crossLink}} event on change.
 
              @property backgroundImage
              @type String
@@ -733,13 +662,6 @@
                         var rgb = "rgb(" + Math.round(this._backgroundColor[0] * 255) + ", " + Math.round(this._backgroundColor[1] * 255) + "," + Math.round(this._backgroundColor[2] * 255) + ")";
                         this._backgroundElement.style.background = rgb;
                     }
-
-                    /**
-                     Fired whenever this Canvas's {{#crossLink "Canvas/backgroundImage:property"}}{{/crossLink}} property changes.
-                     @event backgroundImage
-                     @param value The property's new value
-                     */
-                    this.fire("backgroundImage", this._backgroundImageSrc);
                 },
 
                 get: function () {
@@ -758,42 +680,6 @@
 
                 get: function () {
                     return this._spinner;
-                }
-            },
-
-            fullscreen: {
-
-                set: function (value) {
-
-                    value = !!value;
-
-                    if (value === Document.fullScreen) {
-                        return;
-                    }
-
-                    if (value) {
-                        if (this.canvas.requestFullScreen) {
-                            this.canvas.requestFullScreen();
-                        } else if (this.canvas.webkitRequestFullScreen) {
-                            this.canvas.webkitRequestFullScreen();
-                        } else if (this.canvas.mozRequestFullScreen) {
-                            this.canvas.mozRequestFullScreen();
-                        }
-                    } else {
-                        if(document.exitFullscreen) {
-                            document.exitFullscreen();
-                        } else if(document.mozCancelFullScreen) {
-                            document.mozCancelFullScreen();
-                        } else if(document.webkitExitFullscreen) {
-                            document.webkitExitFullscreen();
-                        }
-                    }
-
-                    this.fire("fullscreen", Document.fullScreen);
-                },
-
-                get: function () {
-                    return Document.fullScreen;
                 }
             }
         },

@@ -129,6 +129,7 @@
 
     /**
      * Gets barycentric coordinates from cartesian coordinates within a triangle.
+     * Gets barycentric coordinates from cartesian coordinates within a triangle.
      *
      * @private
      */

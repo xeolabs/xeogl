@@ -29,6 +29,17 @@ a {
     display: none;
 }
 
+a.section {
+    text-decoration: none;
+    color: #333332
+}
+
+a.section:hover {
+    text-decoration: none;
+    color: #333332
+}
+
+
 a:hover {
     text-decoration: underline;
 }

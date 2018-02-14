@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="../build/xeogl.js"></script>
+
+    <script src="js/models/sceneJSModel.js"></script>
+
+    <script src="js/annotations/pin.js"></script>
+    <script src="js/annotations/annotation.js"></script>
+    <link href="js/annotations/annotation-style.css" rel="stylesheet"/>
+
+    <script src="js/stories/showdown.min.js"></script>
+    <script src="js/stories/story.js"></script>
+    <script src="js/stories/annotationStory.js"></script>
+    <link href="js/stories/story-style.css" rel="stylesheet"/>
+
+    <style>
+
+        .xeogl-annotation-pin {
+            color: #ffffff;
+            line-height: 1.8;
+            text-align: center;
+            font-family: "monospace";
+            font-weight: bold;
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            border-radius: 15px;
+            border: 2px solid #ffffff;
+            background: black;
+            visibility: hidden;
+            box-shadow: 5px 5px 15px 1px #000000;
+            z-index: 0;
+        }
+
+        .xeogl-annotation-pinClickable {
+            /*border: white 1px solid;*/
+            content: '';
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border-radius: 25px;
+            visibility: hidden;
+            /*opacity: 0;*/
+            z-index: 3000000;
+        }
+
+        .xeogl-annotation-label {
+            position: absolute;
+            max-width: 250px;
+            min-height: 50px;
+            padding: 8px;
+            padding-left: 12px;
+            padding-right: 12px;
+            background: black;
+            color: #ffffff;
+            -webkit-border-radius: 3px;
+            -moz-border-radius: 3px;
+            border-radius: 8px;
+            border: #ffffff solid 2px;
+            box-shadow: 5px 5px 15px 1px #000000;
+            z-index: 90000;
+        }
+
+        .xeogl-annotation-label:after {
+            content: '';
+            position: absolute;
+            border-style: solid;
+            border-width: 8px 12px 8px 0;
+            border-color: transparent black;
+            display: block;
+            width: 0;
+            z-index: 1;
+            margin-top: -11px;
+            left: -12px;
+            top: 20px;
+        }
+
+        .xeogl-annotation-label:before {
+            content: '';
+            position: absolute;
+            border-style: solid;
+            border-width: 9px 13px 9px 0;
+            border-color: transparent #ffffff;
+            display: block;
+            width: 0;
+            z-index: 0;
+            margin-top: -12px;
+            left: -15px;
+            top: 20px;
+        }
+
+        .xeogl-annotation-title {
+            font: normal 20px arial, serif;
+            margin-bottom: 8px;
+        }
+
+        .xeogl-annotation-desc {
+            font: normal 14px arial, serif;
+        }
+
+        .xeogl-story {
+            position: absolute;
+            top: 80px;
+            z-index: 200000;
+            float: left;
+            left: 0;
+            padding: 10px;
+            padding-left: 15px;
+            height: auto;
+            text-align: left;
+            font-size: 16px;
+            color: #ffffff;
+            border: 0;
+            max-width: 400px;
+        }
+
+        .xeogl-story a {
+            text-decoration: underline;
+            color: #13d3d2 !important;
+        }
+
+        .xeogl-story a:hover {
+            text-decoration: underline;
+        }
+
+        .xeogl-story img {
+            border: 1px #9c9c9c solid;
+        }
+    </style>
+
+<body>
+
+<div id="info" style="padding-left: 15px;">
+    <h1><a href="../docs/classes/AnnotationStory.html"
+           target="_parent">AnnotationStory</a> demo
+    </h1>
+</div>
+
+<script>
+
+    //---------------------------------------------------------------------------------
+    // Load a Tron tank program model from SceneJS format
+    //---------------------------------------------------------------------------------
+
+    var model = new xeogl.SceneJSModel({
+        id: "tank",
+        src: "models/scenejs/tronTank/tronTank.json",
+        materialWorkflow: "MetallicMaterial"
+    });
+
+    //---------------------------------------------------------------------------------
+    // Set initial camera position
+    //---------------------------------------------------------------------------------
+
+    model.scene.camera.eye = [15, 20, -25];
+
+    //---------------------------------------------------------------------------------
+    // When the model has loaded, create a story with annotations, based on the model
+    //---------------------------------------------------------------------------------
+
+    model.on("loaded", function () {
+
+        //----------------------------------
+        // Faux shadow under the tank
+        //----------------------------------
+
+        model.add({
+            type: "xeogl.Entity",
+            geometry: {
+                type: "xeogl.PlaneGeometry",
+                xSize: 16,
+                zSize: 22
+            },
+            material: {
+                type: "xeogl.PhongMaterial",
+                diffuse: [0.0, 0.0, 0.0],
+                specular: [0, 0, 0],
+                alpha: 0.3,
+                alphaMode: "blend"
+            },
+            transform: {
+                type: "xeogl.Translate",
+                xyz: [-1, 0.1, -4]
+            }
+        });
+
+        //----------------------------------
+        // Story
+        //----------------------------------
+
+        new xeogl.AnnotationStory({
+            speaking: true,
+            authoring: true,
+            text: [
+                "This is a Light Tank from the 1982 Disney movie *Tron*.",
+                "",
+                "The [orange tracks](focusAnnotation(0)) on this tank indicate that it's been stolen by the rebel hacker, CLU (pictured below), who is a goodie. Sark's evil tanks have blue treads.",
+                "",
+                "The [cannon](focusAnnotation(1)) is the tank's main armament, which fires powerful chevron-shaped pulses of energy, which can \"derezz\" vehicles and terrain.",
+                "",
+                "The [pilot hatch](focusAnnotation(2)) is where CLU hops in and out of the tank.",
+                "",
+                "At the back of the tank is the [antenna](focusAnnotation(3)), through which the tank can communicate with the Master Control Program (MCP).",
+                "",
+                "",
+                "",
+                "![](./images/Clu_Program.png)",
+                "",
+                "*\"Forget it, mister high-and-mighty Master Control! You aren't making me talk!\" - CLU*"
+            ],
+            annotations: [
+                {
+                    type: "xeogl.Annotation",
+                    primIndex: 204,
+                    bary: [0.05, 0.16, 0.79],
+                    occludable: true,
+                    glyph: "A",
+                    title: "Orange tracks",
+                    desc: "Indicates that the pilot is the rebel hacker, CLU",
+                    eye: [14.69, 17.89, -26.88],
+                    look: [5.35, 4.14, -15.44],
+                    up: [-0.09, 0.99, 0.11],
+                    pinShown: true,
+                    labelShown: true,
+                    entity: "tank.entity2"
+                },
+                {
+                    type: "xeogl.Annotation",
+                    primIndex: 468,
+                    bary: [0.05, 0.16, 0.79],
+                    occludable: true,
+                    glyph: "B",
+                    title: "Cannon",
+                    desc: "Fires chevron-shaped bolts of de-rezzing energy",
+                    eye: [-0.66, 20.84, -21.59],
+                    look: [-0.39, 6.84, -9.18],
+                    up: [0.01, 0.97, 0.24],
+                    pinShown: true,
+                    labelShown: true,
+                    entity: "tank.entity9"
+                },
+                {
+                    type: "xeogl.Annotation",
+                    primIndex: 216,
+                    bary: [0.05, 0.16, 0.79],
+                    occludable: true,
+                    glyph: "C",
+                    title: "Pilot hatch",
+                    desc: "CLU hops in and out of the tank program here",
+                    eye: [1.48, 11.79, -15.13],
+                    look: [1.62, 5.04, -9.14],
+                    up: [0.01, 0.97, 0.24],
+                    pinShown: true,
+                    labelShown: true,
+                    entity: "tank.entity6"
+                },
+                {
+                    type: "xeogl.Annotation",
+                    primIndex: 4464,
+                    bary: [0.05, 0.16, 0.79],
+                    occludable: true,
+                    glyph: "D",
+                    title: "Antenna",
+                    desc: "Links the tank program to the Master Control Program",
+                    eye: [13.63, 16.79, 13.87],
+                    look: [1.08, 7.72, 3.07],
+                    up: [0.08, 0.99, 0.07],
+                    pinShown: true,
+                    labelShown: true,
+                    entity: "tank.entity9"
+                }
+            ]
+        });
+    });
+
+    //---------------------------------------------------------------------------------
+    // Game loop - swing the gun
+    //---------------------------------------------------------------------------------
+
+    model.on("loaded", function () {
+        var gunDir = 0;
+        var gunDirInc = -0.15;
+        model.scene.on("tick", function () {
+            gunDir += gunDirInc;
+            if (gunDir < -50 || gunDir > 10) {
+                gunDirInc *= -1;
+            }
+            model.components["tank.gunDir"].angle = gunDir;
+        });
+    });
+
+    //---------------------------------------------------------------------------------
+    // Ground plane
+    //---------------------------------------------------------------------------------
+
+    new xeogl.Entity({
+        geometry: {
+            type: "xeogl.PlaneGeometry",
+            xSize: 3000,
+            zSize: 3000
+        },
+        material: {
+            type: "xeogl.PhongMaterial",
+            diffuseMap: {
+                src: "textures/diffuse/UVCheckerMap11-1024.png",
+                wrapS: "repeat",
+                wrapT: "repeat",
+                scale: [30, 30],
+                encoding: "sRGB"
+            },
+            backfaces: true
+        },
+        pickable: false, // Can't be picked
+        collidable: false // Does not contribute to overall scene boundary
+    });
+
+</script>
+</body>
+</html>

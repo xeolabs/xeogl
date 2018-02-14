@@ -7,7 +7,7 @@
 
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
     <script src="js/models/glTFModel.js"></script>
 
     <!-- ZSpaceEffect is insulated from changes to the zSpace WebVR API by
@@ -155,13 +155,13 @@
     // Set initial camera position
     //----------------------------------------------------------------------------
 
-    var view = gearbox.scene.camera.view;
+    var camera = gearbox.scene.camera;
 
-    view.gimbalLockY = false;
+    camera.gimbalLock = false;
 
-    view.eye = [184.21, 10.54, -7.03];
-    view.look = [159.20, 17.02, 3.21];
-    view.up = [-0.15, 0.97, 0.13];
+    camera.eye = [184.21, 10.54, -7.03];
+    camera.look = [159.20, 17.02, 3.21];
+    camera.up = [-0.15, 0.97, 0.13];
 
     var scene = gearbox.scene;
 
@@ -169,7 +169,7 @@
     // Allow camera control with keyboard and mouse
     //----------------------------------------------------------------------------
 
-    var inputControl = new xeogl.InputControl();
+    var cameraControl = new xeogl.CameraControl();
 
     //---------------------------------------------------
     // Create a zSpace effect and stylus control

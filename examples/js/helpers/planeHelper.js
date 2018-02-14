@@ -13,7 +13,7 @@
  @param [cfg.planeSize] {Float32Array} The width and height of the PlaneHelper plane indicator.
  @param [cfg.autoPlaneSize=false] {Boolean} Indicates whether or not this PlaneHelper's
  {{#crossLink "PlaneHelper/planeSize:property"}}{{/crossLink}} is automatically sized to fit within
- the {{#crossLink "Scene/worldBoundary:property"}}Scene's worldBoundary{{/crossLink}}.
+ the {{#crossLink "Scene/aabb:property"}}Scene's boundary{{/crossLink}}.
  */
 (function () {
 
@@ -154,7 +154,7 @@
 
             /**
              * World-space position of this PlaneHelper.
-             * Fires an {{#crossLink "PlaneHelper/worldPos:event"}}{{/crossLink}} event on change.
+             *
              * @property worldPos
              * @default [0,0,0]
              * @type {Float32Array}
@@ -162,19 +162,9 @@
             pos: {
 
                 set: function (value) {
-
                     (this._pos = this._pos || new xeogl.math.vec3()).set(value || [0, 0, 0]);
-
                     this._translate.xyz = this._pos;
-
                     this._needUpdate(); // Need to rebuild arrow
-
-                    /**
-                     Fired whenever this PlaneHelper's {{#crossLink "PlaneHelper/pos:property"}}{{/crossLink}} property changes.
-                     @event pos
-                     @param value {Float32Array} The property's new value
-                     */
-                    this.fire("pos", this._pos);
                 },
 
                 get: function () {
@@ -184,7 +174,7 @@
 
             /**
              * World-space direction of this PlaneHelper.
-             * Fires an {{#crossLink "PlaneHelper/dir:event"}}{{/crossLink}} event on change.
+             *
              * @property dir
              * @default [0,0,1]
              * @type {Float32Array}
@@ -197,21 +187,10 @@
                     var quat = new Float32Array(4);
 
                     return function (value) {
-
                         (this._dir = this._dir || new xeogl.math.vec3()).set(value || [0, 0, 1]);
-
                         xeogl.math.vec3PairToQuaternion(zeroVec, this._dir, quat);
-
                         this._quaternion.xyzw = quat;
-
                         this._needUpdate(); // Need to rebuild arrow
-
-                        /**
-                         Fired whenever this PlaneHelper's {{#crossLink "PlaneHelper/dir:property"}}{{/crossLink}} property changes.
-                         @event dir
-                         @param value {Float32Array} The property's new value
-                         */
-                        this.fire("dir", this._dir);
                     };
                 })(),
 
@@ -226,8 +205,6 @@
              * Values assigned to this property will be overridden by an auto-computed value when
              * {{#crossLink "PlaneHelper/autoPlaneSize:property"}}{{/crossLink}} is true.
              *
-             * Fires an {{#crossLink "PlaneHelper/planeSize:event"}}{{/crossLink}} event on change.
-             *
              * @property planeSize
              * @default [1,1]
              * @type {Float32Array}
@@ -235,17 +212,8 @@
             planeSize: {
 
                 set: function (value) {
-
                     (this._planeSize = this._planeSize || new xeogl.math.vec2()).set(value || [1, 1]);
-
                     this._planeScale.xyz = [this._planeSize[0], this._planeSize[1], 1.0];
-
-                    /**
-                     Fired whenever this PlaneHelper's {{#crossLink "PlaneHelper/planeSize:property"}}{{/crossLink}} property changes.
-                     @event planeSize
-                     @param value {Float32Array} The property's new value
-                     */
-                    this.fire("planeSize", this._planeSize);
                 },
 
                 get: function () {
@@ -258,9 +226,7 @@
              * generated or not.
              *
              * When auto-generated, {{#crossLink "PlaneHelper/planeSize:property"}}{{/crossLink}} will automatically size
-             * to fit within the {{#crossLink "Scene/worldBoundary:property"}}Scene's worldBoundary{{/crossLink}}.
-             *
-             * Fires an {{#crossLink "PlaneHelper/autoPlaneSize:event"}}{{/crossLink}} event on change.
+             * to fit within the {{#crossLink "Scene/aabb:property"}}Scene's boundary{{/crossLink}}.
              *
              * @property autoPlaneSize
              * @default false
@@ -280,25 +246,18 @@
 
                     if (this._autoPlaneSize) {
                         if (!this._onSceneAABB) {
-                            this._onSceneAABB = this.scene.worldBoundary.on("updated", function () {
-                                var aabbDiag = xeogl.math.getAABB3Diag(this.scene.worldBoundary.aabb);
+                            this._onSceneAABB = this.scene.on("boundary", function () {
+                                var aabbDiag = xeogl.math.getAABB3Diag(this.scene.aabb);
                                 var clipSize = (aabbDiag * 0.50);
                                 this.planeSize = [clipSize, clipSize];
                             }, this);
                         }
                     } else {
                         if (this._onSceneAABB) {
-                            this.scene.worldBoundary.off(this._onSceneAABB);
+                            this.scene.off(this._onSceneAABB);
                             this._onSceneAABB = null;
                         }
                     }
-
-                    /**
-                     Fired whenever this PlaneHelper's {{#crossLink "PlaneHelper/autoPlaneSize:property"}}{{/crossLink}} property changes.
-                     @event autoPlaneSize
-                     @param value {Boolean} The property's new value
-                     */
-                    this.fire("autoPlaneSize", this._autoPlaneSize);
                 },
 
                 get: function () {
@@ -309,8 +268,6 @@
             /**
              * Emmissive color of this PlaneHelper.
              *
-             * Fires an {{#crossLink "PlaneHelper/color:event"}}{{/crossLink}} event on change.
-             *
              * @property color
              * @default [0.4,0.4,0.4]
              * @type {Float32Array}
@@ -318,18 +275,9 @@
             color: {
 
                 set: function (value) {
-
                     (this._color = this._color || new xeogl.math.vec3()).set(value || [0.4,0.4,0.4]);
-
                     this._planeWire.material.emissive = this._color;
                     this._arrow.material.emissive = this._color;
-
-                    /**
-                     Fired whenever this PlaneHelper's {{#crossLink "PlaneHelper/color:property"}}{{/crossLink}} property changes.
-                     @event color
-                     @param value {Float32Array} The property's new value
-                     */
-                    this.fire("color", this._color);
                 },
 
                 get: function () {
@@ -340,8 +288,6 @@
             /**
              Indicates whether this PlaneHelper is filled with color or just wireframe.
 
-             Fires a {{#crossLink "PlaneHelper/active:event"}}{{/crossLink}} event on change.
-
              @property solid
              @default true
              @type Boolean
@@ -349,18 +295,8 @@
             solid: {
 
                 set: function (value) {
-
                     this._solid = value !== false;
-
                     this._planeSolid.visible = this._solid && this._visible;
-
-                    /**
-                     Fired whenever this helper's {{#crossLink "PlaneHelper/solid:property"}}{{/crossLink}} property changes.
-
-                     @event solid
-                     @param value {Boolean} The property's new value
-                     */
-                    this.fire("solid", this._solid);
                 },
 
                 get: function () {
@@ -371,8 +307,6 @@
             /**
              Indicates whether this PlaneHelper is visible or not.
 
-             Fires a {{#crossLink "PlaneHelper/visible:event"}}{{/crossLink}} event on change.
-
              @property visible
              @default true
              @type Boolean
@@ -380,21 +314,11 @@
             visible: {
 
                 set: function (value) {
-
                     this._visible = value !== false;
-
                     this._planeWire.visible = this._visible;
                     this._planeSolid.visible = this._solid && this._visible;
                     this._arrow.visible = this._visible;
                     this._label.visible = this._visible;
-
-                    /**
-                     Fired whenever this helper's {{#crossLink "PlaneHelper/visible:property"}}{{/crossLink}} property changes.
-
-                     @event visible
-                     @param value {Boolean} The property's new value
-                     */
-                    this.fire("visible", this._visible);
                 },
 
                 get: function () {
@@ -405,7 +329,7 @@
 
         _destroy: function () {
             if (this._onSceneAABB) {
-                this.scene.worldBoundary.off(this._onSceneAABB);
+                this.scene.off(this._onSceneAABB);
             }
         }
     });

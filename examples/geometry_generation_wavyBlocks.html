@@ -7,7 +7,7 @@
 
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
 
     <script src="js/geometry/k3d.js"></script>
     <script src="js/geometry/objGeometry.js"></script>
@@ -53,7 +53,7 @@
     // Careful not to make the geometry too big if we're running WebGL1
     // without gl.UNSIGNED_INT support for WebGLRenderingContext.drawElements()
 
-    var size = (xeogl.scene.canvas.webgl2 || xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"]) ? 100 : 20;
+    var size = (xeogl.scene.canvas.webgl2 || xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"]) ? 70 : 20;
 
     for (x = -size; x <= size; x += 2) {
         for (z = -size; z <= size; z += 2) {
@@ -74,9 +74,9 @@
     // Now build the actual Geometry component
     //-------------------------------------------------------------------------------
 
-    var geometry = new xeogl.Geometry();
+    var cfg = geometryBuilder.build();
 
-    geometryBuilder.build(geometry);
+    var geometry = new xeogl.Geometry(cfg);
 
     //-------------------------------------------------------------------------------
     // Create an Entity withe our Geometry attached
@@ -84,9 +84,22 @@
 
     var entity = new xeogl.Entity({
         geometry: geometry,
-
         material: new xeogl.PhongMaterial({
             diffuse: [0.6, 0.6, 0.7]
+        }),
+        Xghost: true,
+        ghostMaterial: new xeogl.GhostMaterial({
+            edges: true,
+            edgeAlpha: 1.0,
+            edgeColor: [0.2, 1.0, 0.2],
+            edgeWidth: 1,
+            vertices: false,
+            vertexAlpha: 1.0,
+            vertexColor: [0.6, 1.0, 0.6],
+            vertexSize: 4,
+            fill: true,
+            fillColor: [0, 0, 0],
+            fillAlpha: 1
         })
     });
 
@@ -94,29 +107,29 @@
     // Set the Camera position
     //-------------------------------------------------------------------------------
 
-    var view = entity.scene.camera.view;
+    var camera = entity.scene.camera;
 
-    view.eye = [-200, 50, -200];
+    camera.eye = [-250, 70, -0];
 
     //-------------------------------------------------------------------------------
     // Fit the entity to view
     //-------------------------------------------------------------------------------
 
-    (new xeogl.CameraFlightAnimation).jumpTo({ aabb: entity.worldBoundary.aabb, fitFOV:50 });
+    //(new xeogl.CameraFlightAnimation).jumpTo({ aabb: entity.aabb, fitFOV:50 });
 
     //-------------------------------------------------------------------------------
     // Start orbiting
     //-------------------------------------------------------------------------------
 
     entity.scene.on("tick", function () {
-        view.rotateEyeY(0.1);
+        camera.orbitYaw(0.1);
     });
 
     //-------------------------------------------------------------------------------
     // Allow user intercation with the Camera
     //-------------------------------------------------------------------------------
 
-    new xeogl.InputControl();
+    new xeogl.CameraControl();
 
 </script>
 </body>

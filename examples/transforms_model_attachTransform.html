@@ -7,7 +7,7 @@
 
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
     <script src="js/models/glTFModel.js"></script>
 
 
@@ -30,11 +30,11 @@
     });
 
     // Set initial camera position
-    var view = buggy.scene.camera.view;
-    view.eye = [0, 40, 100];
+    var camera = buggy.scene.camera;
+    camera.eye = [0, 40, 100];
 
     // Allow user camera control
-    new xeogl.InputControl();
+    new xeogl.CameraControl();
 
     // Attach a transform hierarchy to the GLTFModel
     // Shrink the model 50%, rotate it about Y

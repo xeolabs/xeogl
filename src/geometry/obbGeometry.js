@@ -1,14 +1,13 @@
 /**
- An **OBBGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that shows the extents of a World-space entity-oriented bounding box (OBB).
+ An **OBBGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that shows the extents of an oriented bounding box (OBB).
 
  <a href="../../examples/#geometry_primitives_OBBGeometry"><img src="http://i.giphy.com/3o6ZsSVy0NKXZ1vDSo.gif"></img></a>
 
  ## Overview
 
  * A World-space OBB a bounding box that's oriented to its contents, given as a 32-element array containing the homogeneous coordinates for the eight corner vertices, ie. each having elements [x,y,z,w].
- * Set an OBBGeometry's {{#crossLink "OBBGeometry/obb:property"}}{{/crossLink}} property to an OBB to fix it to those extents, or
- * Set an OBBGeometry's {{#crossLink "OBBGeometry/boundary:property"}}{{/crossLink}} property to a {{#crossLink "Boundary3D"}}{{/crossLink}}
- to make it dynamically fit itself to changes in the {{#crossLink "Boundary3D"}}{{/crossLink}}'s {{#crossLink "Boundary3D/obb:property"}}{{/crossLink}} extents.
+ * Set an OBBGeometry's {{#crossLink "OBBGeometry/targetOBB:property"}}{{/crossLink}} property to an OBB to fix it to those extents, or
+ * Set an OBBGeometry's {{#crossLink "OBBGeometry/target:property"}}{{/crossLink}} property to any {{#crossLink "Component"}}{{/crossLink}} subtype that has an OBB.
 
  ## Examples
 
@@ -16,12 +15,9 @@
 
  ## Usage
 
- An {{#crossLink "Entity"}}{{/crossLink}} with a OBBGeometry that shows the extents of the
- World-space {{#crossLink "Boundary3D"}}{{/crossLink}} of another {{#crossLink "Entity"}}{{/crossLink}}:
-
  ````javascript
  // First Entity with a TorusGeometry
- var torus = new xeogl.Entity({
+ var entity = new xeogl.Entity({
      geometry: new xeogl.TorusGeometry()
  });
 
@@ -31,7 +27,7 @@
  var boundaryHelper = new xeogl.Entity({
 
      geometry: new xeogl.OBBGeometry({
-         boundary: torus.worldBoundary
+         target: entity
      }),
 
      material: new xeogl.PhongMaterial({
@@ -42,17 +38,16 @@
  });
  ````
 
- Now whenever our torus {{#crossLink "Entity"}}{{/crossLink}} changes shape or position, our OBBGeometry will automatically
+ Now whenever our entity {{#crossLink "Entity"}}{{/crossLink}} changes shape or position, our OBBGeometry will automatically
  update to stay fitted to it.
 
- We could also directly configure the OBBGeometry with
- the {{#crossLink "Boundary3D"}}{{/crossLink}}'s {{#crossLink "Boundary3D/obb:property"}}OBB{{/crossLink}}:
+ We could also directly configure the OBBGeometry with the {{#crossLink "Entity"}}{{/crossLink}}'s {{#crossLink "Entity/obb:property"}}OBB{{/crossLink}}:
 
  ````javascript
  var boundaryHelper2 = new xeogl.Entity({
 
      geometry: new xeogl.OBBGeometry({
-         boundary: torus.worldBoundary.obb
+         targetOBB: entity.obb
      }),
 
      material: new xeogl.PhongMaterial({
@@ -62,8 +57,6 @@
      })
  });
  ````
- Note that, without the reference to a {{#crossLink "Boundary3D"}}{{/crossLink}}, our second OBBGeometry is fixed to the
- given OBB and will not automatically update whenever our torus {{#crossLink "Entity"}}{{/crossLink}} changes shape or position.
 
  @class OBBGeometry
  @module xeogl
@@ -75,8 +68,8 @@
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this OBBGeometry.
- @param [cfg.boundary] {Number|String|Boundary3D} ID or instance of a {{#crossLink "Boundary3D"}}{{/crossLink}}.
- @param [cfg.obb] {Float32Array} An entity-oriented box (OBB) in a 32-element Float32Array
+ @param [cfg.target] {Component} ID or instance of a {{#crossLink "Component"}}{{/crossLink}} whose OBB we'll show.
+ @param [cfg.targetOBB] {Float32Array} An entity-oriented box (OBB) in a 32-element Float32Array
  containing homogeneous coordinates for the eight corner vertices, ie. each having elements (x,y,z,w).
  @extends Component
  */
@@ -90,91 +83,63 @@
 
         _init: function (cfg) {
 
-            this._super(cfg);
+            this._super(xeogl._apply(cfg, {
+                primitive: cfg.primitive || "lines",
+                positions: cfg.positions || [1.0, 1.0, 1.0, 1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0,
+                    1.0, 1.0, 1.0, 1.0, -1.0, 1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, 1.0, -1.0],
+                indices: [0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6, 6, 7, 7, 4, 0, 4, 1, 5, 2, 6, 3, 7]
+            }));
 
-            this.primitive = cfg.primitive || "lines";
+            if (cfg.target) {
+                this.target = cfg.target;
 
-            this.indices = [
-                0, 1, 1, 2, 2, 3, 3, 0, 4,
-                5, 5, 6, 6, 7, 7, 4, 0, 4,
-                1, 5, 2, 6, 3, 7
-            ];
-
-            if (cfg.boundary) {
-                this.boundary = cfg.boundary;
-
-            } else if (cfg.obb) {
-                this.obb = cfg.obb;
-
-            } else if (cfg.positions) {
-                this.positions = cfg.positions;
-
-            } else {
-                this.positions = [
-                    1.0, 1.0, 1.0,
-                    1.0, -1.0, 1.0,
-                    -1.0, -1.0, 1.0,
-                    -1.0, 1.0, 1.0,
-                    1.0, 1.0, -1.0,
-                    1.0, -1.0, -1.0,
-                    -1.0, -1.0, -1.0,
-                    -1.0, 1.0, -1.0
-                ];
+            } else if (cfg.targetOBB) {
+                this.targetOBB = cfg.targetOBB;
             }
         },
 
         _props: {
 
             /**
-             A {{#crossLink "Boundary3D"}}{{/crossLink}} whose {{#crossLink "Boundary3D/obb:property"}}OBB{{/crossLink}} we'll
-             dynamically fit this OBBGeometry to.
+             A component whose OBB we'll dynamically fit this AABBGeometry to.
 
-             This property effectively replaces the {{#crossLink "OBBGeometry/obb:property"}}{{/crossLink}} property.
+             This property effectively replaces the {{#crossLink "OBBGeometry/targetOBB:property"}}{{/crossLink}} property.
 
-             Fires a {{#crossLink "OBBGeometry/boundary:event"}}{{/crossLink}} event on change.
-
-             @property boundary
-             @type Boundary3D
+             @property target
+             @type Component
              */
-            boundary: {
+            target: {
 
                 set: function (value) {
 
                     var geometryDirty = false;
                     var self = this;
 
-                    /**
-                     * Fired whenever this OBBGeometry's {{#crossLink "OBBGeometry/boundary:property"}}{{/crossLink}}
-                     * property changes.
-                     *
-                     * @event boundary
-                     * @param value The property's new value
-                     */
                     this._attach({
-                        name: "boundary",
-                        type: "xeogl.Boundary3D",
+                        name: "target",
+                        type: "xeogl.Component",
                         component: value,
                         sceneDefault: false,
                         on: {
-                            updated: function () {
+                            boundary: function () {
                                 if (geometryDirty) {
                                     return;
                                 }
                                 geometryDirty = true;
                                 xeogl.scheduleTask(function () {
-                                    self._setPositionsFromOBB(self._attached.boundary.obb);
+                                    self._setPositionsFromOBB(self._attached.target.obb);
                                     geometryDirty = false;
                                 });
                             }
                         },
                         onAttached: function () {
-                            self._setPositionsFromOBB(self._attached.boundary.obb);
+                            self._setPositionsFromOBB(self._attached.target.obb);
                         }
                     });
                 },
 
                 get: function () {
-                    return this._attached.boundary;
+                    return this._attached.target;
                 }
             },
 
@@ -184,10 +149,10 @@
 
              This property effectively replaces the {{#crossLink "OBBGeometry/boundary:property"}}{{/crossLink}} property, causing it to become null.
 
-             @property obb
+             @property targetOBB
              @type Float32Array
              */
-            obb: {
+            targetOBB: {
 
                 set: function (value) {
 
@@ -215,20 +180,6 @@
                 obb[24], obb[25], obb[26],
                 obb[28], obb[29], obb[30]
             ];
-        },
-
-        _getJSON: function () {
-
-            var json = {};
-
-            if (this._attached.boundary) {
-                json.boundary = this._attached.boundary.id;
-
-            } else if (this.positions) {
-                json.positions = xeogl.math.vecToArray(this.positions);
-            }
-
-            return json;
         }
     });
 })();

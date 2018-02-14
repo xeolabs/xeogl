@@ -13,50 +13,47 @@
 <body>
 
 <div id="info">
-    <h1>mouse over the <a href="../docs/classes/Entity.html" target="_parent">Entities</a> to ray-pick their surfaces</h1>
+    <h1>mouse over the <a href="../docs/classes/Entity.html" target="_parent">Entities</a> to ray-pick their surfaces
+    </h1>
+
 </div>
 
 <script>
 
     var gearbox = new xeogl.GLTFModel({
-        src: "models/gltf/GearboxAssy/glTF-MaterialsCommon/GearboxAssy.gltf"
+        src: "models/gltf/GearboxAssy/glTF-MaterialsCommon/GearboxAssy.gltf",
+        flattenTransforms: true,
+        //lambertMaterials: true,
+        combineGeometry: true,
+        compressGeometry: true
     });
 
-    // Ensure entities in our gearbox have unique materials
-    // so we can highlight the entities separately
-
-    gearbox.on("loaded", function () {
-        gearbox.iterate(function (c) {
-            if (c.isType("xeogl.Entity")) {
-                c.material = c.material.clone();
-                gearbox.add(c.material); // Ensure new materials get destroyed with gearbox
-            }
-        });
-    });
-
-    var scene = xeogl.scene;
+    var scene = gearbox.scene;
 
     // Set initial camera position
-    var view = scene.camera.view;
-    view.eye = [174.46, 16.91, -21.92];
-    view.look = [159.2, 17.02, 3.21];
-    view.up = [-0.17, 0.89, 0.4];
+    var camera = scene.camera;
+    camera.eye = [174.46, 16.91, -21.92];
+    camera.look = [159.2, 17.02, 3.21];
+    camera.up = [-0.17, 0.89, 0.4];
 
     // Allow user camera control
-    new xeogl.InputControl();
+    new xeogl.CameraControl();
 
     //--------------------------------------------
     // Create helper to show ray-Entity hits
     //--------------------------------------------
 
+
     var hitHelper = new (function () {
 
         var entity = new xeogl.Entity({
-            geometry: new xeogl.SphereGeometry({radius: 0.45}),
+            geometry: new xeogl.SphereGeometry({radius: .4}),
             material: new xeogl.PhongMaterial({emissive: [1, 0, 0], diffuse: [0, 0, 0]}),
-            transform: new xeogl.Translate(),
+            transform: new xeogl.Translate({
+                xyz: [0, 0, 0]
+            }),
             pickable: false,
-            visible: false
+            visible: true
         });
 
         this.show = function (hit) {
@@ -77,9 +74,12 @@
     var input = scene.input;
 
     var lastEntity = null;
-    var lastDiffuse = null;
+    var lastColorize = null;
 
+    var x = -10;
     input.on("mousemove", function (coords) {
+
+        x += 0.1;
 
         var hit = scene.pick({
             canvasPos: coords,
@@ -91,13 +91,13 @@
             if (!lastEntity || hit.entity.id !== lastEntity.id) {
 
                 if (lastEntity) {
-                    lastEntity.material.diffuse = lastDiffuse;
+                    lastEntity.colorize = lastColorize;
                 }
 
                 lastEntity = hit.entity;
-                lastDiffuse = hit.entity.material.diffuse.slice();
+                lastColorize = hit.entity.colorize.slice();
 
-                hit.entity.material.diffuse = [0.0, 1, 0.0];
+                hit.entity.colorize = [0.0, 1.0, 0.0, 1.0];
             }
 
             hitHelper.show(hit);
@@ -105,7 +105,7 @@
         } else {
 
             if (lastEntity) {
-                lastEntity.material.diffuse = lastDiffuse;
+                lastEntity.colorize = lastColorize;
                 lastEntity = null;
 
                 hitHelper.hide();
