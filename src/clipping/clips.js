@@ -132,7 +132,7 @@
 
                         this._dirtySubs.push(clip.on("dirty", clipDirty));
 
-                        this._destroyedSubs.push(clip.on("destroyed", clipDestroyed));
+                        this._destroyedSubs.push(clip.on("destroyed", clipDestroyed, clip));
                     }
 
                     this._dirty = true;
