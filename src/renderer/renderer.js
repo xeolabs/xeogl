@@ -718,7 +718,7 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
             pickBuf = pickBuf || new xeogl.renderer.RenderBuffer(canvas, gl);
             pickBuf.bind();
 
-            var object = pickObject(canvasX, canvasY, pickViewMatrix, pickProjMatrix);
+            var object = pickObject(canvasX, canvasY, pickViewMatrix, pickProjMatrix, params);
 
             if (!object) {
                 pickBuf.unbind();
@@ -744,7 +744,7 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
         };
     })();
 
-    function pickObject(canvasX, canvasY, pickViewMatrix, pickProjMatrix) {
+    function pickObject(canvasX, canvasY, pickViewMatrix, pickProjMatrix, params) {
 
         frame.reset();
         frame.backfaces = true;
@@ -767,11 +767,21 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
 
         objectPickListLen = 0;
 
+        var i;
+        var len;
         var object;
+        var includeObjects = params.includeObjects;
+        var excludeObjects = params.excludeObjects;
 
-        for (var i = 0, len = objectListLen; i < len; i++) {
+        for (i = 0, len = objectListLen; i < len; i++) {
             object = objectList[i];
             if (object.modes.culled === true || object.modes.visible === false || object.modes.pickable === false) {
+                continue;
+            }
+            if (includeObjects && !includeObjects[object.id]) {
+                continue;
+            }
+            if (excludeObjects && excludeObjects[object.id]) {
                 continue;
             }
             objectPickList[objectPickListLen++] = object;
