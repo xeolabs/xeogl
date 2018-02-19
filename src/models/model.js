@@ -5,7 +5,7 @@
 
  * A Model owns the components that are added to it, automatically destroying them when the Model is destroyed.
  * Can be attached to a {{#crossLink "Transform"}}{{/crossLink}} hierarchy, to transform its components as a group, within World-space.
- * Provides the collective World-space boundary of its components in an automatically updating {{#crossLink "Boundary3D"}}{{/crossLink}}.
+ * Provides the collective axis-aligned World-space boundary of its components.
 
  A Model is subclassed by (at least):
 
@@ -14,11 +14,17 @@
  * {{#crossLink "SceneJSModel"}}{{/crossLink}}, which loads its components from SceneJS scene definitions.
  * {{#crossLink "BuildableModel"}}{{/crossLink}}, which provides a fluent API for building its components.
 
- <img src="../../../assets/images/Model.png"></img>
-
  ## Usage
 
- ### Adding and removing components
+ * [Adding and Removing Components](#adding-and-removing-components)
+ * [Finding Models in Scenes](#finding-models-in-scenes)
+ * [Finding Components in Models](#finding-components-in-models)
+ * [Transforming a Model](#transforming-a-model)
+ * [Getting the World-space boundary of a Model](#getting-the-world-space-boundary-of-a-model)
+ * [Clearing a Model](#clearing-a-model)
+ * [Destroying a Model](#destroying-a-model)
+
+ ### Adding and Removing Components
 
  When adding components to a Model, it's usually easiest to just add their configuration objects and let the Model
  internally instantiate them, as shown below.
@@ -27,7 +33,9 @@
  the Model or call the Model's {{#crossLink "Model/destroyAll:method"}}{{/crossLink}} method.
 
  ````javascript
- var model = new xeogl.Model();
+ var model = new xeogl.Model({ // Create Model in xeogl's default Scene
+     id: "myModel"
+ });
 
  var geometry = model.add({
     type: "xeogl.TorusGeometry"
@@ -70,6 +78,7 @@
 
  ````javascript
  model = new xeogl.Model({
+    id: "myModel",
     components: [
         {
             type: "xeogl.TorusGeometry",
@@ -87,10 +96,20 @@
             material: "myMaterial"
         }
     ]
-});
+ });
  ````
 
- ### Finding components
+ ### Finding Models in Scenes
+
+ Our Model will now be registered by ID on its Scene, so we can now find it like this:
+
+ ````javascript
+    model = xeogl.scene.models["myModel"];
+ ````
+
+ That's assuming that we've created the Model in the default xeogl Scene, which we did for these examples.
+
+ ### Finding Components in Models
 
  Our Model now has various components within itself, which we can find by their IDs.
 
@@ -176,12 +195,39 @@
 
  ### Getting the World-space boundary of a Model
 
+ Get the World-space axis-aligned boundary of a MOdel like this:
+
  ```` Javascript
  model.on("boundary", function() {
-    var aabb = model.aabb;
+    var aabb = model.aabb; //  [xmin, ymin,zmin,xmax,ymax, zmax]
     //...
  });
  ````
+
+ We can also subscribe to changes to that boundary, which will happen whenever
+
+ * the Model's {{#crossLink "Transform"}}{{/crossLink}} is updated,
+ * components are added or removed from the Model, or
+ * the {{#crossLink "Geometry"}}Geometries{{/crossLink}} or {{#crossLink "Transform"}}Transforms{{/crossLink}} of its Entities are switched or modified.
+
+ ````javascript
+ model.on("boundary", function() {
+    var aabb = model.aabb; // [xmin, ymin,zmin,xmax,ymax, zmax]
+ });
+ ````
+
+ ### Clearing a Model
+
+ ```` Javascript
+ model.clear();
+ ````
+
+ ### Destroying a Model
+
+ ```` Javascript
+ model.destroy();
+ ````
+
 
  @class Model
  @module xeogl
