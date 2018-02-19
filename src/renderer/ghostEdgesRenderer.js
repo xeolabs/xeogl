@@ -188,7 +188,13 @@
 
         // Bind VBOs
 
-        var indicesBuf = geometry.getGhostEdgesIndices();
+        var indicesBuf;
+
+        if (geometry.primitive === gl.TRIANGLES) {
+            indicesBuf = geometry.getGhostEdgesIndices();
+        } else if (geometry.primitive === gl.LINES) {
+            indicesBuf = geometry.indicesBuf;
+        }
 
         if (indicesBuf) {
 
