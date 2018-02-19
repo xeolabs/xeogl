@@ -1,51 +1,22 @@
 /**
- A **Frustum** defines a perspective projection as a frustum-shaped view volume.
+ A **Frustum** defines a perspective projection as a frustum-shaped view volume for a {{#crossLink "Camera"}}Camera{{/crossLink}}.
 
  ## Overview
 
- * {{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
- {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ * A {{#crossLink "Camera"}}Camera{{/crossLink}} has a Frustum to configure its frustum-based perspective projection mode.
  * A Frustum lets us explicitly set the positions of the left, right, top, bottom, near and far planes, which is useful
  for asymmetrical view volumes, such as those used for stereo viewing.
- * An Frustum's {{#crossLink "Frustum/near:property"}}{{/crossLink}} and {{#crossLink "Frustum/far:property"}}{{/crossLink}} properties
+ * A Frustum's {{#crossLink "Frustum/near:property"}}{{/crossLink}} and {{#crossLink "Frustum/far:property"}}{{/crossLink}} properties
  specify the distances to the WebGL clipping planes.
- * Use {{#crossLink "Ortho"}}{{/crossLink}} if you just want to specify the X,Y frustum extents with a single scale factor,
- ie. without individually specifying the distance to each frustum plane.
- * Use {{#crossLink "Perspective"}}{{/crossLink}} if you need perspective projection.
-
- <img src="../../../assets/images/Frustum.png"></img>
 
  ## Examples
 
- * [Camera with frustum projection](../../examples/#transforms_camera_project_frustum)
+ * [Camera with frustum projection](../../examples/#camera_frustum)
  * [Stereo viewing with frustum projection](../../examples/#effects_stereo)
 
  ## Usage
 
- ````Javascript
- new xeogl.Entity({
-
-     camera: xeogl.Camera({
-
-        view: new xeogl.Lookat({
-            eye: [0, 0, -4],
-            look: [0, 0, 0],
-            up: [0, 1, 0]
-        }),
-
-        project: new xeogl.Frustum(scene, {
-            left: -0.1,
-            right: 0.1,
-            bottom: -0.1,
-            top: 0.1,
-            near: 0.15,
-            far: 1000
-        })
-     }),
-
-     geometry: new xeogl.BoxGeometry()
- });
- ````
+ * See {{#crossLink "Camera"}}{{/crossLink}}
 
  @class Frustum
  @module xeogl

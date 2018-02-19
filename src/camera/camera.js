@@ -16,7 +16,7 @@
  ## Examples
 
  * [Perspective projection](../../examples/#camera_perspective)
- * [Orthographic projection](../../examples/#camera_ortho)
+ * [Orthographic projection](../../examples/#camera_orthographic)
  * [Frustum projection](../../examples/#camera_frustum)
  * [Camera with world Z-axis as "up"](../../examples/#camera_zAxisUp)
  * [Camera with world Y-axis as "up"](../../examples/#camera_yAxisUp)
@@ -175,7 +175,7 @@
  camera.gimbalLock = true; // Yaw rotation now happens about World's "up" axis
  ````
 
-
+ See: <a href="https://en.wikipedia.org/wiki/Gimbal_lock">https://en.wikipedia.org/wiki/Gimbal_lock</a>
 
  @class Camera
  @module xeogl

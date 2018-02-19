@@ -25,30 +25,51 @@ TODO
 
  ## Usage
 
- ```` javascript
- var entity = new xeogl.Entity(scene, {
+ In the example below we'll customize the default Scene's light sources, defining an AmbientLight and a couple of
+ SpotLights, then create a Phong-shaded box entity.
 
-        lights: new xeogl.Lights({
-            lights: [
-                new xeogl.SpotLight({
-                    pos: [0, 100, 100],
-                    dir: [0, -1, 0],
-                    color: [0.5, 0.7, 0.5],
-                    intensity: 1
-                    constantAttenuation: 0,
-                    linearAttenuation: 0,
-                    quadraticAttenuation: 0,
-                    space: "view"
-                })
-            ]
-        }),
- ,
-        material: new xeogl.PhongMaterial({
-            diffuse: [0.5, 0.5, 0.0]
-        }),
+ ````javascript
 
-        geometry: new xeogl.BoxGeometry()
-  });
+ // We're using the default xeogl Scene
+ // Get Scene's Lights
+ var lights = xeogl.scene.lights;
+
+ // Customize the light sources
+ lights.lights = [
+     new xeogl.AmbientLight({
+         color: [0.8, 0.8, 0.8],
+         intensity: 0.5
+     }),
+     new xeogl.SpotLight({
+         pos: [0, 100, 100],
+         dir: [0, -1, 0],
+         color: [0.5, 0.7, 0.5],
+         intensity: 1
+         constantAttenuation: 0,
+         linearAttenuation: 0,
+         quadraticAttenuation: 0,
+         space: "view"
+     }),
+     new xeogl.PointLight({
+         pos: [0, 100, 100],
+         dir: [0, -1, 0],
+         color: [0.5, 0.7, 0.5],
+         intensity: 1
+         constantAttenuation: 0,
+         linearAttenuation: 0,
+         quadraticAttenuation: 0,
+         space: "view"
+     })
+ ];
+
+ // Create box entity
+ new xeogl.Entity({
+    material: new xeogl.PhongMaterial({
+        ambient: [0.5, 0.5, 0.5],
+        diffuse: [1,0.3,0.3]
+    }),
+    geometry: new xeogl.BoxGeometry()
+ });
  ````
 
  @class SpotLight
