@@ -185,7 +185,8 @@
 
  ### Emphasis effects
 
- The Scene's {{#crossLink "GhostMaterial"}}{{/crossLink}} provides the default material for controlling ghost effects:
+ The Scene's {{#crossLink "Scene/ghostMaterial:property"}}{{/crossLink}} provides the default {{#crossLink "GhostMaterial"}}{{/crossLink}}
+ for controlling ghost effects:
 
  ````javascript
  var ghostMaterial = scene.ghostMaterial;
@@ -193,7 +194,8 @@
  //...
  ````
 
- The Scene's {{#crossLink "HighlightMaterial"}}{{/crossLink}} provides the default material for controlling highlight effects:
+ The Scene's {{#crossLink "Scene/highlightMaterial:property"}}{{/crossLink}} provides the default {{#crossLink "GhostMaterial"}}{{/crossLink}}
+ for controlling highlight effects:
 
  ````javascript
  var highlightMaterial = scene.highlightMaterial;
@@ -201,12 +203,16 @@
  //...
  ````
 
- The Scene's {{#crossLink "OutlineMaterial"}}{{/crossLink}} provides the default material for controlling outline effects:
+ The Scene's {{#crossLink "Scene/outlineMaterial:property"}}{{/crossLink}} provides the default {{#crossLink "OutlineMaterial"}}{{/crossLink}}
+ for controlling outline effects:
+
 
  ````javascript
  var outlineMaterial = scene.outlineMaterial;
  outlineMaterial.edgeWidth = 6;
  ````
+
+ * See {{#crossLink "Entity"}}{{/crossLink}} and {{#crossLink "GhostMaterial"}}{{/crossLink}}
 
  ### Picking entities
 
