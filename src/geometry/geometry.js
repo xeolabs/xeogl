@@ -1001,7 +1001,7 @@
             }
 
             if (this._edgesIndicesBuf) {
-                state._edgesIndicesBuf.destroy();
+                this._edgesIndicesBuf.destroy();
             }
 
             if (state.indicesBufCombined) {
