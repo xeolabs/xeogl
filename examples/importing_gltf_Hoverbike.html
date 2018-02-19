@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.js"></script>
+
+
+    <script src="js/skyboxes/skybox.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="js/libs/dat.gui.min.js"></script>
+
+<body>
+
+<div id="info">
+    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - importing glTF with specular/glossy PBR materials</h1>
+    <pre id="log">model:  hover bike - [<a
+            href='https://github.com/xeolabs/xeogl/tree/master/examples/models/gltf/hover_bike/README.md' target="_parent">model info</a>]</pre>
+</div>
+
+<div id="dat-gui-container">
+</div>
+
+<script>
+
+    //---------------------------------------------------
+    // Load the model
+    //---------------------------------------------------
+
+    var model = new xeogl.GLTFModel({
+        src: "models/gltf/hover_bike/scene.gltf"
+    });
+
+    //-----------------------------------------------------------------------------------------------------
+    // Camera animation and user control
+    //-----------------------------------------------------------------------------------------------------
+
+    var scene = model.scene;
+    var camera = scene.camera;
+
+    camera.eye = [389.7743835449219, 239.3394012451172, 23.223623275756836];
+    camera.look = [0.000003814697265625, 64.58052062988281, 4.9520416259765625];
+    camera.up =  [-0.4082976281642914, 0.9126505851745605, -0.019139183685183525];
+
+    var spinning = false;
+
+    model.on("loaded", function() {
+        scene.on("tick", function () { // Slowly orbit the camera
+            if (spinning) {
+                camera.orbitYaw(-0.1);
+            }
+        });
+    });
+
+    var cameraControl = new xeogl.CameraControl(); // User camera control
+
+    //-----------------------------------------------------------------------------------------------------
+    // Environment
+    //-----------------------------------------------------------------------------------------------------
+
+    var skybox = new xeogl.Skybox({
+        src: "textures/skybox/uffizi_vert_cross.jpg",
+        active: false,
+        encoding: "sRGB"
+    });
+
+    var dirLights = [
+        new xeogl.DirLight({
+            id: "keyLight",
+            dir: [0.8, -0.6, -0.8],
+            color: [0.8, 0.8, 0.8],
+            intensity: 1.0,
+            space: "world"
+        }),
+
+        new xeogl.DirLight({
+            id: "fillLight",
+            dir: [-0.8, -0.4, -0.4],
+            color: [0.4, 0.4, 0.5],
+            intensity: 1.0,
+            space: "world"
+        }),
+
+        new xeogl.DirLight({
+            id: "rimLight",
+            dir: [0.2, -0.8, 0.8],
+            color: [0.8, 0.8, 0.8],
+            intensity: 1.0,
+            space: "world"
+        })
+    ];
+
+    var lightMap = new xeogl.CubeTexture({
+        src: [
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png"
+        ],
+        encoding: "linear"
+    });
+
+    var reflectionMap = new xeogl.CubeTexture({
+        src: [
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
+        ],
+        encoding: "linear"
+    });
+
+    var lights = scene.lights;
+    lights.lights = dirLights;
+    lights.lightMap = lightMap;
+    lights.reflectionMap = reflectionMap;
+
+    //------------------------------------------------------------------------------------------------------------------
+    //  GUI
+    //------------------------------------------------------------------------------------------------------------------
+
+    (function () {
+
+        var Menu = function () {
+
+            this.message = "xeogl.Environment";
+
+            this["lightMap"] = !!lights.lightMap;
+            this["reflectionMap"] = !!lights.reflectionMap;
+            this["dirLights"] = !!(lights.lights && lights.lights.length > 0);
+            this["skybox"] = !!skybox.active;
+            this["spinning"] = true;
+            this["gammaOutput"] = scene.gammaOutput;
+            this["gammaFactor"] = scene.gammaFactor;
+
+            var self = this;
+
+            var update = function () {
+                if (self["lightMap"] !== !!lights.lightMap) {
+                    lights.lightMap = self["lightMap"] ? lightMap : null;
+                }
+                if (self["reflectionMap"] !== !!lights.reflectionMap) {
+                    lights.reflectionMap = self["reflectionMap"] ? reflectionMap : null;
+                }
+                if (self["dirLights"] !== !!(lights.lights && lights.lights.length > 0)) {
+                    lights.lights = self["dirLights"] ? dirLights : [];
+                }
+                if (self["skybox"] !== skybox.active) {
+                    skybox.active = self["skybox"];
+                }
+                if (self["spinning"] !== spinning) {
+                    spinning = self["spinning"];
+                }
+                scene.gammaOutput = self["gammaOutput"];
+                scene.gammaFactor = self["gammaFactor"];
+                requestAnimationFrame(update);
+            };
+
+            update();
+        };
+
+        var gui = new dat.GUI({autoPlace: false, width: 300});
+
+        document.getElementById('dat-gui-container').appendChild(gui.domElement);
+
+        var menu = new Menu();
+
+        var lightsFolder = gui.addFolder('Environment');
+        lightsFolder.add(menu, 'lightMap', true);
+        lightsFolder.add(menu, 'reflectionMap', true);
+        lightsFolder.add(menu, 'dirLights', false);
+        lightsFolder.add(menu, 'skybox', true);
+        lightsFolder.add(menu, 'spinning', true);
+        lightsFolder.add(menu, 'gammaOutput', true);
+        lightsFolder.add(menu, 'gammaFactor', 0.0, 3.0);
+        lightsFolder.open();
+    })();
+
+
+</script>
+</body>
+</html>
