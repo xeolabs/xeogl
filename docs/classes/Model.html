@@ -20,7 +20,7 @@
 
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.0.0</em>
+            <em>API Docs for: 0.7.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -56,13 +56,11 @@
                                 <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
-                                <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/ClipControl.html">ClipControl</a></li>
                                 <li><a href="../classes/ClipHelper.html">ClipHelper</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
-                                <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
@@ -104,9 +102,7 @@
                                 <li><a href="../classes/Progress.html">Progress</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
-                                <li><a href="../classes/Region.html">Region</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
-                                <li><a href="../classes/Ruler.html">Ruler</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
@@ -137,7 +133,6 @@
                                 <li><a href="..//modules/camera.html">camera</a></li>
                                 <li><a href="..//modules/canvas.html">canvas</a></li>
                                 <li><a href="..//modules/clipping.html">clipping</a></li>
-                                <li><a href="..//modules/configs.html">configs</a></li>
                                 <li><a href="..//modules/controls.html">controls</a></li>
                                 <li><a href="..//modules/curves.html">curves</a></li>
                                 <li><a href="..//modules/effects.html">effects</a></li>
@@ -211,7 +206,7 @@
 <ul>
 <li>A Model owns the components that are added to it, automatically destroying them when the Model is destroyed.</li>
 <li>Can be attached to a <a href="../classes/Transform.html" class="crosslink">Transform</a> hierarchy, to transform its components as a group, within World-space.</li>
-<li>Provides the collective World-space boundary of its components in an automatically updating Boundary3D.</li>
+<li>Provides the collective axis-aligned World-space boundary of its components.</li>
 </ul>
 <p>A Model is subclassed by (at least):</p>
 <ul>
@@ -220,14 +215,24 @@
 <li><a href="../classes/SceneJSModel.html" class="crosslink">SceneJSModel</a>, which loads its components from SceneJS scene definitions.</li>
 <li><a href="../classes/BuildableModel.html" class="crosslink">BuildableModel</a>, which provides a fluent API for building its components.</li>
 </ul>
-<p><img src="../../../assets/images/Model.png"></img></p>
 <h2 id="usage">Usage</h2>
-<h3 id="adding-and-removing-components">Adding and removing components</h3>
+<ul>
+<li><a href="#adding-and-removing-components">Adding and Removing Components</a></li>
+<li><a href="#finding-models-in-scenes">Finding Models in Scenes</a></li>
+<li><a href="#finding-components-in-models">Finding Components in Models</a></li>
+<li><a href="#transforming-a-model">Transforming a Model</a></li>
+<li><a href="#getting-the-world-space-boundary-of-a-model">Getting the World-space boundary of a Model</a></li>
+<li><a href="#clearing-a-model">Clearing a Model</a></li>
+<li><a href="#destroying-a-model">Destroying a Model</a></li>
+</ul>
+<h3 id="adding-and-removing-components">Adding and Removing Components</h3>
 <p>When adding components to a Model, it&#39;s usually easiest to just add their configuration objects and let the Model
 internally instantiate them, as shown below.</p>
 <p>As mentioned, a Model owns all the components added to it, destroying them when we destroy
 the Model or call the Model&#39;s <a href="../classes/Model.html#method_destroyAll" class="crosslink">destroyAll</a> method.</p>
-<pre class="code prettyprint"><code class="lang-javascript">var model = new xeogl.Model();
+<pre class="code prettyprint"><code class="lang-javascript">var model = new xeogl.Model({ // Create Model in xeogl&#39;s default Scene
+    id: "myModel"
+});
 
 var geometry = model.add({
    type: "xeogl.TorusGeometry"
@@ -263,6 +268,7 @@ model.add("myEntity");
 </code></pre>
 <p>We can also add components all in one shot,  via the Model&#39;s constructor:</p>
 <pre class="code prettyprint"><code class="lang-javascript">model = new xeogl.Model({
+   id: "myModel",
    components: [
        {
            type: "xeogl.TorusGeometry",
@@ -282,7 +288,12 @@ model.add("myEntity");
    ]
 });
 </code></pre>
-<h3 id="finding-components">Finding components</h3>
+<h3 id="finding-models-in-scenes">Finding Models in Scenes</h3>
+<p>Our Model will now be registered by ID on its Scene, so we can now find it like this:</p>
+<pre class="code prettyprint"><code class="lang-javascript">   model = xeogl.scene.models["myModel"];
+</code></pre>
+<p>That&#39;s assuming that we&#39;ve created the Model in the default xeogl Scene, which we did for these examples.</p>
+<h3 id="finding-components-in-models">Finding Components in Models</h3>
 <p>Our Model now has various components within itself, which we can find by their IDs.</p>
 <p>To find the components grouped by their types, drop this expression into the browser&#39;s JavaScript
 debug console (we&#39;re using Chrome here):</p>
@@ -342,10 +353,27 @@ var model3 = new xeogl.Model({
 <p>Note that, as with the components we added before, the Model will manage the lifecycles of our <a href="../classes/Transform.html" class="crosslink">Transform</a> components,
 destroying them when we destroy the Model or call its <a href="../classes/Model.html#method_destroyAll" class="crosslink">destroyAll</a> method. Also, when we call <a href="../classes/Component.html#method_destroy" class="crosslink">destroy</a> on a Model component, the component will remove itself from the Model first.</p>
 <h3 id="getting-the-world-space-boundary-of-a-model">Getting the World-space boundary of a Model</h3>
+<p>Get the World-space axis-aligned boundary of a MOdel like this:</p>
 <pre class="code prettyprint"><code class="lang-Javascript">model.on("boundary", function() {
-   var aabb = model.aabb;
+   var aabb = model.aabb; //  [xmin, ymin,zmin,xmax,ymax, zmax]
    //...
 });
+</code></pre>
+<p>We can also subscribe to changes to that boundary, which will happen whenever</p>
+<ul>
+<li>the Model&#39;s <a href="../classes/Transform.html" class="crosslink">Transform</a> is updated,</li>
+<li>components are added or removed from the Model, or</li>
+<li>the <a href="../classes/Geometry.html" class="crosslink">Geometries</a> or <a href="../classes/Transform.html" class="crosslink">Transforms</a> of its Entities are switched or modified.</li>
+</ul>
+<pre class="code prettyprint"><code class="lang-javascript">model.on("boundary", function() {
+   var aabb = model.aabb; // [xmin, ymin,zmin,xmax,ymax, zmax]
+});
+</code></pre>
+<h3 id="clearing-a-model">Clearing a Model</h3>
+<pre class="code prettyprint"><code class="lang-Javascript">model.clear();
+</code></pre>
+<h3 id="destroying-a-model">Destroying a Model</h3>
+<pre class="code prettyprint"><code class="lang-Javascript">model.destroy();
 </code></pre>
 
 </div>
@@ -556,16 +584,6 @@ destroying them when we destroy the Model or call its <a href="../classes/Model.
                                 <a href="#method_add">add</a>
 
                             </li>
-                            <li class="index-item method">
-                                <a href="#method_canvasPosToLocalRay">canvasPosToLocalRay</a>
-
-                                    <span class="flag static">static</span>
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_canvasPosToWorldRay">canvasPosToWorldRay</a>
-
-                                    <span class="flag static">static</span>
-                            </li>
                             <li class="index-item method inherited">
                                 <a href="#method_create">create</a>
 
@@ -621,11 +639,6 @@ destroying them when we destroy the Model or call its <a href="../classes/Model.
                             <li class="index-item method inherited">
                                 <a href="#method_warn">warn</a>
 
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_worldRayToLocalRay">worldRayToLocalRay</a>
-
-                                    <span class="flag static">static</span>
                             </li>
                     </ul>
                 </div>
@@ -759,7 +772,7 @@ destroying them when we destroy the Model or call its <a href="../classes/Model.
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_models_model.js.html#l302"><code>src&#x2F;models&#x2F;model.js:302</code></a>
+        <a href="../files/src_models_model.js.html#l348"><code>src&#x2F;models&#x2F;model.js:348</code></a>
         </p>
 
 
@@ -786,218 +799,6 @@ destroying them when we destroy the Model or call its <a href="../classes/Model.
 
                     <div class="param-description">
                         <p>ID, definition or instance of a <a href="../classes/Component.html" class="crosslink">Component</a> type or subtype.</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
-<div id="method_canvasPosToLocalRay" class="method item">
-    <h3 class="name"><code>canvasPosToLocalRay</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>camera</code>
-                </li>
-                <li class="arg">
-                        <code>entity</code>
-                </li>
-                <li class="arg">
-                        <code>canvasPos</code>
-                </li>
-                <li class="arg">
-                        <code>localRayOrigin</code>
-                </li>
-                <li class="arg">
-                        <code>localRayDir</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-        <span class="flag static">static</span>
-
-
-
-
-    <div class="meta">
-                    <p>Provided by the <a href="../modules/xeogl.html">xeogl</a> module.</p>
-                <p>
-                Defined in
-        <a href="../files/src_math_mathRays.js.html#l73"><code>src&#x2F;math&#x2F;mathRays.js:73</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Transforms a Canvas-space position to an Entity&#39;s Local-space coordinate system, in the context of a Camera.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">camera</code>
-                        <span class="type"><a href="../classes/Camera.html" class="crosslink">Camera</a></span>
-
-
-                    <div class="param-description">
-                        <p>The Camera.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">entity</code>
-                        <span class="type"><a href="../classes/Entity.html" class="crosslink">Entity</a></span>
-
-
-                    <div class="param-description">
-                        <p>The Entity.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">canvasPos</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>The Canvas-space position.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">localRayOrigin</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>The Local-space ray origin.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">localRayDir</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>The Local-space ray direction.</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
-<div id="method_canvasPosToWorldRay" class="method item">
-    <h3 class="name"><code>canvasPosToWorldRay</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>camera</code>
-                </li>
-                <li class="arg">
-                        <code>canvasPos</code>
-                </li>
-                <li class="arg">
-                        <code>worldRayOrigin</code>
-                </li>
-                <li class="arg">
-                        <code>worldRayDir</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-        <span class="flag static">static</span>
-
-
-
-
-    <div class="meta">
-                    <p>Provided by the <a href="../modules/xeogl.html">xeogl</a> module.</p>
-                <p>
-                Defined in
-        <a href="../files/src_math_mathRays.js.html#l10"><code>src&#x2F;math&#x2F;mathRays.js:10</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Transforms a Canvas-space position into a World-space ray, in the context of a Camera.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">camera</code>
-                        <span class="type"><a href="../classes/Camera.html" class="crosslink">Camera</a></span>
-
-
-                    <div class="param-description">
-                        <p>The Camera.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">canvasPos</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>The Canvas-space position.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">worldRayOrigin</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>The World-space ray origin.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">worldRayDir</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>The World-space ray direction.</p>
 
                     </div>
 
@@ -1133,7 +934,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_models_model.js.html#l492"><code>src&#x2F;models&#x2F;model.js:492</code></a>
+        <a href="../files/src_models_model.js.html#l538"><code>src&#x2F;models&#x2F;model.js:538</code></a>
         </p>
 
 
@@ -1466,7 +1267,7 @@ myRotate.isType(xeogl.Entity); // Returns false, because xeogl.Rotate does not (
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_models_model.js.html#l586"><code>src&#x2F;models&#x2F;model.js:586</code></a>
+        <a href="../files/src_models_model.js.html#l632"><code>src&#x2F;models&#x2F;model.js:632</code></a>
         </p>
 
 
@@ -1824,7 +1625,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_models_model.js.html#l528"><code>src&#x2F;models&#x2F;model.js:528</code></a>
+        <a href="../files/src_models_model.js.html#l574"><code>src&#x2F;models&#x2F;model.js:574</code></a>
         </p>
 
 
@@ -1898,119 +1699,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
 </div>
-<div id="method_worldRayToLocalRay" class="method item">
-    <h3 class="name"><code>worldRayToLocalRay</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>entity</code>
-                </li>
-                <li class="arg">
-                        <code>worldRayOrigin</code>
-                </li>
-                <li class="arg">
-                        <code>worldRayDir</code>
-                </li>
-                <li class="arg">
-                        <code>localRayOrigin</code>
-                </li>
-                <li class="arg">
-                        <code>localRayDir</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-        <span class="flag static">static</span>
-
-
-
-
-    <div class="meta">
-                    <p>Provided by the <a href="../modules/xeogl.html">xeogl</a> module.</p>
-                <p>
-                Defined in
-        <a href="../files/src_math_mathRays.js.html#l94"><code>src&#x2F;math&#x2F;mathRays.js:94</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Transforms a ray from World-space to an Entity&#39;s Local-space coordinate system.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">entity</code>
-                        <span class="type"><a href="../classes/Entity.html" class="crosslink">Entity</a></span>
-
-
-                    <div class="param-description">
-                        <p>The Entity.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">worldRayOrigin</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>The World-space ray origin.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">worldRayDir</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>The World-space ray direction.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">localRayOrigin</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>The Local-space ray origin.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">localRayDir</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>The Local-space ray direction.</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
             </div>
 
             <div id="properties" class="api-class-tabpanel">
@@ -2028,7 +1716,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_model.js.html#l646"><code>src&#x2F;models&#x2F;model.js:646</code></a>
+                            <a href="../files/src_models_model.js.html#l692"><code>src&#x2F;models&#x2F;model.js:692</code></a>
                             </p>
                     
                     
@@ -2055,7 +1743,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_model.js.html#l224"><code>src&#x2F;models&#x2F;model.js:224</code></a>
+                            <a href="../files/src_models_model.js.html#l270"><code>src&#x2F;models&#x2F;model.js:270</code></a>
                             </p>
                     
                     
@@ -2106,7 +1794,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_model.js.html#l264"><code>src&#x2F;models&#x2F;model.js:264</code></a>
+                            <a href="../files/src_models_model.js.html#l310"><code>src&#x2F;models&#x2F;model.js:310</code></a>
                             </p>
                     
                     
@@ -2131,7 +1819,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_model.js.html#l740"><code>src&#x2F;models&#x2F;model.js:740</code></a>
+                            <a href="../files/src_models_model.js.html#l786"><code>src&#x2F;models&#x2F;model.js:786</code></a>
                             </p>
                     
                     
@@ -2157,7 +1845,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_model.js.html#l767"><code>src&#x2F;models&#x2F;model.js:767</code></a>
+                            <a href="../files/src_models_model.js.html#l813"><code>src&#x2F;models&#x2F;model.js:813</code></a>
                             </p>
                     
                     
@@ -2259,7 +1947,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_model.js.html#l234"><code>src&#x2F;models&#x2F;model.js:234</code></a>
+                            <a href="../files/src_models_model.js.html#l280"><code>src&#x2F;models&#x2F;model.js:280</code></a>
                             </p>
                     
                     
@@ -2284,7 +1972,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_model.js.html#l794"><code>src&#x2F;models&#x2F;model.js:794</code></a>
+                            <a href="../files/src_models_model.js.html#l840"><code>src&#x2F;models&#x2F;model.js:840</code></a>
                             </p>
                     
                     
@@ -2368,7 +2056,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_model.js.html#l605"><code>src&#x2F;models&#x2F;model.js:605</code></a>
+                            <a href="../files/src_models_model.js.html#l651"><code>src&#x2F;models&#x2F;model.js:651</code></a>
                             </p>
                     
                     
@@ -2402,7 +2090,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_models_model.js.html#l213"><code>src&#x2F;models&#x2F;model.js:213</code></a>
+                            <a href="../files/src_models_model.js.html#l259"><code>src&#x2F;models&#x2F;model.js:259</code></a>
                             </p>
                     
                     
@@ -2427,7 +2115,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_model.js.html#l242"><code>src&#x2F;models&#x2F;model.js:242</code></a>
+                            <a href="../files/src_models_model.js.html#l288"><code>src&#x2F;models&#x2F;model.js:288</code></a>
                             </p>
                     
                     
@@ -2463,7 +2151,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_model.js.html#l713"><code>src&#x2F;models&#x2F;model.js:713</code></a>
+                            <a href="../files/src_models_model.js.html#l759"><code>src&#x2F;models&#x2F;model.js:759</code></a>
                             </p>
                     
                     
@@ -2495,7 +2183,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_model.js.html#l453"><code>src&#x2F;models&#x2F;model.js:453</code></a>
+                            <a href="../files/src_models_model.js.html#l499"><code>src&#x2F;models&#x2F;model.js:499</code></a>
                             </p>
                     
                     
@@ -2537,7 +2225,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_model.js.html#l833"><code>src&#x2F;models&#x2F;model.js:833</code></a>
+                            <a href="../files/src_models_model.js.html#l879"><code>src&#x2F;models&#x2F;model.js:879</code></a>
                             </p>
                     
                     
@@ -2588,7 +2276,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_model.js.html#l574"><code>src&#x2F;models&#x2F;model.js:574</code></a>
+                            <a href="../files/src_models_model.js.html#l620"><code>src&#x2F;models&#x2F;model.js:620</code></a>
                             </p>
                     
                     
@@ -2630,7 +2318,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_model.js.html#l623"><code>src&#x2F;models&#x2F;model.js:623</code></a>
+                            <a href="../files/src_models_model.js.html#l669"><code>src&#x2F;models&#x2F;model.js:669</code></a>
                             </p>
                     
                     

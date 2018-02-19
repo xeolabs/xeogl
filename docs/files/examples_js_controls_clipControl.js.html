@@ -20,7 +20,7 @@
 
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.0.0</em>
+            <em>API Docs for: 0.7.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -56,13 +56,11 @@
                                 <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
-                                <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/ClipControl.html">ClipControl</a></li>
                                 <li><a href="../classes/ClipHelper.html">ClipHelper</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
-                                <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
@@ -104,9 +102,7 @@
                                 <li><a href="../classes/Progress.html">Progress</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
-                                <li><a href="../classes/Region.html">Region</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
-                                <li><a href="../classes/Ruler.html">Ruler</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
@@ -137,7 +133,6 @@
                                 <li><a href="..//modules/camera.html">camera</a></li>
                                 <li><a href="..//modules/canvas.html">canvas</a></li>
                                 <li><a href="..//modules/clipping.html">clipping</a></li>
-                                <li><a href="..//modules/configs.html">configs</a></li>
                                 <li><a href="..//modules/controls.html">controls</a></li>
                                 <li><a href="..//modules/curves.html">curves</a></li>
                                 <li><a href="..//modules/effects.html">effects</a></li>
@@ -199,6 +194,7 @@
  @class ClipControl
  @constructor
  @param cfg {*} Configuration
+ @param cfg.cameraControl {BIMCameraControl} The camera input control.
  @param [cfg.pos=[0,0,0]] {Float32Array} World-space position.
  @param [cfg.dir=[0,0,1]] {Float32Array} World-space direction vector.
  @param [cfg.color=[0.4,0.4,0.4]] {Float32Array} Emmissive color
@@ -219,17 +215,29 @@
 
         _init: function (cfg) {
 
-            this._solid = false;
-            this._visible = false;
+            this._cameraControl = cfg.cameraControl;
+
+            this._solid = false; // Whether to render clip plane with a fill color.
+            this._visible = false; // Whether or not the GumBall is visible.
+            this._clipStartDir = xeogl.math.vec3(); // Saves direction of clip plane when we start dragging a GumBall arrow or hoop.
+            this._clipPos = xeogl.math.vec3(); // Holds the current position of the center of the clip plane.
+
+            this._planeScale = null; // xeogl.Scale to size the clip plane helper
+            this._gumballQuaternion = null; // xeogl.Quaternion to rotate the GumBall
+            this._gumballTranslate = null; // xeogl.Translate to position the GumBall
+
+            this._displayEntities = null; // Map of xeogl.Entity&#x27;s that are always visible when GumBall visible
+            this._affordanceEntities = null; // Map of xeogl.Entity&#x27;s that are shown momentarily to give &quot;affordance&quot; when interacting with the GumBall
 
             this._initEntities();
 
+            // Configure
+
             this.planeSize = cfg.planeSize;
             this.autoPlaneSize = cfg.autoPlaneSize;
-            this.pos = cfg.pos;
-            this.dir = cfg.dir;
             this.color = cfg.color;
             this.solid = cfg.solid;
+            this.clip = cfg.clip;
             this.visible = cfg.visible;
             this.active = true;
 
@@ -252,25 +260,228 @@
                 arrowPositions[4] = pos[1] + dir[1];
                 arrowPositions[5] = pos[2] + dir[2];
 
-                //this._display.arrow.geometry.positions = arrowPositions;
+                //this._displayEntities.arrow.geometry.positions = arrowPositions;
             }
         })(),
 
+        _props: {
+
+            /**
+             Indicates whether this ClipControl is active or not.
+
+             When inactive, the ClipControl will ignore input events.
+
+             @property active
+             @default true
+             @type Boolean
+             */
+            active: {
+
+                set: function (value) {
+                    value = value !== false;
+                    if (value === this._active) {
+                        return;
+                    }
+                    this._active = value;
+                },
+
+                get: function () {
+                    return this._active;
+                }
+            },
+
+            /**
+             The {{#crossLink &quot;Clip&quot;}}{{/crossLink}} controlled by this ClipControl.
+
+             @property clip
+             @type Clip
+             */
+            clip: {
+
+                set: (function () {
+
+                    var zeroVec = new Float32Array([0, 0, -1]);
+                    var quat = new Float32Array(4);
+
+                    return function (value) {
+
+                        this._attach({name: &quot;clip&quot;, type: &quot;xeogl.Clip&quot;, component: value});
+
+                        var clip = this._attached.clip;
+
+                        if (clip) {
+
+                            // Save initial clip plane pos and direction,
+                            // Set GumBall&#x27;s current direction and position
+
+                            this._clipStartDir.set(clip.dir);
+                            xeogl.math.vec3PairToQuaternion(zeroVec, this._clipStartDir, quat);
+                            this._gumballQuaternion.xyzw = quat;
+
+                            this._clipPos.set(clip.pos);
+                            this._gumballTranslate.xyz = this._clipPos;
+                        }
+                    };
+                })(),
+
+                get: function () {
+                    return this._attached.clip;
+                }
+            },
+
+            /**
+             * The width and height of this ClipControl&#x27;s plane indicator.
+             *
+             * Values assigned to this property will be overridden by an auto-computed value when
+             * {{#crossLink &quot;ClipControl/autoPlaneSize:property&quot;}}{{/crossLink}} is true.
+             *
+             * @property planeSize
+             * @default [1,1]
+             * @type {Float32Array}
+             */
+            planeSize: {
+
+                set: function (value) {
+                    (this._planeSize = this._planeSize || new xeogl.math.vec2()).set(value || [1, 1]);
+                    this._planeScale.xyz = [this._planeSize[0], this._planeSize[1], 1.0];
+                },
+
+                get: function () {
+                    return this._planeSize;
+                }
+            },
+
+            /**
+             * Indicates whether this ClipControl&#x27;s {{#crossLink &quot;ClipControl/planeSize:property&quot;}}{{/crossLink}} is automatically
+             * generated or not.
+             *
+             * When auto-generated, {{#crossLink &quot;ClipControl/planeSize:property&quot;}}{{/crossLink}} will automatically size
+             * to fit within the {{#crossLink &quot;Scene/aabb:property&quot;}}Scene&#x27;s boundary{{/crossLink}}.
+             *
+             * @property autoPlaneSize
+             * @default false
+             * @type {Boolean}
+             */
+            autoPlaneSize: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    if (this._autoPlaneSize === value) {
+                        return;
+                    }
+
+                    this._autoPlaneSize = value;
+
+                    if (this._autoPlaneSize) {
+                        if (!this._onSceneAABB) {
+                            this._onSceneAABB = this.scene.on(&quot;boundary&quot;, function () {
+                                var aabbDiag = xeogl.math.getAABB3Diag(this.scene.aabb);
+                                var clipSize = (aabbDiag * 0.50);
+                                this.planeSize = [clipSize, clipSize];
+                            }, this);
+                        }
+                    } else {
+                        if (this._onSceneAABB) {
+                            this.scene.off(this._onSceneAABB);
+                            this._onSceneAABB = null;
+                        }
+                    }
+                },
+
+                get: function () {
+                    return this._autoPlaneSize;
+                }
+            },
+
+            /**
+             * The color of this ClipControl.
+             *
+             * @property color
+             * @default [0.4,0.4,0.4]
+             * @type {Float32Array}
+             */
+            color: {
+
+                set: function (value) {
+                    (this._color = this._color || new xeogl.math.vec3()).set(value || [0.4, 0.4, 0.4]);
+                    this._displayEntities.planeWire.material.emissive = this._color;
+                },
+
+                get: function () {
+                    return this._color;
+                }
+            },
+
+            /**
+             Indicates whether this ClipControl is filled with color or just wireframe.
+
+             @property solid
+             @default true
+             @type Boolean
+             */
+            solid: {
+
+                set: function (value) {
+                    this._solid = value !== false;
+                    this._displayEntities.planeSolid.visible = this._solid &amp;&amp; this._visible;
+                },
+
+                get: function () {
+                    return this._solid;
+                }
+            },
+
+            /**
+             * Visibility of this ClipControl.
+             *
+             * @property visible
+             * @type Boolean
+             * @default true
+             */
+            visible: {
+
+                set: function (value) {
+                    value = !!value;
+                    if (this._visible === value) {
+                        return;
+                    }
+                    this._visible = value;
+                    var id;
+                    for (id in this._displayEntities) {
+                        if (this._displayEntities.hasOwnProperty(id)) {
+                            this._displayEntities[id].visible = value;
+                        }
+                    }
+                    if (!value) { // Affordance entities are not initially visible
+                        for (id in this._affordanceEntities) {
+                            if (this._affordanceEntities.hasOwnProperty(id)) {
+                                this._affordanceEntities[id].visible = value;
+                            }
+                        }
+                    }
+                },
+
+                get: function () {
+                    return this._visible;
+                }
+            }
+        },
+
+
         _initEntities: function () {
 
-            var transform = this._planeScale = new xeogl.Scale(this, {
-                xyz: [10, 10, 0],
-                parent: this._posTransform = new xeogl.Translate(this, {
-                    xyz: [0, 0, 0],
-                    parent: this._quaternion = new xeogl.Quaternion(this, {
-                        xyzw: [0, 0, 0, 1],
-                        parent: this._translate = new xeogl.Translate(this, {
-                            xyz: [-10, -10, 0]
-                        })
-                    })
-                })
+            this._gumballQuaternion = new xeogl.Quaternion(this, {
+                parent: this._gumballTranslate = new xeogl.Translate(this)
             });
 
+            this._planeScale = new xeogl.Scale(this, {
+                xyz: [10, 10, 0],
+                parent: this._gumballQuaternion
+            });
+
+            var transform = this._planeScale;
             var radius = 1.2;
             var hoopRadius = radius - 0.2;
 
@@ -304,7 +515,7 @@
                     tubeSegments: 14,
                     arc: (Math.PI * 2.0) / 4.0
                 }),
-                axis: new xeogl.CylinderGeometry(scene, {
+                axis: new xeogl.CylinderGeometry(this, {
                     radiusTop: 0.0175,
                     radiusBottom: 0.0175,
                     height: radius,
@@ -320,14 +531,14 @@
                     alpha: 0, // Invisible
                     alphaMode: &quot;blend&quot;
                 }),
-                red: new xeogl.PhongMaterial(scene, {
+                red: new xeogl.PhongMaterial(this, {
                     diffuse: [1, 0.3, 0.3],
                     ambient: [0.0, 0.0, 0.0],
                     specular: [.6, .6, .3],
                     shininess: 80,
                     lineWidth: 2
                 }),
-                transparentRed: new xeogl.PhongMaterial(scene, {
+                transparentRed: new xeogl.PhongMaterial(this, {
                     diffuse: [1, 0.3, 0.3],
                     ambient: [0.0, 0.0, 0.0],
                     specular: [.6, .6, .3],
@@ -336,35 +547,35 @@
                     alpha: 0.6,
                     alphaMode: &quot;blend&quot;
                 }),
-                highlightRed: new xeogl.GhostMaterial(scene, {
+                highlightRed: new xeogl.GhostMaterial(this, {
                     edges: false,
                     fill: true,
                     fillColor: [1, 0, 0],
                     fillAlpha: 0.5,
                     vertices: false
                 }),
-                labelRed: new xeogl.PhongMaterial(scene, {
+                labelRed: new xeogl.PhongMaterial(this, {
                     emissive: [1, 0.3, 0.3],
                     ambient: [0.0, 0.0, 0.0],
                     specular: [.6, .6, .3],
                     shininess: 80,
                     lineWidth: 3
                 }),
-                green: new xeogl.PhongMaterial(scene, {
+                green: new xeogl.PhongMaterial(this, {
                     diffuse: [0.3, 1, 0.3],
                     ambient: [0.0, 0.0, 0.0],
                     specular: [.6, .6, .3],
                     shininess: 80,
                     lineWidth: 2
                 }),
-                highlightGreen: new xeogl.GhostMaterial(scene, {
+                highlightGreen: new xeogl.GhostMaterial(this, {
                     edges: false,
                     fill: true,
                     fillColor: [0, 1, 0],
                     fillAlpha: 0.5,
                     vertices: false
                 }),
-                transparentGreen: new xeogl.PhongMaterial(scene, {
+                transparentGreen: new xeogl.PhongMaterial(this, {
                     diffuse: [0.3, 1.0, 0.3],
                     ambient: [0.0, 0.0, 0.0],
                     specular: [.6, .6, .3],
@@ -373,60 +584,60 @@
                     alpha: 0.4,
                     alphaMode: &quot;blend&quot;
                 }),
-                labelGreen: new xeogl.PhongMaterial(scene, { // Green by convention
+                labelGreen: new xeogl.PhongMaterial(this, { // Green by convention
                     emissive: [0.3, 1, 0.3],
                     ambient: [0.0, 0.0, 0.0],
                     specular: [.6, .6, .3],
                     shininess: 80,
                     lineWidth: 3
                 }),
-                blue: new xeogl.PhongMaterial(scene, { // Blue by convention
-                    diffuse: [0.3, 0.3, 1],
-                    ambient: [0.0, 0.0, 0.0],
-                    specular: [.6, .6, .3],
-                    shininess: 80,
-                    lineWidth: 2
-                }),
-                highlightBlue: new xeogl.GhostMaterial(scene, {
-                    edges: false,
-                    fill: true,
-                    fillColor: [0, 0, 1],
-                    fillAlpha: 0.5,
-                    vertices: false
-                }),
-                transparentBlue: new xeogl.PhongMaterial(scene, {
-                    diffuse: [0.3, 0.3, 1.0],
-                    ambient: [0.0, 0.0, 0.0],
-                    specular: [.6, .6, .3],
-                    shininess: 80,
-                    lineWidth: 2,
-                    alpha: 0.4,
-                    alphaMode: &quot;blend&quot;
-                }),
-                labelBlue: new xeogl.PhongMaterial(scene, {
-                    emissive: [0.3, 0.3, 1],
-                    ambient: [0.0, 0.0, 0.0],
-                    specular: [.6, .6, .3],
-                    shininess: 80,
-                    lineWidth: 3
-                }),
-                ball: new xeogl.PhongMaterial(scene, {
+                // blue: new xeogl.PhongMaterial(this, { // Blue by convention
+                //     diffuse: [0.3, 0.3, 1],
+                //     ambient: [0.0, 0.0, 0.0],
+                //     specular: [.6, .6, .3],
+                //     shininess: 80,
+                //     lineWidth: 2
+                // }),
+                // highlightBlue: new xeogl.GhostMaterial(this, {
+                //     edges: false,
+                //     fill: true,
+                //     fillColor: [0, 0, 1],
+                //     fillAlpha: 0.5,
+                //     vertices: false
+                // }),
+                // transparentBlue: new xeogl.PhongMaterial(this, {
+                //     diffuse: [0.3, 0.3, 1.0],
+                //     ambient: [0.0, 0.0, 0.0],
+                //     specular: [.6, .6, .3],
+                //     shininess: 80,
+                //     lineWidth: 2,
+                //     alpha: 0.4,
+                //     alphaMode: &quot;blend&quot;
+                // }),
+                // labelBlue: new xeogl.PhongMaterial(this, {
+                //     emissive: [0.3, 0.3, 1],
+                //     ambient: [0.0, 0.0, 0.0],
+                //     specular: [.6, .6, .3],
+                //     shininess: 80,
+                //     lineWidth: 3
+                // }),
+                centerBall: new xeogl.PhongMaterial(this, {
                     diffuse: [0.5, 0.5, 0.5],
                     ambient: [0.0, 0.0, 0.0],
                     specular: [.6, .6, .3],
                     shininess: 80,
                     lineWidth: 2
                 }),
-                highlightBall: new xeogl.GhostMaterial(scene, {
+                highlightCenterBall: new xeogl.GhostMaterial(this, {
                     edges: false,
                     fill: true,
                     fillColor: [0.5, 0.5, 0.5],
                     fillAlpha: 0.5,
                     vertices: false
                 }),
-                highlightPlane: new xeogl.GhostMaterial(scene, {
+                highlightPlane: new xeogl.GhostMaterial(this, {
                     edges: true,
-                    edgeWidth:3,
+                    edgeWidth: 3,
                     fill: false,
                     fillColor: [0.5, 0.5, .5],
                     fillAlpha: 0.5,
@@ -434,7 +645,10 @@
                 })
             };
 
-            this._display = {
+            // Entities that are always visible while the GumBall is visible
+            // We can show/hide these as a batch when showing/hiding the GumBall
+
+            this._displayEntities = {
 
                 planeWire: new xeogl.Entity(this, {
                     geometry: new xeogl.Geometry(this, {
@@ -496,7 +710,7 @@
                     highlightMaterial: materials.highlightGreen,
                     transform: new xeogl.Rotate(this, {
                         xyz: [1, 0, 0],
-                        angle: -90,
+                        angle: 90,
                         parent: transform
                     }),
                     pickable: false,
@@ -510,7 +724,7 @@
                     material: materials.pickable,
                     transform: new xeogl.Rotate(this, {
                         xyz: [1, 0, 0],
-                        angle: -90,
+                        angle: 90,
                         parent: transform
                     }),
                     pickable: true,
@@ -528,7 +742,7 @@
                         angle: 90,
                         parent: new xeogl.Rotate(this, {
                             xyz: [1, 0, 0],
-                            angle: 270,
+                            angle: 180,
                             parent: transform
                         })
                     }),
@@ -546,7 +760,7 @@
                         angle: 90,
                         parent: new xeogl.Rotate(this, {
                             xyz: [1, 0, 0],
-                            angle: 270,
+                            angle: 180,
                             parent: transform
                         })
                     }),
@@ -555,50 +769,50 @@
                     clippable: false
                 }),
 
-                zCurve: new xeogl.Entity(this, { // Blue hoop about Z-axis
-                    geometry: geometries.curve,
-                    material: materials.blue,
-                    highlight: true,
-                    highlightMaterial: materials.highlightBlue,
-                    transform: new xeogl.Rotate(this, {
-                        xyz: [1, 0, 0],
-                        angle: 90,
-                        parent: new xeogl.Rotate(this, {
-                            xyz: [1, 0, 0],
-                            angle: 90,
-                            parent: transform
-                        })
-                    }),
-                    pickable: false,
-                    collidable: true,
-                    clippable: false,
-                    backfaces: true
-                }),
+                // zCurve: new xeogl.Entity(this, { // Blue hoop about Z-axis
+                //     geometry: geometries.curve,
+                //     material: materials.blue,
+                //     highlight: true,
+                //     highlightMaterial: materials.highlightBlue,
+                //     transform: new xeogl.Rotate(this, {
+                //         xyz: [1, 0, 0],
+                //         angle: 90,
+                //         parent: new xeogl.Rotate(this, {
+                //             xyz: [1, 0, 0],
+                //             angle: 90,
+                //             parent: transform
+                //         })
+                //     }),
+                //     pickable: false,
+                //     collidable: true,
+                //     clippable: false,
+                //     backfaces: true
+                // }),
+                //
+                // zCurvePickable: new xeogl.Entity(this, {
+                //     geometry: geometries.curvePickable,
+                //     material: materials.pickable,
+                //     transform: new xeogl.Rotate(this, {
+                //         xyz: [1, 0, 0],
+                //         angle: 90,
+                //         parent: new xeogl.Rotate(this, {
+                //             xyz: [1, 0, 0],
+                //             angle: 90,
+                //             parent: transform
+                //         })
+                //     }),
+                //     pickable: true,
+                //     collidable: true,
+                //     clippable: false
+                // }),
 
-                zCurvePickable: new xeogl.Entity(this, {
-                    geometry: geometries.curvePickable,
-                    material: materials.pickable,
-                    transform: new xeogl.Rotate(this, {
-                        xyz: [1, 0, 0],
-                        angle: 90,
-                        parent: new xeogl.Rotate(this, {
-                            xyz: [1, 0, 0],
-                            angle: 90,
-                            parent: transform
-                        })
-                    }),
-                    pickable: true,
-                    collidable: true,
-                    clippable: false
-                }),
-
-                ball: new xeogl.Entity(this, {
+                centerBall: new xeogl.Entity(this, {
                     geometry: new xeogl.SphereGeometry(this, {
                         radius: 0.05
                     }),
                     highlight: true,
-                    highlightMaterial: materials.highlightBall,
-                    material: materials.ball,
+                    highlightMaterial: materials.highlightCenterBall,
+                    material: materials.centerBall,
                     transform: transform,
                     pickable: false,
                     collidable: true,
@@ -674,7 +888,7 @@
                     clippable: false
                 }),
 
-                zArrow: new xeogl.Entity(this, {
+                zArrow: new xeogl.Entity(this, { // Blue arrow
                     geometry: geometries.arrowHead,
                     material: materials.blue,
                     highlight: true,
@@ -683,7 +897,7 @@
                         xyz: [0, radius + .1, 0],
                         parent: new xeogl.Rotate(this, {
                             xyz: [0.8, 0, 0],
-                            angle: -90,
+                            angle: 90,
                             parent: transform
                         })
                     }),
@@ -692,7 +906,7 @@
                     clippable: false
                 }),
 
-                zShaft: new xeogl.Entity(this, {
+                zShaft: new xeogl.Entity(this, { // Blue shaft
                     geometry: geometries.axis,
                     material: materials.blue,
                     highlight: true,
@@ -701,7 +915,7 @@
                         xyz: [0, radius / 2, 0],
                         parent: new xeogl.Rotate(this, {
                             xyz: [1, 0, 0],
-                            angle: -90,
+                            angle: 90,
                             parent: transform
                         })
                     }),
@@ -711,18 +925,17 @@
                 })
             };
 
-            this._hoops = {
+            // Entities that appear momentarily during certain interactions to give &quot;affordance&quot;. We keep these
+            // in their own map so they don&#x27;t all get shown when we show the ClipControl.
 
-                xHoop: new xeogl.Entity(this, { // Green hoop about Y-axis
+            this._affordanceEntities = {
+
+                xHoop: new xeogl.Entity(this, { // Green hoop about X-axis
                     geometry: geometries.hoop,
                     material: materials.transparentGreen,
                     highlight: true,
                     highlightMaterial: materials.highlightGreen,
-                    transform: new xeogl.Rotate(this, {
-                        xyz: [1, 0, 0],
-                        angle: -90,
-                        parent: transform
-                    }),
+                    transform: new xeogl.Rotate(this, {xyz: [1, 0, 0], angle: -90, parent: transform}),
                     pickable: false,
                     collidable: true,
                     clippable: false,
@@ -747,59 +960,29 @@
                     collidable: true,
                     clippable: false,
                     visible: false
-                }),
-
-                zHoop: new xeogl.Entity(this, { // Blue hoop about Z-axis
-                    geometry: geometries.hoop,
-                    material: materials.transparentBlue,
-                    highlight: true,
-                    highlightMaterial: materials.highlightBlue,
-                    transform: new xeogl.Rotate(this, {
-                        xyz: [1, 0, 0],
-                        angle: 90,
-                        parent: new xeogl.Rotate(this, {
-                            xyz: [1, 0, 0],
-                            angle: 90,
-                            parent: transform
-                        })
-                    }),
-                    pickable: false,
-                    collidable: true,
-                    clippable: false,
-                    visible: false
                 })
+                // ,
+                //
+                // zHoop: new xeogl.Entity(this, { // Blue hoop about Z-axis
+                //     geometry: geometries.hoop,
+                //     material: materials.transparentBlue,
+                //     highlight: true,
+                //     highlightMaterial: materials.highlightBlue,
+                //     transform: new xeogl.Rotate(this, {
+                //         xyz: [1, 0, 0],
+                //         angle: 90,
+                //         parent: new xeogl.Rotate(this, {
+                //             xyz: [1, 0, 0],
+                //             angle: 90,
+                //             parent: transform
+                //         })
+                //     }),
+                //     pickable: false,
+                //     collidable: true,
+                //     clippable: false,
+                //     visible: false
+                // })
             };
-
-        },
-
-        _rotateX: function (incDegrees) {
-            this._quaternion.rotate([1, 0, 0, incDegrees]);
-        },
-
-        _rotateY: function (incDegrees) {
-            this._quaternion.rotate([0, 1, 0, incDegrees]);
-        },
-
-        _rotateZ: function (incDegrees) {
-            this._quaternion.rotate([0, 0, 1, incDegrees]);
-        },
-
-        _panX: function (inc) {
-            var xyz = this._posTransform.xyz;
-            xyz[0] += inc;
-            this._posTransform.xyz = xyz;
-        },
-
-        _panY: function (inc) {
-            var xyz = this._posTransform.xyz;
-            xyz[1] += inc;
-            this._posTransform.xyz = xyz;
-        },
-
-        _panZ: function (inc) {
-            var xyz = this._posTransform.xyz;
-            xyz[2] += inc;
-            this._posTransform.xyz = xyz;
         },
 
         _initEvents: function () {
@@ -820,8 +1003,20 @@
                 zRotate: 5
             };
 
-            var highlightDragAction = null;
-            var dragAction = null;
+            var nextDragAction = null; // As we hover over an arrow or hoop, self is the action we would do if we then dragged it.
+            var dragAction = null; // Action we&#x27;re doing while we drag an arrow or hoop.
+
+            var dragClipPosOrigin = math.vec3();
+            var dragCanvasOrigin = math.vec2();
+            var dragCanvasVec = math.vec2();
+
+            var xLocalAxis = math.vec3([1, 0, 0]);
+            var yLocalAxis = math.vec3([0, -1, 0]);
+            var zLocalAxis = math.vec3([0, 0, 1]);
+
+            var rotateWorldVec = math.vec3();
+            var panWorldVec = math.vec3();
+            var panCanvasVec = math.vec2();
 
             canvas.oncontextmenu = function (e) {
                 e.preventDefault();
@@ -851,6 +1046,49 @@
                 };
             })();
 
+            var localToWorldVec = (function () {
+                var math = xeogl.math;
+                var mat = math.mat4();
+                return function (localVec, worldVec) {
+                    math.quaternionToMat4(self._gumballQuaternion.xyzw, mat);
+                    math.transformVec3(mat, localVec, worldVec);
+                    return worldVec;
+                };
+            })();
+
+            var worldToCanvasVec = (function () {
+                var math = xeogl.math;
+                var tempVec4a = math.vec4([0, 0, 0, 1]);
+                var tempVec4b = math.vec4();
+                var tempVec4c = math.vec4();
+                return function (worldVec, canvasVec) {
+                    tempVec4a.set(worldVec);
+                    math.transformPoint4(self.scene.camera.matrix, tempVec4a, tempVec4b);
+                    math.transformPoint4(self.scene.camera.projMatrix, tempVec4b, tempVec4c);
+                    var aabb = self.scene.canvas.boundary;
+                    canvasVec[0] = Math.floor((1 + tempVec4c[0] / tempVec4c[3]) * aabb[2] / 2);
+                    canvasVec[1] = Math.floor((1 - tempVec4c[1] / tempVec4c[3]) * aabb[3] / 2);
+                    canvasVec[0] -= aabb[2] / 2;
+                    canvasVec[1] -= aabb[3] / 2;
+                    return canvasVec;
+                };
+            })();
+
+            // var rotateX = function (incDegrees) {
+            //     self._gumballQuaternion.rotate([1, 0, 0, incDegrees]);
+            //     rotateClip();
+            // };
+            //
+            // var rotateY = function (incDegrees) {
+            //     self._gumballQuaternion.rotate([0, 1, 0, incDegrees]);
+            //     rotateClip();
+            // };
+            //
+            // var rotateZ = function (incDegrees) {
+            //     self._gumballQuaternion.rotate([0, 0, 1, incDegrees]);
+            //     rotateClip();
+            // };
+
             var pick = (function () {
 
                 var lastHighlightedEntity;
@@ -859,7 +1097,14 @@
                 return function pick(canvasPos) {
 
                     var hit = scene.pick({
-                        canvasPos: canvasPos
+                        canvasPos: canvasPos,
+                        entities: [
+                            this._displayEntities.xArrow,
+                            this._displayEntities.yArrow,
+                            this._displayEntities.zArrow,
+                            this._displayEntities.xCurvePickable,
+                            this._displayEntities.yCurvePickable
+                        ]
                     });
 
                     if (lastHighlightedEntity) {
@@ -878,41 +1123,53 @@
                         var shownEntity;
 
                         switch (id) {
-                            case self._display.xArrow.id:
-                                //  highlightEntity = self._display.xArrow;
-                                highlightDragAction = DRAG_ACTIONS.xPan;
+                            case self._displayEntities.xArrow.id:
+                                console.log(&quot;picked X arrow&quot;);
+                                //  highlightEntity = self._displayEntities.xArrow;
+                                nextDragAction = DRAG_ACTIONS.xPan;
+                                localToWorldVec(xLocalAxis, panWorldVec);
+                                worldToCanvasVec(panWorldVec, panCanvasVec);
                                 break;
 
-                            case self._display.yArrow.id:
-                                //highlightEntity = self._display.yArrow;
-                                highlightDragAction = DRAG_ACTIONS.yPan;
+                            case self._displayEntities.yArrow.id:
+                                console.log(&quot;picked Y arrow&quot;);
+                                //highlightEntity = self._displayEntities.yArrow;
+                                nextDragAction = DRAG_ACTIONS.yPan;
+                                localToWorldVec(yLocalAxis, panWorldVec);
+                                worldToCanvasVec(panWorldVec, panCanvasVec);
                                 break;
 
-                            case self._display.zArrow.id:
-                                //highlightEntity = self._display.zArrow;
-                                highlightDragAction = DRAG_ACTIONS.zPan;
+                            case self._displayEntities.zArrow.id:
+                                console.log(&quot;picked Z arrow&quot;);
+                                //highlightEntity = self._displayEntities.zArrow;
+                                nextDragAction = DRAG_ACTIONS.zPan;
+                                localToWorldVec(zLocalAxis, panWorldVec);
+                                worldToCanvasVec(panWorldVec, panCanvasVec);
                                 break;
 
-                            case self._display.yCurvePickable.id:
-                                //highlightEntity = self._display.yCurve;
-                                shownEntity = self._hoops.yHoop;
-                                highlightDragAction = DRAG_ACTIONS.yRotate;
+                            case self._displayEntities.xCurvePickable.id:
+                                //highlightEntity = self._displayEntities.xCurve;
+                                localToWorldVec(xLocalAxis, rotateWorldVec);
+                                shownEntity = self._affordanceEntities.xHoop;
+                                nextDragAction = DRAG_ACTIONS.yRotate;
                                 break;
 
-                            case self._display.xCurvePickable.id:
-                                //highlightEntity = self._display.xCurve;
-                                shownEntity = self._hoops.xHoop;
-                                highlightDragAction = DRAG_ACTIONS.xRotate;
+                            case self._displayEntities.yCurvePickable.id:
+                                //highlightEntity = self._displayEntities.yCurve;
+                                localToWorldVec(yLocalAxis, rotateWorldVec);
+                                shownEntity = self._affordanceEntities.yHoop;
+                                nextDragAction = DRAG_ACTIONS.xRotate;
                                 break;
 
-                            case self._display.zCurvePickable.id:
-                                //highlightEntity = self._display.zCurve;
-                                shownEntity = self._hoops.zHoop;
-                                highlightDragAction = DRAG_ACTIONS.zRotate;
-                                break;
+                            // case self._displayEntities.zCurvePickable.id:
+                            //     //highlightEntity = self._displayEntities.zCurve;
+                            //     localToWorldVec(zLocalAxis, rotateWorldVec);
+                            //     shownEntity = self._affordanceEntities.zHoop;
+                            //     nextDragAction = DRAG_ACTIONS.zRotate;
+                            //     break;
 
                             default:
-                                highlightDragAction = DRAG_ACTIONS.none;
+                                nextDragAction = DRAG_ACTIONS.none;
                                 return; // Not clicked an arrow or hoop
                         }
 
@@ -931,7 +1188,7 @@
 
                         lastHighlightedEntity = null;
                         lastShownEntity = null;
-                        highlightDragAction = DRAG_ACTIONS.none;
+                        nextDragAction = DRAG_ACTIONS.none;
                     }
                 };
             })();
@@ -944,18 +1201,44 @@
                 var yDelta = 0;
                 var down = false;
 
-
                 var mouseDownLeft;
                 var mouseDownMiddle;
                 var mouseDownRight;
 
-                canvas.addEventListener(&quot;mousedown&quot;, function (e) {
+                canvas.addEventListener(&quot;mouseenter&quot;, function () {
+
                     if (!self._active) {
                         return;
                     }
+
+                    over = true;
+
+                    xDelta = 0;
+                    yDelta = 0;
+                });
+
+                canvas.addEventListener(&quot;mouseleave&quot;, function () {
+
+                    if (!self._active) {
+                        return;
+                    }
+
+                    over = false;
+
+                    xDelta = 0;
+                    yDelta = 0;
+                });
+
+                canvas.addEventListener(&quot;mousedown&quot;, function (e) {
+
+                    if (!self._active) {
+                        return;
+                    }
+
                     if (!over) {
                         return;
                     }
+
                     switch (e.which) {
 
                         case 1: // Left button
@@ -968,33 +1251,56 @@
                             lastX = coords[0];
                             lastY = coords[1];
 
-                            dragAction = highlightDragAction;
+                            dragAction = nextDragAction;
 
-                            //...
+                            dragCanvasOrigin[0] = coords[0];
+                            dragCanvasOrigin[1] = coords[1];
+
+                            dragClipPosOrigin.set(self._clipPos);
+
                             break;
 
-                        case 2: // Middle/both buttons
-                            mouseDownMiddle = true;
-                            break;
-                        case 3: // Right button
-                            mouseDownRight = true;
-                            down = true;
-                            xDelta = 0;
-                            yDelta = 0;
-                            var coords = getClickCoordsWithinElement(e);
-                            lastX = coords[0];
-                            lastY = coords[1];
-                            break;
-                            break;
                         default:
                             break;
                     }
                 });
 
-                canvas.addEventListener(&quot;mouseup&quot;, function (e) {
+                canvas.addEventListener(&quot;mousemove&quot;, function (e) {
+
                     if (!self._active) {
                         return;
                     }
+
+                    if (!over) {
+                        return;
+                    }
+
+                    var coords = getClickCoordsWithinElement(e);
+
+                    if (!down) {
+                        pick(coords);
+                        return;
+                    }
+
+                    var x = coords[0];
+                    var y = coords[1];
+
+                    xDelta += (x - lastX) * 0.1;
+                    yDelta += (y - lastY) * 0.1;
+
+                    lastX = x;
+                    lastY = y;
+
+                    dragCanvasVec[0] = coords[0] - dragCanvasOrigin[0];
+                    dragCanvasVec[1] = coords[1] - dragCanvasOrigin[1];
+                });
+
+                canvas.addEventListener(&quot;mouseup&quot;, function (e) {
+
+                    if (!self._active) {
+                        return;
+                    }
+
                     switch (e.which) {
                         case 1: // Left button
                             mouseDownLeft = false;
@@ -1008,70 +1314,99 @@
                         default:
                             break;
                     }
+
                     down = false;
+
                     xDelta = 0;
                     yDelta = 0;
                 });
 
-                canvas.addEventListener(&quot;mouseenter&quot;, function () {
-                    if (!self._active) {
-                        return;
+                // function Wire(color) {
+                //
+                //     var wire = document.createElement(&#x27;div&#x27;);
+                //     wire.className += wire.className ? &#x27; viewer-ruler-wire&#x27; : &#x27;viewer-ruler-wire&#x27;;
+                //
+                //     var style = wire.style;
+                //     style.border = &quot;solid 2px &quot; + (color || &quot;white&quot;);
+                //     style.position = &quot;absolute&quot;;
+                //     style[&quot;z-index&quot;] = &quot;2000001&quot;;
+                //     style.width = 0 + &quot;px&quot;;
+                //     style.height = 0 + &quot;px&quot;;
+                //     style.visibility = &quot;visible&quot;;
+                //     style.top = 0 + &quot;px&quot;;
+                //     style.left = 0 + &quot;px&quot;;
+                //     style[&quot;pointer-events&quot;] = &quot;none&quot;;
+                //     style[&#x27;-webkit-transform-origin&#x27;] = &quot;0 0&quot;;
+                //     style[&#x27;-moz-transform-origin&#x27;] = &quot;0 0&quot;;
+                //     style[&#x27;-ms-transform-origin&#x27;] = &quot;0 0&quot;;
+                //     style[&#x27;-o-transform-origin&#x27;] = &quot;0 0&quot;;
+                //     style[&#x27;transform-origin&#x27;] = &quot;0 0&quot;;
+                //     style[&#x27;-webkit-transform&#x27;] = &#x27;rotate(0deg)&#x27;;
+                //     style[&#x27;-moz-transform&#x27;] = &#x27;rotate(0deg)&#x27;;
+                //     style[&#x27;-ms-transform&#x27;] = &#x27;rotate(0deg)&#x27;;
+                //     style[&#x27;-o-transform&#x27;] = &#x27;rotate(0deg)&#x27;;
+                //     style[&#x27;transform&#x27;] = &#x27;rotate(0deg)&#x27;;
+                //
+                //     document.body.appendChild(wire);
+                //
+                //     this.setStartAndEnd = function (x1, y1, x2, y2) {
+                //         var length = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+                //         var angle = Math.atan2(y2 - y1, x2 - x1) * 180.0 / Math.PI;
+                //
+                //         length = Math.abs(length);
+                //
+                //         var style = wire.style;
+                //         style[&quot;width&quot;] = Math.round(length) + &#x27;px&#x27;;
+                //         style[&quot;left&quot;] = Math.round(x1) + &#x27;px&#x27;;
+                //         style[&quot;top&quot;] = Math.round(y1) + &#x27;px&#x27;;
+                //         style[&#x27;-webkit-transform&#x27;] = &#x27;rotate(&#x27; + angle + &#x27;deg)&#x27;;
+                //         style[&#x27;-moz-transform&#x27;] = &#x27;rotate(&#x27; + angle + &#x27;deg)&#x27;;
+                //         style[&#x27;-ms-transform&#x27;] = &#x27;rotate(&#x27; + angle + &#x27;deg)&#x27;;
+                //         style[&#x27;-o-transform&#x27;] = &#x27;rotate(&#x27; + angle + &#x27;deg)&#x27;;
+                //         style[&#x27;transform&#x27;] = &#x27;rotate(&#x27; + angle + &#x27;deg)&#x27;;
+                //         style[&quot;pointer-events&quot;] = &quot;none&quot;;
+                //     };
+                //
+                //     this.setStartAndEnd(0, 0, 0, 0);
+                // }
+                //
+                // var dragWire = new Wire(&quot;red&quot;);
+                // var axisWire = new Wire(&quot;white&quot;);
+
+                var pan = function (inc, f) {
+                    self._clipPos[0] = dragClipPosOrigin[0] + inc[0] * f;
+                    self._clipPos[1] = dragClipPosOrigin[1] + inc[1] * f;
+                    self._clipPos[2] = dragClipPosOrigin[2] + inc[2] * f;
+                    self._gumballTranslate.xyz = self._clipPos;
+                    if (self._attached.clip) {
+                        self._attached.clip.pos = self._clipPos;
                     }
-                    over = true;
-                    xDelta = 0;
-                    yDelta = 0;
-                });
+                };
 
-                canvas.addEventListener(&quot;mouseleave&quot;, function () {
-                    if (!self._active) {
-                        return;
-                    }
-                    over = false;
-                    xDelta = 0;
-                    yDelta = 0;
-                });
+                var rotate = function (axis, incDegrees) {
+                    self._gumballQuaternion.rotate([axis[0], axis[1], axis[2], incDegrees]);
+                    rotateClip();
+                };
 
-                canvas.addEventListener(&quot;mousemove&quot;, function (e) {
-                    if (!self._active) {
-                        return;
-                    }
-                    if (!over) {
-                        return;
-                    }
+                var rotateClip = (function () { // &lt;&lt;&lt;&lt;&lt;&lt;&lt;------- suspect
+                    var math = xeogl.math;
+                    var dir = math.vec3();
+                    var mat = math.mat4();
+                    var zeroVec = new Float32Array([0, 0, -1]);
+                    return function () {
+                        if (self._attached.clip) {
+                            math.quaternionToMat4(self._gumballQuaternion.xyzw, mat);  // &lt;&lt; ---
+                            math.transformVec3(mat, zeroVec, dir);
+                            self._attached.clip.dir = dir;
+                        }
+                    };
+                })();
 
-                    var coords = getClickCoordsWithinElement(e);
+                var lastDragLen = 0;
 
-                    pick(coords);
+                scene.on(&quot;tick&quot;, function () {
 
-                    if (!down) {
-                        return;
-                    }
-
-                    var x = coords[0];
-                    var y = coords[1];
-
-                    xDelta += (x - lastX) * 0.1;
-                    yDelta += (y - lastY) * 0.1;
-
-
-                    lastX = x;
-                    lastY = y;
-                });
-
-                canvas.addEventListener(&quot;wheel&quot;, function (e) {
-                    if (!self._active) {
-                        return;
-                    }
-                    var delta = Math.max(-1, Math.min(1, -e.deltaY * 40));
-                    if (delta === 0) {
-                        return;
-                    }
-                    var d = delta / Math.abs(delta);
-//...
-                    e.preventDefault();
-                });
-
-                scene.on(&quot;tick&quot;, function() {
+                    // Periodically checking if there&#x27;s anything we should be doing to move the GumBall
 
                     if (dragAction === DRAG_ACTIONS.none) {
                         return;
@@ -1081,280 +1416,77 @@
                         return;
                     }
 
-                    var panRate = .2;
-                    var rotateRate = 1.0;
+                    if (dragAction === DRAG_ACTIONS.xPan || dragAction === DRAG_ACTIONS.yPan || dragAction === DRAG_ACTIONS.zPan) {
 
-                    switch (dragAction) {
-                        case DRAG_ACTIONS.xPan:
-                            self._panX(xDelta &gt; 0 ? panRate : -panRate);
-                            break;
-                        case DRAG_ACTIONS.yPan:
-                            self._panY(xDelta &gt; 0 ? panRate : -panRate);
-                            break;
-                        case DRAG_ACTIONS.zPan:
-                            self._panZ(xDelta &gt; 0 ? panRate : -panRate);
-                            break;
-                        case DRAG_ACTIONS.xRotate:
-                            self._rotateY(-xDelta);
-                            break;
-                        case DRAG_ACTIONS.yRotate:
-                            self._rotateY(-xDelta);
-                            break;
-                        case DRAG_ACTIONS.zRotate:
-                            self._rotateZ(-xDelta);
-                            break;
+                        // Compute panRate from dragCanvasVec and panCanvasVec
+
+                        var panVec3 = math.vec3([panCanvasVec[0], panCanvasVec[1], 0.0]);
+
+                        var dragVec3 = math.vec3([dragCanvasVec[0], dragCanvasVec[1], 0.0]);
+
+                        math.normalizeVec3(panVec3);
+                        math.normalizeVec3(dragVec3);
+
+                        var angleRad = Math.atan2(panCanvasVec[1], panCanvasVec[0]) - Math.atan2(dragCanvasVec[1], dragCanvasVec[0]);
+                        var angleDeg = angleRad / 0.0174533;
+                        var radiaans = Math.PI * 2;
+
+                        var dragLen = math.lenVec2(dragCanvasVec);
+                        var panRate = dragLen * Math.sin(angleRad - (radiaans / 4));
+
+                        panRate *= 0.015;
+
+                        // TODO: Instead of scaling panRate, scale down dragLen (ie. unproject dragLen to World space?)
+
+                        console.log(&quot;angleDeg = &quot; + angleDeg);
+                        console.log(&quot;panRate = &quot; + panRate);
+
+                        // dragWire.setStartAndEnd(200, 200, 200 + dragCanvasVec[0], 200 + dragCanvasVec[1]);
+                        // axisWire.setStartAndEnd(200, 200, 200 + panCanvasVec[0], 200 + panCanvasVec[1]);
+
+                        console.log(&quot;dragLen = &quot; + dragLen);
+
+                        // panRate *= 0.1;
+
+                        switch (dragAction) {
+                            case DRAG_ACTIONS.xPan:
+                                pan(panWorldVec, -panRate);
+                                break;
+                            case DRAG_ACTIONS.yPan:
+                                pan(panWorldVec, -panRate);
+                                break;
+                            case DRAG_ACTIONS.zPan:
+                                pan(panWorldVec, -panRate);
+                                break;
+                        }
+
+                    } else {
+
+
+                        var dragLen = math.lenVec2(dragCanvasVec);
+                        var rotateRate = (dragLen - lastDragLen) * 0.1;
+
+                        console.log(&quot;dragLen=&quot; + dragLen)
+                        console.log(&quot;rotateRate=&quot; + rotateRate)
+
+                        switch (dragAction) {
+                            case DRAG_ACTIONS.xRotate:
+                                rotate(xLocalAxis, rotateRate);
+                                break;
+                            case DRAG_ACTIONS.yRotate:
+                                rotate(yLocalAxis, rotateRate);
+                                break;
+                        }
+
+                        lastDragLen = dragLen;
                     }
+
 
                     xDelta = 0;
                     yDelta = 0;
                 });
 
             })();
-        },
-
-        _props: {
-
-            /**
-             Indicates whether this ClipControl is active or not.
-
-             @property active
-             @default true
-             @type Boolean
-             */
-            active: {
-
-                set: function (value) {
-
-                    value = value !== false;
-
-                    if (value === this._active) {
-                        return;
-                    }
-
-                    this._active = value;
-                },
-
-                get: function () {
-                    return this._active;
-                }
-            },
-
-            /**
-             The {{#crossLink &quot;Clip&quot;}}{{/crossLink}} attached to this ClipControl.
-
-             @property clip
-             @type Clip
-             */
-            clip: {
-
-                set: function (value) {
-
-                    var self = this;
-
-                    this._attach({
-                        name: &quot;clip&quot;,
-                        type: &quot;xeogl.Clip&quot;,
-                        component: value,
-                        on: {
-                            pos: function (pos) {
-                                self.pos = pos;
-                            },
-                            dir: function (dir) {
-                                self.dir = dir;
-                            },
-                            active: function (active) {
-                                // TODO: How to represent?
-                            }
-                        }
-                    });
-                },
-
-                get: function () {
-                    return this._attached.clip;
-                }
-            },
-
-            /**
-             World-space position of this ClipControl.
-
-             @property pos
-             @default [0,0,0]
-             @type {Float32Array}
-             */
-            pos: {
-
-                set: function (value) {
-                    (this._pos = this._pos || new xeogl.math.vec3()).set(value || [0, 0, 0]);
-                    this._translate.xyz = this._pos;
-                    this._needUpdate(); // Need to rebuild arrow
-                },
-
-                get: function () {
-                    return this._pos;
-                }
-            },
-
-            /**
-             * World-space direction of this ClipControl.
-             *
-             * @property dir
-             * @default [0,0,1]
-             * @type {Float32Array}
-             */
-            dir: {
-
-                set: (function () {
-
-                    var zeroVec = new Float32Array([0, 0, 1]);
-                    var quat = new Float32Array(4);
-
-                    return function (value) {
-                        (this._dir = this._dir || new xeogl.math.vec3()).set(value || [0, 0, 1]);
-                        xeogl.math.vec3PairToQuaternion(zeroVec, this._dir, quat);
-                        this._quaternion.xyzw = quat;
-                        this._needUpdate(); // Need to rebuild arrow
-                    };
-                })(),
-
-                get: function () {
-                    return this._dir;
-                }
-            },
-
-            /**
-             * The width and height of the ClipControl plane indicator.
-             *
-             * Values assigned to this property will be overridden by an auto-computed value when
-             * {{#crossLink &quot;ClipControl/autoPlaneSize:property&quot;}}{{/crossLink}} is true.
-             *
-             * @property planeSize
-             * @default [1,1]
-             * @type {Float32Array}
-             */
-            planeSize: {
-
-                set: function (value) {
-                    (this._planeSize = this._planeSize || new xeogl.math.vec2()).set(value || [1, 1]);
-                    this._planeScale.xyz = [this._planeSize[0], this._planeSize[1], 1.0];
-                },
-
-                get: function () {
-                    return this._planeSize;
-                }
-            },
-
-            /**
-             * Indicates whether this ClipControl&#x27;s {{#crossLink &quot;ClipControl/planeSize:property&quot;}}{{/crossLink}} is automatically
-             * generated or not.
-             *
-             * When auto-generated, {{#crossLink &quot;ClipControl/planeSize:property&quot;}}{{/crossLink}} will automatically size
-             * to fit within the {{#crossLink &quot;Scene/aabb:property&quot;}}Scene&#x27;s boundary{{/crossLink}}.
-             *
-             * @property autoPlaneSize
-             * @default false
-             * @type {Boolean}
-             */
-            autoPlaneSize: {
-
-                set: function (value) {
-
-                    value = !!value;
-
-                    if (this._autoPlaneSize === value) {
-                        return;
-                    }
-
-                    this._autoPlaneSize = value;
-
-                    if (this._autoPlaneSize) {
-                        if (!this._onSceneAABB) {
-                            this._onSceneAABB = this.scene.on(&quot;boundary&quot;, function () {
-                                var aabbDiag = xeogl.math.getAABB3Diag(this.scene.aabb);
-                                var clipSize = (aabbDiag * 0.50);
-                                this.planeSize = [clipSize, clipSize];
-                            }, this);
-                        }
-                    } else {
-                        if (this._onSceneAABB) {
-                            this.scene.off(this._onSceneAABB);
-                            this._onSceneAABB = null;
-                        }
-                    }
-                },
-
-                get: function () {
-                    return this._autoPlaneSize;
-                }
-            },
-
-            /**
-             * Emmissive color of this ClipControl.
-             *
-             * @property color
-             * @default [0.4,0.4,0.4]
-             * @type {Float32Array}
-             */
-            color: {
-
-                set: function (value) {
-                    (this._color = this._color || new xeogl.math.vec3()).set(value || [0.4, 0.4, 0.4]);
-                    this._display.planeWire.material.emissive = this._color;
-                },
-
-                get: function () {
-                    return this._color;
-                }
-            },
-
-            /**
-             Indicates whether this ClipControl is filled with color or just wireframe.
-
-             @property solid
-             @default true
-             @type Boolean
-             */
-            solid: {
-
-                set: function (value) {
-                    this._solid = value !== false;
-                    this._display.planeSolid.visible = this._solid &amp;&amp; this._visible;
-                },
-
-                get: function () {
-                    return this._solid;
-                }
-            },
-
-            /**
-             * Visibility of this ClipControl.
-             *
-             * @property visible
-             * @type Boolean
-             * @default true
-             */
-            visible: {
-
-                set: function (value) {
-
-                    value = !!value;
-
-                    if (this._visible === value) {
-                        return;
-                    }
-
-                    this._visible = value;
-
-                    for (var id in this._display) {
-                        if (this._display.hasOwnProperty(id)) {
-                            this._display[id].visible = value;
-                        }
-                    }
-                },
-
-                get: function () {
-                    return this._visible;
-                }
-            }
         },
 
         _destroy: function () {

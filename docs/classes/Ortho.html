@@ -20,7 +20,7 @@
 
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.0.0</em>
+            <em>API Docs for: 0.7.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -56,13 +56,11 @@
                                 <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
-                                <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/ClipControl.html">ClipControl</a></li>
                                 <li><a href="../classes/ClipHelper.html">ClipHelper</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
-                                <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
@@ -104,9 +102,7 @@
                                 <li><a href="../classes/Progress.html">Progress</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
-                                <li><a href="../classes/Region.html">Region</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
-                                <li><a href="../classes/Ruler.html">Ruler</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
@@ -137,7 +133,6 @@
                                 <li><a href="..//modules/camera.html">camera</a></li>
                                 <li><a href="..//modules/canvas.html">canvas</a></li>
                                 <li><a href="..//modules/clipping.html">clipping</a></li>
-                                <li><a href="..//modules/configs.html">configs</a></li>
                                 <li><a href="..//modules/controls.html">controls</a></li>
                                 <li><a href="..//modules/curves.html">curves</a></li>
                                 <li><a href="..//modules/effects.html">effects</a></li>
@@ -206,46 +201,24 @@
 
 
 <div class="box intro">
-    <p>An <strong>Ortho</strong> defines an orthographic projection transform.</p>
+    <p>An <strong>Ortho</strong> defines an orthographic projection transform for a <a href="../classes/Camera.html" class="crosslink">Camera</a>.</p>
 <h2 id="overview">Overview</h2>
 <ul>
-<li><a href="../classes/Camera.html" class="crosslink">Camera</a> components pair these with viewing transform components, such as
-<a href="../classes/Lookat.html" class="crosslink">Lookat</a>, to define viewpoints on attached <a href="../classes/Entity.html" class="crosslink">Entities</a>.</li>
+<li>A <a href="../classes/Camera.html" class="crosslink">Camera</a> has an Ortho to configure its orthographic projection mode.</li>
 <li>An Ortho works like Blender&#39;s orthographic projection, where the positions of the left, right, top and bottom planes are
 implicitly specified with a single <a href="../classes/Ortho.html#property_scale" class="crosslink">scale</a> property, which causes the frustum to be symmetrical on X and Y axis, large enough to
 contain the number of units given by <a href="../classes/Ortho.html#property_scale" class="crosslink">scale</a>.</li>
 <li>An Ortho&#39;s <a href="../classes/Ortho.html#property_near" class="crosslink">near</a> and <a href="../classes/Ortho.html#property_far" class="crosslink">far</a> properties
 specify the distances to the WebGL clipping planes.</li>
-<li>Use <a href="../classes/Frustum.html" class="crosslink">Frustum</a> if you need to individually specify the position of each of the frustum
-planes, eg. for an asymmetrical view volume, such as those used for stereo viewing.</li>
-<li>Use <a href="../classes/Perspective.html" class="crosslink">Perspective</a> if you need perspective projection.</li>
 </ul>
-<p><img src="../../../assets/images/Ortho.png"></img></p>
 <h2 id="examples">Examples</h2>
 <ul>
-<li><a href="../../examples/#transforms_camera_project_ortho">Camera with orthographic projection</a></li>
+<li><a href="../../examples/#camera_orthographic">Camera with orthographic projection</a></li>
 </ul>
 <h2 id="usage">Usage</h2>
-<pre class="code prettyprint"><code class="lang-Javascript">new xeogl.Entity({
-
-    camera: xeogl.Camera({
-
-        view: new xeogl.Lookat({
-            eye: [0, 0, -4],
-            look: [0, 0, 0],
-            up: [0, 1, 0]
-        }),
-
-        project: new xeogl.Ortho(scene, {
-            scale: 100.0,  // Fit at least 100 units within the ortho volume X &amp; Y extents
-            near: 0.1,
-            far: 1000
-        })
-    }),
-
-    geometry: new xeogl.BoxGeometry()
-});
-</code></pre>
+<ul>
+<li>See <a href="../classes/Camera.html" class="crosslink">Camera</a></li>
+</ul>
 
 </div>
 
@@ -1332,7 +1305,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_ortho.js.html#l192"><code>src&#x2F;camera&#x2F;ortho.js:192</code></a>
+                            <a href="../files/src_camera_ortho.js.html#l167"><code>src&#x2F;camera&#x2F;ortho.js:167</code></a>
                             </p>
                     
                     
@@ -1410,7 +1383,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_ortho.js.html#l223"><code>src&#x2F;camera&#x2F;ortho.js:223</code></a>
+                            <a href="../files/src_camera_ortho.js.html#l198"><code>src&#x2F;camera&#x2F;ortho.js:198</code></a>
                             </p>
                     
                     
@@ -1462,7 +1435,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_ortho.js.html#l161"><code>src&#x2F;camera&#x2F;ortho.js:161</code></a>
+                            <a href="../files/src_camera_ortho.js.html#l136"><code>src&#x2F;camera&#x2F;ortho.js:136</code></a>
                             </p>
                     
                     
@@ -1489,7 +1462,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_ortho.js.html#l120"><code>src&#x2F;camera&#x2F;ortho.js:120</code></a>
+                            <a href="../files/src_camera_ortho.js.html#l95"><code>src&#x2F;camera&#x2F;ortho.js:95</code></a>
                             </p>
                     
                     
@@ -1635,7 +1608,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_ortho.js.html#l209"><code>src&#x2F;camera&#x2F;ortho.js:209</code></a>
+                            <a href="../files/src_camera_ortho.js.html#l184"><code>src&#x2F;camera&#x2F;ortho.js:184</code></a>
                             </p>
                     
                     
@@ -1677,7 +1650,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_ortho.js.html#l178"><code>src&#x2F;camera&#x2F;ortho.js:178</code></a>
+                            <a href="../files/src_camera_ortho.js.html#l153"><code>src&#x2F;camera&#x2F;ortho.js:153</code></a>
                             </p>
                     
                     
@@ -1719,7 +1692,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_ortho.js.html#l147"><code>src&#x2F;camera&#x2F;ortho.js:147</code></a>
+                            <a href="../files/src_camera_ortho.js.html#l122"><code>src&#x2F;camera&#x2F;ortho.js:122</code></a>
                             </p>
                     
                     

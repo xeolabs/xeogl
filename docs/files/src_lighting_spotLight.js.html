@@ -20,7 +20,7 @@
 
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.0.0</em>
+            <em>API Docs for: 0.7.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -56,13 +56,11 @@
                                 <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
-                                <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/ClipControl.html">ClipControl</a></li>
                                 <li><a href="../classes/ClipHelper.html">ClipHelper</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
-                                <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
@@ -104,9 +102,7 @@
                                 <li><a href="../classes/Progress.html">Progress</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
-                                <li><a href="../classes/Region.html">Region</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
-                                <li><a href="../classes/Ruler.html">Ruler</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
@@ -137,7 +133,6 @@
                                 <li><a href="..//modules/camera.html">camera</a></li>
                                 <li><a href="..//modules/canvas.html">canvas</a></li>
                                 <li><a href="..//modules/clipping.html">clipping</a></li>
-                                <li><a href="..//modules/configs.html">configs</a></li>
                                 <li><a href="..//modules/controls.html">controls</a></li>
                                 <li><a href="..//modules/curves.html">curves</a></li>
                                 <li><a href="..//modules/effects.html">effects</a></li>
@@ -219,30 +214,51 @@ TODO
 
  ## Usage
 
- &#x60;&#x60;&#x60;&#x60; javascript
- var entity = new xeogl.Entity(scene, {
+ In the example below we&#x27;ll customize the default Scene&#x27;s light sources, defining an AmbientLight and a couple of
+ SpotLights, then create a Phong-shaded box entity.
 
-        lights: new xeogl.Lights({
-            lights: [
-                new xeogl.SpotLight({
-                    pos: [0, 100, 100],
-                    dir: [0, -1, 0],
-                    color: [0.5, 0.7, 0.5],
-                    intensity: 1
-                    constantAttenuation: 0,
-                    linearAttenuation: 0,
-                    quadraticAttenuation: 0,
-                    space: &quot;view&quot;
-                })
-            ]
-        }),
- ,
-        material: new xeogl.PhongMaterial({
-            diffuse: [0.5, 0.5, 0.0]
-        }),
+ &#x60;&#x60;&#x60;&#x60;javascript
 
-        geometry: new xeogl.BoxGeometry()
-  });
+ // We&#x27;re using the default xeogl Scene
+ // Get Scene&#x27;s Lights
+ var lights = xeogl.scene.lights;
+
+ // Customize the light sources
+ lights.lights = [
+     new xeogl.AmbientLight({
+         color: [0.8, 0.8, 0.8],
+         intensity: 0.5
+     }),
+     new xeogl.SpotLight({
+         pos: [0, 100, 100],
+         dir: [0, -1, 0],
+         color: [0.5, 0.7, 0.5],
+         intensity: 1
+         constantAttenuation: 0,
+         linearAttenuation: 0,
+         quadraticAttenuation: 0,
+         space: &quot;view&quot;
+     }),
+     new xeogl.PointLight({
+         pos: [0, 100, 100],
+         dir: [0, -1, 0],
+         color: [0.5, 0.7, 0.5],
+         intensity: 1
+         constantAttenuation: 0,
+         linearAttenuation: 0,
+         quadraticAttenuation: 0,
+         space: &quot;view&quot;
+     })
+ ];
+
+ // Create box entity
+ new xeogl.Entity({
+    material: new xeogl.PhongMaterial({
+        ambient: [0.5, 0.5, 0.5],
+        diffuse: [1,0.3,0.3]
+    }),
+    geometry: new xeogl.BoxGeometry()
+ });
  &#x60;&#x60;&#x60;&#x60;
 
  @class SpotLight

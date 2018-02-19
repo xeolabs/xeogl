@@ -20,7 +20,7 @@
 
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.0.0</em>
+            <em>API Docs for: 0.7.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -56,13 +56,11 @@
                                 <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
-                                <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/ClipControl.html">ClipControl</a></li>
                                 <li><a href="../classes/ClipHelper.html">ClipHelper</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
-                                <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
@@ -104,9 +102,7 @@
                                 <li><a href="../classes/Progress.html">Progress</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
-                                <li><a href="../classes/Region.html">Region</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
-                                <li><a href="../classes/Ruler.html">Ruler</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
@@ -137,7 +133,6 @@
                                 <li><a href="..//modules/camera.html">camera</a></li>
                                 <li><a href="..//modules/canvas.html">canvas</a></li>
                                 <li><a href="..//modules/clipping.html">clipping</a></li>
-                                <li><a href="..//modules/configs.html">configs</a></li>
                                 <li><a href="..//modules/controls.html">controls</a></li>
                                 <li><a href="..//modules/curves.html">curves</a></li>
                                 <li><a href="..//modules/effects.html">effects</a></li>
@@ -207,7 +202,6 @@
 
 <div class="box intro">
     <p>A <strong>CameraPathAnimation</strong> animates the <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s <a href="../classes/Camera.html" class="crosslink">Camera</a> along a <a href="../classes/CameraPath.html" class="crosslink">CameraPath</a>.</p>
-<p><img src="../../../assets/images/CameraPathAnimation.png"></img></p>
 <h2 id="examples">Examples</h2>
 <ul>
 <li><a href="../../examples/#camera_path_interpolation">Interpolating the Camera along a path</a></li>
@@ -216,7 +210,7 @@
 <li><a href="../../examples/#camera_path_frameMenu">A menu of Camera waypoints to fly to</a></li>
 </ul>
 <h2 id="usage">Usage</h2>
-<h3 id="1-interpolating-the-camera-along-a-path">1. Interpolating the Camera along a path</h3>
+<h3 id="interpolating-the-camera-along-a-path">Interpolating the Camera along a path</h3>
 <p>In this example we&#39;ll use the CameraPathAnimation&#39;s
 <a href="../classes/CameraPathAnimation.html#method_play" class="crosslink">play</a> method to smoothly <b>interpolate</b>
 the <a href="../classes/Camera.html" class="crosslink">Camera</a>&#39;s <a href="../classes/Camera.html" class="crosslink">Camera</a> along a <a href="../classes/CameraPath.html" class="crosslink">CameraPath</a>:</p>
@@ -276,7 +270,7 @@ gearbox.on("loaded", function () {
 });
 </code></pre>
 <p><br></p>
-<h3 id="2-flying-directly-to-each-frame-on-a-path">2. Flying directly to each frame on a path</h3>
+<h3 id="flying-directly-to-each-frame-on-a-path">Flying directly to each frame on a path</h3>
 <p>In this example, we&#39;ll use the CameraPathAnimation&#39;s <a href="../classes/CameraPathAnimation.html#method_flyToFrame" class="crosslink">flyToFrame</a> method
 to <b>fly</b> the <a href="../classes/Camera.html" class="crosslink">Camera</a> directly to each frame on the <a href="../classes/CameraPath.html" class="crosslink">CameraPath</a>:</p>
 <p><a href="../../examples/#camera_path_flyToFrame"><img src="http://i.giphy.com/l3vQYNjsnAQwPBeYU.gif"></img></a></p>
@@ -295,7 +289,7 @@ gearbox.on("loaded", function () {
 });
 </code></pre>
 <p><br></p>
-<h3 id="3-jumping-directly-to-each-frame-on-a-path">3. Jumping directly to each frame on a path</h3>
+<h3 id="jumping-directly-to-each-frame-on-a-path">Jumping directly to each frame on a path</h3>
 <p>In this example, we&#39;ll use the CameraPathAnimation&#39;s <a href="../classes/CameraPathAnimation.html#method_scrubToFrame" class="crosslink">scrubToFrame</a> method
 to <b>jump</b> the <a href="../classes/Camera.html" class="crosslink">Camera</a> directly to each frame on the <a href="../classes/CameraPath.html" class="crosslink">CameraPath</a>:</p>
 <p><a href="../../examples/#camera_path_scrubToFrame"><img src="http://i.giphy.com/l0Hlyqk7kewTjSBZ6.gif"></img></a></p>
@@ -856,7 +850,7 @@ any subsequent notifications on the event as they are made.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/examples_js_animation_cameraPathAnimation.js.html#l341"><code>examples&#x2F;js&#x2F;animation&#x2F;cameraPathAnimation.js:341</code></a>
+        <a href="../files/examples_js_animation_cameraPathAnimation.js.html#l339"><code>examples&#x2F;js&#x2F;animation&#x2F;cameraPathAnimation.js:339</code></a>
         </p>
 
 
@@ -1362,7 +1356,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/examples_js_animation_cameraPathAnimation.js.html#l281"><code>examples&#x2F;js&#x2F;animation&#x2F;cameraPathAnimation.js:281</code></a>
+        <a href="../files/examples_js_animation_cameraPathAnimation.js.html#l279"><code>examples&#x2F;js&#x2F;animation&#x2F;cameraPathAnimation.js:279</code></a>
         </p>
 
 
@@ -1400,7 +1394,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/examples_js_animation_cameraPathAnimation.js.html#l315"><code>examples&#x2F;js&#x2F;animation&#x2F;cameraPathAnimation.js:315</code></a>
+        <a href="../files/examples_js_animation_cameraPathAnimation.js.html#l313"><code>examples&#x2F;js&#x2F;animation&#x2F;cameraPathAnimation.js:313</code></a>
         </p>
 
 
@@ -1455,7 +1449,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/examples_js_animation_cameraPathAnimation.js.html#l294"><code>examples&#x2F;js&#x2F;animation&#x2F;cameraPathAnimation.js:294</code></a>
+        <a href="../files/examples_js_animation_cameraPathAnimation.js.html#l292"><code>examples&#x2F;js&#x2F;animation&#x2F;cameraPathAnimation.js:292</code></a>
         </p>
 
 
@@ -1510,7 +1504,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/examples_js_animation_cameraPathAnimation.js.html#l394"><code>examples&#x2F;js&#x2F;animation&#x2F;cameraPathAnimation.js:394</code></a>
+        <a href="../files/examples_js_animation_cameraPathAnimation.js.html#l392"><code>examples&#x2F;js&#x2F;animation&#x2F;cameraPathAnimation.js:392</code></a>
         </p>
 
 
@@ -1565,7 +1559,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/examples_js_animation_cameraPathAnimation.js.html#l367"><code>examples&#x2F;js&#x2F;animation&#x2F;cameraPathAnimation.js:367</code></a>
+        <a href="../files/examples_js_animation_cameraPathAnimation.js.html#l365"><code>examples&#x2F;js&#x2F;animation&#x2F;cameraPathAnimation.js:365</code></a>
         </p>
 
 
@@ -1614,7 +1608,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/examples_js_animation_cameraPathAnimation.js.html#l428"><code>examples&#x2F;js&#x2F;animation&#x2F;cameraPathAnimation.js:428</code></a>
+        <a href="../files/examples_js_animation_cameraPathAnimation.js.html#l426"><code>examples&#x2F;js&#x2F;animation&#x2F;cameraPathAnimation.js:426</code></a>
         </p>
 
 
@@ -1704,7 +1698,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_animation_cameraPathAnimation.js.html#l239"><code>examples&#x2F;js&#x2F;animation&#x2F;cameraPathAnimation.js:239</code></a>
+                            <a href="../files/examples_js_animation_cameraPathAnimation.js.html#l237"><code>examples&#x2F;js&#x2F;animation&#x2F;cameraPathAnimation.js:237</code></a>
                             </p>
                     
                     
@@ -1831,7 +1825,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_animation_cameraPathAnimation.js.html#l263"><code>examples&#x2F;js&#x2F;animation&#x2F;cameraPathAnimation.js:263</code></a>
+                            <a href="../files/examples_js_animation_cameraPathAnimation.js.html#l261"><code>examples&#x2F;js&#x2F;animation&#x2F;cameraPathAnimation.js:261</code></a>
                             </p>
                     
                     
@@ -1918,7 +1912,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/examples_js_animation_cameraPathAnimation.js.html#l145"><code>examples&#x2F;js&#x2F;animation&#x2F;cameraPathAnimation.js:145</code></a>
+                            <a href="../files/examples_js_animation_cameraPathAnimation.js.html#l143"><code>examples&#x2F;js&#x2F;animation&#x2F;cameraPathAnimation.js:143</code></a>
                             </p>
                     
                     

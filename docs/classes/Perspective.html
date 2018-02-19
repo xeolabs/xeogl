@@ -20,7 +20,7 @@
 
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.0.0</em>
+            <em>API Docs for: 0.7.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -56,13 +56,11 @@
                                 <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
-                                <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/ClipControl.html">ClipControl</a></li>
                                 <li><a href="../classes/ClipHelper.html">ClipHelper</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
-                                <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
@@ -104,9 +102,7 @@
                                 <li><a href="../classes/Progress.html">Progress</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
-                                <li><a href="../classes/Region.html">Region</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
-                                <li><a href="../classes/Ruler.html">Ruler</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
@@ -137,7 +133,6 @@
                                 <li><a href="..//modules/camera.html">camera</a></li>
                                 <li><a href="..//modules/canvas.html">canvas</a></li>
                                 <li><a href="..//modules/clipping.html">clipping</a></li>
-                                <li><a href="..//modules/configs.html">configs</a></li>
                                 <li><a href="..//modules/controls.html">controls</a></li>
                                 <li><a href="..//modules/curves.html">curves</a></li>
                                 <li><a href="..//modules/effects.html">effects</a></li>
@@ -206,39 +201,19 @@
 
 
 <div class="box intro">
-    <p>A <strong>Perspective</strong> defines a perspective projection transform.</p>
+    <p>A <strong>Perspective</strong> defines a perspective projection transform for a <a href="../classes/Camera.html" class="crosslink">Camera</a>.</p>
 <h2 id="overview">Overview</h2>
 <ul>
-<li><a href="../classes/Camera.html" class="crosslink">Camera</a> components pair these with viewing transform components, such as
-<a href="../classes/Lookat.html" class="crosslink">Lookat</a>, to define viewpoints on attached <a href="../classes/Entity.html" class="crosslink">Entities</a>.</li>
-<li>Alternatively, use <a href="../classes/Ortho.html" class="crosslink">Ortho</a> if you need a orthographic projection.</li>
+<li>A <a href="../classes/Camera.html" class="crosslink">Camera</a> has a Perspective to configure its perspective projection mode.</li>
 </ul>
-<p><img src="../../../assets/images/Perspective.png"></img></p>
 <h2 id="examples">Examples</h2>
 <ul>
-<li><a href="../../examples/#transforms_camera_project_perspective">Camera with perspective projection</a></li>
+<li><a href="../../examples/#camera_perspective">Camera with perspective projection</a></li>
 </ul>
 <h2 id="usage">Usage</h2>
-<pre class="code prettyprint"><code class="lang-Javascript">new xeogl.Entity({
-
-    camera: xeogl.Camera({
-
-       view: new xeogl.Lookat({
-           eye: [0, 0, -4],
-           look: [0, 0, 0],
-           up: [0, 1, 0]
-       }),
-
-       project: new xeogl.Perspective({
-           fov: 60,
-           near: 0.1,
-           far: 1000
-       })
-    }),
-
-    perspective: new xeogl.BoxGeometry()
-});
-</code></pre>
+<ul>
+<li>See <a href="../classes/Camera.html" class="crosslink">Camera</a></li>
+</ul>
 
 </div>
 
@@ -1344,7 +1319,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_perspective.js.html#l212"><code>src&#x2F;camera&#x2F;perspective.js:212</code></a>
+                            <a href="../files/src_camera_perspective.js.html#l188"><code>src&#x2F;camera&#x2F;perspective.js:188</code></a>
                             </p>
                     
                     
@@ -1371,7 +1346,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_perspective.js.html#l107"><code>src&#x2F;camera&#x2F;perspective.js:107</code></a>
+                            <a href="../files/src_camera_perspective.js.html#l83"><code>src&#x2F;camera&#x2F;perspective.js:83</code></a>
                             </p>
                     
                     
@@ -1398,7 +1373,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_perspective.js.html#l138"><code>src&#x2F;camera&#x2F;perspective.js:138</code></a>
+                            <a href="../files/src_camera_perspective.js.html#l114"><code>src&#x2F;camera&#x2F;perspective.js:114</code></a>
                             </p>
                     
                     
@@ -1477,7 +1452,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_perspective.js.html#l243"><code>src&#x2F;camera&#x2F;perspective.js:243</code></a>
+                            <a href="../files/src_camera_perspective.js.html#l219"><code>src&#x2F;camera&#x2F;perspective.js:219</code></a>
                             </p>
                     
                     
@@ -1529,7 +1504,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_perspective.js.html#l182"><code>src&#x2F;camera&#x2F;perspective.js:182</code></a>
+                            <a href="../files/src_camera_perspective.js.html#l158"><code>src&#x2F;camera&#x2F;perspective.js:158</code></a>
                             </p>
                     
                     
@@ -1674,7 +1649,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_perspective.js.html#l229"><code>src&#x2F;camera&#x2F;perspective.js:229</code></a>
+                            <a href="../files/src_camera_perspective.js.html#l205"><code>src&#x2F;camera&#x2F;perspective.js:205</code></a>
                             </p>
                     
                     
@@ -1716,7 +1691,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_perspective.js.html#l124"><code>src&#x2F;camera&#x2F;perspective.js:124</code></a>
+                            <a href="../files/src_camera_perspective.js.html#l100"><code>src&#x2F;camera&#x2F;perspective.js:100</code></a>
                             </p>
                     
                     
@@ -1758,7 +1733,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_perspective.js.html#l168"><code>src&#x2F;camera&#x2F;perspective.js:168</code></a>
+                            <a href="../files/src_camera_perspective.js.html#l144"><code>src&#x2F;camera&#x2F;perspective.js:144</code></a>
                             </p>
                     
                     
@@ -1800,7 +1775,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_perspective.js.html#l199"><code>src&#x2F;camera&#x2F;perspective.js:199</code></a>
+                            <a href="../files/src_camera_perspective.js.html#l175"><code>src&#x2F;camera&#x2F;perspective.js:175</code></a>
                             </p>
                     
                     

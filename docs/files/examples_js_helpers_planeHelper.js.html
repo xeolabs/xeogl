@@ -20,7 +20,7 @@
 
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.0.0</em>
+            <em>API Docs for: 0.7.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -56,13 +56,11 @@
                                 <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
-                                <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/ClipControl.html">ClipControl</a></li>
                                 <li><a href="../classes/ClipHelper.html">ClipHelper</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
-                                <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
@@ -104,9 +102,7 @@
                                 <li><a href="../classes/Progress.html">Progress</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
-                                <li><a href="../classes/Region.html">Region</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
-                                <li><a href="../classes/Ruler.html">Ruler</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
@@ -137,7 +133,6 @@
                                 <li><a href="..//modules/camera.html">camera</a></li>
                                 <li><a href="..//modules/canvas.html">canvas</a></li>
                                 <li><a href="..//modules/clipping.html">clipping</a></li>
-                                <li><a href="..//modules/configs.html">configs</a></li>
                                 <li><a href="..//modules/controls.html">controls</a></li>
                                 <li><a href="..//modules/curves.html">curves</a></li>
                                 <li><a href="..//modules/effects.html">effects</a></li>
@@ -223,443 +218,96 @@
             this._visible = false;
 
             var transform = this._planeScale = new xeogl.Scale(this, {
-                xyz: [10, 10, 0],
+                worldPos: [10, 10, 0],
                 parent: this._quaternion = new xeogl.Quaternion(this, {
-                    xyzw: [0, 0, 0, 1],
+                    worldPosw: [0, 0, 0, 1],
                     parent: this._translate = new xeogl.Translate(this, {
-                        xyz: [-10, -10, 0]
+                        worldPos: [0, 0, 0]
                     })
                 })
             });
 
-            var thickQuarterTorus = new xeogl.TorusGeometry(this, {
-                radius: 1.0,
-                tube: 0.02,
-                radialSegments: 64,
-                tubeSegments: 14,
-                arc: (Math.PI * 2.0) / 4.0
-            });
-
-            var arrowHead = new xeogl.CylinderGeometry(this, {
-                radiusTop: 0.001,
-                radiusBottom: 0.10,
-                height: 0.2,
-                radialSegments: 16,
-                heightSegments: 1,
-                openEnded: false
-            });
-
-            var arrowShaft = new xeogl.CylinderGeometry(scene, {
-                radiusTop: 0.02,
-                radiusBottom: 0.02,
-                height: 1.0,
-                radialSegments: 20,
-                heightSegments: 1,
-                openEnded: false
-            });
-
-            var axisMaterial = new xeogl.PhongMaterial(scene, { // Red by convention
-                ambient: [0.0, 0.0, 0.0],
-                specular: [.6, .6, .3],
-                shininess: 80,
-                lineWidth: 2
-            });
-
-            var xAxisMaterial = new xeogl.PhongMaterial(scene, { // Red by convention
-                diffuse: [1, 0.3, 0.3],
-                ambient: [0.0, 0.0, 0.0],
-                specular: [.6, .6, .3],
-                shininess: 80,
-                lineWidth: 2
-            });
-
-            var xAxisLabelMaterial = new xeogl.PhongMaterial(scene, { // Red by convention
-                emissive: [1, 0.3, 0.3],
-                ambient: [0.0, 0.0, 0.0],
-                specular: [.6, .6, .3],
-                shininess: 80,
-                lineWidth: 2
-            });
-
-            var yAxisMaterial = new xeogl.PhongMaterial(scene, { // Green by convention
-                diffuse: [0.3, 1, 0.3],
-                ambient: [0.0, 0.0, 0.0],
-                specular: [.6, .6, .3],
-                shininess: 80,
-                lineWidth: 2
-            });
-
-            var yAxisLabelMaterial = new xeogl.PhongMaterial(scene, { // Green by convention
-                emissive: [0.3, 1, 0.3],
-                ambient: [0.0, 0.0, 0.0],
-                specular: [.6, .6, .3],
-                shininess: 80,
-                lineWidth: 2
-            });
-
-
-            var zAxisMaterial = new xeogl.PhongMaterial(scene, { // Blue by convention
-                diffuse: [0.3, 0.3, 1],
-                ambient: [0.0, 0.0, 0.0],
-                specular: [.6, .6, .3],
-                shininess: 80,
-                lineWidth: 2
-            });
-
-            var zAxisLabelMaterial = new xeogl.PhongMaterial(scene, {
-                emissive: [0.3, 0.3, 1],
-                ambient: [0.0, 0.0, 0.0],
-                specular: [.6, .6, .3],
-                shininess: 80,
-                lineWidth: 2
-            });
-
-            var ballMaterial = new xeogl.PhongMaterial(scene, {
-                diffuse: [0.5, 0.5, 0.5],
-                ambient: [0.0, 0.0, 0.0],
-                specular: [.6, .6, .3],
-                shininess: 80,
-                lineWidth: 2
-            });
-
-
-            // ----------------- Entities ------------------------------
-
-            this._displayEntities = [
-
-                this._planeWire = new xeogl.Entity(this, {
-                    geometry: new xeogl.Geometry(this, {
-                        primitive: &quot;lines&quot;,
-                        positions: [
-                            0.5, 0.5, 0.0, 0.5, -0.5, 0.0, // 0
-                            -0.5, -0.5, 0.0, -0.5, 0.5, 0.0, // 1
-                            0.5, 0.5, -0.0, 0.5, -0.5, -0.0, // 2
-                            -0.5, -0.5, -0.0, -0.5, 0.5, -0.0 // 3
-                        ],
-                        indices: [0, 1, 0, 3, 1, 2, 2, 3]
-                    }),
-                    material: new xeogl.PhongMaterial(this, {
-                        emissive: [1, 0, 0],
-                        diffuse: [0, 0, 0],
-                        lineWidth: 2
-                    }),
-                    transform: transform,
-                    pickable: false,
-                    collidable: true,
-                    clippable: false
-                }),
-
-                this._planeSolid = new xeogl.Entity(this, {
-                    geometry: new xeogl.Geometry(this, {
-                        primitive: &quot;triangles&quot;,
-                        positions: [
-                            0.5, 0.5, 0.0, 0.5, -0.5, 0.0, // 0
-                            -0.5, -0.5, 0.0, -0.5, 0.5, 0.0, // 1
-                            0.5, 0.5, -0.0, 0.5, -0.5, -0.0, // 2
-                            -0.5, -0.5, -0.0, -0.5, 0.5, -0.0 // 3
-                        ],
-                        indices: [0, 1, 2, 2, 3, 0]
-                    }),
-                    material: new xeogl.PhongMaterial(this, {
-                        emissive: [0, 0, 0],
-                        diffuse: [0, 0, 0],
-                        specular: [1, 1, 1],
-                        shininess: 120,
-                        alpha: 0.3,
-                        alphaMode: &quot;blend&quot;,
-                        backfaces: true
-                    }),
-                    transform: transform,
-                    pickable: false,
-                    collidable: true,
-                    clippable: false
-                }),
-
-                this._arrow = new xeogl.Entity(this, {
-                    geometry: new xeogl.Geometry(this, {
-                        primitive: &quot;lines&quot;,
-                        positions: [
-                            1.0, 1.0, 1.0, 1.0, -1.0, 1.0
-                        ],
-                        indices: [0, 1]
-                    }),
-                    material: new xeogl.PhongMaterial(this, {
-                        emissive: [1, 0, 0],
-                        diffuse: [0, 0, 0],
-                        lineWidth: 4
-                    }),
-                    pickable: false,
-                    collidable: true,
-                    clippable: false
-                }),
-
-                this._label = new xeogl.Entity(this, {
-                    geometry: new xeogl.VectorTextGeometry(this, {
-                        text: this.id,
-                        size: 0.07,
-                        origin: [0.02, 0.02, 0.0]
-                    }),
-                    material: new xeogl.PhongMaterial(this, {
-                        emissive: [0.3, 1, 0.3],
-                        lineWidth: 2
-                    }),
-                    transform: transform, // Shares transform with plane
-                    pickable: false,
-                    collidable: true,
-                    clippable: false,
-                    billboard: &quot;spherical&quot;
-                }),
-
-
-                this._rotateXHoopDisplay = new xeogl.Entity(this, { // Green hoop about Y-axis
-                    geometry: thickQuarterTorus,
-                    material: yAxisMaterial,
-                    transform: new xeogl.Rotate(this, {
-                        xyz: [1, 0, 0],
-                        angle: -90,
-                        parent: transform
-                    }),
-                    pickable: false,
-                    collidable: true,
-                    clippable: false
-                }),
-
-                this._rotateYHoopDisplay = new xeogl.Entity(this, { // Red hoop about Y-axis
-                    geometry: thickQuarterTorus,
-                    material: xAxisMaterial,
-                    transform: new xeogl.Rotate(this, {
-                        xyz: [0, 1, 0],
-                        angle: 90,
-                        parent: new xeogl.Rotate(this, {
-                            xyz: [1, 0, 0],
-                            angle: 270,
-                            parent: transform
-                        })
-                    }),
-                    pickable: false,
-                    collidable: true,
-                    clippable: false
-                }),
-
-                this._rotateZHoopDisplay = new xeogl.Entity(this, { // Blue hoop about Z-axis
-                    geometry: thickQuarterTorus,
-                    material: zAxisMaterial,
-                    transform: new xeogl.Rotate(this, {
-                        xyz: [1, 0, 0],
-                        angle: 90,
-                        parent: new xeogl.Rotate(this, {
-                            xyz: [1, 0, 0],
-                            angle: 90,
-                            parent: transform
-                        })
-                    }),
-                    pickable: false,
-                    collidable: true,
-                    clippable: false
-                }),
-
-                // Ball at center of axis
-
-                new xeogl.Entity(this, {  // Arrow
-                    geometry: new xeogl.SphereGeometry(this, {
-                        radius: 0.05
-                    }),
-                    material: ballMaterial,
-                    transform: transform,
-                    pickable: false,
-                    collidable: true,
-                    visible: !!cfg.visible,
-                    clippable: false
-                }),
-
-                // X-axis arrow, shaft and label
-
-                new xeogl.Entity(this, {  // Arrow
-                    geometry: arrowHead,
-                    material: xAxisMaterial,
-                    pickable: false,
-                    collidable: true,
-                    visible: !!cfg.visible,
-                    clippable: false,
-                    transform: new xeogl.Translate(this, {
-                        xyz: [0, 1, 0],
-                        parent: new xeogl.Rotate(this, {
-                            xyz: [0, 0, 1],
-                            angle: 90,
-                            parent: transform
-                        })
-                    })
-                }),
-
-                new xeogl.Entity(this, {  // Shaft
-                    geometry: arrowShaft,
-                    material: xAxisMaterial,
-                    pickable: false,
-                    collidable: true,
-                    visible: !!cfg.visible,
-                    clippable: false,
-                    transform: new xeogl.Translate(this, {
-                        xyz: [0, .5, 0],
-                        parent: new xeogl.Rotate(this, {
-                            xyz: [0, 0, 1],
-                            angle: 90,
-                            parent: transform
-                        })
-                    })
-                }),
-
-                new xeogl.Entity(this, {  // Label
-                    geometry: new xeogl.VectorTextGeometry(this, {text: &quot;X&quot;, size: 1.5}),
-                    material: xAxisLabelMaterial,
-                    pickable: false,
-                    collidable: true,
-                    visible: !!cfg.visible,
-                    clippable: false,
-                    transform: new xeogl.Translate(this, {
-                        xyz: [-7, 0, 0],
-                        parent: transform
-                    }),
-                    billboard: &quot;spherical&quot;
-                }),
-
-                // Y-axis arrow, shaft and label
-
-                new xeogl.Entity(this, {  // Arrow
-                    geometry: arrowHead,
-                    material: yAxisMaterial,
-                    pickable: false,
-                    collidable: true,
-                    visible: !!cfg.visible,
-                    clippable: false,
-                    transform: new xeogl.Translate(this, {
-                        xyz: [0, 1, 0],
-                        parent: transform
-                    })
-                }),
-
-                new xeogl.Entity(this, {  // Shaft
-                    geometry: arrowShaft,
-                    material: yAxisMaterial,
-                    pickable: false,
-                    collidable: true,
-                    visible: !!cfg.visible,
-                    clippable: false,
-                    transform: new xeogl.Translate(this, {
-                        xyz: [0, .5, 0],
-                        parent: transform
-                    })
-                }),
-
-                new xeogl.Entity(this, {  // Label
-                    geometry: new xeogl.VectorTextGeometry(this, {text: &quot;Y&quot;, size: 1.5}),
-                    material: yAxisLabelMaterial,
-                    pickable: false,
-                    collidable: true,
-                    visible: !!cfg.visible,
-                    clippable: false,
-                    transform: new xeogl.Translate(this, {
-                        xyz: [0, 7, 0],
-                        parent: transform
-                    }),
-                    billboard: &quot;spherical&quot;
-                }),
-
-                // Z-axis arrow, shaft and label
-
-                new xeogl.Entity(this, {  // Arrow
-                    geometry: arrowHead,
-                    material: zAxisMaterial,
-                    pickable: false,
-                    collidable: true,
-                    visible: !!cfg.visible,
-                    clippable: false,
-                    transform: new xeogl.Translate(this, {
-                        xyz: [0, 1, 0],
-                        parent: new xeogl.Rotate(this, {
-                            xyz: [0.8, 0, 0],
-                            angle: 90,
-                            parent: transform
-                        })
-                    })
-                }),
-
-                new xeogl.Entity(this, {  // Shaft
-                    geometry: arrowShaft,
-                    material: zAxisMaterial,
-                    clippable: false,
-                    pickable: false,
-                    collidable: true,
-                    visible: !!cfg.visible,
-                    transform: new xeogl.Translate(this, {
-                        xyz: [0, .5, 0],
-                        parent: new xeogl.Rotate(this, {
-                            xyz: [1, 0, 0],
-                            angle: 90,
-                            parent: transform
-                        })
-                    })
-                }),
-
-                new xeogl.Entity(this, {  // Label
-                    geometry: new xeogl.VectorTextGeometry(this, {text: &quot;Z&quot;, size: 1.5}),
-                    material: zAxisLabelMaterial,
-                    pickable: false,
-                    collidable: true,
-                    visible: !!cfg.visible,
-                    transform: new xeogl.Translate(this, {
-                        xyz: [0, 0, 7],
-                        parent: transform
-                    }),
-                    billboard: &quot;spherical&quot;
-                })
-            ];
-
-            this._rotateXHoopPickable = new xeogl.Entity(this, {
-                geometry: new xeogl.TorusGeometry(this, {
-                    radius: 1.0,
-                    tube: 0.05,
-                    radialSegments: 64,
-                    tubeSegments: 14,
-                    arc: (Math.PI * 2.0)
+            this._planeWire = new xeogl.Entity(this, {
+                geometry: new xeogl.Geometry(this, {
+                    primitive: &quot;lines&quot;,
+                    positions: [
+                        0.5, 0.5, 0.0, 0.5, -0.5, 0.0, // 0
+                        -0.5, -0.5, 0.0, -0.5, 0.5, 0.0, // 1
+                        0.5, 0.5, -0.0, 0.5, -0.5, -0.0, // 2
+                        -0.5, -0.5, -0.0, -0.5, 0.5, -0.0 // 3
+                    ],
+                    indices: [0, 1, 0, 3, 1, 2, 2, 3]
                 }),
                 material: new xeogl.PhongMaterial(this, {
-                    alpha: 0,
-                    alphaMode: &quot;blend&quot;
+                    emissive: [1, 0, 0],
+                    diffuse: [0, 0, 0],
+                    lineWidth: 2
                 }),
-                transform: new xeogl.Rotate(this, {
-                    xyz: [1, 0, 0],
-                    angle: 90,
-                    parent: transform
-                }),
-                pickable: true,
-                collidable: true,
+                transform: transform,
+                pickable: false,
+                collidable: false,
                 clippable: false
             });
 
-            this._rotateYHoopPickable = new xeogl.Entity(this, {
-                geometry: new xeogl.TorusGeometry(this, {
-                    radius: 1.0,
-                    tube: 0.05,
-                    radialSegments: 64,
-                    tubeSegments: 14,
-                    arc: (Math.PI * 2.0)
+            this._planeSolid = new xeogl.Entity(this, {
+                geometry: new xeogl.Geometry(this, {
+                    primitive: &quot;triangles&quot;,
+                    positions: [
+                        0.5, 0.5, 0.0, 0.5, -0.5, 0.0, // 0
+                        -0.5, -0.5, 0.0, -0.5, 0.5, 0.0, // 1
+                        0.5, 0.5, -0.0, 0.5, -0.5, -0.0, // 2
+                        -0.5, -0.5, -0.0, -0.5, 0.5, -0.0 // 3
+                    ],
+                    indices: [0, 1, 2, 2, 3, 0]
                 }),
                 material: new xeogl.PhongMaterial(this, {
-                    alpha: 0,
-                    alphaMode: &quot;blend&quot;
+                    emissive: [0, 0, 0],
+                    diffuse: [0, 0, 0],
+                    specular: [1, 1, 1],
+                    shininess: 120,
+                    alpha: 0.3,
+                    alphaMode: &quot;blend&quot;,
+                    backfaces: true
                 }),
-                transform: new xeogl.Rotate(this, {
-                    xyz: [0, 1, 0],
-                    angle: 90,
-                    parent: new xeogl.Rotate(this, {
-                        xyz: [1, 0, 0],
-                        angle: 90,
-                        parent: transform
-                    })
-                }),
-                pickable: true,
-                collidable: true,
+                transform: transform,
+                pickable: false,
+                collidable: false,
                 clippable: false
+            });
+
+            this._arrow = new xeogl.Entity(this, {
+                geometry: new xeogl.Geometry(this, {
+                    primitive: &quot;lines&quot;,
+                    positions: [
+                        1.0, 1.0, 1.0, 1.0, -1.0, 1.0
+                    ],
+                    indices: [0, 1]
+                }),
+                material: new xeogl.PhongMaterial(this, {
+                    emissive: [1, 0, 0],
+                    diffuse: [0, 0, 0],
+                    lineWidth: 4
+                }),
+                pickable: false,
+                collidable: false,
+                clippable: false
+            });
+
+            this._label = new xeogl.Entity(this, {
+                geometry: new xeogl.VectorTextGeometry(this, {
+                    text: this.id,
+                    size: 0.07,
+                    origin: [0.02, 0.02, 0.0]
+                }),
+                material: new xeogl.PhongMaterial(this, {
+                    emissive: [0.3, 1, 0.3],
+                    lineWidth: 2
+                }),
+                transform: transform, // Shares transform with plane
+                pickable: false,
+                collidable: false,
+                clippable: false,
+                billboard: &quot;spherical&quot;
             });
 
             this.planeSize = cfg.planeSize;
@@ -669,7 +317,6 @@
             this.color = cfg.color;
             this.solid = cfg.solid;
             this.visible = cfg.visible;
-            this.active = true;
         },
 
         _update: (function () {
@@ -695,50 +342,9 @@
         _props: {
 
             /**
-             Indicates whether this PlaneHelper is active or not.
-
-             Fires a {{#crossLink &quot;PlaneHelper/active:event&quot;}}{{/crossLink}} event on change.
-
-             @property active
-             @default true
-             @type Boolean
-             */
-            active: {
-
-                set: function (value) {
-
-                    value = value !== false;
-
-                    if (value === this._active) {
-                        return;
-                    }
-
-                    this._active = value;
-
-                    if (value) {
-
-                    } else {
-
-                    }
-
-                    /**
-                     Fired whenever this PlaneHelper&#x27;s {{#crossLink &quot;PlaneHelper/active:property&quot;}}{{/crossLink}} property changes.
-
-                     @event active
-                     @param value {Boolean} The property&#x27;s new value
-                     */
-                    this.fire(&quot;active&quot;, this._active);
-                },
-
-                get: function () {
-                    return this._active;
-                }
-            },
-
-            /**
              * World-space position of this PlaneHelper.
              *
-             * @property pos
+             * @property worldPos
              * @default [0,0,0]
              * @type {Float32Array}
              */
@@ -858,7 +464,7 @@
             color: {
 
                 set: function (value) {
-                    (this._color = this._color || new xeogl.math.vec3()).set(value || [0.4, 0.4, 0.4]);
+                    (this._color = this._color || new xeogl.math.vec3()).set(value || [0.4,0.4,0.4]);
                     this._planeWire.material.emissive = this._color;
                     this._arrow.material.emissive = this._color;
                 },
@@ -886,7 +492,7 @@
                     return this._solid;
                 }
             },
-
+            
             /**
              Indicates whether this PlaneHelper is visible or not.
 

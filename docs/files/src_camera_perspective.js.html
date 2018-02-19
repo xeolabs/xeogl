@@ -20,7 +20,7 @@
 
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.0.0</em>
+            <em>API Docs for: 0.7.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -56,13 +56,11 @@
                                 <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
-                                <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/ClipControl.html">ClipControl</a></li>
                                 <li><a href="../classes/ClipHelper.html">ClipHelper</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
-                                <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
@@ -104,9 +102,7 @@
                                 <li><a href="../classes/Progress.html">Progress</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
-                                <li><a href="../classes/Region.html">Region</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
-                                <li><a href="../classes/Ruler.html">Ruler</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
@@ -137,7 +133,6 @@
                                 <li><a href="..//modules/camera.html">camera</a></li>
                                 <li><a href="..//modules/canvas.html">canvas</a></li>
                                 <li><a href="..//modules/clipping.html">clipping</a></li>
-                                <li><a href="..//modules/configs.html">configs</a></li>
                                 <li><a href="..//modules/controls.html">controls</a></li>
                                 <li><a href="..//modules/curves.html">curves</a></li>
                                 <li><a href="..//modules/effects.html">effects</a></li>
@@ -193,43 +188,19 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
- A **Perspective** defines a perspective projection transform.
+ A **Perspective** defines a perspective projection transform for a {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}}.
 
  ## Overview
 
- * {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} components pair these with viewing transform components, such as
- {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
- * Alternatively, use {{#crossLink &quot;Ortho&quot;}}{{/crossLink}} if you need a orthographic projection.
-
- &lt;img src=&quot;../../../assets/images/Perspective.png&quot;&gt;&lt;/img&gt;
+ * A {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} has a Perspective to configure its perspective projection mode.
 
  ## Examples
 
- * [Camera with perspective projection](../../examples/#transforms_camera_project_perspective)
+ * [Camera with perspective projection](../../examples/#camera_perspective)
 
  ## Usage
 
- &#x60;&#x60;&#x60;&#x60;Javascript
- new xeogl.Entity({
-
-     camera: xeogl.Camera({
-
-        view: new xeogl.Lookat({
-            eye: [0, 0, -4],
-            look: [0, 0, 0],
-            up: [0, 1, 0]
-        }),
-
-        project: new xeogl.Perspective({
-            fov: 60,
-            near: 0.1,
-            far: 1000
-        })
-     }),
-
-     perspective: new xeogl.BoxGeometry()
- });
- &#x60;&#x60;&#x60;&#x60;
+ * See {{#crossLink &quot;Camera&quot;}}{{/crossLink}}
 
  @class Perspective
  @module xeogl
