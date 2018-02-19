@@ -20,7 +20,7 @@
 
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.0.0</em>
+            <em>API Docs for: 0.7.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -56,13 +56,11 @@
                                 <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
-                                <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/ClipControl.html">ClipControl</a></li>
                                 <li><a href="../classes/ClipHelper.html">ClipHelper</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
-                                <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
@@ -104,9 +102,7 @@
                                 <li><a href="../classes/Progress.html">Progress</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
-                                <li><a href="../classes/Region.html">Region</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
-                                <li><a href="../classes/Ruler.html">Ruler</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
@@ -137,7 +133,6 @@
                                 <li><a href="..//modules/camera.html">camera</a></li>
                                 <li><a href="..//modules/canvas.html">canvas</a></li>
                                 <li><a href="..//modules/clipping.html">clipping</a></li>
-                                <li><a href="..//modules/configs.html">configs</a></li>
                                 <li><a href="..//modules/controls.html">controls</a></li>
                                 <li><a href="..//modules/curves.html">curves</a></li>
                                 <li><a href="..//modules/effects.html">effects</a></li>
@@ -226,29 +221,49 @@ head as the <a href="../classes/Camera.html" class="crosslink">Camera</a> moves.
 <h2 id="examples">Examples</h2>
 <p>   TODO</p>
 <h2 id="usage">Usage</h2>
-<pre class="code prettyprint"><code class="lang-javascript">var entity = new xeogl.Entity(scene, {
+<p>In the example below we&#39;ll customize the default Scene&#39;s light sources, defining an AmbientLight and a couple of
+SpotLights, then create a Phong-shaded box entity.</p>
+<pre class="code prettyprint"><code class="lang-javascript">
+// We&#39;re using the default xeogl Scene
+// Get Scene&#39;s Lights
+var lights = xeogl.scene.lights;
 
-       lights: new xeogl.Lights({
-           lights: [
-               new xeogl.SpotLight({
-                   pos: [0, 100, 100],
-                   dir: [0, -1, 0],
-                   color: [0.5, 0.7, 0.5],
-                   intensity: 1
-                   constantAttenuation: 0,
-                   linearAttenuation: 0,
-                   quadraticAttenuation: 0,
-                   space: "view"
-               })
-           ]
-       }),
-,
-       material: new xeogl.PhongMaterial({
-           diffuse: [0.5, 0.5, 0.0]
-       }),
+// Customize the light sources
+lights.lights = [
+    new xeogl.AmbientLight({
+        color: [0.8, 0.8, 0.8],
+        intensity: 0.5
+    }),
+    new xeogl.SpotLight({
+        pos: [0, 100, 100],
+        dir: [0, -1, 0],
+        color: [0.5, 0.7, 0.5],
+        intensity: 1
+        constantAttenuation: 0,
+        linearAttenuation: 0,
+        quadraticAttenuation: 0,
+        space: "view"
+    }),
+    new xeogl.PointLight({
+        pos: [0, 100, 100],
+        dir: [0, -1, 0],
+        color: [0.5, 0.7, 0.5],
+        intensity: 1
+        constantAttenuation: 0,
+        linearAttenuation: 0,
+        quadraticAttenuation: 0,
+        space: "view"
+    })
+];
 
-       geometry: new xeogl.BoxGeometry()
- });
+// Create box entity
+new xeogl.Entity({
+   material: new xeogl.PhongMaterial({
+       ambient: [0.5, 0.5, 0.5],
+       diffuse: [1,0.3,0.3]
+   }),
+   geometry: new xeogl.BoxGeometry()
+});
 </code></pre>
 
 </div>
@@ -1410,7 +1425,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lighting_spotLight.js.html#l217"><code>src&#x2F;lighting&#x2F;spotLight.js:217</code></a>
+                            <a href="../files/src_lighting_spotLight.js.html#l238"><code>src&#x2F;lighting&#x2F;spotLight.js:238</code></a>
                             </p>
                     
                     
@@ -1437,7 +1452,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lighting_spotLight.js.html#l279"><code>src&#x2F;lighting&#x2F;spotLight.js:279</code></a>
+                            <a href="../files/src_lighting_spotLight.js.html#l300"><code>src&#x2F;lighting&#x2F;spotLight.js:300</code></a>
                             </p>
                     
                     
@@ -1489,7 +1504,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lighting_spotLight.js.html#l186"><code>src&#x2F;lighting&#x2F;spotLight.js:186</code></a>
+                            <a href="../files/src_lighting_spotLight.js.html#l207"><code>src&#x2F;lighting&#x2F;spotLight.js:207</code></a>
                             </p>
                     
                     
@@ -1542,7 +1557,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lighting_spotLight.js.html#l247"><code>src&#x2F;lighting&#x2F;spotLight.js:247</code></a>
+                            <a href="../files/src_lighting_spotLight.js.html#l268"><code>src&#x2F;lighting&#x2F;spotLight.js:268</code></a>
                             </p>
                     
                     
@@ -1594,7 +1609,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lighting_spotLight.js.html#l310"><code>src&#x2F;lighting&#x2F;spotLight.js:310</code></a>
+                            <a href="../files/src_lighting_spotLight.js.html#l331"><code>src&#x2F;lighting&#x2F;spotLight.js:331</code></a>
                             </p>
                     
                     
@@ -1646,7 +1661,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lighting_spotLight.js.html#l153"><code>src&#x2F;lighting&#x2F;spotLight.js:153</code></a>
+                            <a href="../files/src_lighting_spotLight.js.html#l174"><code>src&#x2F;lighting&#x2F;spotLight.js:174</code></a>
                             </p>
                     
                     
@@ -1674,7 +1689,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lighting_spotLight.js.html#l341"><code>src&#x2F;lighting&#x2F;spotLight.js:341</code></a>
+                            <a href="../files/src_lighting_spotLight.js.html#l362"><code>src&#x2F;lighting&#x2F;spotLight.js:362</code></a>
                             </p>
                     
                     
@@ -1727,7 +1742,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lighting_spotLight.js.html#l410"><code>src&#x2F;lighting&#x2F;spotLight.js:410</code></a>
+                            <a href="../files/src_lighting_spotLight.js.html#l431"><code>src&#x2F;lighting&#x2F;spotLight.js:431</code></a>
                             </p>
                     
                     
@@ -1754,7 +1769,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lighting_spotLight.js.html#l372"><code>src&#x2F;lighting&#x2F;spotLight.js:372</code></a>
+                            <a href="../files/src_lighting_spotLight.js.html#l393"><code>src&#x2F;lighting&#x2F;spotLight.js:393</code></a>
                             </p>
                     
                     
@@ -1853,7 +1868,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lighting_spotLight.js.html#l234"><code>src&#x2F;lighting&#x2F;spotLight.js:234</code></a>
+                            <a href="../files/src_lighting_spotLight.js.html#l255"><code>src&#x2F;lighting&#x2F;spotLight.js:255</code></a>
                             </p>
                     
                     
@@ -1895,7 +1910,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lighting_spotLight.js.html#l296"><code>src&#x2F;lighting&#x2F;spotLight.js:296</code></a>
+                            <a href="../files/src_lighting_spotLight.js.html#l317"><code>src&#x2F;lighting&#x2F;spotLight.js:317</code></a>
                             </p>
                     
                     
@@ -1962,7 +1977,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lighting_spotLight.js.html#l204"><code>src&#x2F;lighting&#x2F;spotLight.js:204</code></a>
+                            <a href="../files/src_lighting_spotLight.js.html#l225"><code>src&#x2F;lighting&#x2F;spotLight.js:225</code></a>
                             </p>
                     
                     
@@ -2004,7 +2019,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lighting_spotLight.js.html#l266"><code>src&#x2F;lighting&#x2F;spotLight.js:266</code></a>
+                            <a href="../files/src_lighting_spotLight.js.html#l287"><code>src&#x2F;lighting&#x2F;spotLight.js:287</code></a>
                             </p>
                     
                     
@@ -2046,7 +2061,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lighting_spotLight.js.html#l327"><code>src&#x2F;lighting&#x2F;spotLight.js:327</code></a>
+                            <a href="../files/src_lighting_spotLight.js.html#l348"><code>src&#x2F;lighting&#x2F;spotLight.js:348</code></a>
                             </p>
                     
                     
@@ -2088,7 +2103,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lighting_spotLight.js.html#l173"><code>src&#x2F;lighting&#x2F;spotLight.js:173</code></a>
+                            <a href="../files/src_lighting_spotLight.js.html#l194"><code>src&#x2F;lighting&#x2F;spotLight.js:194</code></a>
                             </p>
                     
                     
@@ -2130,7 +2145,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lighting_spotLight.js.html#l358"><code>src&#x2F;lighting&#x2F;spotLight.js:358</code></a>
+                            <a href="../files/src_lighting_spotLight.js.html#l379"><code>src&#x2F;lighting&#x2F;spotLight.js:379</code></a>
                             </p>
                     
                     
@@ -2172,7 +2187,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lighting_spotLight.js.html#l435"><code>src&#x2F;lighting&#x2F;spotLight.js:435</code></a>
+                            <a href="../files/src_lighting_spotLight.js.html#l456"><code>src&#x2F;lighting&#x2F;spotLight.js:456</code></a>
                             </p>
                     
                     
@@ -2214,7 +2229,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lighting_spotLight.js.html#l396"><code>src&#x2F;lighting&#x2F;spotLight.js:396</code></a>
+                            <a href="../files/src_lighting_spotLight.js.html#l417"><code>src&#x2F;lighting&#x2F;spotLight.js:417</code></a>
                             </p>
                     
                     

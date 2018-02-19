@@ -20,7 +20,7 @@
 
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.0.0</em>
+            <em>API Docs for: 0.7.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -56,13 +56,11 @@
                                 <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
-                                <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/ClipControl.html">ClipControl</a></li>
                                 <li><a href="../classes/ClipHelper.html">ClipHelper</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
-                                <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
@@ -104,9 +102,7 @@
                                 <li><a href="../classes/Progress.html">Progress</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
-                                <li><a href="../classes/Region.html">Region</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
-                                <li><a href="../classes/Ruler.html">Ruler</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
@@ -137,7 +133,6 @@
                                 <li><a href="..//modules/camera.html">camera</a></li>
                                 <li><a href="..//modules/canvas.html">canvas</a></li>
                                 <li><a href="..//modules/clipping.html">clipping</a></li>
-                                <li><a href="..//modules/configs.html">configs</a></li>
                                 <li><a href="..//modules/controls.html">controls</a></li>
                                 <li><a href="..//modules/curves.html">curves</a></li>
                                 <li><a href="..//modules/effects.html">effects</a></li>
@@ -199,7 +194,7 @@
 
  * A Model owns the components that are added to it, automatically destroying them when the Model is destroyed.
  * Can be attached to a {{#crossLink &quot;Transform&quot;}}{{/crossLink}} hierarchy, to transform its components as a group, within World-space.
- * Provides the collective World-space boundary of its components in an automatically updating {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}}.
+ * Provides the collective axis-aligned World-space boundary of its components.
 
  A Model is subclassed by (at least):
 
@@ -208,11 +203,17 @@
  * {{#crossLink &quot;SceneJSModel&quot;}}{{/crossLink}}, which loads its components from SceneJS scene definitions.
  * {{#crossLink &quot;BuildableModel&quot;}}{{/crossLink}}, which provides a fluent API for building its components.
 
- &lt;img src=&quot;../../../assets/images/Model.png&quot;&gt;&lt;/img&gt;
-
  ## Usage
 
- ### Adding and removing components
+ * [Adding and Removing Components](#adding-and-removing-components)
+ * [Finding Models in Scenes](#finding-models-in-scenes)
+ * [Finding Components in Models](#finding-components-in-models)
+ * [Transforming a Model](#transforming-a-model)
+ * [Getting the World-space boundary of a Model](#getting-the-world-space-boundary-of-a-model)
+ * [Clearing a Model](#clearing-a-model)
+ * [Destroying a Model](#destroying-a-model)
+
+ ### Adding and Removing Components
 
  When adding components to a Model, it&#x27;s usually easiest to just add their configuration objects and let the Model
  internally instantiate them, as shown below.
@@ -221,7 +222,9 @@
  the Model or call the Model&#x27;s {{#crossLink &quot;Model/destroyAll:method&quot;}}{{/crossLink}} method.
 
  &#x60;&#x60;&#x60;&#x60;javascript
- var model = new xeogl.Model();
+ var model = new xeogl.Model({ // Create Model in xeogl&#x27;s default Scene
+     id: &quot;myModel&quot;
+ });
 
  var geometry = model.add({
     type: &quot;xeogl.TorusGeometry&quot;
@@ -264,6 +267,7 @@
 
  &#x60;&#x60;&#x60;&#x60;javascript
  model = new xeogl.Model({
+    id: &quot;myModel&quot;,
     components: [
         {
             type: &quot;xeogl.TorusGeometry&quot;,
@@ -281,10 +285,20 @@
             material: &quot;myMaterial&quot;
         }
     ]
-});
+ });
  &#x60;&#x60;&#x60;&#x60;
 
- ### Finding components
+ ### Finding Models in Scenes
+
+ Our Model will now be registered by ID on its Scene, so we can now find it like this:
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+    model = xeogl.scene.models[&quot;myModel&quot;];
+ &#x60;&#x60;&#x60;&#x60;
+
+ That&#x27;s assuming that we&#x27;ve created the Model in the default xeogl Scene, which we did for these examples.
+
+ ### Finding Components in Models
 
  Our Model now has various components within itself, which we can find by their IDs.
 
@@ -370,12 +384,39 @@
 
  ### Getting the World-space boundary of a Model
 
+ Get the World-space axis-aligned boundary of a MOdel like this:
+
  &#x60;&#x60;&#x60;&#x60; Javascript
  model.on(&quot;boundary&quot;, function() {
-    var aabb = model.aabb;
+    var aabb = model.aabb; //  [xmin, ymin,zmin,xmax,ymax, zmax]
     //...
  });
  &#x60;&#x60;&#x60;&#x60;
+
+ We can also subscribe to changes to that boundary, which will happen whenever
+
+ * the Model&#x27;s {{#crossLink &quot;Transform&quot;}}{{/crossLink}} is updated,
+ * components are added or removed from the Model, or
+ * the {{#crossLink &quot;Geometry&quot;}}Geometries{{/crossLink}} or {{#crossLink &quot;Transform&quot;}}Transforms{{/crossLink}} of its Entities are switched or modified.
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ model.on(&quot;boundary&quot;, function() {
+    var aabb = model.aabb; // [xmin, ymin,zmin,xmax,ymax, zmax]
+ });
+ &#x60;&#x60;&#x60;&#x60;
+
+ ### Clearing a Model
+
+ &#x60;&#x60;&#x60;&#x60; Javascript
+ model.clear();
+ &#x60;&#x60;&#x60;&#x60;
+
+ ### Destroying a Model
+
+ &#x60;&#x60;&#x60;&#x60; Javascript
+ model.destroy();
+ &#x60;&#x60;&#x60;&#x60;
+
 
  @class Model
  @module xeogl

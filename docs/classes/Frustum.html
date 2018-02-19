@@ -20,7 +20,7 @@
 
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.0.0</em>
+            <em>API Docs for: 0.7.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -56,13 +56,11 @@
                                 <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
-                                <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/ClipControl.html">ClipControl</a></li>
                                 <li><a href="../classes/ClipHelper.html">ClipHelper</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
-                                <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
@@ -104,9 +102,7 @@
                                 <li><a href="../classes/Progress.html">Progress</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
-                                <li><a href="../classes/Region.html">Region</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
-                                <li><a href="../classes/Ruler.html">Ruler</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
@@ -137,7 +133,6 @@
                                 <li><a href="..//modules/camera.html">camera</a></li>
                                 <li><a href="..//modules/canvas.html">canvas</a></li>
                                 <li><a href="..//modules/clipping.html">clipping</a></li>
-                                <li><a href="..//modules/configs.html">configs</a></li>
                                 <li><a href="..//modules/controls.html">controls</a></li>
                                 <li><a href="..//modules/curves.html">curves</a></li>
                                 <li><a href="..//modules/effects.html">effects</a></li>
@@ -206,49 +201,24 @@
 
 
 <div class="box intro">
-    <p>A <strong>Frustum</strong> defines a perspective projection as a frustum-shaped view volume.</p>
+    <p>A <strong>Frustum</strong> defines a perspective projection as a frustum-shaped view volume for a <a href="../classes/Camera.html" class="crosslink">Camera</a>.</p>
 <h2 id="overview">Overview</h2>
 <ul>
-<li><a href="../classes/Camera.html" class="crosslink">Camera</a> components pair these with viewing transform components, such as
-<a href="../classes/Lookat.html" class="crosslink">Lookat</a>, to define viewpoints for attached <a href="../classes/Entity.html" class="crosslink">Entities</a>.</li>
+<li>A <a href="../classes/Camera.html" class="crosslink">Camera</a> has a Frustum to configure its frustum-based perspective projection mode.</li>
 <li>A Frustum lets us explicitly set the positions of the left, right, top, bottom, near and far planes, which is useful
 for asymmetrical view volumes, such as those used for stereo viewing.</li>
-<li>An Frustum&#39;s <a href="../classes/Frustum.html#property_near" class="crosslink">near</a> and <a href="../classes/Frustum.html#property_far" class="crosslink">far</a> properties
+<li>A Frustum&#39;s <a href="../classes/Frustum.html#property_near" class="crosslink">near</a> and <a href="../classes/Frustum.html#property_far" class="crosslink">far</a> properties
 specify the distances to the WebGL clipping planes.</li>
-<li>Use <a href="../classes/Ortho.html" class="crosslink">Ortho</a> if you just want to specify the X,Y frustum extents with a single scale factor,
-ie. without individually specifying the distance to each frustum plane.</li>
-<li>Use <a href="../classes/Perspective.html" class="crosslink">Perspective</a> if you need perspective projection.</li>
 </ul>
-<p><img src="../../../assets/images/Frustum.png"></img></p>
 <h2 id="examples">Examples</h2>
 <ul>
-<li><a href="../../examples/#transforms_camera_project_frustum">Camera with frustum projection</a></li>
+<li><a href="../../examples/#camera_frustum">Camera with frustum projection</a></li>
 <li><a href="../../examples/#effects_stereo">Stereo viewing with frustum projection</a></li>
 </ul>
 <h2 id="usage">Usage</h2>
-<pre class="code prettyprint"><code class="lang-Javascript">new xeogl.Entity({
-
-    camera: xeogl.Camera({
-
-       view: new xeogl.Lookat({
-           eye: [0, 0, -4],
-           look: [0, 0, 0],
-           up: [0, 1, 0]
-       }),
-
-       project: new xeogl.Frustum(scene, {
-           left: -0.1,
-           right: 0.1,
-           bottom: -0.1,
-           top: 0.1,
-           near: 0.15,
-           far: 1000
-       })
-    }),
-
-    geometry: new xeogl.BoxGeometry()
-});
-</code></pre>
+<ul>
+<li>See <a href="../classes/Camera.html" class="crosslink">Camera</a></li>
+</ul>
 
 </div>
 
@@ -1356,7 +1326,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_frustum.js.html#l202"><code>src&#x2F;camera&#x2F;frustum.js:202</code></a>
+                            <a href="../files/src_camera_frustum.js.html#l173"><code>src&#x2F;camera&#x2F;frustum.js:173</code></a>
                             </p>
                     
                     
@@ -1408,7 +1378,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_frustum.js.html#l264"><code>src&#x2F;camera&#x2F;frustum.js:264</code></a>
+                            <a href="../files/src_camera_frustum.js.html#l235"><code>src&#x2F;camera&#x2F;frustum.js:235</code></a>
                             </p>
                     
                     
@@ -1486,7 +1456,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_frustum.js.html#l109"><code>src&#x2F;camera&#x2F;frustum.js:109</code></a>
+                            <a href="../files/src_camera_frustum.js.html#l80"><code>src&#x2F;camera&#x2F;frustum.js:80</code></a>
                             </p>
                     
                     
@@ -1513,7 +1483,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_frustum.js.html#l295"><code>src&#x2F;camera&#x2F;frustum.js:295</code></a>
+                            <a href="../files/src_camera_frustum.js.html#l266"><code>src&#x2F;camera&#x2F;frustum.js:266</code></a>
                             </p>
                     
                     
@@ -1565,7 +1535,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_frustum.js.html#l233"><code>src&#x2F;camera&#x2F;frustum.js:233</code></a>
+                            <a href="../files/src_camera_frustum.js.html#l204"><code>src&#x2F;camera&#x2F;frustum.js:204</code></a>
                             </p>
                     
                     
@@ -1592,7 +1562,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_frustum.js.html#l140"><code>src&#x2F;camera&#x2F;frustum.js:140</code></a>
+                            <a href="../files/src_camera_frustum.js.html#l111"><code>src&#x2F;camera&#x2F;frustum.js:111</code></a>
                             </p>
                     
                     
@@ -1677,7 +1647,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_frustum.js.html#l171"><code>src&#x2F;camera&#x2F;frustum.js:171</code></a>
+                            <a href="../files/src_camera_frustum.js.html#l142"><code>src&#x2F;camera&#x2F;frustum.js:142</code></a>
                             </p>
                     
                     
@@ -1739,7 +1709,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_frustum.js.html#l219"><code>src&#x2F;camera&#x2F;frustum.js:219</code></a>
+                            <a href="../files/src_camera_frustum.js.html#l190"><code>src&#x2F;camera&#x2F;frustum.js:190</code></a>
                             </p>
                     
                     
@@ -1806,7 +1776,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_frustum.js.html#l281"><code>src&#x2F;camera&#x2F;frustum.js:281</code></a>
+                            <a href="../files/src_camera_frustum.js.html#l252"><code>src&#x2F;camera&#x2F;frustum.js:252</code></a>
                             </p>
                     
                     
@@ -1848,7 +1818,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_frustum.js.html#l126"><code>src&#x2F;camera&#x2F;frustum.js:126</code></a>
+                            <a href="../files/src_camera_frustum.js.html#l97"><code>src&#x2F;camera&#x2F;frustum.js:97</code></a>
                             </p>
                     
                     
@@ -1890,7 +1860,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_frustum.js.html#l250"><code>src&#x2F;camera&#x2F;frustum.js:250</code></a>
+                            <a href="../files/src_camera_frustum.js.html#l221"><code>src&#x2F;camera&#x2F;frustum.js:221</code></a>
                             </p>
                     
                     
@@ -1932,7 +1902,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_frustum.js.html#l157"><code>src&#x2F;camera&#x2F;frustum.js:157</code></a>
+                            <a href="../files/src_camera_frustum.js.html#l128"><code>src&#x2F;camera&#x2F;frustum.js:128</code></a>
                             </p>
                     
                     
@@ -1974,7 +1944,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_frustum.js.html#l188"><code>src&#x2F;camera&#x2F;frustum.js:188</code></a>
+                            <a href="../files/src_camera_frustum.js.html#l159"><code>src&#x2F;camera&#x2F;frustum.js:159</code></a>
                             </p>
                     
                     

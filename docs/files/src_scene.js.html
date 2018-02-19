@@ -20,7 +20,7 @@
 
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.0.0</em>
+            <em>API Docs for: 0.7.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -56,13 +56,11 @@
                                 <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
-                                <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/ClipControl.html">ClipControl</a></li>
                                 <li><a href="../classes/ClipHelper.html">ClipHelper</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
-                                <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
@@ -104,9 +102,7 @@
                                 <li><a href="../classes/Progress.html">Progress</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
-                                <li><a href="../classes/Region.html">Region</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
-                                <li><a href="../classes/Ruler.html">Ruler</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
@@ -137,7 +133,6 @@
                                 <li><a href="..//modules/camera.html">camera</a></li>
                                 <li><a href="..//modules/canvas.html">canvas</a></li>
                                 <li><a href="..//modules/clipping.html">clipping</a></li>
-                                <li><a href="..//modules/configs.html">configs</a></li>
                                 <li><a href="..//modules/controls.html">controls</a></li>
                                 <li><a href="..//modules/curves.html">curves</a></li>
                                 <li><a href="..//modules/effects.html">effects</a></li>
@@ -197,20 +192,21 @@
 
  ## Usage
 
- * [Creating a Scene](#creating)
- * [Creating entities](#creating-content)
- * [Loading models](#loading-content)
+ * [Creating a Scene](#creating-a-scene)
+ * [Creating entities](#creating-entities)
+ * [Loading models](#loading-models)
  * [Accessing content](#accessing-content)
- * [Controlling the camera](#camera)
- * [Taking snapshots](#snapshots)
+ * [Controlling the camera](#controlling-the-camera)
+ * [Taking snapshots](#taking-snapshots)
  * [Lighting](#lighting)
  * [Clipping](#clipping)
- * [Emphasis effects](#emphasis)
+ * [Emphasis effects](#emphasis-effects)
  * [Picking](#picking)
- * [Controlling the viewport](#viewport)
- * [Controlling rendering](#rendering)
+ * [Pick masking](#pick-masking)
+ * [Controlling the viewport](#controlling-the-viewport)
+ * [Controlling rendering](#controlling-rendering)
 
- ### &lt;a class=&quot;section&quot;  name=&quot;creating&quot;&gt;Creating a Scene&lt;/a&gt;
+ ### Creating a Scene
 
  Creating a Scene with its own default canvas:
 
@@ -230,7 +226,7 @@
  });
  &#x60;&#x60;&#x60;&#x60;
 
- ### &lt;a class=&quot;section&quot;  name=&quot;creating-content&quot;&gt;Creating entities&lt;/a&gt;
+ ### Creating entities
 
  Creating an {{#crossLink &quot;Entity&quot;}}{{/crossLink}} within a Scene:
 
@@ -264,7 +260,7 @@
  scene = xeogl.scene;
  &#x60;&#x60;&#x60;&#x60;
 
- ### &lt;a class=&quot;section&quot;  name=&quot;loading-content&quot;&gt;Loading models&lt;/a&gt;
+ ### Loading models
 
  Use {{#crossLink &quot;GLTFModel&quot;}}{{/crossLink}} components to load glTF models into a Scene:
 
@@ -275,7 +271,7 @@
  });
  &#x60;&#x60;&#x60;&#x60;
 
- ### &lt;a class=&quot;section&quot;  name=&quot;accessing-content&quot;&gt;Accessing content&lt;/a&gt;
+ ### Accessing content
 
  Find components by ID in their Scene&#x27;s {{#crossLink &quot;Scene/components:property&quot;}}{{/crossLink}} map:
 
@@ -310,7 +306,7 @@
  gear = scene.entities[&quot;gearbox#gear99&quot;];
  &#x60;&#x60;&#x60;&#x60;
 
- ### &lt;a class=&quot;section&quot;  name=&quot;camera&quot;&gt;Controlling the camera&lt;/a&gt;
+ ### Controlling the camera
 
  Use the Scene&#x27;s {{#crossLink &quot;Camera&quot;}}{{/crossLink}} to control the current viewpoint and projection:
 
@@ -326,7 +322,7 @@
  //...
  &#x60;&#x60;&#x60;&#x60;
 
- ### &lt;a class=&quot;section&quot;  name=&quot;snapshots&quot;&gt;Managing the canvas, taking snapshots&lt;/a&gt;
+ ### Managing the canvas, taking snapshots
 
  The Scene&#x27;s {{#crossLink &quot;Canvas&quot;}}{{/crossLink}} component provides various conveniences relevant to the WebGL canvas, such
  as getting getting snapshots, firing resize events etc:
@@ -345,7 +341,7 @@
  });
  &#x60;&#x60;&#x60;&#x60;
 
- ### &lt;a class=&quot;section&quot;  name=&quot;lighting&quot;&gt;Lighting&lt;/a&gt;
+ ### Lighting
 
  The Scene&#x27;s {{#crossLink &quot;Lights&quot;}}{{/crossLink}} component manages lighting:
 
@@ -355,28 +351,28 @@
  //...
  &#x60;&#x60;&#x60;&#x60;
 
- ### &lt;a class=&quot;section&quot;  name=&quot;clipping&quot;&gt;Clipping&lt;/a&gt;
+ ### Clipping
 
  The Scene&#x27;s {{#crossLink &quot;Clips&quot;}}{{/crossLink}} component manages clipping planes for custom cross-sections:
 
  &#x60;&#x60;&#x60;&#x60;javascript
  var clips = scene.clips;
  clips.clips = [
-    new xeogl.Clip({  // Clip plane on negative diagonal
+ new xeogl.Clip({  // Clip plane on negative diagonal
         pos: [1.0, 1.0, 1.0],
         dir: [-1.0, -1.0, -1.0],
         active: true
     }),
-    new xeogl.Clip({ // Clip plane on positive diagonal
+ new xeogl.Clip({ // Clip plane on positive diagonal
         pos: [-1.0, -1.0, -1.0],
         dir: [1.0, 1.0, 1.0],
         active: true
     }),
-    //...
+ //...
  ];
  &#x60;&#x60;&#x60;&#x60;
 
- ### &lt;a class=&quot;section&quot; name=&quot;emphasis&quot;&gt;Emphasis effects&lt;/a&gt;
+ ### Emphasis effects
 
  The Scene&#x27;s {{#crossLink &quot;GhostMaterial&quot;}}{{/crossLink}} provides the default material for controlling ghost effects:
 
@@ -401,7 +397,7 @@
  outlineMaterial.edgeWidth = 6;
  &#x60;&#x60;&#x60;&#x60;
 
- ### &lt;a class=&quot;section&quot; name=&quot;picking&quot;&gt;Picking entities&lt;/a&gt;
+ ### Picking entities
 
  Use the Scene&#x27;s {{#crossLink &quot;Scene/pick:method&quot;}}pick(){{/crossLink}} method to pick and raycast entities.
 
@@ -429,9 +425,50 @@
  }
  &#x60;&#x60;&#x60;&#x60;
 
- See {{#crossLink &quot;Scene/pick:method&quot;}}pick(){{/crossLink}} for more info.
+ ### Pick masking
 
- ### &lt;a class=&quot;section&quot; name=&quot;boundary&quot;&gt;Getting the World-space boundary&lt;/a&gt;
+ We can use the {{#crossLink &quot;Scene/pick:method&quot;}}pick(){{/crossLink}} method&#x27;s &#x60;&#x60;&#x60;&#x60;include&#x60;&#x60;&#x60;&#x60; and &#x60;&#x60;&#x60;&#x60;exclude&#x60;&#x60;&#x60;&#x60;
+ options to mask which Entities we attempt to pick.
+
+ This is useful for picking &lt;em&gt;through&lt;/em&gt; things, to pick only the Entities of interest.
+
+ #### Including entities
+
+ To pick only Entities &#x60;&#x60;&#x60;&#x60;&quot;gearbox#77.0&quot;&#x60;&#x60;&#x60;&#x60; and &#x60;&#x60;&#x60;&#x60;&quot;gearbox#79.0&quot;&#x60;&#x60;&#x60;&#x60;, picking through any other Entities that are
+ in the way, as if they weren&#x27;t there:
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ var hit = scene.pick({
+     canvasPos: [23, 131],
+     include: [&quot;gearbox#77.0&quot;, &quot;gearbox#79.0&quot;]
+ });
+
+ if (hit) {
+      // Entity will always be either &quot;gearbox#77.0&quot; or &quot;gearbox#79.0&quot;
+      var entity = hit.entity;
+ }
+ &#x60;&#x60;&#x60;&#x60;
+
+ #### Excluding entities
+
+ To pick any pickable Entity, except for &#x60;&#x60;&#x60;&#x60;&quot;gearbox#77.0&quot;&#x60;&#x60;&#x60;&#x60; and &#x60;&#x60;&#x60;&#x60;&quot;gearbox#79.0&quot;&#x60;&#x60;&#x60;&#x60;, picking through those
+ Entities if they happen to be in the way:
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ var hit = scene.pick({
+     canvasPos: [23, 131],
+     exclude: [&quot;gearbox#77.0&quot;, &quot;gearbox#79.0&quot;]
+ });
+
+ if (hit) {
+      // Entity will never be &quot;gearbox#77.0&quot; or &quot;gearbox#79.0&quot;
+      var entity = hit.entity;
+ }
+ &#x60;&#x60;&#x60;&#x60;
+
+ See {{#crossLink &quot;Scene/pick:method&quot;}}pick(){{/crossLink}} for more info on picking.
+
+ ### Getting the World-space boundary
 
  Getting a Scene&#x27;s World-space boundary as an AABB:
 
@@ -448,9 +485,9 @@
  });
  &#x60;&#x60;&#x60;&#x60;
 
- ### &lt;a class=&quot;section&quot;  name=&quot;rendering&quot;&gt;Controlling rendering&lt;/a&gt;
+ ### Controlling rendering
 
- ### &lt;a class=&quot;section&quot;  name=&quot;viewport&quot;&gt;Managing the viewport&lt;/a&gt;
+ ### Managing the viewport
 
  The Scene&#x27;s {{#crossLink &quot;Viewport&quot;}}{{/crossLink}} component manages the WebGL viewport:
 
@@ -572,15 +609,6 @@
 
             // Contains xeogl.Entities that need to be recompiled back into this._renderer
             this._dirtyEntities = {};
-
-            /**
-             * Configurations for this Scene. Set whatever properties on here
-             * that will be useful to the components within the Scene.
-             * @final
-             * @property configs
-             * @type {Configs}
-             */
-            this.configs = new xeogl.Configs(this, cfg.configs);
 
             /**
              * Manages the HTML5 canvas for this Scene.
@@ -1122,7 +1150,7 @@
                     return this._renderer.gammaInput;
                 }
             },
-            
+
             /**
              * Whether or not to render pixels with pre-multiplied gama.
              *
@@ -1165,7 +1193,7 @@
 
                 set: function (value) {
 
-                    value = (value === undefined || value === null) ? 2.2: value;
+                    value = (value === undefined || value === null) ? 2.2 : value;
 
                     if (value === this._renderer.gammaFactor) {
                         return;
@@ -1267,7 +1295,7 @@
                     return this.components[&quot;default.ghostMaterial&quot;] ||
                         new xeogl.GhostMaterial(this, {
                             id: &quot;default.ghostMaterial&quot;,
-                            preset:&quot;sepia&quot;,
+                            preset: &quot;sepia&quot;,
                             isDefault: true
                         });
                 }
@@ -1291,7 +1319,7 @@
                     return this.components[&quot;default.highlightMaterial&quot;] ||
                         new xeogl.GhostMaterial(this, {
                             id: &quot;default.highlightMaterial&quot;,
-                            preset:&quot;yellowHighlight&quot;,
+                            preset: &quot;yellowHighlight&quot;,
                             isDefault: true
                         });
                 }
@@ -1544,6 +1572,8 @@
          * directly along the negative View-space Z-axis.
          * @param {Float32Array} [params.origin] World-space ray origin when ray-picking. Ignored when canvasPos given.
          * @param {Float32Array} [params.direction] World-space ray direction when ray-picking. Also indicates the length of the ray. Ignored when canvasPos given.
+         * @param {Array} [params.include] IDs of {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} to pick from amongst. When given, ignores {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} whose IDs are not in this list.
+         * @param {Array} [params.exclude] IDs of {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} to ignore. When given, will pick *through* these {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}, as if they were not there.
          * @returns {*} Hit record, returned when an {{#crossLink &quot;Entity&quot;}}{{/crossLink}} is picked, else null. See
          * method comments for description.
          */
@@ -1590,6 +1620,22 @@
             var tempVec3j = math.vec3();
             var tempVec3k = math.vec3();
 
+            function entityIDsToObjectIDs(scene, entityIds) {
+                var objectIds = {};
+                var entityId;
+                var entity;
+                for (var i = 0, len = entityIds.length; i &lt; len; i++) {
+                    entityId = entityIds[i];
+                    entity = scene.entities[entityId];
+                    if (!entity) {
+                        scene.warn(&quot;pick(): Entity not found: &quot; + entityId);
+                        continue;
+                    }
+                    objectIds[entity._objectId] = true;
+                }
+                return objectIds;
+            }
+
             return function (params) {
 
                 if (this.canvas.boundary[2] === 0 || this.canvas.boundary[3] === 0) {
@@ -1603,6 +1649,14 @@
 
                 if (!params.canvasPos &amp;&amp; (!params.origin || !params.direction)) {
                     this.warn(&quot;picking without canvasPos or ray origin and direction&quot;);
+                }
+
+                if (params.include) {
+                    params.includeObjects = entityIDsToObjectIDs(this, params.include)
+                }
+
+                if (params.exclude) {
+                    params.excludeObjects = entityIDsToObjectIDs(this, params.exclude)
                 }
 
                 var hit = this._renderer.pick(params);
@@ -1824,11 +1878,11 @@
         })(),
 
         /**
-         * Resets this Scene to its default state.
-         *
-         * References to any components in this Scene will become invalid.
-         *
-         * @method clear
+         Resets this Scene to its default state.
+
+         References to any components in this Scene will become invalid.
+
+         @method clear
          */
         clear: function () {  // FIXME: should only clear user-created components
 
@@ -1848,7 +1902,6 @@
 
             this._dirtyEntities = {};
         },
-
 
         _destroy: function () {
             this.clear();

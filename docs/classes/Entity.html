@@ -20,7 +20,7 @@
 
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.0.0</em>
+            <em>API Docs for: 0.7.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -56,13 +56,11 @@
                                 <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
-                                <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/ClipControl.html">ClipControl</a></li>
                                 <li><a href="../classes/ClipHelper.html">ClipHelper</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
-                                <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
@@ -104,9 +102,7 @@
                                 <li><a href="../classes/Progress.html">Progress</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
-                                <li><a href="../classes/Region.html">Region</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
-                                <li><a href="../classes/Ruler.html">Ruler</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
@@ -137,7 +133,6 @@
                                 <li><a href="..//modules/camera.html">camera</a></li>
                                 <li><a href="..//modules/canvas.html">canvas</a></li>
                                 <li><a href="..//modules/clipping.html">clipping</a></li>
-                                <li><a href="..//modules/configs.html">configs</a></li>
                                 <li><a href="..//modules/controls.html">controls</a></li>
                                 <li><a href="..//modules/curves.html">curves</a></li>
                                 <li><a href="..//modules/effects.html">effects</a></li>
@@ -224,23 +219,23 @@ component instances are provided by the <a href="../classes/Scene.html" class="c
 </ul>
 <h2 id="usage">Usage</h2>
 <ul>
-<li><a href="#creating">Creating an Entity</a></li>
-<li><a href="#visibility">Controlling visibility</a></li>
-<li><a href="#clipping">Controlling clipping</a></li>
-<li><a href="#layer">Controlling rendering order</a></li>
+<li><a href="#creating-an-entity">Creating an Entity</a></li>
+<li><a href="#controlling-visibility">Controlling visibility</a></li>
+<li><a href="#controlling-clipping">Controlling clipping</a></li>
+<li><a href="#controlling-rendering-order">Controlling rendering order</a></li>
 <li><a href="#geometry">Geometry</a></li>
 <li><a href="#material">Material</a></li>
 <li><a href="#transforming">Transforming</a></li>
 <li><a href="#ghosting">Ghosting</a></li>
 <li><a href="#highlighting">Highlighting</a></li>
 <li><a href="#outlining">Outlining</a></li>
-<li><a href="#local-boundary">Local-space boundary</a></li>
-<li><a href="#world-boundary">World-space boundary</a></li>
+<li><a href="#local-space-boundary">Local-space boundary</a></li>
+<li><a href="#world-space-boundary">World-space boundary</a></li>
 <li><a href="#skyboxing">Skyboxing</a></li>
 <li><a href="#billboarding">Billboarding</a></li>
 <li><a href="#shadows">Shadows</a> TODO</li>
 </ul>
-<h3 id="-a-class-section-name-creating-creating-an-entity-a-"><a class="section"  name="creating">Creating an Entity</a></h3>
+<h3 id="creating-an-entity">Creating an Entity</h3>
 <p>Creating a minimal Entity that has all the default components:</p>
 <p><img src="../../assets/images/screenshots/Scene/defaultEntity.png"></img></p>
 <pre class="code prettyprint"><code class="lang-javascript">var entity = new xeogl.Entity(); // A white unit-sized box centered at the World-space origin
@@ -260,18 +255,18 @@ scene.material.diffuse  = [1.0, 0.0, 0.0];  // ...as this one.
     })
 });
 </code></pre>
-<h3 id="-a-class-section-name-visibility-controlling-visibility-a-"><a class="section"  name="visibility">Controlling visibility</a></h3>
+<h3 id="controlling-visibility">Controlling visibility</h3>
 <p>Show or hide an Entity by setting its <a href="../classes/Entity.html#property_visible" class="crosslink">visible</a> property:</p>
 <pre class="code prettyprint"><code class="lang-javascript">entity.visible = false; // Hide
 entity.visible = true; // Show (default)
 </code></pre>
-<h3 id="-a-class-section-name-clipping-controlling-clipping-a-"><a class="section"  name="clipping">Controlling clipping</a></h3>
+<h3 id="controlling-clipping">Controlling clipping</h3>
 <p>By default, an Entity will be clipped by the
 Scene&#39;s <a href="../classes/Scene.html#property_clips" class="crosslink">clipping planes</a> (if you&#39;ve created some).</p>
 <p>Make an Entity unclippable by setting its <a href="../classes/Entity.html#property_clippable" class="crosslink">clippable</a> property false:</p>
 <pre class="code prettyprint"><code class="lang-javascript">entity.clippable = false; // Default is true
 </code></pre>
-<h3 id="-a-class-section-name-layer-controlling-rendering-order-a-"><a class="section" name="layer">Controlling rendering order</a></h3>
+<h3 id="controlling-rendering-order">Controlling rendering order</h3>
 <p>Control the order in which an Entity is rendered relative to others by setting its <a href="../classes/Entity.html#property_layer" class="crosslink">layer</a>
 property. You would normally do this when you need to ensure that transparent Entities are rendered in back-to-front order for correct alpha blending.</p>
 <p>Assign entity to layer 0 (all Entities are in layer 0 by default):</p>
@@ -283,7 +278,7 @@ property. You would normally do this when you need to ensure that transparent En
     layer: 1
 });
 </code></pre>
-<h3 id="-a-class-section-name-geometry-geometry-a-"><a class="section" name="geometry">Geometry</a></h3>
+<h3 id="geometry">Geometry</h3>
 <p>An Entity has a <a href="../classes/Geometry.html" class="crosslink">Geometry</a> which describes its shape. When we don&#39;t provide it with a
 Geometry, it will have the Scene&#39;s <a href="../classes/Scene.html#property_geometry" class="crosslink">geometry</a> by default.</p>
 <p>Creating an Entity with its own Geometry:</p>
@@ -309,7 +304,7 @@ transformed by the Entity&#39;s Transform:</p>
 // vertex World positions when you&#39;re done with them, set this property to null or undefined
 var worldPositions = entity.worldPositions;
 </code></pre>
-<h3 id="-a-class-section-name-material-material-a-"><a class="section" name="material">Material</a></h3>
+<h3 id="material">Material</h3>
 <p>An Entity has a <a href="../classes/Material.html" class="crosslink">Material</a>, which describes its appearance. When we don&#39;t provide it with
 a Material, it will have the Scene&#39;s <a href="../classes/Scene.html#property_material" class="crosslink">material</a> by default.</p>
 <p>Creating an Entity with its own custom Geometry and Material:</p>
@@ -339,7 +334,7 @@ a Material, it will have the Scene&#39;s <a href="../classes/Scene.html#property
    entity.material.diffuse = [0.5 + Math.sin(t * 0.01), 0.0, 0.0]; // RGB
 });
 </code></pre>
-<h3 id="-a-class-section-name-transforming-transforming-a-"><a class="section" name="transforming">Transforming</a></h3>
+<h3 id="transforming">Transforming</h3>
 <p>An Entity has a <a href="../classes/Transform.html" class="crosslink">Transform</a>, which positions, sizes and orients it within the World-space
 coordinate system. When we don&#39;t provide it with a Transform, it will have the Scene&#39;s <a href="../classes/Scene.html#property_transform" class="crosslink">transform</a>
 by default (which is the identity transform unless modified).</p>
@@ -374,7 +369,7 @@ by default (which is the identity transform unless modified).</p>
    entity.transform.parent.angle += 0.5;
 });
 </code></pre>
-<h3 id="-a-class-section-name-ghosting-ghosting-a-"><a class="section" name="ghosting">Ghosting</a></h3>
+<h3 id="ghosting">Ghosting</h3>
 <p>Ghost an Entity by setting its <a href="../classes/Entity.html#property_ghost" class="crosslink">ghost</a> property true. The Entity&#39;s
 <a href="../classes/GhostMaterial.html" class="crosslink">GhostMaterial</a> then controls its appearance while ghosted.</p>
 <p>When we don&#39;t provide it with a GhostMaterial, it will have the Scene&#39;s <a href="../classes/Scene.html#property_ghostMaterial" class="crosslink">ghostMaterial</a>
@@ -402,7 +397,11 @@ by default.</p>
    ghost: true
 });
 </code></pre>
-<h3 id="-a-class-section-name-highlighting-highlighting-a-"><a class="section" name="highlighting">Highlighting</a></h3>
+<h4 id="examples">Examples</h4>
+<ul>
+<li><a href="../../examples/#effects_ghost">Ghosted teapot</a></li>
+</ul>
+<h3 id="highlighting">Highlighting</h3>
 <p>Highlight an Entity by setting its <a href="../classes/Entity.html#property_highlight" class="crosslink">highlight</a> property true. The Entity&#39;s
 HighlightMaterial then controls its appearance while highlighted.</p>
 <p>When we don&#39;t provide it with a HighlightMaterial, it will have the Scene&#39;s <a href="../classes/Scene.html#property_highlightMaterial" class="crosslink">highlightMaterial</a>
@@ -421,7 +420,11 @@ by default.</p>
    highlight: true
 });
 </code></pre>
-<h3 id="-a-class-section-name-outlining-outlining-a-"><a class="section" name="outlining">Outlining</a></h3>
+<h4 id="examples">Examples</h4>
+<ul>
+<li><a href="../../examples/#effects_demo_gearbox">Ghost and highlight effects</a></li>
+</ul>
+<h3 id="outlining">Outlining</h3>
 <p>Outline an Entity by setting its <a href="../classes/Entity.html#property_outline" class="crosslink">outline</a> property true. The Entity&#39;s
 <a href="../classes/OutlineMaterial.html" class="crosslink">OutlineMaterial</a> then controls its appearance while outlined.</p>
 <p>When we don&#39;t provide it with an OutlineMaterial, it will have the Scene&#39;s <a href="../classes/Scene.html#property_outlineMaterial" class="crosslink">outlineMaterial</a>
@@ -441,7 +444,7 @@ by default.</p>
    outline: true
 });
 </code></pre>
-<h3 id="-a-class-section-name-local-boundary-local-space-boundary-a-"><a class="section" name="local-boundary">Local-space boundary</a></h3>
+<h3 id="local-space-boundary">Local-space boundary</h3>
 <p>We can get an Entity&#39;s Local-space boundary at any time, as both an axis-aligned bounding box (AABB) and
 an object-aligned bounding box (OBB).</p>
 <p>The Local-space boundary is the boundary of the Entity&#39;s Geometry, without any transforms applied.</p>
@@ -450,7 +453,12 @@ an object-aligned bounding box (OBB).</p>
 </code></pre><p>Getting the Local-space boundary as an OBB:</p>
 <pre class="code prettyprint"><code class="lang-javascript">var obb = entity.geometry.obb; // Flat array containing eight 3D corner vertices of a box
 </code></pre>
-<h3 id="-a-class-section-name-world-boundary-world-space-boundary-a-"><a class="section" name="world-boundary">World-space boundary</a></h3>
+<h4 id="examples">Examples</h4>
+<ul>
+<li><a href="../../examples/#boundaries_geometry_aabb">Local-space Geometry AABB</a></li>
+<li><a href="../../examples/#boundaries_geometry_obb">Local-space Geometry OBB</a></li>
+</ul>
+<h3 id="world-space-boundary">World-space boundary</h3>
 <p>We can get an Entity&#39;s World-space boundary at any time, as both an axis-aligned bounding box (AABB) and
 an object-aligned bounding box (OBB).</p>
 <p>The World-space boundary is the boundary of the Entity&#39;s Geometry after the Entity&#39;s Transform has been applied to it.</p>
@@ -466,7 +474,23 @@ an object-aligned bounding box (OBB).</p>
     var obb = entity.obb;
 });
 </code></pre>
-<h3 id="-a-class-section-name-skyboxing-skyboxing-a-"><a class="section" name="skyboxing">Skyboxing</a></h3>
+<h4 id="excluding-from-boundary-calculations">Excluding from boundary calculations</h4>
+<p>The <a href="../classes/Scene.html#property_aabb" class="crosslink">Scene aabb</a>
+and <a href="../classes/Model.html#property_aabb" class="crosslink">Model aabb</a> properties provide AABBs that include the boundaries of all
+contained Entities, except those Entities that have their <a href="../classes/Entity.html#property_collidable" class="crosslink">collidable</a> properties set <code>false</code>.</p>
+<p>Toggle that inclusion like so:</p>
+<pre class="code prettyprint"><code class="lang-javascript">entity.collidable = false; // Exclude entity from calculation of its Scene/Model boundary
+entity.collidable = true; // Include entity in calculation of its Scene/Model boundary
+</code></pre>
+<p>Setting this false is useful when an Entity represents some object, such as a control gizmo, that you don&#39;t want to consider as
+being a contributor to a Scene or Model boundary. It also helps performance, since boundaries will not need dynamically re-calculated
+whenever the Entity&#39;s boundary changes after a Transform or Geometry update.</p>
+<h4 id="examples">Examples</h4>
+<ul>
+<li><a href="../../examples/#boundaries_entity_aabb">World-space Entity AABB</a></li>
+<li><a href="../../examples/#boundaries_entity_obb">World-space Entity OBB</a></li>
+</ul>
+<h3 id="skyboxing">Skyboxing</h3>
 <p>An Entity has a <a href="../classes/Entity.html#property_stationary" class="crosslink">stationary</a> property
 that will cause it to never translate with respect to the viewpoint, while still rotationg, as if always far away.</p>
 <p>This is useful for using Entities as skyboxes, like this:</p>
@@ -487,7 +511,12 @@ that will cause it to never translate with respect to the viewpoint, while still
     stationary: true // Locks position with respect to viewpoint
 });
 </code></pre>
-<h3 id="-a-class-section-name-billboarding-billboarding-a-"><a class="section" name="billboarding">billboarding</a></h3>
+<h4 id="examples">Examples</h4>
+<ul>
+<li><a href="../../examples/#skyboxes_skybox">Skybox component</a></li>
+<li><a href="../../examples/#skyboxes_skybox_custom">Custom skybox</a></li>
+</ul>
+<h3 id="billboarding">Billboarding</h3>
 <p>An Entity has a <a href="../classes/Entity.html#property_billboard" class="crosslink">billboard</a> property
 that can make it behave as a billboard.</p>
 <p>Two billboard types are supported:</p>
@@ -516,7 +545,7 @@ that can make it behave as a billboard.</p>
 <li><a href="../../examples/#billboards_cylindrical">Cylindrical billboards</a></li>
 <li><a href="../../examples/#billboards_spherical_clouds">Clouds using billboards</a></li>
 </ul>
-<h3 id="-a-class-section-name-shadows-shadows-a-"><a class="section" name="shadows">Shadows</a></h3>
+<h3 id="shadows">Shadows</h3>
 <p>[Work-in-progress]</p>
 
 </div>
@@ -1833,7 +1862,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l1155"><code>src&#x2F;entities&#x2F;entity.js:1155</code></a>
+                            <a href="../files/src_entities_entity.js.html#l1194"><code>src&#x2F;entities&#x2F;entity.js:1194</code></a>
                             </p>
                     
                     
@@ -1860,7 +1889,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l1095"><code>src&#x2F;entities&#x2F;entity.js:1095</code></a>
+                            <a href="../files/src_entities_entity.js.html#l1134"><code>src&#x2F;entities&#x2F;entity.js:1134</code></a>
                             </p>
                     
                     
@@ -1893,7 +1922,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l911"><code>src&#x2F;entities&#x2F;entity.js:911</code></a>
+                            <a href="../files/src_entities_entity.js.html#l950"><code>src&#x2F;entities&#x2F;entity.js:950</code></a>
                             </p>
                     
                     
@@ -1919,7 +1948,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l865"><code>src&#x2F;entities&#x2F;entity.js:865</code></a>
+                            <a href="../files/src_entities_entity.js.html#l904"><code>src&#x2F;entities&#x2F;entity.js:904</code></a>
                             </p>
                     
                     
@@ -1945,7 +1974,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l888"><code>src&#x2F;entities&#x2F;entity.js:888</code></a>
+                            <a href="../files/src_entities_entity.js.html#l927"><code>src&#x2F;entities&#x2F;entity.js:927</code></a>
                             </p>
                     
                     
@@ -1971,7 +2000,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l1008"><code>src&#x2F;entities&#x2F;entity.js:1008</code></a>
+                            <a href="../files/src_entities_entity.js.html#l1047"><code>src&#x2F;entities&#x2F;entity.js:1047</code></a>
                             </p>
                     
                     
@@ -1997,7 +2026,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l816"><code>src&#x2F;entities&#x2F;entity.js:816</code></a>
+                            <a href="../files/src_entities_entity.js.html#l855"><code>src&#x2F;entities&#x2F;entity.js:855</code></a>
                             </p>
                     
                     
@@ -2050,7 +2079,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l552"><code>src&#x2F;entities&#x2F;entity.js:552</code></a>
+                            <a href="../files/src_entities_entity.js.html#l591"><code>src&#x2F;entities&#x2F;entity.js:591</code></a>
                             </p>
                     
                     
@@ -2081,7 +2110,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l1130"><code>src&#x2F;entities&#x2F;entity.js:1130</code></a>
+                            <a href="../files/src_entities_entity.js.html#l1169"><code>src&#x2F;entities&#x2F;entity.js:1169</code></a>
                             </p>
                     
                     
@@ -2108,7 +2137,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l622"><code>src&#x2F;entities&#x2F;entity.js:622</code></a>
+                            <a href="../files/src_entities_entity.js.html#l661"><code>src&#x2F;entities&#x2F;entity.js:661</code></a>
                             </p>
                     
                     
@@ -2136,7 +2165,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l983"><code>src&#x2F;entities&#x2F;entity.js:983</code></a>
+                            <a href="../files/src_entities_entity.js.html#l1022"><code>src&#x2F;entities&#x2F;entity.js:1022</code></a>
                             </p>
                     
                     
@@ -2163,7 +2192,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l649"><code>src&#x2F;entities&#x2F;entity.js:649</code></a>
+                            <a href="../files/src_entities_entity.js.html#l688"><code>src&#x2F;entities&#x2F;entity.js:688</code></a>
                             </p>
                     
                     
@@ -2242,7 +2271,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l1041"><code>src&#x2F;entities&#x2F;entity.js:1041</code></a>
+                            <a href="../files/src_entities_entity.js.html#l1080"><code>src&#x2F;entities&#x2F;entity.js:1080</code></a>
                             </p>
                     
                     
@@ -2270,7 +2299,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l595"><code>src&#x2F;entities&#x2F;entity.js:595</code></a>
+                            <a href="../files/src_entities_entity.js.html#l634"><code>src&#x2F;entities&#x2F;entity.js:634</code></a>
                             </p>
                     
                     
@@ -2324,7 +2353,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l1188"><code>src&#x2F;entities&#x2F;entity.js:1188</code></a>
+                            <a href="../files/src_entities_entity.js.html#l1227"><code>src&#x2F;entities&#x2F;entity.js:1227</code></a>
                             </p>
                     
                     
@@ -2351,7 +2380,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l958"><code>src&#x2F;entities&#x2F;entity.js:958</code></a>
+                            <a href="../files/src_entities_entity.js.html#l997"><code>src&#x2F;entities&#x2F;entity.js:997</code></a>
                             </p>
                     
                     
@@ -2378,7 +2407,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l676"><code>src&#x2F;entities&#x2F;entity.js:676</code></a>
+                            <a href="../files/src_entities_entity.js.html#l715"><code>src&#x2F;entities&#x2F;entity.js:715</code></a>
                             </p>
                     
                     
@@ -2406,7 +2435,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l838"><code>src&#x2F;entities&#x2F;entity.js:838</code></a>
+                            <a href="../files/src_entities_entity.js.html#l877"><code>src&#x2F;entities&#x2F;entity.js:877</code></a>
                             </p>
                     
                     
@@ -2433,7 +2462,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l934"><code>src&#x2F;entities&#x2F;entity.js:934</code></a>
+                            <a href="../files/src_entities_entity.js.html#l973"><code>src&#x2F;entities&#x2F;entity.js:973</code></a>
                             </p>
                     
                     
@@ -2485,7 +2514,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l1069"><code>src&#x2F;entities&#x2F;entity.js:1069</code></a>
+                            <a href="../files/src_entities_entity.js.html#l1108"><code>src&#x2F;entities&#x2F;entity.js:1108</code></a>
                             </p>
                     
                     
@@ -2545,7 +2574,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l703"><code>src&#x2F;entities&#x2F;entity.js:703</code></a>
+                            <a href="../files/src_entities_entity.js.html#l742"><code>src&#x2F;entities&#x2F;entity.js:742</code></a>
                             </p>
                     
                     
@@ -2605,7 +2634,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l794"><code>src&#x2F;entities&#x2F;entity.js:794</code></a>
+                            <a href="../files/src_entities_entity.js.html#l833"><code>src&#x2F;entities&#x2F;entity.js:833</code></a>
                             </p>
                     
                     
@@ -2634,7 +2663,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l1216"><code>src&#x2F;entities&#x2F;entity.js:1216</code></a>
+                            <a href="../files/src_entities_entity.js.html#l1255"><code>src&#x2F;entities&#x2F;entity.js:1255</code></a>
                             </p>
                     
                     
@@ -2667,7 +2696,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l1274"><code>src&#x2F;entities&#x2F;entity.js:1274</code></a>
+                            <a href="../files/src_entities_entity.js.html#l1313"><code>src&#x2F;entities&#x2F;entity.js:1313</code></a>
                             </p>
                     
                     
@@ -2719,7 +2748,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l476"><code>src&#x2F;entities&#x2F;entity.js:476</code></a>
+                            <a href="../files/src_entities_entity.js.html#l515"><code>src&#x2F;entities&#x2F;entity.js:515</code></a>
                             </p>
                     
                     

@@ -20,7 +20,7 @@
 
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.0.0</em>
+            <em>API Docs for: 0.7.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -56,13 +56,11 @@
                                 <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
-                                <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/ClipControl.html">ClipControl</a></li>
                                 <li><a href="../classes/ClipHelper.html">ClipHelper</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
-                                <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
@@ -104,9 +102,7 @@
                                 <li><a href="../classes/Progress.html">Progress</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
-                                <li><a href="../classes/Region.html">Region</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
-                                <li><a href="../classes/Ruler.html">Ruler</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
@@ -137,7 +133,6 @@
                                 <li><a href="..//modules/camera.html">camera</a></li>
                                 <li><a href="..//modules/canvas.html">canvas</a></li>
                                 <li><a href="..//modules/clipping.html">clipping</a></li>
-                                <li><a href="..//modules/configs.html">configs</a></li>
                                 <li><a href="..//modules/controls.html">controls</a></li>
                                 <li><a href="..//modules/curves.html">curves</a></li>
                                 <li><a href="..//modules/effects.html">effects</a></li>
@@ -193,53 +188,24 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
- A **Frustum** defines a perspective projection as a frustum-shaped view volume.
+ A **Frustum** defines a perspective projection as a frustum-shaped view volume for a {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}}.
 
  ## Overview
 
- * {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} components pair these with viewing transform components, such as
- {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}}, to define viewpoints for attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
+ * A {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} has a Frustum to configure its frustum-based perspective projection mode.
  * A Frustum lets us explicitly set the positions of the left, right, top, bottom, near and far planes, which is useful
  for asymmetrical view volumes, such as those used for stereo viewing.
- * An Frustum&#x27;s {{#crossLink &quot;Frustum/near:property&quot;}}{{/crossLink}} and {{#crossLink &quot;Frustum/far:property&quot;}}{{/crossLink}} properties
+ * A Frustum&#x27;s {{#crossLink &quot;Frustum/near:property&quot;}}{{/crossLink}} and {{#crossLink &quot;Frustum/far:property&quot;}}{{/crossLink}} properties
  specify the distances to the WebGL clipping planes.
- * Use {{#crossLink &quot;Ortho&quot;}}{{/crossLink}} if you just want to specify the X,Y frustum extents with a single scale factor,
- ie. without individually specifying the distance to each frustum plane.
- * Use {{#crossLink &quot;Perspective&quot;}}{{/crossLink}} if you need perspective projection.
-
- &lt;img src=&quot;../../../assets/images/Frustum.png&quot;&gt;&lt;/img&gt;
 
  ## Examples
 
- * [Camera with frustum projection](../../examples/#transforms_camera_project_frustum)
+ * [Camera with frustum projection](../../examples/#camera_frustum)
  * [Stereo viewing with frustum projection](../../examples/#effects_stereo)
 
  ## Usage
 
- &#x60;&#x60;&#x60;&#x60;Javascript
- new xeogl.Entity({
-
-     camera: xeogl.Camera({
-
-        view: new xeogl.Lookat({
-            eye: [0, 0, -4],
-            look: [0, 0, 0],
-            up: [0, 1, 0]
-        }),
-
-        project: new xeogl.Frustum(scene, {
-            left: -0.1,
-            right: 0.1,
-            bottom: -0.1,
-            top: 0.1,
-            near: 0.15,
-            far: 1000
-        })
-     }),
-
-     geometry: new xeogl.BoxGeometry()
- });
- &#x60;&#x60;&#x60;&#x60;
+ * See {{#crossLink &quot;Camera&quot;}}{{/crossLink}}
 
  @class Frustum
  @module xeogl

@@ -20,7 +20,7 @@
 
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.0.0</em>
+            <em>API Docs for: 0.7.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -56,13 +56,11 @@
                                 <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
-                                <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/ClipControl.html">ClipControl</a></li>
                                 <li><a href="../classes/ClipHelper.html">ClipHelper</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
-                                <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
@@ -104,9 +102,7 @@
                                 <li><a href="../classes/Progress.html">Progress</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
-                                <li><a href="../classes/Region.html">Region</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
-                                <li><a href="../classes/Ruler.html">Ruler</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
@@ -137,7 +133,6 @@
                                 <li><a href="..//modules/camera.html">camera</a></li>
                                 <li><a href="..//modules/canvas.html">canvas</a></li>
                                 <li><a href="..//modules/clipping.html">clipping</a></li>
-                                <li><a href="..//modules/configs.html">configs</a></li>
                                 <li><a href="..//modules/controls.html">controls</a></li>
                                 <li><a href="..//modules/curves.html">curves</a></li>
                                 <li><a href="..//modules/effects.html">effects</a></li>
@@ -257,6 +252,16 @@
         
                                 <ul class="params-list">
                                     <li class="param">
+                                            <code class="param-name">cameraControl</code>
+                                            <span class="type">BIMCameraControl</span>
+        
+                                        <div class="param-description">
+                                            <p>The camera input control.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
                                             <code class="param-name optional">[pos=[0,0,0]]</code>
                                             <span class="type">Float32Array</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
@@ -349,7 +354,6 @@
     <ul class="api-class-tabs">
         <li class="api-class-tab index"><a href="#index">Index</a></li>
 
-            <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
             <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
     </ul>
 
@@ -357,20 +361,6 @@
         <div id="index" class="api-class-tabpanel index">
             <h2 class="off-left">Index</h2>
 
-                <div class="index-section methods">
-                    <h3>Methods</h3>
-
-                    <ul class="index-list methods">
-                            <li class="index-item method">
-                                <a href="#method_fire">fire</a>
-
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_on">on</a>
-
-                            </li>
-                    </ul>
-                </div>
 
                 <div class="index-section properties">
                     <h3>Properties</h3>
@@ -413,19 +403,11 @@
 
                             </li>
                             <li class="index-item property">
-                                <a href="#property_dir">dir</a>
-
-                            </li>
-                            <li class="index-item property">
                                 <a href="#property_planeSize">planeSize</a>
 
                             </li>
                             <li class="index-item property">
                                 <a href="#property_planeSize">planeSize</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_pos">pos</a>
 
                             </li>
                             <li class="index-item property">
@@ -454,152 +436,37 @@
 
         </div>
 
-            <div id="methods" class="api-class-tabpanel">
-                <h2 class="off-left">Methods</h2>
-
-<div id="method_fire" class="method item">
-    <h3 class="name"><code>fire</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>event</code>
-                </li>
-                <li class="arg">
-                        <code>value</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/examples_js_controls_BIMPickingControl.js.html#l183"><code>examples&#x2F;js&#x2F;controls&#x2F;BIMPickingControl.js:183</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Fires an event on this BIMPickingControl.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">event</code>
-                        <span class="type">String</span>
-
-
-                    <div class="param-description">
-                        <p>The event type name</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">value</code>
-                        <span class="type">Object</span>
-
-
-                    <div class="param-description">
-                        <p>The event parameters</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
-<div id="method_on" class="method item">
-    <h3 class="name"><code>on</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>event</code>
-                </li>
-                <li class="arg">
-                        <code>callback</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/examples_js_controls_BIMPickingControl.js.html#l168"><code>examples&#x2F;js&#x2F;controls&#x2F;BIMPickingControl.js:168</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Subscribes to an event on this BIMPickingControl.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">event</code>
-                        <span class="type">String</span>
-
-
-                    <div class="param-description">
-                        <p>The event</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">callback</code>
-                        <span class="type">Function</span>
-
-
-                    <div class="param-description">
-                        <p>Called fired on the event</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
-            </div>
 
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
+                    <div id="property_active" class="property item">
+                        <h3 class="name"><code>active</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_controls_clipControl.js.html#l80"><code>examples&#x2F;js&#x2F;controls&#x2F;clipControl.js:80</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Indicates whether this ClipControl is active or not.</p>
+                    <p>When inactive, the ClipControl will ignore input events.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> true</p>
+                    
+                    
+                    </div>
                     <div id="property_active" class="property item">
                         <h3 class="name"><code>active</code></h3>
                         <span class="type">Boolean</span>
@@ -623,61 +490,6 @@
                         </div>
                     
                             <p><strong>Default:</strong> true</p>
-                    
-                    
-                    </div>
-                    <div id="property_active" class="property item">
-                        <h3 class="name"><code>active</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_controls_clipControl.js.html#l923"><code>examples&#x2F;js&#x2F;controls&#x2F;clipControl.js:923</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Indicates whether this ClipControl is active or not.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> true</p>
-                    
-                    
-                    </div>
-                    <div id="property_autoPlaneSize" class="property item">
-                        <h3 class="name"><code>autoPlaneSize</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_controls_clipControl.js.html#l1052"><code>examples&#x2F;js&#x2F;controls&#x2F;clipControl.js:1052</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Indicates whether this ClipControl&#39;s <a href="../classes/ClipControl.html#property_planeSize" class="crosslink">planeSize</a> is automatically
-                    generated or not.</p>
-                    <p>When auto-generated, <a href="../classes/ClipControl.html#property_planeSize" class="crosslink">planeSize</a> will automatically size
-                    to fit within the <a href="../classes/Scene.html#property_aabb" class="crosslink">Scene&#39;s boundary</a>.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> false</p>
                     
                     
                     </div>
@@ -710,6 +522,60 @@
                     
                     
                     </div>
+                    <div id="property_autoPlaneSize" class="property item">
+                        <h3 class="name"><code>autoPlaneSize</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_controls_clipControl.js.html#l165"><code>examples&#x2F;js&#x2F;controls&#x2F;clipControl.js:165</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Indicates whether this ClipControl&#39;s <a href="../classes/ClipControl.html#property_planeSize" class="crosslink">planeSize</a> is automatically
+                    generated or not.</p>
+                    <p>When auto-generated, <a href="../classes/ClipControl.html#property_planeSize" class="crosslink">planeSize</a> will automatically size
+                    to fit within the <a href="../classes/Scene.html#property_aabb" class="crosslink">Scene&#39;s boundary</a>.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> false</p>
+                    
+                    
+                    </div>
+                    <div id="property_clip" class="property item">
+                        <h3 class="name"><code>clip</code></h3>
+                        <span class="type"><a href="../classes/Clip.html" class="crosslink">Clip</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_controls_clipControl.js.html#l104"><code>examples&#x2F;js&#x2F;controls&#x2F;clipControl.js:104</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The <a href="../classes/Clip.html" class="crosslink">Clip</a> controlled by this ClipControl.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_clip" class="property item">
                         <h3 class="name"><code>clip</code></h3>
                         <span class="type"><a href="../classes/Clip.html" class="crosslink">Clip</a></span>
@@ -735,31 +601,6 @@
                     
                     
                     </div>
-                    <div id="property_clip" class="property item">
-                        <h3 class="name"><code>clip</code></h3>
-                        <span class="type"><a href="../classes/Clip.html" class="crosslink">Clip</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_controls_clipControl.js.html#l948"><code>examples&#x2F;js&#x2F;controls&#x2F;clipControl.js:948</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The <a href="../classes/Clip.html" class="crosslink">Clip</a> attached to this ClipControl.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
                     <div id="property_color" class="property item">
                         <h3 class="name"><code>color</code></h3>
                         <span class="type">Float32Array</span>
@@ -771,14 +612,14 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_controls_clipControl.js.html#l1096"><code>examples&#x2F;js&#x2F;controls&#x2F;clipControl.js:1096</code></a>
+                            <a href="../files/examples_js_controls_clipControl.js.html#l209"><code>examples&#x2F;js&#x2F;controls&#x2F;clipControl.js:209</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Emmissive color of this ClipControl.</p>
+                            <p>The color of this ClipControl.</p>
                     
                         </div>
                     
@@ -823,32 +664,6 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_controls_clipControl.js.html#l1003"><code>examples&#x2F;js&#x2F;controls&#x2F;clipControl.js:1003</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>World-space direction of this ClipControl.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> [0,0,1]</p>
-                    
-                    
-                    </div>
-                    <div id="property_dir" class="property item">
-                        <h3 class="name"><code>dir</code></h3>
-                        <span class="type">Float32Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
                             <a href="../files/examples_js_controls_planeControl.js.html#l730"><code>examples&#x2F;js&#x2F;controls&#x2F;planeControl.js:730</code></a>
                             </p>
                     
@@ -861,34 +676,6 @@
                         </div>
                     
                             <p><strong>Default:</strong> [0,0,1]</p>
-                    
-                    
-                    </div>
-                    <div id="property_planeSize" class="property item">
-                        <h3 class="name"><code>planeSize</code></h3>
-                        <span class="type">Float32Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_controls_clipControl.js.html#l1030"><code>examples&#x2F;js&#x2F;controls&#x2F;clipControl.js:1030</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The width and height of the ClipControl plane indicator.</p>
-                    <p>Values assigned to this property will be overridden by an auto-computed value when
-                    <a href="../classes/ClipControl.html#property_autoPlaneSize" class="crosslink">autoPlaneSize</a> is true.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> [1,1]</p>
                     
                     
                     </div>
@@ -920,8 +707,8 @@
                     
                     
                     </div>
-                    <div id="property_pos" class="property item">
-                        <h3 class="name"><code>pos</code></h3>
+                    <div id="property_planeSize" class="property item">
+                        <h3 class="name"><code>planeSize</code></h3>
                         <span class="type">Float32Array</span>
                     
                     
@@ -931,18 +718,20 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_controls_clipControl.js.html#l983"><code>examples&#x2F;js&#x2F;controls&#x2F;clipControl.js:983</code></a>
+                            <a href="../files/examples_js_controls_clipControl.js.html#l143"><code>examples&#x2F;js&#x2F;controls&#x2F;clipControl.js:143</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>World-space position of this ClipControl.</p>
+                            <p>The width and height of this ClipControl&#39;s plane indicator.</p>
+                    <p>Values assigned to this property will be overridden by an auto-computed value when
+                    <a href="../classes/ClipControl.html#property_autoPlaneSize" class="crosslink">autoPlaneSize</a> is true.</p>
                     
                         </div>
                     
-                            <p><strong>Default:</strong> [0,0,0]</p>
+                            <p><strong>Default:</strong> [1,1]</p>
                     
                     
                     </div>
@@ -983,7 +772,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_controls_clipControl.js.html#l1115"><code>examples&#x2F;js&#x2F;controls&#x2F;clipControl.js:1115</code></a>
+                            <a href="../files/examples_js_controls_clipControl.js.html#l228"><code>examples&#x2F;js&#x2F;controls&#x2F;clipControl.js:228</code></a>
                             </p>
                     
                     
@@ -1035,7 +824,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_controls_clipControl.js.html#l1134"><code>examples&#x2F;js&#x2F;controls&#x2F;clipControl.js:1134</code></a>
+                            <a href="../files/examples_js_controls_clipControl.js.html#l247"><code>examples&#x2F;js&#x2F;controls&#x2F;clipControl.js:247</code></a>
                             </p>
                     
                     

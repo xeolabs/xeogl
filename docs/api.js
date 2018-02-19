@@ -16,13 +16,11 @@ YUI.add("yuidoc-meta", function(Y) {
         "CameraPath",
         "CameraPathAnimation",
         "Canvas",
-        "CardboardEffect",
         "Clip",
         "ClipControl",
         "ClipHelper",
         "Clips",
         "Component",
-        "Configs",
         "CubeTexture",
         "CubicBezierCurve",
         "Curve",
@@ -64,9 +62,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "Progress",
         "QuadraticBezierCurve",
         "Quaternion",
-        "Region",
         "Rotate",
-        "Ruler",
         "Scale",
         "Scene",
         "SceneJSModel",
@@ -96,7 +92,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "camera",
         "canvas",
         "clipping",
-        "configs",
         "controls",
         "curves",
         "effects",
@@ -140,11 +135,6 @@ YUI.add("yuidoc-meta", function(Y) {
             "displayName": "clipping",
             "name": "clipping",
             "description": "Components for cross-section views of Entities."
-        },
-        {
-            "displayName": "configs",
-            "name": "configs",
-            "description": "Components for managing Scene configuration."
         },
         {
             "displayName": "controls",

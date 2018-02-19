@@ -20,7 +20,7 @@
 
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.0.0</em>
+            <em>API Docs for: 0.7.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -56,13 +56,11 @@
                                 <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
-                                <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/ClipControl.html">ClipControl</a></li>
                                 <li><a href="../classes/ClipHelper.html">ClipHelper</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
-                                <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubeTexture.html">CubeTexture</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
@@ -104,9 +102,7 @@
                                 <li><a href="../classes/Progress.html">Progress</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
-                                <li><a href="../classes/Region.html">Region</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
-                                <li><a href="../classes/Ruler.html">Ruler</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
                                 <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
@@ -137,7 +133,6 @@
                                 <li><a href="..//modules/camera.html">camera</a></li>
                                 <li><a href="..//modules/canvas.html">canvas</a></li>
                                 <li><a href="..//modules/clipping.html">clipping</a></li>
-                                <li><a href="..//modules/configs.html">configs</a></li>
                                 <li><a href="..//modules/controls.html">controls</a></li>
                                 <li><a href="..//modules/curves.html">curves</a></li>
                                 <li><a href="..//modules/effects.html">effects</a></li>
@@ -212,23 +207,23 @@
 
  ## Usage
 
- * [Creating an Entity](#creating)
- * [Controlling visibility](#visibility)
- * [Controlling clipping](#clipping)
- * [Controlling rendering order](#layer)
+ * [Creating an Entity](#creating-an-entity)
+ * [Controlling visibility](#controlling-visibility)
+ * [Controlling clipping](#controlling-clipping)
+ * [Controlling rendering order](#controlling-rendering-order)
  * [Geometry](#geometry)
  * [Material](#material)
  * [Transforming](#transforming)
  * [Ghosting](#ghosting)
  * [Highlighting](#highlighting)
  * [Outlining](#outlining)
- * [Local-space boundary](#local-boundary)
- * [World-space boundary](#world-boundary)
+ * [Local-space boundary](#local-space-boundary)
+ * [World-space boundary](#world-space-boundary)
  * [Skyboxing](#skyboxing)
  * [Billboarding](#billboarding)
  * [Shadows](#shadows) TODO
 
- ### &lt;a class=&quot;section&quot;  name=&quot;creating&quot;&gt;Creating an Entity&lt;/a&gt;
+ ### Creating an Entity
 
  Creating a minimal Entity that has all the default components:
 
@@ -260,7 +255,7 @@
  });
  &#x60;&#x60;&#x60;&#x60;
 
- ### &lt;a class=&quot;section&quot;  name=&quot;visibility&quot;&gt;Controlling visibility&lt;/a&gt;
+ ### Controlling visibility
 
  Show or hide an Entity by setting its {{#crossLink &quot;Entity/visible:property&quot;}}{{/crossLink}} property:
 
@@ -269,7 +264,7 @@
  entity.visible = true; // Show (default)
  &#x60;&#x60;&#x60;&#x60;
 
- ### &lt;a class=&quot;section&quot;  name=&quot;clipping&quot;&gt;Controlling clipping&lt;/a&gt;
+ ### Controlling clipping
 
  By default, an Entity will be clipped by the
  Scene&#x27;s {{#crossLink &quot;Scene/clips:property&quot;}}clipping planes{{/crossLink}} (if you&#x27;ve created some).
@@ -280,7 +275,7 @@
  entity.clippable = false; // Default is true
  &#x60;&#x60;&#x60;&#x60;
 
- ### &lt;a class=&quot;section&quot; name=&quot;layer&quot;&gt;Controlling rendering order&lt;/a&gt;
+ ### Controlling rendering order
 
  Control the order in which an Entity is rendered relative to others by setting its {{#crossLink &quot;Entity/layer:property&quot;}}{{/crossLink}}
  property. You would normally do this when you need to ensure that transparent Entities are rendered in back-to-front order for correct alpha blending.
@@ -300,7 +295,7 @@
  });
  &#x60;&#x60;&#x60;&#x60;
 
- ### &lt;a class=&quot;section&quot; name=&quot;geometry&quot;&gt;Geometry&lt;/a&gt;
+ ### Geometry
 
  An Entity has a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} which describes its shape. When we don&#x27;t provide it with a
  Geometry, it will have the Scene&#x27;s {{#crossLink &quot;Scene/geometry:property&quot;}}{{/crossLink}} by default.
@@ -340,7 +335,7 @@
  var worldPositions = entity.worldPositions;
  &#x60;&#x60;&#x60;&#x60;
 
- ### &lt;a class=&quot;section&quot; name=&quot;material&quot;&gt;Material&lt;/a&gt;
+ ### Material
 
  An Entity has a {{#crossLink &quot;Material&quot;}}{{/crossLink}}, which describes its appearance. When we don&#x27;t provide it with
  a Material, it will have the Scene&#x27;s {{#crossLink &quot;Scene/material:property&quot;}}{{/crossLink}} by default.
@@ -381,7 +376,7 @@
  });
  &#x60;&#x60;&#x60;&#x60;
 
- ### &lt;a class=&quot;section&quot; name=&quot;transforming&quot;&gt;Transforming&lt;/a&gt;
+ ### Transforming
 
  An Entity has a {{#crossLink &quot;Transform&quot;}}{{/crossLink}}, which positions, sizes and orients it within the World-space
  coordinate system. When we don&#x27;t provide it with a Transform, it will have the Scene&#x27;s {{#crossLink &quot;Scene/transform:property&quot;}}{{/crossLink}}
@@ -428,7 +423,7 @@
  });
  &#x60;&#x60;&#x60;&#x60;
 
- ### &lt;a class=&quot;section&quot; name=&quot;ghosting&quot;&gt;Ghosting&lt;/a&gt;
+ ### Ghosting
 
  Ghost an Entity by setting its {{#crossLink &quot;Entity/ghost:property&quot;}}{{/crossLink}} property true. The Entity&#x27;s
  {{#crossLink &quot;GhostMaterial&quot;}}{{/crossLink}} then controls its appearance while ghosted.
@@ -463,7 +458,11 @@
  });
  &#x60;&#x60;&#x60;&#x60;
 
- ### &lt;a class=&quot;section&quot; name=&quot;highlighting&quot;&gt;Highlighting&lt;/a&gt;
+ #### Examples
+
+ * [Ghosted teapot](../../examples/#effects_ghost)
+
+ ### Highlighting
 
  Highlight an Entity by setting its {{#crossLink &quot;Entity/highlight:property&quot;}}{{/crossLink}} property true. The Entity&#x27;s
  {{#crossLink &quot;HighlightMaterial&quot;}}{{/crossLink}} then controls its appearance while highlighted.
@@ -489,7 +488,11 @@
  });
  &#x60;&#x60;&#x60;&#x60;
 
- ### &lt;a class=&quot;section&quot; name=&quot;outlining&quot;&gt;Outlining&lt;/a&gt;
+ #### Examples
+
+ * [Ghost and highlight effects](../../examples/#effects_demo_gearbox)
+
+ ### Outlining
 
  Outline an Entity by setting its {{#crossLink &quot;Entity/outline:property&quot;}}{{/crossLink}} property true. The Entity&#x27;s
  {{#crossLink &quot;OutlineMaterial&quot;}}{{/crossLink}} then controls its appearance while outlined.
@@ -516,7 +519,7 @@
  });
  &#x60;&#x60;&#x60;&#x60;
 
- ### &lt;a class=&quot;section&quot; name=&quot;local-boundary&quot;&gt;Local-space boundary&lt;/a&gt;
+ ### Local-space boundary
 
  We can get an Entity&#x27;s Local-space boundary at any time, as both an axis-aligned bounding box (AABB) and
  an object-aligned bounding box (OBB).
@@ -535,7 +538,12 @@
  var obb = entity.geometry.obb; // Flat array containing eight 3D corner vertices of a box
  &#x60;&#x60;&#x60;&#x60;
 
- ### &lt;a class=&quot;section&quot; name=&quot;world-boundary&quot;&gt;World-space boundary&lt;/a&gt;
+ #### Examples
+
+ * [Local-space Geometry AABB](../../examples/#boundaries_geometry_aabb)
+ * [Local-space Geometry OBB](../../examples/#boundaries_geometry_obb)
+
+ ### World-space boundary
 
  We can get an Entity&#x27;s World-space boundary at any time, as both an axis-aligned bounding box (AABB) and
  an object-aligned bounding box (OBB).
@@ -563,7 +571,28 @@
  });
  &#x60;&#x60;&#x60;&#x60;
 
- ### &lt;a class=&quot;section&quot; name=&quot;skyboxing&quot;&gt;Skyboxing&lt;/a&gt;
+ #### Excluding from boundary calculations
+
+ The {{#crossLink &quot;Scene/aabb:property&quot;}}Scene aabb{{/crossLink}}
+ and {{#crossLink &quot;Model/aabb:property&quot;}}Model aabb{{/crossLink}} properties provide AABBs that include the boundaries of all
+ contained Entities, except those Entities that have their {{#crossLink &quot;Entity/collidable:property&quot;}}collidable{{/crossLink}} properties set &#x60;&#x60;&#x60;&#x60;false&#x60;&#x60;&#x60;&#x60;.
+
+ Toggle that inclusion like so:
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ entity.collidable = false; // Exclude entity from calculation of its Scene/Model boundary
+ entity.collidable = true; // Include entity in calculation of its Scene/Model boundary
+ &#x60;&#x60;&#x60;&#x60;
+ Setting this false is useful when an Entity represents some object, such as a control gizmo, that you don&#x27;t want to consider as
+ being a contributor to a Scene or Model boundary. It also helps performance, since boundaries will not need dynamically re-calculated
+ whenever the Entity&#x27;s boundary changes after a Transform or Geometry update.
+
+ #### Examples
+
+ * [World-space Entity AABB](../../examples/#boundaries_entity_aabb)
+ * [World-space Entity OBB](../../examples/#boundaries_entity_obb)
+
+ ### Skyboxing
 
  An Entity has a {{#crossLink &quot;Entity/stationary:property&quot;}}{{/crossLink}} property
  that will cause it to never translate with respect to the viewpoint, while still rotationg, as if always far away.
@@ -589,7 +618,12 @@
  });
  &#x60;&#x60;&#x60;&#x60;
 
- ### &lt;a class=&quot;section&quot; name=&quot;billboarding&quot;&gt;billboarding&lt;/a&gt;
+ #### Examples
+
+ * [Skybox component](../../examples/#skyboxes_skybox)
+ * [Custom skybox](../../examples/#skyboxes_skybox_custom)
+
+ ### Billboarding
 
  An Entity has a {{#crossLink &quot;Entity/billboard:property&quot;}}{{/crossLink}} property
  that can make it behave as a billboard.
@@ -625,7 +659,7 @@
  * [Clouds using billboards](../../examples/#billboards_spherical_clouds)
 
 
- ### &lt;a class=&quot;section&quot; name=&quot;shadows&quot;&gt;Shadows&lt;/a&gt;
+ ### Shadows
 
  [Work-in-progress]
 
