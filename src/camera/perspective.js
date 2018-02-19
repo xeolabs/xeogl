@@ -1,41 +1,17 @@
 /**
- A **Perspective** defines a perspective projection transform.
+ A **Perspective** defines a perspective projection transform for a {{#crossLink "Camera"}}Camera{{/crossLink}}.
 
  ## Overview
 
- * {{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
- {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
- * Alternatively, use {{#crossLink "Ortho"}}{{/crossLink}} if you need a orthographic projection.
-
- <img src="../../../assets/images/Perspective.png"></img>
+ * A {{#crossLink "Camera"}}Camera{{/crossLink}} has a Perspective to configure its perspective projection mode.
 
  ## Examples
 
- * [Camera with perspective projection](../../examples/#transforms_camera_project_perspective)
+ * [Camera with perspective projection](../../examples/#camera_perspective)
 
  ## Usage
 
- ````Javascript
- new xeogl.Entity({
-
-     camera: xeogl.Camera({
-
-        view: new xeogl.Lookat({
-            eye: [0, 0, -4],
-            look: [0, 0, 0],
-            up: [0, 1, 0]
-        }),
-
-        project: new xeogl.Perspective({
-            fov: 60,
-            near: 0.1,
-            far: 1000
-        })
-     }),
-
-     perspective: new xeogl.BoxGeometry()
- });
- ````
+ * See {{#crossLink "Camera"}}{{/crossLink}}
 
  @class Perspective
  @module xeogl

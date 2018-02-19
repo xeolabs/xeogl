@@ -1,48 +1,23 @@
 /**
- An **Ortho** defines an orthographic projection transform.
+ An **Ortho** defines an orthographic projection transform for a {{#crossLink "Camera"}}Camera{{/crossLink}}.
 
  ## Overview
 
- * {{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
- {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ * A {{#crossLink "Camera"}}Camera{{/crossLink}} has an Ortho to configure its orthographic projection mode.
  * An Ortho works like Blender's orthographic projection, where the positions of the left, right, top and bottom planes are
  implicitly specified with a single {{#crossLink "Ortho/scale:property"}}{{/crossLink}} property, which causes the frustum to be symmetrical on X and Y axis, large enough to
  contain the number of units given by {{#crossLink "Ortho/scale:property"}}{{/crossLink}}.
  * An Ortho's {{#crossLink "Ortho/near:property"}}{{/crossLink}} and {{#crossLink "Ortho/far:property"}}{{/crossLink}} properties
  specify the distances to the WebGL clipping planes.
- * Use {{#crossLink "Frustum"}}{{/crossLink}} if you need to individually specify the position of each of the frustum
- planes, eg. for an asymmetrical view volume, such as those used for stereo viewing.
- * Use {{#crossLink "Perspective"}}{{/crossLink}} if you need perspective projection.
 
- <img src="../../../assets/images/Ortho.png"></img>
 
  ## Examples
 
- * [Camera with orthographic projection](../../examples/#transforms_camera_project_ortho)
+ * [Camera with orthographic projection](../../examples/#camera_orthographic)
 
  ## Usage
 
- ````Javascript
- new xeogl.Entity({
-
-     camera: xeogl.Camera({
-
-         view: new xeogl.Lookat({
-             eye: [0, 0, -4],
-             look: [0, 0, 0],
-             up: [0, 1, 0]
-         }),
-
-         project: new xeogl.Ortho(scene, {
-             scale: 100.0,  // Fit at least 100 units within the ortho volume X & Y extents
-             near: 0.1,
-             far: 1000
-         })
-     }),
-
-     geometry: new xeogl.BoxGeometry()
- });
- ````
+ * See {{#crossLink "Camera"}}{{/crossLink}}
 
  @class Ortho
  @module xeogl

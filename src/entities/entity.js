@@ -18,23 +18,23 @@
 
  ## Usage
 
- * [Creating an Entity](#creating)
- * [Controlling visibility](#visibility)
- * [Controlling clipping](#clipping)
- * [Controlling rendering order](#layer)
+ * [Creating an Entity](#creating-an-entity)
+ * [Controlling visibility](#controlling-visibility)
+ * [Controlling clipping](#controlling-clipping)
+ * [Controlling rendering order](#controlling-rendering-order)
  * [Geometry](#geometry)
  * [Material](#material)
  * [Transforming](#transforming)
  * [Ghosting](#ghosting)
  * [Highlighting](#highlighting)
  * [Outlining](#outlining)
- * [Local-space boundary](#local-boundary)
- * [World-space boundary](#world-boundary)
+ * [Local-space boundary](#local-space-boundary)
+ * [World-space boundary](#world-space-boundary)
  * [Skyboxing](#skyboxing)
  * [Billboarding](#billboarding)
  * [Shadows](#shadows) TODO
 
- ### <a class="section"  name="creating">Creating an Entity</a>
+ ### Creating an Entity
 
  Creating a minimal Entity that has all the default components:
 
@@ -66,7 +66,7 @@
  });
  ````
 
- ### <a class="section"  name="visibility">Controlling visibility</a>
+ ### Controlling visibility
 
  Show or hide an Entity by setting its {{#crossLink "Entity/visible:property"}}{{/crossLink}} property:
 
@@ -75,7 +75,7 @@
  entity.visible = true; // Show (default)
  ````
 
- ### <a class="section"  name="clipping">Controlling clipping</a>
+ ### Controlling clipping
 
  By default, an Entity will be clipped by the
  Scene's {{#crossLink "Scene/clips:property"}}clipping planes{{/crossLink}} (if you've created some).
@@ -86,7 +86,7 @@
  entity.clippable = false; // Default is true
  ````
 
- ### <a class="section" name="layer">Controlling rendering order</a>
+ ### Controlling rendering order
 
  Control the order in which an Entity is rendered relative to others by setting its {{#crossLink "Entity/layer:property"}}{{/crossLink}}
  property. You would normally do this when you need to ensure that transparent Entities are rendered in back-to-front order for correct alpha blending.
@@ -106,7 +106,7 @@
  });
  ````
 
- ### <a class="section" name="geometry">Geometry</a>
+ ### Geometry
 
  An Entity has a {{#crossLink "Geometry"}}{{/crossLink}} which describes its shape. When we don't provide it with a
  Geometry, it will have the Scene's {{#crossLink "Scene/geometry:property"}}{{/crossLink}} by default.
@@ -146,7 +146,7 @@
  var worldPositions = entity.worldPositions;
  ````
 
- ### <a class="section" name="material">Material</a>
+ ### Material
 
  An Entity has a {{#crossLink "Material"}}{{/crossLink}}, which describes its appearance. When we don't provide it with
  a Material, it will have the Scene's {{#crossLink "Scene/material:property"}}{{/crossLink}} by default.
@@ -187,7 +187,7 @@
  });
  ````
 
- ### <a class="section" name="transforming">Transforming</a>
+ ### Transforming
 
  An Entity has a {{#crossLink "Transform"}}{{/crossLink}}, which positions, sizes and orients it within the World-space
  coordinate system. When we don't provide it with a Transform, it will have the Scene's {{#crossLink "Scene/transform:property"}}{{/crossLink}}
@@ -234,7 +234,7 @@
  });
  ````
 
- ### <a class="section" name="ghosting">Ghosting</a>
+ ### Ghosting
 
  Ghost an Entity by setting its {{#crossLink "Entity/ghost:property"}}{{/crossLink}} property true. The Entity's
  {{#crossLink "GhostMaterial"}}{{/crossLink}} then controls its appearance while ghosted.
@@ -269,7 +269,11 @@
  });
  ````
 
- ### <a class="section" name="highlighting">Highlighting</a>
+ #### Examples
+
+ * [Ghosted teapot](../../examples/#effects_ghost)
+
+ ### Highlighting
 
  Highlight an Entity by setting its {{#crossLink "Entity/highlight:property"}}{{/crossLink}} property true. The Entity's
  {{#crossLink "HighlightMaterial"}}{{/crossLink}} then controls its appearance while highlighted.
@@ -295,7 +299,11 @@
  });
  ````
 
- ### <a class="section" name="outlining">Outlining</a>
+ #### Examples
+
+ * [Ghost and highlight effects](../../examples/#effects_demo_gearbox)
+
+ ### Outlining
 
  Outline an Entity by setting its {{#crossLink "Entity/outline:property"}}{{/crossLink}} property true. The Entity's
  {{#crossLink "OutlineMaterial"}}{{/crossLink}} then controls its appearance while outlined.
@@ -322,7 +330,7 @@
  });
  ````
 
- ### <a class="section" name="local-boundary">Local-space boundary</a>
+ ### Local-space boundary
 
  We can get an Entity's Local-space boundary at any time, as both an axis-aligned bounding box (AABB) and
  an object-aligned bounding box (OBB).
@@ -341,7 +349,12 @@
  var obb = entity.geometry.obb; // Flat array containing eight 3D corner vertices of a box
  ````
 
- ### <a class="section" name="world-boundary">World-space boundary</a>
+ #### Examples
+
+ * [Local-space Geometry AABB](../../examples/#boundaries_geometry_aabb)
+ * [Local-space Geometry OBB](../../examples/#boundaries_geometry_obb)
+
+ ### World-space boundary
 
  We can get an Entity's World-space boundary at any time, as both an axis-aligned bounding box (AABB) and
  an object-aligned bounding box (OBB).
@@ -369,7 +382,28 @@
  });
  ````
 
- ### <a class="section" name="skyboxing">Skyboxing</a>
+ #### Excluding from boundary calculations
+
+ The {{#crossLink "Scene/aabb:property"}}Scene aabb{{/crossLink}}
+ and {{#crossLink "Model/aabb:property"}}Model aabb{{/crossLink}} properties provide AABBs that include the boundaries of all
+ contained Entities, except those Entities that have their {{#crossLink "Entity/collidable:property"}}collidable{{/crossLink}} properties set ````false````.
+
+ Toggle that inclusion like so:
+
+ ````javascript
+ entity.collidable = false; // Exclude entity from calculation of its Scene/Model boundary
+ entity.collidable = true; // Include entity in calculation of its Scene/Model boundary
+ ````
+ Setting this false is useful when an Entity represents some object, such as a control gizmo, that you don't want to consider as
+ being a contributor to a Scene or Model boundary. It also helps performance, since boundaries will not need dynamically re-calculated
+ whenever the Entity's boundary changes after a Transform or Geometry update.
+
+ #### Examples
+
+ * [World-space Entity AABB](../../examples/#boundaries_entity_aabb)
+ * [World-space Entity OBB](../../examples/#boundaries_entity_obb)
+
+ ### Skyboxing
 
  An Entity has a {{#crossLink "Entity/stationary:property"}}{{/crossLink}} property
  that will cause it to never translate with respect to the viewpoint, while still rotationg, as if always far away.
@@ -395,7 +429,12 @@
  });
  ````
 
- ### <a class="section" name="billboarding">billboarding</a>
+ #### Examples
+
+ * [Skybox component](../../examples/#skyboxes_skybox)
+ * [Custom skybox](../../examples/#skyboxes_skybox_custom)
+
+ ### Billboarding
 
  An Entity has a {{#crossLink "Entity/billboard:property"}}{{/crossLink}} property
  that can make it behave as a billboard.
@@ -431,7 +470,7 @@
  * [Clouds using billboards](../../examples/#billboards_spherical_clouds)
 
 
- ### <a class="section" name="shadows">Shadows</a>
+ ### Shadows
 
  [Work-in-progress]
 
@@ -750,46 +789,6 @@
                     return this._attached.transform;
                 }
             },
-
-            // /**
-            //  * Rotation applied before {{#crossLink "Entity/transform:property"}}{{/crossLink}}.
-            //  *
-            //  * @property translate
-            //  * @default [0,0,0]
-            //  * @type {Float32Array}
-            //  */
-            // rotate: {
-            //
-            //     set: function (value) {
-            //         (this._state.translate = this._translate || new xeogl.math.vec3()).set(value || [0, 0, 0]);
-            //         this._setBoundaryDirty();
-            //         this._renderer.imageDirty();
-            //     },
-            //
-            //     get: function () {
-            //         return this._state.translate;
-            //     }
-            // },
-            //
-            // /**
-            //  * Translation applied after {{#crossLink "Entity/transform:property"}}{{/crossLink}}.
-            //  *
-            //  * @property translate
-            //  * @default [0,0,0]
-            //  * @type {Float32Array}
-            //  */
-            // translate: {
-            //
-            //     set: function (value) {
-            //         (this._state.translate = this._translate || new xeogl.math.vec3()).set(value || [0, 0, 0]);
-            //         this._setBoundaryDirty();
-            //         this._renderer.imageDirty();
-            //     },
-            //
-            //     get: function () {
-            //         return this._state.translate;
-            //     }
-            // },
 
             /**
              Indicates whether this Entity is visible or not.
