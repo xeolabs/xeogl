@@ -1,8 +1,6 @@
 /**
  A **CameraPathAnimation** animates the {{#crossLink "Scene"}}{{/crossLink}}'s {{#crossLink "Camera"}}{{/crossLink}} along a {{#crossLink "CameraPath"}}{{/crossLink}}.
 
- <img src="../../../assets/images/CameraPathAnimation.png"></img>
-
  ## Examples
 
  * [Interpolating the Camera along a path](../../examples/#camera_path_interpolation)
@@ -12,7 +10,7 @@
 
  ## Usage
 
- ### 1. Interpolating the Camera along a path
+ ### Interpolating the Camera along a path
 
  In this example we'll use the CameraPathAnimation's
  {{#crossLink "CameraPathAnimation/play"}}{{/crossLink}} method to smoothly <b>interpolate</b>
@@ -77,7 +75,7 @@
  ````
 
  <br>
- ### 2. Flying directly to each frame on a path
+ ### Flying directly to each frame on a path
 
  In this example, we'll use the CameraPathAnimation's {{#crossLink "CameraPathAnimation/flyToFrame"}}{{/crossLink}} method
  to <b>fly</b> the {{#crossLink "Camera"}}{{/crossLink}} directly to each frame on the {{#crossLink "CameraPath"}}{{/crossLink}}:
@@ -100,7 +98,7 @@
  });
  ````
  <br>
- ### 3. Jumping directly to each frame on a path
+ ### Jumping directly to each frame on a path
 
  In this example, we'll use the CameraPathAnimation's {{#crossLink "CameraPathAnimation/scrubToFrame"}}{{/crossLink}} method
  to <b>jump</b> the {{#crossLink "Camera"}}{{/crossLink}} directly to each frame on the {{#crossLink "CameraPath"}}{{/crossLink}}:
