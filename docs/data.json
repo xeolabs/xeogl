@@ -642,13 +642,6 @@
         "src/scene.js": {
             "name": "src/scene.js",
             "modules": {},
-            "classes": {},
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/scene.v2.js": {
-            "name": "src/scene.v2.js",
-            "modules": {},
             "classes": {
                 "Scene": 1
             },
@@ -5503,9 +5496,9 @@
             "extension_for": [],
             "module": "xeogl",
             "namespace": "",
-            "file": "src/scene.v2.js",
+            "file": "src/scene.js",
             "line": 1,
-            "description": "A Scene represents a 3D world.\n\n## Usage\n\n* [Creating a Scene](#creating-a-scene)\n* [Creating entities](#creating-entities)\n* [Loading models](#loading-models)\n* [Accessing content](#accessing-content)\n* [Controlling the camera](#controlling-the-camera)\n* [Taking snapshots](#taking-snapshots)\n* [Lighting](#lighting)\n* [Clipping](#clipping)\n* [Emphasis effects](#emphasis-effects)\n* [Picking](#picking)\n* [Pick masking](#pick-masking)\n* [Controlling the viewport](#controlling-the-viewport)\n* [Controlling rendering](#controlling-rendering)\n\n### Creating a Scene\n\nCreating a Scene with its own default canvas:\n\n````javascript\nvar scene = new Scene();\n````\n\nCreating a Scene with an existing canvas.\n\n````javascript\nvar scene2 = new Scene({\n   canvas: \"myCanvas\"\n});\n\nvar scene3 = new Scene({\n   canvas: document.getElementById(\"myCanvas\");\n});\n````\n\n### Creating entities\n\nCreating an {{#crossLink \"Entity\"}}{{/crossLink}} within a Scene:\n\n<a href=\"../../examples/#geometry_primitives_teapot\"><img src=\"../../assets/images/screenshots/Scene/teapot.png\"></img></a>\n\n````javascript\nvar entity = new xeogl.Entity(scene, {\n   geometry: new xeogl.TeapotGeometry(scene),\n   material: new xeogl.PhongMaterial(scene, {\n       diffuse: [0.2, 0.2, 1.0]\n   })\n});\n````\n\nCreating an entity within the default Scene (which will be automatically created if not yet existing):\n````javascript\nentity = new xeogl.Entity({\n   geometry: new xeogl.TeapotGeometry(),\n   material: new xeogl.PhongMaterial({\n       diffuse: [0.2, 0.2, 1.0]\n   })\n});\n\nentity.scene.camera.eye = [45, 45, 45];\n````\n\nThe default Scene can be got from either the Entity or the xeogl namespace:\n\n````javascript\nscene = entity.scene;\nscene = xeogl.scene;\n````\n\n### Loading models\n\nUse {{#crossLink \"GLTFModel\"}}{{/crossLink}} components to load glTF models into a Scene:\n\n````javascript\nvar model = new xeogl.GLTFModel(scene, { // If we don't provide the Scene, will create in default Scene\n   id: \"gearbox\",\n   src: \"models/gltf/gearbox/gearbox_assy.gltf\"\n});\n````\n\n### Accessing content\n\nFind components by ID in their Scene's {{#crossLink \"Scene/components:property\"}}{{/crossLink}} map:\n\n````javascript\nvar gear1 = scene.components[\"gearbox#gear99\"];\ngear1.visible = false;\n//...\n````\n\nA Scene also has a map of component instances for each {{#crossLink \"Component\"}}{{/crossLink}} subtype:\n\n````javascript\nvar entities = scene.types[\"xeogl.Entity\"];\nvar gear = entities[\"gearbox#gear99\"];\ngear.ghost = true;\n//...\n\nvar glTFModels = scene.types[\"xeogl.GLTFModel\"];\nvar gearbox = glTFModels[\"gearbox\"];\ngearbox.visible = false;\n//...\n````\na map containing just the {{#crossLink \"Model\"}}{{/crossLink}} instances:\n\n````javascript\ngearbox = scene.models[\"gearbox\"];\n````\n\nand a map containing just the {{#crossLink \"Entity\"}}{{/crossLink}} instances:\n\n````javascript\ngear = scene.entities[\"gearbox#gear99\"];\n````\n\n### Controlling the camera\n\nUse the Scene's {{#crossLink \"Camera\"}}{{/crossLink}} to control the current viewpoint and projection:\n\n````javascript\nvar camera = myScene.camera;\n\ncamera.eye = [-10,0,0];\ncamera.look = [-10,0,0];\ncamera.up = [0,1,0];\n\ncamera.projection = \"perspective\";\ncamera.perspective.fov = 45;\n//...\n````\n\n### Managing the canvas, taking snapshots\n\nThe Scene's {{#crossLink \"Canvas\"}}{{/crossLink}} component provides various conveniences relevant to the WebGL canvas, such\nas getting getting snapshots, firing resize events etc:\n\n````javascript\nvar canvas = scene.canvas;\n\ncanvas.on(\"boundary\", function(boundary) {\n   //...\n});\n\nvar imageData = canvas.getSnapshot({\n   width: 500,\n   height: 500,\n   format: \"png\"\n});\n````\n\n### Lighting\n\nThe Scene's {{#crossLink \"Lights\"}}{{/crossLink}} component manages lighting:\n\n````javascript\nvar lights = scene.lights;\nlights[1].color = [0.9, 0.9, 0.9];\n//...\n````\n\n### Clipping\n\nThe Scene's {{#crossLink \"Clips\"}}{{/crossLink}} component manages clipping planes for custom cross-sections:\n\n````javascript\nvar clips = scene.clips;\nclips.clips = [\nnew xeogl.Clip({  // Clip plane on negative diagonal\n       pos: [1.0, 1.0, 1.0],\n       dir: [-1.0, -1.0, -1.0],\n       active: true\n   }),\nnew xeogl.Clip({ // Clip plane on positive diagonal\n       pos: [-1.0, -1.0, -1.0],\n       dir: [1.0, 1.0, 1.0],\n       active: true\n   }),\n//...\n];\n````\n\n### Emphasis effects\n\nThe Scene's {{#crossLink \"GhostMaterial\"}}{{/crossLink}} provides the default material for controlling ghost effects:\n\n````javascript\nvar ghostMaterial = scene.ghostMaterial;\nghostMaterial.edgeColor = [0.9, 0.9, 0.0];\n//...\n````\n\nThe Scene's {{#crossLink \"HighlightMaterial\"}}{{/crossLink}} provides the default material for controlling highlight effects:\n\n````javascript\nvar highlightMaterial = scene.highlightMaterial;\nhighlightMaterial.color = [0.9, 0.9, 0.0];\n//...\n````\n\nThe Scene's {{#crossLink \"OutlineMaterial\"}}{{/crossLink}} provides the default material for controlling outline effects:\n\n````javascript\nvar outlineMaterial = scene.outlineMaterial;\noutlineMaterial.edgeWidth = 6;\n````\n\n### Picking entities\n\nUse the Scene's {{#crossLink \"Scene/pick:method\"}}pick(){{/crossLink}} method to pick and raycast entities.\n\nFor example, to pick a point on the surface of the closest entity at the given canvas coordinates:\n\n````javascript\nvar hit = scene.pick({\n    pickSurface: true,\n    canvasPos: [23, 131]\n});\n\nif (hit) { // Picked an Entity\n\n     var entity = hit.entity;\n\n     var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n     var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n     var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n     var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle\n     var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle\n     var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle\n     var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n     var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n     var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n}\n````\n\n### Pick masking\n\nWe can use the {{#crossLink \"Scene/pick:method\"}}pick(){{/crossLink}} method's ````include```` and ````exclude````\noptions to mask which Entities we attempt to pick.\n\nThis is useful for picking <em>through</em> things, to pick only the Entities of interest.\n\n#### Including entities\n\nTo pick only Entities ````\"gearbox#77.0\"```` and ````\"gearbox#79.0\"````, picking through any other Entities that are\nin the way, as if they weren't there:\n\n````javascript\nvar hit = scene.pick({\n    canvasPos: [23, 131],\n    include: [\"gearbox#77.0\", \"gearbox#79.0\"]\n});\n\nif (hit) {\n     // Entity will always be either \"gearbox#77.0\" or \"gearbox#79.0\"\n     var entity = hit.entity;\n}\n````\n\n#### Excluding entities\n\nTo pick any pickable Entity, except for ````\"gearbox#77.0\"```` and ````\"gearbox#79.0\"````, picking through those\nEntities if they happen to be in the way:\n\n````javascript\nvar hit = scene.pick({\n    canvasPos: [23, 131],\n    exclude: [\"gearbox#77.0\", \"gearbox#79.0\"]\n});\n\nif (hit) {\n     // Entity will never be \"gearbox#77.0\" or \"gearbox#79.0\"\n     var entity = hit.entity;\n}\n````\n\nSee {{#crossLink \"Scene/pick:method\"}}pick(){{/crossLink}} for more info on picking.\n\n### Getting the World-space boundary\n\nGetting a Scene's World-space boundary as an AABB:\n\n````javascript\nvar aabb = scene.aabb; // [xmin, ymin, zmin, xmax, ymax, zmax]\n````\n\nSubscribing to updates to the World-space boundary, which occur whenever Entities are Transformed, or their Geometries have been updated.\n\n````javascript\nscene.on(\"boundary\", function() {\n    var aabb = scene.aabb;\n    var obb = scene.obb;\n});\n````\n\n### Controlling rendering\n\n### Managing the viewport\n\nThe Scene's {{#crossLink \"Viewport\"}}{{/crossLink}} component manages the WebGL viewport:\n\n````javascript\nvar viewport = scene.viewport\nviewport.boundary = [0, 0, 500, 400];;\n````",
+            "description": "A Scene represents a 3D world.\n\n## Usage\n\n* [Creating a Scene](#creating-a-scene)\n* [Creating entities](#creating-entities)\n* [Loading models](#loading-models)\n* [Accessing content](#accessing-content)\n* [Controlling the camera](#controlling-the-camera)\n* [Taking snapshots](#taking-snapshots)\n* [Lighting](#lighting)\n* [Clipping](#clipping)\n* [Emphasis effects](#emphasis-effects)\n* [Picking](#picking)\n* [Pick masking](#pick-masking)\n* [Controlling the viewport](#controlling-the-viewport)\n* [Controlling rendering](#controlling-rendering)\n\n### Creating a Scene\n\nCreating a Scene with its own default canvas:\n\n````javascript\nvar scene = new Scene();\n````\n\nCreating a Scene with an existing canvas.\n\n````javascript\nvar scene2 = new Scene({\n   canvas: \"myCanvas\"\n});\n\nvar scene3 = new Scene({\n   canvas: document.getElementById(\"myCanvas\");\n});\n````\n\n### Creating entities\n\nCreating an {{#crossLink \"Entity\"}}{{/crossLink}} within a Scene:\n\n<a href=\"../../examples/#geometry_primitives_teapot\"><img src=\"../../assets/images/screenshots/Scene/teapot.png\"></img></a>\n\n````javascript\nvar entity = new xeogl.Entity(scene, {\n   geometry: new xeogl.TeapotGeometry(scene),\n   material: new xeogl.PhongMaterial(scene, {\n       diffuse: [0.2, 0.2, 1.0]\n   })\n});\n````\n\nCreating an entity within the default Scene (which will be automatically created if not yet existing):\n````javascript\nentity = new xeogl.Entity({\n   geometry: new xeogl.TeapotGeometry(),\n   material: new xeogl.PhongMaterial({\n       diffuse: [0.2, 0.2, 1.0]\n   })\n});\n\nentity.scene.camera.eye = [45, 45, 45];\n````\n\nThe default Scene can be got from either the Entity or the xeogl namespace:\n\n````javascript\nscene = entity.scene;\nscene = xeogl.scene;\n````\n\n### Loading models\n\nUse {{#crossLink \"GLTFModel\"}}{{/crossLink}} components to load glTF models into a Scene:\n\n````javascript\nvar model = new xeogl.GLTFModel(scene, { // If we don't provide the Scene, will create in default Scene\n   id: \"gearbox\",\n   src: \"models/gltf/gearbox/gearbox_assy.gltf\"\n});\n````\n\n### Accessing content\n\nFind components by ID in their Scene's {{#crossLink \"Scene/components:property\"}}{{/crossLink}} map:\n\n````javascript\nvar gear1 = scene.components[\"gearbox#gear99\"];\ngear1.visible = false;\n//...\n````\n\nA Scene also has a map of component instances for each {{#crossLink \"Component\"}}{{/crossLink}} subtype:\n\n````javascript\nvar entities = scene.types[\"xeogl.Entity\"];\nvar gear = entities[\"gearbox#gear99\"];\ngear.ghost = true;\n//...\n\nvar glTFModels = scene.types[\"xeogl.GLTFModel\"];\nvar gearbox = glTFModels[\"gearbox\"];\ngearbox.visible = false;\n//...\n````\na map containing just the {{#crossLink \"Model\"}}{{/crossLink}} instances:\n\n````javascript\ngearbox = scene.models[\"gearbox\"];\n````\n\nand a map containing just the {{#crossLink \"Entity\"}}{{/crossLink}} instances:\n\n````javascript\ngear = scene.entities[\"gearbox#gear99\"];\n````\n\n### Controlling the camera\n\nUse the Scene's {{#crossLink \"Camera\"}}{{/crossLink}} to control the current viewpoint and projection:\n\n````javascript\nvar camera = myScene.camera;\n\ncamera.eye = [-10,0,0];\ncamera.look = [-10,0,0];\ncamera.up = [0,1,0];\n\ncamera.projection = \"perspective\";\ncamera.perspective.fov = 45;\n//...\n````\n\n### Managing the canvas, taking snapshots\n\nThe Scene's {{#crossLink \"Canvas\"}}{{/crossLink}} component provides various conveniences relevant to the WebGL canvas, such\nas getting getting snapshots, firing resize events etc:\n\n````javascript\nvar canvas = scene.canvas;\n\ncanvas.on(\"boundary\", function(boundary) {\n   //...\n});\n\nvar imageData = canvas.getSnapshot({\n   width: 500,\n   height: 500,\n   format: \"png\"\n});\n````\n\n### Lighting\n\nThe Scene's {{#crossLink \"Lights\"}}{{/crossLink}} component manages lighting:\n\n````javascript\nvar lights = scene.lights;\nlights[1].color = [0.9, 0.9, 0.9];\n//...\n````\n\n### Clipping\n\nThe Scene's {{#crossLink \"Clips\"}}{{/crossLink}} component manages clipping planes for custom cross-sections:\n\n````javascript\nvar clips = scene.clips;\nclips.clips = [\nnew xeogl.Clip({  // Clip plane on negative diagonal\n       pos: [1.0, 1.0, 1.0],\n       dir: [-1.0, -1.0, -1.0],\n       active: true\n   }),\nnew xeogl.Clip({ // Clip plane on positive diagonal\n       pos: [-1.0, -1.0, -1.0],\n       dir: [1.0, 1.0, 1.0],\n       active: true\n   }),\n//...\n];\n````\n\n### Emphasis effects\n\nThe Scene's {{#crossLink \"Scene/ghostMaterial:property\"}}{{/crossLink}} provides the default {{#crossLink \"GhostMaterial\"}}{{/crossLink}}\nfor controlling ghost effects:\n\n````javascript\nvar ghostMaterial = scene.ghostMaterial;\nghostMaterial.edgeColor = [0.9, 0.9, 0.0];\n//...\n````\n\nThe Scene's {{#crossLink \"Scene/highlightMaterial:property\"}}{{/crossLink}} provides the default {{#crossLink \"GhostMaterial\"}}{{/crossLink}}\nfor controlling highlight effects:\n\n````javascript\nvar highlightMaterial = scene.highlightMaterial;\nhighlightMaterial.color = [0.9, 0.9, 0.0];\n//...\n````\n\nThe Scene's {{#crossLink \"Scene/outlineMaterial:property\"}}{{/crossLink}} provides the default {{#crossLink \"OutlineMaterial\"}}{{/crossLink}}\nfor controlling outline effects:\n\n\n````javascript\nvar outlineMaterial = scene.outlineMaterial;\noutlineMaterial.edgeWidth = 6;\n````\n\n* See {{#crossLink \"Entity\"}}{{/crossLink}} and {{#crossLink \"GhostMaterial\"}}{{/crossLink}}\n\n### Picking entities\n\nUse the Scene's {{#crossLink \"Scene/pick:method\"}}pick(){{/crossLink}} method to pick and raycast entities.\n\nFor example, to pick a point on the surface of the closest entity at the given canvas coordinates:\n\n````javascript\nvar hit = scene.pick({\n    pickSurface: true,\n    canvasPos: [23, 131]\n});\n\nif (hit) { // Picked an Entity\n\n     var entity = hit.entity;\n\n     var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n     var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n     var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n     var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle\n     var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle\n     var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle\n     var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n     var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n     var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n}\n````\n\n### Pick masking\n\nWe can use the {{#crossLink \"Scene/pick:method\"}}pick(){{/crossLink}} method's ````include```` and ````exclude````\noptions to mask which Entities we attempt to pick.\n\nThis is useful for picking <em>through</em> things, to pick only the Entities of interest.\n\n#### Including entities\n\nTo pick only Entities ````\"gearbox#77.0\"```` and ````\"gearbox#79.0\"````, picking through any other Entities that are\nin the way, as if they weren't there:\n\n````javascript\nvar hit = scene.pick({\n    canvasPos: [23, 131],\n    include: [\"gearbox#77.0\", \"gearbox#79.0\"]\n});\n\nif (hit) {\n     // Entity will always be either \"gearbox#77.0\" or \"gearbox#79.0\"\n     var entity = hit.entity;\n}\n````\n\n#### Excluding entities\n\nTo pick any pickable Entity, except for ````\"gearbox#77.0\"```` and ````\"gearbox#79.0\"````, picking through those\nEntities if they happen to be in the way:\n\n````javascript\nvar hit = scene.pick({\n    canvasPos: [23, 131],\n    exclude: [\"gearbox#77.0\", \"gearbox#79.0\"]\n});\n\nif (hit) {\n     // Entity will never be \"gearbox#77.0\" or \"gearbox#79.0\"\n     var entity = hit.entity;\n}\n````\n\nSee {{#crossLink \"Scene/pick:method\"}}pick(){{/crossLink}} for more info on picking.\n\n### Getting the World-space boundary\n\nGetting a Scene's World-space boundary as an AABB:\n\n````javascript\nvar aabb = scene.aabb; // [xmin, ymin, zmin, xmax, ymax, zmax]\n````\n\nSubscribing to updates to the World-space boundary, which occur whenever Entities are Transformed, or their Geometries have been updated.\n\n````javascript\nscene.on(\"boundary\", function() {\n    var aabb = scene.aabb;\n    var obb = scene.obb;\n});\n````\n\n### Controlling rendering\n\n### Managing the viewport\n\nThe Scene's {{#crossLink \"Viewport\"}}{{/crossLink}} component manages the WebGL viewport:\n\n````javascript\nvar viewport = scene.viewport\nviewport.boundary = [0, 0, 500, 400];;\n````",
             "is_constructor": 1,
             "params": [
                 {
@@ -9554,7 +9547,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 833,
+            "line": 793,
             "description": "Indicates whether this Entity is visible or not.\n\nThe Entity is only rendered when {{#crossLink \"Entity/visible:property\"}}{{/crossLink}} is true and\n{{#crossLink \"Entity/culled:property\"}}{{/crossLink}} is false.",
             "itemtype": "property",
             "name": "visible",
@@ -9566,7 +9559,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 855,
+            "line": 815,
             "description": "Indicates whether or not this Entity is currently culled from view.\n\nThe Entity is only rendered when {{#crossLink \"Entity/visible:property\"}}{{/crossLink}} is true and\n{{#crossLink \"Entity/culled:property\"}}{{/crossLink}} is false.",
             "itemtype": "property",
             "name": "culled",
@@ -9578,7 +9571,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 877,
+            "line": 837,
             "description": "Indicates whether this entity is pickable or not.\n\nPicking is done via calls to {{#crossLink \"Canvas/pick:method\"}}Canvas#pick{{/crossLink}}.",
             "itemtype": "property",
             "name": "pickable",
@@ -9590,7 +9583,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 904,
+            "line": 864,
             "description": "Indicates whether this Entity is clippable by {{#crossLink \"Clips\"}}{{/crossLink}} components.",
             "itemtype": "property",
             "name": "clippable",
@@ -9602,7 +9595,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 927,
+            "line": 887,
             "description": "Indicates whether this Entity is included in boundary calculations.",
             "itemtype": "property",
             "name": "collidable",
@@ -9614,7 +9607,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 950,
+            "line": 910,
             "description": "Indicates whether this Entity casts shadows.",
             "itemtype": "property",
             "name": "castShadow",
@@ -9626,7 +9619,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 973,
+            "line": 933,
             "description": "Indicates whether this Entity receives shadows.",
             "itemtype": "property",
             "name": "receiveShadow",
@@ -9638,7 +9631,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 997,
+            "line": 957,
             "description": "Indicates whether this Entity is rendered with an outline.\n\nThe outline effect is configured via the Entity's {{#crossLink \"Entity/outlineMaterial:property\"}}outlineMaterial{{/crossLink}} component.",
             "itemtype": "property",
             "name": "outline",
@@ -9650,7 +9643,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1022,
+            "line": 982,
             "description": "Indicates whether this Entity is highlighted.\n\nThe highlight effect is configured via the Entity's {{#crossLink \"Entity/highlightMaterial:property\"}}highlightMaterial{{/crossLink}}.",
             "itemtype": "property",
             "name": "highlight",
@@ -9662,7 +9655,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1047,
+            "line": 1007,
             "description": "RGBA colorize color, multiplies by the outgoing fragment color and transparency.",
             "itemtype": "property",
             "name": "colorize",
@@ -9674,7 +9667,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1080,
+            "line": 1040,
             "description": "Indicates this Entity's rendering order.\n\nThis can be set on multiple transparent Entities, to make them render in a specific order\nfor correct alpha blending.",
             "itemtype": "property",
             "name": "layer",
@@ -9686,7 +9679,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1108,
+            "line": 1068,
             "description": "Flag which indicates whether this Entity is stationary or not.\n\nSetting this true will disable the effect of {{#crossLink \"Lookat\"}}view transform{{/crossLink}}\ntranslations for this Entity, while still alowing it to rotate. This is useful for skybox Entities.",
             "itemtype": "property",
             "name": "stationary",
@@ -9698,7 +9691,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1134,
+            "line": 1094,
             "description": "Specifies the billboarding behaviour for this Entity.\n\nOptions are:\n\n* **\"none\"** -  **(default)** - No billboarding.\n* **\"spherical\"** - Entity is billboarded to face the viewpoint, rotating both vertically and horizontally.\n* **\"cylindrical\"** - Entity is billboarded to face the viewpoint, rotating only about its vertically\naxis. Use this mode for things like trees on a landscape.",
             "itemtype": "property",
             "name": "billboard",
@@ -9710,7 +9703,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1169,
+            "line": 1129,
             "description": "Flag which indicates if this Entity is rendered with ghosting effect.\n\nThe ghost effect is configured via the Entity's {{#crossLink \"Entity/ghostMaterial:property\"}}ghostMaterial{{/crossLink}}.",
             "itemtype": "property",
             "name": "ghost",
@@ -9722,7 +9715,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1194,
+            "line": 1154,
             "description": "World-space axis-aligned 3D boundary (AABB) of this Entity.\n\nThe AABB is represented by a six-element Float32Array containing the min/max extents of the\naxis-aligned volume, ie. ````[xmin, ymin,zmin,xmax,ymax, zmax]````.",
             "itemtype": "property",
             "name": "aabb",
@@ -9734,7 +9727,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1227,
+            "line": 1187,
             "description": "World-space oriented 3D boundary (OBB) of this Entity.\n\nThe OBB is represented by a 32-element Float32Array containing the eight vertices of the box,\nwhere each vertex is a homogeneous coordinate having [x,y,z,w] elements.",
             "itemtype": "property",
             "name": "obb",
@@ -9746,7 +9739,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1255,
+            "line": 1215,
             "description": "World-space vertex positions of this Entity.\n\nThese are internally generated on-demand and cached. To free the cached\nvertex World positions when you're done with them, set this property to null or undefined.",
             "itemtype": "property",
             "name": "worpdPositions",
@@ -9758,7 +9751,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1313,
+            "line": 1273,
             "description": "Fired whenever this Entity's World-space boundary changes.\n\nGet the latest boundary from the Entity's {{#crossLink \"Entity/aabb:property\"}}{{/crossLink}}\nand {{#crossLink \"Entity/obb:property\"}}{{/crossLink}} properties.",
             "itemtype": "event",
             "name": "boundary",
@@ -18011,7 +18004,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 336,
+            "line": 342,
             "description": "Fired whenever a debug message logged on a component within this Scene.",
             "itemtype": "event",
             "name": "log",
@@ -18027,7 +18020,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 342,
+            "line": 348,
             "description": "Fired whenever an error is logged on a component within this Scene.",
             "itemtype": "event",
             "name": "error",
@@ -18043,7 +18036,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 348,
+            "line": 354,
             "description": "Fired whenever a warning is logged on a component within this Scene.",
             "itemtype": "event",
             "name": "warn",
@@ -18059,7 +18052,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 363,
+            "line": 369,
             "description": "The number of models currently loading.",
             "itemtype": "property",
             "name": "loading",
@@ -18069,7 +18062,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 371,
+            "line": 377,
             "description": "The epoch time (in milliseconds since 1970) when this Scene was instantiated.",
             "itemtype": "property",
             "name": "timeCreated",
@@ -18079,7 +18072,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 379,
+            "line": 385,
             "description": "The {{#crossLink \"Component\"}}Component{{/crossLink}}s within\nthis Scene, mapped to their IDs.\n\nWill also contain the {{#crossLink \"Entity\"}}{{/crossLink}}s\ncontained in {{#crossLink \"Entity/components:property\"}}{{/crossLink}}.",
             "itemtype": "property",
             "name": "components",
@@ -18089,7 +18082,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 391,
+            "line": 397,
             "description": "For each {{#crossLink \"Component\"}}Component{{/crossLink}} type, a map of\nIDs to instances.",
             "itemtype": "property",
             "name": "types",
@@ -18099,7 +18092,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 400,
+            "line": 406,
             "description": "The {{#crossLink \"Entity\"}}{{/crossLink}}s within\nthis Scene, mapped to their IDs.\n\nThe {{#crossLink \"Entity\"}}{{/crossLink}}s in this map\nwill also be contained in {{#crossLink \"Entity/components:property\"}}{{/crossLink}}.",
             "itemtype": "property",
             "name": "entities",
@@ -18109,7 +18102,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 412,
+            "line": 418,
             "description": "The {{#crossLink \"Model\"}}{{/crossLink}}s within\nthis Scene, mapped to their IDs.",
             "itemtype": "property",
             "name": "entities",
@@ -18119,7 +18112,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 424,
+            "line": 430,
             "description": "Manages the HTML5 canvas for this Scene.",
             "final": 1,
             "itemtype": "property",
@@ -18130,7 +18123,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 454,
+            "line": 460,
             "description": "Publishes input events that occur on this Scene's canvas.",
             "final": 1,
             "itemtype": "property",
@@ -18141,7 +18134,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 718,
+            "line": 724,
             "description": "Renders a single frame of this Scene.\n\nThe Scene will periodically render itself after any updates, but you can call this method to force a render\nif required. This method is typically used when we want to synchronously take a snapshot of the canvas and\nneed everything rendered right at that moment.",
             "itemtype": "method",
             "name": "render",
@@ -18159,7 +18152,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 769,
+            "line": 775,
             "description": "Fired when about to render a frame for a Scene.",
             "itemtype": "event",
             "name": "rendering",
@@ -18180,7 +18173,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 782,
+            "line": 788,
             "description": "Fired when we have just rendered a frame for a Scene.",
             "itemtype": "event",
             "name": "rendering",
@@ -18201,7 +18194,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 836,
+            "line": 842,
             "description": "The number of {{#crossLink \"Scene/tick:property\"}}{{/crossLink}} that happen between each render or this Scene.",
             "itemtype": "property",
             "name": "ticksPerRender",
@@ -18212,7 +18205,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 870,
+            "line": 876,
             "description": "The number of times this Scene renders per frame.",
             "itemtype": "property",
             "name": "passes",
@@ -18223,7 +18216,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 906,
+            "line": 912,
             "description": "When doing multiple passes per frame, specifies whether to clear the\ncanvas before each pass (true) or just before the first pass (false).",
             "itemtype": "property",
             "name": "clearEachPass",
@@ -18234,7 +18227,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 934,
+            "line": 940,
             "description": "When true, expects all textures and colors are premultiplied gamma.",
             "itemtype": "property",
             "name": "gammaInput",
@@ -18245,7 +18238,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 965,
+            "line": 971,
             "description": "Whether or not to render pixels with pre-multiplied gama.",
             "itemtype": "property",
             "name": "gammaOutput",
@@ -18256,7 +18249,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 996,
+            "line": 1002,
             "description": "The gamma factor to use when {{#crossLink \"Scene/property:gammaOutput\"}}{{/crossLink}} is set true.",
             "itemtype": "property",
             "name": "gammaOutput",
@@ -18267,7 +18260,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1023,
+            "line": 1029,
             "description": "The default modelling {{#crossLink \"Transform\"}}{{/crossLink}} for this Scene.\n\nThis {{#crossLink \"Transform\"}}{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.transform\",\nwith all other properties initialised to their default values (ie. an identity matrix).\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to\nthis {{#crossLink \"Transform\"}}{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "transform",
@@ -18278,7 +18271,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1046,
+            "line": 1052,
             "description": "The default geometry for this Scene, which is a {{#crossLink \"BoxGeometry\"}}BoxGeometry{{/crossLink}}.\n\nThis {{#crossLink \"BoxGeometry\"}}BoxGeometry{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.geometry\".\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Geometry\"}}Geometry{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "geometry",
@@ -18289,7 +18282,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1067,
+            "line": 1073,
             "description": "The default drawing material for this Scene, which is a {{#crossLink \"PhongMaterial\"}}PhongMaterial{{/crossLink}}.\n\nThis {{#crossLink \"PhongMaterial\"}}PhongMaterial{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.material\", with all\nother properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"PhongMaterial\"}}PhongMaterial{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "material",
@@ -18300,7 +18293,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1091,
+            "line": 1097,
             "description": "The default {{#crossLink \"GhostMaterial\"}}GhostMaterial{{/crossLink}} for this Scene.\n\nThis {{#crossLink \"GhostMaterial\"}}GhostMaterial{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.ghostMaterial\", with all\nother properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"GhostMaterial\"}}GhostMaterial{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "ghostMaterial",
@@ -18311,7 +18304,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1115,
+            "line": 1121,
             "description": "The default {{#crossLink \"HighlightMaterial\"}}HighlightMaterial{{/crossLink}} for this Scene.\n\nThis {{#crossLink \"HighlightMaterial\"}}HighlightMaterial{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.highlightMaterial\", with all\nother properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"HighlightMaterial\"}}HighlightMaterial{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "highlightMaterial",
@@ -18322,7 +18315,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1139,
+            "line": 1145,
             "description": "The default {{#crossLink \"OutlineMaterial\"}}OutlineMaterial{{/crossLink}} for this Scene.\n\nThis {{#crossLink \"OutlineMaterial\"}}OutlineMaterial{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.outlineMaterial\", with all\nother properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"OutlineMaterial\"}}OutlineMaterial{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "outlineMaterial",
@@ -18333,7 +18326,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1162,
+            "line": 1168,
             "description": "The {{#crossLink \"Viewport\"}}{{/crossLink}} belonging to this Scene.",
             "itemtype": "property",
             "name": "viewport",
@@ -18344,7 +18337,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1175,
+            "line": 1181,
             "description": "The {{#crossLink \"Lights\"}}Lights{{/crossLink}} belonging to this Scene.",
             "itemtype": "property",
             "name": "lights",
@@ -18355,7 +18348,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1188,
+            "line": 1194,
             "description": "The {{#crossLink \"Camera\"}}Camera{{/crossLink}} belonging to this Scene.",
             "itemtype": "property",
             "name": "camera",
@@ -18366,7 +18359,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1201,
+            "line": 1207,
             "description": "The {{#crossLink \"Clips\"}}Clips{{/crossLink}} belonging to this Scene.",
             "itemtype": "property",
             "name": "clips",
@@ -18377,7 +18370,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1214,
+            "line": 1220,
             "description": "World-space axis-aligned 3D boundary (AABB) of this Scene.\n\nThe AABB is represented by a six-element Float32Array containing the min/max extents of the\naxis-aligned volume, ie. ````[xmin, ymin,zmin,xmax,ymax, zmax]````.",
             "itemtype": "property",
             "name": "aabb",
@@ -18388,7 +18381,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1305,
+            "line": 1311,
             "description": "Attempts to pick an {{#crossLink \"Entity\"}}Entity{{/crossLink}} in this Scene.\n\nIgnores {{#crossLink \"Entity\"}}Entities{{/crossLink}} with {{#crossLink \"Entity/pickable:property\"}}pickable{{/crossLink}}\nset *false*.\n\nPicking the {{#crossLink \"Entity\"}}{{/crossLink}} at the given canvas coordinates:\n\n````javascript\nvar hit = scene.pick({\n    canvasPos: [23, 131]\n });\n\nif (hit) { // Picked an Entity\n    var entity = hit.entity;\n}\n````\n\n**Usage:**\n\nPicking the {{#crossLink \"Entity\"}}{{/crossLink}} that intersects a ray cast through the canvas:\n\n````javascript\nvar hit = scene.pick({\n    pickSurface: true,\n    canvasPos: [23, 131]\n });\n\nif (hit) { // Picked an Entity\n\n    var entity = hit.entity;\n\n    // These properties are only on the hit result when we do a ray-pick:\n\n    var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n    var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n    var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n    var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle\n    var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle\n    var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle\n    var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n    var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n    var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n}\n````\n\nPicking the {{#crossLink \"Entity\"}}{{/crossLink}} that intersects an arbitrarily-aligned World-space ray:\n\n````javascript\nvar hit = scene.pick({\n    pickSurface: true,       // Picking with arbitrarily-positioned ray\n    origin: [0,0,-5],    // Ray origin\n    direction: [0,0,1]   // Ray direction\n});\n\nif (hit) { // Picked an Entity with the ray\n\n    var entity = hit.entity;\n\n    var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n    var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n    var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n    var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle\n    var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle\n    var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle\n    var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n    var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n    var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n    var origin = hit.origin; // Float32Array containing the World-space ray origin\n    var direction = hit.direction; // Float32Array containing the World-space ray direction\n}\n````",
             "itemtype": "method",
             "name": "pick",
@@ -18447,717 +18440,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1691,
-            "description": "Resets this Scene to its default state.\n\nReferences to any components in this Scene will become invalid.",
-            "itemtype": "method",
-            "name": "clear",
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 336,
-            "description": "Fired whenever a debug message logged on a component within this Scene.",
-            "itemtype": "event",
-            "name": "log",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The debug message",
-                    "type": "String"
-                }
-            ],
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 342,
-            "description": "Fired whenever an error is logged on a component within this Scene.",
-            "itemtype": "event",
-            "name": "error",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The error message",
-                    "type": "String"
-                }
-            ],
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 348,
-            "description": "Fired whenever a warning is logged on a component within this Scene.",
-            "itemtype": "event",
-            "name": "warn",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The warning message",
-                    "type": "String"
-                }
-            ],
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 363,
-            "description": "The number of models currently loading.",
-            "itemtype": "property",
-            "name": "loading",
-            "type": "{Number}",
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 371,
-            "description": "The epoch time (in milliseconds since 1970) when this Scene was instantiated.",
-            "itemtype": "property",
-            "name": "timeCreated",
-            "type": "{Number}",
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 379,
-            "description": "The {{#crossLink \"Component\"}}Component{{/crossLink}}s within\nthis Scene, mapped to their IDs.\n\nWill also contain the {{#crossLink \"Entity\"}}{{/crossLink}}s\ncontained in {{#crossLink \"Entity/components:property\"}}{{/crossLink}}.",
-            "itemtype": "property",
-            "name": "components",
-            "type": "{String:xeogl.Component}",
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 391,
-            "description": "For each {{#crossLink \"Component\"}}Component{{/crossLink}} type, a map of\nIDs to instances.",
-            "itemtype": "property",
-            "name": "types",
-            "type": "{String:{String:xeogl.Component}}",
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 400,
-            "description": "The {{#crossLink \"Entity\"}}{{/crossLink}}s within\nthis Scene, mapped to their IDs.\n\nThe {{#crossLink \"Entity\"}}{{/crossLink}}s in this map\nwill also be contained in {{#crossLink \"Entity/components:property\"}}{{/crossLink}}.",
-            "itemtype": "property",
-            "name": "entities",
-            "type": "{String:xeogl.Entity}",
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 412,
-            "description": "The {{#crossLink \"Model\"}}{{/crossLink}}s within\nthis Scene, mapped to their IDs.",
-            "itemtype": "property",
-            "name": "entities",
-            "type": "{String:xeogl.Model}",
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 424,
-            "description": "Manages the HTML5 canvas for this Scene.",
-            "final": 1,
-            "itemtype": "property",
-            "name": "canvas",
-            "type": "{Canvas}",
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 454,
-            "description": "Publishes input events that occur on this Scene's canvas.",
-            "final": 1,
-            "itemtype": "property",
-            "name": "input",
-            "type": "{Input}",
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 718,
-            "description": "Renders a single frame of this Scene.\n\nThe Scene will periodically render itself after any updates, but you can call this method to force a render\nif required. This method is typically used when we want to synchronously take a snapshot of the canvas and\nneed everything rendered right at that moment.",
-            "itemtype": "method",
-            "name": "render",
-            "params": [
-                {
-                    "name": "forceRender",
-                    "description": "Forces a render when true, otherwise only renders if something has changed in this Scene\nsince the last render.",
-                    "type": "Boolean",
-                    "optional": true,
-                    "optdefault": "false"
-                }
-            ],
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 769,
-            "description": "Fired when about to render a frame for a Scene.",
-            "itemtype": "event",
-            "name": "rendering",
-            "params": [
-                {
-                    "name": "sceneID",
-                    "description": "The ID of this Scene.",
-                    "type": "String"
-                },
-                {
-                    "name": "pass",
-                    "description": "Index of the pass we are about to render (see {{#crossLink \"Scene/passes:property\"}}{{/crossLink}}).",
-                    "type": "Number"
-                }
-            ],
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 782,
-            "description": "Fired when we have just rendered a frame for a Scene.",
-            "itemtype": "event",
-            "name": "rendering",
-            "params": [
-                {
-                    "name": "sceneID",
-                    "description": "The ID of this Scene.",
-                    "type": "String"
-                },
-                {
-                    "name": "pass",
-                    "description": "Index of the pass we rendered (see {{#crossLink \"Scene/passes:property\"}}{{/crossLink}}).",
-                    "type": "Number"
-                }
-            ],
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 836,
-            "description": "The number of {{#crossLink \"Scene/tick:property\"}}{{/crossLink}} that happen between each render or this Scene.",
-            "itemtype": "property",
-            "name": "ticksPerRender",
-            "default": "1",
-            "type": "Number",
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 870,
-            "description": "The number of times this Scene renders per frame.",
-            "itemtype": "property",
-            "name": "passes",
-            "default": "1",
-            "type": "Number",
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 906,
-            "description": "When doing multiple passes per frame, specifies whether to clear the\ncanvas before each pass (true) or just before the first pass (false).",
-            "itemtype": "property",
-            "name": "clearEachPass",
-            "default": "false",
-            "type": "Boolean",
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 934,
-            "description": "When true, expects all textures and colors are premultiplied gamma.",
-            "itemtype": "property",
-            "name": "gammaInput",
-            "default": "false",
-            "type": "Boolean",
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 965,
-            "description": "Whether or not to render pixels with pre-multiplied gama.",
-            "itemtype": "property",
-            "name": "gammaOutput",
-            "default": "true",
-            "type": "Boolean",
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 996,
-            "description": "The gamma factor to use when {{#crossLink \"Scene/property:gammaOutput\"}}{{/crossLink}} is set true.",
-            "itemtype": "property",
-            "name": "gammaOutput",
-            "default": "1.0",
-            "type": "Number",
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 1023,
-            "description": "The default modelling {{#crossLink \"Transform\"}}{{/crossLink}} for this Scene.\n\nThis {{#crossLink \"Transform\"}}{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.transform\",\nwith all other properties initialised to their default values (ie. an identity matrix).\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to\nthis {{#crossLink \"Transform\"}}{{/crossLink}} by default.",
-            "itemtype": "property",
-            "name": "transform",
-            "final": 1,
-            "type": "Transform",
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 1046,
-            "description": "The default geometry for this Scene, which is a {{#crossLink \"BoxGeometry\"}}BoxGeometry{{/crossLink}}.\n\nThis {{#crossLink \"BoxGeometry\"}}BoxGeometry{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.geometry\".\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Geometry\"}}Geometry{{/crossLink}} by default.",
-            "itemtype": "property",
-            "name": "geometry",
-            "final": 1,
-            "type": "BoxGeometry",
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 1067,
-            "description": "The default drawing material for this Scene, which is a {{#crossLink \"PhongMaterial\"}}PhongMaterial{{/crossLink}}.\n\nThis {{#crossLink \"PhongMaterial\"}}PhongMaterial{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.material\", with all\nother properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"PhongMaterial\"}}PhongMaterial{{/crossLink}} by default.",
-            "itemtype": "property",
-            "name": "material",
-            "final": 1,
-            "type": "PhongMaterial",
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 1091,
-            "description": "The default {{#crossLink \"GhostMaterial\"}}GhostMaterial{{/crossLink}} for this Scene.\n\nThis {{#crossLink \"GhostMaterial\"}}GhostMaterial{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.ghostMaterial\", with all\nother properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"GhostMaterial\"}}GhostMaterial{{/crossLink}} by default.",
-            "itemtype": "property",
-            "name": "ghostMaterial",
-            "final": 1,
-            "type": "GhostMaterial",
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 1115,
-            "description": "The default {{#crossLink \"HighlightMaterial\"}}HighlightMaterial{{/crossLink}} for this Scene.\n\nThis {{#crossLink \"HighlightMaterial\"}}HighlightMaterial{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.highlightMaterial\", with all\nother properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"HighlightMaterial\"}}HighlightMaterial{{/crossLink}} by default.",
-            "itemtype": "property",
-            "name": "highlightMaterial",
-            "final": 1,
-            "type": "HighlightMaterial",
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 1139,
-            "description": "The default {{#crossLink \"OutlineMaterial\"}}OutlineMaterial{{/crossLink}} for this Scene.\n\nThis {{#crossLink \"OutlineMaterial\"}}OutlineMaterial{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.outlineMaterial\", with all\nother properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"OutlineMaterial\"}}OutlineMaterial{{/crossLink}} by default.",
-            "itemtype": "property",
-            "name": "outlineMaterial",
-            "final": 1,
-            "type": "OutlineMaterial",
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 1162,
-            "description": "The {{#crossLink \"Viewport\"}}{{/crossLink}} belonging to this Scene.",
-            "itemtype": "property",
-            "name": "viewport",
-            "final": 1,
-            "type": "Viewport",
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 1175,
-            "description": "The {{#crossLink \"Lights\"}}Lights{{/crossLink}} belonging to this Scene.",
-            "itemtype": "property",
-            "name": "lights",
-            "final": 1,
-            "type": "Lights",
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 1188,
-            "description": "The {{#crossLink \"Camera\"}}Camera{{/crossLink}} belonging to this Scene.",
-            "itemtype": "property",
-            "name": "camera",
-            "final": 1,
-            "type": "Camera",
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 1201,
-            "description": "The {{#crossLink \"Clips\"}}Clips{{/crossLink}} belonging to this Scene.",
-            "itemtype": "property",
-            "name": "clips",
-            "final": 1,
-            "type": "Clips",
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 1214,
-            "description": "World-space axis-aligned 3D boundary (AABB) of this Scene.\n\nThe AABB is represented by a six-element Float32Array containing the min/max extents of the\naxis-aligned volume, ie. ````[xmin, ymin,zmin,xmax,ymax, zmax]````.",
-            "itemtype": "property",
-            "name": "aabb",
-            "final": 1,
-            "type": "{Float32Array}",
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 1305,
-            "description": "Attempts to pick an {{#crossLink \"Entity\"}}Entity{{/crossLink}} in this Scene.\n\nIgnores {{#crossLink \"Entity\"}}Entities{{/crossLink}} with {{#crossLink \"Entity/pickable:property\"}}pickable{{/crossLink}}\nset *false*.\n\nPicking the {{#crossLink \"Entity\"}}{{/crossLink}} at the given canvas coordinates:\n\n````javascript\nvar hit = scene.pick({\n    canvasPos: [23, 131]\n });\n\nif (hit) { // Picked an Entity\n    var entity = hit.entity;\n}\n````\n\n**Usage:**\n\nPicking the {{#crossLink \"Entity\"}}{{/crossLink}} that intersects a ray cast through the canvas:\n\n````javascript\nvar hit = scene.pick({\n    pickSurface: true,\n    canvasPos: [23, 131]\n });\n\nif (hit) { // Picked an Entity\n\n    var entity = hit.entity;\n\n    // These properties are only on the hit result when we do a ray-pick:\n\n    var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n    var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n    var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n    var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle\n    var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle\n    var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle\n    var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n    var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n    var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n}\n````\n\nPicking the {{#crossLink \"Entity\"}}{{/crossLink}} that intersects an arbitrarily-aligned World-space ray:\n\n````javascript\nvar hit = scene.pick({\n    pickSurface: true,       // Picking with arbitrarily-positioned ray\n    origin: [0,0,-5],    // Ray origin\n    direction: [0,0,1]   // Ray direction\n});\n\nif (hit) { // Picked an Entity with the ray\n\n    var entity = hit.entity;\n\n    var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n    var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n    var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n    var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle\n    var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle\n    var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle\n    var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n    var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n    var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n    var origin = hit.origin; // Float32Array containing the World-space ray origin\n    var direction = hit.direction; // Float32Array containing the World-space ray direction\n}\n````",
-            "itemtype": "method",
-            "name": "pick",
-            "params": [
-                {
-                    "name": "params",
-                    "description": "Picking parameters.",
-                    "type": "*",
-                    "props": [
-                        {
-                            "name": "pickSurface",
-                            "description": "Whether to find the picked position on the surface of the Entity.",
-                            "type": "Boolean",
-                            "optional": true,
-                            "optdefault": "false"
-                        },
-                        {
-                            "name": "canvasPos",
-                            "description": "Canvas-space coordinates. When ray-picking, this will override the\n**origin** and ** direction** parameters and will cause the ray to be fired through the canvas at this position,\ndirectly along the negative View-space Z-axis.",
-                            "type": "Float32Array",
-                            "optional": true
-                        },
-                        {
-                            "name": "origin",
-                            "description": "World-space ray origin when ray-picking. Ignored when canvasPos given.",
-                            "type": "Float32Array",
-                            "optional": true
-                        },
-                        {
-                            "name": "direction",
-                            "description": "World-space ray direction when ray-picking. Also indicates the length of the ray. Ignored when canvasPos given.",
-                            "type": "Float32Array",
-                            "optional": true
-                        },
-                        {
-                            "name": "include",
-                            "description": "IDs of {{#crossLink \"Entity\"}}Entities{{/crossLink}} to pick from amongst. When given, ignores {{#crossLink \"Entity\"}}Entities{{/crossLink}} whose IDs are not in this list.",
-                            "type": "Array",
-                            "optional": true
-                        },
-                        {
-                            "name": "exclude",
-                            "description": "IDs of {{#crossLink \"Entity\"}}Entities{{/crossLink}} to ignore. When given, will pick *through* these {{#crossLink \"Entity\"}}Entities{{/crossLink}}, as if they were not there.",
-                            "type": "Array",
-                            "optional": true
-                        }
-                    ]
-                }
-            ],
-            "return": {
-                "description": "Hit record, returned when an {{#crossLink \"Entity\"}}{{/crossLink}} is picked, else null. See\nmethod comments for description.",
-                "type": "*"
-            },
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 1691,
-            "description": "Loads a {{#crossLink \"GLTFModel\"}}{{/crossLink}} into this {{#crossLink \"Scene\"}}{{/crossLink}}.\n\nAssigns the {{#crossLink \"GLTFModel\"}}{{/crossLink}} an ID, which gets prefixed to the IDs of\nits {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n````JavaScript\nscene.load(\"saw\", \"models/gltf/ReciprocatingSaw/glTF/ReciprocatingSaw.gltf\", function () {\n    scene.hide();\n    scene.show([\"saw#0.1\", \"saw#0.2\"]);\n });\n````",
-            "itemtype": "method",
-            "name": "load",
-            "params": [
-                {
-                    "name": "id",
-                    "description": "ID to assign to the {{#crossLink \"GLTFModel\"}}{{/crossLink}}. This gets prefixed to the\nIDs of the {{#crossLink \"GLTFModel\"}}{{/crossLink}}'s {{#crossLink \"Entity\"}}Entities{{/crossLink}}.",
-                    "type": "String"
-                },
-                {
-                    "name": "src",
-                    "description": "Locates the glTF file.",
-                    "type": "String"
-                },
-                {
-                    "name": "options",
-                    "description": "Loading options.",
-                    "type": "Object",
-                    "optional": true,
-                    "props": [
-                        {
-                            "name": "viewfit",
-                            "description": "When true, fits the view to the GLTFModel once it's loaded.",
-                            "type": "Boolean",
-                            "optional": true,
-                            "optdefault": "false"
-                        },
-                        {
-                            "name": "maxObjects",
-                            "description": "Limit number of objects to load, for debugging/development.",
-                            "type": "Object",
-                            "optional": true
-                        },
-                        {
-                            "name": "flattenTransforms",
-                            "description": "Flatten transform hierarchies for increased performance.",
-                            "type": "Object",
-                            "optional": true,
-                            "optdefault": "true"
-                        },
-                        {
-                            "name": "compressGeometry",
-                            "description": "Compress geometry for reduced memory footprint and GPU bus usage.",
-                            "type": "Object",
-                            "optional": true,
-                            "optdefault": "true"
-                        },
-                        {
-                            "name": "combineGeometry",
-                            "description": "Combine geometry buffers for increased performance.",
-                            "type": "Object",
-                            "optional": true,
-                            "optdefault": "true"
-                        },
-                        {
-                            "name": "lambertMaterials",
-                            "description": "Render with simple flat-shading for increased performance.",
-                            "type": "Object",
-                            "optional": true,
-                            "optdefault": "true"
-                        }
-                    ]
-                },
-                {
-                    "name": "ok",
-                    "description": "Callback fired when the {{#crossLink \"GLTFModel\"}}{{/crossLink}} has loaded.",
-                    "type": "Function",
-                    "optional": true
-                }
-            ],
-            "return": {
-                "description": "The model.",
-                "type": "GLTFModel"
-            },
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 1751,
-            "description": "Unloads a {{#crossLink \"GLTFModel\"}}{{/crossLink}} that was previously loaded with {{#crossLink \"Entity/unload:method\"}}pickable{{/crossLink}}.",
-            "itemtype": "method",
-            "name": "unload",
-            "params": [
-                {
-                    "name": "id",
-                    "description": "ID of the {{#crossLink \"GLTFModel\"}}{{/crossLink}} to unload.",
-                    "type": "String"
-                }
-            ],
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 1773,
-            "description": "Convenience method which shows Entities and/or Models by ID.\n\nShows all entities in the scene when no arguments are given.\n\nEntities are visible by default.",
-            "itemtype": "method",
-            "name": "show",
-            "params": [
-                {
-                    "name": "ids",
-                    "description": "IDs of model/object/types/clip/annotation/light(s).",
-                    "type": "String|String[]",
-                    "optional": true
-                }
-            ],
-            "return": {
-                "description": "this",
-                "type": "Scene"
-            },
-            "example": [
-                "\n\n// Show all entities in the scene\nscene.show();\n\n// Show all entities in models \"saw\" and \"gearbox\"\nscene.show([\"saw\", \"gearbox\"]);\n\n// Show two entities in model \"saw\", plus all entities in model \"gearbox\"\nscene.show([\"saw#0.1\", \"saw#0.2\", \"gearbox\"]);\n\n// Show entities in the model \"gearbox\", plus all entities in scene that are IFC cable fittings and carriers\nscene.show(\"gearbox\", \"IfcCableFitting\", \"IfcCableCarrierFitting\"]);"
-            ],
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 1802,
-            "description": "Convenience method which hides Entities and/or Models by ID.\n\nHides all Models and Entities in the scene when no arguments are given.\n\n````JavaScript\n// Hide all entities in the scene\nscene.hide();\n\n// Hide all entities in models \"saw\" and \"gearbox\"\nscene.hide([\"saw\", \"gearbox\"]);\n\n// Hide two entities in model \"saw\", plus all entities in model \"gearbox\"\nscene.hide([\"saw#0.1\", \"saw#0.2\", \"gearbox\"]);\n\n// Hide entities in the model \"gearbox\", plus all entities in scene that are IFC cable fittings and carriers\nscene.hide(\"gearbox\", \"IfcCableFitting\", \"IfcCableCarrierFitting\"]);\n````",
-            "itemtype": "method",
-            "name": "hide",
-            "params": [
-                {
-                    "name": "ids",
-                    "description": "IDs of model/object/types/clip/annotation/light(s).",
-                    "type": "String|String[]"
-                }
-            ],
-            "return": {
-                "description": "this",
-                "type": "Scene"
-            },
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 1845,
-            "description": "Convenience method which ghosts Entities and/or Models by ID.\n\nGhosts all entities in the scene when no arguments are given.\n\nEntities are visible by default.",
-            "itemtype": "method",
-            "name": "ghost",
-            "params": [
-                {
-                    "name": "ids",
-                    "description": "IDs of model/object/types/clip/annotation/light(s).",
-                    "type": "String|String[]",
-                    "optional": true
-                }
-            ],
-            "return": {
-                "description": "this",
-                "type": "Scene"
-            },
-            "example": [
-                "\n\n// Ghost all entities in the scene\nscene.ghost();\n\n// Ghost all entities in models \"saw\" and \"gearbox\"\nscene.ghost([\"saw\", \"gearbox\"]);\n\n// Ghost two entities in model \"saw\", plus all entities in model \"gearbox\"\nscene.ghost([\"saw#0.1\", \"saw#0.2\", \"gearbox\"]);\n\n// Ghost entities in the model \"gearbox\", plus all entities in scene that are IFC cable fittings and carriers\nscene.ghost(\"gearbox\", \"IfcCableFitting\", \"IfcCableCarrierFitting\"]);"
-            ],
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 1874,
-            "description": "Convenience method which unghosts Entities and/or Models by ID.\n\nUnghosts all Models and Entities in the scene when no arguments are given.\n\n````JavaScript\n// Unghost all entities in the scene\nscene.unghost();\n\n// Unghost all entities in models \"saw\" and \"gearbox\"\nscene.unghost([\"saw\", \"gearbox\"]);\n\n// Unghost two entities in model \"saw\", plus all entities in model \"gearbox\"\nscene.unghost([\"saw#0.1\", \"saw#0.2\", \"gearbox\"]);\n\n// Unghost entities in the model \"gearbox\", plus all entities in scene that are IFC cable fittings and carriers\nscene.unghost(\"gearbox\", \"IfcCableFitting\", \"IfcCableCarrierFitting\"]);\n````",
-            "itemtype": "method",
-            "name": "unghost",
-            "params": [
-                {
-                    "name": "ids",
-                    "description": "IDs of model/object/types/clip/annotation/light(s).",
-                    "type": "String|String[]"
-                }
-            ],
-            "return": {
-                "description": "this",
-                "type": "Scene"
-            },
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 1917,
-            "description": "Convenience method which highlights Entities and/or Models by ID.\n\nhighlights all entities in the scene when no arguments are given.\n\nEntities are visible by default.\n\n````JavaScript\n// highlight all entities in the scene\nscene.highlight();\n\n// highlight all entities in models \"saw\" and \"gearbox\"\nscene.highlight([\"saw\", \"gearbox\"]);\n\n// highlight two entities in model \"saw\", plus all entities in model \"gearbox\"\nscene.highlight([\"saw#0.1\", \"saw#0.2\", \"gearbox\"]);\n\n// highlight entities in the model \"gearbox\", plus all entities in scene that are IFC cable fittings and carriers\nscene.highlight(\"gearbox\", \"IfcCableFitting\", \"IfcCableCarrierFitting\"]);\n```",
-            "itemtype": "method",
-            "name": "highlight",
-            "params": [
-                {
-                    "name": "ids",
-                    "description": "IDs of model/object/types/clip/annotation/light(s).",
-                    "type": "String|String[]",
-                    "optional": true
-                }
-            ],
-            "return": {
-                "description": "this",
-                "type": "Scene"
-            },
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 1947,
-            "description": "Convenience method which unhighlights Entities and/or Models by ID.\n\nUnhighlights all Models and Entities in the scene when no arguments are given.\n\n````JavaScript\n// Unhighlight all entities in the scene\nscene.unhighlight();\n\n// Unhighlight all entities in models \"saw\" and \"gearbox\"\nscene.unhighlight([\"saw\", \"gearbox\"]);\n\n// Unhighlight two entities in model \"saw\", plus all entities in model \"gearbox\"\nscene.unhighlight([\"saw#0.1\", \"saw#0.2\", \"gearbox\"]);\n\n// Unhighlight entities in the model \"gearbox\", plus all entities in scene that are IFC cable fittings and carriers\nscene.unhighlight(\"gearbox\", \"IfcCableFitting\", \"IfcCableCarrierFitting\"]);\n````",
-            "itemtype": "method",
-            "name": "unhighlight",
-            "params": [
-                {
-                    "name": "ids",
-                    "description": "IDs of model/object/types/clip/annotation/light(s).",
-                    "type": "String|String[]"
-                }
-            ],
-            "return": {
-                "description": "this",
-                "type": "Scene"
-            },
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 2007,
-            "description": "Gets the World-space center point of the given model(s), object(s) or type(s).\n\nWhen no arguments are given, returns the collective center of all objects in the viewer.\n\n````JavaScript\nviewer.getCenter(); // Gets collective center of all objects in the viewer\nviewer.getCenter(\"saw\"); // Gets collective center of all objects in saw model\nviewer.getCenter([\"saw\", \"gearbox\"]); // Gets collective center of all objects in saw and gearbox models\nviewer.getCenter(\"saw#0.1\"); // Get center of an object in the saw model\nviewer.getCenter([\"saw#0.1\", \"saw#0.2\"]); // Get collective center of two objects in saw model\n````",
-            "itemtype": "method",
-            "name": "getCenter",
-            "params": [
-                {
-                    "name": "target",
-                    "description": "IDs of models and/or objects.",
-                    "type": "String|String[]"
-                }
-            ],
-            "return": {
-                "description": "The World-space center point.",
-                "type": "[Number, Number, Number]"
-            },
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 2029,
-            "description": "Convenience method which returns the collective axis-aligned boundary of the Entities and/or Models with the given IDs.\n\nWhen no arguments are given, returns the collective boundary of all objects in the viewer.\n\n````JavaScript\nviewer.getAABB(); // Gets collective boundary of all objects in the viewer\nviewer.getAABB(\"saw\"); // Gets collective boundary of all objects in saw model\nviewer.getAABB([\"saw\", \"gearbox\"]); // Gets collective boundary of all objects in saw and gearbox models\nviewer.getAABB(\"saw#0.1\"); // Get boundary of an object in the saw model\nviewer.getAABB([\"saw#0.1\", \"saw#0.2\"]); // Get collective boundary of two objects in saw model\n````",
-            "itemtype": "method",
-            "name": "getAABB",
-            "params": [
-                {
-                    "name": "target",
-                    "description": "IDs of models, objects and/or annotations",
-                    "type": "String|String[]"
-                }
-            ],
-            "return": {
-                "description": "An axis-aligned World-space bounding box, given as elements ````[xmin, ymin, zmin, xmax, ymax, zmax]````.",
-                "type": "[Number, Number, Number, Number, Number, Number]"
-            },
-            "class": "Scene",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/scene.v2.js",
-            "line": 2124,
+            "line": 1697,
             "description": "Resets this Scene to its default state.\n\nReferences to any components in this Scene will become invalid.",
             "itemtype": "method",
             "name": "clear",
@@ -22698,43 +21981,7 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/scene.js:1305"
-        },
-        {
-            "message": "replacing incorrect tag: returns with return",
-            "line": " src/scene.v2.js:1305"
-        },
-        {
-            "message": "replacing incorrect tag: returns with return",
-            "line": " src/scene.v2.js:1773"
-        },
-        {
-            "message": "replacing incorrect tag: returns with return",
-            "line": " src/scene.v2.js:1802"
-        },
-        {
-            "message": "replacing incorrect tag: returns with return",
-            "line": " src/scene.v2.js:1845"
-        },
-        {
-            "message": "replacing incorrect tag: returns with return",
-            "line": " src/scene.v2.js:1874"
-        },
-        {
-            "message": "replacing incorrect tag: returns with return",
-            "line": " src/scene.v2.js:1917"
-        },
-        {
-            "message": "replacing incorrect tag: returns with return",
-            "line": " src/scene.v2.js:1947"
-        },
-        {
-            "message": "replacing incorrect tag: returns with return",
-            "line": " src/scene.v2.js:2007"
-        },
-        {
-            "message": "replacing incorrect tag: returns with return",
-            "line": " src/scene.v2.js:2029"
+            "line": " src/scene.js:1311"
         },
         {
             "message": "unknown tag: demo",
