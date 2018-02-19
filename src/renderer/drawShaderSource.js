@@ -12,7 +12,7 @@
             normals: hasNormals(object),
             normalMapping: hasNormalMap(object),
             clipping: scene.clips.clips.length > 0,
-            solid: true && object.material.backfaces,
+            solid: false && object.material.backfaces,
             lambertMaterial: (object.material.type === "LambertMaterial"),
             phongMaterial: (object.material.type === "PhongMaterial"),
             metallicMaterial: (object.material.type === "MetallicMaterial"),
