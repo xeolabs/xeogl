@@ -61,7 +61,6 @@
     "src/clipping/clips.js",
     "src/controls/_module.js",
     "src/controls/cameraControl.js",
-    "src/controls/inputControl.js",
     "src/geometry/_module.js",
     "src/geometry/geometry.js",
     "src/geometry/boxGeometry.js",

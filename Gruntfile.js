@@ -68,7 +68,7 @@ module.exports = function (grunt) {
                     ],
 
                     outdir: './docs/',
-                    exclude: "renderer, utils, webgl"
+                    exclude: "renderer, utils"
                 },
                 logo: '../assets/images/logo.png'
             }
