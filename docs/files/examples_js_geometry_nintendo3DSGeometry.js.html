@@ -57,7 +57,6 @@
                                 <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
-                                <li><a href="../classes/ClipControl.html">ClipControl</a></li>
                                 <li><a href="../classes/ClipHelper.html">ClipHelper</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
@@ -75,7 +74,6 @@
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
-                                <li><a href="../classes/InputControl.html">InputControl</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
@@ -98,8 +96,6 @@
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PlaneHelper.html">PlaneHelper</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
-                                <li><a href="../classes/PointLightHelper.html">PointLightHelper</a></li>
-                                <li><a href="../classes/Progress.html">Progress</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
@@ -187,82 +183,81 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
+/**
+ A **Nintendo3DSGeometry** is a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that&#x27;s loaded from a
+ &lt;a href=&quot;https://en.wikipedia.org/wiki/Nintendo_3DS&quot;&gt;Nintendo 3DS&lt;/a&gt; file.
+
+ &lt;a href=&quot;../../examples/#importing_3ds_lexus&quot;&gt;&lt;img src=&quot;../../assets/images/screenshots/Nintendo3DSGeometry.png&quot;&gt;&lt;/img&gt;&lt;/a&gt;
+
+ ## Overview
+
+ * A Nintendo3DSGeometry mesh is defined by the .3DS file referenced by the Nintendo3DSGeometry&#x27;s {{#crossLink &quot;Nintendo3DSGeometry/src:property&quot;}}{{/crossLink}} property.
+ * Set the {{#crossLink &quot;Nintendo3DSGeometry/src:property&quot;}}{{/crossLink}} property to a different file at any time, to regenerate the Nintendo3DSGeometry&#x27;s mesh from the new file.
+ * Internally uses the &lt;a href=&quot;http://k3d.ivank.net/&quot;&gt;k3d.js&lt;/a&gt; library for parsing .3DS files.
+
+ ## Examples
+
+ &lt;ul&gt;
+ &lt;li&gt;[Importing a Lexus from 3DS](../../examples/#importing_3ds_lexus)&lt;/li&gt;
+ &lt;/ul&gt;
+
+ ## Usage
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ var entity = new xeogl.Entity({
+
+     geometry: new xeogl.Nintendo3DSGeometry({
+         src: &quot;models/3ds/lexus.3ds&quot;
+     }),
+
+     material: new xeogl.PhongMaterial({
+         diffuseMap: new xeogl.Texture({
+             src: &quot;models/3ds/lexus.jpg&quot;
+         }),
+         specular: [0, 0, 0]
+     }),
+
+     // We need to rotate this particular .3DS model
+     transform: new xeogl.Rotate({
+         xyz: [1,0,0],
+         angle: -90,
+         parent: new xeogl.Rotate({
+             xyz: [0,1,0],
+             angle: 90
+         })
+     })
+ });
+
+ // When the Nintendo3DSGeometry has loaded,
+ // fly the camera to fit the entity in view
+
+ var cameraFlight = new xeogl.CameraFlightAnimation();
+
+ entity.geometry.on(&quot;loaded&quot;, function () {
+     cameraFlight.flyTo({
+         aabb: entity.aabb
+     });
+ });
+ &#x60;&#x60;&#x60;&#x60;
+
+ @class Nintendo3DSGeometry
+ @module xeogl
+ @submodule geometry
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this Nintendo3DSGeometry in the default
+ {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}},
+ generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Nintendo3DSGeometry.
+ @param [cfg.src] {String} Path to the .3DS file.
+ @param [cfg.autoNormals] {Boolean} Set true to automatically generate normal vectors from positions and indices.
+ @extends Geometry
+ */
 (function () {
 
     &quot;use strict&quot;;
 
-    /**
-     A **Nintendo3DSGeometry** is a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that&#x27;s loaded from a
-     &lt;a href=&quot;https://en.wikipedia.org/wiki/Nintendo_3DS&quot;&gt;Nintendo 3DS&lt;/a&gt; file.
-
-     &lt;a href=&quot;../../examples/#importing_3ds_lexus&quot;&gt;&lt;img src=&quot;../../assets/images/screenshots/Nintendo3DSGeometry.png&quot;&gt;&lt;/img&gt;&lt;/a&gt;
-
-     ## Overview
-
-     * A Nintendo3DSGeometry mesh is defined by the .3DS file referenced by the Nintendo3DSGeometry&#x27;s {{#crossLink &quot;Nintendo3DSGeometry/src:property&quot;}}{{/crossLink}} property.
-     * Set the {{#crossLink &quot;Nintendo3DSGeometry/src:property&quot;}}{{/crossLink}} property to a different file at any time, to regenerate the Nintendo3DSGeometry&#x27;s mesh from the new file.
-     * Internally uses the &lt;a href=&quot;http://k3d.ivank.net/&quot;&gt;k3d.js&lt;/a&gt; library for parsing .3DS files.
-
-     ## Examples
-
-     &lt;ul&gt;
-     &lt;li&gt;[Importing a Lexus from 3DS](../../examples/#importing_3ds_lexus)&lt;/li&gt;
-     &lt;/ul&gt;
-
-     ## Usage
-
-     &#x60;&#x60;&#x60;&#x60;javascript
-     var entity = new xeogl.Entity({
-
-        geometry: new xeogl.Nintendo3DSGeometry({
-            src: &quot;models/3ds/lexus.3ds&quot;
-        }),
-
-        material: new xeogl.PhongMaterial({
-            diffuseMap: new xeogl.Texture({
-                src: &quot;models/3ds/lexus.jpg&quot;
-            }),
-            specular: [0, 0, 0]
-        }),
-
-        // We need to rotate this particular .3DS model
-        transform: new xeogl.Rotate({
-            xyz: [1,0,0],
-            angle: -90,
-            parent: new xeogl.Rotate({
-                xyz: [0,1,0],
-                angle: 90
-            })
-        })
-     });
-
-     // When the Nintendo3DSGeometry has loaded,
-     // fly the camera to fit the entity in view
-
-     var cameraFlight = new xeogl.CameraFlightAnimation();
-
-     entity.geometry.on(&quot;loaded&quot;, function () {
-
-             cameraFlight.flyTo({
-                 aabb: entity.aabb
-             });
-         });
-     &#x60;&#x60;&#x60;&#x60;
-
-     @class Nintendo3DSGeometry
-     @module xeogl
-     @submodule geometry
-     @constructor
-     @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this Nintendo3DSGeometry in the default
-     {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
-     @param [cfg] {*} Configs
-     @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}},
-     generated automatically when omitted.
-     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Nintendo3DSGeometry.
-     @param [cfg.src] {String} Path to the .3DS file.
-     @param [cfg.autoNormals] {Boolean} Set true to automatically generate normal vectors from positions and indices.
-     @extends Geometry
-     */
     xeogl.Nintendo3DSGeometry = xeogl.Geometry.extend({
 
         type: &quot;xeogl.Nintendo3DSGeometry&quot;,
@@ -323,7 +318,7 @@
                                 self.positions = mesh.vertices;
                                 self.uv = mesh.uvt;
                                 self.normals = null;
-                          //   self.autoNormals = true;
+                                //   self.autoNormals = true;
                                 self.indices = mesh.indices;
                                 self.tangents = null;
 
