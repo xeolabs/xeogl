@@ -1,76 +1,77 @@
+/**
+ An **OBJGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that's loaded from a
+
+ <a href="https://en.wikipedia.org/wiki/Wavefront_.obj_file">Wavefront .OBJ</a> file.
+
+ <a href="../../examples/#importing_obj_raptor"><img src="../../assets/images/screenshots/OBJGeometry.png"></img></a>
+
+ ## Overview
+
+ * An OBJGeometry mesh is defined by the Wavefront .OBJ file referenced by the OBJGeometry's {{#crossLink "OBJGeometry/src:property"}}{{/crossLink}} property.
+ * An OBJGeometry only parses the geometry data from the .OBJ file and ignores any associated .MTL file.
+ * Internally uses the <a href="http://k3d.ivank.net/">k3d.js</a> library for parsing .OBJ files.
+
+ ## Examples
+
+ <ul>
+ <li>[Importing a Raptor from OBJ](../../examples/#importing_obj_raptor)</li>
+ </ul>
+
+ ## Usage
+
+ ````javascript
+ var entity = new xeogl.Entity({
+
+     geometry: new xeogl.OBJGeometry({
+         src: "models/obj/raptor.obj"
+     }),
+
+     material: new xeogl.PhongMaterial({
+         diffuseMap: new xeogl.Texture({
+             src: "models/obj/raptor.jpg"
+         })
+     }),
+
+     transform: new xeogl.Rotate({
+         xyz: [1, 0, 0],
+         angle: 0,
+
+         parent: new xeogl.Translate({
+             xyz: [10, 3, 10]
+         })
+     })
+ });
+
+ // When the OBJGeometry has loaded,
+ // fly the camera to fit the entity in view
+
+ var cameraFlight = new xeogl.CameraFlightAnimation();
+
+ entity.geometry.on("loaded", function () {
+
+     cameraFlight.flyTo({
+         aabb: entity.aabb
+     });
+ });
+ ````
+
+ @class OBJGeometry
+ @module xeogl
+ @submodule geometry
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this OBJGeometry in the default
+ {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
+ generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this OBJGeometry.
+ @param [cfg.src] {String} Path to the .OBJ file.
+ @extends Geometry
+ */
 (function () {
 
     "use strict";
 
-    /**
-     An **OBJGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that's loaded from a
-     <a href="https://en.wikipedia.org/wiki/Wavefront_.obj_file">Wavefront .OBJ</a> file.
-
-     <a href="../../examples/#importing_obj_raptor"><img src="../../assets/images/screenshots/OBJGeometry.png"></img></a>
-
-     ## Overview
-
-     * An OBJGeometry mesh is defined by the Wavefront .OBJ file referenced by the OBJGeometry's {{#crossLink "OBJGeometry/src:property"}}{{/crossLink}} property.
-     * An OBJGeometry only parses the geometry data from the .OBJ file and ignores any associated .MTL file.
-     * Internally uses the <a href="http://k3d.ivank.net/">k3d.js</a> library for parsing .OBJ files.
-
-     ## Examples
-
-     <ul>
-     <li>[Importing a Raptor from OBJ](../../examples/#importing_obj_raptor)</li>
-     </ul>
-
-     ## Usage
-
-     ````javascript
-     var entity = new xeogl.Entity({
-
-        geometry: new xeogl.OBJGeometry({
-            src: "models/obj/raptor.obj"
-        }),
-
-        material: new xeogl.PhongMaterial({
-            diffuseMap: new xeogl.Texture({
-                src: "models/obj/raptor.jpg"
-            })
-        }),
-
-        transform: new xeogl.Rotate({
-            xyz: [1, 0, 0],
-            angle: 0,
-
-            parent: new xeogl.Translate({
-                xyz: [10, 3, 10]
-            })
-        })
-     });
-
-     // When the OBJGeometry has loaded,
-     // fly the camera to fit the entity in view
-
-     var cameraFlight = new xeogl.CameraFlightAnimation();
-
-     entity.geometry.on("loaded", function () {
-
-             cameraFlight.flyTo({
-                 aabb: entity.aabb
-             });
-         });
-     ````
-
-     @class OBJGeometry
-     @module xeogl
-     @submodule geometry
-     @constructor
-     @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this OBJGeometry in the default
-     {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
-     @param [cfg] {*} Configs
-     @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
-     generated automatically when omitted.
-     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this OBJGeometry.
-     @param [cfg.src] {String} Path to the .OBJ file.
-     @extends Geometry
-     */
     xeogl.OBJGeometry = xeogl.Geometry.extend({
 
         type: "xeogl.OBJGeometry",
@@ -111,7 +112,7 @@
                     }
 
                     _super.call(self, xeogl._apply(cfg, {
-                        primitive : "triangles",
+                        primitive: "triangles",
                         positions: positions,
                         normals: normals.length > 0 ? normals : null,
                         autoNormals: normals.length === 0,

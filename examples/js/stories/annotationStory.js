@@ -45,7 +45,7 @@
      An **AnnotationStory** is a  {{#crossLink "Story"}}{{/crossLink}} that contains a list
      of {{#crossLink "Annotation"}}Annotations{{/crossLink}} accompanied by a panel of text containing links that activate them.
 
-     <a href="../../examples/#annotations_stories_tronTank"><img src="../../assets/images/screenshots/tronTankAnnotationStory.jpg"></img></a>
+     <a href="../../examples/#annotations_stories_tronTank"><img src="../../assets/images/screenshots/tronTankStory.jpg"></img></a>
 
      * AnnotationStory text is provided as markdown.
      * Words in the text can be linked to xeogl storytelling functions, to fly the camera to Annotation vantage points, show labels etc.
