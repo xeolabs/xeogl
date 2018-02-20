@@ -7,8 +7,6 @@
 
  * Based on technique described in [this article by Paul Bourke](http://paulbourke.net/stereographics/stereorender/).
 
- <img src="../../../assets/images/StereoEffect.png"></img>
-
  ## Examples
 
  * [Stereo view using a StereoEffect](../../examples/#effects_stereo)

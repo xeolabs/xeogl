@@ -5,7 +5,7 @@
 
  #### Position
 
- An Pin is positioned within one of the triangles of its {{#crossLink "Entity"}}Entity's{{/crossLink}} {{#crossLink "Geometry"}}{{/crossLink}}. Wherever that triangles goes within the 3D view, the Pin will automatically follow. An Pin specifies its position with two properties:
+ A Pin is positioned within one of the triangles of its {{#crossLink "Entity"}}Entity's{{/crossLink}} {{#crossLink "Geometry"}}{{/crossLink}}. Wherever that triangles goes within the 3D view, the Pin will automatically follow. An Pin specifies its position with two properties:
 
  * {{#crossLink "Pin/primIndex:property"}}{{/crossLink}}, which indicates the index of the triangle within the {{#crossLink "Geometry"}}{{/crossLink}} {{#crossLink "Geometry/indices:property"}}{{/crossLink}}, and
  * {{#crossLink "Pin/bary:property"}}{{/crossLink}}, the barycentric coordinates of the position within the triangle.
