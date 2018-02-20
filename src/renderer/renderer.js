@@ -274,6 +274,9 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
             if (!object.modes.visible || !object.modes.castShadow) {
                 continue; // For now, culled objects still cast shadows because they are just out of view
             }
+            if (object.material.alpha === 0) {
+                continue;
+            }
             object.drawShadow(frame, light);
         }
 
@@ -380,6 +383,10 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                 material = object.material;
 
                 if (modes.culled === true || modes.visible === false) {
+                    continue;
+                }
+
+                if (material.alpha === 0) {
                     continue;
                 }
 
