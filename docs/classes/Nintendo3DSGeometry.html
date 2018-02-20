@@ -57,7 +57,6 @@
                                 <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
-                                <li><a href="../classes/ClipControl.html">ClipControl</a></li>
                                 <li><a href="../classes/ClipHelper.html">ClipHelper</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
@@ -75,7 +74,6 @@
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
-                                <li><a href="../classes/InputControl.html">InputControl</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
@@ -98,8 +96,6 @@
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PlaneHelper.html">PlaneHelper</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
-                                <li><a href="../classes/PointLightHelper.html">PointLightHelper</a></li>
-                                <li><a href="../classes/Progress.html">Progress</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
@@ -186,12 +182,13 @@
 <h1>Nintendo3DSGeometry</h1>
 <div class="box meta">
 
+
         <div class="extends">
             Extends <a href="../classes/Geometry.html" class="crosslink">Geometry</a>
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/examples_js_geometry_nintendo3DSGeometry.js.html#l5"><code>examples&#x2F;js&#x2F;geometry&#x2F;nintendo3DSGeometry.js:5</code></a>
+            Defined in: <a href="../files/examples_js_geometry_nintendo3DSGeometry.js.html#l1"><code>examples&#x2F;js&#x2F;geometry&#x2F;nintendo3DSGeometry.js:1</code></a>
         </div>
 
             Module: <a href="../modules/geometry.html">geometry</a><br>
@@ -218,26 +215,26 @@
 <h2 id="usage">Usage</h2>
 <pre class="code prettyprint"><code class="lang-javascript">var entity = new xeogl.Entity({
 
-   geometry: new xeogl.Nintendo3DSGeometry({
-       src: "models/3ds/lexus.3ds"
-   }),
+    geometry: new xeogl.Nintendo3DSGeometry({
+        src: "models/3ds/lexus.3ds"
+    }),
 
-   material: new xeogl.PhongMaterial({
-       diffuseMap: new xeogl.Texture({
-           src: "models/3ds/lexus.jpg"
-       }),
-       specular: [0, 0, 0]
-   }),
+    material: new xeogl.PhongMaterial({
+        diffuseMap: new xeogl.Texture({
+            src: "models/3ds/lexus.jpg"
+        }),
+        specular: [0, 0, 0]
+    }),
 
-   // We need to rotate this particular .3DS model
-   transform: new xeogl.Rotate({
-       xyz: [1,0,0],
-       angle: -90,
-       parent: new xeogl.Rotate({
-           xyz: [0,1,0],
-           angle: 90
-       })
-   })
+    // We need to rotate this particular .3DS model
+    transform: new xeogl.Rotate({
+        xyz: [1,0,0],
+        angle: -90,
+        parent: new xeogl.Rotate({
+            xyz: [0,1,0],
+            angle: 90
+        })
+    })
 });
 
 // When the Nintendo3DSGeometry has loaded,
@@ -246,11 +243,10 @@
 var cameraFlight = new xeogl.CameraFlightAnimation();
 
 entity.geometry.on("loaded", function () {
-
-        cameraFlight.flyTo({
-            aabb: entity.aabb
-        });
+    cameraFlight.flyTo({
+        aabb: entity.aabb
     });
+});
 </code></pre>
 
 </div>
@@ -282,7 +278,7 @@ entity.geometry.on("loaded", function () {
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/examples_js_geometry_nintendo3DSGeometry.js.html#l5"><code>examples&#x2F;js&#x2F;geometry&#x2F;nintendo3DSGeometry.js:5</code></a>
+                <a href="../files/examples_js_geometry_nintendo3DSGeometry.js.html#l1"><code>examples&#x2F;js&#x2F;geometry&#x2F;nintendo3DSGeometry.js:1</code></a>
                 </p>
         
         
@@ -1693,7 +1689,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_geometry_nintendo3DSGeometry.js.html#l90"><code>examples&#x2F;js&#x2F;geometry&#x2F;nintendo3DSGeometry.js:90</code></a>
+                            <a href="../files/examples_js_geometry_nintendo3DSGeometry.js.html#l89"><code>examples&#x2F;js&#x2F;geometry&#x2F;nintendo3DSGeometry.js:89</code></a>
                             </p>
                     
                     
@@ -1864,7 +1860,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_geometry_nintendo3DSGeometry.js.html#l156"><code>examples&#x2F;js&#x2F;geometry&#x2F;nintendo3DSGeometry.js:156</code></a>
+                            <a href="../files/examples_js_geometry_nintendo3DSGeometry.js.html#l155"><code>examples&#x2F;js&#x2F;geometry&#x2F;nintendo3DSGeometry.js:155</code></a>
                             </p>
                     
                     

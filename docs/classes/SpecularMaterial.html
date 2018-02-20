@@ -57,7 +57,6 @@
                                 <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
-                                <li><a href="../classes/ClipControl.html">ClipControl</a></li>
                                 <li><a href="../classes/ClipHelper.html">ClipHelper</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
@@ -75,7 +74,6 @@
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
-                                <li><a href="../classes/InputControl.html">InputControl</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
@@ -98,8 +96,6 @@
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PlaneHelper.html">PlaneHelper</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
-                                <li><a href="../classes/PointLightHelper.html">PointLightHelper</a></li>
-                                <li><a href="../classes/Progress.html">Progress</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
@@ -185,6 +181,7 @@
                     <div class="content">
 <h1>SpecularMaterial</h1>
 <div class="box meta">
+
 
         <div class="extends">
             Extends <a href="../classes/Material.html" class="crosslink">Material</a>
@@ -401,9 +398,11 @@
 <p>Our plastered sphere <a href="../classes/Entity.html" class="crosslink">Entity</a> has:</p>
 <ul>
 <li>a <a href="../classes/SphereGeometry.html" class="crosslink">SphereGeometry</a>,</li>
-<li>a <a href="../classes/Lights.html" class="crosslink">Lights</a> containing <a href="../classes/DirLight.html" class="crosslink">DirLights</a>, plus <a href="../classes/CubeTexture.html" class="crosslink">CubeTextures</a> for light and reflection maps, and</li>
 <li>a SpecularMaterial with <a href="../classes/Texture.html" class="crosslink">Textures</a> providing diffuse, glossiness, specular and normal maps.</li>
 </ul>
+<p>We&#39;ll also provide its <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s <a href="../classes/Lights.html" class="crosslink">Lights</a> with
+<a href="../classes/DirLight.html" class="crosslink">DirLights</a>, plus <a href="../classes/CubeTexture.html" class="crosslink">CubeTextures</a> for light
+and reflection maps.</p>
 <p>Note that in this example we&#39;re providing separate <a href="../classes/Texture.html" class="crosslink">Textures</a> for the <a href="../classes/SpecularMaterial.html#property_specular" class="crosslink">specular</a> and <a href="../classes/SpecularMaterial.html#property_glossiness" class="crosslink">glossiness</a>
 channels, which allows us a little creative flexibility. Then, in the next example further down, we&#39;ll combine those channels
 within the same <a href="../classes/Texture.html" class="crosslink">Texture</a> for efficiency.</p>
@@ -414,46 +413,6 @@ within the same <a href="../classes/Texture.html" class="crosslink">Texture</a> 
        radius: 1.5,
        heightSegments: 60,
        widthSegments: 60
-   }),
-
-   lights: new xeogl.Lights({
-       lights: [
-           new xeogl.DirLight({
-               dir: [0.8, -0.6, -0.8],
-               color: [0.8, 0.8, 0.8],
-               space: "view"
-           }),
-           new xeogl.DirLight({
-               dir: [-0.8, -0.4, -0.4],
-               color: [0.4, 0.4, 0.5],
-               space: "view"
-           }),
-           new xeogl.DirLight({
-               dir: [0.2, -0.8, 0.8],
-               color: [0.8, 0.8, 0.8],
-               space: "view"
-           })
-       ],
-       lightMap: new xeogl.CubeTexture({
-           src: [
-               "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
-               "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png",
-               "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png",
-               "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png",
-               "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png",
-               "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png"
-           ]
-       }),
-       reflectionMap: new xeogl.CubeTexture({
-           src: [
-               "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
-               "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
-               "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
-               "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
-               "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
-               "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
-           ]
-       })
    }),
 
    material: new xeogl.SpecularMaterial({
@@ -481,6 +440,48 @@ within the same <a href="../classes/Texture.html" class="crosslink">Texture</a> 
            src: "textures/materials/poligon/Plaster07_1k/Plaster07_NRM_1K.jpg"
        }
    })
+});
+
+var scene = plasteredSphere.scene;
+
+scene.lights.lights = [
+    new xeogl.DirLight({
+        dir: [0.8, -0.6, -0.8],
+        color: [0.8, 0.8, 0.8],
+        space: "view"
+    }),
+    new xeogl.DirLight({
+        dir: [-0.8, -0.4, -0.4],
+        color: [0.4, 0.4, 0.5],
+        space: "view"
+    }),
+    new xeogl.DirLight({
+        dir: [0.2, -0.8, 0.8],
+        color: [0.8, 0.8, 0.8],
+        space: "view"
+    }
+];
+
+scene.lights.lightMap = new xeogl.CubeTexture({
+    src: [
+        "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
+        "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png",
+        "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png",
+        "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png",
+        "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png",
+        "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png"
+    ]
+});
+
+scene.lights.reflectionMap = new xeogl.CubeTexture({
+    src: [
+        "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
+        "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
+        "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
+        "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
+        "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
+        "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
+    ]
 });
 </code></pre>
 <h3 id="combining-channels-within-the-same-textures">Combining channels within the same textures</h3>
@@ -525,8 +526,8 @@ plasteredSphere.material.alphaMode = "blend";
 and configure <a href="../classes/SpecularMaterial.html#property_alpha" class="crosslink">alpha</a>, <a href="../classes/SpecularMaterial.html#property_alphaMode" class="crosslink">alphaMode</a>,
 and <a href="../classes/SpecularMaterial.html#property_alphaCutoff" class="crosslink">alphaCutoff</a> to treat it as an alpha mask:</p>
 <pre class="code prettyprint"><code class="lang-javascript">plasteredSphere.material.alphaMap = new xeogl.Texture({
-       src: "textures/diffuse/crossGridColorMap.jpg"
-   });
+    src: "textures/diffuse/crossGridColorMap.jpg"
+});
 
 plasteredSphere.material.alpha = 1.0;
 plasteredSphere.material.alphaMode = "mask";
@@ -1857,7 +1858,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l720"><code>src&#x2F;materials&#x2F;specularMaterial.js:720</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l725"><code>src&#x2F;materials&#x2F;specularMaterial.js:725</code></a>
                             </p>
                     
                     
@@ -1886,7 +1887,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l860"><code>src&#x2F;materials&#x2F;specularMaterial.js:860</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l865"><code>src&#x2F;materials&#x2F;specularMaterial.js:865</code></a>
                             </p>
                     
                     
@@ -1919,7 +1920,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l752"><code>src&#x2F;materials&#x2F;specularMaterial.js:752</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l757"><code>src&#x2F;materials&#x2F;specularMaterial.js:757</code></a>
                             </p>
                     
                     
@@ -1947,7 +1948,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l816"><code>src&#x2F;materials&#x2F;specularMaterial.js:816</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l821"><code>src&#x2F;materials&#x2F;specularMaterial.js:821</code></a>
                             </p>
                     
                     
@@ -1981,7 +1982,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l895"><code>src&#x2F;materials&#x2F;specularMaterial.js:895</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l900"><code>src&#x2F;materials&#x2F;specularMaterial.js:900</code></a>
                             </p>
                     
                     
@@ -2034,7 +2035,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l390"><code>src&#x2F;materials&#x2F;specularMaterial.js:390</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l395"><code>src&#x2F;materials&#x2F;specularMaterial.js:395</code></a>
                             </p>
                     
                     
@@ -2061,7 +2062,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l431"><code>src&#x2F;materials&#x2F;specularMaterial.js:431</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l436"><code>src&#x2F;materials&#x2F;specularMaterial.js:436</code></a>
                             </p>
                     
                     
@@ -2090,7 +2091,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l650"><code>src&#x2F;materials&#x2F;specularMaterial.js:650</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l655"><code>src&#x2F;materials&#x2F;specularMaterial.js:655</code></a>
                             </p>
                     
                     
@@ -2117,7 +2118,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l691"><code>src&#x2F;materials&#x2F;specularMaterial.js:691</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l696"><code>src&#x2F;materials&#x2F;specularMaterial.js:696</code></a>
                             </p>
                     
                     
@@ -2145,7 +2146,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l925"><code>src&#x2F;materials&#x2F;specularMaterial.js:925</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l930"><code>src&#x2F;materials&#x2F;specularMaterial.js:930</code></a>
                             </p>
                     
                     
@@ -2173,7 +2174,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l562"><code>src&#x2F;materials&#x2F;specularMaterial.js:562</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l567"><code>src&#x2F;materials&#x2F;specularMaterial.js:567</code></a>
                             </p>
                     
                     
@@ -2202,7 +2203,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l594"><code>src&#x2F;materials&#x2F;specularMaterial.js:594</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l599"><code>src&#x2F;materials&#x2F;specularMaterial.js:599</code></a>
                             </p>
                     
                     
@@ -2281,7 +2282,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l955"><code>src&#x2F;materials&#x2F;specularMaterial.js:955</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l960"><code>src&#x2F;materials&#x2F;specularMaterial.js:960</code></a>
                             </p>
                     
                     
@@ -2332,7 +2333,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l774"><code>src&#x2F;materials&#x2F;specularMaterial.js:774</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l779"><code>src&#x2F;materials&#x2F;specularMaterial.js:779</code></a>
                             </p>
                     
                     
@@ -2359,7 +2360,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l794"><code>src&#x2F;materials&#x2F;specularMaterial.js:794</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l799"><code>src&#x2F;materials&#x2F;specularMaterial.js:799</code></a>
                             </p>
                     
                     
@@ -2387,7 +2388,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l976"><code>src&#x2F;materials&#x2F;specularMaterial.js:976</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l981"><code>src&#x2F;materials&#x2F;specularMaterial.js:981</code></a>
                             </p>
                     
                     
@@ -2439,7 +2440,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l461"><code>src&#x2F;materials&#x2F;specularMaterial.js:461</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l466"><code>src&#x2F;materials&#x2F;specularMaterial.js:466</code></a>
                             </p>
                     
                     
@@ -2467,7 +2468,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l623"><code>src&#x2F;materials&#x2F;specularMaterial.js:623</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l628"><code>src&#x2F;materials&#x2F;specularMaterial.js:628</code></a>
                             </p>
                     
                     
@@ -2493,7 +2494,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l532"><code>src&#x2F;materials&#x2F;specularMaterial.js:532</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l537"><code>src&#x2F;materials&#x2F;specularMaterial.js:537</code></a>
                             </p>
                     
                     
@@ -2522,7 +2523,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l503"><code>src&#x2F;materials&#x2F;specularMaterial.js:503</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l508"><code>src&#x2F;materials&#x2F;specularMaterial.js:508</code></a>
                             </p>
                     
                     
@@ -2642,7 +2643,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l447"><code>src&#x2F;materials&#x2F;specularMaterial.js:447</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l452"><code>src&#x2F;materials&#x2F;specularMaterial.js:452</code></a>
                             </p>
                     
                     
@@ -2684,7 +2685,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l706"><code>src&#x2F;materials&#x2F;specularMaterial.js:706</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l711"><code>src&#x2F;materials&#x2F;specularMaterial.js:711</code></a>
                             </p>
                     
                     
@@ -2726,7 +2727,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l609"><code>src&#x2F;materials&#x2F;specularMaterial.js:609</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l614"><code>src&#x2F;materials&#x2F;specularMaterial.js:614</code></a>
                             </p>
                     
                     
@@ -2768,7 +2769,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l548"><code>src&#x2F;materials&#x2F;specularMaterial.js:548</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l553"><code>src&#x2F;materials&#x2F;specularMaterial.js:553</code></a>
                             </p>
                     
                     
@@ -2810,7 +2811,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_specularMaterial.js.html#l518"><code>src&#x2F;materials&#x2F;specularMaterial.js:518</code></a>
+                            <a href="../files/src_materials_specularMaterial.js.html#l523"><code>src&#x2F;materials&#x2F;specularMaterial.js:523</code></a>
                             </p>
                     
                     

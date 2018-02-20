@@ -57,7 +57,6 @@
                                 <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
-                                <li><a href="../classes/ClipControl.html">ClipControl</a></li>
                                 <li><a href="../classes/ClipHelper.html">ClipHelper</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
@@ -75,7 +74,6 @@
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
-                                <li><a href="../classes/InputControl.html">InputControl</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
@@ -98,8 +96,6 @@
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PlaneHelper.html">PlaneHelper</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
-                                <li><a href="../classes/PointLightHelper.html">PointLightHelper</a></li>
-                                <li><a href="../classes/Progress.html">Progress</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
@@ -401,8 +397,6 @@
  outlineMaterial.edgeWidth = 6;
  &#x60;&#x60;&#x60;&#x60;
 
- * See {{#crossLink &quot;Entity&quot;}}{{/crossLink}} and {{#crossLink &quot;GhostMaterial&quot;}}{{/crossLink}}
-
  ### Picking entities
 
  Use the Scene&#x27;s {{#crossLink &quot;Scene/pick:method&quot;}}pick(){{/crossLink}} method to pick and raycast entities.
@@ -491,8 +485,6 @@
  });
  &#x60;&#x60;&#x60;&#x60;
 
- ### Controlling rendering
-
  ### Managing the viewport
 
  The Scene&#x27;s {{#crossLink &quot;Viewport&quot;}}{{/crossLink}} component manages the WebGL viewport:
@@ -500,6 +492,59 @@
  &#x60;&#x60;&#x60;&#x60;javascript
  var viewport = scene.viewport
  viewport.boundary = [0, 0, 500, 400];;
+ &#x60;&#x60;&#x60;&#x60;
+
+ ### Controlling rendering
+
+ You can configure a Scene to perform multiple &quot;passes&quot; (renders) per frame. This is useful when we want to render the
+ scene to multiple viewports, such as for stereo effects.
+
+ In the example, below, we&#x27;ll configure the Scene to render twice on each frame, each time to different viewport. We&#x27;ll do this
+ with a callback that intercepts the Scene before each render and sets its {{#crossLink &quot;Viewport&quot;}}{{/crossLink}} to a
+ different portion of the canvas. By default, the Scene will clear the canvas only before the first render, allowing the
+ two views to be shown on the canvas at the same time.
+
+ &#x60;&#x60;&#x60;&#x60;Javascript
+ // Load glTF model
+ var model = new xeogl.GLTFModel({
+    src: &quot;models/gltf/GearboxAssy/glTF/GearboxAssy.gltf&quot;
+ });
+
+ var scene = model.scene;
+ var viewport = scene.viewport;
+
+ // Configure Scene to render twice for each frame
+ scene.passes = 2; // Default is 1
+ scene.clearEachPass = false; // Default is false
+
+ // Render to a separate viewport on each render
+
+ var viewport = scene.viewport;
+ viewport.autoBoundary = false;
+
+ scene.on(&quot;rendering&quot;, function (e) {
+     switch (e.pass) {
+         case 0:
+             viewport.boundary = [0, 0, 200, 200]; // xmin, ymin, width, height
+             break;
+
+         case 1:
+             viewport.boundary = [200, 0, 200, 200];
+             break;
+     }
+ });
+
+ // We can also intercept the Scene after each render,
+ // (though we&#x27;re not using this for anything here)
+ scene.on(&quot;rendered&quot;, function (e) {
+     switch (e.pass) {
+         case 0:
+             break;
+
+         case 1:
+             break;
+     }
+ });
  &#x60;&#x60;&#x60;&#x60;
 
  @class Scene

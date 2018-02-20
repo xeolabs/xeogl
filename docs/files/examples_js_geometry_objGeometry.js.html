@@ -57,7 +57,6 @@
                                 <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
-                                <li><a href="../classes/ClipControl.html">ClipControl</a></li>
                                 <li><a href="../classes/ClipHelper.html">ClipHelper</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
@@ -75,7 +74,6 @@
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
-                                <li><a href="../classes/InputControl.html">InputControl</a></li>
                                 <li><a href="../classes/LabelHelper.html">LabelHelper</a></li>
                                 <li><a href="../classes/LambertMaterial.html">LambertMaterial</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
@@ -98,8 +96,6 @@
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PlaneHelper.html">PlaneHelper</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
-                                <li><a href="../classes/PointLightHelper.html">PointLightHelper</a></li>
-                                <li><a href="../classes/Progress.html">Progress</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
@@ -187,79 +183,80 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
+/**
+ An **OBJGeometry** is a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that&#x27;s loaded from a
+
+ &lt;a href=&quot;https://en.wikipedia.org/wiki/Wavefront_.obj_file&quot;&gt;Wavefront .OBJ&lt;/a&gt; file.
+
+ &lt;a href=&quot;../../examples/#importing_obj_raptor&quot;&gt;&lt;img src=&quot;../../assets/images/screenshots/OBJGeometry.png&quot;&gt;&lt;/img&gt;&lt;/a&gt;
+
+ ## Overview
+
+ * An OBJGeometry mesh is defined by the Wavefront .OBJ file referenced by the OBJGeometry&#x27;s {{#crossLink &quot;OBJGeometry/src:property&quot;}}{{/crossLink}} property.
+ * An OBJGeometry only parses the geometry data from the .OBJ file and ignores any associated .MTL file.
+ * Internally uses the &lt;a href=&quot;http://k3d.ivank.net/&quot;&gt;k3d.js&lt;/a&gt; library for parsing .OBJ files.
+
+ ## Examples
+
+ &lt;ul&gt;
+ &lt;li&gt;[Importing a Raptor from OBJ](../../examples/#importing_obj_raptor)&lt;/li&gt;
+ &lt;/ul&gt;
+
+ ## Usage
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ var entity = new xeogl.Entity({
+
+     geometry: new xeogl.OBJGeometry({
+         src: &quot;models/obj/raptor.obj&quot;
+     }),
+
+     material: new xeogl.PhongMaterial({
+         diffuseMap: new xeogl.Texture({
+             src: &quot;models/obj/raptor.jpg&quot;
+         })
+     }),
+
+     transform: new xeogl.Rotate({
+         xyz: [1, 0, 0],
+         angle: 0,
+
+         parent: new xeogl.Translate({
+             xyz: [10, 3, 10]
+         })
+     })
+ });
+
+ // When the OBJGeometry has loaded,
+ // fly the camera to fit the entity in view
+
+ var cameraFlight = new xeogl.CameraFlightAnimation();
+
+ entity.geometry.on(&quot;loaded&quot;, function () {
+
+     cameraFlight.flyTo({
+         aabb: entity.aabb
+     });
+ });
+ &#x60;&#x60;&#x60;&#x60;
+
+ @class OBJGeometry
+ @module xeogl
+ @submodule geometry
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this OBJGeometry in the default
+ {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}},
+ generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this OBJGeometry.
+ @param [cfg.src] {String} Path to the .OBJ file.
+ @extends Geometry
+ */
 (function () {
 
     &quot;use strict&quot;;
 
-    /**
-     An **OBJGeometry** is a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that&#x27;s loaded from a
-     &lt;a href=&quot;https://en.wikipedia.org/wiki/Wavefront_.obj_file&quot;&gt;Wavefront .OBJ&lt;/a&gt; file.
-
-     &lt;a href=&quot;../../examples/#importing_obj_raptor&quot;&gt;&lt;img src=&quot;../../assets/images/screenshots/OBJGeometry.png&quot;&gt;&lt;/img&gt;&lt;/a&gt;
-
-     ## Overview
-
-     * An OBJGeometry mesh is defined by the Wavefront .OBJ file referenced by the OBJGeometry&#x27;s {{#crossLink &quot;OBJGeometry/src:property&quot;}}{{/crossLink}} property.
-     * An OBJGeometry only parses the geometry data from the .OBJ file and ignores any associated .MTL file.
-     * Internally uses the &lt;a href=&quot;http://k3d.ivank.net/&quot;&gt;k3d.js&lt;/a&gt; library for parsing .OBJ files.
-
-     ## Examples
-
-     &lt;ul&gt;
-     &lt;li&gt;[Importing a Raptor from OBJ](../../examples/#importing_obj_raptor)&lt;/li&gt;
-     &lt;/ul&gt;
-
-     ## Usage
-
-     &#x60;&#x60;&#x60;&#x60;javascript
-     var entity = new xeogl.Entity({
-
-        geometry: new xeogl.OBJGeometry({
-            src: &quot;models/obj/raptor.obj&quot;
-        }),
-
-        material: new xeogl.PhongMaterial({
-            diffuseMap: new xeogl.Texture({
-                src: &quot;models/obj/raptor.jpg&quot;
-            })
-        }),
-
-        transform: new xeogl.Rotate({
-            xyz: [1, 0, 0],
-            angle: 0,
-
-            parent: new xeogl.Translate({
-                xyz: [10, 3, 10]
-            })
-        })
-     });
-
-     // When the OBJGeometry has loaded,
-     // fly the camera to fit the entity in view
-
-     var cameraFlight = new xeogl.CameraFlightAnimation();
-
-     entity.geometry.on(&quot;loaded&quot;, function () {
-
-             cameraFlight.flyTo({
-                 aabb: entity.aabb
-             });
-         });
-     &#x60;&#x60;&#x60;&#x60;
-
-     @class OBJGeometry
-     @module xeogl
-     @submodule geometry
-     @constructor
-     @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this OBJGeometry in the default
-     {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
-     @param [cfg] {*} Configs
-     @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}},
-     generated automatically when omitted.
-     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this OBJGeometry.
-     @param [cfg.src] {String} Path to the .OBJ file.
-     @extends Geometry
-     */
     xeogl.OBJGeometry = xeogl.Geometry.extend({
 
         type: &quot;xeogl.OBJGeometry&quot;,
@@ -300,7 +297,7 @@
                     }
 
                     _super.call(self, xeogl._apply(cfg, {
-                        primitive : &quot;triangles&quot;,
+                        primitive: &quot;triangles&quot;,
                         positions: positions,
                         normals: normals.length &gt; 0 ? normals : null,
                         autoNormals: normals.length === 0,
