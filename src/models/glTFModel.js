@@ -28,6 +28,17 @@
  * [KHR_materials_pbrSpecularGlossiness](https://github.com/KhronosGroup/glTF/blob/master/extensions/Khronos/KHR_materials_pbrSpecularGlossiness/README.md)
  * [KHR_materials_common](https://github.com/KhronosGroup/glTF/blob/master/extensions/Khronos/KHR_materials_common/README.md)
 
+ ## Examples
+
+ * [Damaged Helmet with metal/rough PBR materials](../../examples/#importing_gltf_DamagedHelmet)
+ * [Hover bike with specular/glossiness PBR materials](../../examples/#importing_gltf_Hoverbike)
+ * [Loading glTF with embedded assets](../../examples/#importing_gltf_embedded)
+ * [Parsing glTF JSON with embedded assets](../../examples/#importing_gltf_parsing_embedded)
+ * [Ignoring materials when loading](../../examples/#importing_gltf_options_ignoreMaterials)
+ * [Baking transform hierarchies when loading](../../examples/#importing_gltf_options_flattenTransforms)
+ * [Converting materials to simple Lambertian when loading](../../examples/#importing_gltf_options_lambertMaterials)
+ * [All loading options for max performance](../../examples/#importing_gltf_options_maxPerformance)
+
  ## Usage
 
  * [Loading glTF](#loading-gltf)
@@ -247,17 +258,6 @@
  ```` Javascript
  model.destroy();
  ````
-
- ## Examples
-
- * [Damaged Helmet with metal/rough PBR materials](../../examples/#importing_gltf_DamagedHelmet)
- * [Hover bike with specular/glossiness PBR materials](../../examples/#importing_gltf_Hoverbike)
- * [Loading glTF with embedded assets](../../examples/#importing_gltf_embedded)
- * [Parsing glTF JSON with embedded assets](../../examples/#importing_gltf_parsing_embedded)
- * [Ignoring materials when loading](../../examples/#importing_gltf_options_ignoreMaterials)
- * [Baking transform hierarchies when loading](../../examples/#importing_gltf_options_flattenTransforms)
- * [Converting materials to simple Lambertian when loading](../../examples/#importing_gltf_options_lambertMaterials)
- * [All loading options for max performance](../../examples/#importing_gltf_options_maxPerformance)
 
  @class GLTFModel
  @module xeogl

@@ -50,8 +50,11 @@
  In the example below we'll create the [yellow fire hydrant](../../examples/#materials_metallic_fireHydrant) shown in the example screen shots above. Our hydrant {{#crossLink "Entity"}}{{/crossLink}} has:
 
  * a {{#crossLink "OBJGeometry"}}{{/crossLink}} which loads the fire hydrant mesh from an .OBJ file,
- * a {{#crossLink "Lights"}}{{/crossLink}} containing {{#crossLink "DirLight"}}DirLights{{/crossLink}}, plus {{#crossLink "CubeTexture"}}CubeTextures{{/crossLink}} for light and reflection maps, and
  * a MetallicMaterial with {{#crossLink "Texture"}}Textures{{/crossLink}} providing diffuse, metallic, roughness, occlusion and normal maps.
+
+ We'll also provide its {{#crossLink "Scene"}}{{/crossLink}}'s {{#crossLink "Lights"}}{{/crossLink}} with
+ {{#crossLink "DirLight"}}DirLights{{/crossLink}}, plus {{#crossLink "CubeTexture"}}CubeTextures{{/crossLink}} for light
+ and reflection maps.
 
  Note that in this example we're providing separate {{#crossLink "Texture"}}Textures{{/crossLink}} for the {{#crossLink "MetallicMaterial/metallic:property"}}{{/crossLink}} and {{#crossLink "MetallicMaterial/roughness:property"}}{{/crossLink}}
  channels, which allows us a little creative flexibility. Then, in the next example further down, we'll combine those channels
@@ -62,46 +65,6 @@
 
     geometry: new xeogl.OBJGeometry({
         src: "models/obj/FireHydrantMesh.obj"
-    }),
-
-    lights: new xeogl.Lights({
-        lights: [
-            new xeogl.DirLight({
-                dir: [0.8, -0.6, -0.8],
-                color: [0.8, 0.8, 0.8],
-                space: "view"
-            }),
-            new xeogl.DirLight({
-                dir: [-0.8, -0.4, -0.4],
-                color: [0.4, 0.4, 0.5],
-                space: "view"
-            }),
-            new xeogl.DirLight({
-                dir: [0.2, -0.8, 0.8],
-                color: [0.8, 0.8, 0.8],
-                space: "view"
-            })
-        ],
-        lightMap: new xeogl.CubeTexture({
-            src: [
-                "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
-                "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png",
-                "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png",
-                "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png",
-                "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png",
-                "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png"
-            ]
-        }),
-        reflectionMap: new xeogl.CubeTexture({
-            src: [
-                "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
-                "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
-                "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
-                "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
-                "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
-                "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
-            ]
-        })
     }),
 
     material: new xeogl.MetallicMaterial({
@@ -136,6 +99,48 @@
             src: "textures/normal/fire_hydrant_Normal_OpenGL.png"
         })
     })
+ });
+
+ var scene = hydrant.scene;
+
+ scene.lights.lights = [
+     new xeogl.DirLight({
+         dir: [0.8, -0.6, -0.8],
+         color: [0.8, 0.8, 0.8],
+         space: "view"
+     }),
+     new xeogl.DirLight({
+         dir: [-0.8, -0.4, -0.4],
+         color: [0.4, 0.4, 0.5],
+         space: "view"
+     }),
+     new xeogl.DirLight({
+         dir: [0.2, -0.8, 0.8],
+         color: [0.8, 0.8, 0.8],
+         space: "view"
+     }
+ ];
+
+ scene.lights.lightMap = new xeogl.CubeTexture({
+     src: [
+         "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
+         "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png",
+         "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png",
+         "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png",
+         "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png",
+         "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png"
+     ]
+ });
+
+ scene.lights.reflectionMap = new xeogl.CubeTexture({
+     src: [
+         "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
+         "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
+         "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
+         "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
+         "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
+         "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
+     ]
  });
  ````
 

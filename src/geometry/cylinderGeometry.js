@@ -3,14 +3,6 @@
 
  <a href="../../examples/#geometry_primitives_cylinder"><img src="../../assets/images/screenshots/CylinderGeometry.png"></img></a>
 
- ## Overview
-
- * Dynamically modify a CylinderGeometry's shape at any time by updating its {{#crossLink "CylinderGeometry/center:property"}}{{/crossLink}}, {{#crossLink "CylinderGeometry/radiusTop:property"}}{{/crossLink}}, {{#crossLink "CylinderGeometry/radiusBottom:property"}}{{/crossLink}}, {{#crossLink "CylinderGeometry/height:property"}}{{/crossLink}},
- {{#crossLink "CylinderGeometry/radialSegments:property"}}{{/crossLink}}, {{#crossLink "CylinderGeometry/heightSegments:property"}}{{/crossLink}} and
- {{#crossLink "CylinderGeometry/openEnded:property"}}{{/crossLink}} properties.
- * Dynamically switch its primitive type between ````"points"````, ````"lines"```` and ````"triangles"```` at any time by
- updating its {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} property.
-
  ## Examples
 
  * [Textured CylinderGeometry](../../examples/#geometry_primitives_cylinder)

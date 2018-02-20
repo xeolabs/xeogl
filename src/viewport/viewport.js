@@ -1,13 +1,12 @@
 /**
- A **Viewport** defines TODO.
-
- <br>
+ A **Viewport** controls the canvas viewport for a {{#crossLink "Scene"}}{{/crossLink}}.
 
  <a href="../../examples/#effects_stereo_custom"><img src="../../../assets/images/screenshots/StereoEffect.png"></img></a>
 
  ## Overview
 
- * TODO
+ * One Viewport per scene.
+ * You can configure a Scene to render multiple times per frame, while setting the Viewport to different extents on each render.
  * Make a Viewport automatically size to its {{#crossLink "Scene"}}Scene's{{/crossLink}} {{#crossLink "Canvas"}}{{/crossLink}}
  by setting its {{#crossLink "Viewport/autoBoundary:property"}}{{/crossLink}} property ````true```` (default is ````false````).
 
@@ -17,7 +16,38 @@
 
  ## Usage
 
-TODO
+ Configuring the Scene to render twice on each frame, each time to a separate viewport:
+
+ ````Javascript
+ // Load glTF model
+ var model = new xeogl.GLTFModel({
+    src: "models/gltf/GearboxAssy/glTF/GearboxAssy.gltf"
+ });
+
+ var scene = model.scene;
+ var viewport = scene.viewport;
+
+ // Configure Scene to render twice for each frame
+ scene.passes = 2; // Default is 1
+ scene.clearEachPass = false; // Default is false
+
+ // Render to a separate viewport on each render
+
+ var viewport = scene.viewport;
+ viewport.autoBoundary = false;
+
+ scene.on("rendering", function (e) {
+     switch (e.pass) {
+         case 0:
+             viewport.boundary = [0, 0, 200, 200]; // xmin, ymin, width, height
+             break;
+
+         case 1:
+             viewport.boundary = [200, 0, 200, 200];
+             break;
+     }
+ });
+ ````
 
  @class Viewport
  @module xeogl

@@ -16,7 +16,6 @@
  * By default, an Entity has the {{#crossLink "Scene"}}{{/crossLink}}'s global GhostMaterial, but you can give each Entity its own GhostMaterial when you want to customize the effect per-Entity.
  * Ghost all Entities in a {{#crossLink "Model"}}{{/crossLink}} by setting the Model's {{#crossLink "Model/ghost:property"}}{{/crossLink}} property ````true````. Note that all Entities in a Model have the Scene's global GhostMaterial by default.
  * Modify the Scene's global GhostMaterial to customize it.
- * GhostMaterial is often used in conjunction with {{#crossLink "HighlightMaterial"}}{{/crossLink}}, where HighlightMaterial emphasises objects of interest and GhostMaterial de-emphasises everything else (see Examples 2 and 3 above).
 
  ## Usage
 
