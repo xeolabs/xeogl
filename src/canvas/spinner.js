@@ -12,8 +12,6 @@
  completes (or fails), would decrement it again.
  * A Spinner is only visible while {{#crossLink "Spinner/processes:property"}}{{/crossLink}} is greater than zero.
 
- <img src="../../../assets/images/Spinner.png"></img>
-
  ## Examples
 
  * [Loading glTF model with spinner](../../examples/#importing_gltf_GearboxAssy)

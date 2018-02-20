@@ -2,8 +2,6 @@
  A **SpotLight** defines a positional light source that originates from a single point and eminates in a given direction,
  to illuminate {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
-TODO
-
  ## Overview
 
  * SpotLights are grouped, along with other light source types, within a {{#crossLink "Lights"}}Lights{{/crossLink}} component,
@@ -16,8 +14,6 @@ TODO
  * SpotLights have {{#crossLink "SpotLight/constantAttenuation:property"}}{{/crossLink}}, {{#crossLink "SpotLight/linearAttenuation:property"}}{{/crossLink}} and
  {{#crossLink "SpotLight/quadraticAttenuation:property"}}{{/crossLink}} factors, which indicate how their intensity attenuates over distance.
  * A SpotLight can also have a {{#crossLink "Shadow"}}{{/crossLink}} component, to configure it to cast a shadow.
-
- TODO
 
  ## Examples
 

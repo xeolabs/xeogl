@@ -10,8 +10,6 @@
  * To create a Texture from an HTMLImageElement, set the Texture's {{#crossLink "Texture/image:property"}}{{/crossLink}}
  property to the HTMLImageElement.
 
- <img src="../../assets/images/Texture.png"></img>
-
  ## Examples
 
  * [Textures on MetallicMaterials](../../examples/#materials_metallic_textures)

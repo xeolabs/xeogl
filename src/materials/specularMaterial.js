@@ -56,8 +56,11 @@
  Our plastered sphere {{#crossLink "Entity"}}{{/crossLink}} has:
 
  * a {{#crossLink "SphereGeometry"}}{{/crossLink}},
- * a {{#crossLink "Lights"}}{{/crossLink}} containing {{#crossLink "DirLight"}}DirLights{{/crossLink}}, plus {{#crossLink "CubeTexture"}}CubeTextures{{/crossLink}} for light and reflection maps, and
  * a SpecularMaterial with {{#crossLink "Texture"}}Textures{{/crossLink}} providing diffuse, glossiness, specular and normal maps.
+
+ We'll also provide its {{#crossLink "Scene"}}{{/crossLink}}'s {{#crossLink "Lights"}}{{/crossLink}} with
+ {{#crossLink "DirLight"}}DirLights{{/crossLink}}, plus {{#crossLink "CubeTexture"}}CubeTextures{{/crossLink}} for light
+ and reflection maps.
 
  Note that in this example we're providing separate {{#crossLink "Texture"}}Textures{{/crossLink}} for the {{#crossLink "SpecularMaterial/specular:property"}}{{/crossLink}} and {{#crossLink "SpecularMaterial/glossiness:property"}}{{/crossLink}}
  channels, which allows us a little creative flexibility. Then, in the next example further down, we'll combine those channels
@@ -71,46 +74,6 @@
         radius: 1.5,
         heightSegments: 60,
         widthSegments: 60
-    }),
-
-    lights: new xeogl.Lights({
-        lights: [
-            new xeogl.DirLight({
-                dir: [0.8, -0.6, -0.8],
-                color: [0.8, 0.8, 0.8],
-                space: "view"
-            }),
-            new xeogl.DirLight({
-                dir: [-0.8, -0.4, -0.4],
-                color: [0.4, 0.4, 0.5],
-                space: "view"
-            }),
-            new xeogl.DirLight({
-                dir: [0.2, -0.8, 0.8],
-                color: [0.8, 0.8, 0.8],
-                space: "view"
-            })
-        ],
-        lightMap: new xeogl.CubeTexture({
-            src: [
-                "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
-                "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png",
-                "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png",
-                "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png",
-                "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png",
-                "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png"
-            ]
-        }),
-        reflectionMap: new xeogl.CubeTexture({
-            src: [
-                "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
-                "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
-                "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
-                "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
-                "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
-                "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
-            ]
-        })
     }),
 
     material: new xeogl.SpecularMaterial({
@@ -138,6 +101,48 @@
             src: "textures/materials/poligon/Plaster07_1k/Plaster07_NRM_1K.jpg"
         }
     })
+ });
+
+ var scene = plasteredSphere.scene;
+
+ scene.lights.lights = [
+     new xeogl.DirLight({
+         dir: [0.8, -0.6, -0.8],
+         color: [0.8, 0.8, 0.8],
+         space: "view"
+     }),
+     new xeogl.DirLight({
+         dir: [-0.8, -0.4, -0.4],
+         color: [0.4, 0.4, 0.5],
+         space: "view"
+     }),
+     new xeogl.DirLight({
+         dir: [0.2, -0.8, 0.8],
+         color: [0.8, 0.8, 0.8],
+         space: "view"
+     }
+ ];
+
+ scene.lights.lightMap = new xeogl.CubeTexture({
+     src: [
+         "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
+         "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png",
+         "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png",
+         "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png",
+         "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png",
+         "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png"
+     ]
+ });
+
+ scene.lights.reflectionMap = new xeogl.CubeTexture({
+     src: [
+         "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
+         "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
+         "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
+         "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
+         "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
+         "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
+     ]
  });
  ````
 
@@ -198,8 +203,8 @@
 
  ````javascript
  plasteredSphere.material.alphaMap = new xeogl.Texture({
-        src: "textures/diffuse/crossGridColorMap.jpg"
-    });
+     src: "textures/diffuse/crossGridColorMap.jpg"
+ });
 
  plasteredSphere.material.alpha = 1.0;
  plasteredSphere.material.alphaMode = "mask";

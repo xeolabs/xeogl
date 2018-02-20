@@ -3,18 +3,9 @@
 
  <a href="../../examples/#geometry_primitives_sphere"><img src="../../assets/images/screenshots/SphereGeometry.png"></img></a>
 
- ## Overview
-
- * Dynamically modify a SphereGeometry's shape at any time by updating its {{#crossLink "SphereGeometry/center:property"}}{{/crossLink}}, {{#crossLink "SphereGeometry/radius:property"}}{{/crossLink}}, {{#crossLink "SphereGeometry/heightSegments:property"}}{{/crossLink}} and
- {{#crossLink "SphereGeometry/widthSegments:property"}}{{/crossLink}} properties.
- * Dynamically switch its primitive type between ````"points"````, ````"lines"```` and ````"triangles"```` at any time by
- updating its {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} property.
-
  ## Examples
 
-
  * [Textured SphereGeometry](../../examples/#geometry_primitives_sphere)
-
 
  ## Usage
 

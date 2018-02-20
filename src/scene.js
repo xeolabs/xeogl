@@ -212,8 +212,6 @@
  outlineMaterial.edgeWidth = 6;
  ````
 
- * See {{#crossLink "Entity"}}{{/crossLink}} and {{#crossLink "GhostMaterial"}}{{/crossLink}}
-
  ### Picking entities
 
  Use the Scene's {{#crossLink "Scene/pick:method"}}pick(){{/crossLink}} method to pick and raycast entities.
@@ -302,8 +300,6 @@
  });
  ````
 
- ### Controlling rendering
-
  ### Managing the viewport
 
  The Scene's {{#crossLink "Viewport"}}{{/crossLink}} component manages the WebGL viewport:
@@ -311,6 +307,59 @@
  ````javascript
  var viewport = scene.viewport
  viewport.boundary = [0, 0, 500, 400];;
+ ````
+
+ ### Controlling rendering
+
+ You can configure a Scene to perform multiple "passes" (renders) per frame. This is useful when we want to render the
+ scene to multiple viewports, such as for stereo effects.
+
+ In the example, below, we'll configure the Scene to render twice on each frame, each time to different viewport. We'll do this
+ with a callback that intercepts the Scene before each render and sets its {{#crossLink "Viewport"}}{{/crossLink}} to a
+ different portion of the canvas. By default, the Scene will clear the canvas only before the first render, allowing the
+ two views to be shown on the canvas at the same time.
+
+ ````Javascript
+ // Load glTF model
+ var model = new xeogl.GLTFModel({
+    src: "models/gltf/GearboxAssy/glTF/GearboxAssy.gltf"
+ });
+
+ var scene = model.scene;
+ var viewport = scene.viewport;
+
+ // Configure Scene to render twice for each frame
+ scene.passes = 2; // Default is 1
+ scene.clearEachPass = false; // Default is false
+
+ // Render to a separate viewport on each render
+
+ var viewport = scene.viewport;
+ viewport.autoBoundary = false;
+
+ scene.on("rendering", function (e) {
+     switch (e.pass) {
+         case 0:
+             viewport.boundary = [0, 0, 200, 200]; // xmin, ymin, width, height
+             break;
+
+         case 1:
+             viewport.boundary = [200, 0, 200, 200];
+             break;
+     }
+ });
+
+ // We can also intercept the Scene after each render,
+ // (though we're not using this for anything here)
+ scene.on("rendered", function (e) {
+     switch (e.pass) {
+         case 0:
+             break;
+
+         case 1:
+             break;
+     }
+ });
  ````
 
  @class Scene

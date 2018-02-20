@@ -43,12 +43,12 @@
 
  var geometry = new xeogl.BoxGeometry();
 
- var Entity1 = new xeogl.Entity({
+ var entity1 = new xeogl.Entity({
     transform: translate1,
     geometry: geometry
  });
 
- var Entity2 = new xeogl.Entity({
+ var entity2 = new xeogl.Entity({
     transform: scale,
     geometry: geometry
  });
@@ -64,7 +64,7 @@
     xyz: [1, 1, 2] // Scale x2 on Z axis
  });
 
- Entity2.transform = scale2;
+ entity2.transform = scale2;
  ````
 
  And just for fun, we'll start updating the second {{#crossLink "Translate"}}{{/crossLink}}:
