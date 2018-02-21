@@ -23,7 +23,13 @@
     "grunt-contrib-jshint": "^0.11.3",
     "grunt-contrib-qunit": "~0.5.2",
     "grunt-contrib-uglify": "^0.9.2",
-    "grunt-contrib-yuidoc": "^0.7.0"
+    "grunt-contrib-yuidoc": "^0.7.0",
+    "grunt-rollup": "^4.0.0",
+    "grunt-rollup-babel": "^0.6.2",
+    "rollup": "^0.45.2",
+    "rollup-plugin-babel": "^2.7.1",
+    "rollup-plugin-commonjs": "^8.2.0",
+    "rollup-plugin-node-resolve": "^3.0.0"
   },
   "engines": {
     "node": ">=0.10.17",
