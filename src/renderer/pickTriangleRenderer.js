@@ -139,7 +139,7 @@
 
         if (this._uPositionsDecodeMatrix) {
             gl.uniformMatrix4fv(this._uPositionsDecodeMatrix, false, geometry.positionsDecodeMatrix);
-            this._aPosition.bindArrayBuffer(positions, geometry.compressed ? gl.UNSIGNED_SHORT : gl.FLOAT);
+            this._aPosition.bindArrayBuffer(positions, geometry.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
         } else {
             this._aPosition.bindArrayBuffer(positions);
         }

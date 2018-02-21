@@ -894,15 +894,15 @@
             var vertexBufs = object.vertexBufs;
             if (vertexBufs.id !== this._lastVertexBufsId) {
                 if (vertexBufs.positionsBuf && this._aPosition) {
-                    this._aPosition.bindArrayBuffer(vertexBufs.positionsBuf, vertexBufs.compressed ? gl.UNSIGNED_SHORT : gl.FLOAT);
+                    this._aPosition.bindArrayBuffer(vertexBufs.positionsBuf, vertexBufs.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
                     frame.bindArray++;
                 }
                 if (vertexBufs.normalsBuf && this._aNormal) {
-                    this._aNormal.bindArrayBuffer(vertexBufs.normalsBuf, vertexBufs.compressed ? gl.BYTE : gl.FLOAT);
+                    this._aNormal.bindArrayBuffer(vertexBufs.normalsBuf, vertexBufs.quantized ? gl.BYTE : gl.FLOAT);
                     frame.bindArray++;
                 }
                 if (vertexBufs.uvBuf && this._aUV) {
-                    this._aUV.bindArrayBuffer(vertexBufs.uvBuf, geometry.compressed ? gl.UNSIGNED_SHORT : gl.FLOAT);
+                    this._aUV.bindArrayBuffer(vertexBufs.uvBuf, geometry.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
                     frame.bindArray++;
                 }
                 if (vertexBufs.colorsBuf && this._aColor) {
@@ -936,15 +936,15 @@
                 }
             } else {
                 if (this._aPosition) {
-                    this._aPosition.bindArrayBuffer(geometry.positionsBuf, geometry.compressed ? gl.UNSIGNED_SHORT : gl.FLOAT);
+                    this._aPosition.bindArrayBuffer(geometry.positionsBuf, geometry.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
                     frame.bindArray++;
                 }
                 if (this._aNormal) {
-                    this._aNormal.bindArrayBuffer(geometry.normalsBuf, geometry.compressed ? gl.BYTE : gl.FLOAT);
+                    this._aNormal.bindArrayBuffer(geometry.normalsBuf, geometry.quantized ? gl.BYTE : gl.FLOAT);
                     frame.bindArray++;
                 }
                 if (this._aUV) {
-                    this._aUV.bindArrayBuffer(geometry.uvBuf, geometry.compressed ? gl.UNSIGNED_SHORT : gl.FLOAT);
+                    this._aUV.bindArrayBuffer(geometry.uvBuf, geometry.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
                     frame.bindArray++;
                 }
                 if (this._aColor) {

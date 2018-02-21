@@ -11,7 +11,7 @@
             normals: hasNormals(object),
             clipping: scene.clips.clips.length > 0,
             receiveShadow: receivesShadow(scene, object),
-            compressedGeometry: !!object.geometry.compressed
+            quantizedGeometry: !!object.geometry.quantized
         };
         this.vertex = buildVertex(gl, cfg, scene, object);
         this.fragment = buildFragment(gl, cfg, scene, object);
@@ -73,7 +73,7 @@
         src.push("uniform mat4 projMatrix;");
         src.push("uniform vec4 colorize;");
 
-        if (cfg.compressedGeometry) {
+        if (cfg.quantizedGeometry) {
             src.push("uniform mat4 positionsDecodeMatrix;");
         }
 
@@ -110,7 +110,7 @@
                 }
             }
 
-            if (cfg.compressedGeometry) {
+            if (cfg.quantizedGeometry) {
                 src.push("vec3 octDecode(vec2 oct) {");
                 src.push("    vec3 v = vec3(oct.xy, 1.0 - abs(oct.x) - abs(oct.y));");
                 src.push("    if (v.z < 0.0) {");
@@ -148,12 +148,12 @@
         src.push("vec4 localPosition = vec4(position, 1.0); ");
         src.push("vec4 worldPosition;");
 
-        if (cfg.compressedGeometry) {
+        if (cfg.quantizedGeometry) {
             src.push("localPosition = positionsDecodeMatrix * localPosition;");
         }
 
         if (cfg.normals) {
-            if (cfg.compressedGeometry) {
+            if (cfg.quantizedGeometry) {
                 src.push("vec4 localNormal = vec4(octDecode(normal.xy), 0.0); ");
             } else {
                 src.push("vec4 localNormal = vec4(normal, 0.0); ");

@@ -624,7 +624,7 @@
             /**
              A diffuse {{#crossLink "Texture"}}{{/crossLink}} attached to this PhongMaterial.
 
-             This property multiplies by {{#crossLink "PhongMaterial/diffuseMap:property"}}{{/crossLink}} when not null or undefined.
+             This property multiplies by {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} when not null or undefined.
 
              Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
 

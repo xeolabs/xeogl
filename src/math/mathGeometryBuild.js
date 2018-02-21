@@ -180,10 +180,10 @@
      *
      * @private
      */
-    math.buildPickTriangles = function (positions, indices, compressed) {
+    math.buildPickTriangles = function (positions, indices, quantized) {
 
         var numIndices = indices.length;
-        var pickPositions = compressed ? new Uint16Array(numIndices * 30) : new Float32Array(numIndices * 30); // FIXME: Why do we need to extend size like this to make large meshes pickable?
+        var pickPositions = quantized ? new Uint16Array(numIndices * 30) : new Float32Array(numIndices * 30); // FIXME: Why do we need to extend size like this to make large meshes pickable?
         var pickColors = new Uint8Array(numIndices * 40);
         var primIndex = 0;
         var vi;// Positions array index

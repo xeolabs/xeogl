@@ -30,7 +30,7 @@
 
     var model = new xeogl.GLTFModel({
         src: "models/gltf/2CylinderEngine/glTF/2CylinderEngine.gltf",
-        compressGeometry: false // <---- FIXME: Compressed normals are not precise enough for this helper on this model
+        quantizeGeometry: false // <---- FIXME: Quantized normals are not precise enough for this helper on this model
     });
 
     var camera = model.scene.camera;

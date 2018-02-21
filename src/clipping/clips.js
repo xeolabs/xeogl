@@ -1,5 +1,6 @@
 /**
- A **Clips** applies a set of {{#crossLink "Clip"}}{{/crossLink}} planes to attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **Clips** applies a set of {{#crossLink "Clip"}}{{/crossLink}} planes to the
+ clippable {{#crossLink "Entity"}}Entities{{/crossLink}} within its {{#crossLink "Scene"}}{{/crossLink}}.
 
  See {{#crossLink "Clip"}}{{/crossLink}} for more info.
 
