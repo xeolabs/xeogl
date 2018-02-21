@@ -230,7 +230,7 @@
                     xyz: [0, 5, 0],
                     parent: new xeogl.Rotate(scene, {
                         xyz: [0, 0, 1],
-                        angle: 90
+                        angle: 270
                     })
                 })
             }),
@@ -245,7 +245,7 @@
                     xyz: [0, 2, 0],
                     parent: new xeogl.Rotate(scene, {
                         xyz: [0, 0, 1],
-                        angle: 90
+                        angle: 270
                     })
                 })
             }),
@@ -257,7 +257,7 @@
                 collidable: false,
                 visible: !!cfg.visible,
                 transform: new xeogl.Translate(scene, {
-                    xyz: [-7, 0, 0]
+                    xyz: [7, 0, 0]
                 }),
                 billboard: "spherical"
             }),
