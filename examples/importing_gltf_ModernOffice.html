@@ -20,8 +20,8 @@
 <body>
 
 <div id="info">
-    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a>
-        option</h1>
+    <h1>oldschool 80's fly-through using <a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a>, <a href="../docs/classes/CameraPathAnimation.html" target="_parent">CameraPathAnimation</a> and <a href="../docs/classes/GhostMaterial.html" target="_parent">GhostMaterial</a></h1>
+    <h1>big model loading - be patient!</h1>
     <pre id="log">model: Modern Office - [<a
             href='https://github.com/xeolabs/xeogl/tree/master/examples/models/gltf/modern_office/AUTHOR'
             target="_parent">model info</a>]</pre>
@@ -81,6 +81,7 @@
     // Customize the default ghost material
 
     scene.ghostMaterial.preset = "vectorscope";
+    scene.ghostMaterial.vertices = false; // Faster
 
     var cameraControl = new xeogl.CameraControl();
 
@@ -494,7 +495,7 @@
 
         setTimeout(function () {
             cameraPathAnimation.play(0);
-        }, 1000);
+        }, 2000);
 
     });
 
