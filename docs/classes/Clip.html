@@ -182,7 +182,6 @@
 <h1>Clip</h1>
 <div class="box meta">
 
-
         <div class="extends">
             Extends <a href="../classes/Component.html" class="crosslink">Component</a>
         </div>
@@ -203,41 +202,37 @@
 <h2 id="overview">Overview</h2>
 <ul>
 <li>Used to slice portions off objects, to create cross-section views or reveal interiors.</li>
-<li>Is contained within <a href="../classes/Clips.html" class="crosslink">Clips</a> components, which are attached to <a href="../classes/Entity.html" class="crosslink">Entities</a>.</li>
-<li>Has a World-space position in <a href="../classes/Clip.html#property_pos" class="crosslink">pos</a> and a orientation in <a href="../classes/Clip.html#property_dir" class="crosslink">dir</a>.</li>
+<li>Is contained within a <a href="../classes/Clips.html" class="crosslink">Clips</a> belonging to its <a href="../classes/Scene.html" class="crosslink">Scene</a>.</li>
+<li>Has a World-space position in <a href="../classes/Clip.html#property_pos" class="crosslink">pos</a> and orientation in <a href="../classes/Clip.html#property_dir" class="crosslink">dir</a>.</li>
 <li>Discards elements from the half-space in the direction of <a href="../classes/Clip.html#property_dir" class="crosslink">dir</a>.</li>
 <li>Can be be enabled or disabled via its <a href="../classes/Clip.html#property_active" class="crosslink">active</a> property.</li>
 </ul>
-<p><img src="../../../assets/images/Clips.png"></img></p>
 <h2 id="usage">Usage</h2>
 <p>In the example below, we have an <a href="../classes/Entity.html" class="crosslink">Entity</a> that&#39;s attached by a <a href="../classes/Clips.html" class="crosslink">Clips</a>
 that contains two <a href="../classes/Clip.html" class="crosslink">Clip</a> components.  The first <a href="../classes/Clip.html" class="crosslink">Clip</a> is on the
 positive diagonal, while the second is on the negative diagonal. The <a href="../classes/Entity.html" class="crosslink">Entity&#39;s</a> <a href="../classes/Geometry.html" class="crosslink">Geometry</a>
 is a box, which will get two of its corners clipped off.</p>
-<pre class="code prettyprint"><code class="lang-javascript">// Create a set of Clip planes
-clips = new xeogl.Clip({
-   clips: [
+<pre class="code prettyprint"><code class="lang-javascript">// Create a set of Clip planes in the default Scene
+scene.clips.clips = [
 
-       // Clip plane on negative diagonal
-       new xeogl.Clip({
-           pos: [1.0, 1.0, 1.0],
-           dir: [-1.0, -1.0, -1.0],
-           active: true
-       }),
+    // Clip plane on negative diagonal
+    new xeogl.Clip({
+        pos: [1.0, 1.0, 1.0],
+        dir: [-1.0, -1.0, -1.0],
+        active: true
+    }),
 
-       // Clip plane on positive diagonal
-       new xeogl.Clip({
-           pos: [-1.0, -1.0, -1.0],
-           dir: [1.0, 1.0, 1.0],
-           active: true
-       })
-   ]
-});
+    // Clip plane on positive diagonal
+    new xeogl.Clip({
+        pos: [-1.0, -1.0, -1.0],
+        dir: [1.0, 1.0, 1.0],
+        active: true
+    })
+];
 
-// Create an Entity that&#39;s clipped by our Clip planes
+// Create an Entity in the default Scene, that will be clipped by our Clip planes
 var entity = new xeogl.Entity({
-    geometry: new xeogl.BoxGeometry(),
-    clips: clips,
+    geometry: new xeogl.SphereGeometry(),
     clippable: true // Enable clipping (default)
 });
 </code></pre>
@@ -551,7 +546,7 @@ entity.clippable = true;
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_create">Component</a>:
-        <a href="../files/src_component.js.html#l848"><code>src&#x2F;component.js:848</code></a>
+        <a href="../files/src_component.js.html#l883"><code>src&#x2F;component.js:883</code></a>
         </p>
 
 
@@ -615,7 +610,7 @@ entity.clippable = true;
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_component.js.html#l956"><code>src&#x2F;component.js:956</code></a>
+        <a href="../files/src_component.js.html#l991"><code>src&#x2F;component.js:991</code></a>
         </p>
 
 
@@ -657,7 +652,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_error">Component</a>:
-        <a href="../files/src_component.js.html#l566"><code>src&#x2F;component.js:566</code></a>
+        <a href="../files/src_component.js.html#l601"><code>src&#x2F;component.js:601</code></a>
         </p>
 
 
@@ -721,7 +716,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_fire">Component</a>:
-        <a href="../files/src_component.js.html#l390"><code>src&#x2F;component.js:390</code></a>
+        <a href="../files/src_component.js.html#l425"><code>src&#x2F;component.js:425</code></a>
         </p>
 
 
@@ -804,7 +799,7 @@ any subsequent notifications on the event as they are made.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_hasSubs">Component</a>:
-        <a href="../files/src_component.js.html#l517"><code>src&#x2F;component.js:517</code></a>
+        <a href="../files/src_component.js.html#l552"><code>src&#x2F;component.js:552</code></a>
         </p>
 
 
@@ -871,7 +866,7 @@ any subsequent notifications on the event as they are made.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_isType">Component</a>:
-        <a href="../files/src_component.js.html#l346"><code>src&#x2F;component.js:346</code></a>
+        <a href="../files/src_component.js.html#l381"><code>src&#x2F;component.js:381</code></a>
         </p>
 
 
@@ -949,7 +944,7 @@ myRotate.isType(xeogl.Entity); // Returns false, because xeogl.Rotate does not (
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_log">Component</a>:
-        <a href="../files/src_component.js.html#l528"><code>src&#x2F;component.js:528</code></a>
+        <a href="../files/src_component.js.html#l563"><code>src&#x2F;component.js:563</code></a>
         </p>
 
 
@@ -1007,7 +1002,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_off">Component</a>:
-        <a href="../files/src_component.js.html#l471"><code>src&#x2F;component.js:471</code></a>
+        <a href="../files/src_component.js.html#l506"><code>src&#x2F;component.js:506</code></a>
         </p>
 
 
@@ -1072,7 +1067,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_on">Component</a>:
-        <a href="../files/src_component.js.html#l429"><code>src&#x2F;component.js:429</code></a>
+        <a href="../files/src_component.js.html#l464"><code>src&#x2F;component.js:464</code></a>
         </p>
 
 
@@ -1166,7 +1161,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_once">Component</a>:
-        <a href="../files/src_component.js.html#l496"><code>src&#x2F;component.js:496</code></a>
+        <a href="../files/src_component.js.html#l531"><code>src&#x2F;component.js:531</code></a>
         </p>
 
 
@@ -1246,7 +1241,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_warn">Component</a>:
-        <a href="../files/src_component.js.html#l549"><code>src&#x2F;component.js:549</code></a>
+        <a href="../files/src_component.js.html#l584"><code>src&#x2F;component.js:584</code></a>
         </p>
 
 
@@ -1298,7 +1293,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_clipping_clip.js.html#l105"><code>src&#x2F;clipping&#x2F;clip.js:105</code></a>
+                            <a href="../files/src_clipping_clip.js.html#l100"><code>src&#x2F;clipping&#x2F;clip.js:100</code></a>
                             </p>
                     
                     
@@ -1325,7 +1320,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l269"><code>src&#x2F;component.js:269</code></a>
+                            <a href="../files/src_component.js.html#l307"><code>src&#x2F;component.js:307</code></a>
                             </p>
                     
                     
@@ -1350,7 +1345,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_clipping_clip.js.html#l165"><code>src&#x2F;clipping&#x2F;clip.js:165</code></a>
+                            <a href="../files/src_clipping_clip.js.html#l160"><code>src&#x2F;clipping&#x2F;clip.js:160</code></a>
                             </p>
                     
                     
@@ -1380,7 +1375,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_id">Component</a>:
-                            <a href="../files/src_component.js.html#l260"><code>src&#x2F;component.js:260</code></a>
+                            <a href="../files/src_component.js.html#l298"><code>src&#x2F;component.js:298</code></a>
                             </p>
                     
                     
@@ -1405,7 +1400,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_isDefault">Component</a>:
-                            <a href="../files/src_component.js.html#l252"><code>src&#x2F;component.js:252</code></a>
+                            <a href="../files/src_component.js.html#l290"><code>src&#x2F;component.js:290</code></a>
                             </p>
                     
                     
@@ -1430,7 +1425,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_metadata">Component</a>:
-                            <a href="../files/src_component.js.html#l244"><code>src&#x2F;component.js:244</code></a>
+                            <a href="../files/src_component.js.html#l282"><code>src&#x2F;component.js:282</code></a>
                             </p>
                     
                     
@@ -1455,7 +1450,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_clipping_clip.js.html#l134"><code>src&#x2F;clipping&#x2F;clip.js:134</code></a>
+                            <a href="../files/src_clipping_clip.js.html#l129"><code>src&#x2F;clipping&#x2F;clip.js:129</code></a>
                             </p>
                     
                     
@@ -1483,7 +1478,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_scene">Component</a>:
-                            <a href="../files/src_component.js.html#l196"><code>src&#x2F;component.js:196</code></a>
+                            <a href="../files/src_component.js.html#l234"><code>src&#x2F;component.js:234</code></a>
                             </p>
                     
                     
@@ -1509,7 +1504,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_superTypes">Component</a>:
-                            <a href="../files/src_component.js.html#l327"><code>src&#x2F;component.js:327</code></a>
+                            <a href="../files/src_component.js.html#l362"><code>src&#x2F;component.js:362</code></a>
                             </p>
                     
                     
@@ -1541,7 +1536,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_type">Component</a>:
-                            <a href="../files/src_component.js.html#l313"><code>src&#x2F;component.js:313</code></a>
+                            <a href="../files/src_component.js.html#l351"><code>src&#x2F;component.js:351</code></a>
                             </p>
                     
                     
@@ -1549,8 +1544,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>JavaScript class name for this Component.</p>
-                    <p>This is used when <a href="Scene.html#savingAndLoading">loading Scenes from JSON</a>, and is included in the JSON
-                    representation of this Component, so that this class may be instantiated when loading it from the JSON representation.</p>
                     <p>For example: &quot;xeogl.AmbientLight&quot;, &quot;xeogl.ColorTarget&quot;, &quot;xeogl.Lights&quot; etc.</p>
                     
                         </div>
@@ -1575,7 +1568,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_clipping_clip.js.html#l120"><code>src&#x2F;clipping&#x2F;clip.js:120</code></a>
+                            <a href="../files/src_clipping_clip.js.html#l115"><code>src&#x2F;clipping&#x2F;clip.js:115</code></a>
                             </p>
                     
                     
@@ -1617,7 +1610,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l1016"><code>src&#x2F;component.js:1016</code></a>
+                            <a href="../files/src_component.js.html#l1051"><code>src&#x2F;component.js:1051</code></a>
                             </p>
                     
                     
@@ -1642,7 +1635,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_clipping_clip.js.html#l185"><code>src&#x2F;clipping&#x2F;clip.js:185</code></a>
+                            <a href="../files/src_clipping_clip.js.html#l180"><code>src&#x2F;clipping&#x2F;clip.js:180</code></a>
                             </p>
                     
                     
@@ -1684,7 +1677,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_clipping_clip.js.html#l151"><code>src&#x2F;clipping&#x2F;clip.js:151</code></a>
+                            <a href="../files/src_clipping_clip.js.html#l146"><code>src&#x2F;clipping&#x2F;clip.js:146</code></a>
                             </p>
                     
                     

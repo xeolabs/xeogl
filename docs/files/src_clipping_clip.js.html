@@ -191,12 +191,10 @@
  ## Overview
 
  * Used to slice portions off objects, to create cross-section views or reveal interiors.
- * Is contained within {{#crossLink &quot;Clips&quot;}}{{/crossLink}} components, which are attached to {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
- * Has a World-space position in {{#crossLink &quot;Clip/pos:property&quot;}}{{/crossLink}} and a orientation in {{#crossLink &quot;Clip/dir:property&quot;}}{{/crossLink}}.
+ * Is contained within a {{#crossLink &quot;Clips&quot;}}{{/crossLink}} belonging to its {{#crossLink &quot;Scene&quot;}}{{/crossLink}}.
+ * Has a World-space position in {{#crossLink &quot;Clip/pos:property&quot;}}{{/crossLink}} and orientation in {{#crossLink &quot;Clip/dir:property&quot;}}{{/crossLink}}.
  * Discards elements from the half-space in the direction of {{#crossLink &quot;Clip/dir:property&quot;}}{{/crossLink}}.
  * Can be be enabled or disabled via its {{#crossLink &quot;Clip/active:property&quot;}}{{/crossLink}} property.
-
- &lt;img src=&quot;../../../assets/images/Clips.png&quot;&gt;&lt;/img&gt;
 
  ## Usage
 
@@ -206,30 +204,27 @@
  is a box, which will get two of its corners clipped off.
 
  &#x60;&#x60;&#x60;&#x60;javascript
- // Create a set of Clip planes
- clips = new xeogl.Clip({
-    clips: [
+ // Create a set of Clip planes in the default Scene
+ scene.clips.clips = [
 
-        // Clip plane on negative diagonal
-        new xeogl.Clip({
-            pos: [1.0, 1.0, 1.0],
-            dir: [-1.0, -1.0, -1.0],
-            active: true
-        }),
+     // Clip plane on negative diagonal
+     new xeogl.Clip({
+         pos: [1.0, 1.0, 1.0],
+         dir: [-1.0, -1.0, -1.0],
+         active: true
+     }),
 
-        // Clip plane on positive diagonal
-        new xeogl.Clip({
-            pos: [-1.0, -1.0, -1.0],
-            dir: [1.0, 1.0, 1.0],
-            active: true
-        })
-    ]
- });
+     // Clip plane on positive diagonal
+     new xeogl.Clip({
+         pos: [-1.0, -1.0, -1.0],
+         dir: [1.0, 1.0, 1.0],
+         active: true
+     })
+ ];
 
- // Create an Entity that&#x27;s clipped by our Clip planes
+ // Create an Entity in the default Scene, that will be clipped by our Clip planes
  var entity = new xeogl.Entity({
-     geometry: new xeogl.BoxGeometry(),
-     clips: clips,
+     geometry: new xeogl.SphereGeometry(),
      clippable: true // Enable clipping (default)
  });
  &#x60;&#x60;&#x60;&#x60;
