@@ -1,5 +1,5 @@
 addPrettify();
-addFeatures();
+//addFeatures();
 
 function addPrettify() {
     var els = document.querySelectorAll('pre');
