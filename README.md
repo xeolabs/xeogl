@@ -13,6 +13,8 @@ Find out more in the [Getting Started](https://github.com/xeolabs/xeogl/wiki/Get
 
 [![screenshot from 2018-02-01 02-02-50](http://xeogl.org/assets/images/screenshots/officePlan.png)](http://xeogl.org/examples/#importing_gltf_OfficePlan)
 
+[[Run demo](http://xeogl.org/examples/#importing_gltf_OfficePlan)]
+
 ## Links 
 
  - [Website](http://xeogl.org)
