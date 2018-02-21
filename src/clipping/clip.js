@@ -1,7 +1,7 @@
 /**
  A **Clip** is an arbitrarily-aligned World-space clipping plane.
 
- <a href="../../examples/#clipping_userClipPlanes"><img src="../../../assets/images/screenshots/Clips.png"></img></a>
+ <a href="../../examples/#effects_clipping"><img src="../../../assets/images/screenshots/Clips.png"></img></a>
 
  ## Overview
 
