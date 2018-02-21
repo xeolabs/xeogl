@@ -201,6 +201,7 @@
  * [Pick masking](#pick-masking)
  * [Controlling the viewport](#controlling-the-viewport)
  * [Controlling rendering](#controlling-rendering)
+ * [Gamma correction](#gamma-correction)
 
  ### Creating a Scene
 
@@ -546,6 +547,32 @@
      }
  });
  &#x60;&#x60;&#x60;&#x60;
+
+ ### Gamma correction
+
+ Within its shaders, xeogl performs shading calculations in linear space.
+
+ By default, the Scene expects color textures (ie. {{#crossLink &quot;PhongMaterial/diffuseMap:property&quot;}}{{/crossLink}},
+ {{#crossLink &quot;MetallicMaterial/baseColorMap:property&quot;}}{{/crossLink}} and {{#crossLink &quot;SpecularMaterial/diffuseMap:property&quot;}}{{/crossLink}}) to
+ be in pre-multipled gamma space, so will convert those to linear space before they are used in shaders. Other textures are
+ always expected to be in linear space.
+
+ By default, the Scene will also gamma-correct its rendered output.
+
+ You can configure the Scene to expect all those color textures to be linear space, so that it does not gamma-correct them:
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ scene.gammaInput = false;
+ &#x60;&#x60;&#x60;&#x60;
+
+ You would still need to gamma-correct the output, though, if it&#x27;s going straight to the canvas, so normally we would
+ leave that enabled:
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ scene.gammaOutput = true;
+ &#x60;&#x60;&#x60;&#x60;
+
+ See {{#crossLink &quot;Texture&quot;}}{{/crossLink}} for more information on texture encoding and gamma.
 
  @class Scene
  @module xeogl
@@ -1777,7 +1804,7 @@
                                 c[1] = positions[ic3 + 1];
                                 c[2] = positions[ic3 + 2];
 
-                                if (geometry.compressed) {
+                                if (geometry.quantized) {
 
                                     // Decompress vertex positions
 
@@ -1851,7 +1878,7 @@
 
                                 if (normals) {
 
-                                    if (geometry.compressed) {
+                                    if (geometry.quantized) {
 
                                         // Decompress vertex normals
 
@@ -1901,7 +1928,7 @@
                                     uvc[0] = uvs[(ic * 2)];
                                     uvc[1] = uvs[(ic * 2) + 1];
 
-                                    if (geometry.compressed) {
+                                    if (geometry.quantized) {
 
                                         // Decompress vertex UVs
 
