@@ -7,8 +7,8 @@
 
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="../build/xeogl.min.js"></script>
-    <script src="js/models/glTFModel.js"></script>
+    <script src="../build/xeogl.js"></script>
+
 
     <script src="libs/gl-matrix-min.js"></script>
     <script src="js/zspace/zSpaceEffect_complete.js"></script>
@@ -62,7 +62,7 @@
     // Allow camera control with keyboard and mouse
     //----------------------------------------------------------------------------
 
-    var inputControl = new xeogl.InputControl();
+    var cameraControl = new xeogl.CameraControl();
 
     //---------------------------------------------------
     // Create a zSpace effect and stylus control
@@ -79,10 +79,10 @@
             document.getElementById("log").innerText = "(zSpace not detected) ";
 
             // Viewpoint for non-zSpace viewing
-            var view = model.scene.camera.view;
-            view.eye = [-110.8940200805664, -44.85665512084961, 276.6570739746094];
-            view.look = [-110.8940200805664, -44.85665512084961, -0.46092796325683594];
-            view.up = [0, 1, 0];
+            var camera = model.scene.camera;
+            camera.eye = [-110.8940200805664, -44.85665512084961, 276.6570739746094];
+            camera.look = [-110.8940200805664, -44.85665512084961, -0.46092796325683594];
+            camera.up = [0, 1, 0];
         }
     });
 

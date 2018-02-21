@@ -5,7 +5,7 @@
 
  #### Position
 
- An Pin is positioned within one of the triangles of its {{#crossLink "Entity"}}Entity's{{/crossLink}} {{#crossLink "Geometry"}}{{/crossLink}}. Wherever that triangles goes within the 3D view, the Pin will automatically follow. An Pin specifies its position with two properties:
+ A Pin is positioned within one of the triangles of its {{#crossLink "Entity"}}Entity's{{/crossLink}} {{#crossLink "Geometry"}}{{/crossLink}}. Wherever that triangles goes within the 3D view, the Pin will automatically follow. An Pin specifies its position with two properties:
 
  * {{#crossLink "Pin/primIndex:property"}}{{/crossLink}}, which indicates the index of the triangle within the {{#crossLink "Geometry"}}{{/crossLink}} {{#crossLink "Geometry/indices:property"}}{{/crossLink}}, and
  * {{#crossLink "Pin/bary:property"}}{{/crossLink}}, the barycentric coordinates of the position within the triangle.
@@ -198,10 +198,6 @@
 
         // Entity which renders a 3D point that we'll test for occlusion
         this._markers[pinId] = new xeogl.Entity(this._scene, {
-            lights: this._scene.components["_pinMarkerLights"] || new xeogl.Lights(this._scene, {
-                id: "_pinMarkerLights",
-                lights: []
-            }),
             geometry: this._scene.components["_pinMarkerGeometry"] || new xeogl.Geometry(this._scene, {
                 id: "_pinMarkerGeometry",
                 primitive: "points",
@@ -530,7 +526,7 @@
 
                 get: function () {
                     this.__update();
-                    xeogl.math.transformPoint3(this.scene.camera.view.matrix, this.worldPos, this._viewPos);
+                    xeogl.math.transformPoint3(this.scene.camera.matrix, this.worldPos, this._viewPos);
                     return this._viewPos;
                 }
             },
@@ -556,7 +552,7 @@
 
                         tempVec4a.set(this.viewPos);
 
-                        xeogl.math.transformPoint4(this.scene.camera.project.matrix, tempVec4a, tempVec4b);
+                        xeogl.math.transformPoint4(this.scene.camera.projMatrix, tempVec4a, tempVec4b);
 
                         var aabb = this.scene.canvas.boundary;
 
@@ -614,8 +610,8 @@
         },
 
         _entityAttached: function (entity) {
-            this._onEntityLocalBoundary = entity.localBoundary.on("updated", this._setLocalPosDirty, this);
-            this._onEntityWorldBoundary = entity.worldBoundary.on("updated", this._setWorldPosDirty, this);
+            this._onGeometryBoundary = entity.geometry.on("boundary", this._setLocalPosDirty, this);
+            this._onEntityBoundary = entity.on("boundary", this._setWorldPosDirty, this);
             this._onEntityVisible = entity.on("visible", this._entityVisible, this);
             this._setLocalPosDirty();
         },
@@ -644,8 +640,8 @@
         },
 
         _entityDetached: function (entity) {
-            entity.localBoundary.off(this._onEntityLocalBoundary);
-            entity.worldBoundary.off(this._onEntityWorldBoundary);
+            entity.geometry.off(this._onGeometryBoundary);
+            entity.off(this._onEntityBoundary);
             entity.off(this._onEntityVisible);
             this._entityVisible(false);
         },

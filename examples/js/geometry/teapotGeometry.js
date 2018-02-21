@@ -32,7 +32,7 @@
      })
  });
 
- entity.scene.camera.view.eye = [0, 0, -80];
+ entity.scene.camera.eye = [0, 0, -80];
  ````
 
  @class TeapotGeometry

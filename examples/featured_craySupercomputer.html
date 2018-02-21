@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
 
     <!--<script src="js/geometry/vectorTextGeometry.js"></script>-->
     <script src="js/geometry/heightmapGeometry.js"></script>
@@ -30,7 +30,7 @@
             intensity: 1.0,
             space: "world",
             linearAttenuation: 0.010,
-            quadrahticAttenuation: 0.0038
+            quadraticAttenuation: 0.0038
         }),
         new xeogl.PointLight({
             pos: [-2.5, 6.7, 30.0],
@@ -38,7 +38,7 @@
             intensity: 1.0,
             space: "world",
             linearAttenuation: 0.010,
-            quadrathicAttenuation: 0.0038
+            quadraticAttenuation: 0.0038
         })
         ,
         new xeogl.PointLight({
@@ -46,7 +46,7 @@
             color: [1.0, 1., 1.0],
             intensity: 1.0,
             space: "world",
-            quahdraticAttenuation: 0.0038
+            quadraticAttenuation: 0.0038
         })
     ];
 
@@ -817,23 +817,23 @@
         });
     }
 
-    new xeogl.InputControl();
+    new xeogl.CameraControl();
 
     var scene = xeogl.scene;
     var camera = scene.camera;
-    camera.view.gimbalLockY = true;
-    camera.view.rotateEyeY(165);
-    // camera.view.rotateEyeX(35);
+    camera.gimbalLock = true;
+    camera.orbitYaw(165);
+    // camera.orbitPitch(35);
 
 
     var input = scene.input;
 
-    //  camera.view.pan([0,-2,0])
-    camera.view.rotateEyeY(180 - 15);
+    //  camera.pan([0,-2,0])
+    camera.orbitYaw(180 - 15);
 
 
     scene.on("tick", function () {
-        camera.view.rotateEyeY(0.07);
+        camera.orbitYaw(0.07);
     });
 
     setInterval(function () {

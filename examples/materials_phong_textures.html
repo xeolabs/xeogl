@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
     <script src="js/skyboxes/skybox.js"></script>
     <script src="js/geometry/vectorTextGeometry.js"></script>
     <script src="js/utils/materialGallery.js"></script>
@@ -34,7 +34,8 @@
         translate: [0, 0],
         scale: [1, 1],
         rotate: 0,
-        flipY: false // Default
+        flipY: false,
+        encoding: "sRGB"
     });
 
     materialGallery("menu", {
@@ -65,8 +66,8 @@
                     wrapT: "repeat",
                     translate: [0, 0],
                     scale: [1, 1],
-                    rotate: 0
-
+                    rotate: 0,
+                    encoding: "sRGB"
                 }
             }
         },
@@ -88,7 +89,8 @@
                     wrapT: "repeat",
                     translate: [0, 0],
                     scale: [1, 1],
-                    rotate: 0
+                    rotate: 0,
+                    encoding: "linear"
                 }
             }
         },
@@ -117,7 +119,8 @@
                 type: "xeogl.PhongMaterial",
                 diffuseMap: { // Just to help show the normal map
                     src: "textures/diffuse/chesterfieldDiffuseMap.png",
-                    scale: [5, 5]
+                    scale: [5, 5],
+                    encoding: "sRGB"
                 },
                 normalMap: {
                     src: "textures/normal/chesterfieldNormalMap.png",
@@ -130,7 +133,8 @@
                 type: "xeogl.PhongMaterial",
                 id: "textureScaleMaterial",
                 diffuseMap: {
-                    src: "textures/diffuse/crossGridColorMap.jpg"
+                    src: "textures/diffuse/crossGridColorMap.jpg",
+                    encoding: "sRGB"
                 }
             }
         }

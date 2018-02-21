@@ -6,14 +6,14 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
     <script src="../build/xeogl.js"></script>
-    <script src="js/models/glTFModel.js"></script>
+
 
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="info">
-    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - loading glTF 2.0 with alpha mask</h1>
+    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - importing glTF with alpha mask</h1>
     <pre id="log">model: <a
             href='https://sketchfab.com/eliteforcevn' target="_parent">https://sketchfab.com/eliteforcevn</a></pre>
 </div>
@@ -32,21 +32,21 @@
     // Camera animation and user control
     //-----------------------------------------------------------------------------------------------------
 
-    var view = xeogl.scene.camera.view;
+    var camera = xeogl.scene.camera;
 
-    view.eye = [-0.8, -36.51, -871.64];
-    view.look = [-0.8,-36.51,-2.37];
-    view.up = [0,1,0 ];
+    camera.eye = [-0.8, -36.51, -871.64];
+    camera.look = [-0.8,-36.51,-2.37];
+    camera.up = [0,1,0 ];
 
     var spinning = true;
 
     xeogl.scene.on("tick", function () { // Slowly orbit the camera
         if (spinning) {
-            view.rotateEyeY(-0.05);
+            camera.orbitYaw(-0.05);
         }
     });
 
-    var inputControl = new xeogl.InputControl(); // User camera control
+    var cameraControl = new xeogl.CameraControl(); // User camera control
 
 
 

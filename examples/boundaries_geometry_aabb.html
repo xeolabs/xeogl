@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <h1>visualizing the Local-space axis-aligned boundary of a <a href="../docs/classes/Geometry.html" target="_parent">Geometry</a>
+        with an <a href="../docs/classes/AABBGeometry.html" target="_parent">AABBGeometry</a></h1>
+</div>
+
+<script>
+
+    new xeogl.CameraControl();
+
+
+    var entity = new xeogl.Entity({
+
+        geometry: new xeogl.TorusGeometry({
+            radius: 1.0,
+            tube: 0.5,
+            segmentsR: 32,
+            segmentsT: 24,
+            arc: Math.PI * 2.0
+        }),
+
+        material: new xeogl.PhongMaterial({
+            diffuse: [1, 0.3, 0.3]
+        }),
+
+        transform: getTransform()
+    });
+
+
+    var boundaryObject = new xeogl.Entity({
+
+        geometry: new xeogl.AABBGeometry({
+            targetAABB: entity.geometry.aabb
+        }),
+
+        material: new xeogl.PhongMaterial({
+            diffuse: [0.5, 1.0, 0.5],
+            emissive: [0.5, 1.0, 0.5],
+            lineWidth: 2
+        }),
+
+        transform: getTransform()
+    });
+
+    function getTransform() {
+
+        var scale0 = new xeogl.Scale({
+            xyz: [0.3, 0.5, 0.5]
+        });
+
+        var rotate0 = new xeogl.Rotate({
+            xyz: [0, 0, 1],
+            angle: 40
+        });
+
+        var translate = new xeogl.Translate({
+            xyz: [5, 0, 0]
+            ,
+            parent: rotate0
+        });
+
+        var rotate1 = new xeogl.Rotate({
+            xyz: [1, 0, 1],
+            angle: 25,
+            parent: translate
+        });
+
+        var rotate2 = new xeogl.Rotate({
+            xyz: [1, 1, 0],
+            angle: 45,
+
+            parent: rotate1
+        });
+
+        var scale = new xeogl.Scale({
+            xyz: [0.5, 0.5, 0.5],
+
+            parent: rotate2
+        });
+
+        var a = 0;
+
+        rotate1.scene.on("tick", function () {
+            rotate0.angle = a * 0.1;
+            rotate1.angle = a += 4;
+        });
+
+        return scale
+
+    }
+
+</script>
+</body>
+</html>

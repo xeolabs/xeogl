@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
@@ -46,10 +46,10 @@
     // Orbit the eye position about the look position.
     entity.scene.on("tick", function () {
 
-        var view = entity.camera.view;
+        var camera = entity.scene.camera;
 
-        view.rotateEyeY(-0.15);
-        view.rotateEyeX(0.05);
+        camera.orbitYaw(-0.15);
+        camera.orbitPitch(0.05);
     });
 
     // Logs text to the page

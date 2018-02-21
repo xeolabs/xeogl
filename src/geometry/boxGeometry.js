@@ -63,356 +63,200 @@
 
         _init: function (cfg) {
 
-            this._super(cfg);
-
-            this.center = cfg.center;
-            this.xSize = cfg.xSize;
-            this.ySize = cfg.ySize;
-            this.zSize = cfg.zSize;
-        },
-
-        /**
-         * Implement protected virtual template method {{#crossLink "Geometry/method:_update"}}{{/crossLink}},
-         * to generate geometry data arrays.
-         *
-         * @protected
-         */
-        _update: function () {
-
-            var xmin = -this._xSize + this._center[0];
-            var ymin = -this._ySize + this._center[1];
-            var zmin = -this._zSize + this._center[2];
-            var xmax = this._xSize + this._center[0];
-            var ymax = this._ySize + this._center[1];
-            var zmax = this._zSize + this._center[2];
-
-            // The vertices - eight for our cube, each
-            // one spanning three array elements for X,Y and Z
-            this.positions = [
-
-                // v0-v1-v2-v3 front
-                xmax, ymax, zmax,
-                xmin, ymax, zmax,
-                xmin, ymin, zmax,
-                xmax, ymin, zmax,
-
-                // v0-v3-v4-v1 right
-                xmax, ymax, zmax,
-                xmax, ymin, zmax,
-                xmax, ymin, zmin,
-                xmax, ymax, zmin,
-
-                // v0-v1-v6-v1 top
-                xmax, ymax, zmax,
-                xmax, ymax, zmin,
-                xmin, ymax, zmin,
-                xmin, ymax, zmax,
-
-                // v1-v6-v7-v2 left
-                xmin, ymax, zmax,
-                xmin, ymax, zmin,
-                xmin, ymin, zmin,
-                xmin, ymin, zmax,
-
-                // v7-v4-v3-v2 bottom
-                xmin, ymin, zmin,
-                xmax, ymin, zmin,
-                xmax, ymin, zmax,
-                xmin, ymin, zmax,
-
-                // v4-v7-v6-v1 back
-                xmax, ymin, zmin,
-                xmin, ymin, zmin,
-                xmin, ymax, zmin,
-                xmax, ymax, zmin
-            ];
-
-            // Normal vectors, one for each vertex
-            this.normals = [
-
-                // v0-v1-v2-v3 front
-                0, 0, 1,
-                0, 0, 1,
-                0, 0, 1,
-                0, 0, 1,
-
-                // v0-v3-v4-v5 right
-                1, 0, 0,
-                1, 0, 0,
-                1, 0, 0,
-                1, 0, 0,
-
-                // v0-v5-v6-v1 top
-                0, 1, 0,
-                0, 1, 0,
-                0, 1, 0,
-                0, 1, 0,
-
-                // v1-v6-v7-v2 left
-                -1, 0, 0,
-                -1, 0, 0,
-                -1, 0, 0,
-                -1, 0, 0,
-
-                // v7-v4-v3-v2 bottom
-                0, -1, 0,
-                0, -1, 0,
-                0, -1, 0,
-                0, -1, 0,
-
-                // v4-v7-v6-v5 back
-                0, 0, -1,
-                0, 0, -1,
-                0, 0, -1,
-                0, 0, -1
-            ];
-
-            // UV coords
-            this.uv = [
-
-                // v0-v1-v2-v3 front
-                1, 0,
-                0, 0,
-                0, 1,
-                1, 1,
-
-                // v0-v3-v4-v1 right
-                0, 0,
-                0, 1,
-                1, 1,
-                1, 0,
-
-                // v0-v1-v6-v1 top
-                1, 1,
-                1, 0,
-                0, 0,
-                0, 1,
-
-                // v1-v6-v7-v2 left
-                1, 0,
-                0, 0,
-                0, 1,
-                1, 1,
-
-                // v7-v4-v3-v2 bottom
-                0, 1,
-                1, 1,
-                1, 0,
-                0, 0,
-
-                // v4-v7-v6-v1 back
-                0, 1,
-                1, 1,
-                1, 0,
-                0, 0
-            ];
-
-            // Indices - these organise the
-            // positions and uv texture coordinates
-            // into geometric primitives in accordance
-            // with the "primitive" parameter,
-            // in this case a set of three indices
-            // for each triangle.
-            //
-            // Note that each triangle is specified
-            // in counter-clockwise winding order.
-            //
-            // You can specify them in clockwise
-            // order if you configure the Modes
-            // node's frontFace flag as "cw", instead of
-            // the default "ccw".
-            this.indices = [
-                0, 1, 2,
-                0, 2, 3,
-                // front
-                4, 5, 6,
-                4, 6, 7,
-                // right
-                8, 9, 10,
-                8, 10, 11,
-                // top
-                12, 13, 14,
-                12, 14, 15,
-                // left
-                16, 17, 18,
-                16, 18, 19,
-                // bottom
-                20, 21, 22,
-                20, 22, 23
-            ];
-
-            // Tangents are lazy-computed from normals and UVs
-            // for Normal mapping once we know we have texture
-
-            this.tangents = null;
-        },
-
-        _props: {
-
-            /**
-             * 3D point indicating the center position of this BoxGeometry.
-             *
-             * Fires an {{#crossLink "BoxGeometry/center:event"}}{{/crossLink}} event on change.
-             *
-             * @property center
-             * @default [0,0,0]
-             * @type {Float32Array}
-             */
-            center: {
-
-                set: function (value) {
-
-                    (this._center = this._center || new xeogl.math.vec3()).set(value || [0, 0, 0]);
-
-                    this._needUpdate();
-
-                    /**
-                     Fired whenever this BoxGeometry's {{#crossLink "BoxGeometry/center:property"}}{{/crossLink}} property changes.
-                     @event center
-                     @param value {Float32Array} The property's new value
-                     */
-                    this.fire("center", this._center);
-                },
-
-                get: function () {
-                    return this._center;
-                }
-            },
-
-            /**
-             * The BoxGeometry's half-size on the X-axis.
-             *
-             * Fires a {{#crossLink "BoxGeometry/xsize:event"}}{{/crossLink}} event on change.
-             *
-             * @property xSize
-             * @default 1
-             * @type Number
-             */
-            xSize: {
-
-                set: function (value) {
-
-                    value = value || 1;
-
-                    if (this._xSize === value) {
-                        return;
-                    }
-
-                    if (value < 0) {
-                        this.warn("negative xSize not allowed - will invert");
-                        value = value * -1;
-                    }
-
-                    this._xSize = value;
-
-                    this._needUpdate();
-
-                    /**
-                     * Fired whenever this BoxGeometry's {{#crossLink "BoxGeometry/xSize:property"}}{{/crossLink}} property changes.
-                     * @event xSize
-                     * @type Number
-                     * @param value The property's new value
-                     */
-                    this.fire("xSize", this._xSize);
-                },
-
-                get: function () {
-                    return this._xSize;
-                }
-            },
-
-            /**
-             * The BoxGeometry's half-size on the Y-axis.
-             *
-             * Fires a {{#crossLink "BoxGeometry/ySize:event"}}{{/crossLink}} event on change.
-             *
-             * @property ySize
-             * @default 1
-             * @type Number
-             */
-            ySize: {
-
-                set: function (value) {
-
-                    value = value || 1;
-
-                    if (this._ySize === value) {
-                        return;
-                    }
-
-                    if (value < 0) {
-                        this.warn("negative ySize not allowed - will invert");
-                        value = value * -1;
-                    }
-
-                    this._ySize = value;
-
-                    this._needUpdate();
-
-                    /**
-                     * Fired whenever this BoxGeometry's {{#crossLink "BoxGeometry/ySize:property"}}{{/crossLink}} property changes.
-                     * @event ySize
-                     * @type Number
-                     * @param value The property's new value
-                     */
-                    this.fire("ySize", this._ySize);
-                },
-
-                get: function () {
-                    return this._ySize;
-                }
-            },
-
-            /**
-             * The BoxGeometry's half-size on the Z-axis.
-             *
-             * Fires a {{#crossLink "BoxGeometry/zSize:event"}}{{/crossLink}} event on change.
-             *
-             * @property zSize
-             * @default 1
-             * @type Number
-             */
-            zSize: {
-
-                set: function (value) {
-
-                    value = value || 1;
-
-                    if (this._zSize === value) {
-                        return;
-                    }
-
-                    if (value < 0) {
-                        this.warn("negative zSize not allowed - will invert");
-                        value = value * -1;
-                    }
-
-                    this._zSize = value;
-
-                    this._needUpdate();
-
-                    /**
-                     * Fired whenever this BoxGeometry's {{#crossLink "BoxGeometry/zSize:property"}}{{/crossLink}} property changes.
-                     * @event zSize
-                     * @type Number
-                     * @param value The property's new value
-                     */
-                    this.fire("zSize", this._zSize);
-                },
-
-                get: function () {
-                    return this._zSize;
-                }
+            var xSize = cfg.xSize || 1;
+            if (xSize < 0) {
+                this.error("negative xSize not allowed - will invert");
+                xSize *= -1;
             }
-        },
 
-        _getJSON: function () {
-            return {
-                center: xeogl.math.vecToArray(this._center),
-                xSize: this._xSize,
-                ySize: this._ySize,
-                zSize: this._zSize
-            };
+            var ySize = cfg.ySize || 1;
+            if (ySize < 0) {
+                this.error("negative ySize not allowed - will invert");
+                ySize *= -1;
+            }
+
+            var zSize = cfg.zSize || 1;
+            if (zSize < 0) {
+                this.error("negative zSize not allowed - will invert");
+                zSize *= -1;
+            }
+
+            var center = cfg.center;
+            var centerX = center ? center[0] : 0;
+            var centerY = center ? center[1] : 0;
+            var centerZ = center ? center[2] : 0;
+
+            var xmin = -xSize + centerX;
+            var ymin = -ySize + centerY;
+            var zmin = -zSize + centerZ;
+            var xmax = xSize + centerX;
+            var ymax = ySize + centerY;
+            var zmax = zSize + centerZ;
+
+            this._super(xeogl._apply(cfg, {
+
+                // The vertices - eight for our cube, each
+                // one spanning three array elements for X,Y and Z
+                positions: [
+
+                    // v0-v1-v2-v3 front
+                    xmax, ymax, zmax,
+                    xmin, ymax, zmax,
+                    xmin, ymin, zmax,
+                    xmax, ymin, zmax,
+
+                    // v0-v3-v4-v1 right
+                    xmax, ymax, zmax,
+                    xmax, ymin, zmax,
+                    xmax, ymin, zmin,
+                    xmax, ymax, zmin,
+
+                    // v0-v1-v6-v1 top
+                    xmax, ymax, zmax,
+                    xmax, ymax, zmin,
+                    xmin, ymax, zmin,
+                    xmin, ymax, zmax,
+
+                    // v1-v6-v7-v2 left
+                    xmin, ymax, zmax,
+                    xmin, ymax, zmin,
+                    xmin, ymin, zmin,
+                    xmin, ymin, zmax,
+
+                    // v7-v4-v3-v2 bottom
+                    xmin, ymin, zmin,
+                    xmax, ymin, zmin,
+                    xmax, ymin, zmax,
+                    xmin, ymin, zmax,
+
+                    // v4-v7-v6-v1 back
+                    xmax, ymin, zmin,
+                    xmin, ymin, zmin,
+                    xmin, ymax, zmin,
+                    xmax, ymax, zmin
+                ],
+
+                // Normal vectors, one for each vertex
+                normals: [
+
+                    // v0-v1-v2-v3 front
+                    0, 0, 1,
+                    0, 0, 1,
+                    0, 0, 1,
+                    0, 0, 1,
+
+                    // v0-v3-v4-v5 right
+                    1, 0, 0,
+                    1, 0, 0,
+                    1, 0, 0,
+                    1, 0, 0,
+
+                    // v0-v5-v6-v1 top
+                    0, 1, 0,
+                    0, 1, 0,
+                    0, 1, 0,
+                    0, 1, 0,
+
+                    // v1-v6-v7-v2 left
+                    -1, 0, 0,
+                    -1, 0, 0,
+                    -1, 0, 0,
+                    -1, 0, 0,
+
+                    // v7-v4-v3-v2 bottom
+                    0, -1, 0,
+                    0, -1, 0,
+                    0, -1, 0,
+                    0, -1, 0,
+
+                    // v4-v7-v6-v5 back
+                    0, 0, -1,
+                    0, 0, -1,
+                    0, 0, -1,
+                    0, 0, -1
+                ],
+
+                // UV coords
+                uv: [
+
+                    // v0-v1-v2-v3 front
+                    1, 0,
+                    0, 0,
+                    0, 1,
+                    1, 1,
+
+                    // v0-v3-v4-v1 right
+                    0, 0,
+                    0, 1,
+                    1, 1,
+                    1, 0,
+
+                    // v0-v1-v6-v1 top
+                    1, 1,
+                    1, 0,
+                    0, 0,
+                    0, 1,
+
+                    // v1-v6-v7-v2 left
+                    1, 0,
+                    0, 0,
+                    0, 1,
+                    1, 1,
+
+                    // v7-v4-v3-v2 bottom
+                    0, 1,
+                    1, 1,
+                    1, 0,
+                    0, 0,
+
+                    // v4-v7-v6-v1 back
+                    0, 1,
+                    1, 1,
+                    1, 0,
+                    0, 0
+                ],
+
+                // Indices - these organise the
+                // positions and uv texture coordinates
+                // into geometric primitives in accordance
+                // with the "primitive" parameter,
+                // in this case a set of three indices
+                // for each triangle.
+                //
+                // Note that each triangle is specified
+                // in counter-clockwise winding order.
+                //
+                // You can specify them in clockwise
+                // order if you configure the Modes
+                // node's frontFace flag as "cw", instead of
+                // the default "ccw".
+                indices: [
+                    0, 1, 2,
+                    0, 2, 3,
+                    // front
+                    4, 5, 6,
+                    4, 6, 7,
+                    // right
+                    8, 9, 10,
+                    8, 10, 11,
+                    // top
+                    12, 13, 14,
+                    12, 14, 15,
+                    // left
+                    16, 17, 18,
+                    16, 18, 19,
+                    // bottom
+                    20, 21, 22,
+                    20, 22, 23
+                ],
+
+                // Tangents are lazy-computed from normals and UVs
+                // for Normal mapping once we know we have texture
+
+                tangents: null
+            }));
+
+            this.box = true;
         }
     });
 

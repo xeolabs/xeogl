@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
@@ -34,11 +34,11 @@
     ];
 
     var gi = 0;
-    var sqrtNum = 10;
+    var sqrtNum = 30;
     var diffuse = [0, 0, 0];
     var specular = [0, 0, 0];
     var inc = 1.0 / sqrtNum;
-    var width = 100;
+    var width = 400;
     var halfWidth = width / 2;
 
     for (var y = 0; y <= 1.0; y += inc) {
@@ -47,9 +47,11 @@
 
                 new xeogl.Entity({
 
+                    colorize: [x, z, y, 1],
+
                     geometry: geometries[gi < 3 ? gi++ : gi = 0],
 
-                        material: new xeogl.PhongMaterial({
+                        material: new xeogl.LambertMaterial({
                             diffuse: [x, z, y]
                         }),
 
@@ -64,9 +66,9 @@
 
     var scene = xeogl.scene;
 
-    scene.camera.view.zoom(170);
+    scene.camera.zoom(670);
 
-    new xeogl.InputControl();
+    new xeogl.CameraControl();
 
     // Spin camera
     // Log statistics
@@ -75,10 +77,10 @@
 
                 // Spin camera
 
-                var view = scene.camera.view;
+                var camera = scene.camera;
 
-                view.rotateEyeY(0.5);
-                view.rotateEyeX(0.3);
+                camera.orbitYaw(0.5);
+                camera.orbitPitch(0.3);
 
                 // Get stats from xeogl and log them
 

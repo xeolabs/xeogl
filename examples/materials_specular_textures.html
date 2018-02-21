@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
     <script src="js/skyboxes/skybox.js"></script>
     <script src="js/geometry/vectorTextGeometry.js"></script>
     <script src="js/utils/materialGallery.js"></script>
@@ -30,11 +30,12 @@
             material: {
                 type: "xeogl.SpecularMaterial",
                 diffuse: [1.0, 1.0, 1.0],
-                specular: [0.4, 0.4, 0.4],
-                glossiness: 0.0,
+                specular: [0.6, 0.6, 0.6],
+                glossiness: 0.8,
                 alpha: 1.0,
                 diffuseMap: {
-                    src: "textures/diffuse/uvGrid2.jpg"
+                    src: "textures/diffuse/uvGrid2.jpg",
+                    encoding: "sRGB"
                 }
             }
         },
@@ -73,7 +74,8 @@
                 glossiness: 0.5,
                 alpha: 1.0,
                 emissiveMap: {
-                    src: "textures/emissive/emissiveMap.jpg"
+                    src: "textures/emissive/emissiveMap.jpg",
+                    encoding: "sRGB"
                 }
             }
         },
@@ -112,7 +114,8 @@
                 specular: [0.5, 0.5, 0.8],
                 glossiness: 0.1,
                 diffuseMap: {
-                    src: "textures/alpha/crosshatchAlphaMap.jpg"
+                    src: "textures/alpha/crosshatchAlphaMap.jpg",
+                    encoding: "sRGB"
                 }
             }
         }

@@ -45,7 +45,7 @@
      An **AnnotationStory** is a  {{#crossLink "Story"}}{{/crossLink}} that contains a list
      of {{#crossLink "Annotation"}}Annotations{{/crossLink}} accompanied by a panel of text containing links that activate them.
 
-     <a href="../../examples/#annotations_stories_tronTank"><img src="../../assets/images/screenshots/tronTankAnnotationStory.jpg"></img></a>
+     <a href="../../examples/#annotations_stories_tronTank"><img src="../../assets/images/screenshots/tronTankStory.jpg"></img></a>
 
      * AnnotationStory text is provided as markdown.
      * Words in the text can be linked to xeogl storytelling functions, to fly the camera to Annotation vantage points, show labels etc.
@@ -71,7 +71,7 @@
             src: "models/scenejs/tronTank/tronTank.json"
         });
 
-     model.scene.camera.view.eye = [15, 20, -25];
+     model.scene.camera.eye = [15, 20, -25];
 
      // When the model has loaded, create a story with annotations
 
@@ -197,7 +197,7 @@
             }
 
             this._cameraFlight = new xeogl.CameraFlightAnimation(this, {duration: 1});
-            this._inputControl = new xeogl.CameraControl(this);
+            this._cameraControl = new xeogl.CameraControl(this);
 
             //-------------------------------------------------------------------
             // Authoring mode
@@ -216,7 +216,7 @@
                     switch (keyCode) {
                         case this.KEY_SHIFT:
                             shiftDown = true;
-                            self._inputControl.mousePickEntity.active = false;
+                            self._cameraControl.mousePickEntity.active = false;
                             break;
                         case this.KEY_ESCAPE:
                             self._clear();
@@ -231,7 +231,7 @@
                     switch (keyCode) {
                         case this.KEY_SHIFT:
                             shiftDown = false;
-                            self._inputControl.mousePickEntity.active = true;
+                            self._cameraControl.mousePickEntity.active = true;
                             break;
                     }
                 });
@@ -252,12 +252,7 @@
                     if (hit) {
 
                         var entity = hit.entity;
-                        var camera = entity.camera;
-                        var lookat = camera.view;
-
-                        if (!lookat || !lookat.isType("xeogl.Lookat")) {
-                            return;
-                        }
+                        var camera = entity.scene.camera;
 
                         var i = self._annotations.length;
                         var num = i + 1;
@@ -272,9 +267,9 @@
                             glyph: glyph,
                             title: "Annotation " + num,
                             desc: dummyText,
-                            eye: lookat.eye,
-                            look: lookat.look,
-                            up: lookat.up,
+                            eye: camera.eye,
+                            look: camera.look,
+                            up: camera.up,
                             pinShown: true,
                             labelShown: true
                         });

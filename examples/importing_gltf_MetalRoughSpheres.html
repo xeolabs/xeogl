@@ -6,12 +6,9 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
     <script src="../build/xeogl.js"></script>
-    <script src="js/models/glTFModel.js"></script>
+
     <script src="js/skyboxes/skybox.js"></script>
 
-    <script src="libs/gl-matrix-min.js"></script>
-    <script src="js/zspace/zSpaceEffect_complete.js"></script>
-    <script src="js/zspace/zSpaceStylusControl.js"></script>
 
     <link href="css/styles.css" rel="stylesheet"/>
 
@@ -37,19 +34,20 @@
 
     var model = new xeogl.GLTFModel({
         src: "models/gltf/MetalRoughSpheres/glTF/MetalRoughSpheres.gltf"
+
     });
 
     //-----------------------------------------------------------------------------------------------------
     // Camera animation and user control
     //-----------------------------------------------------------------------------------------------------
 
-    var view = xeogl.scene.camera.view;
+    var camera = xeogl.scene.camera;
 
     var spinning = true;
 
     xeogl.scene.on("tick", function () { // Slowly orbit the camera
         if (spinning) {
-            view.rotateEyeY(-0.05);
+            camera.orbitYaw(-0.05);
         }
     });
 
@@ -58,7 +56,7 @@
         cameraFlight.flyTo(model);
     });
 
-    var inputControl = new xeogl.InputControl();
+    var cameraControl = new xeogl.CameraControl();
 
     //-----------------------------------------------------------------------------------------------------
     // Environment
@@ -137,6 +135,8 @@
             this["dirLights"] = !!(lights.lights && lights.lights.length > 0);
             this["skybox"] = !!skybox.active;
             this["spinning"] = true;
+            this["gammaOutput"] = xeogl.scene.gammaOutput;
+            this["gammaFactor"] = xeogl.scene.gammaFactor;
 
             var self = this;
 
@@ -156,6 +156,8 @@
                 if (self["spinning"] !== spinning) {
                     spinning = self["spinning"];
                 }
+                xeogl.scene.gammaOutput = self["gammaOutput"];
+                xeogl.scene.gammaFactor = self["gammaFactor"];
                 requestAnimationFrame(update);
             };
 
@@ -174,6 +176,8 @@
         lightsFolder.add(menu, 'dirLights', false);
         lightsFolder.add(menu, 'skybox', true);
         lightsFolder.add(menu, 'spinning', true);
+        lightsFolder.add(menu, 'gammaOutput', true);
+        lightsFolder.add(menu, 'gammaFactor', 0.0, 3.0);
         lightsFolder.open();
     })();
 

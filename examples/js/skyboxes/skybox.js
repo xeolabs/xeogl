@@ -55,11 +55,11 @@
  var scene = skybox.scene;
 
  // Move the camera back a bit
- scene.camera.view.eye = [0, 0, -30];
+ scene.camera.eye = [0, 0, -30];
 
  // Slowly orbit the camera on each frame
  scene.on("tick", function () {
-         scene.camera.view.rotateEyeY(0.2);
+         scene.camera.orbitYaw(0.2);
      });
  ````
 
@@ -73,6 +73,7 @@
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Skybox.
  @param [cfg.src=[null]] {String} Path to skybox texture
+ @param [cfg.encoding="linear"] {String} Texture encoding format.  See the {{#crossLink "Texture/encoding:property"}}{{/crossLink}} property for more info.
  @param [cfg.size=1000] {Number} Size of this Skybox, given as the distance from the center at [0,0,0] to each face.
  @param [cfg.active=true] {Boolean} True when this Skybox is visible.
  @extends Component
@@ -165,7 +166,8 @@
                     emissive: [1, 1, 1],
                     emissiveMap: new xeogl.Texture(this, {
                         src: cfg.src,
-                        flipY: true
+                        flipY: true,
+                        encoding: cfg.encoding || "sRGB"
                     }),
                     backfaces: true // Show interior faces of our skybox geometry
                 }),

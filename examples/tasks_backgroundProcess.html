@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.js"></script>
+
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <h1>running a background process within xeogl's frame-budgeted task queue</h1>
+</div>
+
+<script>
+
+    var Process = function (cfg) {
+
+        var batchSize = cfg.batchSize || 1;
+        var pid = 0;
+
+        this.start = function () {
+
+            pid++;
+
+            var taskCount = 0;
+            var batchLen = 0;
+
+            var task = (function () {
+                const _pid = pid;
+                return function () {
+                    if (_pid !== pid) {
+                        return;
+                    }
+                    cfg.task();
+                    if (++taskCount >= batchLen) {
+                        nextBatch();
+                    }
+                };
+            })();
+
+            function nextBatch() {
+                taskCount = 0;
+                batchLen = 0;
+                for (var i = 0; i < batchSize; i++) {
+                    xeogl.scheduleTask(task);
+                    batchLen++;
+                }
+            }
+
+            nextBatch();
+        };
+
+        this.stop = function () {
+            pid++;
+        };
+    };
+
+    //------------------------------------------------------------------
+    // Create some random entities
+    //------------------------------------------------------------------
+
+    var geometry = new xeogl.TorusGeometry({
+        radius: 2.0,
+        tube: 0.7,
+        radialSegments: 8,
+        tubeSegments: 8,
+        arc: Math.PI * 2.0
+    });
+
+    var material = new xeogl.PhongMaterial({
+        diffuseMap: new xeogl.Texture({
+            src: "textures/diffuse/uvGrid2.jpg"
+        })
+    });
+
+    for (var i = 0; i < 400; i++) {
+
+        var s = Math.random() * 5;
+
+        new xeogl.Entity({
+            geometry: geometry,
+            material: material,
+            transform: new xeogl.Scale({
+                xyz: [2, 1 + Math.random() * 3, 2],
+                parent: new xeogl.Rotate({
+                    xyz: [Math.random(), Math.random(), Math.random()], angle: Math.random() * 360,
+                    parent: new xeogl.Translate({
+                        xyz: [Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50]
+                    })
+                })
+            })
+        });
+    }
+
+    //--------------------------------------------------
+    // Set up camera
+    //--------------------------------------------------
+
+    var camera = xeogl.scene.camera;
+
+    camera.eye = [0, 0, -120];
+    camera.look = [0, 0, 0];
+    camera.up = [0, 1, 0];
+
+    xeogl.scene.on("tick", function () { // Slowly orbit the camera
+        camera.orbitYaw(-0.1);
+    });
+
+    new xeogl.CameraControl();
+
+    //--------------------------------------------------
+    // Run background process
+    //--------------------------------------------------
+
+    (function () {
+
+        var entities = xeogl.scene.entities;
+        var entityIds = Object.keys(entities);
+
+        var entityIdx1 = 0;
+        var triangleIdx1 = 0;
+
+        var entityIdx2 = 1; // Start at next entity
+        var triangleIdx2 = 0;
+
+        var a1 = new Float32Array(3);
+        var b1 = new Float32Array(3);
+        var c1 = new Float32Array(3);
+
+        var a2 = new Float32Array(3);
+        var b2 = new Float32Array(3);
+        var c2 = new Float32Array(3);
+
+        var numTrianglesTested = 0;
+
+        var collisions = [];
+
+        var process = new Process({
+            batchSize: 200,
+            task: function () {
+
+                var entity1 = entities[entityIds[entityIdx1]];
+                var geometry1 = entity1.geometry;
+                var positions1 = entity1.worldPositions;
+                var indices1 = geometry1.indices;
+                var i1 = indices1[triangleIdx1] * 3;
+                var j1 = indices1[triangleIdx1 + 1] * 3;
+                var k1 = indices1[triangleIdx1 + 2] * 3;
+
+                var entity2 = entities[entityIds[entityIdx2]];
+                var geometry2 = entity2.geometry;
+                var positions2 = entity2.worldPositions;
+                var indices2 = geometry2.indices;
+                var i2 = indices2[triangleIdx2] * 3;
+                var j2 = indices2[triangleIdx2 + 1] * 3;
+                var k2 = indices2[triangleIdx2 + 2] * 3;
+
+                // Get triangle vertices
+
+                a1[0] = positions1[i1];
+                a1[1] = positions1[i1 + 1];
+                a1[2] = positions1[i1 + 2];
+
+                b1[0] = positions1[j1];
+                b1[1] = positions1[j1 + 1];
+                b1[2] = positions1[j1 + 2];
+
+                c1[0] = positions1[k1];
+                c1[1] = positions1[k1 + 1];
+                c1[2] = positions1[k1 + 2];
+
+                a2[0] = positions2[i2];
+                a2[1] = positions2[i2 + 1];
+                a2[2] = positions2[i2 + 2];
+
+                b2[0] = positions2[j2];
+                b2[1] = positions2[j2 + 1];
+                b2[2] = positions2[j2 + 2];
+
+                c2[0] = positions2[k2];
+                c2[1] = positions2[k2 + 1];
+                c2[2] = positions2[k2 + 2];
+
+                // Test triangles for collision
+
+                var collision = trianglesCollision(a1, b1, c1, a2, b2, c2);
+
+                numTrianglesTested++;
+
+                if (collision) {
+
+                    //entity1.outlined = true;
+
+                    collisions.push([entity1.id, entity2.id]);
+
+                    entityIdx2++;
+
+                    if (entityIdx2 === entityIdx1) {
+                        entityIdx2++;
+                    }
+
+                    //   console.log("collision");
+                    // console.log("next target entity: " + entityIdx2);
+
+                    if (entityIdx2 >= entityIds.length) {
+
+                        entityIdx2 = 0;
+                        triangleIdx2 = 0;
+                        triangleIdx1 += 3;
+
+                        // console.log("next source triangle: " + triangleIdx1);
+
+                        if (triangleIdx1 >= (indices1.length / 3)) {
+
+                            entityIdx1++;
+                            triangleIdx1 = 0;
+
+                            //    console.log("next source entity: " + triangleIdx1);
+
+                            if (entityIdx1 >= entityIds.length) { // Stop if done
+                                console.log("Done. Triangles tested: " + numTrianglesTested);
+                                process.stop();
+                            }
+                        }
+                    }
+
+                } else {
+
+                    triangleIdx2 += 3;
+
+                    //    console.log("next target triangle: " + triangleIdx2);
+
+                    if (triangleIdx2 >= (indices2.length / 3)) {
+
+                        triangleIdx2 = 0;
+                        entityIdx2++;
+
+                        if (entityIdx2 === entityIdx1) {
+                            entityIdx2++;
+                        }
+
+                        //    console.log("next target entity: " + entityIdx2);
+
+                        if (entityIdx2 >= entityIds.length) {
+
+                            entityIdx2 = 0;
+                            triangleIdx2 = 0;
+                            triangleIdx1 += 3;
+
+                            //      console.log("next source triangle: " + triangleIdx1);
+
+                            if (triangleIdx1 >= (indices1.length / 3)) {
+
+                                entityIdx1++;
+                                triangleIdx1 = 0;
+
+                                //        console.log("next source entity: " + triangleIdx1);
+
+                                if (entityIdx1 >= entityIds.length) { // Stop if done
+                                    console.log("Done. Triangles tested: " + numTrianglesTested);
+                                    process.stop();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        function trianglesCollision(a1, b1, c1, a2, b2, c2) {
+            return Math.random() < 0.03;
+        }
+
+        process.start();
+    })();
+
+</script>
+</body>
+</html>

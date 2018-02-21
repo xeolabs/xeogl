@@ -7,7 +7,7 @@
 
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
 
     <script src="js/geometry/k3d.js"></script>
     <script src="js/geometry/nintendo3DSGeometry.js"></script>
@@ -45,7 +45,7 @@
     });
 
     // Allow user camera control
-    new xeogl.InputControl();
+    new xeogl.CameraControl();
 
     // Fit to view as soon as the .3DS is loaded
     entity.geometry.on("loaded", function () {
@@ -54,11 +54,11 @@
         cameraFlight.jumpTo(entity);
 
         // Start orbiting the camera
-        entity.scene.camera.view.rotateEyeX(20);
-        entity.scene.camera.view.rotateEyeY(130);
+        entity.scene.camera.orbitPitch(20);
+        entity.scene.camera.orbitYaw(130);
 
         entity.scene.on("tick", function () {
-            entity.scene.camera.view.rotateEyeY(-0.2);
+            entity.scene.camera.orbitYaw(-0.2);
         });
     });
 

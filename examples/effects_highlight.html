@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="../build/xeogl.js"></script>
+    <script src="js/geometry/teapotGeometry.js"></script>
+
+    <script src="js/libs/dat.gui.min.js"></script>
+
+
+<body>
+
+<div id="info">
+    <h1>highlight effect applied to an <a href="../docs/classes/Entity.html" target="_parent">Entity</a> with a custom <a
+            href="../docs/classes/HighlightMaterial.html" target="_parent">HighlightMaterial</a></h1>
+</div>
+
+<div id="dat-gui-container">
+</div>
+
+<script>
+
+    var entity = new xeogl.Entity({
+        geometry: new xeogl.TeapotGeometry({
+            highlightEdgeThreshold: 1
+        }),
+        material: new xeogl.PhongMaterial({
+            diffuse: [0.5, 0.5, 1.0]
+        }),
+        highlightMaterial: new xeogl.GhostMaterial({
+            edges: false,
+            edgeColor: [0.529411792755127, 0.4577854573726654, 0.4100345969200134],
+            edgeAlpha: 1.0,
+            edgeWidth: 1,
+            vertices: false,
+            vertexColor: [0.7, 1.0, 0.7],
+            vertexAlpha: 0.9,
+            vertexSize: 4.0,
+            fill: true,
+            fillColor: [1.0, 1.0, 0.0],
+            fillAlpha: 0.5
+        }),
+        transform: new xeogl.Rotate({
+            xyz: [1, 0, 0],
+            angle: -90,
+            parent: new xeogl.Translate({
+                xyz: [0, -20, 0]
+            })
+        }),
+       // highlight: true
+    });
+
+    var camera = entity.scene.camera;
+
+    camera.eye = [0, 0, -100];
+
+    entity.scene.on("tick", function () {
+       // camera.orbitYaw(0.2);
+    });
+
+    new xeogl.CameraControl();
+
+    //------------------------------------------------------------------------------------------------------------------
+    // GUI
+    //------------------------------------------------------------------------------------------------------------------
+
+    var Menu = function () {
+
+        var highlightMaterial = entity.highlightMaterial;
+
+        this["highlight"] = true;
+        this["highlightMaterial.preset"] = "yellowHighlight";
+        this["highlightMaterial.edges"] = highlightMaterial.edges;
+        this["highlightMaterial.fill"] = highlightMaterial.fill;
+        this["highlightMaterial.vertices"] = highlightMaterial.vertices;
+        this["highlightMaterial.edgeColor"] = typedToJS(highlightMaterial.edgeColor);
+        this["highlightMaterial.edgeAlpha"] = highlightMaterial.edgeAlpha;
+        this["highlightMaterial.edgeWidth"] = highlightMaterial.edgeWidth;
+        this["highlightMaterial.vertexColor"] = typedToJS(highlightMaterial.vertexColor);
+        this["highlightMaterial.vertexAlpha"] = highlightMaterial.vertexAlpha;
+        this["highlightMaterial.vertexSize"] = highlightMaterial.vertexSize;
+        this["highlightMaterial.fillColor"] = typedToJS(highlightMaterial.fillColor);
+        this["highlightMaterial.fillAlpha"] = highlightMaterial.fillAlpha;
+        this["scene.gammaOutput"] = entity.scene.gammaOutput;
+        this["scene.gammaFactor"] = entity.scene.gammaFactor;
+
+        var self = this;
+
+        var lastHighlightMaterialPreset;
+
+        var update = function () {
+
+            entity.highlight = !!self["highlight"];
+
+            var preset = self["highlightMaterial.preset"];
+            if (lastHighlightMaterialPreset !== preset) {
+                highlightMaterial.preset = preset;
+                lastHighlightMaterialPreset = preset;
+                self["highlightMaterial.edges"] = highlightMaterial.edges;
+                self["highlightMaterial.fill"] = highlightMaterial.fill;
+                self["highlightMaterial.vertices"] = highlightMaterial.vertices;
+                self["highlightMaterial.edgeColor"] = typedToJS(highlightMaterial.edgeColor);
+                self["highlightMaterial.edgeAlpha"] = highlightMaterial.edgeAlpha;
+                self["highlightMaterial.edgeWidth"] = highlightMaterial.edgeWidth;
+                self["highlightMaterial.vertexColor"] = typedToJS(highlightMaterial.vertexColor);
+                self["highlightMaterial.vertexAlpha"] = highlightMaterial.vertexAlpha;
+                self["highlightMaterial.vertexSize"] = highlightMaterial.vertexSize;
+                self["highlightMaterial.fillColor"] = typedToJS(highlightMaterial.fillColor);
+                self["highlightMaterial.fillAlpha"] = highlightMaterial.fillAlpha;
+            } else {
+                highlightMaterial.vertices = !!self["highlightMaterial.vertices"];
+                highlightMaterial.edges = !!self["highlightMaterial.edges"];
+                highlightMaterial.fill = !!self["highlightMaterial.fill"];
+                highlightMaterial.edgeColor = JSToTyped(self["highlightMaterial.edgeColor"]);
+                highlightMaterial.edgeAlpha = self["highlightMaterial.edgeAlpha"];
+                highlightMaterial.edgeWidth = self["highlightMaterial.edgeWidth"];
+                highlightMaterial.vertexColor = JSToTyped(self["highlightMaterial.vertexColor"]);
+                highlightMaterial.vertexAlpha = self["highlightMaterial.vertexAlpha"];
+                highlightMaterial.vertexSize = self["highlightMaterial.vertexSize"];
+                highlightMaterial.fillColor = JSToTyped(self["highlightMaterial.fillColor"]);
+                highlightMaterial.fillAlpha = self["highlightMaterial.fillAlpha"];
+            }
+
+            entity.scene.gammaOutput = self["scene.gammaOutput"];
+            entity.scene.gammaFactor = self["scene.gammaFactor"];
+
+            requestAnimationFrame(update);
+        };
+
+        update();
+    };
+
+    var gui = new dat.GUI({autoPlace: false, top: 0, width: 400});
+
+    document.getElementById('dat-gui-container').appendChild(gui.domElement);
+
+    var menu = new Menu();
+
+    var highlightFolder = gui.addFolder('highlight');
+    highlightFolder.add(menu, 'highlight', true);
+    highlightFolder.add(menu, 'highlightMaterial.preset', Object.keys(xeogl.GhostMaterial.presets));
+    highlightFolder.add(menu, 'highlightMaterial.edges', true).listen();
+    highlightFolder.addColor(menu, 'highlightMaterial.edgeColor', [255, 255, 255]).listen();
+    highlightFolder.add(menu, 'highlightMaterial.edgeAlpha', 0.0, 1.0).listen();
+    highlightFolder.add(menu, 'highlightMaterial.edgeWidth', 1, 10).listen();
+    highlightFolder.add(menu, 'highlightMaterial.vertices', true).listen();
+    highlightFolder.addColor(menu, 'highlightMaterial.vertexColor', [255, 255, 255]).listen();
+    highlightFolder.add(menu, 'highlightMaterial.vertexAlpha', 0.0, 1.0).listen();
+    highlightFolder.add(menu, 'highlightMaterial.vertexSize', 1, 10).listen();
+    highlightFolder.add(menu, 'highlightMaterial.fill', true).listen();
+    highlightFolder.addColor(menu, 'highlightMaterial.fillColor', [255, 255, 255]).listen();
+    highlightFolder.add(menu, 'highlightMaterial.fillAlpha', 0.0, 1.0).listen();
+    highlightFolder.open();
+
+    var gammaFolder = gui.addFolder('gamma');
+    gammaFolder.add(menu, 'scene.gammaOutput', true).listen();
+    gammaFolder.add(menu, 'scene.gammaFactor', 0.0, 3.0).listen();
+    gammaFolder.open();
+
+    function typedToJS(arry) {
+        return [arry[0] * 255, arry[1] * 255, arry[2] * 255];
+    }
+
+    function JSToTyped(arry) {
+        return [arry[0] / 255, arry[1] / 255, arry[2] / 255];
+    }
+
+</script>
+</body>
+</html>

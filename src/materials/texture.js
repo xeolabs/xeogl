@@ -10,8 +10,6 @@
  * To create a Texture from an HTMLImageElement, set the Texture's {{#crossLink "Texture/image:property"}}{{/crossLink}}
  property to the HTMLImageElement.
 
- <img src="../../assets/images/Texture.png"></img>
-
  ## Examples
 
  * [Textures on MetallicMaterials](../../examples/#materials_metallic_textures)
@@ -23,7 +21,6 @@
 
  In this example we have an Entity with
 
- * a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "DirLight"}}{{/crossLink}},
  * a {{#crossLink "PhongMaterial"}}{{/crossLink}} which applies diffuse and specular {{#crossLink "Texture"}}Textures{{/crossLink}}, and
  * a {{#crossLink "TorusGeometry"}}{{/crossLink}}.
 
@@ -34,20 +31,6 @@
 
  ```` javascript
  var entity = new xeogl.Entity({
-
-    lights: new xeogl.Lights({
-        lights: [
-            new xeogl.AmbientLight({
-                color: [0.7, 0.7, 0.7]
-            }),
-            new xeogl.DirLight({
-                dir: [-1, -1, -1],
-                color: [0.5, 0.7, 0.5],
-                intensity: [1.0, 1.0, 1.0],
-                space: "view"
-            })
-        ]
-    }),
 
     material: new xeogl.PhongMaterial({
         ambient: [0.3, 0.3, 0.3],
@@ -86,6 +69,7 @@
  @param [cfg.translate=[0,0]] {Array of Number} 2D translation vector that will be added to texture's *S* and *T* coordinates.
  @param [cfg.scale=[1,1]] {Array of Number} 2D scaling vector that will be applied to texture's *S* and *T* coordinates.
  @param [cfg.rotate=0] {Number} Rotation, in degrees, that will be applied to texture's *S* and *T* coordinates.
+ @param [cfg.encoding="linear"] {String} Encoding format.  See the {{#crossLink "Texture/encoding:property"}}{{/crossLink}} property for more info.
  @extends Component
  */
 (function () {
@@ -102,7 +86,7 @@
 
             this._state = new xeogl.renderer.Texture({
 
-                texture : new xeogl.renderer.webgl.Texture2D( this.scene.canvas.gl),
+                texture: new xeogl.renderer.Texture2D(this.scene.canvas.gl),
                 matrix: null,   // Float32Array
 
                 // Texture properties
@@ -149,6 +133,7 @@
             this.wrapS = cfg.wrapS;
             this.wrapT = cfg.wrapT;
             this.flipY = cfg.flipY;
+            this.encoding = cfg.encoding;
 
             // Data source
 
@@ -157,7 +142,6 @@
 
             } else if (cfg.image) {
                 this.image = cfg.image; // Image object
-
             }
 
             xeogl.stats.memory.textures++;
@@ -205,7 +189,7 @@
                 if (this._image) {
 
                     if (!state.texture) {
-                        state.texture = new xeogl.renderer.webgl.Texture2D(gl);
+                        state.texture = new xeogl.renderer.Texture2D(gl);
                     }
 
                     state.texture.setImage(this._image, state);
@@ -246,7 +230,7 @@
                 if (!!matrix !== !!oldMatrix) {
 
                     // Matrix has been lazy-created, now need
-                    // to recompile xeogl shaders to use the matrix
+                    // to recompile xeogl objectRenderers to use the matrix
 
                     this.fire("dirty");
                 }
@@ -261,7 +245,7 @@
                 this._propsDirty = false;
             }
 
-            this._renderer.imageDirty = true;
+            this._renderer.imageDirty();
         },
 
         _loadSrc: function (src) {
@@ -269,9 +253,6 @@
             var self = this;
 
             var image = new Image();
-
-            var spinner = this.scene.canvas.spinner;
-            var spinnerTextures = spinner.textures;
 
             image.onload = function () {
 
@@ -282,23 +263,12 @@
                     // Keep self._src because that's where we loaded the image
                     // from, and we may need to save that in JSON later
 
-                    self._image = xeogl.renderer.webgl.ensureImageSizePowerOfTwo(image);
+                    self._image = xeogl.renderer.ensureImageSizePowerOfTwo(image);
 
                     self._imageDirty = true;
                     self._srcDirty = false;
 
-                    if (spinnerTextures) {
-                        spinner.processes--;
-                    }
-
                     self._needUpdate();
-
-                    /**
-                     * Fired whenever this Texture's  {{#crossLink "Texture/image:property"}}{{/crossLink}} property changes.
-                     * @event image
-                     * @param value {HTML Image} The property's new value
-                     */
-                    self.fire("image", self._image);
 
                     /**
                      * Fired whenever this Texture has loaded the
@@ -311,9 +281,12 @@
             };
 
             image.onerror = function () {
-                if (spinnerTextures) {
-                    spinner.processes--;
-                }
+
+                /**
+                 * Fired when an error occurs that prevents this Texture from loading.
+                 * @event error
+                 */
+                self.fire("error");
             };
 
             if (src.indexOf("data") === 0) {
@@ -326,10 +299,6 @@
                 // Image file
                 image.crossOrigin = "Anonymous";
                 image.src = src;
-
-                if (spinnerTextures) {
-                    spinner.processes++;
-                }
             }
         },
 
@@ -337,8 +306,6 @@
 
             /**
              * Indicates an HTML DOM Image object to source this Texture from.
-             *
-             * Fires an {{#crossLink "Texture/image:event"}}{{/crossLink}} event on change.
              *
              * Sets the {{#crossLink "Texture/src:property"}}{{/crossLink}} property to null.
              *
@@ -350,20 +317,13 @@
 
                 set: function (value) {
 
-                    this._image = xeogl.renderer.webgl.ensureImageSizePowerOfTwo(value);
+                    this._image = xeogl.renderer.ensureImageSizePowerOfTwo(value);
                     this._src = null;
 
                     this._imageDirty = true;
                     this._srcDirty = false;
 
                     this._needUpdate();
-
-                    /**
-                     * Fired whenever this Texture's  {{#crossLink "Texture/image:property"}}{{/crossLink}} property changes.
-                     * @event image
-                     * @param value {HTML Image} The property's new value
-                     */
-                    this.fire("image", this._image);
                 },
 
                 get: function () {
@@ -373,8 +333,6 @@
 
             /**
              * Indicates a path to an image file to source this Texture from.
-             *
-             * Fires a {{#crossLink "Texture/src:event"}}{{/crossLink}} event on change.
              *
              * Sets the {{#crossLink "Texture/image:property"}}{{/crossLink}} property to null.
              *
@@ -393,14 +351,6 @@
                     this._srcDirty = true;
 
                     this._needUpdate();
-
-                    /**
-                     * Fired whenever this Texture's {{#crossLink "Texture/src:property"}}{{/crossLink}} property changes.
-                     * @event src
-                     * @param value The property's new value
-                     * @type String
-                     */
-                    this.fire("src", this._src);
                 },
 
                 get: function () {
@@ -410,8 +360,6 @@
 
             /**
              * 2D translation vector that will be added to this Texture's *S* and *T* coordinates.
-             *
-             * Fires a {{#crossLink "Texture/translate:event"}}{{/crossLink}} event on change.
              *
              * @property translate
              * @default [0, 0]
@@ -425,13 +373,6 @@
                     this._matrixDirty = true;
 
                     this._needUpdate();
-
-                    /**
-                     * Fired whenever this Texture's   {{#crossLink "Texture/translate:property"}}{{/crossLink}} property changes.
-                     * @event translate
-                     * @param value {Array(Number)} The property's new value
-                     */
-                    this.fire("translate", this._translate);
                 },
 
                 get: function () {
@@ -441,8 +382,6 @@
 
             /**
              * 2D scaling vector that will be applied to this Texture's *S* and *T* coordinates.
-             *
-             * Fires a {{#crossLink "Texture/scale:event"}}{{/crossLink}} event on change.
              *
              * @property scale
              * @default [1, 1]
@@ -456,13 +395,6 @@
                     this._matrixDirty = true;
 
                     this._needUpdate();
-
-                    /**
-                     * Fired whenever this Texture's   {{#crossLink "Texture/scale:property"}}{{/crossLink}} property changes.
-                     * @event scale
-                     * @param value {Array(Number)} The property's new value
-                     */
-                    this.fire("scale", this._scale);
                 },
 
                 get: function () {
@@ -472,8 +404,6 @@
 
             /**
              * Rotation, in degrees, that will be applied to this Texture's *S* and *T* coordinates.
-             *
-             * Fires a {{#crossLink "Texture/rotate:event"}}{{/crossLink}} event on change.
              *
              * @property rotate
              * @default 0
@@ -493,13 +423,6 @@
                     this._matrixDirty = true;
 
                     this._needUpdate();
-
-                    /**
-                     * Fired whenever this Texture's  {{#crossLink "Texture/rotate:property"}}{{/crossLink}} property changes.
-                     * @event rotate
-                     * @param value {Number} The property's new value
-                     */
-                    this.fire("rotate", this._rotate);
                 },
 
                 get: function () {
@@ -540,9 +463,6 @@
              *     produce a texture value from each mipmap. The final texture value is a weighted
              *     average of those two values.
              *
-             *
-             * Fires a {{#crossLink "Texture/minFilter:event"}}{{/crossLink}} event on change.
-             *
              * @property minFilter
              * @default "linearMipmapLinear"
              * @type String
@@ -570,13 +490,6 @@
                     this._propsDirty = true;
 
                     this._needUpdate();
-
-                    /**
-                     * Fired whenever this Texture's  {{#crossLink "Texture/minFilter:property"}}{{/crossLink}} property changes.
-                     * @event minFilter
-                     * @param value {String} The property's new value
-                     */
-                    this.fire("minFilter", this._state.minFilter);
                 },
 
                 get: function () {
@@ -594,9 +507,6 @@
              *     (in Manhattan distance) to the center of the pixel being textured.
              *     * **"linear"** - **(default)** - Uses the weighted average of the four texture elements that are
              *     closest to the center of the pixel being textured.
-             *
-             *
-             * Fires a {{#crossLink "Texture/magFilter:event"}}{{/crossLink}} event on change.
              *
              * @property magFilter
              * @default "linear"
@@ -620,13 +530,6 @@
                     this._propsDirty = true;
 
                     this._needUpdate();
-
-                    /**
-                     * Fired whenever this Texture's  {{#crossLink "Texture/magFilter:property"}}{{/crossLink}} property changes.
-                     * @event magFilter
-                     * @param value {String} The property's new value
-                     */
-                    this.fire("magFilter", this._state.magFilter);
                 },
 
                 get: function () {
@@ -646,9 +549,6 @@
              *     set to *1 - frac ⁡ S* , where *frac ⁡ S* represents the fractional part of *S*.
              *     * **"repeat"** - **(default)** - causes the integer part of the *S* coordinate to be ignored; xeogl uses only the
              *     fractional part, thereby creating a repeating pattern.
-             *
-             *
-             * Fires a {{#crossLink "Texture/wrapS:event"}}{{/crossLink}} event on change.
              *
              * @property wrapS
              * @default "repeat"
@@ -672,13 +572,6 @@
                     this._propsDirty = true;
 
                     this._needUpdate();
-
-                    /**
-                     * Fired whenever this Texture's  {{#crossLink "Texture/wrapS:property"}}{{/crossLink}} property changes.
-                     * @event wrapS
-                     * @param value {String} The property's new value
-                     */
-                    this.fire("wrapS", this._state.wrapS);
                 },
 
                 get: function () {
@@ -698,9 +591,6 @@
              *     set to *1 - frac ⁡ S* , where *frac ⁡ S* represents the fractional part of *T*.
              *     * **"repeat"** - **(default)** - Causes the integer part of the *T* coordinate to be ignored; xeogl uses only the
              *     fractional part, thereby creating a repeating pattern.
-             *
-             *
-             * Fires a {{#crossLink "Texture/wrapT:event"}}{{/crossLink}} event on change.
              *
              * @property wrapT
              * @default "repeat"
@@ -724,13 +614,6 @@
                     this._propsDirty = true;
 
                     this._needUpdate();
-
-                    /**
-                     * Fired whenever this Texture's  {{#crossLink "Texture/wrapT:property"}}{{/crossLink}} property changes.
-                     * @event wrapT
-                     * @param value {String} The property's new value
-                     */
-                    this.fire("wrapT", this._state.wrapT);
                 },
 
                 get: function () {
@@ -740,8 +623,6 @@
 
             /**
              * Flips this Texture's source data along its vertical axis when true.
-             *
-             * Fires a {{#crossLink "Texture/flipY:event"}}{{/crossLink}} event on change.
              *
              * @property flipY
              * @default false
@@ -761,66 +642,47 @@
                     this._imageDirty = true; // flipY is used when loading image data, not when post-applying props
 
                     this._needUpdate();
-
-                    /**
-                     * Fired whenever this Texture's  {{#crossLink "Texture/flipY:property"}}{{/crossLink}} property changes.
-                     * @event flipY
-                     * @param value {String} The property's new value
-                     */
-                    this.fire("flipY", this._state.flipY);
                 },
 
                 get: function () {
                     return this._state.flipY;
                 }
+            },
+
+            /**
+             The Texture's encoding format.
+
+             Supported values are:
+
+             * "linear" (default)
+             * "sRGB"
+             * "gamma"
+
+             @property encoding
+             @default "linear"
+             @type String
+             */
+            encoding: {
+
+                set: function (value) {
+
+                    value = value || "linear";
+
+                    if (value !== "linear" && value !== "sRGB" && value !== "gamma") {
+                        this.error("Unsupported value for 'encoding': '" + value +  "' - supported values are 'linear', 'sRGB', 'gamma'. Defaulting to 'linear'.");
+
+                        value = "linear";
+                    }
+
+                    this._state.encoding = value;
+
+                    this.fire("dirty"); // Encoding/decoding is baked into shaders - need recompile of entities using this texture in their materials
+                },
+
+                get: function () {
+                    return this._state.encoding;
+                }
             }
-        },
-
-        _getJSON: function () {
-
-            var json = {};
-
-            if (this._translate && (this._translate[0] !== 0 || this._translate[1] !== 0)) {
-                json.translate = xeogl.math.vecToArray(this._translate);
-            }
-
-            if (this._scale && (this._scale[0] !== 1 || this._scale[1] !== 1)) {
-                json.scale = xeogl.math.vecToArray(this._scale);
-            }
-
-            if (this._rotate !== 0) {
-                json.rotate = this._rotate;
-            }
-
-            if (this._state.minFilter !== "linearMipmapLinear") {
-                json.minFilter = this._state.minFilter;
-            }
-
-            if (this._state.magFilter !== "linear") {
-                json.magFilter = this._state.magFilter;
-            }
-
-            if (this._state.wrapS !== "repeat") {
-                json.wrapS = this._state.wrapS;
-            }
-
-            if (this._state.wrapT !== "repeat") {
-                json.wrapT = this._state.wrapT;
-            }
-
-            if (this._state.flipY !== false) {
-                json.flipY = this._state.flipY;
-            }
-
-            if (this._src) {
-                json.src = this._src;
-
-            } else if (this._image) {
-                // TODO: Image data
-                // json.src = image.src;
-            }
-
-            return json;
         },
 
         _destroy: function () {

@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
     <script src="js/controls/bimCameraControl.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
@@ -31,12 +31,6 @@
 
 <script>
 
-    var camera = new xeogl.Camera({
-        view: new xeogl.Lookat({
-            gimbalLockY: false // Default is true
-        })
-    });
-
     var material = new xeogl.PhongMaterial({
         diffuseMap: new xeogl.Texture({
             src: "textures/diffuse/uvGrid2.jpg"
@@ -54,7 +48,6 @@
 
                 new xeogl.Entity({
                     id: "entity + " + x + "." + y + "." + z,
-                    camera: camera,
                     geometry: geometry,
                     material: material,
                     transform: new xeogl.Translate({
@@ -66,17 +59,13 @@
         }
     }
 
-    var bimCameraControl = new xeogl.BIMCameraControl({
-        camera: camera
-    });
+    var bimCameraControl = new xeogl.BIMCameraControl();
 
-    var cameraFlightAnimation = new xeogl.CameraFlightAnimation({
-        camera: camera
-    });
+    var cameraFlightAnimation = new xeogl.CameraFlightAnimation();
 
     bimCameraControl.on("pick", function (hit) {
         cameraFlightAnimation.flyTo({
-            aabb: hit.entity.worldBoundary.aabb
+            aabb: hit.entity.aabb
         });
     });
 

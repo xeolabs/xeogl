@@ -11,55 +11,75 @@ var gltfExplorer = function (menuId, files) {
 
     var file = files[0];
 
-    var outline = xeogl.scene.outline;
-    outline.color = [1.0, 1.0, 0.0];
-    outline.thickness = 8;
+    var lights = xeogl.scene.lights;
 
-    //xeogl.scene.lights.lightMap = new xeogl.CubeTexture({
-    //    src: [
-    //        "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
-    //        "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png",
-    //        "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png",
-    //        "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png",
-    //        "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png",
-    //        "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png"
-    //    ]
-    //});
+    lights.lights = [
+        new xeogl.AmbientLight({
+            color: [.7, .9, 1.0],
+            intensity: 0.8
+        }),
+        new xeogl.DirLight({
+            dir: [0.8, -0.6, -0.8],
+            color: [1.0, 1.0, 1.0],
+            intensity: 1.0,
+            space: "view"
+        })
+        ,
 
-    //xeogl.scene.lights.lights = [
-    //    new xeogl.AmbientLight({
-    //        color: [0.7, 0.7, 0.8]
-    //    }),
-    //    new xeogl.PointLight({
-    //        pos: [-80, 60, 80],
-    //        color: [1.0, 1.0, 1.0],
-    //        space: "view"
-    //    }),
-    //    new xeogl.PointLight({
-    //        pos: [80, 40, 40],
-    //        color: [1.0, 1.0, 1.0],
-    //        space: "view"
-    //    }),
-    //    new xeogl.PointLight({
-    //        pos: [-20, 80, -80],
-    //        color: [1.0, 1.0, 1.0],
-    //        space: "view"
-    //    })
-    //];
+        new xeogl.DirLight({
+            dir: [-0.8, -0.4, -0.4],
+            color: [1.0, 1.0, 1.0],
+            intensity: 1.0,
+            space: "view"
+        }),
 
-    var model = new xeogl.GLTFModel({
-        src: file.src
+        new xeogl.DirLight({
+            dir: [0.2, -0.8, 0.8],
+            color: [0.6, 0.6, 0.6],
+            intensity: 1.0,
+            space: "view"
+        })
+    ];
+
+    lights.reflectionMap = new xeogl.CubeTexture({
+        src: [
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
+        ]
     });
 
-    model.scene.camera.view.gimbalLockY = false;
+    lights.lightMap = new xeogl.CubeTexture({
+        src: [
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png"
+        ]
+    });
+
+    var model = new xeogl.GLTFModel({
+        id: "turbine",
+        src: file.src,
+        ghost: true,
+        ghostEdgeThreshold: 20,
+        lambertMaterials: true,
+
+        transform: new xeogl.Scale({
+            xyz: [100, 100, 100]
+        })
+    });
+
+  //  model.scene.camera.gimbalLock = false;
 
     var cameraFlight = new xeogl.CameraFlightAnimation();
 
-    model.scene.on("tick", function () {
-        //model.scene.camera.view.rotateEyeY(-0.1);
-    });
-
-    window.flyTo = (function () {
+    window.selectObject = (function () {
 
         var lastEntity;
 
@@ -68,85 +88,47 @@ var gltfExplorer = function (menuId, files) {
             if (!id) {
                 cameraFlight.flyTo();
                 if (lastEntity) {
-                    lastEntity.material.alphaMode = "blend";
-                    lastEntity.material.alpha = 0.4;
-                    lastEntity.outlined = false;
+                    lastEntity.ghost = true;
                     lastEntity = null;
                 }
                 return;
             }
 
             var entity = model.scene.entities[id];
-
             if (entity) {
-
                 if (lastEntity) {
-                    lastEntity.material.alphaMode = "blend";
-                    lastEntity.material.alpha = 0.4;
-                    lastEntity.outlined = false;
+                    lastEntity.ghost = true;
                 }
-
-                entity.material.alphaMode = "opaque";
-                entity.material.alpha = 1.0;
-                entity.outlined = true;
-
+                entity.ghost = false;
                 cameraFlight.flyTo({
-                    aabb: entity.worldBoundary.aabb,
+                    aabb: entity.aabb,
                     fitFOV: 25,
                     duration: 1.0,
                     showAABB: false
                 });
-
                 lastEntity = entity;
             }
         };
     })();
 
-    var inputControl = new xeogl.InputControl();
-
     model.on("loaded", function () {
-
-        var entities = model.types["xeogl.Entity"];
-        var entity;
-        var material;
 
         var html = [""];
         var i = 0;
-
-        for (var entityId in entities) {
-            if (entities.hasOwnProperty(entityId)) {
-
-                entity = entities[entityId];
-
-                entity.material = entity.material.clone();
-                entity.material.alpha = 0.5;
-                entity.material.alphaMode = "blend";
-
-                model.add(entity.material);
-
-                html.push("<a href='javascript:flyTo(\"" + entity.id + "\")'>" + (entity.meta.name || ("entity." + i++)) + "</a><br>")
+        for (var entityId in model.entities) {
+            if (model.entities.hasOwnProperty(entityId)) {
+                var entity = model.entities[entityId];
+                html.push("<a href='javascript:selectObject(\"" + entity.id + "\")'>" + (entity.meta.name || entity.id) + "</a><br>")
             }
         }
-
-        //html.push("</ul>");
-
         document.getElementById(menuId).innerHTML = html.join("");
 
-        if (file.eye && file.look) {
-
-            cameraFlight.jumpTo({
-                eye: file.eye,
-                look: file.look,
-                up: file.up
-            });
-
-        } else {
-
-            cameraFlight.jumpTo({
-                worldBoundary: model.worldBoundary,
-                fit: true,
-                fitFOV: 50
-            });
-        }
+        cameraFlight.jumpTo({
+            aabb: model.aabb,
+            fit: true,
+            fitFOV: 50
+        });
     });
+
+    var cameraControl = new xeogl.CameraControl();
 };

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="../build/xeogl.js"></script>
+    <script src="js/geometry/teapotGeometry.js"></script>
+
+<body>
+
+<div id="info">
+    <h1><a href="../docs/classes/TeapotGeometry.html" target="_parent">TeapotGeometry</a> with a <a href="../docs/classes/LambertMaterial.html" target="_parent">LambertMaterial</a></h1>
+</div>
+
+<script>
+
+    var entity = new xeogl.Entity({
+
+        geometry: new xeogl.TeapotGeometry(),
+
+        material: new xeogl.LambertMaterial({
+            ambient: [0.9, 0.3, 0.9],
+            color: [0.4, 0.4, 0.9],
+            backfaces: true  // Show backfaces, since the lid has a big gap around it
+        }),
+
+        transform: new xeogl.Rotate({
+            xyz: [1, 0, 0],
+            angle: -90,
+
+            parent: new xeogl.Translate({
+                xyz: [0, -20, 0]
+            })
+        })
+    });
+
+    var camera = entity.scene.camera;
+
+    camera.eye = [0, 40, -80];
+
+    entity.scene.on("tick", function () {
+        camera.orbitYaw(0.2);
+    });
+
+    new xeogl.CameraControl();
+
+</script>
+</body>
+</html>

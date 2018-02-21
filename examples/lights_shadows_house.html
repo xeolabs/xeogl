@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.js"></script>
+
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info" class="dark">
+    <h1>ghost effect applied to a <a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> with shadows</h1>
+    <pre id="log">model: <a href="https://sketchfab.com/bimcc" target="_parent">https://sketchfab.com/bimcc</a></pre>
+</div>
+
+<script>
+
+    var model = new xeogl.GLTFModel({
+        src: "models/gltf/vianney_house_2/scene.gltf",
+
+        combineGeometry: false,
+        quantizeGeometry : false,
+
+        transform: new xeogl.Rotate({
+            xyz: [1, 0, 0],
+            angle: -90
+        })
+    });
+
+    var camera = xeogl.scene.camera;
+
+    camera.eye = [-58.023033142089844, 34.3411750793457, -25.53963851928711];
+    camera.look = [27.641752243041992, 20.933584213256836, -19.75855827331543];
+    camera.up = [0.12662741541862488, 0.9919988512992859, 0.015218700282275677];
+
+    var spinning = true;
+
+    model.on("loaded", function () {
+        xeogl.scene.on("tick", function () { // Slowly orbit the camera
+            if (spinning) {
+                camera.orbitYaw(0.25);
+            }
+        });
+    });
+
+    var cameraControl = new xeogl.CameraControl();
+
+    cameraControl.on("input", function () {
+        spinning = false;
+    });
+
+    var lights = model.scene.lights;
+
+    lights.lights = [
+        new xeogl.AmbientLight({
+            color: [0.5, 0.5, 0.5],
+            intensity: 1.0
+        }),
+//        new xeogl.SpotLight({
+//            pos: [50, 50, 50],
+//            dir: [-1, -1, -1],
+//            color: [1.0, 1.0, 1.0],
+//            intensity: 1.0,
+//            space: "world",
+//            shadow: false
+//        }),
+//        new xeogl.PointLight({
+//            pos: [-5, 5, -5],
+//            color: [1.0, 1.0, 1.0],
+//            intensity: 1.0,
+//            space: "world",
+//            shadow: true
+//        })
+        new xeogl.DirLight({
+            dir: [.4, -1, .1],
+            color: [1.0, 1.0, 1.0],
+            intensity: 1.0,
+            space: "world",
+            shadow: true
+        })
+    ];
+
+    lights.reflectionMap = new xeogl.CubeTexture({
+        src: [
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
+        ]
+    });
+
+
+
+</script>
+</body>
+</html>

@@ -1,7 +1,7 @@
 {
   "name": "xeogl",
   "title": "xeogl",
-  "version": "1.0.0",
+  "version": "0.7.0",
   "description": "A WebGL-based 3D visualization engine from xeoLabs",
   "homepage": "http://xeogl.org/",
   "author": {
@@ -13,9 +13,7 @@
     "type": "git",
     "url": "http://github.com/xeolabs/xeogl.git"
   },
-  "dependencies": {
-    "grunt-contrib-yuidoc": "~0.7.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "grunt": "^0.4.5",
     "grunt-contrib-clean": "^0.6.0",

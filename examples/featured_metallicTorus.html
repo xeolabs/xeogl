@@ -7,7 +7,7 @@
 
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
 
 <body>
 
@@ -40,10 +40,10 @@
         material: material
     });
 
-    entity.scene.camera.view.eye = [0, 0, -4];
+    entity.scene.camera.eye = [0, 0, -4];
 
     entity.scene.on("tick", function () {
-        entity.scene.camera.view.rotateEyeY(0.2);
+        entity.scene.camera.orbitYaw(0.2);
     });
 </script>
 </body>

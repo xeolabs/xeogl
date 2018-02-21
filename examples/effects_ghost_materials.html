@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.js"></script>
+
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info" class="dark">
+    <h1>ghost effect applied to a <a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a>, with two <a href="../docs/classes/Entity.html" target="_parent">Entities</a> having custom <a href="../docs/classes/GhostMaterial.html" target="_parent">GhostMaterials</a></h1>
+    <pre id="log">model:  adam head - [<a
+            href='https://github.com/xeolabs/xeogl/tree/master/examples/models/gltf/adamHead/README.md'
+            target="_parent">model info</a>]</pre>
+</div>
+
+<script>
+
+    var scene = xeogl.scene;
+    var lights = scene.lights;
+    var camera = scene.camera;
+
+    // Customize lights for default scene
+
+    lights.lights = [
+        new xeogl.AmbientLight({
+            color: [.7, .9, 1.0],
+            intensity: 0.8
+        }),
+        new xeogl.DirLight({
+            dir: [0.8, -0.6, -0.8],
+            color: [1.0, 1.0, 1.0],
+            intensity: 1.0,
+            space: "view"
+        }),
+        new xeogl.DirLight({
+            dir: [-0.8, -0.4, -0.4],
+            color: [1.0, 1.0, 1.0],
+            intensity: 1.0,
+            space: "view"
+        }),
+        new xeogl.DirLight({
+            dir: [0.2, -0.8, 0.8],
+            color: [0.6, 0.6, 0.6],
+            intensity: 1.0,
+            space: "view"
+        })
+    ];
+
+    // Position camera
+
+    camera.eye = [3.16, 0.29, 5.47];
+    camera.look = [0, 0, 0.05];
+    camera.up = [-0.02, 0.99, -0.04];
+
+    // Load glTF model
+
+    var model = new xeogl.GLTFModel({
+        id: "adam",
+        src: "models/gltf/adamHead/adamHead.gltf",
+        lambertMaterials: true,
+        ghostEdgeThreshold: 15
+    });
+
+    // Customize the default ghost material
+
+    var ghostMaterial = scene.ghostMaterial;
+    ghostMaterial.edges = true;
+    ghostMaterial.edgeAlpha = 0.8;
+    ghostMaterial.edgeColor = [0.2, 0.2, 0.2];
+    ghostMaterial.edgeWidth = 1;
+    ghostMaterial.vertices = false;
+    ghostMaterial.vertexAlpha = 1.0;
+    ghostMaterial.vertexColor = [0.4, 1.0, 0.4];
+    ghostMaterial.vertexSize = 4;
+    ghostMaterial.fill = true;
+    ghostMaterial.fillColor = [0.4, 0.4, 0.4];
+    ghostMaterial.fillAlpha = 0.4;
+
+    model.on("loaded", function () {
+
+        // Switch whole model over to ghost view
+
+        model.ghost = true;
+
+        // Customize ghost materials on a couple of objects
+
+        var maskObject = model.entities["adam#node_mesh_Adam_mask_-4108.0"];
+        var guardObject = model.entities["adam#node_Object001_-4112.5"];
+
+        maskObject.ghostMaterial = new xeogl.GhostMaterial({
+            edgeColor: [0.5, 0.1, 0.1],
+            edgeWidth: 2,
+            fill: true,
+            fillAlpha: 0.6,
+            fillColor: [1.0, 0.0, 0.0]
+        });
+
+        guardObject.ghostMaterial = new xeogl.GhostMaterial({
+            edgeColor: [.1, 0.4, 0.1],
+            fill: true,
+            fillAlpha: 0.6,
+            fillColor: [0.0, 1.0, 0.0]
+        });
+    });
+
+    // Handle user input
+
+    var cameraControl = new xeogl.CameraControl();
+
+    cameraControl.on("picked", function (e) {
+        console.log(e.entity.id)
+    });
+
+</script>
+</body>
+</html>

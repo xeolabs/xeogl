@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
 
     <script src="libs/gl-matrix-min.js"></script>
     <script src="js/zspace/zSpaceEffect_complete.js"></script>
@@ -20,29 +20,22 @@
     // Override xeogl's default lights with some View-space directional lights,
     // including one that shines from behind our torus Entity
 
-    var lights = new xeogl.Lights({
-        lights: [
-//            new xeogl.AmbientLight({
-//                color: [0.5, 0.5, 0.5],
-//                intensity: 0.8
-//            }),
-            new xeogl.DirLight({
-                dir: [0.0, 0.0, -1.0],
-                color: [1.0, 1.0, 0.9],
-                intensity: 1.0,
-                space: "view"
-            }),
-            new xeogl.DirLight({
-                dir: [0.1, 0.1, 0.7],
-                color: [1.0, 1.0, 1.1],
-                intensity: 1.0,
-                space: "view"
-            })
-        ]
-    });
+    xeogl.scene.lights.lights = [
+        new xeogl.DirLight({
+            dir: [0.0, 0.0, -1.0],
+            color: [1.0, 1.0, 0.9],
+            intensity: 1.0,
+            space: "view"
+        }),
+        new xeogl.DirLight({
+            dir: [0.1, 0.1, 0.7],
+            color: [1.0, 1.0, 1.1],
+            intensity: 1.0,
+            space: "view"
+        })
+    ];
 
     var wireframeTorus = new xeogl.Entity({
-        lights: new xeogl.Lights(),
         geometry: new xeogl.TorusGeometry({
             primitive: "lines",
             radius: 0.9,
@@ -70,12 +63,6 @@
             tubeSegments: 60,
             arc: Math.PI * 2.0
         }),
-        Xmaterial: new xeogl.MetallicMaterial({
-            roughness: 1.0,
-            metallic: 1.0,
-            baseColorMap: {src: "textures/materials/poligon/RustMixedOnPaint012_1k/RustMixedOnPaint012_COL_VAR1_1K.jpg"},
-            roughnessMap: {src: "textures/materials/poligon/RustMixedOnPaint012_1k/RustMixedOnPaint012_REFL_1K.jpg"}
-        }),
         material: new xeogl.PhongMaterial({
             ambient: [0.3, 0.3, 0.3],
             diffuse: [1.0, 1.0, 1.0],
@@ -91,7 +78,7 @@
                 edgeColor: [1.0, 1.0, 1.0],
                 centerColor: [0.0, 0.0, 0.0]
             }),
-            XXXalphaFresnel: new xeogl.Fresnel({
+            alphaFresnel: new xeogl.Fresnel({
                 edgeBias: 0.2,
                 centerBias: 1.2,
                 edgeColor: [1.0, 0.0, 0.0],
@@ -100,13 +87,11 @@
             }),
             alpha: 0
         }),
-        lights: lights,
         layer: 2
     });
 
 
     var wireframeBox = new xeogl.Entity({
-        lights: new xeogl.Lights(),
         geometry: new xeogl.Geometry({
             primitive: "lines",
             positions: [
@@ -158,77 +143,59 @@
             alphaMode: "blend",
             backfaces: true
         }),
-        lights: new xeogl.Lights({
-            lights: [
-                new xeogl.DirLight({
-                    dir: [0.0, 0.0, 1.0],
-                    color: [1.0, 1.0, 0.9],
-                    intensity: 0.9,
-                    space: "view"
-                }),
-                new xeogl.DirLight({
-                    dir: [0.1, 0.1, -0.7],
-                    color: [0.5, 0.5, 0.5],
-                    intensity: 0.9,
-                    space: "view"
-                })
-            ]
-        }),
         layer: 1,
         visible: true
     });
 
-    var view = xeogl.scene.camera.view;
+    var camera = xeogl.scene.camera;
 
-    view.zoom(-6);
-    view.rotateEyeY(40);
-    view.rotateEyeX(20);
+    camera.zoom(-6);
+    camera.orbitYaw(40);
+    camera.orbitPitch(20);
 
     var lastCoords;
 
-    xeogl.scene.on("tick",
-            function (e) {
+    xeogl.scene.on("tick", function (e) {
 
 
-                view.rotateEyeY(0.1);
-                view.rotateEyeX(0.05);
+        camera.orbitYaw(0.1);
+        camera.orbitPitch(0.05);
 
-                if (wireframeBox) {
-                    if (wireframeBox.material.alpha > 0) {
-                        wireframeBox.material.alpha -= 0.005;
-                    } else {
-                        wireframeBox.destroy();
-                        wireFrameBox = null;
-                    }
-                }
+        if (wireframeBox) {
+            if (wireframeBox.material.alpha > 0) {
+                wireframeBox.material.alpha -= 0.005;
+            } else {
+                wireframeBox.destroy();
+                wireFrameBox = null;
+            }
+        }
 
-                if (solidBox.material.alpha < 1) {
-                    solidBox.material.alpha += 0.01;
-                } else {
-                    solidBox.material.alphaMode = "opaque";
-                }
+        if (solidBox.material.alpha < 1) {
+            solidBox.material.alpha += 0.01;
+        } else {
+            solidBox.material.alphaMode = "opaque";
+        }
 
-                if (wireframeTorus) {
-                    if (wireframeTorus.material.alpha > 0.0) {
-                        wireframeTorus.material.alpha -= 0.005;
-                    } else {
-                        //  wireframeTorus.destroy();
-                        // wireframeTorus = null
-                    }
-                }
+        if (wireframeTorus) {
+            if (wireframeTorus.material.alpha > 0.0) {
+                wireframeTorus.material.alpha -= 0.005;
+            } else {
+                //  wireframeTorus.destroy();
+                // wireframeTorus = null
+            }
+        }
 
-                if (solidTorus) {
-                    if (solidTorus.material.alpha < 1.0) {
-                        solidTorus.material.alpha += 0.005;
-                    } else {
-                        solidTorus = null;
-                    }
-                }
+        if (solidTorus) {
+            if (solidTorus.material.alpha < 1.0) {
+                solidTorus.material.alpha += 0.005;
+            } else {
+                solidTorus = null;
+            }
+        }
 
-            });
+    });
 
-    new xeogl.MouseRotateCamera();
-
+    new xeogl.CameraControl();
 
 </script>
 </body>

@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
 
     <script src="js/skyboxes/skybox.js"></script>
     <script src="js/geometry/vectorTextGeometry.js"></script>
@@ -187,10 +187,10 @@
     //  Camera setup
     //--------------------------------------------------------------------------------------
 
-    new xeogl.InputControl(); // Allow user camera interaction
+    new xeogl.CameraControl(); // Allow user camera interaction
 
-    var view = xeogl.scene.camera.view; // Move eye position back a bit
-    view.eye = [0, 0, 25];
+    var camera = xeogl.scene.camera; // Move eye position back a bit
+    camera.eye = [0, 0, 30];
 
     //------------------------------------------------------------------------------------------------------------------
     //  GUI

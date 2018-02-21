@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.js"></script>
+    <script src="js/geometry/vectorTextGeometry.js"></script>
+
+    <script src="js/controls/mousePickControl.js"></script>
+    <script src="js/helpers/viewCube.js"></script>
+    <script src="js/geometry/heightmapGeometry.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <h1><a href="js/helpers/viewCube.js" target="_parent">ViewCube</a> (bottom left of canvas) showing the directions of
+        the World-space axis</h1>
+</div>
+
+<script>
+
+    // Creating a Camera with a perspective projection
+
+    var entity = new xeogl.Entity({
+        geometry: new xeogl.HeightmapGeometry({ // xeogl.HeightMap is defined in ./js/geometry/heightmapGeometry.js
+            primitive: "triangles",
+            src: "textures/height/mountain.png",
+            xSize: 1,
+            ySize: 1,
+            zSize: 1,
+            xSegments: 70,
+            zSegments: 70,
+            lod: 1.0, // Default
+            autoNormals: true // Default
+        }),
+        material: new xeogl.PhongMaterial({
+            diffuseMap: new xeogl.Texture({
+                src: "textures/diffuse/uvGrid2.jpg"
+            }),
+            backfaces: true
+        })
+    });
+
+    entity.scene.lights.lights.push(new xeogl.AmbientLight({
+        color: [1.0, 1.0, 1.0],
+        intensity: 0.7
+    }));
+
+    new xeogl.ViewCube({
+        lookat: entity.scene.camera,
+        visible: true,
+        size: [250, 250]
+    });
+
+    new xeogl.CameraControl();
+
+</script>
+</body>
+</html>

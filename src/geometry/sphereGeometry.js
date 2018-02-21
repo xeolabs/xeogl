@@ -3,18 +3,9 @@
 
  <a href="../../examples/#geometry_primitives_sphere"><img src="../../assets/images/screenshots/SphereGeometry.png"></img></a>
 
- ## Overview
- 
- * Dynamically modify a SphereGeometry's shape at any time by updating its {{#crossLink "SphereGeometry/center:property"}}{{/crossLink}}, {{#crossLink "SphereGeometry/radius:property"}}{{/crossLink}}, {{#crossLink "SphereGeometry/heightSegments:property"}}{{/crossLink}} and
- {{#crossLink "SphereGeometry/widthSegments:property"}}{{/crossLink}} properties.
- * Dynamically switch its primitive type between ````"points"````, ````"lines"```` and ````"triangles"```` at any time by
- updating its {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} property.
- 
  ## Examples
 
-
  * [Textured SphereGeometry](../../examples/#geometry_primitives_sphere)
-
 
  ## Usage
 
@@ -67,31 +58,34 @@
 
         _init: function (cfg) {
 
-            this._super(cfg);
+            var lod = cfg.lod || 1;
 
-            this.lod = cfg.lod;
-            this.center = cfg.center;
-            this.radius = cfg.radius;
-            this.heightSegments = cfg.heightSegments;
-            this.widthSegments = cfg.widthSegments;
-        },
+            var centerX = cfg.center ? cfg.center[0] : 0;
+            var centerY = cfg.center ? cfg.center[1] : 0;
+            var centerZ = cfg.center ? cfg.center[2] : 0;
 
-        /**
-         * Implement protected virtual template method {{#crossLink "Geometry/method:_update"}}{{/crossLink}},
-         * to generate geometry data arrays.
-         *
-         * @protected
-         */
-        _update: function () {
+            var radius = cfg.radius || 1;
+            if (radius < 0) {
+                this.warn("negative radius not allowed - will invert");
+                radius *= -1;
+            }
 
-            var radius = this._radius;
-            var heightSegments = Math.floor(this._lod * this._heightSegments);
-            var widthSegments = Math.floor(this._lod * this._widthSegments);
-
+            var heightSegments = cfg.heightSegments || 18;
+            if (heightSegments < 0) {
+                this.warn("negative heightSegments not allowed - will invert");
+                heightSegments *= -1;
+            }
+            heightSegments = Math.floor(lod * heightSegments);
             if (heightSegments < 18) {
                 heightSegments = 18;
             }
 
+            var widthSegments = cfg.widthSegments || 18;
+            if (widthSegments < 0) {
+                this.warn("negative widthSegments not allowed - will invert");
+                widthSegments *= -1;
+            }
+            widthSegments = Math.floor(lod * widthSegments);
             if (widthSegments < 18) {
                 widthSegments = 18;
             }
@@ -115,10 +109,6 @@
             var x;
             var y;
             var z;
-
-            var xCenter = this._center[0];
-            var yCenter = this._center[1];
-            var zCenter = this._center[2];
 
             var u;
             var v;
@@ -151,9 +141,9 @@
                     uvs.push(u);
                     uvs.push(v);
 
-                    positions.push(xCenter + radius * x);
-                    positions.push(yCenter + radius * y);
-                    positions.push(zCenter + radius * z);
+                    positions.push(centerX + radius * x);
+                    positions.push(centerY + radius * y);
+                    positions.push(centerZ + radius * z);
                 }
             }
 
@@ -172,222 +162,12 @@
                 }
             }
 
-            this.positions = positions;
-            this.normals = normals;
-            this.uv = uvs;
-            this.indices = indices;
-        },
-
-        _props: {
-
-            /**
-             * The SphereGeometry's level-of-detail factor.
-             *
-             * Fires a {{#crossLink "SphereGeometry/lod:event"}}{{/crossLink}} event on change.
-             *
-             * @property lod
-             * @default 1
-             * @type Number
-             */
-            lod: {
-
-                set: function (value) {
-
-                    value = value !== undefined ? value : 1;
-
-                    if (this._lod === value) {
-                        return;
-                    }
-
-                    if (value < 0 || value > 1) {
-                        this.warn("clamping lod to [0..1]");
-                        value = value < 0 ? 0 : 1;
-                    }
-
-                    this._lod = value;
-
-                    this._needUpdate();
-
-                    /**
-                     * Fired whenever this SphereGeometry's {{#crossLink "SphereGeometry/lod:property"}}{{/crossLink}} property changes.
-                     * @event lod
-                     * @type Number
-                     * @param value The property's new value
-                     */
-                    this.fire("lod", this._lod);
-                },
-
-                get: function () {
-                    return this._lod;
-                }
-            },
-
-            /**
-             * 3D point indicating the center position of this SphereGeometry.
-             *
-             * Fires an {{#crossLink "SphereGeometry/center:event"}}{{/crossLink}} event on change.
-             *
-             * @property center
-             * @default [0,0,0]
-             * @type {Float32Array}
-             */
-            center: {
-
-                set: function (value) {
-
-                    (this._center = this._center || new xeogl.math.vec3()).set(value || [0, 0, 0]);
-
-                    this._needUpdate();
-
-                    /**
-                     Fired whenever this SphereGeometry's {{#crossLink "SphereGeometry/center:property"}}{{/crossLink}} property changes.
-                     @event center
-                     @param value {Float32Array} The property's new value
-                     */
-                    this.fire("center", this._center);
-                },
-
-                get: function () {
-                    return this._center;
-                }
-            },
-            
-            /**
-             * The SphereGeometry's radius.
-             *
-             * Fires a {{#crossLink "SphereGeometry/radius:event"}}{{/crossLink}} event on change.
-             *
-             * @property radius
-             * @default 1
-             * @type Number
-             */
-            radius: {
-
-                set: function (value) {
-
-                    value = value || 1;
-
-                    if (this._radius === value) {
-                        return;
-                    }
-
-                    if (value < 0) {
-                        this.warn("negative radius not allowed - will invert");
-                        value = value * -1;
-                    }
-
-                    this._radius = value;
-
-                    this._needUpdate();
-
-                    /**
-                     * Fired whenever this SphereGeometry's {{#crossLink "SphereGeometry/radius:property"}}{{/crossLink}} property changes.
-                     * @event radius
-                     * @type Number
-                     * @param value The property's new value
-                     */
-                    this.fire("radius", this._radius);
-                },
-
-                get: function () {
-                    return this._radius;
-                }
-            },
-
-
-            /**
-             * The SphereGeometry's number of latitudinal bands.
-             *
-             * Fires a {{#crossLink "SphereGeometry/heightSegments:event"}}{{/crossLink}} event on change.
-             *
-             * @property heightSegments
-             * @default 18
-             * @type Number
-             */
-            heightSegments: {
-
-                set: function (value) {
-
-                    value = value || 18;
-
-                    if (this._heightSegments === value) {
-                        return;
-                    }
-
-                    if (value < 0) {
-                        this.warn("negative heightSegments not allowed - will invert");
-                        value = value * -1;
-                    }
-
-                    this._heightSegments = value;
-
-                    this._needUpdate();
-
-                    /**
-                     * Fired whenever this SphereGeometry's {{#crossLink "SphereGeometry/heightSegments:property"}}{{/crossLink}} property changes.
-                     * @event heightSegments
-                     * @type Number
-                     * @param value The property's new value
-                     */
-                    this.fire("heightSegments", this._heightSegments);
-                },
-
-                get: function () {
-                    return this._heightSegments;
-                }
-            },
-
-            /**
-             * The SphereGeometry's number of longitudinal bands.
-             *
-             * Fires a {{#crossLink "SphereGeometry/widthSegments:event"}}{{/crossLink}} event on change.
-             *
-             * @property widthSegments
-             * @default 24
-             * @type Number
-             */
-            widthSegments: {
-
-                set: function (value) {
-
-                    value = value || 24;
-
-                    if (this._widthSegments === value) {
-                        return;
-                    }
-
-                    if (value < 0) {
-                        this.warn("negative widthSegments not allowed - will invert");
-                        value = value * -1;
-                    }
-
-                    this._widthSegments = value;
-
-                    this._needUpdate();
-
-                    /**
-                     * Fired whenever this SphereGeometry's {{#crossLink "SphereGeometry/widthSegments:property"}}{{/crossLink}} property changes.
-                     * @event widthSegments
-                     * @type Number
-                     * @param value The property's new value
-                     */
-                    this.fire("widthSegments", this._widthSegments);
-                },
-
-                get: function () {
-                    return this._widthSegments;
-                }
-            }
-        },
-
-        _getJSON: function () {
-            return {
-                // Don't save lod
-                center: xeogl.math.vecToArray(this._center),
-                radius: this._radius,
-                heightSegments: this._heightSegments,
-                widthSegments: this._widthSegments
-            };
+            this._super(xeogl._apply(cfg, {
+                positions: positions,
+                normals: normals,
+                uv: uvs,
+                indices: indices
+            }));
         }
     });
 

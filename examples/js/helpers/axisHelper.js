@@ -6,12 +6,9 @@
 
      Helper widget that indicates the World coordinate axis.
 
-     The helper works by tracking updates on a xeogl.Lookat and orienting a gnomon accordingly.
-
      @class AxisHelper
      @constructor
      @param cfg {*} Configuration
-     @param cfg.lookat {xeogl.Lookat} A {{#crossLink "xeogl.Lookat"}}{{/crossLink}} to observe.
      @param [cfg.size] {Int16Array} Pixel dimensions of helper's canvas, [250, 250] by default.
      */
     xeogl.AxisHelper = function (cfg) {
@@ -83,16 +80,15 @@
 
         // Rotate helper in synch with target lookat
 
-        var helperLookat = scene.camera.view;
+        var helperLookat = scene.camera;
 
-        lookat.on("matrix",
-            function () {
+        lookat.on("matrix",            function () {
 
                 var eye = lookat.eye;
                 var look = lookat.look;
                 var up = lookat.up;
 
-                var eyeLook = xeogl.math.mulVec3Scalar(xeogl.math.normalizeVec3(xeogl.math.subVec3(eye, look, [])), 18);
+                var eyeLook = xeogl.math.mulVec3Scalar(xeogl.math.normalizeVec3(xeogl.math.subVec3(eye, look, [])), 22);
 
                 helperLookat.look = [0, 0, 0];
                 helperLookat.eye = eyeLook;
@@ -126,32 +122,61 @@
             lineWidth: 2
         });
 
-        var xAxisMaterial = axisMaterial.clone({ // Red by convention
-            diffuse: [1, 0.3, 0.3]
+        var xAxisMaterial = new xeogl.PhongMaterial(scene, { // Red by convention
+            diffuse: [1, 0.3, 0.3],
+            ambient: [0.0, 0.0, 0.0],
+            specular: [.6, .6, .3],
+            shininess: 80,
+            lineWidth: 2
         });
 
-        var xAxisLabelMaterial = axisMaterial.clone({
-            emissive: [1, 0.3, 0.3]
+        var xAxisLabelMaterial = new xeogl.PhongMaterial(scene, { // Red by convention
+            emissive: [1, 0.3, 0.3],
+            ambient: [0.0, 0.0, 0.0],
+            specular: [.6, .6, .3],
+            shininess: 80,
+            lineWidth: 2
         });
 
-        var yAxisMaterial = axisMaterial.clone({ // Green by convention
-            diffuse: [0.3, 1, 0.3]
+        var yAxisMaterial = new xeogl.PhongMaterial(scene, { // Green by convention
+            diffuse: [0.3, 1, 0.3],
+            ambient: [0.0, 0.0, 0.0],
+            specular: [.6, .6, .3],
+            shininess: 80,
+            lineWidth: 2
         });
 
-        var yAxisLabelMaterial = axisMaterial.clone({
-            emissive: [0.3, 1, 0.3]
+        var yAxisLabelMaterial = new xeogl.PhongMaterial(scene, { // Green by convention
+            emissive: [0.3, 1, 0.3],
+            ambient: [0.0, 0.0, 0.0],
+            specular: [.6, .6, .3],
+            shininess: 80,
+            lineWidth: 2
         });
 
-        var zAxisMaterial = axisMaterial.clone({ // Blue by convention
-            diffuse: [0.3, 0.3, 1]
+
+        var zAxisMaterial  = new xeogl.PhongMaterial(scene, { // Blue by convention
+            diffuse: [0.3, 0.3, 1],
+            ambient: [0.0, 0.0, 0.0],
+            specular: [.6, .6, .3],
+            shininess: 80,
+            lineWidth: 2
         });
 
-        var zAxisLabelMaterial = axisMaterial.clone({
-            emissive: [0.3, 0.3, 1]
+        var zAxisLabelMaterial = new xeogl.PhongMaterial(scene, {
+            emissive: [0.3, 0.3, 1],
+            ambient: [0.0, 0.0, 0.0],
+            specular: [.6, .6, .3],
+            shininess: 80,
+            lineWidth: 2
         });
 
-        var ballMaterial = axisMaterial.clone({
-            diffuse: [0.5, 0.5, 0.5]
+        var ballMaterial = new xeogl.PhongMaterial(scene, {
+            diffuse: [0.5, 0.5, 0.5],
+            ambient: [0.0, 0.0, 0.0],
+            specular: [.6, .6, .3],
+            shininess: 80,
+            lineWidth: 2
         });
 
 
@@ -162,17 +187,16 @@
             // Sphere behind gnomon
 
             new xeogl.Entity(scene, {
-                lights: new xeogl.Lights(scene),
                 geometry: new xeogl.SphereGeometry(scene, {
-                    radius: 9,
+                    radius: 9.0,
                     heightSegments: 60,
                     widthSegments: 60
                 }),
                 material: new xeogl.PhongMaterial(scene, {
                     diffuse: [0.0, 0.0, 0.0],
-                    emissive: [0.1, 0.1, 0.2],
+                    emissive: [0.1, 0.1, 0.1],
                     ambient: [0.1, 0.1, 0.2],
-                    specular: [1, 1, 1],
+                    specular: [0,0,0],
                     alpha: 0.4,
                     alphaMode: "blend",
                     frontface: "cw"
@@ -181,27 +205,6 @@
                 collidable: false,
                 visible: !!cfg.visible
             }),
-
-            // Ground plane
-
-            //new xeogl.Entity(scene, {
-            //    geometry: new xeogl.BoxGeometry(scene, {
-            //        xSize: 6,
-            //        ySize: 0.01,
-            //        zSize: 6
-            //    }),
-            //    material: axisMaterial.clone({
-            //        diffuse: [0.3, 0.3, 1.0],
-            //        alpha: 0.4,
-            //        diffuseMap: new xeogl.Texture(scene, {
-            //            src: "bimsurfer/src/xeoViewer/helpers/UVCheckerMap11-1024.png"
-            //        })
-            //    }),
-            //    pickable: false,
-            //    collidable: false,
-            //    visible: !!cfg.visible,
-            //    transform: new xeogl.Rotate(scene, { xyz:[1,0,0], angle: 90})
-            //}),
 
             // Ball at center of axis
 
@@ -227,7 +230,7 @@
                     xyz: [0, 5, 0],
                     parent: new xeogl.Rotate(scene, {
                         xyz: [0, 0, 1],
-                        angle: 90
+                        angle: 270
                     })
                 })
             }),
@@ -242,7 +245,7 @@
                     xyz: [0, 2, 0],
                     parent: new xeogl.Rotate(scene, {
                         xyz: [0, 0, 1],
-                        angle: 90
+                        angle: 270
                     })
                 })
             }),
@@ -254,7 +257,7 @@
                 collidable: false,
                 visible: !!cfg.visible,
                 transform: new xeogl.Translate(scene, {
-                    xyz: [-7, 0, 0]
+                    xyz: [7, 0, 0]
                 }),
                 billboard: "spherical"
             }),
@@ -348,6 +351,83 @@
             for (var i = 0; i < entities.length; i++) {
                 entities[i].visible = visible;
             }
-        }
+        };
+
+        this.setLocale = function (locale) {
+
+        };
+
+        this.show = function () {
+            this.setVisible(true);
+        };
+
+        this.hide = function () {
+            this.setVisible(false);
+        };
+
+        this.setVisible = function (visible) {
+            style.visibility = visible ? "visible" : "hidden";
+        };
+
+        this.getVisible = function () {
+            return cube.visible;
+        };
+
+        /**
+         * Sets the canvas size of the ViewCube.
+         * @param {Number} size Canvas size.
+         */
+        this.setSize = function (value) {
+            size = value || 200;
+            cubeCanvas.width = size;
+            cubeCanvas.height = size;
+            cubeCanvas.style.width = size + "px";
+            cubeCanvas.style.height = size + "px";
+        };
+
+        /**
+         * Gets the canvas size of the ViewCube.
+         * @returns {Number} Canvas size.
+         */
+        this.getSize = function () {
+            return size;
+        };
+
+        // /**
+        //  * Sets the top margin. Overrides the bottom margin if previously set.
+        //  * @param {Number} top Top margin in pixels.
+        //  */
+        // this.setTop = function(top) {
+        //     style.top = top + "px";
+        //     style.bottom = null;
+        // };
+        //
+        // /**
+        //  * Sets the bottom margin. Overrides the top margin if previously set.
+        //  * @param {Number} bottom Bottom margin in pixels.
+        //  */
+        // this.setBottom = function(bottom) {
+        //     style.top = null;
+        //     style.bottom = bottom + "px";
+        // };
+        //
+        // /**
+        //  * Sets the left margin. Overrides the right margin if previously set.
+        //  * @param {Number} left Left margin in pixels.
+        //  */
+        // this.setLeft = function(left) {
+        //     style.left = left + "px";
+        //     style.right = null;
+        // };
+        //
+        // /**
+        //  * Sets the right margin. Overrides the left margin if previously set.
+        //  * @param {Number} right Right margin in pixels.
+        //  */
+        // this.setRight = function(right) {
+        //     style.left = null;
+        //     style.right = right + "px";
+        // };
+        //
     };
 })();

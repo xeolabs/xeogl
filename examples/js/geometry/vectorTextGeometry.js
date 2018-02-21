@@ -23,9 +23,6 @@
          emissive: [0.5, 1.0, 1.0],
          lineWidth: 2
      }),
-     lights: new xeogl.Lights({
-         lights: [] // No lights - rely on emissive color
-     }),
      transform: new xeogl.Translate({
          xyz: [0, 40, 0]
      })
@@ -59,32 +56,23 @@
 
         _init: function (cfg) {
 
-            this._super(cfg);
-
-            this.text = cfg.text;
-            this.origin = cfg.origin;
-            this.size = cfg.size;
-        },
-
-        /**
-         * Implement protected virtual template method {{#crossLink "Geometry/method:_update"}}{{/crossLink}},
-         * to generate geometry data arrays.
-         *
-         * @protected
-         */
-        _update: function () {
-
             if (!letters) {
                 letters = buildStrokeData();
             }
 
-            var xOrigin = this._origin[0];
-            var yOrigin = this._origin[1];
-            var zOrigin = this._origin[2];
+            var origin = cfg.origin || [0, 0, 0];
+            var xOrigin = origin[0];
+            var yOrigin = origin[1];
+            var zOrigin = origin[2];
+            var size = cfg.size || 1;
 
             var positions = [];
             var indices = [];
-            var lines = this._text.split("\n");
+            var text = cfg.text;
+            if (xeogl._isNumeric(text)) {
+                text = "" + text;
+            }
+            var lines = (text || "").split("\n");
             var countVerts = 0;
             var y = 0;
             var x;
@@ -133,8 +121,8 @@
                             continue;
                         }
 
-                        positions.push((x + (a[0] * this._size) * mag) + xOrigin);
-                        positions.push((y + (a[1] * this._size) * mag) + yOrigin);
+                        positions.push((x + (a[0] * size) * mag) + xOrigin);
+                        positions.push((y + (a[1] * size) * mag) + yOrigin);
                         positions.push(0 + zOrigin);
 
                         if (p1 == -1) {
@@ -157,137 +145,17 @@
 
                         needLine = true;
                     }
-                    x += c.width * mag * this._size;
+                    x += c.width * mag * size;
 
                 }
-                y -= 35 * mag * this._size;
+                y -= 35 * mag * size;
             }
 
-            this.primitive = "lines";
-            this.positions = positions;
-            this.normals = null;
-            this.uv = null;
-            this.indices = indices;
-        },
-
-        _props: {
-
-            /**
-             * The text for this VectorText
-             *
-             * Fires a {{#crossLink "VectorTextGeometry/text:event"}}{{/crossLink}} event on change.
-             *
-             * @property text
-             * @default ""
-             * @type String
-             */
-            text: {
-
-                set: function (value) {
-
-                    value = value || "";
-
-                    if (this._text === value) {
-                        return;
-                    }
-
-                    this._text = value;
-
-                    this._needUpdate();
-
-                    /**
-                     * Fired whenever this VectorTextGeometry's {{#crossLink "VectorTextGeometry/text:property"}}{{/crossLink}} property changes.
-                     * @event text
-                     * @type Boolean
-                     * @param value The property's new value
-                     */
-                    this.fire("text", this._text);
-                },
-
-                get: function () {
-                    return this._text;
-                }
-            },
-
-            /**
-             * 3D point indicating the top left corner this VectorTextGeometry.
-             *
-             * Fires an {{#crossLink "VectorTextGeometry/origin:event"}}{{/crossLink}} event on change.
-             *
-             * @property origin
-             * @default [0,0,0]
-             * @type {Float32Array}
-             */
-            origin: {
-
-                set: function (value) {
-
-                    (this._origin = this._origin || new xeogl.math.vec3()).set(value || [0, 0, 0]);
-
-                    this._needUpdate();
-
-                    /**
-                     Fired whenever this VectorTextGeometry's {{#crossLink "VectorTextGeometry/origin:property"}}{{/crossLink}} property changes.
-                     @event origin
-                     @param value {Float32Array} The property's new value
-                     */
-                    this.fire("origin", this._origin);
-                },
-
-                get: function () {
-                    return this._origin;
-                }
-            },
-
-            /**
-             * Size of each character cell.
-             *
-             * Fires a {{#crossLink "VectorText/size:event"}}{{/crossLink}} event on change.
-             *
-             * @property size
-             * @default 1
-             * @type Number
-             */
-            size: {
-
-                set: function (value) {
-
-                    value = value || 1;
-
-                    if (this._size === value) {
-                        return;
-                    }
-
-                    if (value < 0) {
-                        this.warn("negative size not allowed - will invert");
-                        value = value * -1;
-                    }
-
-                    this._size = value;
-
-                    this._needUpdate();
-
-                    /**
-                     * Fired whenever this VectorText's {{#crossLink "VectorText/size:property"}}{{/crossLink}} property changes.
-                     * @event size
-                     * @type Number
-                     * @param value The property's new value
-                     */
-                    this.fire("size", this._size);
-                },
-
-                get: function () {
-                    return this._size;
-                }
-            },
-
-            _getJSON: function () {
-                return {
-                    center: this._center.slice(),
-                    size: this._size,
-                    text: this._text
-                };
-            }
+            this._super(xeogl._apply(cfg, {
+                primitive: "lines",
+                positions: positions,
+                indices: indices
+            }));
         }
     });
 
@@ -1865,6 +1733,5 @@
                 ]
             }
         };
-
     }
 })();

@@ -19,13 +19,13 @@
 
     var entity = new xeogl.Entity();
 
-    entity.camera.view.eye = [0, 0, -5];
+    entity.scene.camera.eye = [0, 0, -5];
 
     entity.scene.on("tick",
             function (params) {
 
-                entity.camera.view.rotateEyeY(0.5);
-                entity.camera.view.rotateEyeX(0.3);
+                entity.scene.camera.orbitYaw(0.5);
+                entity.scene.camera.orbitPitch(0.3);
 
                 log("tick", params);
                 ;
@@ -34,7 +34,7 @@
 
     // Orbit the eye position about the look position.
     entity.scene.on("tick", function () {
-        entity.camera.view.rotateEyeY(-0.1);
+        entity.scene.camera.orbitYaw(-0.1);
     });
 
     var buf = [];

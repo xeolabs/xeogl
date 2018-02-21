@@ -180,11 +180,11 @@
      *
      * @private
      */
-    math.buildPickTriangles = function (positions, indices) {
+    math.buildPickTriangles = function (positions, indices, quantized) {
 
         var numIndices = indices.length;
-        var pickPositions = new Float32Array(numIndices * 30); // FIXME: Why do we need to extend size like this to make large meshes pickable?
-        var pickColors = new Float32Array(numIndices * 40);
+        var pickPositions = quantized ? new Uint16Array(numIndices * 30) : new Float32Array(numIndices * 30); // FIXME: Why do we need to extend size like this to make large meshes pickable?
+        var pickColors = new Uint8Array(numIndices * 40);
         var primIndex = 0;
         var vi;// Positions array index
         var pvi;// Picking positions array index
@@ -204,10 +204,10 @@
 
             // Primitive-indexed triangle pick color
 
-            a = (primIndex >> 24 & 0xFF) / 255.0;
-            b = (primIndex >> 16 & 0xFF) / 255.0;
-            g = (primIndex >> 8 & 0xFF) / 255.0;
-            r = (primIndex & 0xFF) / 255.0;
+            a = (primIndex >> 24 & 0xFF);
+            b = (primIndex >> 16 & 0xFF);
+            g = (primIndex >> 8 & 0xFF);
+            r = (primIndex & 0xFF);
 
             // A
 
@@ -218,7 +218,7 @@
             pickPositions[pvi + 1] = positions[vi + 1];
             pickPositions[pvi + 2] = positions[vi + 2];
 
-            pickColors[pci] = r;
+            pickColors[pci + 0] = r;
             pickColors[pci + 1] = g;
             pickColors[pci + 2] = b;
             pickColors[pci + 3] = a;

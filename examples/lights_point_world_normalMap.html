@@ -5,25 +5,39 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
     <script src="js/curves/curve.js"></script>
     <script src="js/curves/splineCurve.js"></script>
-    <script src="js/debug/debug.js"></script>
 
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="info">
-   <h1>normal map <a href="../docs/classes/Texture.html" target="_parent">Texture</a>
-    with World-space <a href="../docs/classes/PointLight.html" target="_parent">PointLight</a> animated
-    along <a href="../docs/classes/SplineCurve.html" target="_parent">SplineCurve</a></h1>
+    <h1>normal map <a href="../docs/classes/Texture.html" target="_parent">Texture</a>
+        with World-space <a href="../docs/classes/PointLight.html" target="_parent">PointLight</a> animated
+        along <a href="../docs/classes/SplineCurve.html" target="_parent">SplineCurve</a></h1>
 </div>
 
 <script>
 
-    // Remove all default scene lights
-    xeogl.scene.lights.lights = [];
+    // Lights for our normal-mapped objects, containing the PointLight
+    var pointLight = new xeogl.PointLight({
+        pos: [0, 0, 0],
+        color: [1.0, 1.0, 0.0],
+        intensity: 1.0,
+//        constantAttenuation: 0.2,
+//        linearAttenuation: 0.0005,
+//        quadraticAttenuation: 0.0005,
+        space: "world"
+    });
+
+    xeogl.scene.lights.lights = [
+//            new xeogl.AmbientLight({
+//                color: [0.3, 0.3, 0.3]
+//            }),
+        pointLight
+    ];
 
     // Sphere for each of our normal-mapped objects
     var geometry = new xeogl.SphereGeometry({
@@ -31,7 +45,7 @@
         heightSegments: 60,
         widthSegments: 60
     });
-    
+
     // Material for each of our normal-mapped objects
     var material = new xeogl.PhongMaterial({
         ambient: [0.3, 0.3, 0.3],
@@ -47,33 +61,11 @@
         })
     });
 
-    // The PointLight
-    var pointLight = new xeogl.PointLight({
-        pos: [0, 0, 0],
-        color: [1.0, 1.0, 0.0],
-        intensity: 1.0,
-//        constantAttenuation: 0.2,
-//        linearAttenuation: 0.0005,
-//        quadraticAttenuation: 0.0005,
-        space: "world"
-    });
-
-    // Lights for our normal-mapped objects, containing the PointLight
-    var lights = new xeogl.Lights({
-        lights: [
-//            new xeogl.AmbientLight({
-//                color: [0.3, 0.3, 0.3]
-//            }),
-            pointLight
-        ]
-    });
-
     // Our normal-mapped objects
     for (var x = -15; x <= 15; x += 4) {
         for (var z = -15; z <= 15; z += 4) {
 
             new xeogl.Entity({
-                lights: lights,
                 geometry: geometry,
                 material: material,
                 transform: new xeogl.Translate({
@@ -84,10 +76,10 @@
     }
 
     var scene = xeogl.scene;
-    var view = scene.view;
+    var camera = scene.camera;
 
-    view.rotateEyeX(20);
-    view.eye = [0, 20, -30];
+    camera.orbitPitch(20);
+    camera.eye = [0, 20, -30];
 
     // SplineCurve to animate PointLight along
     var splineCurve = new xeogl.SplineCurve({
@@ -111,7 +103,7 @@
         }),
         material: new xeogl.PhongMaterial({
             diffuse: [0.5, 0.5, 0],
-            lineWidth:7,
+            lineWidth: 7,
             alpha: 0.3,
             alphaMode: "blend"
         }),
@@ -156,7 +148,7 @@
     });
 
     // Allow user camera control
-    new xeogl.InputControl();
+    new xeogl.CameraControl();
 
 </script>
 </body>

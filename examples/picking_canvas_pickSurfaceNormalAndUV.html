@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
 
     <script src="js/geometry/heightmapGeometry.js"></script>
 
@@ -18,7 +18,8 @@
 <body>
 
 <div id="info">
-    <h1>raycasting to find position, UV and normal on <a  href="../docs/classes/Entity.html" target="_parent">Entity</a> surfaces</h1>
+    <h1>raycasting to find position, UV and normal on <a href="../docs/classes/Entity.html" target="_parent">Entity</a>
+        surfaces</h1>
     <br>
     <img id="diffuseTexture" src="textures/diffuse/uvGrid2.jpg" width="400px" height="400px">
 
@@ -57,8 +58,6 @@
     });
 
     // A Entity that we can pick - a heightmap with a diffuse map
-
-
 
 
     new xeogl.Entity({
@@ -141,18 +140,11 @@
 
     var scene = xeogl.scene;
 
-    var view = scene.camera.view;
+    var camera = scene.camera;
 
-    view.zoom(15);
-    view.rotateEyeX(30);
-    view.rotateEyeY(50);
-
-
-    // ------------ Interaction ------------------------------------------
-
-    // Allow camera interaction
-
-    new xeogl.InputControl();
+    camera.zoom(15);
+    camera.orbitPitch(30);
+    camera.orbitYaw(50);
 
 
     // Whenever mouse moves, attempt to pick a triangle on a Entity,
@@ -160,49 +152,33 @@
     // the triangle, along with the interpolated normal vector and UV coordinates
     // at the picked position.
 
-    scene.input.on("mousemove",
-            function (coords) {
+    scene.input.on("mousemove", function (coords) {
 
-                // Hide visual indicators
+        showUVPos(null);
 
-                xeogl.debug.hide("cone");
+        var hit = scene.pick({
+            canvasPos: coords,
+            pickSurface: true
+        });
 
-                showUVPos(null);
+        if (hit) {
 
-                // Pick a primitive on some Entity
+            if (hit.worldPos && hit.normal) {
+//
+            }
 
-                var hit = scene.pick({
-                    canvasPos: coords,
-                    pickSurface: true
-                });
+            if (hit.uv) {
+                showUVPos(hit.uv);
+            }
 
-                if (hit) {
+        } else {
+            // No Triangle picked
+        }
 
-                    // Entity picked
+    });
 
-                    if (hit.worldPos && hit.normal) {
-                        xeogl.debug
-                                .id("cone")
-                                .pos(hit.worldPos)
-                                .dir([-hit.normal[0], -hit.normal[1], -hit.normal[2]])
-                                .radius(0.3)
-                                .cone();
-                    }
 
-                    if (hit.uv) {
-
-                        // UV coordinates picked
-
-                        showUVPos(hit.uv);
-                    }
-
-                } else {
-
-                    // No Triangle picked
-                }
-
-            });
-
+    new xeogl.CameraControl();
 
 </script>
 </body>

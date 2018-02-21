@@ -10,10 +10,6 @@
 
  <img src="../../../assets/images/Quaternion.png"></img>
 
- ## Examples
-
- * [Viewing transform hierarchy](../../examples/#transforms_camera_view_hierarchy)
-
  ## Usage
 
  In this example we have two {{#crossLink "Entity"}}Entities{{/crossLink}} that are transformed by a hierarchy that contains
@@ -108,8 +104,6 @@
 
              The quaternion elements.
 
-             Fires an {{#crossLink "Quaternion/xyzw:event"}}{{/crossLink}} event on change.
-
              @property xyzw
              @default [0,0,0,1]
              @type {Float32Array}
@@ -117,20 +111,9 @@
             xyzw: {
 
                 set: function (value) {
-
                     var math = xeogl.math;
-
                     (this._xyzw = this._xyzw || new math.vec4()).set(value || math.identityQuaternion());
-
                     this.matrix = math.quaternionToMat4(this._xyzw, this._matrix || (this._matrix = xeogl.math.identityMat4()));
-
-                    /**
-                     Fired whenever this Quaternion's {{#crossLink "Quaternion/xyzw:property"}}{{/crossLink}} property changes.
-
-                     @event xyzw
-                     @param value {Float32Array} The property's new value
-                     */
-                    this.fire("xyzw", this._xyzw);
                 },
 
                 get: function () {
@@ -141,39 +124,22 @@
 
         /**
          Rotates this Quaternion.
-         Fires an {{#crossLink "Quaternion/xyzw:event"}}{{/crossLink}} event to notify of update to the Quaternion elements.
          @method rotate
          @param {Float32Array} angleAxis Rotation in angle-axis form.
          */
         rotate: (function () {
-
             var math = xeogl.math;
             var tempAngleAxis = math.vec4();
             var tempQuat = math.vec4();
-
             return function (angleAxis) {
-
                 // TODO: Make API work in radians so we don't have to do this?:
-
                 tempAngleAxis[0] = angleAxis[0];
                 tempAngleAxis[1] = angleAxis[1];
                 tempAngleAxis[2] = angleAxis[2];
                 tempAngleAxis[3] = angleAxis[3] * math.DEGTORAD;
-
                 math.angleAxisToQuaternion(tempAngleAxis, tempQuat);
-
                 this.xyzw = math.mulQuaternions(this._xyzw, tempQuat, this._xyzw);
             };
-        })(),
-
-        _getJSON: function () {
-            var json = {
-                xyzw: xeogl.math.vecToArray(this._xyzw)
-            };
-            if (this._parent) {
-                json.parent = this._parent.id;
-            }
-            return json;
-        }
+        })()
     });
 })();

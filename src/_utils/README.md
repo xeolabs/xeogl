@@ -1,1 +1,0 @@
-Private utilities used within xeogl

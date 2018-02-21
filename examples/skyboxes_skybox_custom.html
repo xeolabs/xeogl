@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
 
     <link href="css/styles.css" rel="stylesheet"/>
 
@@ -22,8 +22,15 @@
 
     // A bunch of random cubes
 
-    for (var i = 0; i < 20; i++) {
+    var boxGeometry = new xeogl.BoxGeometry({
+        xSize: 1,
+        ySize: 1,
+        zSize: 1
+    });
+
+    for (var i = 0; i < 40; i++) {
         new xeogl.Entity({
+            geometry: boxGeometry,
             transform: new xeogl.Translate({
                 xyz: [
                     Math.random() * 15 - 7,
@@ -147,19 +154,19 @@
 
     // Move the camera back a bit
 
-    skybox.scene.camera.view.eye = [0, 0, -30];
+    skybox.scene.camera.eye = [0, 0, -30];
 
     // Slowly orbit the camera
 
     skybox.scene.on("tick",
             function () {
                 moon.transform.angle += 0.1;
-                //      skybox.scene.camera.view.rotateEyeY(0.2);
+                      skybox.scene.camera.orbitYaw(0.2);
             });
 
     // Allow user camera control
 
-    new xeogl.InputControl();
+    new xeogl.CameraControl();
 
 </script>
 </body>

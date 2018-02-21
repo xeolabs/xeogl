@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
 
     <script src="js/skyboxes/skybox.js"></script>
     <script src="js/geometry/vectorTextGeometry.js"></script>
@@ -50,7 +50,7 @@
             material: {
                 type: "xeogl.MetallicMaterial",
                 baseColor: [1.0, 1.0, 1.0],
-                baseColorMap: {src: "textures/diffuse/goldAlbedo.jpg"},
+                baseColorMap: {src: "textures/diffuse/goldAlbedo.jpg", encoding: "sRGB"},
                 metallic: 1.0,
                 roughness: 0.5,
                 roughnessMap: roughnessMap
@@ -61,7 +61,7 @@
                 type: "xeogl.MetallicMaterial",
                 roughness: 1.0,
                 metallic: 1.0,
-                baseColorMap: {src: "textures/materials/poligon/RustMixedOnPaint012_1k/RustMixedOnPaint012_COL_VAR1_1K.jpg"},
+                baseColorMap: {src: "textures/materials/poligon/RustMixedOnPaint012_1k/RustMixedOnPaint012_COL_VAR1_1K.jpg", encoding: "sRGB"},
                 roughnessMap: {src: "textures/materials/poligon/RustMixedOnPaint012_1k/RustMixedOnPaint012_REFL_1K.jpg"}
             }
         },
@@ -150,7 +150,8 @@
                 metallic: 0.5,
                 roughness: 0.5,
                 baseColorMap: {
-                    src: "textures/materials/poligon/RustMixedOnPaint012_1k/RustMixedOnPaint012_COL_VAR1_1K.jpg"
+                    src: "textures/materials/poligon/RustMixedOnPaint012_1k/RustMixedOnPaint012_COL_VAR1_1K.jpg",
+                    encoding: "sRGB"
                 },
                 normalMap: {
                     src: "textures/materials/poligon/RustMixedOnPaint012_1k/RustMixedOnPaint012_NRM_1K.jpg"

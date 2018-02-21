@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
     <script src="../build/xeogl.js"></script>
-    <script src="js/models/glTFModel.js"></script>
+
 
     <script src="js/skyboxes/skybox.js"></script>
 
@@ -22,38 +22,6 @@
 </div>
 
 <script>
-
-    //---------------------------------------------------
-    // Load the model
-    //---------------------------------------------------
-
-    var model = new xeogl.GLTFModel({
-        src: "models/gltf/van_gogh_room/scene.gltf"
-    });
-
-    //-----------------------------------------------------------------------------------------------------
-    // Camera
-    //-----------------------------------------------------------------------------------------------------
-
-    var view = xeogl.scene.camera.view;
-
-    view.eye = [1.4904934167861938, 1.4698673486709595, 2.3580610752105713];
-    view.look = [-0.09735000133514404, 1.406699776649475, 2.6095502376556396];
-    view.up = [0.034530654549598694, 0.9992275238037109, -0.018670810386538506];
-
-    view.rotateEyeY(-140);
-
-    var spinning = true;
-
-    model.on("loaded", function () {
-        xeogl.scene.on("tick", function () { // Slowly orbit the camera
-            if (spinning) {
-                view.rotateEyeY(0.05);
-            }
-        });
-    });
-
-    new xeogl.InputControl();
 
     //-----------------------------------------------------------------------------------------------------
     // Customize lighting
@@ -103,6 +71,41 @@
             "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
         ]
     });
+
+    //---------------------------------------------------
+    // Load the model
+    //---------------------------------------------------
+
+    var model = new xeogl.GLTFModel({
+        src: "models/gltf/van_gogh_room/scene.gltf",
+        quantizeGeometry: true,
+        combineGeometry: true
+    });
+
+    //-----------------------------------------------------------------------------------------------------
+    // Camera
+    //-----------------------------------------------------------------------------------------------------
+
+    var camera = xeogl.scene.camera;
+
+    camera.eye = [1.4904934167861938, 1.4698673486709595, 2.3580610752105713];
+    camera.look = [-0.09735000133514404, 1.406699776649475, 2.6095502376556396];
+    camera.up = [0.034530654549598694, 0.9992275238037109, -0.018670810386538506];
+
+    camera.orbitYaw(-140);
+
+    var spinning = true;
+
+    model.on("loaded", function () {
+        xeogl.scene.on("tick", function () { // Slowly orbit the camera
+            if (spinning) {
+                camera.orbitYaw(0.05);
+            }
+        });
+    });
+
+    new xeogl.CameraControl();
+
 
 </script>
 </body>

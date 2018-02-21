@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
     <style>
@@ -39,8 +39,6 @@
         transparent: true
     });
 
-    var scene = xeogl.scene;
-
     // Torus entity
     new xeogl.Entity({
         geometry: new xeogl.TorusGeometry({
@@ -59,18 +57,20 @@
         })
     });
 
-    // Set initial camera position
-    scene.camera.view.eye = [0, 0, -4];
+
+    var scene = xeogl.scene;
+    var camera = scene.camera;
+
+    camera.eye = [0, 0, -4];
 
     // Orbit the camera
     scene.on("tick", function () {
-        var view = scene.camera.view;
-        view.rotateEyeY(0.2);
-        view.rotateEyeX(0.1);
+        camera.orbitYaw(0.2);
+        camera.orbitPitch(0.1);
     });
 
     // Allow user interaction
-    new xeogl.CameraControl(scene);
+    new xeogl.CameraControl();
 
 </script>
 </body>

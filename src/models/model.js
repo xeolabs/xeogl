@@ -5,7 +5,7 @@
 
  * A Model owns the components that are added to it, automatically destroying them when the Model is destroyed.
  * Can be attached to a {{#crossLink "Transform"}}{{/crossLink}} hierarchy, to transform its components as a group, within World-space.
- * Provides the collective World-space boundary of its components in an automatically updating {{#crossLink "Boundary3D"}}{{/crossLink}}.
+ * Provides the collective axis-aligned World-space boundary of its components.
 
  A Model is subclassed by (at least):
 
@@ -14,20 +14,28 @@
  * {{#crossLink "SceneJSModel"}}{{/crossLink}}, which loads its components from SceneJS scene definitions.
  * {{#crossLink "BuildableModel"}}{{/crossLink}}, which provides a fluent API for building its components.
 
- <img src="../../../assets/images/Model.png"></img>
-
  ## Usage
 
- ### Adding and removing components
+ * [Adding and Removing Components](#adding-and-removing-components)
+ * [Finding Models in Scenes](#finding-models-in-scenes)
+ * [Finding Components in Models](#finding-components-in-models)
+ * [Transforming a Model](#transforming-a-model)
+ * [Getting the World-space boundary of a Model](#getting-the-world-space-boundary-of-a-model)
+ * [Clearing a Model](#clearing-a-model)
+ * [Destroying a Model](#destroying-a-model)
+
+ ### Adding and Removing Components
 
  When adding components to a Model, it's usually easiest to just add their configuration objects and let the Model
  internally instantiate them, as shown below.
 
  As mentioned, a Model owns all the components added to it, destroying them when we destroy
- the Model or call its {{#crossLink "Model/destroyAll:method"}}{{/crossLink}} method.
+ the Model or call the Model's {{#crossLink "Model/destroyAll:method"}}{{/crossLink}} method.
 
  ````javascript
- var model = new xeogl.Model();
+ var model = new xeogl.Model({ // Create Model in xeogl's default Scene
+     id: "myModel"
+ });
 
  var geometry = model.add({
     type: "xeogl.TorusGeometry"
@@ -66,11 +74,11 @@
  model.add("myEntity");
  ````
 
- Since xeogl aims to be as declarative as possible, we can also add components all in one shot,
- via the Model's constructor:
+ We can also add components all in one shot,  via the Model's constructor:
 
  ````javascript
  model = new xeogl.Model({
+    id: "myModel",
     components: [
         {
             type: "xeogl.TorusGeometry",
@@ -88,10 +96,20 @@
             material: "myMaterial"
         }
     ]
-});
+ });
  ````
 
- ### Finding components
+ ### Finding Models in Scenes
+
+ Our Model will now be registered by ID on its Scene, so we can now find it like this:
+
+ ````javascript
+    model = xeogl.scene.models["myModel"];
+ ````
+
+ That's assuming that we've created the Model in the default xeogl Scene, which we did for these examples.
+
+ ### Finding Components in Models
 
  Our Model now has various components within itself, which we can find by their IDs.
 
@@ -124,7 +142,7 @@
 
  ### Transforming a Model
 
- As well as allowing us organize the lifecycle of groups of components, a Model also lets us transform them as a group.
+ A Model lets us transform its Entities as a group.
 
  We can attach a modeling {{#crossLink "Transform"}}{{/crossLink}} to our Model, as a either a
  configuration object or a component instance:
@@ -177,47 +195,39 @@
 
  ### Getting the World-space boundary of a Model
 
- A Model's {{#crossLink "Model/worldBoundary:property"}}{{/crossLink}} property is a {{#crossLink "Boundary3D"}}{{/crossLink}}
- that provides the collective World-space boundary of all its components. The {{#crossLink "Boundary3D"}}{{/crossLink}} will
- automatically adjust its extents whenever we add or remove components to its Model, or whenever we update the Model's {{#crossLink "Transform"}}Transforms{{/crossLink}}.
-
- Let's get the {{#crossLink "Boundary3D"}}{{/crossLink}} from our first Model, subscribe to changes on its extents,
- then animate one of the Model's {{#crossLink "Transform"}}Transforms{{/crossLink}}, which will cause the {{#crossLink "Boundary3D"}}{{/crossLink}} to fire an
- {{#crossLink "Boundary3D/updated:event"}}{{/crossLink}} event each time its extents change:
+ Get the World-space axis-aligned boundary of a MOdel like this:
 
  ```` Javascript
- var worldBoundary = model.worldBoundary;
-
- worldBoundary.on("updated", function() {
-
-        // See docs on xeogl.Boundary3D for
-        // the format of these properties
-
-        obb = worldBoundary.obb;
-        aabb = worldBoundary.aabb;
-        center = worldBoundary.center;
-        //...
-    });
-
- model.scene.on("tick", function() {
-        model.transform.parent.angle += 0.2;
-    });
+ model.on("boundary", function() {
+    var aabb = model.aabb; //  [xmin, ymin,zmin,xmax,ymax, zmax]
+    //...
+ });
  ````
 
- Since xeogl is all about lazy-execution to avoid needless work, the {{#crossLink "Boundary3D"}}{{/crossLink}} will
- only actually recompute its extents the first time we read its {{#crossLink "Boundary3D/obb:property"}}{{/crossLink}},
- {{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}}, {{#crossLink "Boundary3D/center:property"}}{{/crossLink}} or
- {{#crossLink "Boundary3D/center:property"}}{{/crossLink}} properties after it fired its
- last {{#crossLink "Boundary3D/updated:event"}}{{/crossLink}} event.
+ We can also subscribe to changes to that boundary, which will happen whenever
 
- Also, the Model lazy-instantiates its {{#crossLink "Boundary3D"}}{{/crossLink}} the first time we reference
- the Model's {{#crossLink "Model/worldBoundary:property"}}{{/crossLink}} property. Since the {{#crossLink "Boundary3D"}}{{/crossLink}}
- is going to hang around in memory and fire {{#crossLink "Boundary3D/updated:event"}}{{/crossLink}} events each time we add or
- remove components, or animate {{#crossLink "Transform"}}Transforms{{/crossLink}}, for efficiency we should destroy the {{#crossLink "Boundary3D"}}{{/crossLink}}
- as soon as we no longer need it.
+ * the Model's {{#crossLink "Transform"}}{{/crossLink}} is updated,
+ * components are added or removed from the Model, or
+ * the {{#crossLink "Geometry"}}Geometries{{/crossLink}} or {{#crossLink "Transform"}}Transforms{{/crossLink}} of its Entities are switched or modified.
 
- Finally, when we destroy a Model, it will also destroy its {{#crossLink "Boundary3D"}}{{/crossLink}}, if it
- currently has one.
+ ````javascript
+ model.on("boundary", function() {
+    var aabb = model.aabb; // [xmin, ymin,zmin,xmax,ymax, zmax]
+ });
+ ````
+
+ ### Clearing a Model
+
+ ```` Javascript
+ model.clear();
+ ````
+
+ ### Destroying a Model
+
+ ```` Javascript
+ model.destroy();
+ ````
+
 
  @class Model
  @module xeogl
@@ -229,6 +239,10 @@
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ModelModel.
+ @param [flattenTransforms=true] {Boolean} Flattens transform hierarchies to improve rendering performance.
+ @param [ghost=false] {Boolean} When true, sets all the Model's Entities initially ghosted. |
+ @param [highlight=false] {Boolean} When true, sets all the Model's Entities initially highlighted. |
+ @param [outline=false] {Boolean} When true, sets all the Model's Entities initially outlined. |
  @param [cfg.transform] {Number|String|Transform} A Local-to-World-space (modelling) {{#crossLink "Transform"}}{{/crossLink}} to attach to this Model.
  Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this Model. Internally, the given
  {{#crossLink "Transform"}}{{/crossLink}} will be inserted above each top-most {{#crossLink "Transform"}}Transform{{/crossLink}}
@@ -304,8 +318,10 @@
             // Subscriptions to "destroyed" events from components
             this._onDestroyed = {};
 
-            // Subscriptions to "updated" events from components' worldBoundaries
-            this._onWorldBoundaryUpdated = {};
+            // Subscriptions to "boundary" events from Entities
+            this._onBoundary = {};
+
+            this._aabb = xeogl.math.AABB3();
 
             this._aabbDirty = false;
 
@@ -316,6 +332,10 @@
             });
 
             this.transform = cfg.transform;
+
+            this.ghost = cfg.ghost;
+            this.visible = cfg.visible;
+            this.outline = cfg.outline;
 
             if (cfg.components) {
                 var components = cfg.components;
@@ -391,7 +411,6 @@
                 }
 
                 component = new window[type](this.scene, component);
-
             }
 
             if (component.scene !== this.scene) {
@@ -467,10 +486,14 @@
                 }
 
                 this.entities[component.id] = component;
-            }
 
-            if (component.worldBoundary) {
-                this._onWorldBoundaryUpdated[component.id] = component.worldBoundary.on("updated", this._updated, this);
+                component.ghost = this.ghost;
+                component.highlight = this.highlight;
+                component.visible = this.visible;
+
+                this._onBoundary[component.id] = component.on("boundary", this._setAABBDirty, this);
+
+                this._setAABBDirty();
             }
 
             /**
@@ -479,8 +502,6 @@
              * @param value {Component} The {{#crossLink "Component"}}{{/crossLink}} that was added.
              */
             this.fire("added", component);
-
-            //   this.log("Mode.added:" + component.id);
 
             if (!this._dirty) {
                 this._needUpdate();
@@ -591,9 +612,9 @@
 
             //
 
-            if (component.worldBoundary) {
-                component.worldBoundary.off(this._onWorldBoundaryUpdated[component.id]);
-                delete this._onWorldBoundaryUpdated[component.id];
+            if (component.isType("xeogl.Entity")) {
+                component.off(this._onBoundary[component.id]);
+                delete this._onBoundary[component.id];
             }
 
             /**
@@ -669,133 +690,200 @@
             },
 
             /**
-             * World-space 3D boundary enclosing all the components in this Model.
+             * World-space axis-aligned 3D boundary (AABB) of this Model.
              *
-             * If you call {{#crossLink "Component/destroy:method"}}{{/crossLink}} on this boundary, then
-             * this property will be assigned to a fresh {{#crossLink "Boundary3D"}}{{/crossLink}} instance next
-             * time you reference it.
+             * The AABB is represented by a six-element Float32Array containing the min/max extents of the
+             * axis-aligned volume, ie. ````[xmin, ymin,zmin,xmax,ymax, zmax]````.
              *
-             * @property worldBoundary
-             * @type Boundary3D
+             * @property aabb
              * @final
+             * @type {Float32Array}
              */
-            worldBoundary: {
+            aabb: {
 
                 get: function () {
 
-                    if (!this._worldBoundary) {
+                    if (this._aabbDirty) {
 
-                        var self = this;
+                        var xmin = xeogl.math.MAX_DOUBLE;
+                        var ymin = xeogl.math.MAX_DOUBLE;
+                        var zmin = xeogl.math.MAX_DOUBLE;
+                        var xmax = -xeogl.math.MAX_DOUBLE;
+                        var ymax = -xeogl.math.MAX_DOUBLE;
+                        var zmax = -xeogl.math.MAX_DOUBLE;
 
-                        this._worldBoundary = this.create({
+                        var aabb;
 
-                            type: "xeogl.Boundary3D",
+                        var entities = this.entities;
 
-                            getDirty: function () {
-                                if (self._aabbDirty || !self._aabb) {
-                                    self._buildAABB();
-                                    self._aabbDirty = false;
-                                    return true;
+                        for (var entityId in entities) {
+                            if (entities.hasOwnProperty(entityId)) {
+
+                                aabb = entities[entityId].aabb;
+
+                                if (aabb[0] < xmin) {
+                                    xmin = aabb[0];
                                 }
-                                return false;
-                            },
-
-                            getAABB: function () {
-                                return self._aabb;
+                                if (aabb[1] < ymin) {
+                                    ymin = aabb[1];
+                                }
+                                if (aabb[2] < zmin) {
+                                    zmin = aabb[2];
+                                }
+                                if (aabb[3] > xmax) {
+                                    xmax = aabb[3];
+                                }
+                                if (aabb[4] > ymax) {
+                                    ymax = aabb[4];
+                                }
+                                if (aabb[5] > zmax) {
+                                    zmax = aabb[5];
+                                }
                             }
-                        });
+                        }
 
-                        this._worldBoundary.on("destroyed",
-                            function () {
-                                self._worldBoundary = null;
-                            });
+                        this._aabb[0] = xmin;
+                        this._aabb[1] = ymin;
+                        this._aabb[2] = zmin;
+                        this._aabb[3] = xmax;
+                        this._aabb[4] = ymax;
+                        this._aabb[5] = zmax;
+
+                        this._aabbDirty = false;
                     }
 
-                    return this._worldBoundary;
+                    return this._aabb;
+                }
+            },
+
+            /**
+             Indicates whether this Model's Entities are visible or not.
+
+             @property visible
+             @default true
+             @type Boolean
+             */
+            visible: {
+
+                set: function (value) {
+                    value = value !== false;
+                    if (this._visible === value) {
+                        return;
+                    }
+                    this._visible = value;
+                    for (var id in this.entities) {
+                        if (this.entities.hasOwnProperty(id)) {
+                            this.entities[id].visible = value;
+                        }
+                    }
+                },
+
+                get: function () {
+                    return this._visible;
+                }
+            },
+
+            /**
+             * Flag which indicates if this Model's Entities are rendered with ghost effect.
+             *
+             * @property ghost
+             * @default false
+             * @type Boolean
+             */
+            ghost: {
+
+                set: function (value) {
+                    value = !!value;
+                    if (this._ghost === value) {
+                        return;
+                    }
+                    this._ghost = value;
+                    for (var id in this.entities) {
+                        if (this.entities.hasOwnProperty(id)) {
+                            this.entities[id].ghost = value;
+                        }
+                    }
+                },
+
+                get: function () {
+                    return this._ghost;
+                }
+            },
+
+            /**
+             * Flag which indicates if this Model's Entities are rendered with highlight effect.
+             *
+             * @property highlight
+             * @default false
+             * @type Boolean
+             */
+            highlight: {
+
+                set: function (value) {
+                    value = !!value;
+                    if (this._highlight === value) {
+                        return;
+                    }
+                    this._highlight = value;
+                    for (var id in this.entities) {
+                        if (this.entities.hasOwnProperty(id)) {
+                            this.entities[id].highlight = value;
+                        }
+                    }
+                },
+
+                get: function () {
+                    return this._highlight;
+                }
+            },
+
+            /**
+             * Flag which indicates if this Model's Entities are rendered with outline effect.
+             *
+             * @property outline
+             * @default false
+             * @type Boolean
+             */
+            outline: {
+
+                set: function (value) {
+                    value = !!value;
+                    if (this._outline === value) {
+                        return;
+                    }
+                    this._outline = value;
+                    for (var id in this.entities) {
+                        if (this.entities.hasOwnProperty(id)) {
+                            this.entities[id].outline = value;
+                        }
+                    }
+                },
+
+                get: function () {
+                    return this._outline;
                 }
             }
         },
 
         _transformUpdated: function (transform) {
             this._dummyRootTransform.parent = transform;
-        },
-
-        _updated: function () {
-            if (!this._aabbDirty) {
-                this._setAABBDirty();
-            }
+            this._setAABBDirty();
         },
 
         _setAABBDirty: function () {
+            if (this._aabbDirty) {
+                return;
+            }
             this._aabbDirty = true;
-            if (this._worldBoundary) {
-                this._worldBoundary.fire("updated", true);
-            }
-        },
 
-        _buildAABB: function () {
+            /**
+             Fired whenever this Model's World-space boundary changes.
 
-            if (!this._aabb) {
-                this._aabb = xeogl.math.AABB3();
-            }
+             Get the latest boundary from the Model's {{#crossLink "Model/aabb:property"}}{{/crossLink}} property.
 
-            var xmin = xeogl.math.MAX_DOUBLE;
-            var ymin = xeogl.math.MAX_DOUBLE;
-            var zmin = xeogl.math.MAX_DOUBLE;
-            var xmax = -xeogl.math.MAX_DOUBLE;
-            var ymax = -xeogl.math.MAX_DOUBLE;
-            var zmax = -xeogl.math.MAX_DOUBLE;
-
-            var component;
-            var worldBoundary;
-            var aabb;
-
-            var components = this.components;
-
-            for (var componentId in components) {
-                if (components.hasOwnProperty(componentId)) {
-
-                    component = components[componentId];
-
-                    worldBoundary = component.worldBoundary;
-
-                    if (worldBoundary) {
-
-                        aabb = worldBoundary.aabb;
-
-                        if (aabb[0] < xmin) {
-                            xmin = aabb[0];
-                        }
-
-                        if (aabb[1] < ymin) {
-                            ymin = aabb[1];
-                        }
-
-                        if (aabb[2] < zmin) {
-                            zmin = aabb[2];
-                        }
-
-                        if (aabb[3] > xmax) {
-                            xmax = aabb[3];
-                        }
-
-                        if (aabb[4] > ymax) {
-                            ymax = aabb[4];
-                        }
-
-                        if (aabb[5] > zmax) {
-                            zmax = aabb[5];
-                        }
-                    }
-                }
-            }
-
-            this._aabb[0] = xmin;
-            this._aabb[1] = ymin;
-            this._aabb[2] = zmin;
-            this._aabb[3] = xmax;
-            this._aabb[4] = ymax;
-            this._aabb[5] = zmax;
+             @event boundary
+             */
+            this.fire("boundary");
         },
 
         _destroy: function () {

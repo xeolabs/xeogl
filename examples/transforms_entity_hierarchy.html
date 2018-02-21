@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
@@ -110,7 +110,7 @@
 
     new xeogl.Entity({
         geometry: new xeogl.AABBGeometry({
-            boundary: yellowLeg.worldBoundary
+            target: yellowLeg
         }),
         material: new xeogl.PhongMaterial({
             diffuse: [0.5, 1.0, 0.5],
@@ -138,20 +138,19 @@
 
     var scene = xeogl.scene;
 
-    scene.camera.view.zoom(10);
+    scene.camera.zoom(10);
 
 
     var angle = 0;
 
-    scene.on("tick",
-            function () {
+    scene.on("tick", function () {
 
-                angle += 0.5;
+        angle += 0.5;
 
-                tableRotate.angle = angle;
+        tableRotate.angle = angle;
 
-                yellowLeg.transform.parent.angle += 1;
-            });
+        yellowLeg.transform.parent.angle += 1;
+    });
 
 </script>
 </body>

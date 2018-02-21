@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.js"></script>
+
+
+    <script src="js/curves/curve.js"></script>
+    <script src="js/curves/splineCurve.js"></script>
+    <script src="js/animation/cameraPath.js"></script>
+    <script src="js/animation/cameraPathAnimation.js"></script>
+
+    <script src="js/libs/dat.gui.min.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a>
+        option</h1>
+    <pre id="log">model: Modern Office - [<a
+            href='https://github.com/xeolabs/xeogl/tree/master/examples/models/gltf/modern_office/AUTHOR'
+            target="_parent">model info</a>]</pre>
+
+    <ul>
+        <li><a href="javascript:cameraPathAnimation.play(0)">cameraPathAnimation.play(0)</a></li>
+        <li><a href="javascript:cameraPathAnimation.stop()">cameraPathAnimation.stop()</a></li>
+    </ul>
+</div>
+
+<div id="dat-gui-container">
+</div>
+
+<script>
+
+    xeogl.scene = new xeogl.Scene({
+        transparent: true
+    });
+
+    var model = new xeogl.GLTFModel({
+        id: "office",
+        src: "models/gltf/modern_office/scene.gltf",
+     //   lambertMaterials: true,
+        ghost: true,
+        ghostEdgeThreshold: 20
+    });
+
+    var scene = model.scene;
+    var camera = scene.camera;
+
+    // Customize lights for default scene
+
+    scene.lights.lights = [
+        new xeogl.AmbientLight({
+            color: [1, 1, 1],
+            intensity: 0.8
+        }),
+        new xeogl.DirLight({
+            dir: [0.8, -0.6, -0.8],
+            color: [1.0, 1.0, 1.0],
+            intensity: 1.0,
+            space: "world"
+        }),
+        new xeogl.DirLight({
+            dir: [-0.8, -0.4, -0.4],
+            color: [1.0, 1.0, 1.0],
+            intensity: 1.0,
+            space: "world"
+        }),
+        new xeogl.DirLight({
+            dir: [0.2, -0.8, 0.8],
+            color: [0.6, 0.6, 0.6],
+            intensity: 1.0,
+            space: "world"
+        })
+    ];
+
+    camera.eye = [334.84033203125, 18.283493041992188, 538.8114013671875];
+    camera.look = [58.12596130371094, -74.73777770996094, 278.8338928222656];
+    camera.up = [-0.10558781772851944, 0.9894523024559021, -0.09920109063386917];
+
+    // Customize the default ghost material
+
+    scene.ghostMaterial.preset = "sepia";
+
+    var cameraControl = new xeogl.CameraControl();
+
+    var cameraPath = new xeogl.CameraPath({
+        frames: [
+            {
+                t: 0,
+                eye: [
+                    124.86756896972656,
+                    -93.50288391113281,
+                    173.2632598876953
+                ],
+                look: [
+                    102.14186096191406,
+                    -90.24193572998047,
+                    173.4224395751953
+                ],
+                up: [
+                    0.23516440391540527,
+                    0.9719591736793518,
+                    -0.0016466031083837152
+                ]
+            },
+            {
+                t: 1,
+                eye: [
+                    79.75687408447266,
+                    -85.9892349243164,
+                    226.57110595703125
+                ],
+                look: [
+                    99.24199676513672,
+                    -84.1186294555664,
+                    238.56883239746094
+                ],
+                up: [
+                    -0.1494685709476471,
+                    0.9844797849655151,
+                    -0.09203410893678665
+                ]
+            },
+            {
+                t: 2,
+                eye: [
+                    34.84157180786133,
+                    -87.93140411376953,
+                    273.11322021484375
+                ],
+                look: [
+                    26.479145050048828,
+                    -92.49353790283203,
+                    294.0028381347656
+                ],
+                up: [
+                    -0.03900747746229172,
+                    0.9944829940795898,
+                    0.09744877368211746
+                ]
+            },
+            {
+                t: 3,
+                eye: [
+                    21.076765060424805,
+                    -90.01764678955078,
+                    289.5051574707031
+                ],
+                look: [
+                    17.627647399902344,
+                    -91.0494613647461,
+                    298.38616943359375
+                ],
+                up: [
+                    -0.0046955798752605915,
+                    0.9999232888221741,
+                    0.012120242230594158
+                ]
+            },
+            {
+                t: 4,
+                eye: [
+                    1.7270406484603882,
+                    -91.4652099609375,
+                    320.97088623046875
+                ],
+                look: [
+                    3.958563804626465,
+                    -93.14399719238281,
+                    332.5712890625
+                ],
+                up: [
+                    0.008739267475903034,
+                    0.9989370703697205,
+                    0.045433226972818375
+                ]
+            },
+            {
+                t: 5,
+                eye: [
+                    3.7832694053649902,
+                    -90.14629364013672,
+                    357.3613586425781
+                ],
+                look: [
+                    1.313842535018921,
+                    -93.85652160644531,
+                    390.3735046386719
+                ],
+                up: [
+                    -0.0012480108998715878,
+                    0.9998677372932434,
+                    0.016679462045431137
+                ]
+            },
+            {
+                t: 6,
+                eye: [
+                    3.6393966674804688,
+                    -83.18291473388672,
+                    390.2780456542969
+                ],
+                look: [
+                    -21.50203514099121,
+                    -72.93193817138672,
+                    370.9781188964844
+                ],
+                up: [
+                    0.3145114779472351,
+                    0.918045699596405,
+                    0.2414349764585495
+                ]
+            },
+            {
+                t: 7,
+                eye: [
+                    -3.4995110034942627,
+                    -74.77263641357422,
+                    371.0653991699219
+                ],
+                look: [
+                    -5.384510517120361,
+                    -62.85005187988281,
+                    340.0177917480469
+                ],
+                up: [
+                    0.026954522356390953,
+                    0.8956530094146729,
+                    0.443954735994339
+                ]
+            },
+            {
+                t: 8,
+                eye: [
+                    -9.91634464263916,
+                    -75.13982391357422,
+                    283.62359619140625
+                ],
+                look: [
+                    -11.605611801147461,
+                    -77.28392028808594,
+                    250.42396545410156
+                ],
+                up: [
+                    0.0015489873476326466,
+                    0.9995446801185608,
+                    0.030431384220719337
+                ]
+            },
+            {
+                t: 9,
+                eye: [
+                    -9.581436157226562,
+                    -77.44599914550781,
+                    252.5220184326172
+                ],
+                look: [
+                    -7.15036678314209,
+                    -76.88567352294922,
+                    247.8950958251953
+                ],
+                up: [
+                    -0.09317363053560257,
+                    0.9797407984733582,
+                    0.17733030021190643
+                ]
+            },
+            {
+                t: 10,
+                eye: [
+                    -1.166993498802185,
+                    -75.6410140991211,
+                    236.17108154296875
+                ],
+                look: [
+                    1.1523300409317017,
+                    -75.21733856201172,
+                    231.47279357910156
+                ],
+                up: [
+                    -0.07732030749320984,
+                    0.9846366047859192,
+                    0.1566261500120163
+                ]
+            },
+            {
+                t: 11,
+                eye: [
+                    5.862013816833496,
+                    -74.66243743896484,
+                    230.28533935546875
+                ],
+                look: [
+                    9.592266082763672,
+                    -74.08384704589844,
+                    226.62704467773438
+                ],
+                up: [
+                    -0.14546562731266022,
+                    0.9790344834327698,
+                    0.1426575928926468
+                ]
+            },
+            {
+                t: 12,
+                eye: [
+                    15.185075759887695,
+                    -73.85205841064453,
+                    237.0224609375
+                ],
+                look: [
+                    19.237565994262695,
+                    -73.48764038085938,
+                    240.35076904296875
+                ],
+                up: [
+                    -0.1263706535100937,
+                    0.9865478873252869,
+                    -0.10379531979560852
+                ]
+            },
+            {
+                t: 13,
+                eye: [
+                    14.346619606018066,
+                    -71.90723419189453,
+                    217.30661010742188
+                ],
+                look: [
+                    15.311902046203613,
+                    -71.38763427734375,
+                    212.1654815673828
+                ],
+                up: [
+                    -0.035561393946409225,
+                    0.9812723398208618,
+                    0.18936878442764282
+                ]
+            },
+            {
+                t: 14,
+                eye: [
+                    17.92144775390625,
+                    -67.9234619140625,
+                    155.74508666992188
+                ],
+                look: [
+                    16.38196563720703,
+                    -68.61629486083984,
+                    150.76707458496094
+                ],
+                up: [
+                    -0.011025184765458107,
+                    0.9993153810501099,
+                    -0.03562847524881363
+                ]
+            },
+            {
+                t: 15,
+                eye: [
+                    5.741620063781738,
+                    -83.43045806884766,
+                    125.86271667480469
+                ],
+                look: [
+                    3.6081366539001465,
+                    -84.8179702758789,
+                    121.26342010498047
+                ],
+                up: [
+                    -0.07213042676448822,
+                    0.9852134585380554,
+                    -0.15548022091388702
+                ]
+            },
+            {
+                t: 16,
+                eye: [
+                    2.824738025665283,
+                    -89.72730255126953,
+                    101.02896118164062
+                ],
+                look: [
+                    5.579619884490967,
+                    -90.40284729003906,
+                    96.60347747802734
+                ],
+                up: [
+                    0.01795274391770363,
+                    0.999433696269989,
+                    -0.028852401301264763
+                ]
+            },
+            {
+                t: 17,
+                eye: [
+                    10.112589836120605,
+                    -90.85828399658203,
+                    93.62769317626953
+                ],
+                look: [
+                    15.353513717651367,
+                    -90.7756576538086,
+                    93.23223876953125
+                ],
+                up: [
+                    -0.1100664734840393,
+                    0.9939011335372925,
+                    0.008297941647469997
+                ]
+            },
+            {
+                t: 18,
+                eye: [
+                    99.1791763305664,
+                    -90.64168548583984,
+                    89.23528289794922
+                ],
+                look: [
+                    104.42350769042969,
+                    -90.89813232421875,
+                    89.48371887207031
+                ],
+                up: [
+                    -0.04601164534687996,
+                    0.9989499449729919,
+                    -0.002186196157708764
+                ]
+            },
+            {
+                t: 19,
+                eye: [
+                    120.68441772460938,
+                    -90.80726623535156,
+                    90.6360092163086
+                ],
+                look: [
+                    125.92752838134766,
+                    -90.76811218261719,
+                    91.00847625732422
+                ],
+                up: [
+                    -0.10190017521381378,
+                    0.9947797060012817,
+                    -0.007245310582220554
+                ]
+            },
+            {
+                t: 20,
+                eye: [
+                    149.11044311523438,
+                    -93.3681411743164,
+                    110.17097473144531
+                ],
+                look: [
+                    159.43226623535156,
+                    -92.94440460205078,
+                    114.13573455810547
+                ],
+                up: [
+                    -0.12396728247404099,
+                    0.9911544322967529,
+                    -0.04762369021773338
+                ]
+            },
+            {
+                t: 21,
+                eye: [
+                    149.14317321777344,
+                    -90.86740112304688,
+                    109.82379913330078
+                ],
+                look: [
+                    156.5924530029297,
+                    -91.658203125,
+                    101.67988586425781
+                ],
+                up: [
+                    -0.015769293531775475,
+                    0.9997391700744629,
+                    0.017231009900569916
+                ]
+            }
+        ]
+    });
+
+    var cameraPathAnimation = new xeogl.CameraPathAnimation({
+        cameraPath: cameraPath,
+        playingRate: 0.3
+    });
+
+    model.on("loaded", function () { // We'll wait for the model to load first
+
+        var Menu = function () {
+
+            var ghostMaterial = scene.ghostMaterial;
+            var highlightMaterial = scene.highlightMaterial;
+
+            this["ghost"] = false;
+            this["ghostMaterial.preset"] = "default";
+            this["ghostMaterial.edges"] = ghostMaterial.edges;
+            this["ghostMaterial.fill"] = ghostMaterial.fill;
+            this["ghostMaterial.vertices"] = ghostMaterial.vertices;
+            this["ghostMaterial.edgeColor"] = typedToJS(ghostMaterial.edgeColor);
+            this["ghostMaterial.edgeAlpha"] = ghostMaterial.edgeAlpha;
+            this["ghostMaterial.edgeWidth"] = ghostMaterial.edgeWidth;
+            this["ghostMaterial.vertexColor"] = typedToJS(ghostMaterial.vertexColor);
+            this["ghostMaterial.vertexAlpha"] = ghostMaterial.vertexAlpha;
+            this["ghostMaterial.vertexSize"] = ghostMaterial.vertexSize;
+            this["ghostMaterial.fillColor"] = typedToJS(ghostMaterial.fillColor);
+            this["ghostMaterial.fillAlpha"] = ghostMaterial.fillAlpha;
+
+            this["highlight"] = false;
+            this["highlightMaterial.preset"] = "yellowHighlight";
+            this["highlightMaterial.edges"] = highlightMaterial.edges;
+            this["highlightMaterial.fill"] = highlightMaterial.fill;
+            this["highlightMaterial.vertices"] = highlightMaterial.vertices;
+            this["highlightMaterial.edgeColor"] = typedToJS(highlightMaterial.edgeColor);
+            this["highlightMaterial.edgeAlpha"] = highlightMaterial.edgeAlpha;
+            this["highlightMaterial.edgeWidth"] = highlightMaterial.edgeWidth;
+            this["highlightMaterial.vertexColor"] = typedToJS(highlightMaterial.vertexColor);
+            this["highlightMaterial.vertexAlpha"] = highlightMaterial.vertexAlpha;
+            this["highlightMaterial.vertexSize"] = highlightMaterial.vertexSize;
+            this["highlightMaterial.fillColor"] = typedToJS(highlightMaterial.fillColor);
+            this["highlightMaterial.fillAlpha"] = highlightMaterial.fillAlpha;
+
+            this["scene.gammaOutput"] = model.scene.gammaOutput;
+            this["scene.gammaFactor"] = model.scene.gammaFactor;
+
+            var self = this;
+
+            var lastGhostMaterialPreset;
+            var lastHighlightMaterialPreset;
+
+            var update = function () {
+
+                model.ghost = !!self["ghost"];
+
+                var preset = self["ghostMaterial.preset"];
+                if (lastGhostMaterialPreset !== preset) {
+                    ghostMaterial.preset = preset;
+                    lastGhostMaterialPreset = preset;
+                    self["ghostMaterial.edges"] = ghostMaterial.edges;
+                    self["ghostMaterial.fill"] = ghostMaterial.fill;
+                    self["ghostMaterial.vertices"] = ghostMaterial.vertices;
+                    self["ghostMaterial.edgeColor"] = typedToJS(ghostMaterial.edgeColor);
+                    self["ghostMaterial.edgeAlpha"] = ghostMaterial.edgeAlpha;
+                    self["ghostMaterial.edgeWidth"] = ghostMaterial.edgeWidth;
+                    self["ghostMaterial.vertexColor"] = typedToJS(ghostMaterial.vertexColor);
+                    self["ghostMaterial.vertexAlpha"] = ghostMaterial.vertexAlpha;
+                    self["ghostMaterial.vertexSize"] = ghostMaterial.vertexSize;
+                    self["ghostMaterial.fillColor"] = typedToJS(ghostMaterial.fillColor);
+                    self["ghostMaterial.fillAlpha"] = ghostMaterial.fillAlpha;
+                } else {
+                    ghostMaterial.vertices = !!self["ghostMaterial.vertices"];
+                    ghostMaterial.edges = !!self["ghostMaterial.edges"];
+                    ghostMaterial.fill = !!self["ghostMaterial.fill"];
+                    ghostMaterial.edgeColor = JSToTyped(self["ghostMaterial.edgeColor"]);
+                    ghostMaterial.edgeAlpha = self["ghostMaterial.edgeAlpha"];
+                    ghostMaterial.edgeWidth = self["ghostMaterial.edgeWidth"];
+                    ghostMaterial.vertexColor = JSToTyped(self["ghostMaterial.vertexColor"]);
+                    ghostMaterial.vertexAlpha = self["ghostMaterial.vertexAlpha"];
+                    ghostMaterial.vertexSize = self["ghostMaterial.vertexSize"];
+                    ghostMaterial.fillColor = JSToTyped(self["ghostMaterial.fillColor"]);
+                    ghostMaterial.fillAlpha = self["ghostMaterial.fillAlpha"];
+                }
+
+                preset = self["highlightMaterial.preset"];
+
+                if (lastHighlightMaterialPreset !== preset) {
+                    highlightMaterial.preset = preset;
+                    lastHighlightMaterialPreset = preset;
+                    self["highlightMaterial.edges"] = highlightMaterial.edges;
+                    self["highlightMaterial.fill"] = highlightMaterial.fill;
+                    self["highlightMaterial.vertices"] = highlightMaterial.vertices;
+                    self["highlightMaterial.edgeColor"] = typedToJS(highlightMaterial.edgeColor);
+                    self["highlightMaterial.edgeAlpha"] = highlightMaterial.edgeAlpha;
+                    self["highlightMaterial.edgeWidth"] = highlightMaterial.edgeWidth;
+                    self["highlightMaterial.vertexColor"] = typedToJS(highlightMaterial.vertexColor);
+                    self["highlightMaterial.vertexAlpha"] = highlightMaterial.vertexAlpha;
+                    self["highlightMaterial.vertexSize"] = highlightMaterial.vertexSize;
+                    self["highlightMaterial.fillColor"] = typedToJS(highlightMaterial.fillColor);
+                    self["highlightMaterial.fillAlpha"] = highlightMaterial.fillAlpha;
+                } else {
+                    highlightMaterial.vertices = !!self["highlightMaterial.vertices"];
+                    highlightMaterial.edges = !!self["highlightMaterial.edges"];
+                    highlightMaterial.fill = !!self["highlightMaterial.fill"];
+                    highlightMaterial.edgeColor = JSToTyped(self["highlightMaterial.edgeColor"]);
+                    highlightMaterial.edgeAlpha = self["highlightMaterial.edgeAlpha"];
+                    highlightMaterial.edgeWidth = self["highlightMaterial.edgeWidth"];
+                    highlightMaterial.vertexColor = JSToTyped(self["highlightMaterial.vertexColor"]);
+                    highlightMaterial.vertexAlpha = self["highlightMaterial.vertexAlpha"];
+                    highlightMaterial.vertexSize = self["highlightMaterial.vertexSize"];
+                    highlightMaterial.fillColor = JSToTyped(self["highlightMaterial.fillColor"]);
+                    highlightMaterial.fillAlpha = self["highlightMaterial.fillAlpha"];
+                }
+
+                model.scene.gammaOutput = self["scene.gammaOutput"];
+                model.scene.gammaFactor = self["scene.gammaFactor"];
+
+                requestAnimationFrame(update);
+            };
+
+            update();
+        };
+
+        var gui = new dat.GUI({autoPlace: false, top: 0, width: 400});
+
+        document.getElementById('dat-gui-container').appendChild(gui.domElement);
+
+        var menu = new Menu();
+
+        var ghostFolder = gui.addFolder('ghost');
+        ghostFolder.add(menu, 'ghost', false);
+        ghostFolder.add(menu, 'ghostMaterial.preset', Object.keys(xeogl.GhostMaterial.presets));
+        ghostFolder.add(menu, 'ghostMaterial.edges', true).listen();
+        ghostFolder.addColor(menu, 'ghostMaterial.edgeColor', [255, 255, 255]).listen();
+        ghostFolder.add(menu, 'ghostMaterial.edgeAlpha', 0.0, 1.0).listen();
+        ghostFolder.add(menu, 'ghostMaterial.edgeWidth', 1, 10).listen();
+        ghostFolder.add(menu, 'ghostMaterial.vertices', true).listen();
+        ghostFolder.addColor(menu, 'ghostMaterial.vertexColor', [255, 255, 255]).listen();
+        ghostFolder.add(menu, 'ghostMaterial.vertexAlpha', 0.0, 1.0).listen();
+        ghostFolder.add(menu, 'ghostMaterial.vertexSize', 1, 10).listen();
+        ghostFolder.add(menu, 'ghostMaterial.fill', true).listen();
+        ghostFolder.addColor(menu, 'ghostMaterial.fillColor', [255, 255, 255]).listen();
+        ghostFolder.add(menu, 'ghostMaterial.fillAlpha', 0.0, 1.0).listen();
+     //   ghostFolder.open();
+
+        var highlightFolder = gui.addFolder('scene.highlight');
+        highlightFolder.add(menu, 'highlight', false);
+        highlightFolder.add(menu, 'highlightMaterial.preset', Object.keys(xeogl.GhostMaterial.presets));
+        highlightFolder.add(menu, 'highlightMaterial.edges', true).listen();
+        highlightFolder.addColor(menu, 'highlightMaterial.edgeColor', [255, 255, 255]).listen();
+        highlightFolder.add(menu, 'highlightMaterial.edgeAlpha', 0.0, 1.0).listen();
+        highlightFolder.add(menu, 'highlightMaterial.edgeWidth', 1, 10).listen();
+        highlightFolder.add(menu, 'highlightMaterial.vertices', true).listen();
+        highlightFolder.addColor(menu, 'highlightMaterial.vertexColor', [255, 255, 255]).listen();
+        highlightFolder.add(menu, 'highlightMaterial.vertexAlpha', 0.0, 1.0).listen();
+        highlightFolder.add(menu, 'highlightMaterial.vertexSize', 1, 10).listen();
+        highlightFolder.add(menu, 'highlightMaterial.fill', true).listen();
+        highlightFolder.addColor(menu, 'highlightMaterial.fillColor', [255, 255, 255]).listen();
+        highlightFolder.add(menu, 'highlightMaterial.fillAlpha', 0.0, 1.0).listen();
+      //  highlightFolder.open();
+
+        var gammaFolder = gui.addFolder('gamma');
+        gammaFolder.add(menu, 'scene.gammaOutput', true).listen();
+        gammaFolder.add(menu, 'scene.gammaFactor', 0.0, 3.0).listen();
+     ///   gammaFolder.open();
+
+        function typedToJS(arry) {
+            return [arry[0] * 255, arry[1] * 255, arry[2] * 255];
+        }
+
+        function JSToTyped(arry) {
+            return [arry[0] / 255, arry[1] / 255, arry[2] / 255];
+        }
+
+    });
+
+
+</script>
+</body>
+</html>

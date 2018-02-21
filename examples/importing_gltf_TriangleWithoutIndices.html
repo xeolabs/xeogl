@@ -6,14 +6,14 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
     <script src="../build/xeogl.js"></script>
-    <script src="js/models/glTFModel.js"></script>
+
 
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="info">
-    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - loading glTF 2.0 triangle without
+    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - importing glTF triangle without
         indices and normals</h1>
     <pre id="log">model:  TriangleWithoutIndices - [<a
             href='https://github.com/xeolabs/xeogl/tree/master/examples/models/gltf/TriangleWithoutIndices/README.md'
@@ -28,13 +28,13 @@
 
     model.scene.lights.lights = []; // glTF file doesn't have lights and this is a test
 
-    var view = model.scene.camera.view;
+    var camera = model.scene.camera;
 
-    view.eye = [0, 0, 3];
-    view.look = [0, 0, 0];
-    view.up = [0, 1, 0];
+    camera.eye = [0, 0, 3];
+    camera.look = [0, 0, 0];
+    camera.up = [0, 1, 0];
 
-    var inputControl = new xeogl.InputControl(); // User camera control
+    new xeogl.CameraControl(); // User camera control
 
 </script>
 </body>

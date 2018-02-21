@@ -157,23 +157,23 @@ function materialGallery(menuId, cfg) {
     // Camera control and animation
     //-----------------------------------------------------------------------------------------------------
 
-    new xeogl.InputControl();
+    new xeogl.CameraControl();
 
     var cameraFlight = new xeogl.CameraFlightAnimation();
 
     cameraFlight.jumpTo({
-        worldBoundary: xeogl.scene.worldBoundary,
+        aabb: xeogl.scene.aabb,
         fit: true,
-        fitFOV: 55
+        fitFOV: 40
     });
 
     window.flyTo = function (id) {
             var entity = xeogl.scene.entities[id];
             if (entity) {
                 cameraFlight.flyTo({
-                    worldBoundary: entity.worldBoundary,
+                    aabb: entity.aabb,
                     fit: true,
-                    fitFOV: 35
+                    fitFOV: 30
                 });
             }
         };

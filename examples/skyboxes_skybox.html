@@ -15,9 +15,9 @@
 <body>
 
 <div id="info">
-   <h1><a
-        href="../docs/classes/Skybox.html"
-        target="_parent">Skybox</a></h1>
+    <h1><a
+            href="../docs/classes/Skybox.html"
+            target="_parent">Skybox</a></h1>
     <br>
     <img src="textures/skybox/miramarClouds.jpg" width="400px" height="400px">
 </div>
@@ -26,9 +26,16 @@
 
     // A bunch of random cube Entities
 
-    for (var i = 0; i < 20; i++) {
+    var boxGeometry = new xeogl.BoxGeometry({
+        xSize: 1,
+        ySize: 1,
+        zSize: 1
+    });
+
+    for (var i = 0; i < 40; i++) {
 
         new xeogl.Entity({
+            geometry: boxGeometry,
             transform: new xeogl.Translate({
                 xyz: [
                     Math.random() * 15 - 7,
@@ -55,22 +62,21 @@
 
     // Move the camera back a bit
 
-    skybox.scene.camera.view.eye = [0, 0, -30];
+    skybox.scene.camera.eye = [0, 0, -30];
 
     // Slowly orbit the camera on each frame
 
-    var view = skybox.scene.camera.view;
+    var camera = skybox.scene.camera;
 
-    view.rotateEyeX(-20);
+    camera.orbitPitch(-20);
 
-    skybox.scene.on("tick",
-            function () {
-                view.rotateEyeY(0.2);
-            });
+    skybox.scene.on("tick", function () {
+        camera.orbitYaw(0.2);
+    });
 
     // Allow user camera control
 
-    new xeogl.InputControl();
+    new xeogl.CameraControl();
 
 </script>
 </body>

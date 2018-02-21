@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
@@ -25,7 +25,9 @@
         zSize: 1
     });
 
-    var diffuseMap = new xeogl.Texture();
+    var diffuseMap = new xeogl.Texture({
+        encoding: "sRGB"
+    });
 
     var material = new xeogl.PhongMaterial({
         diffuseMap: diffuseMap,
@@ -37,7 +39,7 @@
         material: material
     });
 
-    entity.camera.view.zoom(-5);
+    entity.scene.camera.zoom(-5);
 
     // Create hidden video canvas
 
@@ -68,13 +70,13 @@
 
         // Spin camera
 
-        var view = entity.scene.camera.view;
+        var camera = entity.scene.camera;
 
-        view.rotateEyeY(0.2);
-        view.rotateEyeX(0.1);
+        camera.orbitYaw(0.2);
+        camera.orbitPitch(0.1);
     });
 
-    new xeogl.InputControl();
+    new xeogl.CameraControl();
 
 </script>
 </body>

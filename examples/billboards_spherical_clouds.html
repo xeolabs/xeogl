@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+   <h1>spherically-billboarded cloud <a href="../docs/classes/Entity.html" target="_parent">Entities</a> (no depth sort)</h1>
+</div>
+
+<script>
+
+    // Clouds
+
+    var geometry = new xeogl.Geometry({
+        primitive: "triangles",
+        positions: [20, 20, 0, -20, 20, 0, -20, -20, 0, 20, -20, 0],
+        normals: [-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0],
+        uv: [1, 1, 0, 1, 0, 0, 1, 0],
+        indices: [0, 1, 2, 0, 2, 3] // Ensure these will be front-faces
+    });
+
+    var material = new xeogl.PhongMaterial({
+        ambient: [0.3, 0.3, 0.3],
+        shininess: 30,
+        diffuseMap: {
+            src: "textures/alpha/cloud10.png",
+            encoding: "gamma"
+        },
+        alpha: 1.0,
+        alphaMap: {
+            src: "textures/alpha/cloud10.png"
+        },
+        alphaMode: "blend"
+    });
+
+    var numClouds = 200;
+
+    var clouds = [];
+
+    for (var i = 0; i < numClouds; i++) {
+
+        var r = (Math.random() + 0.1 ) * 200;
+        var halfr = r / 2;
+
+        var entity = new xeogl.Entity({
+            geometry: geometry,
+            material: material,
+            billboard: "spherical",
+            transform: new xeogl.Translate({
+                xyz: [
+                    Math.random() * r - halfr,
+                    Math.random() * r - halfr ,
+                    Math.random() * r - halfr
+                ]
+            }),
+            pickable: false,
+            layer: 0
+        });
+
+        clouds.push(entity);
+    }
+
+    var scene = xeogl.scene;
+    var camera = scene.camera;
+
+    // Move the camera back a bit
+
+    camera.zoom(320);
+
+    // Orbit the eye position about the look position.
+
+    scene.on("tick", function () {
+        camera.orbitYaw(0.5);
+    });
+
+    var cameraControl = new xeogl.CameraControl();
+
+</script>
+</body>
+</html>

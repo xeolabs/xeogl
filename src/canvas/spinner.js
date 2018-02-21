@@ -1,10 +1,10 @@
 /**
- A Spinner displays a spinner animation at the center of its {{#crossLink "Canvas"}}{{/crossLink}} while things are loading or otherwise busy.
+ A Progress displays a progress animation at the center of its {{#crossLink "Canvas"}}{{/crossLink}} while things are loading or otherwise busy.
 
  ## Overview
 
  * Spinners are normally shown by {{#crossLink "Model"}}Models{{/crossLink}} while they are loading, however they may also
- be shown by any application code that wants to indicate business.
+ be shown by any application code that wants to indicate busyness.
  * By default, they are also shown by components that load assets, such as {{#crossLink "Texture"}}{{/crossLink}}. You
  can disable that by flipping the Spinner's {{#crossLink "Spinner/textures:property"}}{{/crossLink}} property.
  * A Spinner component has a {{#crossLink "Spinner/processes:property"}}{{/crossLink}} count that indicates how many
@@ -12,11 +12,9 @@
  completes (or fails), would decrement it again.
  * A Spinner is only visible while {{#crossLink "Spinner/processes:property"}}{{/crossLink}} is greater than zero.
 
- <img src="../../../assets/images/Spinner.png"></img>
-
  ## Examples
 
- * [Loading glTF model with spinner](../../examples/#importing_gltf_gearbox)
+ * [Loading glTF model with spinner](../../examples/#importing_gltf_GearboxAssy)
 
  ## Usage
 
@@ -111,8 +109,6 @@
             /**
              * Whether Spinner shows while images are loading for components like {{#crossLink "Texture"}}{{/crossLink}}.
              *
-             * Fires a {{#crossLink "Spinner/textures:event"}}{{/crossLink}} event on change.
-             *
              * @property textures
              * @default true
              * @type Boolean
@@ -124,14 +120,6 @@
                     value = value !== false;
 
                     this._textures = value;
-                    
-                    /**
-                     * Fired whenever this Spinner's  {{#crossLink "Spinner/textures:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event textures
-                     * @param value The property's new value
-                     */
-                    this.fire("textures", this._textures);
                 },
 
                 get: function () {

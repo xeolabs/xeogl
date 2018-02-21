@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
     <script src="../build/xeogl.js"></script>
-    <script src="js/models/glTFModel.js"></script>
+
 
     <script src="js/skyboxes/skybox.js"></script>
 
@@ -17,7 +17,7 @@
 <body>
 
 <div id="info">
-    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - loading glTF 2.0</h1>
+    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - importing glTF</h1>
     <pre id="log">model:  damaged helmet - [<a
             href='https://github.com/xeolabs/xeogl/tree/master/examples/models/gltf/DamagedHelmet/README.md' target="_parent">model info</a>]</pre>
 </div>
@@ -36,32 +36,29 @@
         src: "models/gltf/DamagedHelmet/glTF/DamagedHelmet.gltf"
     });
 
-    xeogl.scene.lights.lights = [
-        new xeogl.AmbientLight({
-            color: [1.0, 0.7, 0.7]
-        })
-    ];
+    var scene = model.scene;
+
     //-----------------------------------------------------------------------------------------------------
     // Camera animation and user control
     //-----------------------------------------------------------------------------------------------------
 
-    var view = xeogl.scene.camera.view;
+    var camera = xeogl.scene.camera;
 
-    view.eye = [0,0,-3.0];
-    view.look = [0,0,0];
-    view.up = [0,1,0];
+    camera.eye = [0,0,-3.0];
+    camera.look = [0,0,0];
+    camera.up = [0,1,0];
 
     var spinning = true;
 
     model.on("loaded", function() {
-        xeogl.scene.on("tick", function () { // Slowly orbit the camera
+        scene.on("tick", function () { // Slowly orbit the camera
             if (spinning) {
-                view.rotateEyeY(-0.1);
+                camera.orbitYaw(-0.1);
             }
         });
     });
 
-    var inputControl = new xeogl.InputControl(); // User camera control
+    var cameraControl = new xeogl.CameraControl(); // User camera control
 
     //-----------------------------------------------------------------------------------------------------
     // Environment
@@ -106,7 +103,8 @@
             "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png",
             "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png",
             "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png"
-        ]
+        ],
+        encoding: "linear"
     });
 
     var reflectionMap = new xeogl.CubeTexture({
@@ -117,10 +115,11 @@
             "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
             "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
             "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
-        ]
+        ],
+        encoding: "sRGB"
     });
 
-    var lights = xeogl.scene.lights;
+    var lights = scene.lights;
     lights.lights = dirLights;
     lights.lightMap = lightMap;
     lights.reflectionMap = reflectionMap;
@@ -140,6 +139,8 @@
             this["dirLights"] = !!(lights.lights && lights.lights.length > 0);
             this["skybox"] = !!skybox.active;
             this["spinning"] = true;
+            this["gammaOutput"] = scene.gammaOutput;
+            this["gammaFactor"] = scene.gammaFactor;
 
             var self = this;
 
@@ -159,6 +160,8 @@
                 if (self["spinning"] !== spinning) {
                     spinning = self["spinning"];
                 }
+                scene.gammaOutput = self["gammaOutput"];
+                scene.gammaFactor = self["gammaFactor"];
                 requestAnimationFrame(update);
             };
 
@@ -177,6 +180,8 @@
         lightsFolder.add(menu, 'dirLights', false);
         lightsFolder.add(menu, 'skybox', true);
         lightsFolder.add(menu, 'spinning', true);
+        lightsFolder.add(menu, 'gammaOutput', true);
+        lightsFolder.add(menu, 'gammaFactor', 0.0, 3.0);
         lightsFolder.open();
     })();
 

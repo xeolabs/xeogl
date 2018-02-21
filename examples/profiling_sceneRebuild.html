@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
@@ -21,13 +21,16 @@
     var geometries = [
         new xeogl.TorusGeometry({
             radius: 2.0,
-            tube: 0.8
+            tube: 0.8,
+            combineVBOs: false
         }),
         new xeogl.SphereGeometry({
-            radius: 1.0
+            radius: 1.0,
+            combineVBOs: false
         }),
         new xeogl.BoxGeometry({
-            xSize: 2, ySize: 2, zSize: 2
+            xSize: 2, ySize: 2, zSize: 2,
+            combineVBOs: false
         }),
         new xeogl.CylinderGeometry({
             radiusTop: 2.0,
@@ -35,7 +38,8 @@
             height: 5.0,
             radialSegments: 20,
             heightSegments: 1,
-            openEnded: false
+            openEnded: false,
+            combineVBOs: false
         })
     ];
 
@@ -108,10 +112,10 @@
 
     var scene = xeogl.scene;
 
-    scene.camera.view.zoom(270);
+    scene.camera.zoom(270);
 
 
-    new xeogl.InputControl();
+    new xeogl.CameraControl();
 
     // Spin camera
     // Log statistics
@@ -152,10 +156,10 @@
 
         // Spin camera
 
-        var view = scene.camera.view;
+        var camera = scene.camera;
 
-        view.rotateEyeY(0.5);
-        view.rotateEyeX(0.3);
+        camera.orbitYaw(0.5);
+        camera.orbitPitch(0.3);
 
         // Get stats from xeogl and log them
 

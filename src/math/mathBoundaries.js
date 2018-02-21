@@ -264,59 +264,78 @@
      *
      * @private
      */
-    math.positions3ToAABB3 = function (positions, aabb) {
+    math.positions3ToAABB3 = (function() {
 
-        aabb = aabb || math.AABB3();
+        var p = new Float32Array(3);
 
-        var xmin = xeogl.math.MAX_DOUBLE;
-        var ymin = xeogl.math.MAX_DOUBLE;
-        var zmin = xeogl.math.MAX_DOUBLE;
-        var xmax = -xeogl.math.MAX_DOUBLE;
-        var ymax = -xeogl.math.MAX_DOUBLE;
-        var zmax = -xeogl.math.MAX_DOUBLE;
+        return function (positions, aabb, positionsDecodeMatrix) {
 
-        var x, y, z;
+            aabb = aabb || math.AABB3();
 
-        for (var i = 0, len = positions.length; i < len; i += 3) {
+            var xmin = xeogl.math.MAX_DOUBLE;
+            var ymin = xeogl.math.MAX_DOUBLE;
+            var zmin = xeogl.math.MAX_DOUBLE;
+            var xmax = -xeogl.math.MAX_DOUBLE;
+            var ymax = -xeogl.math.MAX_DOUBLE;
+            var zmax = -xeogl.math.MAX_DOUBLE;
 
-            x = positions[i + 0];
-            y = positions[i + 1];
-            z = positions[i + 2];
+            var x, y, z;
 
-            if (x < xmin) {
-                xmin = x;
+            for (var i = 0, len = positions.length; i < len; i += 3) {
+
+                if (positionsDecodeMatrix) {
+
+                    p[0] = positions[i + 0];
+                    p[1] = positions[i + 1];
+                    p[2] = positions[i + 2];
+
+                    math.decompressPosition(p, positionsDecodeMatrix, p);
+
+                    x = p[0];
+                    y = p[1];
+                    z = p[2];
+
+                } else {
+                    x = positions[i + 0];
+                    y = positions[i + 1];
+                    z = positions[i + 2];
+                }
+
+                if (x < xmin) {
+                    xmin = x;
+                }
+
+                if (y < ymin) {
+                    ymin = y;
+                }
+
+                if (z < zmin) {
+                    zmin = z;
+                }
+
+                if (x > xmax) {
+                    xmax = x;
+                }
+
+                if (y > ymax) {
+                    ymax = y;
+                }
+
+                if (z > zmax) {
+                    zmax = z;
+                }
             }
 
-            if (y < ymin) {
-                ymin = y;
-            }
+            aabb[0] = xmin;
+            aabb[1] = ymin;
+            aabb[2] = zmin;
+            aabb[3] = xmax;
+            aabb[4] = ymax;
+            aabb[5] = zmax;
 
-            if (z < zmin) {
-                zmin = z;
-            }
-
-            if (x > xmax) {
-                xmax = x;
-            }
-
-            if (y > ymax) {
-                ymax = y;
-            }
-
-            if (z > zmax) {
-                zmax = z;
-            }
-        }
-
-        aabb[0] = xmin;
-        aabb[1] = ymin;
-        aabb[2] = zmin;
-        aabb[3] = xmax;
-        aabb[4] = ymax;
-        aabb[5] = zmax;
-
-        return aabb;
-    };
+            return aabb;
+        };
+    })();
 
     /**
      * Finds the minimum axis-aligned 3D boundary enclosing the homogeneous 3D points (x,y,z,w) given in a flattened array.

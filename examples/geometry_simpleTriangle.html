@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <h1>trivial <a href="../docs/classes/Geometry.html" target="_parent">Geometry</a> triangle mesh</h1>
+</div>
+
+<script>
+
+    var entity = new xeogl.Entity({
+        geometry: new xeogl.Geometry({
+            primitive: "triangles",
+            positions: [0.0, 0.9, 0.0, -0.9, -0.9, 0.0, 0.9, -0.9, 0.0],
+            indices: [0, 1, 2]
+        }),
+        material: new xeogl.PhongMaterial({
+            emissive: [0.6, 0.6, 1.0],
+            backfaces: true
+        })
+    });
+
+    var scene = entity.scene;
+    var camera = scene.camera;
+
+    scene.on("tick", function () {
+        camera.orbitYaw(0.2);
+        camera.orbitPitch(0.1);
+    });
+
+    new xeogl.CameraControl();
+
+</script>
+</body>
+</html>

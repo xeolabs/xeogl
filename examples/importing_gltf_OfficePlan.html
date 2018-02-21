@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.js"></script>
+
+
+    <script src="js/skyboxes/skybox.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+
+<body>
+
+<div id="info">
+    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - loading glTF</h1>
+    <pre id="log">model: <a href="https://sketchfab.com/scann3d"
+                            target="_parent">sketchfab.com/scann3d</a></pre>
+</div>
+
+<script>
+
+    //---------------------------------------------------
+    // Load the model
+    //---------------------------------------------------
+
+    var model = new xeogl.GLTFModel({
+        // src: "models/gltf/shield_helicarrier_meeting_room/scene.gltf",
+        //src: "models/gltf/hover_bike/scene.gltf",
+        src: "models/gltf/office/scene.gltf",
+        transform: new xeogl.Scale({
+            xyz: [.01, .01, .01]
+        }),
+        ghostEdgeThreshold: 20,
+        lambertMaterials:true
+    });
+
+    var scene = model.scene;
+
+    //-----------------------------------------------------------------------------------------------------
+    // Camera
+    //-----------------------------------------------------------------------------------------------------
+
+    var camera = scene.camera;
+
+    camera.eye = [-651.1327514648438, 1284.6214599609375, -1185.9097900390625];
+    camera.look = [-117.79715728759766, -631.378662109375, 97.258544921875];
+    camera.up = [0.3106960654258728, 0.587106466293335, 0.7475125789642334];
+
+
+    model.on("loaded", function () {
+        scene.on("tick", function () { // Slowly orbit the camera
+
+        });
+    });
+
+    var cameraControl = new xeogl.CameraControl();
+    cameraControl.firstPerson = true;
+
+    //-----------------------------------------------------------------------------------------------------
+    // Customize lighting
+    //-----------------------------------------------------------------------------------------------------
+
+    var lights = scene.lights;
+    //
+    lights.lights = [
+
+//        new xeogl.AmbientLight({
+//            color: [1, 1, 1],
+//            intensity: 0.4
+//        }),
+        new xeogl.DirLight({
+            dir: [0.4, -0.7, -.7],
+            color: [1.0, 1.0, 0.9],
+            intensity: 1.0,
+            space: "world"
+        })
+        ,
+        new xeogl.DirLight({
+            dir: [-0.5, -0.6, 0.5],
+            color: [0.9, 0.9, 1.0],
+            intensity: 1.0,
+            space: "world"
+        })
+    ];
+    //
+    //
+    //        lights.lightMap = new xeogl.CubeTexture({
+    //            src: [
+    //                "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
+    //                "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png",
+    //                "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png",
+    //                "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png",
+    //                "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png",
+    //                "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png"
+    //            ]
+    //        });
+
+    //        lights.reflectionMap = new xeogl.CubeTexture({
+    //            src: [
+    //                "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
+    //                "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
+    //                "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
+    //                "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
+    //                "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
+    //                "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
+    //            ]
+    //        });
+
+    model.on("loaded", function () {
+        xeogl.scene.on("tick", function () { // Slowly orbit the camera
+            //  camera.orbitYaw(0.25);
+        });
+    });
+
+</script>
+</body>
+</html>
