@@ -1,22 +1,35 @@
 /**
  A **Geometry** defines a mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- ## Compression
+ ## Usage
+
+ * [Geometry compression](#geometry-compression)
+ * [Geometry batching](#geometry-batching)
+
+ ### Geometry compression
 
  Geometries are automatically quantized to reduce memory and GPU bus usage. Usually, geometry attributes such as positions
  and normals are stored as 32-bit floating-point numbers. Quantization compresses those attributes to 16-bit integers
- represented on a scale between the minimum and maximum values. Decompression is then done on the GPU, via a simple matrix
- multiplication in the vertex shader.
+ represented on a scale between the minimum and maximum values. Decompression is then done on the GPU, via a simple
+ matrix multiplication in the vertex shader.
 
- A caveat: since each normal vector is oct-encoded into two 8-bit unsigned integers, this can lead to a loss of accuracy
- in normal vectors, which can affect any operation that relies on normal vectors being perfectly perpendicular to their
- vertices or faces. Until a more accurate compression is found for normals, you may need to disable compression for Geometry
- that needs such precision:
+ #### Disabling
+
+ Since each normal vector is oct-encoded into two 8-bit unsigned integers, this can cause them to lose precision, which
+ may affect the accuracy of any operations that rely on them being perfectly perpendicular to their surfaces. In such
+ cases, you may need to disable compression for your geometries and models:
 
  ````javascript
+ // Disable geometry compression when loading a Model
+ var model = new xeogl.GLTFModel({
+    src: "models/gltf/modern_office/scene.gltf",
+    quantizeGeometry: false // Default is true
+});
+
+ // Disable compression when creating a Geometry
  var entity = new xeogl.Entity({
     geometry: new xeogl.TeapotGeometry({
-        compressed: false // Default is true
+        quantized: false // Default is true
     }),
     material: new xeogl.PhongMaterial({
         diffuse: [0.2, 0.2, 1.0]
@@ -24,11 +37,34 @@
  });
  ````
 
- ## Batching
+ ### Geometry batching
 
- Geometries are automatically combined into the same vertex buffer objects (VBOs) so that we reduce the number of VBO binds
- that WebGL needs to do when rendering each frame. Since VBO binds are expensive in terms of performance, this can really
- speed things up when rendering many objects.
+ Geometries are automatically combined into the same vertex buffer objects (VBOs) so that we reduce the number of VBO
+ binds done by WebGL on each frame. VBO binds are expensive, so this really makes a difference when we have large numbers
+ of Entities that share similar Materials (as is often the case in CAD rendering).
+
+ #### Disabling
+
+ Since combined VBOs need to be rebuilt whenever we destroy a Geometry, we can disable this optimization for individual
+ Models and Geometries when we know that we'll be continually creating and destroying them.
+
+ ````javascript
+ // Disable VBO combination for a GLTFModel
+ var model = new xeogl.GLTFModel({
+    src: "models/gltf/modern_office/scene.gltf",
+    combinedGeometry: false // Default is true
+});
+
+ // Disable VBO combination for an individual Geometry
+ var entity = new xeogl.Entity({
+    geometry: new xeogl.TeapotGeometry({
+        combined: false // Default is true
+    }),
+    material: new xeogl.PhongMaterial({
+        diffuse: [0.2, 0.2, 1.0]
+    })
+ });
+ ````
 
  @class Geometry
  @module xeogl
@@ -48,7 +84,7 @@
  @param [cfg.indices] {Array of Number} Indices array.
  @param [cfg.autoNormals=false] {Boolean} Set true to automatically generate normal vectors from the positions and
  indices, if those are supplied.
- @param [cfg.compressed=true] {Boolean} Stores positions, colors, normals and UVs in quantized and oct-encoded formats
+ @param [cfg.quantized=true] {Boolean} Stores positions, colors, normals and UVs in quantized and oct-encoded formats
  for reduced memory footprint and GPU bus usage.
  @param [cfg.combined=false] {Boolean} Combines positions, colors, normals and UVs into the same WebGL vertex buffers
  with other Geometries, in order to reduce the number of buffer binds performed per frame.
@@ -70,7 +106,7 @@
                                     hasNormals,
                                     hasColors,
                                     hasUVs,
-                                    compressed) {
+                                    quantized) {
 
         const CHUNK_LEN = bigIndicesSupported ? (Number.MAX_SAFE_INTEGER / 6) : (64000 * 4); // RGBA is largest item
 
@@ -213,7 +249,7 @@
                             normalsBuf: null,
                             uvBuf: null,
                             colorsBuf: null,
-                            compressed: compressed
+                            quantized: quantized
                         });
                         indicesOffset = 0;
                     }
@@ -286,13 +322,13 @@
             var gl = scene.canvas.gl;
             var array;
             if (hasPositions) {
-                array = compressed ? new Uint16Array(positions) : new Float32Array(positions);
+                array = quantized ? new Uint16Array(positions) : new Float32Array(positions);
                 vertexBufs.positionsBuf = new xeogl.renderer.ArrayBuffer(gl, gl.ARRAY_BUFFER, array, array.length, 3, gl.STATIC_DRAW);
                 memoryStats.positions += vertexBufs.positionsBuf.numItems;
                 positions = [];
             }
             if (hasNormals) {
-                array = compressed ? new Int8Array(normals) : new Float32Array(normals);
+                array = quantized ? new Int8Array(normals) : new Float32Array(normals);
                 vertexBufs.normalsBuf = new xeogl.renderer.ArrayBuffer(gl, gl.ARRAY_BUFFER, array, array.length, 3, gl.STATIC_DRAW);
                 memoryStats.normals += vertexBufs.normalsBuf.numItems;
                 normals = [];
@@ -304,7 +340,7 @@
                 colors = [];
             }
             if (hasUVs) {
-                array = compressed ? new Uint16Array(uv) : new Float32Array(uv);
+                array = quantized ? new Uint16Array(uv) : new Float32Array(uv);
                 vertexBufs.uvBuf = new xeogl.renderer.ArrayBuffer(gl, gl.ARRAY_BUFFER, array, array.length, 2, gl.STATIC_DRAW);
                 memoryStats.uvs += vertexBufs.uvBuf.numItems;
                 uv = [];
@@ -314,13 +350,13 @@
 
     function getSceneVertexBufs(scene, geometry) {
         var hasPositions = !!geometry.positions;
-        var compressed = !!geometry.compressed;
+        var quantized = !!geometry.quantized;
         var hasNormals = !!geometry.normals;
         var hasColors = !!geometry.colors;
         var hasUVs = !!geometry.uv;
         var hash = ([
             hasPositions ? "p" : "",
-            compressed ? "c" : "",
+            quantized ? "c" : "",
             hasNormals ? "n" : "",
             hasColors ? "c" : "",
             hasUVs ? "u" : ""
@@ -336,7 +372,7 @@
                 hasNormals,
                 hasColors,
                 hasUVs,
-                compressed);
+                quantized);
             scene._sceneVertexBufs[hash] = sceneVertexBufs;
         }
         return sceneVertexBufs;
@@ -353,20 +389,20 @@
             this._state = new xeogl.renderer.Geometry({
 
                 combined: !!cfg.combined,
-                compressed: !!cfg.compressed,
+                quantized: !!cfg.quantized,
                 autoNormals: !!cfg.autoNormals,
 
                 primitive: null, // WebGL enum
                 primitiveName: null, // String
 
-                positions: null,    // Uint16Array when compressed == true, else Float32Array
-                normals: null,      // Uint8Array when compressed == true, else Float32Array
+                positions: null,    // Uint16Array when quantized == true, else Float32Array
+                normals: null,      // Uint8Array when quantized == true, else Float32Array
                 colors: null,
-                uv: null,           // Uint8Array when compressed == true, else Float32Array
+                uv: null,           // Uint8Array when quantized == true, else Float32Array
                 indices: null,
 
-                positionsDecodeMatrix: null, // Set when compressed == true
-                uvDecodeMatrix: null, // Set when compressed == true
+                positionsDecodeMatrix: null, // Set when quantized == true
+                uvDecodeMatrix: null, // Set when quantized == true
 
                 positionsBuf: null,
                 normalsBuf: null,
@@ -476,11 +512,11 @@
             }
 
             if (cfg.positions) {
-                if (this._state.compressed) {
+                if (this._state.quantized) {
                     var bounds = getBounds(cfg.positions, 3);
-                    var compressed = quantizeVec3(cfg.positions, bounds.min, bounds.max);
-                    state.positions = compressed.quantized;
-                    state.positionsDecodeMatrix = compressed.decode;
+                    var quantized = quantizeVec3(cfg.positions, bounds.min, bounds.max);
+                    state.positions = quantized.quantized;
+                    state.positionsDecodeMatrix = quantized.decode;
                 } else {
                     state.positions = cfg.positions.constructor === Float32Array ? cfg.positions : new Float32Array(cfg.positions);
                 }
@@ -489,17 +525,17 @@
                 state.colors = cfg.colors.constructor === Float32Array ? cfg.colors : new Float32Array(cfg.colors);
             }
             if (cfg.uv) {
-                if (this._state.compressed) {
+                if (this._state.quantized) {
                     var bounds = getBounds(cfg.uv, 2);
-                    var compressed = quantizeVec2(cfg.uv, bounds.min, bounds.max);
-                    state.uv = compressed.quantized;
-                    state.uvDecodeMatrix = compressed.decode;
+                    var quantized = quantizeVec2(cfg.uv, bounds.min, bounds.max);
+                    state.uv = quantized.quantized;
+                    state.uvDecodeMatrix = quantized.decode;
                 } else {
                     state.uv = cfg.uv.constructor === Float32Array ? cfg.uv : new Float32Array(cfg.uv);
                 }
             }
             if (cfg.normals) {
-                if (this._state.compressed) {
+                if (this._state.quantized) {
                     state.normals = octEncode(cfg.normals);
                 } else {
                     state.normals = cfg.normals.constructor === Float32Array ? cfg.normals : new Float32Array(cfg.normals);
@@ -581,7 +617,7 @@
             if (state.uv) {
                 hash.push("u");
             }
-            if (state.compressed) {
+            if (state.quantized) {
                 hash.push("cp");
             }
             hash.push(";");
@@ -606,7 +642,7 @@
                 return;
             }
             var gl = this.scene.canvas.gl;
-            var arrays = xeogl.math.buildPickTriangles(state.positions, state.indices, state.compressed);
+            var arrays = xeogl.math.buildPickTriangles(state.positions, state.indices, state.quantized);
             var pickTrianglePositions = arrays.positions;
             var pickColors = arrays.colors;
             this._pickTrianglePositionsBuf = new xeogl.renderer.ArrayBuffer(gl, gl.ARRAY_BUFFER, pickTrianglePositions, pickTrianglePositions.length, 3, gl.STATIC_DRAW);
@@ -621,7 +657,7 @@
             //     return;
             // }
             // var gl = this.scene.canvas.gl;
-            // var arrays = xeogl.math.buildPickVertices(state.positions, state.indices, state.compressed);
+            // var arrays = xeogl.math.buildPickVertices(state.positions, state.indices, state.quantized);
             // var pickVertexPositions = arrays.positions;
             // var pickColors = arrays.colors;
             // this._pickVertexPositionsBuf = new xeogl.renderer.ArrayBuffer(gl, gl.ARRAY_BUFFER, pickVertexPositions, pickVertexPositions.length, 3, gl.STATIC_DRAW);
@@ -650,22 +686,22 @@
             },
 
             /**
-             Indicates if this Geometry is compressed.
+             Indicates if this Geometry is quantized.
 
              Compression is an internally-performed optimization which stores positions, colors, normals and UVs
              in quantized and oct-encoded formats for reduced memory footprint and GPU bus usage.
 
-             Compressed geometry may not be updated.
+             Quantized geometry may not be updated.
 
-             @property compressed
+             @property quantized
              @default false
              @type Boolean
              @final
              */
-            compressed: {
+            quantized: {
 
                 get: function () {
-                    return this._state.compressed;
+                    return this._state.quantized;
                 }
             },
 
@@ -702,7 +738,7 @@
                     if (!this._state.positions) {
                         return;
                     }
-                    if (!this._state.compressed) {
+                    if (!this._state.quantized) {
                         return this._state.positions;
                     }
                     if (!this._decompressedPositions) {
@@ -713,8 +749,8 @@
                 },
 
                 set: function (newPositions) {
-                    if (this._state.compressed) {
-                        this.error("can't update geometry positions - compressed geometry is immutable"); // But will be eventually
+                    if (this._state.quantized) {
+                        this.error("can't update geometry positions - quantized geometry is immutable"); // But will be eventually
                         return;
                     }
                     var state = this._state;
@@ -752,7 +788,7 @@
                     if (!this._state.normals) {
                         return;
                     }
-                    if (!this._state.compressed) {
+                    if (!this._state.quantized) {
                         return this._state.normals;
                     }
                     if (!this._decompressedNormals) {
@@ -765,8 +801,8 @@
                 },
 
                 set: function (newNormals) {
-                    if (this._state.compressed) {
-                        this.error("can't update geometry normals - compressed geometry is immutable"); // But will be eventually
+                    if (this._state.quantized) {
+                        this.error("can't update geometry normals - quantized geometry is immutable"); // But will be eventually
                         return;
                     }
                     var state = this._state;
@@ -803,7 +839,7 @@
                     if (!this._state.uv) {
                         return;
                     }
-                    if (!this._state.compressed) {
+                    if (!this._state.quantized) {
                         return this._state.uv;
                     }
                     if (!this._decompressedUV) {
@@ -814,8 +850,8 @@
                 },
 
                 set: function (newUV) {
-                    if (this._state.compressed) {
-                        this.error("can't update geometry UVs - compressed geometry is immutable"); // But will be eventually
+                    if (this._state.quantized) {
+                        this.error("can't update geometry UVs - quantized geometry is immutable"); // But will be eventually
                         return;
                     }
                     var state = this._state;
@@ -853,8 +889,8 @@
                 },
 
                 set: function (newColors) {
-                    if (this._state.compressed) {
-                        this.error("can't update geometry colors - compressed geometry is immutable"); // But will be eventually
+                    if (this._state.quantized) {
+                        this.error("can't update geometry colors - quantized geometry is immutable"); // But will be eventually
                         return;
                     }
                     var state = this._state;

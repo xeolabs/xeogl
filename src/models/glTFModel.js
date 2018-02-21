@@ -94,7 +94,7 @@
  |:--------:|:----:|:-----:|:-------------:|:-----:|:-----------:|
  | flattenTransforms | Boolean |  | true | Flattens transform hierarchies to improve rendering performance. |
  | lambertMaterials | Boolean |  | false | When true, gives each {{#crossLink "Entity"}}{{/crossLink}} the same {{#crossLink "LambertMaterial"}}{{/crossLink}} and a {{#crossLink "Entity/colorize:property"}}{{/crossLink}} set the to diffuse color extracted from the glTF material. This is typically used for CAD models with huge amounts of objects, and will ignore textures.|
- | compressGeometry | Boolean |  | true | When true, quantizes geometry to reduce memory and GPU bus usage (see {{#crossLink "Geometry"}}{{/crossLink}}). |
+ | quantizeGeometry | Boolean |  | true | When true, quantizes geometry to reduce memory and GPU bus usage (see {{#crossLink "Geometry"}}{{/crossLink}}). |
  | combineGeometry | Boolean |  | true | When true, combines geometry vertex buffers to improve rendering performance (see {{#crossLink "Geometry"}}{{/crossLink}}). |
  | backfaces | Boolean |  | true | When true, allows visible backfaces, wherever specified in the glTF. When false, ignores backfaces. |
  | ghost | Boolean |  | false | When true, ghosts all the model's Entities (see {{#crossLink "Entity"}}{{/crossLink}} and {{#crossLink "GhostMaterial"}}{{/crossLink}}). |
@@ -272,7 +272,7 @@
  @param [cfg.src] {String} Path to a glTF file. You can set this to a new file path at any time, which will cause the
  @param [flattenTransforms=true] {Boolean} Flattens transform hierarchies to improve rendering performance.
  @param [lambertMaterials | Boolean |  | false | When true, gives each {{#crossLink "Entity"}}{{/crossLink}} the same {{#crossLink "LambertMaterial"}}{{/crossLink}} and a {{#crossLink "Entity/colorize:property"}}{{/crossLink}} set the to diffuse color extracted from the glTF material. This is typically used for CAD models with huge amounts of objects, and will ignore textures.|
- @param [compressGeometry | Boolean |  | true | When true, quantizes geometry to reduce memory and GPU bus usage. |
+ @param [quantizeGeometry | Boolean |  | true | When true, quantizes geometry to reduce memory and GPU bus usage. |
  @param [combineGeometry | Boolean |  | true | When true, combines geometry vertex buffers to improve rendering performance. |
  @param [backfaces | Boolean |  | true | When true, allows visible backfaces, wherever specified in the glTF. When false, ignores backfaces. |
  @param [ghost=false] {Boolean} When true, sets all the Model's Entities initially ghosted. |
@@ -303,7 +303,7 @@
                 flattenTransforms: cfg.flattenTransforms !== false,
                 ignoreMaterials: !!cfg.ignoreMaterials,
                 combineGeometry: cfg.combineGeometry !== false,
-                compressGeometry: cfg.compressGeometry !== false,
+                quantizeGeometry: cfg.quantizeGeometry !== false,
                 ghostEdgeThreshold: cfg.ghostEdgeThreshold,
                 lambertMaterials: !!cfg.lambertMaterials,
                 maxEntities: cfg.maxEntities,
@@ -456,7 +456,7 @@
                         flattenTransforms: options.flattenTransforms,
                         ignoreMaterials: options.ignoreMaterials,
                         combineGeometry: options.combineGeometry,
-                        compressGeometry: options.compressGeometry,
+                        quantizeGeometry: options.quantizeGeometry,
                         ghostEdgeThreshold: options.ghostEdgeThreshold,
                         lambertMaterials: options.lambertMaterials,
                         maxEntities: options.maxEntities,
@@ -529,7 +529,7 @@
                 flattenTransforms: !!options.flattenTransforms,
                 ignoreMaterials: !!options.ignoreMaterials,
                 combineGeometry: !!options.combineGeometry,
-                compressGeometry: !!options.compressGeometry,
+                quantizeGeometry: !!options.quantizeGeometry,
                 ghostEdgeThreshold: options.ghostEdgeThreshold,
                 lambertMaterials: !!options.lambertMaterials,
                 maxEntities: options.maxEntities,
@@ -542,7 +542,7 @@
 
             // model.log("Loading glTF (flattenTransforms=" + ctx.flattenTransforms +
             //     ", combineGeometry=" + ctx.combineGeometry +
-            //     ", compressGeometry=" + ctx.compressGeometry +
+            //     ", quantizeGeometry=" + ctx.quantizeGeometry +
             //     ", lambertMaterials=" + ctx.lambertMaterials + ")");
 
             model.scene.loading++; // Disables (re)compilation
@@ -1090,7 +1090,7 @@
                     geometryCfg = {
                         primitive: "triangles",
                         combined: ctx.combineGeometry,
-                        compressed: ctx.compressGeometry,
+                        quantized: ctx.quantizeGeometry,
                         ghostEdgeThreshold: ctx.ghostEdgeThreshold
                     };
 

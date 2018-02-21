@@ -1,7 +1,15 @@
 /**
  The **Component** class is the base class for all xeogl components.
 
- ## Component IDs
+ ## Usage
+
+ * [Component IDs](#component-ids)
+ * [Metadata](#metadata)
+ * [Logging](#logging)
+ * [Destruction](#destruction)
+ * [Creating custom Components](#creating-custom-components)
+
+ ### Component IDs
 
  Every Component has an ID that's unique within the parent {{#crossLink "Scene"}}{{/crossLink}}. xeogl generates
  the IDs automatically by default, however you can also specify them yourself. In the example below, we're creating a
@@ -38,48 +46,47 @@
 
  // Find the Material
  var theMaterial = theScene.components["myMaterial"];
+
+ // Find all PhongMaterials in the Scene
+ var phongMaterials = theScene.types["xeogl.PhongMaterial"];
+
+ // Find our Material within the PhongMaterials
+ var theMaterial = phongMaterials["myMaterial"];
  ````
 
- ## Properties
+ ### Component inheritance
 
- Almost every property on a xeogl Component fires a change event when you update it. For example, we can subscribe
- to the {{#crossLink "PhongMaterial/diffuse:event"}}{{/crossLink}} event that a
- {{#crossLink "Material"}}{{/crossLink}} fires when its {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}}
- property is updated, like so:
+
+ TODO
+
+ All xeogl components extend the Component base type. Each component
+
+ For example, if this component is a {{#crossLink "Rotate"}}{{/crossLink}}, which
+ extends {{#crossLink "Transform"}}{{/crossLink}}, which in turn extends {{#crossLink "Component"}}{{/crossLink}},
+ then this property will have the value:
+
+ ````json
+ ["xeogl.Component", "xeogl.Transform"]
+ ````
+
+ TODO
 
  ````javascript
- // Bind a change callback to a property
- var handle = material.on("diffuse", function(diffuse) {
-    console.log("Material diffuse color has changed to: [" + diffuse[0] + ", " + diffuse[1] + "," + diffuse[2] + "]");
-});
+ // Evaluates true:
+ var isComponent = theMaterial.isType("xeogl.Component");
 
- // Change the property value, which fires the callback
- material.diffuse = [ 0.0, 0.5, 0.5 ];
+ // Evaluates true:
+ var isMaterial = theMaterial.isType("xeogl.Material");
 
- // Unsubscribe from the property change event
- material.off(handle);
+ // Evaluates true:
+ var isPhongMaterial = theMaterial.isType("xeogl.PhongMaterial");
+
+ // Evaluates false:
+ var isMetallicMaterial = theMaterial.isType("xeogl.MetallicMaterial");
  ````
+ Note that the chain is ordered downwards in the hierarchy, ie. from super-class down towards sub-class.
 
- We can also subscribe to changes in the way components are attached to each other, since components are properties
- of other components. For example, we can subscribe to the '{{#crossLink "Entity/material:event"}}{{/crossLink}}' event that a
- {{#crossLink "Entity"}}Entity{{/crossLink}} fires when its {{#crossLink "Entity/material:property"}}{{/crossLink}}
- property is set to a different {{#crossLink "Material"}}Material{{/crossLink}}:
-
- ```` javascript
- // Bind a change callback to the Entity's Material
- entity1.on("material", function(material) {
-    console.log("Entity's Material has changed to: " + material.id);
- });
-
- // Now replace that Material with another
- entity1.material = new xeogl.PhongMaterial({
-    id: "myOtherMaterial",
-    diffuse: [ 0.3, 0.3, 0.6 ]
-    //..
- });
- ````
-
- ## Metadata
+ ### Metadata
 
  You can set optional **metadata** on your Components, which can be anything you like. These are intended
  to help manage your components within your application code or content pipeline. You could use metadata to attach
@@ -90,9 +97,9 @@
  var scene = new xeogl.Scene({
     id: "myScene",
     meta: {
-        title: "My awesome 3D scene",
-        author: "@xeolabs",
-        date: "February 13 2015"
+        title: "My bodacious 3D scene",
+        author: "@xeographics",
+        date: "February 30 2018"
     }
  });
 
@@ -108,23 +115,7 @@
  });
  ````
 
- As with all properties, you can subscribe and change the metadata like this:
-
- ````javascript
- // Subscribe to changes to the Material's metadata
- material.on("meta", function(value) {
-    console.log("Metadata changed: " + JSON.stringify(value));
- });
-
- // Change the Material's metadata, firing our change handler
- material.meta = {
-    description: "Bright red color with no textures",
-    version: "0.2",
-    foo: "baz"
- };
- ````
-
- ## Logging
+ ### Logging
 
  Components have methods to log ID-prefixed messages to the JavaScript console:
 
@@ -142,7 +133,7 @@
  [ERROR] myMaterial: Aw, snap!
  ````
 
- ## Destruction
+ ### Destruction
 
  Get notification of destruction directly on the Components:
 
@@ -166,9 +157,56 @@
  material.destroy();
  ````
 
- Other Components that are linked to it will fall back on a default of some sort. For example, any
- {{#crossLink "Entity"}}Entities{{/crossLink}} that were linked to our {{#crossLink "Material"}}{{/crossLink}}
- will then automatically link to the {{#crossLink "Scene"}}Scene's{{/crossLink}} default {{#crossLink "Scene/material:property"}}{{/crossLink}}.
+ ### Creating custom Components
+
+ Subclassing a Component to create a new ````xeogl.ColoredTorus```` type:
+
+ ````javascript
+ xeogl.ColoredTorus = xeogl.Component.extend({
+
+     type: "xeogl.ColoredTorus",
+
+     _init: function (cfg) { // Constructor
+
+         this._torus = new xeogl.Entity({
+             geometry: new xeogl.TorusGeometry({radius: 2, tube: .6}),
+             material: new xeogl.MetallicMaterial({
+                 baseColor: [1.0, 0.5, 0.5],
+                 roughness: 0.4,
+                 metallic: 0.1
+             })
+         });
+
+         this.color = cfg.color;
+     },
+
+     _props: {
+
+         // The color of this ColoredTorus.
+         color: {
+             set: function (color) {
+                 this._torus.material.baseColor = color;
+             },
+             get: function () {
+                 return this._torus.material.baseColor;
+             }
+         }
+     },
+
+     _destroy: function () {
+         this._torus.geometry.destroy();
+         this._torus.material.destroy();
+         this._torus.destroy();
+     }
+ });
+ ````
+
+ #### Examples
+
+ * [Custom component definition](../../examples/#extending_component_basic)
+ * [Custom component that fires events](../../examples/#extending_component_changeEvents)
+ * [Custom component that manages child components](../../examples/#extending_component_childCleanup)
+ * [Custom component that schedules asynch tasks](../../examples/#extending_component_update)
 
  @class Component
  @module xeogl
@@ -312,9 +350,6 @@
 
         /**
          JavaScript class name for this Component.
-
-         This is used when <a href="Scene.html#savingAndLoading">loading Scenes from JSON</a>, and is included in the JSON
-         representation of this Component, so that this class may be instantiated when loading it from the JSON representation.
 
          For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
 

@@ -19,7 +19,7 @@
             specularMaterial: (object.material.type === "SpecularMaterial"),
             reflection: hasReflection(scene),
             receiveShadow: receivesShadow(scene, object),
-            compressedGeometry: !!object.geometry.compressed,
+            quantizedGeometry: !!object.geometry.quantized,
             gammaInput: scene.gammaInput, // If set, then it expects that all textures and colors are premultiplied gamma. Default is false.
             gammaOutput: scene.gammaOutput // If set, then it expects that all textures and colors need to be outputted in premultiplied gamma. Default is false.
         };
@@ -121,7 +121,7 @@
         src.push("uniform mat4 projMatrix;");
         src.push("uniform vec4 colorize;");
 
-        if (cfg.compressedGeometry) {
+        if (cfg.quantizedGeometry) {
             src.push("uniform mat4 positionsDecodeMatrix;");
         }
 
@@ -159,7 +159,7 @@
                 }
             }
 
-            if (cfg.compressedGeometry) {
+            if (cfg.quantizedGeometry) {
                 src.push("vec3 octDecode(vec2 oct) {");
                 src.push("    vec3 v = vec3(oct.xy, 1.0 - abs(oct.x) - abs(oct.y));");
                 src.push("    if (v.z < 0.0) {");
@@ -197,12 +197,12 @@
         src.push("vec4 localPosition = vec4(position, 1.0); ");
         src.push("vec4 worldPosition;");
 
-        if (cfg.compressedGeometry) {
+        if (cfg.quantizedGeometry) {
             src.push("localPosition = positionsDecodeMatrix * localPosition;");
         }
 
         if (cfg.normals) {
-            if (cfg.compressedGeometry) {
+            if (cfg.quantizedGeometry) {
                 src.push("vec4 localNormal = vec4(octDecode(normal.xy), 0.0); ");
             } else {
                 src.push("vec4 localNormal = vec4(normal, 0.0); ");
@@ -383,7 +383,7 @@
         src.push("// Drawing vertex shader");
         src.push("attribute  vec3 position;");
 
-        if (cfg.compressedGeometry) {
+        if (cfg.quantizedGeometry) {
             src.push("uniform mat4 positionsDecodeMatrix;");
         }
 
@@ -433,7 +433,7 @@
                 }
             }
 
-            if (cfg.compressedGeometry) {
+            if (cfg.quantizedGeometry) {
                 src.push("vec3 octDecode(vec2 oct) {");
                 src.push("    vec3 v = vec3(oct.xy, 1.0 - abs(oct.x) - abs(oct.y));");
                 src.push("    if (v.z < 0.0) {");
@@ -448,7 +448,7 @@
             src.push("attribute vec2 uv;");
             src.push("varying vec2 vUV;");
 
-            if (cfg.compressedGeometry) {
+            if (cfg.quantizedGeometry) {
                 src.push("uniform mat3 uvDecodeMatrix;")
             }
         }
@@ -501,12 +501,12 @@
         src.push("vec4 localPosition = vec4(position, 1.0); ");
         src.push("vec4 worldPosition;");
 
-        if (cfg.compressedGeometry) {
+        if (cfg.quantizedGeometry) {
             src.push("localPosition = positionsDecodeMatrix * localPosition;");
         }
 
         if (cfg.normals) {
-            if (cfg.compressedGeometry) {
+            if (cfg.quantizedGeometry) {
                 src.push("vec4 localNormal = vec4(octDecode(normal.xy), 0.0); ");
             } else {
                 src.push("vec4 localNormal = vec4(normal, 0.0); ");
@@ -592,7 +592,7 @@
         }
 
         if (cfg.texturing) {
-            if (cfg.compressedGeometry) {
+            if (cfg.quantizedGeometry) {
                 src.push("vUV = (uvDecodeMatrix * vec3(uv, 1.0)).xy;");
             } else {
                 src.push("vUV = uv;");

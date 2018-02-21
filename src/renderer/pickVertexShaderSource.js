@@ -9,7 +9,7 @@
     xeogl.renderer.PickVertexShaderSource = function (gl, scene, object) {
         var cfg = {
             clipping: scene.clips.clips.length > 0,
-            compressedGeometry: !!object.geometry.compressed
+            quantizedGeometry: !!object.geometry.quantized
         };
         this.vertex = buildVertex(gl, cfg);
         this.fragment = buildFragment(gl, cfg, scene);
@@ -35,7 +35,7 @@
 
         src.push("varying vec4 vColor;");
 
-        if (cfg.compressedGeometry) {
+        if (cfg.quantizedGeometry) {
             src.push("uniform mat4 positionsDecodeMatrix;");
         }
 
@@ -43,7 +43,7 @@
 
         src.push("vec4 localPosition = vec4(position, 1.0); ");
 
-        if (cfg.compressedGeometry) {
+        if (cfg.quantizedGeometry) {
             src.push("localPosition = positionsDecodeMatrix * localPosition;");
         }
 

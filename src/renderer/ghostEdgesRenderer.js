@@ -175,11 +175,11 @@
             var vertexBufs = object.vertexBufs;
             if (vertexBufs.id !== this._lastVertexBufsId) {
                 if (vertexBufs.positionsBuf && this._aPosition) {
-                    this._aPosition.bindArrayBuffer(vertexBufs.positionsBuf, vertexBufs.compressed ? gl.UNSIGNED_SHORT : gl.FLOAT);
+                    this._aPosition.bindArrayBuffer(vertexBufs.positionsBuf, vertexBufs.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
                     frame.bindArray++;
                 }
                 if (vertexBufs.normalsBuf && this._aNormal) {
-                    this._aNormal.bindArrayBuffer(vertexBufs.normalsBuf, vertexBufs.compressed ? gl.BYTE : gl.FLOAT);
+                    this._aNormal.bindArrayBuffer(vertexBufs.normalsBuf, vertexBufs.quantized ? gl.BYTE : gl.FLOAT);
                     frame.bindArray++;
                 }
                 this._lastVertexBufsId = vertexBufs.id;
@@ -206,11 +206,11 @@
 
                 if (!geometry.combined) { // VBOs were bound by the VertexBufs logic above
                     if (this._aPosition) {
-                        this._aPosition.bindArrayBuffer(geometry.positionsBuf, geometry.compressed ? gl.UNSIGNED_SHORT : gl.FLOAT);
+                        this._aPosition.bindArrayBuffer(geometry.positionsBuf, geometry.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
                         frame.bindArray++;
                     }
                     if (this._aNormal) {
-                        this._aNormal.bindArrayBuffer(geometry.normalsBuf, geometry.compressed ? gl.BYTE : gl.FLOAT);
+                        this._aNormal.bindArrayBuffer(geometry.normalsBuf, geometry.quantized ? gl.BYTE : gl.FLOAT);
                         frame.bindArray++;
                     }
                 }
