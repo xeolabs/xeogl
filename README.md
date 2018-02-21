@@ -27,35 +27,11 @@ Find out more in the [Getting Started](https://github.com/xeolabs/xeogl/wiki/Get
  
 ## Building
  
- Install node (Ubuntu):
- 
- ````
- sudo apt-get install nodejs
- ````
- 
- Install Grunt task runner:
- 
- ````
- npm install grunt --save-dev
- npm install grunt-cli --save-dev
- ````
- 
- Install Grunt task plugins:
- 
- ````
- npm install grunt-contrib-concat --save-dev
- npm install grunt-contrib-uglify --save-dev
- npm install grunt-contrib-jshint --save-dev
- npm install grunt-contrib-qunit --save-dev
- npm install grunt-contrib-clean --save-dev
- npm install grunt-contrib-yuidoc --save-dev
- npm install grunt-contrib-copy --save-dev
+This project requires [Node.js](https://nodejs.org/en/download/) to be installed.
 
-
- ````
-
-Build all:
-
-````
-grunt
-````
+```
+git clone git@github.com:xeolabs/xeogl.git
+cd xeogl
+npm install
+npm run build 
+```
