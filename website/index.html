@@ -253,6 +253,8 @@
                             <li><a href="https://www.khronos.org/gltf">glTF</a> import,</li>
                             <li><a href="http://xeogl.org/examples/#materials_metallic_fireHydrant">physically-based
                                 rendering</a></li>
+                            <li>geometry compression</li>
+                            <li>built-in emphasis effects for CAD visualization</li>
                             <li>easy to use, with defaults for everything,</li>
                             <li>open source (<a href="https://github.com/xeolabs/xeogl/blob/master/MIT-LICENSE">MIT</a>).
                             </li>
@@ -334,7 +336,7 @@ var entity = new xeogl.Entity({
                     <div class="col-md-6">
                         <h2>Editing</h2>
 
-                        <p>You can edit everything in your scene at runtime. Create and destroy components, link
+                        <p>You can edit most things in your scene at runtime. Create and destroy components, link
                             or unlink
                             them, update their properties etc.<br><br>Let's add <a
                                     href="http://xeogl.org/docs/classes/Rotate.html" target="_parent">rotation</a> and
@@ -357,15 +359,9 @@ entity.geometry.tube *= 2.0; </pre>
 
                         <h2>Animating</h2>
 
-                        <p>Animate scenes by updating properties on components. Virtually everything in xeogl
-                            fires change events that you can subscribe to.</p>
+                        <p>Animate scenes by updating properties on components:</p>
 
-                        <pre class="prettyprint lang-javascript">// Listen for updates to the rotation angle
-entity.transform.on("angle", function(value) {
-    console.log("Rotation angle is now: " + value);
-});
-
-// Update the rotation angle, which fires our listener
+                        <pre class="prettyprint lang-javascript">// Update the rotation angle
 entity.transform.angle = 90.0;</pre>
                         <br>
 

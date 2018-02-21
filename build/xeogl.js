@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2018-02-20
+ * Built on 2018-02-21
  *
  * MIT License
  * Copyright 2018, Lindsay Kay
@@ -5177,10 +5177,10 @@ xeogl.utils.Map = function (items, baseId) {
      *
      * @private
      */
-    math.buildPickTriangles = function (positions, indices, compressed) {
+    math.buildPickTriangles = function (positions, indices, quantized) {
 
         var numIndices = indices.length;
-        var pickPositions = compressed ? new Uint16Array(numIndices * 30) : new Float32Array(numIndices * 30); // FIXME: Why do we need to extend size like this to make large meshes pickable?
+        var pickPositions = quantized ? new Uint16Array(numIndices * 30) : new Float32Array(numIndices * 30); // FIXME: Why do we need to extend size like this to make large meshes pickable?
         var pickColors = new Uint8Array(numIndices * 40);
         var primIndex = 0;
         var vi;// Positions array index
@@ -8502,15 +8502,15 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             var vertexBufs = object.vertexBufs;
             if (vertexBufs.id !== this._lastVertexBufsId) {
                 if (vertexBufs.positionsBuf && this._aPosition) {
-                    this._aPosition.bindArrayBuffer(vertexBufs.positionsBuf, vertexBufs.compressed ? gl.UNSIGNED_SHORT : gl.FLOAT);
+                    this._aPosition.bindArrayBuffer(vertexBufs.positionsBuf, vertexBufs.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
                     frame.bindArray++;
                 }
                 if (vertexBufs.normalsBuf && this._aNormal) {
-                    this._aNormal.bindArrayBuffer(vertexBufs.normalsBuf, vertexBufs.compressed ? gl.BYTE : gl.FLOAT);
+                    this._aNormal.bindArrayBuffer(vertexBufs.normalsBuf, vertexBufs.quantized ? gl.BYTE : gl.FLOAT);
                     frame.bindArray++;
                 }
                 if (vertexBufs.uvBuf && this._aUV) {
-                    this._aUV.bindArrayBuffer(vertexBufs.uvBuf, geometry.compressed ? gl.UNSIGNED_SHORT : gl.FLOAT);
+                    this._aUV.bindArrayBuffer(vertexBufs.uvBuf, geometry.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
                     frame.bindArray++;
                 }
                 if (vertexBufs.colorsBuf && this._aColor) {
@@ -8544,15 +8544,15 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 }
             } else {
                 if (this._aPosition) {
-                    this._aPosition.bindArrayBuffer(geometry.positionsBuf, geometry.compressed ? gl.UNSIGNED_SHORT : gl.FLOAT);
+                    this._aPosition.bindArrayBuffer(geometry.positionsBuf, geometry.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
                     frame.bindArray++;
                 }
                 if (this._aNormal) {
-                    this._aNormal.bindArrayBuffer(geometry.normalsBuf, geometry.compressed ? gl.BYTE : gl.FLOAT);
+                    this._aNormal.bindArrayBuffer(geometry.normalsBuf, geometry.quantized ? gl.BYTE : gl.FLOAT);
                     frame.bindArray++;
                 }
                 if (this._aUV) {
-                    this._aUV.bindArrayBuffer(geometry.uvBuf, geometry.compressed ? gl.UNSIGNED_SHORT : gl.FLOAT);
+                    this._aUV.bindArrayBuffer(geometry.uvBuf, geometry.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
                     frame.bindArray++;
                 }
                 if (this._aColor) {
@@ -8617,7 +8617,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             specularMaterial: (object.material.type === "SpecularMaterial"),
             reflection: hasReflection(scene),
             receiveShadow: receivesShadow(scene, object),
-            compressedGeometry: !!object.geometry.compressed,
+            quantizedGeometry: !!object.geometry.quantized,
             gammaInput: scene.gammaInput, // If set, then it expects that all textures and colors are premultiplied gamma. Default is false.
             gammaOutput: scene.gammaOutput // If set, then it expects that all textures and colors need to be outputted in premultiplied gamma. Default is false.
         };
@@ -8719,7 +8719,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         src.push("uniform mat4 projMatrix;");
         src.push("uniform vec4 colorize;");
 
-        if (cfg.compressedGeometry) {
+        if (cfg.quantizedGeometry) {
             src.push("uniform mat4 positionsDecodeMatrix;");
         }
 
@@ -8757,7 +8757,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 }
             }
 
-            if (cfg.compressedGeometry) {
+            if (cfg.quantizedGeometry) {
                 src.push("vec3 octDecode(vec2 oct) {");
                 src.push("    vec3 v = vec3(oct.xy, 1.0 - abs(oct.x) - abs(oct.y));");
                 src.push("    if (v.z < 0.0) {");
@@ -8795,12 +8795,12 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         src.push("vec4 localPosition = vec4(position, 1.0); ");
         src.push("vec4 worldPosition;");
 
-        if (cfg.compressedGeometry) {
+        if (cfg.quantizedGeometry) {
             src.push("localPosition = positionsDecodeMatrix * localPosition;");
         }
 
         if (cfg.normals) {
-            if (cfg.compressedGeometry) {
+            if (cfg.quantizedGeometry) {
                 src.push("vec4 localNormal = vec4(octDecode(normal.xy), 0.0); ");
             } else {
                 src.push("vec4 localNormal = vec4(normal, 0.0); ");
@@ -8981,7 +8981,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         src.push("// Drawing vertex shader");
         src.push("attribute  vec3 position;");
 
-        if (cfg.compressedGeometry) {
+        if (cfg.quantizedGeometry) {
             src.push("uniform mat4 positionsDecodeMatrix;");
         }
 
@@ -9031,7 +9031,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 }
             }
 
-            if (cfg.compressedGeometry) {
+            if (cfg.quantizedGeometry) {
                 src.push("vec3 octDecode(vec2 oct) {");
                 src.push("    vec3 v = vec3(oct.xy, 1.0 - abs(oct.x) - abs(oct.y));");
                 src.push("    if (v.z < 0.0) {");
@@ -9046,7 +9046,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             src.push("attribute vec2 uv;");
             src.push("varying vec2 vUV;");
 
-            if (cfg.compressedGeometry) {
+            if (cfg.quantizedGeometry) {
                 src.push("uniform mat3 uvDecodeMatrix;")
             }
         }
@@ -9099,12 +9099,12 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         src.push("vec4 localPosition = vec4(position, 1.0); ");
         src.push("vec4 worldPosition;");
 
-        if (cfg.compressedGeometry) {
+        if (cfg.quantizedGeometry) {
             src.push("localPosition = positionsDecodeMatrix * localPosition;");
         }
 
         if (cfg.normals) {
-            if (cfg.compressedGeometry) {
+            if (cfg.quantizedGeometry) {
                 src.push("vec4 localNormal = vec4(octDecode(normal.xy), 0.0); ");
             } else {
                 src.push("vec4 localNormal = vec4(normal, 0.0); ");
@@ -9190,7 +9190,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         }
 
         if (cfg.texturing) {
-            if (cfg.compressedGeometry) {
+            if (cfg.quantizedGeometry) {
                 src.push("vUV = (uvDecodeMatrix * vec3(uv, 1.0)).xy;");
             } else {
                 src.push("vUV = uv;");
@@ -10484,11 +10484,11 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             var vertexBufs = object.vertexBufs;
             if (vertexBufs.id !== this._lastVertexBufsId) {
                 if (vertexBufs.positionsBuf && this._aPosition) {
-                    this._aPosition.bindArrayBuffer(vertexBufs.positionsBuf, vertexBufs.compressed ? gl.UNSIGNED_SHORT : gl.FLOAT);
+                    this._aPosition.bindArrayBuffer(vertexBufs.positionsBuf, vertexBufs.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
                     frame.bindArray++;
                 }
                 if (vertexBufs.normalsBuf && this._aNormal) {
-                    this._aNormal.bindArrayBuffer(vertexBufs.normalsBuf, vertexBufs.compressed ? gl.BYTE : gl.FLOAT);
+                    this._aNormal.bindArrayBuffer(vertexBufs.normalsBuf, vertexBufs.quantized ? gl.BYTE : gl.FLOAT);
                     frame.bindArray++;
                 }
                 this._lastVertexBufsId = vertexBufs.id;
@@ -10514,11 +10514,11 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 }
             } else {
                 if (this._aPosition) {
-                    this._aPosition.bindArrayBuffer(geometry.positionsBuf, geometry.compressed ? gl.UNSIGNED_SHORT : gl.FLOAT);
+                    this._aPosition.bindArrayBuffer(geometry.positionsBuf, geometry.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
                     frame.bindArray++;
                 }
                 if (this._aNormal) {
-                    this._aNormal.bindArrayBuffer(geometry.normalsBuf, geometry.compressed ? gl.BYTE : gl.FLOAT);
+                    this._aNormal.bindArrayBuffer(geometry.normalsBuf, geometry.quantized ? gl.BYTE : gl.FLOAT);
                     frame.bindArray++;
                 }
                 if (geometry.indicesBuf) {
@@ -10566,7 +10566,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         var cfg = {
             normals: hasNormals(object),
             clipping: scene.clips.clips.length > 0,
-            compressedGeometry: !!object.geometry.compressed
+            quantizedGeometry: !!object.geometry.quantized
         };
         this.vertex = buildVertex(gl, cfg, object);
         this.fragment = buildFragment(gl, cfg, scene);
@@ -10596,7 +10596,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
         src.push("uniform float width;");
 
-        if (cfg.compressedGeometry) {
+        if (cfg.quantizedGeometry) {
             src.push("uniform mat4 positionsDecodeMatrix;");
         }
 
@@ -10606,7 +10606,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
         if (cfg.normals) {
             src.push("attribute vec3 normal;");
-            if (cfg.compressedGeometry) {
+            if (cfg.quantizedGeometry) {
                 src.push("vec3 octDecode(vec2 oct) {");
                 src.push("    vec3 v = vec3(oct.xy, 1.0 - abs(oct.x) - abs(oct.y));");
                 src.push("    if (v.z < 0.0) {");
@@ -10638,12 +10638,12 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         src.push("vec4 localPosition = vec4(position, 1.0); ");
         src.push("vec4 worldPosition;");
 
-        if (cfg.compressedGeometry) {
+        if (cfg.quantizedGeometry) {
             src.push("localPosition = positionsDecodeMatrix * localPosition;");
         }
 
         if (cfg.normals) {
-            if (cfg.compressedGeometry) {
+            if (cfg.quantizedGeometry) {
                 src.push("vec3 localNormal = octDecode(normal.xy); ");
             } else {
                 src.push("vec3 localNormal = normal; ");
@@ -10893,7 +10893,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             var vertexBufs = object.vertexBufs;
             if (vertexBufs.id !== this._lastVertexBufsId) {
                 if (vertexBufs.positionsBuf && this._aPosition) {
-                    this._aPosition.bindArrayBuffer(vertexBufs.positionsBuf, vertexBufs.compressed ? gl.UNSIGNED_SHORT : gl.FLOAT);
+                    this._aPosition.bindArrayBuffer(vertexBufs.positionsBuf, vertexBufs.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
                     frame.bindArray++;
                 }
                 this._lastVertexBufsId = vertexBufs.id;
@@ -10921,7 +10921,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 }
             } else {
                 if (this._aPosition) {
-                    this._aPosition.bindArrayBuffer(geometry.positionsBuf, geometry.compressed ? gl.UNSIGNED_SHORT : gl.FLOAT);
+                    this._aPosition.bindArrayBuffer(geometry.positionsBuf, geometry.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
                     frame.bindArray++;
                 }
                 if (geometry.indicesBuf) {
@@ -10973,7 +10973,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
     xeogl.renderer.PickObjectShaderSource = function (gl, scene, object) {
         var cfg = {
             clipping: scene.clips.clips.length > 0,
-            compressedGeometry: !!object.geometry.compressed
+            quantizedGeometry: !!object.geometry.quantized
         };
         this.vertex = buildVertex(gl, cfg, object);
         this.fragment = buildFragment(gl, cfg, scene);
@@ -10993,7 +10993,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
         src.push("varying vec4 vViewPosition;");
 
-        if (cfg.compressedGeometry) {
+        if (cfg.quantizedGeometry) {
             src.push("uniform mat4 positionsDecodeMatrix;");
         }
 
@@ -11021,7 +11021,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         src.push("void main(void) {");
 
         src.push("vec4 localPosition = vec4(position, 1.0); ");
-        if (cfg.compressedGeometry) {
+        if (cfg.quantizedGeometry) {
             src.push("localPosition = positionsDecodeMatrix * localPosition;");
         }
 
@@ -11234,7 +11234,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
         if (this._uPositionsDecodeMatrix) {
             gl.uniformMatrix4fv(this._uPositionsDecodeMatrix, false, geometry.positionsDecodeMatrix);
-            this._aPosition.bindArrayBuffer(positions, geometry.compressed ? gl.UNSIGNED_SHORT : gl.FLOAT);
+            this._aPosition.bindArrayBuffer(positions, geometry.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
         } else {
             this._aPosition.bindArrayBuffer(positions);
         }
@@ -11261,7 +11261,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
     xeogl.renderer.PickTriangleShaderSource = function (gl, scene, object) {
         var cfg = {
             clipping: scene.clips.clips.length > 0,
-            compressedGeometry: !!object.geometry.compressed
+            quantizedGeometry: !!object.geometry.quantized
         };
         this.vertex = buildVertex(gl, cfg);
         this.fragment = buildFragment(gl, cfg, scene);
@@ -11287,7 +11287,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
         src.push("varying vec4 vColor;");
 
-        if (cfg.compressedGeometry) {
+        if (cfg.quantizedGeometry) {
             src.push("uniform mat4 positionsDecodeMatrix;");
         }
 
@@ -11295,7 +11295,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
         src.push("vec4 localPosition = vec4(position, 1.0); ");
 
-        if (cfg.compressedGeometry) {
+        if (cfg.quantizedGeometry) {
             src.push("localPosition = positionsDecodeMatrix * localPosition;");
         }
 
@@ -11541,7 +11541,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             var vertexBufs = object.vertexBufs;
             if (vertexBufs.id !== this._lastVertexBufsId) {
                 if (vertexBufs.positionsBuf && this._aPosition) {
-                    this._aPosition.bindArrayBuffer(vertexBufs.positionsBuf, vertexBufs.compressed ? gl.UNSIGNED_SHORT : gl.FLOAT);
+                    this._aPosition.bindArrayBuffer(vertexBufs.positionsBuf, vertexBufs.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
                     frame.bindArray++;
                 }
                 this._lastVertexBufsId = vertexBufs.id;
@@ -11561,7 +11561,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 }
             } else {
                 if (this._aPosition) {
-                    this._aPosition.bindArrayBuffer(geometry.positionsBuf, geometry.compressed ? gl.UNSIGNED_SHORT : gl.FLOAT);
+                    this._aPosition.bindArrayBuffer(geometry.positionsBuf, geometry.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
                     frame.bindArray++;
                 }
                 if (geometry.indicesBuf) {
@@ -11604,7 +11604,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
     xeogl.renderer.ShadowShaderSource = function (gl, scene, object) {
         var cfg = {
             clipping: scene.clips.clips.length > 0,
-            compressedGeometry: !!object.geometry.compressed
+            quantizedGeometry: !!object.geometry.quantized
         };
         this.vertex = buildVertex(gl, cfg, scene, object);
         this.fragment = buildFragment(gl, cfg, scene, object);
@@ -11636,7 +11636,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         src.push("uniform mat4 viewMatrix;");
         src.push("uniform mat4 projMatrix;");
 
-        if (cfg.compressedGeometry) {
+        if (cfg.quantizedGeometry) {
             src.push("uniform mat4 positionsDecodeMatrix;");
         }
 
@@ -11669,7 +11669,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         src.push("vec4 localPosition = vec4(position, 1.0); ");
         src.push("vec4 worldPosition;");
 
-        if (cfg.compressedGeometry) {
+        if (cfg.quantizedGeometry) {
             src.push("localPosition = positionsDecodeMatrix * localPosition;");
         }
 
@@ -12023,11 +12023,11 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             var vertexBufs = object.vertexBufs;
             if (vertexBufs.id !== this._lastVertexBufsId) {
                 if (vertexBufs.positionsBuf && this._aPosition) {
-                    this._aPosition.bindArrayBuffer(vertexBufs.positionsBuf, vertexBufs.compressed ? gl.UNSIGNED_SHORT : gl.FLOAT);
+                    this._aPosition.bindArrayBuffer(vertexBufs.positionsBuf, vertexBufs.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
                     frame.bindArray++;
                 }
                 if (vertexBufs.normalsBuf && this._aNormal) {
-                    this._aNormal.bindArrayBuffer(vertexBufs.normalsBuf, vertexBufs.compressed ? gl.BYTE : gl.FLOAT);
+                    this._aNormal.bindArrayBuffer(vertexBufs.normalsBuf, vertexBufs.quantized ? gl.BYTE : gl.FLOAT);
                     frame.bindArray++;
                 }
                 this._lastVertexBufsId = vertexBufs.id;
@@ -12053,11 +12053,11 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 }
             } else {
                 if (this._aPosition) {
-                    this._aPosition.bindArrayBuffer(geometry.positionsBuf, geometry.compressed ? gl.UNSIGNED_SHORT : gl.FLOAT);
+                    this._aPosition.bindArrayBuffer(geometry.positionsBuf, geometry.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
                     frame.bindArray++;
                 }
                 if (this._aNormal) {
-                    this._aNormal.bindArrayBuffer(geometry.normalsBuf, geometry.compressed ? gl.BYTE : gl.FLOAT);
+                    this._aNormal.bindArrayBuffer(geometry.normalsBuf, geometry.quantized ? gl.BYTE : gl.FLOAT);
                     frame.bindArray++;
                 }
                 if (geometry.indicesBuf) {
@@ -12105,7 +12105,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         var cfg = {
             normals: hasNormals(object),
             clipping: scene.clips.clips.length > 0,
-            compressedGeometry: !!object.geometry.compressed,
+            quantizedGeometry: !!object.geometry.quantized,
             gammaOutput: scene.gammaOutput
         };
         this.vertex = buildVertex(gl, cfg, scene, object);
@@ -12152,7 +12152,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         src.push("uniform mat4 projMatrix;");
         src.push("uniform vec4 colorize;");
 
-        if (cfg.compressedGeometry) {
+        if (cfg.quantizedGeometry) {
             src.push("uniform mat4 positionsDecodeMatrix;");
         }
 
@@ -12189,7 +12189,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 }
             }
 
-            if (cfg.compressedGeometry) {
+            if (cfg.quantizedGeometry) {
                 src.push("vec3 octDecode(vec2 oct) {");
                 src.push("    vec3 v = vec3(oct.xy, 1.0 - abs(oct.x) - abs(oct.y));");
                 src.push("    if (v.z < 0.0) {");
@@ -12223,12 +12223,12 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         src.push("vec4 localPosition = vec4(position, 1.0); ");
         src.push("vec4 worldPosition;");
 
-        if (cfg.compressedGeometry) {
+        if (cfg.quantizedGeometry) {
             src.push("localPosition = positionsDecodeMatrix * localPosition;");
         }
 
         if (cfg.normals) {
-            if (cfg.compressedGeometry) {
+            if (cfg.quantizedGeometry) {
                 src.push("vec4 localNormal = vec4(octDecode(normal.xy), 0.0); ");
             } else {
                 src.push("vec4 localNormal = vec4(normal, 0.0); ");
@@ -12555,11 +12555,11 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             var vertexBufs = object.vertexBufs;
             if (vertexBufs.id !== this._lastVertexBufsId) {
                 if (vertexBufs.positionsBuf && this._aPosition) {
-                    this._aPosition.bindArrayBuffer(vertexBufs.positionsBuf, vertexBufs.compressed ? gl.UNSIGNED_SHORT : gl.FLOAT);
+                    this._aPosition.bindArrayBuffer(vertexBufs.positionsBuf, vertexBufs.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
                     frame.bindArray++;
                 }
                 if (vertexBufs.normalsBuf && this._aNormal) {
-                    this._aNormal.bindArrayBuffer(vertexBufs.normalsBuf, vertexBufs.compressed ? gl.BYTE : gl.FLOAT);
+                    this._aNormal.bindArrayBuffer(vertexBufs.normalsBuf, vertexBufs.quantized ? gl.BYTE : gl.FLOAT);
                     frame.bindArray++;
                 }
                 this._lastVertexBufsId = vertexBufs.id;
@@ -12582,12 +12582,12 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             } else {
 
                 if (this._aPosition) {
-                    this._aPosition.bindArrayBuffer(geometry.positionsBuf, geometry.compressed ? gl.UNSIGNED_SHORT : gl.FLOAT);
+                    this._aPosition.bindArrayBuffer(geometry.positionsBuf, geometry.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
                     frame.bindArray++;
                 }
 
                 if (this._aNormal) {
-                    this._aNormal.bindArrayBuffer(geometry.normalsBuf, geometry.compressed ? gl.BYTE : gl.FLOAT);
+                    this._aNormal.bindArrayBuffer(geometry.normalsBuf, geometry.quantized ? gl.BYTE : gl.FLOAT);
                     frame.bindArray++;
                 }
 
@@ -12636,7 +12636,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         var cfg = {
             normals: hasNormals(object),
             clipping: scene.clips.clips.length > 0,
-            compressedGeometry: !!object.geometry.compressed,
+            quantizedGeometry: !!object.geometry.quantized,
             gammaOutput: scene.gammaOutput
         };
         this.vertex = buildVertex(gl, cfg, scene, object);
@@ -12667,7 +12667,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         src.push("uniform vec4 vertexColor;");
         src.push("uniform float vertexSize;");
 
-        if (cfg.compressedGeometry) {
+        if (cfg.quantizedGeometry) {
             src.push("uniform mat4 positionsDecodeMatrix;");
         }
 
@@ -12677,7 +12677,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
         if (cfg.normals) {
             src.push("attribute vec3 normal;");
-            if (cfg.compressedGeometry) {
+            if (cfg.quantizedGeometry) {
                 src.push("vec3 octDecode(vec2 oct) {");
                 src.push("    vec3 v = vec3(oct.xy, 1.0 - abs(oct.x) - abs(oct.y));");
                 src.push("    if (v.z < 0.0) {");
@@ -12711,12 +12711,12 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         src.push("vec4 localPosition = vec4(position, 1.0); ");
         src.push("vec4 worldPosition;");
 
-        if (cfg.compressedGeometry) {
+        if (cfg.quantizedGeometry) {
             src.push("localPosition = positionsDecodeMatrix * localPosition;");
         }
 
         if (cfg.normals) {
-            if (cfg.compressedGeometry) {
+            if (cfg.quantizedGeometry) {
                 src.push("vec3 localNormal = octDecode(normal.xy); ");
             } else {
                 src.push("vec3 localNormal = normal; ");
@@ -12991,11 +12991,11 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             var vertexBufs = object.vertexBufs;
             if (vertexBufs.id !== this._lastVertexBufsId) {
                 if (vertexBufs.positionsBuf && this._aPosition) {
-                    this._aPosition.bindArrayBuffer(vertexBufs.positionsBuf, vertexBufs.compressed ? gl.UNSIGNED_SHORT : gl.FLOAT);
+                    this._aPosition.bindArrayBuffer(vertexBufs.positionsBuf, vertexBufs.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
                     frame.bindArray++;
                 }
                 if (vertexBufs.normalsBuf && this._aNormal) {
-                    this._aNormal.bindArrayBuffer(vertexBufs.normalsBuf, vertexBufs.compressed ? gl.BYTE : gl.FLOAT);
+                    this._aNormal.bindArrayBuffer(vertexBufs.normalsBuf, vertexBufs.quantized ? gl.BYTE : gl.FLOAT);
                     frame.bindArray++;
                 }
                 this._lastVertexBufsId = vertexBufs.id;
@@ -13022,11 +13022,11 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
                 if (!geometry.combined) { // VBOs were bound by the VertexBufs logic above
                     if (this._aPosition) {
-                        this._aPosition.bindArrayBuffer(geometry.positionsBuf, geometry.compressed ? gl.UNSIGNED_SHORT : gl.FLOAT);
+                        this._aPosition.bindArrayBuffer(geometry.positionsBuf, geometry.quantized ? gl.UNSIGNED_SHORT : gl.FLOAT);
                         frame.bindArray++;
                     }
                     if (this._aNormal) {
-                        this._aNormal.bindArrayBuffer(geometry.normalsBuf, geometry.compressed ? gl.BYTE : gl.FLOAT);
+                        this._aNormal.bindArrayBuffer(geometry.normalsBuf, geometry.quantized ? gl.BYTE : gl.FLOAT);
                         frame.bindArray++;
                     }
                 }
@@ -13054,7 +13054,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         var cfg = {
             normals: hasNormals(object),
             clipping: scene.clips.clips.length > 0,
-            compressedGeometry: !!object.geometry.compressed,
+            quantizedGeometry: !!object.geometry.quantized,
             gammaOutput: scene.gammaOutput
         };
         this.vertex =  buildVertex(gl, cfg, scene, object);
@@ -13085,7 +13085,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
         src.push("uniform vec4 edgeColor;");
 
-        if (cfg.compressedGeometry) {
+        if (cfg.quantizedGeometry) {
             src.push("uniform mat4 positionsDecodeMatrix;");
         }
 
@@ -13095,7 +13095,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
         if (cfg.normals) {
             src.push("attribute vec3 normal;");
-            if (cfg.compressedGeometry) {
+            if (cfg.quantizedGeometry) {
                 src.push("vec3 octDecode(vec2 oct) {");
                 src.push("    vec3 v = vec3(oct.xy, 1.0 - abs(oct.x) - abs(oct.y));");
                 src.push("    if (v.z < 0.0) {");
@@ -13129,12 +13129,12 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         src.push("vec4 localPosition = vec4(position, 1.0); ");
         src.push("vec4 worldPosition;");
 
-        if (cfg.compressedGeometry) {
+        if (cfg.quantizedGeometry) {
             src.push("localPosition = positionsDecodeMatrix * localPosition;");
         }
 
         if (cfg.normals) {
-            if (cfg.compressedGeometry) {
+            if (cfg.quantizedGeometry) {
                 src.push("vec3 localNormal = octDecode(normal.xy); ");
             } else {
                 src.push("vec3 localNormal = normal; ");
@@ -13230,7 +13230,15 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 })();;/**
  The **Component** class is the base class for all xeogl components.
 
- ## Component IDs
+ ## Usage
+
+ * [Component IDs](#component-ids)
+ * [Metadata](#metadata)
+ * [Logging](#logging)
+ * [Destruction](#destruction)
+ * [Creating custom Components](#creating-custom-components)
+
+ ### Component IDs
 
  Every Component has an ID that's unique within the parent {{#crossLink "Scene"}}{{/crossLink}}. xeogl generates
  the IDs automatically by default, however you can also specify them yourself. In the example below, we're creating a
@@ -13267,48 +13275,47 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
  // Find the Material
  var theMaterial = theScene.components["myMaterial"];
+
+ // Find all PhongMaterials in the Scene
+ var phongMaterials = theScene.types["xeogl.PhongMaterial"];
+
+ // Find our Material within the PhongMaterials
+ var theMaterial = phongMaterials["myMaterial"];
  ````
 
- ## Properties
+ ### Component inheritance
 
- Almost every property on a xeogl Component fires a change event when you update it. For example, we can subscribe
- to the {{#crossLink "PhongMaterial/diffuse:event"}}{{/crossLink}} event that a
- {{#crossLink "Material"}}{{/crossLink}} fires when its {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}}
- property is updated, like so:
+
+ TODO
+
+ All xeogl components extend the Component base type. Each component
+
+ For example, if this component is a {{#crossLink "Rotate"}}{{/crossLink}}, which
+ extends {{#crossLink "Transform"}}{{/crossLink}}, which in turn extends {{#crossLink "Component"}}{{/crossLink}},
+ then this property will have the value:
+
+ ````json
+ ["xeogl.Component", "xeogl.Transform"]
+ ````
+
+ TODO
 
  ````javascript
- // Bind a change callback to a property
- var handle = material.on("diffuse", function(diffuse) {
-    console.log("Material diffuse color has changed to: [" + diffuse[0] + ", " + diffuse[1] + "," + diffuse[2] + "]");
-});
+ // Evaluates true:
+ var isComponent = theMaterial.isType("xeogl.Component");
 
- // Change the property value, which fires the callback
- material.diffuse = [ 0.0, 0.5, 0.5 ];
+ // Evaluates true:
+ var isMaterial = theMaterial.isType("xeogl.Material");
 
- // Unsubscribe from the property change event
- material.off(handle);
+ // Evaluates true:
+ var isPhongMaterial = theMaterial.isType("xeogl.PhongMaterial");
+
+ // Evaluates false:
+ var isMetallicMaterial = theMaterial.isType("xeogl.MetallicMaterial");
  ````
+ Note that the chain is ordered downwards in the hierarchy, ie. from super-class down towards sub-class.
 
- We can also subscribe to changes in the way components are attached to each other, since components are properties
- of other components. For example, we can subscribe to the '{{#crossLink "Entity/material:event"}}{{/crossLink}}' event that a
- {{#crossLink "Entity"}}Entity{{/crossLink}} fires when its {{#crossLink "Entity/material:property"}}{{/crossLink}}
- property is set to a different {{#crossLink "Material"}}Material{{/crossLink}}:
-
- ```` javascript
- // Bind a change callback to the Entity's Material
- entity1.on("material", function(material) {
-    console.log("Entity's Material has changed to: " + material.id);
- });
-
- // Now replace that Material with another
- entity1.material = new xeogl.PhongMaterial({
-    id: "myOtherMaterial",
-    diffuse: [ 0.3, 0.3, 0.6 ]
-    //..
- });
- ````
-
- ## Metadata
+ ### Metadata
 
  You can set optional **metadata** on your Components, which can be anything you like. These are intended
  to help manage your components within your application code or content pipeline. You could use metadata to attach
@@ -13319,9 +13326,9 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  var scene = new xeogl.Scene({
     id: "myScene",
     meta: {
-        title: "My awesome 3D scene",
-        author: "@xeolabs",
-        date: "February 13 2015"
+        title: "My bodacious 3D scene",
+        author: "@xeographics",
+        date: "February 30 2018"
     }
  });
 
@@ -13337,23 +13344,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  });
  ````
 
- As with all properties, you can subscribe and change the metadata like this:
-
- ````javascript
- // Subscribe to changes to the Material's metadata
- material.on("meta", function(value) {
-    console.log("Metadata changed: " + JSON.stringify(value));
- });
-
- // Change the Material's metadata, firing our change handler
- material.meta = {
-    description: "Bright red color with no textures",
-    version: "0.2",
-    foo: "baz"
- };
- ````
-
- ## Logging
+ ### Logging
 
  Components have methods to log ID-prefixed messages to the JavaScript console:
 
@@ -13371,7 +13362,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  [ERROR] myMaterial: Aw, snap!
  ````
 
- ## Destruction
+ ### Destruction
 
  Get notification of destruction directly on the Components:
 
@@ -13395,9 +13386,56 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  material.destroy();
  ````
 
- Other Components that are linked to it will fall back on a default of some sort. For example, any
- {{#crossLink "Entity"}}Entities{{/crossLink}} that were linked to our {{#crossLink "Material"}}{{/crossLink}}
- will then automatically link to the {{#crossLink "Scene"}}Scene's{{/crossLink}} default {{#crossLink "Scene/material:property"}}{{/crossLink}}.
+ ### Creating custom Components
+
+ Subclassing a Component to create a new ````xeogl.ColoredTorus```` type:
+
+ ````javascript
+ xeogl.ColoredTorus = xeogl.Component.extend({
+
+     type: "xeogl.ColoredTorus",
+
+     _init: function (cfg) { // Constructor
+
+         this._torus = new xeogl.Entity({
+             geometry: new xeogl.TorusGeometry({radius: 2, tube: .6}),
+             material: new xeogl.MetallicMaterial({
+                 baseColor: [1.0, 0.5, 0.5],
+                 roughness: 0.4,
+                 metallic: 0.1
+             })
+         });
+
+         this.color = cfg.color;
+     },
+
+     _props: {
+
+         // The color of this ColoredTorus.
+         color: {
+             set: function (color) {
+                 this._torus.material.baseColor = color;
+             },
+             get: function () {
+                 return this._torus.material.baseColor;
+             }
+         }
+     },
+
+     _destroy: function () {
+         this._torus.geometry.destroy();
+         this._torus.material.destroy();
+         this._torus.destroy();
+     }
+ });
+ ````
+
+ #### Examples
+
+ * [Custom component definition](../../examples/#extending_component_basic)
+ * [Custom component that fires events](../../examples/#extending_component_changeEvents)
+ * [Custom component that manages child components](../../examples/#extending_component_childCleanup)
+ * [Custom component that schedules asynch tasks](../../examples/#extending_component_update)
 
  @class Component
  @module xeogl
@@ -13541,9 +13579,6 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
         /**
          JavaScript class name for this Component.
-
-         This is used when <a href="Scene.html#savingAndLoading">loading Scenes from JSON</a>, and is included in the JSON
-         representation of this Component, so that this class may be instantiated when loading it from the JSON representation.
 
          For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
 
@@ -14277,6 +14312,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  * [Pick masking](#pick-masking)
  * [Controlling the viewport](#controlling-the-viewport)
  * [Controlling rendering](#controlling-rendering)
+ * [Gamma correction](#gamma-correction)
 
  ### Creating a Scene
 
@@ -14622,6 +14658,32 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
      }
  });
  ````
+
+ ### Gamma correction
+
+ Within its shaders, xeogl performs shading calculations in linear space.
+
+ By default, the Scene expects color textures (ie. {{#crossLink "PhongMaterial/diffuseMap:property"}}{{/crossLink}},
+ {{#crossLink "MetallicMaterial/baseColorMap:property"}}{{/crossLink}} and {{#crossLink "SpecularMaterial/diffuseMap:property"}}{{/crossLink}}) to
+ be in pre-multipled gamma space, so will convert those to linear space before they are used in shaders. Other textures are
+ always expected to be in linear space.
+
+ By default, the Scene will also gamma-correct its rendered output.
+
+ You can configure the Scene to expect all those color textures to be linear space, so that it does not gamma-correct them:
+
+ ````javascript
+ scene.gammaInput = false;
+ ````
+
+ You would still need to gamma-correct the output, though, if it's going straight to the canvas, so normally we would
+ leave that enabled:
+
+ ````javascript
+ scene.gammaOutput = true;
+ ````
+
+ See {{#crossLink "Texture"}}{{/crossLink}} for more information on texture encoding and gamma.
 
  @class Scene
  @module xeogl
@@ -15853,7 +15915,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                                 c[1] = positions[ic3 + 1];
                                 c[2] = positions[ic3 + 2];
 
-                                if (geometry.compressed) {
+                                if (geometry.quantized) {
 
                                     // Decompress vertex positions
 
@@ -15927,7 +15989,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
                                 if (normals) {
 
-                                    if (geometry.compressed) {
+                                    if (geometry.quantized) {
 
                                         // Decompress vertex normals
 
@@ -15977,7 +16039,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                                     uvc[0] = uvs[(ic * 2)];
                                     uvc[1] = uvs[(ic * 2) + 1];
 
-                                    if (geometry.compressed) {
+                                    if (geometry.quantized) {
 
                                         // Decompress vertex UVs
 
@@ -17833,12 +17895,10 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  ## Overview
 
  * Used to slice portions off objects, to create cross-section views or reveal interiors.
- * Is contained within {{#crossLink "Clips"}}{{/crossLink}} components, which are attached to {{#crossLink "Entity"}}Entities{{/crossLink}}.
- * Has a World-space position in {{#crossLink "Clip/pos:property"}}{{/crossLink}} and a orientation in {{#crossLink "Clip/dir:property"}}{{/crossLink}}.
+ * Is contained within a {{#crossLink "Clips"}}{{/crossLink}} belonging to its {{#crossLink "Scene"}}{{/crossLink}}.
+ * Has a World-space position in {{#crossLink "Clip/pos:property"}}{{/crossLink}} and orientation in {{#crossLink "Clip/dir:property"}}{{/crossLink}}.
  * Discards elements from the half-space in the direction of {{#crossLink "Clip/dir:property"}}{{/crossLink}}.
  * Can be be enabled or disabled via its {{#crossLink "Clip/active:property"}}{{/crossLink}} property.
-
- <img src="../../../assets/images/Clips.png"></img>
 
  ## Usage
 
@@ -17848,30 +17908,27 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  is a box, which will get two of its corners clipped off.
 
  ````javascript
- // Create a set of Clip planes
- clips = new xeogl.Clip({
-    clips: [
+ // Create a set of Clip planes in the default Scene
+ scene.clips.clips = [
 
-        // Clip plane on negative diagonal
-        new xeogl.Clip({
-            pos: [1.0, 1.0, 1.0],
-            dir: [-1.0, -1.0, -1.0],
-            active: true
-        }),
+     // Clip plane on negative diagonal
+     new xeogl.Clip({
+         pos: [1.0, 1.0, 1.0],
+         dir: [-1.0, -1.0, -1.0],
+         active: true
+     }),
 
-        // Clip plane on positive diagonal
-        new xeogl.Clip({
-            pos: [-1.0, -1.0, -1.0],
-            dir: [1.0, 1.0, 1.0],
-            active: true
-        })
-    ]
- });
+     // Clip plane on positive diagonal
+     new xeogl.Clip({
+         pos: [-1.0, -1.0, -1.0],
+         dir: [1.0, 1.0, 1.0],
+         active: true
+     })
+ ];
 
- // Create an Entity that's clipped by our Clip planes
+ // Create an Entity in the default Scene, that will be clipped by our Clip planes
  var entity = new xeogl.Entity({
-     geometry: new xeogl.BoxGeometry(),
-     clips: clips,
+     geometry: new xeogl.SphereGeometry(),
      clippable: true // Enable clipping (default)
  });
  ````
@@ -18026,7 +18083,8 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
     });
 })();
 ;/**
- A **Clips** applies a set of {{#crossLink "Clip"}}{{/crossLink}} planes to attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **Clips** applies a set of {{#crossLink "Clip"}}{{/crossLink}} planes to the
+ clippable {{#crossLink "Entity"}}Entities{{/crossLink}} within its {{#crossLink "Scene"}}{{/crossLink}}.
 
  See {{#crossLink "Clip"}}{{/crossLink}} for more info.
 
@@ -19665,22 +19723,35 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  */;/**
  A **Geometry** defines a mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- ## Compression
+ ## Usage
+
+ * [Geometry compression](#geometry-compression)
+ * [Geometry batching](#geometry-batching)
+
+ ### Geometry compression
 
  Geometries are automatically quantized to reduce memory and GPU bus usage. Usually, geometry attributes such as positions
  and normals are stored as 32-bit floating-point numbers. Quantization compresses those attributes to 16-bit integers
- represented on a scale between the minimum and maximum values. Decompression is then done on the GPU, via a simple matrix
- multiplication in the vertex shader.
+ represented on a scale between the minimum and maximum values. Decompression is then done on the GPU, via a simple
+ matrix multiplication in the vertex shader.
 
- A caveat: since each normal vector is oct-encoded into two 8-bit unsigned integers, this can lead to a loss of accuracy
- in normal vectors, which can affect any operation that relies on normal vectors being perfectly perpendicular to their
- vertices or faces. Until a more accurate compression is found for normals, you may need to disable compression for Geometry
- that needs such precision:
+ #### Disabling
+
+ Since each normal vector is oct-encoded into two 8-bit unsigned integers, this can cause them to lose precision, which
+ may affect the accuracy of any operations that rely on them being perfectly perpendicular to their surfaces. In such
+ cases, you may need to disable compression for your geometries and models:
 
  ````javascript
+ // Disable geometry compression when loading a Model
+ var model = new xeogl.GLTFModel({
+    src: "models/gltf/modern_office/scene.gltf",
+    quantizeGeometry: false // Default is true
+});
+
+ // Disable compression when creating a Geometry
  var entity = new xeogl.Entity({
     geometry: new xeogl.TeapotGeometry({
-        compressed: false // Default is true
+        quantized: false // Default is true
     }),
     material: new xeogl.PhongMaterial({
         diffuse: [0.2, 0.2, 1.0]
@@ -19688,11 +19759,34 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  });
  ````
 
- ## Batching
+ ### Geometry batching
 
- Geometries are automatically combined into the same vertex buffer objects (VBOs) so that we reduce the number of VBO binds
- that WebGL needs to do when rendering each frame. Since VBO binds are expensive in terms of performance, this can really
- speed things up when rendering many objects.
+ Geometries are automatically combined into the same vertex buffer objects (VBOs) so that we reduce the number of VBO
+ binds done by WebGL on each frame. VBO binds are expensive, so this really makes a difference when we have large numbers
+ of Entities that share similar Materials (as is often the case in CAD rendering).
+
+ #### Disabling
+
+ Since combined VBOs need to be rebuilt whenever we destroy a Geometry, we can disable this optimization for individual
+ Models and Geometries when we know that we'll be continually creating and destroying them.
+
+ ````javascript
+ // Disable VBO combination for a GLTFModel
+ var model = new xeogl.GLTFModel({
+    src: "models/gltf/modern_office/scene.gltf",
+    combinedGeometry: false // Default is true
+});
+
+ // Disable VBO combination for an individual Geometry
+ var entity = new xeogl.Entity({
+    geometry: new xeogl.TeapotGeometry({
+        combined: false // Default is true
+    }),
+    material: new xeogl.PhongMaterial({
+        diffuse: [0.2, 0.2, 1.0]
+    })
+ });
+ ````
 
  @class Geometry
  @module xeogl
@@ -19712,7 +19806,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  @param [cfg.indices] {Array of Number} Indices array.
  @param [cfg.autoNormals=false] {Boolean} Set true to automatically generate normal vectors from the positions and
  indices, if those are supplied.
- @param [cfg.compressed=true] {Boolean} Stores positions, colors, normals and UVs in quantized and oct-encoded formats
+ @param [cfg.quantized=true] {Boolean} Stores positions, colors, normals and UVs in quantized and oct-encoded formats
  for reduced memory footprint and GPU bus usage.
  @param [cfg.combined=false] {Boolean} Combines positions, colors, normals and UVs into the same WebGL vertex buffers
  with other Geometries, in order to reduce the number of buffer binds performed per frame.
@@ -19734,7 +19828,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                                     hasNormals,
                                     hasColors,
                                     hasUVs,
-                                    compressed) {
+                                    quantized) {
 
         const CHUNK_LEN = bigIndicesSupported ? (Number.MAX_SAFE_INTEGER / 6) : (64000 * 4); // RGBA is largest item
 
@@ -19877,7 +19971,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                             normalsBuf: null,
                             uvBuf: null,
                             colorsBuf: null,
-                            compressed: compressed
+                            quantized: quantized
                         });
                         indicesOffset = 0;
                     }
@@ -19950,13 +20044,13 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             var gl = scene.canvas.gl;
             var array;
             if (hasPositions) {
-                array = compressed ? new Uint16Array(positions) : new Float32Array(positions);
+                array = quantized ? new Uint16Array(positions) : new Float32Array(positions);
                 vertexBufs.positionsBuf = new xeogl.renderer.ArrayBuffer(gl, gl.ARRAY_BUFFER, array, array.length, 3, gl.STATIC_DRAW);
                 memoryStats.positions += vertexBufs.positionsBuf.numItems;
                 positions = [];
             }
             if (hasNormals) {
-                array = compressed ? new Int8Array(normals) : new Float32Array(normals);
+                array = quantized ? new Int8Array(normals) : new Float32Array(normals);
                 vertexBufs.normalsBuf = new xeogl.renderer.ArrayBuffer(gl, gl.ARRAY_BUFFER, array, array.length, 3, gl.STATIC_DRAW);
                 memoryStats.normals += vertexBufs.normalsBuf.numItems;
                 normals = [];
@@ -19968,7 +20062,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 colors = [];
             }
             if (hasUVs) {
-                array = compressed ? new Uint16Array(uv) : new Float32Array(uv);
+                array = quantized ? new Uint16Array(uv) : new Float32Array(uv);
                 vertexBufs.uvBuf = new xeogl.renderer.ArrayBuffer(gl, gl.ARRAY_BUFFER, array, array.length, 2, gl.STATIC_DRAW);
                 memoryStats.uvs += vertexBufs.uvBuf.numItems;
                 uv = [];
@@ -19978,13 +20072,13 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
     function getSceneVertexBufs(scene, geometry) {
         var hasPositions = !!geometry.positions;
-        var compressed = !!geometry.compressed;
+        var quantized = !!geometry.quantized;
         var hasNormals = !!geometry.normals;
         var hasColors = !!geometry.colors;
         var hasUVs = !!geometry.uv;
         var hash = ([
             hasPositions ? "p" : "",
-            compressed ? "c" : "",
+            quantized ? "c" : "",
             hasNormals ? "n" : "",
             hasColors ? "c" : "",
             hasUVs ? "u" : ""
@@ -20000,7 +20094,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 hasNormals,
                 hasColors,
                 hasUVs,
-                compressed);
+                quantized);
             scene._sceneVertexBufs[hash] = sceneVertexBufs;
         }
         return sceneVertexBufs;
@@ -20017,20 +20111,20 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             this._state = new xeogl.renderer.Geometry({
 
                 combined: !!cfg.combined,
-                compressed: !!cfg.compressed,
+                quantized: !!cfg.quantized,
                 autoNormals: !!cfg.autoNormals,
 
                 primitive: null, // WebGL enum
                 primitiveName: null, // String
 
-                positions: null,    // Uint16Array when compressed == true, else Float32Array
-                normals: null,      // Uint8Array when compressed == true, else Float32Array
+                positions: null,    // Uint16Array when quantized == true, else Float32Array
+                normals: null,      // Uint8Array when quantized == true, else Float32Array
                 colors: null,
-                uv: null,           // Uint8Array when compressed == true, else Float32Array
+                uv: null,           // Uint8Array when quantized == true, else Float32Array
                 indices: null,
 
-                positionsDecodeMatrix: null, // Set when compressed == true
-                uvDecodeMatrix: null, // Set when compressed == true
+                positionsDecodeMatrix: null, // Set when quantized == true
+                uvDecodeMatrix: null, // Set when quantized == true
 
                 positionsBuf: null,
                 normalsBuf: null,
@@ -20140,11 +20234,11 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             }
 
             if (cfg.positions) {
-                if (this._state.compressed) {
+                if (this._state.quantized) {
                     var bounds = getBounds(cfg.positions, 3);
-                    var compressed = quantizeVec3(cfg.positions, bounds.min, bounds.max);
-                    state.positions = compressed.quantized;
-                    state.positionsDecodeMatrix = compressed.decode;
+                    var quantized = quantizeVec3(cfg.positions, bounds.min, bounds.max);
+                    state.positions = quantized.quantized;
+                    state.positionsDecodeMatrix = quantized.decode;
                 } else {
                     state.positions = cfg.positions.constructor === Float32Array ? cfg.positions : new Float32Array(cfg.positions);
                 }
@@ -20153,17 +20247,17 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 state.colors = cfg.colors.constructor === Float32Array ? cfg.colors : new Float32Array(cfg.colors);
             }
             if (cfg.uv) {
-                if (this._state.compressed) {
+                if (this._state.quantized) {
                     var bounds = getBounds(cfg.uv, 2);
-                    var compressed = quantizeVec2(cfg.uv, bounds.min, bounds.max);
-                    state.uv = compressed.quantized;
-                    state.uvDecodeMatrix = compressed.decode;
+                    var quantized = quantizeVec2(cfg.uv, bounds.min, bounds.max);
+                    state.uv = quantized.quantized;
+                    state.uvDecodeMatrix = quantized.decode;
                 } else {
                     state.uv = cfg.uv.constructor === Float32Array ? cfg.uv : new Float32Array(cfg.uv);
                 }
             }
             if (cfg.normals) {
-                if (this._state.compressed) {
+                if (this._state.quantized) {
                     state.normals = octEncode(cfg.normals);
                 } else {
                     state.normals = cfg.normals.constructor === Float32Array ? cfg.normals : new Float32Array(cfg.normals);
@@ -20245,7 +20339,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             if (state.uv) {
                 hash.push("u");
             }
-            if (state.compressed) {
+            if (state.quantized) {
                 hash.push("cp");
             }
             hash.push(";");
@@ -20270,7 +20364,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 return;
             }
             var gl = this.scene.canvas.gl;
-            var arrays = xeogl.math.buildPickTriangles(state.positions, state.indices, state.compressed);
+            var arrays = xeogl.math.buildPickTriangles(state.positions, state.indices, state.quantized);
             var pickTrianglePositions = arrays.positions;
             var pickColors = arrays.colors;
             this._pickTrianglePositionsBuf = new xeogl.renderer.ArrayBuffer(gl, gl.ARRAY_BUFFER, pickTrianglePositions, pickTrianglePositions.length, 3, gl.STATIC_DRAW);
@@ -20285,7 +20379,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             //     return;
             // }
             // var gl = this.scene.canvas.gl;
-            // var arrays = xeogl.math.buildPickVertices(state.positions, state.indices, state.compressed);
+            // var arrays = xeogl.math.buildPickVertices(state.positions, state.indices, state.quantized);
             // var pickVertexPositions = arrays.positions;
             // var pickColors = arrays.colors;
             // this._pickVertexPositionsBuf = new xeogl.renderer.ArrayBuffer(gl, gl.ARRAY_BUFFER, pickVertexPositions, pickVertexPositions.length, 3, gl.STATIC_DRAW);
@@ -20314,22 +20408,22 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             },
 
             /**
-             Indicates if this Geometry is compressed.
+             Indicates if this Geometry is quantized.
 
              Compression is an internally-performed optimization which stores positions, colors, normals and UVs
              in quantized and oct-encoded formats for reduced memory footprint and GPU bus usage.
 
-             Compressed geometry may not be updated.
+             Quantized geometry may not be updated.
 
-             @property compressed
+             @property quantized
              @default false
              @type Boolean
              @final
              */
-            compressed: {
+            quantized: {
 
                 get: function () {
-                    return this._state.compressed;
+                    return this._state.quantized;
                 }
             },
 
@@ -20366,7 +20460,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                     if (!this._state.positions) {
                         return;
                     }
-                    if (!this._state.compressed) {
+                    if (!this._state.quantized) {
                         return this._state.positions;
                     }
                     if (!this._decompressedPositions) {
@@ -20377,8 +20471,8 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 },
 
                 set: function (newPositions) {
-                    if (this._state.compressed) {
-                        this.error("can't update geometry positions - compressed geometry is immutable"); // But will be eventually
+                    if (this._state.quantized) {
+                        this.error("can't update geometry positions - quantized geometry is immutable"); // But will be eventually
                         return;
                     }
                     var state = this._state;
@@ -20416,7 +20510,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                     if (!this._state.normals) {
                         return;
                     }
-                    if (!this._state.compressed) {
+                    if (!this._state.quantized) {
                         return this._state.normals;
                     }
                     if (!this._decompressedNormals) {
@@ -20429,8 +20523,8 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 },
 
                 set: function (newNormals) {
-                    if (this._state.compressed) {
-                        this.error("can't update geometry normals - compressed geometry is immutable"); // But will be eventually
+                    if (this._state.quantized) {
+                        this.error("can't update geometry normals - quantized geometry is immutable"); // But will be eventually
                         return;
                     }
                     var state = this._state;
@@ -20467,7 +20561,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                     if (!this._state.uv) {
                         return;
                     }
-                    if (!this._state.compressed) {
+                    if (!this._state.quantized) {
                         return this._state.uv;
                     }
                     if (!this._decompressedUV) {
@@ -20478,8 +20572,8 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 },
 
                 set: function (newUV) {
-                    if (this._state.compressed) {
-                        this.error("can't update geometry UVs - compressed geometry is immutable"); // But will be eventually
+                    if (this._state.quantized) {
+                        this.error("can't update geometry UVs - quantized geometry is immutable"); // But will be eventually
                         return;
                     }
                     var state = this._state;
@@ -20517,8 +20611,8 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 },
 
                 set: function (newColors) {
-                    if (this._state.compressed) {
-                        this.error("can't update geometry colors - compressed geometry is immutable"); // But will be eventually
+                    if (this._state.quantized) {
+                        this.error("can't update geometry colors - quantized geometry is immutable"); // But will be eventually
                         return;
                     }
                     var state = this._state;
@@ -27434,7 +27528,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  |:--------:|:----:|:-----:|:-------------:|:-----:|:-----------:|
  | flattenTransforms | Boolean |  | true | Flattens transform hierarchies to improve rendering performance. |
  | lambertMaterials | Boolean |  | false | When true, gives each {{#crossLink "Entity"}}{{/crossLink}} the same {{#crossLink "LambertMaterial"}}{{/crossLink}} and a {{#crossLink "Entity/colorize:property"}}{{/crossLink}} set the to diffuse color extracted from the glTF material. This is typically used for CAD models with huge amounts of objects, and will ignore textures.|
- | compressGeometry | Boolean |  | true | When true, quantizes geometry to reduce memory and GPU bus usage (see {{#crossLink "Geometry"}}{{/crossLink}}). |
+ | quantizeGeometry | Boolean |  | true | When true, quantizes geometry to reduce memory and GPU bus usage (see {{#crossLink "Geometry"}}{{/crossLink}}). |
  | combineGeometry | Boolean |  | true | When true, combines geometry vertex buffers to improve rendering performance (see {{#crossLink "Geometry"}}{{/crossLink}}). |
  | backfaces | Boolean |  | true | When true, allows visible backfaces, wherever specified in the glTF. When false, ignores backfaces. |
  | ghost | Boolean |  | false | When true, ghosts all the model's Entities (see {{#crossLink "Entity"}}{{/crossLink}} and {{#crossLink "GhostMaterial"}}{{/crossLink}}). |
@@ -27612,7 +27706,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  @param [cfg.src] {String} Path to a glTF file. You can set this to a new file path at any time, which will cause the
  @param [flattenTransforms=true] {Boolean} Flattens transform hierarchies to improve rendering performance.
  @param [lambertMaterials | Boolean |  | false | When true, gives each {{#crossLink "Entity"}}{{/crossLink}} the same {{#crossLink "LambertMaterial"}}{{/crossLink}} and a {{#crossLink "Entity/colorize:property"}}{{/crossLink}} set the to diffuse color extracted from the glTF material. This is typically used for CAD models with huge amounts of objects, and will ignore textures.|
- @param [compressGeometry | Boolean |  | true | When true, quantizes geometry to reduce memory and GPU bus usage. |
+ @param [quantizeGeometry | Boolean |  | true | When true, quantizes geometry to reduce memory and GPU bus usage. |
  @param [combineGeometry | Boolean |  | true | When true, combines geometry vertex buffers to improve rendering performance. |
  @param [backfaces | Boolean |  | true | When true, allows visible backfaces, wherever specified in the glTF. When false, ignores backfaces. |
  @param [ghost=false] {Boolean} When true, sets all the Model's Entities initially ghosted. |
@@ -27643,7 +27737,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
                 flattenTransforms: cfg.flattenTransforms !== false,
                 ignoreMaterials: !!cfg.ignoreMaterials,
                 combineGeometry: cfg.combineGeometry !== false,
-                compressGeometry: cfg.compressGeometry !== false,
+                quantizeGeometry: cfg.quantizeGeometry !== false,
                 ghostEdgeThreshold: cfg.ghostEdgeThreshold,
                 lambertMaterials: !!cfg.lambertMaterials,
                 maxEntities: cfg.maxEntities,
@@ -27796,7 +27890,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
                         flattenTransforms: options.flattenTransforms,
                         ignoreMaterials: options.ignoreMaterials,
                         combineGeometry: options.combineGeometry,
-                        compressGeometry: options.compressGeometry,
+                        quantizeGeometry: options.quantizeGeometry,
                         ghostEdgeThreshold: options.ghostEdgeThreshold,
                         lambertMaterials: options.lambertMaterials,
                         maxEntities: options.maxEntities,
@@ -27869,7 +27963,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
                 flattenTransforms: !!options.flattenTransforms,
                 ignoreMaterials: !!options.ignoreMaterials,
                 combineGeometry: !!options.combineGeometry,
-                compressGeometry: !!options.compressGeometry,
+                quantizeGeometry: !!options.quantizeGeometry,
                 ghostEdgeThreshold: options.ghostEdgeThreshold,
                 lambertMaterials: !!options.lambertMaterials,
                 maxEntities: options.maxEntities,
@@ -27882,7 +27976,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
             // model.log("Loading glTF (flattenTransforms=" + ctx.flattenTransforms +
             //     ", combineGeometry=" + ctx.combineGeometry +
-            //     ", compressGeometry=" + ctx.compressGeometry +
+            //     ", quantizeGeometry=" + ctx.quantizeGeometry +
             //     ", lambertMaterials=" + ctx.lambertMaterials + ")");
 
             model.scene.loading++; // Disables (re)compilation
@@ -28430,7 +28524,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
                     geometryCfg = {
                         primitive: "triangles",
                         combined: ctx.combineGeometry,
-                        compressed: ctx.compressGeometry,
+                        quantized: ctx.quantizeGeometry,
                         ghostEdgeThreshold: ctx.ghostEdgeThreshold
                     };
 
@@ -29376,7 +29470,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
             /**
              A diffuse {{#crossLink "Texture"}}{{/crossLink}} attached to this PhongMaterial.
 
-             This property multiplies by {{#crossLink "PhongMaterial/diffuseMap:property"}}{{/crossLink}} when not null or undefined.
+             This property multiplies by {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} when not null or undefined.
 
              Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this PhongMaterial.
 
