@@ -42,22 +42,22 @@
     lights.lights = [
         new xeogl.AmbientLight({
             color: [1, 1, 1],
-            intensity: 0.8
+            intensity: 0.99
         }),
         new xeogl.DirLight({
-            dir: [0.8, -0.6, -0.8],
+            dir: [-0.8, -0.6, 0.4],
             color: [1.0, 1.0, 1.0],
             intensity: 1.0,
             space: "world"
         }),
         new xeogl.DirLight({
-            dir: [-0.8, -0.4, -0.4],
+            dir: [0.8, -0.4, 0.4],
             color: [1.0, 1.0, 1.0],
             intensity: 1.0,
             space: "world"
         }),
         new xeogl.DirLight({
-            dir: [0.2, -0.8, 0.8],
+            dir: [-0.2, -0.8, -0.8],
             color: [0.6, 0.6, 0.6],
             intensity: 1.0,
             space: "world"
@@ -83,7 +83,7 @@
 
     var ghostMaterial = scene.ghostMaterial;
     ghostMaterial.edges = true;
-    ghostMaterial.edgeAlpha = 0.5;
+    ghostMaterial.edgeAlpha = 1.0;
     ghostMaterial.edgeColor = [0.2, 0.2, 0.2];
     ghostMaterial.edgeWidth = 1;
     ghostMaterial.vertices = false;
@@ -91,8 +91,8 @@
     ghostMaterial.vertexColor = [0.4, 1.0, 0.4];
     ghostMaterial.vertexSize = 4;
     ghostMaterial.fill = true;
-    ghostMaterial.fillColor = [0.4, 0.4, 0.4];
-    ghostMaterial.fillAlpha = 0.2;
+    ghostMaterial.fillColor = [1, 1, 1];
+    ghostMaterial.fillAlpha = 0.6;
 
     scene.highlightMaterial.alpha = 0.5;
 
@@ -129,7 +129,7 @@
             var highlightMaterial = scene.highlightMaterial;
 
             this["ghost"] = true;
-            this["ghostMaterial.preset"] = "defaultLightBG";
+            this["ghostMaterial.preset"] = "defaultWhiteBG";
             this["ghostMaterial.edges"] = ghostMaterial.edges;
             this["ghostMaterial.fill"] = ghostMaterial.fill;
             this["ghostMaterial.vertices"] = ghostMaterial.vertices;

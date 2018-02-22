@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2018-02-21
+ * Built on 2018-02-22
  *
  * MIT License
  * Copyright 2018, Lindsay Kay
@@ -33297,6 +33297,19 @@ TODO
             fillAlpha: 0.2
         },
 
+        "defaultWhiteBG": {
+            edgeColor: [0.2, 0.2, 0.2],
+            edgeAlpha: 1.0,
+            edgeWidth: 1,
+            vertices: false,
+            vertexColor: [0.4, 0.4, 0.4],
+            vertexAlpha: 0.7,
+            vertexSize: 4.0,
+            fill: true,
+            fillColor: [1, 1, 1],
+            fillAlpha: 0.6
+        },
+
         "defaultLightBG": {
             edges: true,
             edgeColor: [0.2, 0.2, 0.2],
@@ -33322,6 +33335,34 @@ TODO
             vertexSize: 4.0,
             fill: true,
             fillColor: [0.4, 0.4, 0.4],
+            fillAlpha: 0.2
+        },
+
+        "phosphorous": {
+            edges: true,
+            edgeColor: [0.9, 0.9, 0.9],
+            edgeAlpha: 0.5,
+            edgeWidth: 2,
+            vertices: false,
+            vertexColor: [0.4, 0.4, 0.4],
+            vertexAlpha: 0.7,
+            vertexSize: 1.0,
+            fill: true,
+            fillColor: [0.0, 0.0, 0.0],
+            fillAlpha: 0.4
+        },
+
+        "sunset": {
+            edges: true,
+            edgeColor: [0.9, 0.9, 0.9],
+            edgeAlpha: 0.5,
+            edgeWidth: 1,
+            vertices: false,
+            vertexColor: [0.4, 0.4, 0.4],
+            vertexAlpha: 0.7,
+            vertexSize: 1.0,
+            fill: true,
+            fillColor: [0.9, 0.9, 0.6],
             fillAlpha: 0.2
         },
 
