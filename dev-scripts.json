@@ -83,7 +83,6 @@
     "src/lighting/shadow.js",
     "src/models/_module.js",
     "src/models/model.js",
-    "src/models/glTFModel.js",
     "src/materials/_module.js",
     "src/materials/material.js",
     "src/materials/phongMaterial.js",
