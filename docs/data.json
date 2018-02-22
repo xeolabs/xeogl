@@ -513,15 +513,6 @@
             "fors": {},
             "namespaces": {}
         },
-        "src/models/glTFModel.js": {
-            "name": "src/models/glTFModel.js",
-            "modules": {},
-            "classes": {
-                "GLTFModel": 1
-            },
-            "fors": {},
-            "namespaces": {}
-        },
         "src/models/model.js": {
             "name": "src/models/model.js",
             "modules": {},
@@ -923,6 +914,15 @@
             "fors": {},
             "namespaces": {}
         },
+        "examples/js/models/glTFModel.js": {
+            "name": "examples/js/models/glTFModel.js",
+            "modules": {},
+            "classes": {
+                "GLTFModel": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
         "examples/js/models/sceneJSModel.js": {
             "name": "examples/js/models/sceneJSModel.js",
             "modules": {},
@@ -1072,7 +1072,6 @@
                 "SpecularMaterial": 1,
                 "Texture": 1,
                 "xeogl.math.math": 1,
-                "GLTFModel": 1,
                 "Model": 1,
                 "Lookat": 1,
                 "Quaternion": 1,
@@ -1106,6 +1105,7 @@
                 "VectorTextGeometry": 1,
                 "OBJModel": 1,
                 "BuildableModel": 1,
+                "GLTFModel": 1,
                 "SceneJSModel": 1,
                 "AABBHelper": 1,
                 "AxisHelper": 1,
@@ -1336,10 +1336,10 @@
             "name": "models",
             "submodules": {},
             "classes": {
-                "GLTFModel": 1,
                 "Model": 1,
                 "OBJModel": 1,
                 "BuildableModel": 1,
+                "GLTFModel": 1,
                 "SceneJSModel": 1
             },
             "fors": {},
@@ -4636,127 +4636,6 @@
             "line": 12,
             "description": "This utility object provides math functions that are used within xeogl. These functions are also part of xeogl's\npublic API and are therefore available for you to use within your application code."
         },
-        "GLTFModel": {
-            "name": "GLTFModel",
-            "shortname": "GLTFModel",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "module": "xeogl",
-            "namespace": "",
-            "file": "src/models/glTFModel.js",
-            "line": 1,
-            "description": "A **GLTFModel** is a {{#crossLink \"Model\"}}{{/crossLink}} loaded from a <a href=\"https://github.com/KhronosGroup/glTF\" target = \"_other\">glTF</a> file.\n\n<a href=\"../../examples/#importing_gltf_GearboxAssy\"><img src=\"../../../assets/images/gltf/glTF_gearbox_squashed.png\"></img></a>\n\n## Overview\n\n* A GLTFModel is a container of {{#crossLink \"Component\"}}Components{{/crossLink}} that loads itself from a glTF file.\n* It begins loading as soon as you set its {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}\nproperty to the location of a valid glTF file.\n* You can set {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}} to a new file path at any time, which causes\nthe GLTFModel to clear itself and load components from the new file.\n\nIt inherits these capabilities from its {{#crossLink \"Model\"}}{{/crossLink}} base class:\n\n* Allows you to access and manipulate the components within it.\n* Can be transformed within World-space by attaching it to a {{#crossLink \"Transform\"}}{{/crossLink}}.\n* Provides its dynamic World-space axis-aligned boundary.\n\n## Supported glTF 2.0 features\n\nSo far, GLTFModel loads only geometry, materials and modeling transform hierarchies, without animations. It does not\nload cameras or lights because its purpose is to import models into environments that have already been created using\nthe xeogl API.\n\nIn addition to glTF's core metal-roughness material workflow, GLTFModel also supports two material extensions:\n\n* [KHR_materials_pbrSpecularGlossiness](https://github.com/KhronosGroup/glTF/blob/master/extensions/Khronos/KHR_materials_pbrSpecularGlossiness/README.md)\n* [KHR_materials_common](https://github.com/KhronosGroup/glTF/blob/master/extensions/Khronos/KHR_materials_common/README.md)\n\n## Examples\n\n* [Damaged Helmet with metal/rough PBR materials](../../examples/#importing_gltf_DamagedHelmet)\n* [Hover bike with specular/glossiness PBR materials](../../examples/#importing_gltf_Hoverbike)\n* [Loading glTF with embedded assets](../../examples/#importing_gltf_embedded)\n* [Parsing glTF JSON with embedded assets](../../examples/#importing_gltf_parsing_embedded)\n* [Ignoring materials when loading](../../examples/#importing_gltf_options_ignoreMaterials)\n* [Baking transform hierarchies when loading](../../examples/#importing_gltf_options_flattenTransforms)\n* [Converting materials to simple Lambertian when loading](../../examples/#importing_gltf_options_lambertMaterials)\n* [All loading options for max performance](../../examples/#importing_gltf_options_maxPerformance)\n\n## Usage\n\n* [Loading glTF](#loading-gltf)\n* [Loading options](#loading-options)\n* [Finding loaded Entities](#finding-loaded-entities)\n* [Transforming a GLTFModel](#transforming-a-gltfmodel)\n* [Getting the World-space boundary of a GLTFModel](#getting-the-world-space-boundary-of-a-gltfmodel)\n* [Clearing a GLTFModel](#clearing-a-gltfmodel)\n* [Destroying a GLTFModel](#destroying-a-gltfmodel)\n\n### Loading glTF\n\nLoad a glTF file by creating a GLTFModel:\n\n````javascript\nvar model = new xeogl.GLTFModel({\n    id: \"gearbox\",\n    src: \"models/gltf/gearbox_conical/scene.gltf\",\n});\n````\n\nA GLTFModel prefixes its own ID to those of its components. The ID is optional, but in this example we're providing our own custom ID.\n\nThe GLTFModel begins loading the glTF file immediately.\n\nTo bind a callback to be notified when the file has loaded (which fires immediately if already loaded):\n\n````javascript\nmodel.on(\"loaded\", function() {\n       // GLTFModel has loaded!\n   });\n````\n\nYou can also bind a callback to fire if loading fails:\n\n````javascript\nmodel.on(\"error\", function(msg) {\n       // Error occurred\n   });\n````\n\nTo switch to a different glTF file, simply update {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}:\n\n````javascript\nmodel.src = \"models/gltf/Buggy/glTF/Buggy.gltf\"\n````\n\n### Loading options\n\nThe following options may be specified when loading glTF:\n\n| Option | Type | Range | Default Value | Description |\n|:--------:|:----:|:-----:|:-------------:|:-----:|:-----------:|\n| flattenTransforms | Boolean |  | true | Flattens transform hierarchies to improve rendering performance. |\n| lambertMaterials | Boolean |  | false | When true, gives each {{#crossLink \"Entity\"}}{{/crossLink}} the same {{#crossLink \"LambertMaterial\"}}{{/crossLink}} and a {{#crossLink \"Entity/colorize:property\"}}{{/crossLink}} set the to diffuse color extracted from the glTF material. This is typically used for CAD models with huge amounts of objects, and will ignore textures.|\n| quantizeGeometry | Boolean |  | true | When true, quantizes geometry to reduce memory and GPU bus usage (see {{#crossLink \"Geometry\"}}{{/crossLink}}). |\n| combineGeometry | Boolean |  | true | When true, combines geometry vertex buffers to improve rendering performance (see {{#crossLink \"Geometry\"}}{{/crossLink}}). |\n| backfaces | Boolean |  | true | When true, allows visible backfaces, wherever specified in the glTF. When false, ignores backfaces. |\n| ghost | Boolean |  | false | When true, ghosts all the model's Entities (see {{#crossLink \"Entity\"}}{{/crossLink}} and {{#crossLink \"GhostMaterial\"}}{{/crossLink}}). |\n| outline | Boolean |  | false | When true, outlines all the model's Entities (see {{#crossLink \"Entity\"}}{{/crossLink}} and {{#crossLink \"OutlineMaterial\"}}{{/crossLink}}). |\n| highlight | Boolean |  | false | When true, highlights all the model's Entities (see {{#crossLink \"Entity\"}}{{/crossLink}} and {{#crossLink \"HighlightMaterial\"}}{{/crossLink}}). |\n| ghostEdgeThreshold | Number | [0..180] | 2 | When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn. |\n| maxEntities | Number | | | Optional maximum number of {{#crossLink \"Entity\"}}{{/crossLink}}'s to load. |\n| included | Function(entityId) | | null | Optional callback to mask which {{#crossLink \"Entity\"}}{{/crossLink}}'s are loaded. Entity will only be loaded when this callback returns ````true``` for the given Entity ID. |\n\nUsing the ````flattenTransforms```` option to load a glTF model while flattening its transform hierarchy:\n\n````javascript\nvar model = new xeogl.GLTFModel({\n    id: \"gearbox\",\n    src: \"models/gltf/gearbox_conical/scene.gltf\",\n    flattenTransforms: true\n});\n````\n\nUsing the ````included```` option to load all entities except for those with IDs \"gearbox#77.0\" and \"gearbox#79.0\":\n\n````javascript\nvar model = new xeogl.GLTFModel({\n    id: \"gearbox\",\n    src: \"models/gltf/gearbox_conical/scene.gltf\",\n    included: function(entityId) {\n       return id !== (\"gearbox#77.0\") &&  (id !== \"gearbox#79.0\");\n    }\n});\n````\n\n### Finding GLTFModels in Scenes\n\nOur GLTFModel will now be registered by ID on its Scene, so we can now find it like this:\n\n````javascript\nmodel = xeogl.scene.models[\"gearbox\"];\n````\n\nThat's assuming that we've created the GLTFModel in the default xeogl Scene, which we're doing in these examples.\n\n### Finding loaded Entities\n\nOnce the GLTFModel has loaded, its {{#crossLink \"Scene\"}}{{/crossLink}} will contain various components that represent the elements of the glTF file.\nWe'll now access some of those components by ID, to query and update them programmatically.\n\nLet's highlight a couple of {{#crossLink \"Entity\"}}Entities{{/crossLink}} in our GLTFModel:\n\n````javascript\nvar entities = scene.entities;\n\nentities[\"gearbox77.0\"].highlight = true;\nentities[\"gearbox79.0\"].highlight = true;\n````\n\nA GLTFModel also has ID maps of the components within it. Its components map contains all\nits {{#crossLink \"Component\"}}Components{{/crossLink}} in one big map:\n\n````javascript\nmodel.components[\"gearbox77.0\"].highlight = true;\n````\n\nwhile its entities map contains just the {{#crossLink \"Entity\"}}Entities{{/crossLink}}:\n\n````javascript\nmodel.entities[\"gearbox77.0\"].highlight = true;\n````\n\n\nNote the format of the {{#crossLink \"Entity\"}}{{/crossLink}} IDs:\n\n````<GLTFModel ID>#<glTF node ID>.<glTF primitive index>````\n\nWithin the glTF, a node's mesh may contain multiple primitives. For each primitive, xeogl will create\na separate {{#crossLink \"Entity\"}}{{/crossLink}}. Within each Entity's ID, the part before the hash is the ID of the GLTFModel,\nfollowed by the ID of the node, then \".\", then the index of the primitive within the mesh.\n\n### Transforming a GLTFModel\n\nA GLTFModel lets us transform its Entities as a group.\n\nWe can attach a modeling {{#crossLink \"Transform\"}}{{/crossLink}} to our GLTFModel, as a either a\nconfiguration object or a component instance:\n\n```` Javascript\n// Attach transforms as a configuration object:\nmodel.transform = {\n       type: \"xeogl.Translate\",\n       xyz: [-35, 0, 0],\n       parent: {\n           type: \"xeogl.Rotate\",\n           xyz: [0, 1, 0],\n           angle: 45\n       }\n    };\n\n// Attach our own transform instances:\nmodel.transform = new xeogl.Translate({\n       xyz: [-35, 0, 0],\n       parent: new xeogl.Rotate({\n           xyz: [0, 1, 0],\n           angle: 45\n       })\n    });\n````\n\nWe can also provide the {{#crossLink \"Transform\"}}{{/crossLink}} to the GLTFModel constructor, as either configuration\nobjects or instances.\n\nHere we'll provide a Transform hierarchy as a configuration object:\n\n```` Javascript\n// Model internally instantiates our transform components:\nvar model = new xeogl.GLTFModel({\n    src: \"models/gltf/gearbox_conical/scene.gltf\",\n    transform: {\n       type: \"xeogl.Translate\",\n       xyz: [-35, 0, 0],\n       parent: {\n           type: \"xeogl.Rotate\",\n           xyz: [0, 1, 0],\n           angle: 45\n       }\n    }\n});\n\n````\n\n### Getting the World-space boundary of a GLTFModel\n\nGet the World-space axis-aligned boundary like this:\n\n```` Javascript\nmodel.on(\"boundary\", function() {\n   var aabb = model.aabb; //  [xmin, ymin,zmin,xmax,ymax, zmax]\n   //...\n});\n````\n\nWe can also subscribe to changes to that boundary, which will happen whenever\n\n* the GLTFModel's {{#crossLink \"Transform\"}}{{/crossLink}} is updated,\n* components are added or removed, or\n* the GLTF model is reloaded from a different source,\n* the {{#crossLink \"Geometry\"}}Geometries{{/crossLink}} or {{#crossLink \"Transform\"}}Transforms{{/crossLink}} of its {{#crossLink \"Entities\"}}Entities{{/crossLink}} are updated.\n\n````javascript\nmodel.on(\"boundary\", function() {\n   var aabb = model.aabb; // [xmin, ymin,zmin,xmax,ymax, zmax]\n});\n````\n\n### Clearing a GLTFModel\n\n```` Javascript\nmodel.clear();\n````\n\n### Destroying a GLTFModel\n\n```` Javascript\nmodel.destroy();\n````",
-            "submodule": "models",
-            "is_constructor": 1,
-            "params": [
-                {
-                    "name": "scene",
-                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this GLTFModel in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
-                    "type": "Scene",
-                    "optional": true
-                },
-                {
-                    "name": "cfg",
-                    "description": "Configs",
-                    "type": "*",
-                    "optional": true,
-                    "props": [
-                        {
-                            "name": "id",
-                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}},\ngenerated automatically when omitted.",
-                            "type": "String",
-                            "optional": true
-                        },
-                        {
-                            "name": "meta",
-                            "description": "Optional map of user-defined metadata to attach to this GLTFModel.",
-                            "type": "String:Object",
-                            "optional": true
-                        },
-                        {
-                            "name": "src",
-                            "description": "Path to a glTF file. You can set this to a new file path at any time, which will cause the",
-                            "type": "String",
-                            "optional": true
-                        },
-                        {
-                            "name": "transform",
-                            "description": "A Local-to-World-space (modelling) {{#crossLink \"Transform\"}}{{/crossLink}} to attach to this GLTFModel.\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this GLTFModel. Internally, the given\n{{#crossLink \"Transform\"}}{{/crossLink}} will be inserted above each top-most {{#crossLink \"Transform\"}}Transform{{/crossLink}}\nthat the GLTFModel attaches to its {{#crossLink \"Entity\"}}Entities{{/crossLink}}.",
-                            "type": "Number|String|Transform",
-                            "optional": true
-                        }
-                    ]
-                },
-                {
-                    "name": "flattenTransforms",
-                    "description": "Flattens transform hierarchies to improve rendering performance.",
-                    "type": "Boolean",
-                    "optional": true,
-                    "optdefault": "true"
-                },
-                {
-                    "name": "[lambertMaterials",
-                    "description": "| Boolean |  | false | When true, gives each }{{/crossLink}} the same {{#crossLink \"LambertMaterial\"}}{{/crossLink}} and a {{#crossLink \"Entity/colorize:property\"}}{{/crossLink}} set the to diffuse color extracted from the glTF material. This is typically used for CAD models with huge amounts of objects, and will ignore textures.|",
-                    "type": "#crossLink \"Entity\""
-                },
-                {
-                    "name": "[quantizeGeometry",
-                    "description": "| Boolean |  | true | When true, quantizes geometry to reduce memory and GPU bus usage. |"
-                },
-                {
-                    "name": "[combineGeometry",
-                    "description": "| Boolean |  | true | When true, combines geometry vertex buffers to improve rendering performance. |"
-                },
-                {
-                    "name": "[backfaces",
-                    "description": "| Boolean |  | true | When true, allows visible backfaces, wherever specified in the glTF. When false, ignores backfaces. |"
-                },
-                {
-                    "name": "ghost",
-                    "description": "When true, sets all the Model's Entities initially ghosted. |",
-                    "type": "Boolean",
-                    "optional": true,
-                    "optdefault": "false"
-                },
-                {
-                    "name": "highlight",
-                    "description": "When true, sets all the Model's Entities initially highlighted. |",
-                    "type": "Boolean",
-                    "optional": true,
-                    "optdefault": "false"
-                },
-                {
-                    "name": "outline",
-                    "description": "When true, sets all the Model's Entities initially outlined. |",
-                    "type": "Boolean",
-                    "optional": true,
-                    "optdefault": "false"
-                },
-                {
-                    "name": "ghostEdgeThreshold",
-                    "description": "When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn. |",
-                    "type": "Number",
-                    "optional": true,
-                    "optdefault": "2"
-                },
-                {
-                    "name": "maxEntities",
-                    "description": "Optional maximum number of {{#crossLink \"Entity\"}}{{/crossLink}}'s to load. |",
-                    "type": "Number",
-                    "optional": true
-                },
-                {
-                    "name": "included",
-                    "description": "Optional callback to mask which {{#crossLink \"Entity\"}}{{/crossLink}}'s are loaded. Entity will only be loaded when this callback returns ````true``` for the given Entity ID. |\nGLTFModel to load components from the new file (after first destroying any components loaded from a previous file path).",
-                    "type": "Function",
-                    "optional": true
-                }
-            ],
-            "extends": "Model"
-        },
         "Model": {
             "name": "Model",
             "shortname": "Model",
@@ -6872,6 +6751,127 @@
                             "optional": true
                         }
                     ]
+                }
+            ],
+            "extends": "Model"
+        },
+        "GLTFModel": {
+            "name": "GLTFModel",
+            "shortname": "GLTFModel",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "xeogl",
+            "namespace": "",
+            "file": "examples/js/models/glTFModel.js",
+            "line": 1,
+            "description": "A **GLTFModel** is a {{#crossLink \"Model\"}}{{/crossLink}} loaded from a <a href=\"https://github.com/KhronosGroup/glTF\" target = \"_other\">glTF</a> file.\n\n<a href=\"../../examples/#importing_gltf_GearboxAssy\"><img src=\"../../../assets/images/gltf/glTF_gearbox_squashed.png\"></img></a>\n\n## Overview\n\n* A GLTFModel is a container of {{#crossLink \"Component\"}}Components{{/crossLink}} that loads itself from a glTF file.\n* It begins loading as soon as you set its {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}\nproperty to the location of a valid glTF file.\n* You can set {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}} to a new file path at any time, which causes\nthe GLTFModel to clear itself and load components from the new file.\n\nIt inherits these capabilities from its {{#crossLink \"Model\"}}{{/crossLink}} base class:\n\n* Allows you to access and manipulate the components within it.\n* Can be transformed within World-space by attaching it to a {{#crossLink \"Transform\"}}{{/crossLink}}.\n* Provides its dynamic World-space axis-aligned boundary.\n\n## Supported glTF 2.0 features\n\nSo far, GLTFModel loads only geometry, materials and modeling transform hierarchies, without animations. It does not\nload cameras or lights because its purpose is to import models into environments that have already been created using\nthe xeogl API.\n\nIn addition to glTF's core metal-roughness material workflow, GLTFModel also supports two material extensions:\n\n* [KHR_materials_pbrSpecularGlossiness](https://github.com/KhronosGroup/glTF/blob/master/extensions/Khronos/KHR_materials_pbrSpecularGlossiness/README.md)\n* [KHR_materials_common](https://github.com/KhronosGroup/glTF/blob/master/extensions/Khronos/KHR_materials_common/README.md)\n\n## Examples\n\n* [Damaged Helmet with metal/rough PBR materials](../../examples/#importing_gltf_DamagedHelmet)\n* [Hover bike with specular/glossiness PBR materials](../../examples/#importing_gltf_Hoverbike)\n* [Loading glTF with embedded assets](../../examples/#importing_gltf_embedded)\n* [Parsing glTF JSON with embedded assets](../../examples/#importing_gltf_parsing_embedded)\n* [Ignoring materials when loading](../../examples/#importing_gltf_options_ignoreMaterials)\n* [Baking transform hierarchies when loading](../../examples/#importing_gltf_options_flattenTransforms)\n* [Converting materials to simple Lambertian when loading](../../examples/#importing_gltf_options_lambertMaterials)\n* [All loading options for max performance](../../examples/#importing_gltf_options_maxPerformance)\n\n## Usage\n\n* [Loading glTF](#loading-gltf)\n* [Loading options](#loading-options)\n* [Finding loaded Entities](#finding-loaded-entities)\n* [Transforming a GLTFModel](#transforming-a-gltfmodel)\n* [Getting the World-space boundary of a GLTFModel](#getting-the-world-space-boundary-of-a-gltfmodel)\n* [Clearing a GLTFModel](#clearing-a-gltfmodel)\n* [Destroying a GLTFModel](#destroying-a-gltfmodel)\n\n### Loading glTF\n\nLoad a glTF file by creating a GLTFModel:\n\n````javascript\nvar model = new xeogl.GLTFModel({\n    id: \"gearbox\",\n    src: \"models/gltf/gearbox_conical/scene.gltf\",\n});\n````\n\nA GLTFModel prefixes its own ID to those of its components. The ID is optional, but in this example we're providing our own custom ID.\n\nThe GLTFModel begins loading the glTF file immediately.\n\nTo bind a callback to be notified when the file has loaded (which fires immediately if already loaded):\n\n````javascript\nmodel.on(\"loaded\", function() {\n       // GLTFModel has loaded!\n   });\n````\n\nYou can also bind a callback to fire if loading fails:\n\n````javascript\nmodel.on(\"error\", function(msg) {\n       // Error occurred\n   });\n````\n\nTo switch to a different glTF file, simply update {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}:\n\n````javascript\nmodel.src = \"models/gltf/Buggy/glTF/Buggy.gltf\"\n````\n\n### Loading options\n\nThe following options may be specified when loading glTF:\n\n| Option | Type | Range | Default Value | Description |\n|:--------:|:----:|:-----:|:-------------:|:-----:|:-----------:|\n| flattenTransforms | Boolean |  | true | Flattens transform hierarchies to improve rendering performance. |\n| lambertMaterials | Boolean |  | false | When true, gives each {{#crossLink \"Entity\"}}{{/crossLink}} the same {{#crossLink \"LambertMaterial\"}}{{/crossLink}} and a {{#crossLink \"Entity/colorize:property\"}}{{/crossLink}} set the to diffuse color extracted from the glTF material. This is typically used for CAD models with huge amounts of objects, and will ignore textures.|\n| quantizeGeometry | Boolean |  | true | When true, quantizes geometry to reduce memory and GPU bus usage (see {{#crossLink \"Geometry\"}}{{/crossLink}}). |\n| combineGeometry | Boolean |  | true | When true, combines geometry vertex buffers to improve rendering performance (see {{#crossLink \"Geometry\"}}{{/crossLink}}). |\n| backfaces | Boolean |  | true | When true, allows visible backfaces, wherever specified in the glTF. When false, ignores backfaces. |\n| ghost | Boolean |  | false | When true, ghosts all the model's Entities (see {{#crossLink \"Entity\"}}{{/crossLink}} and {{#crossLink \"GhostMaterial\"}}{{/crossLink}}). |\n| outline | Boolean |  | false | When true, outlines all the model's Entities (see {{#crossLink \"Entity\"}}{{/crossLink}} and {{#crossLink \"OutlineMaterial\"}}{{/crossLink}}). |\n| highlight | Boolean |  | false | When true, highlights all the model's Entities (see {{#crossLink \"Entity\"}}{{/crossLink}} and {{#crossLink \"HighlightMaterial\"}}{{/crossLink}}). |\n| ghostEdgeThreshold | Number | [0..180] | 2 | When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn. |\n| maxEntities | Number | | | Optional maximum number of {{#crossLink \"Entity\"}}{{/crossLink}}'s to load. |\n| included | Function(entityId) | | null | Optional callback to mask which {{#crossLink \"Entity\"}}{{/crossLink}}'s are loaded. Entity will only be loaded when this callback returns ````true``` for the given Entity ID. |\n\nUsing the ````flattenTransforms```` option to load a glTF model while flattening its transform hierarchy:\n\n````javascript\nvar model = new xeogl.GLTFModel({\n    id: \"gearbox\",\n    src: \"models/gltf/gearbox_conical/scene.gltf\",\n    flattenTransforms: true\n});\n````\n\nUsing the ````included```` option to load all entities except for those with IDs \"gearbox#77.0\" and \"gearbox#79.0\":\n\n````javascript\nvar model = new xeogl.GLTFModel({\n    id: \"gearbox\",\n    src: \"models/gltf/gearbox_conical/scene.gltf\",\n    included: function(entityId) {\n       return id !== (\"gearbox#77.0\") &&  (id !== \"gearbox#79.0\");\n    }\n});\n````\n\n### Finding GLTFModels in Scenes\n\nOur GLTFModel will now be registered by ID on its Scene, so we can now find it like this:\n\n````javascript\nmodel = xeogl.scene.models[\"gearbox\"];\n````\n\nThat's assuming that we've created the GLTFModel in the default xeogl Scene, which we're doing in these examples.\n\n### Finding loaded Entities\n\nOnce the GLTFModel has loaded, its {{#crossLink \"Scene\"}}{{/crossLink}} will contain various components that represent the elements of the glTF file.\nWe'll now access some of those components by ID, to query and update them programmatically.\n\nLet's highlight a couple of {{#crossLink \"Entity\"}}Entities{{/crossLink}} in our GLTFModel:\n\n````javascript\nvar entities = scene.entities;\n\nentities[\"gearbox77.0\"].highlight = true;\nentities[\"gearbox79.0\"].highlight = true;\n````\n\nA GLTFModel also has ID maps of the components within it. Its components map contains all\nits {{#crossLink \"Component\"}}Components{{/crossLink}} in one big map:\n\n````javascript\nmodel.components[\"gearbox77.0\"].highlight = true;\n````\n\nwhile its entities map contains just the {{#crossLink \"Entity\"}}Entities{{/crossLink}}:\n\n````javascript\nmodel.entities[\"gearbox77.0\"].highlight = true;\n````\n\n\nNote the format of the {{#crossLink \"Entity\"}}{{/crossLink}} IDs:\n\n````<GLTFModel ID>#<glTF node ID>.<glTF primitive index>````\n\nWithin the glTF, a node's mesh may contain multiple primitives. For each primitive, xeogl will create\na separate {{#crossLink \"Entity\"}}{{/crossLink}}. Within each Entity's ID, the part before the hash is the ID of the GLTFModel,\nfollowed by the ID of the node, then \".\", then the index of the primitive within the mesh.\n\n### Transforming a GLTFModel\n\nA GLTFModel lets us transform its Entities as a group.\n\nWe can attach a modeling {{#crossLink \"Transform\"}}{{/crossLink}} to our GLTFModel, as a either a\nconfiguration object or a component instance:\n\n```` Javascript\n// Attach transforms as a configuration object:\nmodel.transform = {\n       type: \"xeogl.Translate\",\n       xyz: [-35, 0, 0],\n       parent: {\n           type: \"xeogl.Rotate\",\n           xyz: [0, 1, 0],\n           angle: 45\n       }\n    };\n\n// Attach our own transform instances:\nmodel.transform = new xeogl.Translate({\n       xyz: [-35, 0, 0],\n       parent: new xeogl.Rotate({\n           xyz: [0, 1, 0],\n           angle: 45\n       })\n    });\n````\n\nWe can also provide the {{#crossLink \"Transform\"}}{{/crossLink}} to the GLTFModel constructor, as either configuration\nobjects or instances.\n\nHere we'll provide a Transform hierarchy as a configuration object:\n\n```` Javascript\n// Model internally instantiates our transform components:\nvar model = new xeogl.GLTFModel({\n    src: \"models/gltf/gearbox_conical/scene.gltf\",\n    transform: {\n       type: \"xeogl.Translate\",\n       xyz: [-35, 0, 0],\n       parent: {\n           type: \"xeogl.Rotate\",\n           xyz: [0, 1, 0],\n           angle: 45\n       }\n    }\n});\n\n````\n\n### Getting the World-space boundary of a GLTFModel\n\nGet the World-space axis-aligned boundary like this:\n\n```` Javascript\nmodel.on(\"boundary\", function() {\n   var aabb = model.aabb; //  [xmin, ymin,zmin,xmax,ymax, zmax]\n   //...\n});\n````\n\nWe can also subscribe to changes to that boundary, which will happen whenever\n\n* the GLTFModel's {{#crossLink \"Transform\"}}{{/crossLink}} is updated,\n* components are added or removed, or\n* the GLTF model is reloaded from a different source,\n* the {{#crossLink \"Geometry\"}}Geometries{{/crossLink}} or {{#crossLink \"Transform\"}}Transforms{{/crossLink}} of its {{#crossLink \"Entities\"}}Entities{{/crossLink}} are updated.\n\n````javascript\nmodel.on(\"boundary\", function() {\n   var aabb = model.aabb; // [xmin, ymin,zmin,xmax,ymax, zmax]\n});\n````\n\n### Clearing a GLTFModel\n\n```` Javascript\nmodel.clear();\n````\n\n### Destroying a GLTFModel\n\n```` Javascript\nmodel.destroy();\n````",
+            "submodule": "models",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this GLTFModel in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}},\ngenerated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this GLTFModel.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "src",
+                            "description": "Path to a glTF file. You can set this to a new file path at any time, which will cause the",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "transform",
+                            "description": "A Local-to-World-space (modelling) {{#crossLink \"Transform\"}}{{/crossLink}} to attach to this GLTFModel.\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this GLTFModel. Internally, the given\n{{#crossLink \"Transform\"}}{{/crossLink}} will be inserted above each top-most {{#crossLink \"Transform\"}}Transform{{/crossLink}}\nthat the GLTFModel attaches to its {{#crossLink \"Entity\"}}Entities{{/crossLink}}.",
+                            "type": "Number|String|Transform",
+                            "optional": true
+                        }
+                    ]
+                },
+                {
+                    "name": "flattenTransforms",
+                    "description": "Flattens transform hierarchies to improve rendering performance.",
+                    "type": "Boolean",
+                    "optional": true,
+                    "optdefault": "true"
+                },
+                {
+                    "name": "[lambertMaterials",
+                    "description": "| Boolean |  | false | When true, gives each }{{/crossLink}} the same {{#crossLink \"LambertMaterial\"}}{{/crossLink}} and a {{#crossLink \"Entity/colorize:property\"}}{{/crossLink}} set the to diffuse color extracted from the glTF material. This is typically used for CAD models with huge amounts of objects, and will ignore textures.|",
+                    "type": "#crossLink \"Entity\""
+                },
+                {
+                    "name": "[quantizeGeometry",
+                    "description": "| Boolean |  | true | When true, quantizes geometry to reduce memory and GPU bus usage. |"
+                },
+                {
+                    "name": "[combineGeometry",
+                    "description": "| Boolean |  | true | When true, combines geometry vertex buffers to improve rendering performance. |"
+                },
+                {
+                    "name": "[backfaces",
+                    "description": "| Boolean |  | true | When true, allows visible backfaces, wherever specified in the glTF. When false, ignores backfaces. |"
+                },
+                {
+                    "name": "ghost",
+                    "description": "When true, sets all the Model's Entities initially ghosted. |",
+                    "type": "Boolean",
+                    "optional": true,
+                    "optdefault": "false"
+                },
+                {
+                    "name": "highlight",
+                    "description": "When true, sets all the Model's Entities initially highlighted. |",
+                    "type": "Boolean",
+                    "optional": true,
+                    "optdefault": "false"
+                },
+                {
+                    "name": "outline",
+                    "description": "When true, sets all the Model's Entities initially outlined. |",
+                    "type": "Boolean",
+                    "optional": true,
+                    "optdefault": "false"
+                },
+                {
+                    "name": "ghostEdgeThreshold",
+                    "description": "When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn. |",
+                    "type": "Number",
+                    "optional": true,
+                    "optdefault": "2"
+                },
+                {
+                    "name": "maxEntities",
+                    "description": "Optional maximum number of {{#crossLink \"Entity\"}}{{/crossLink}}'s to load. |",
+                    "type": "Number",
+                    "optional": true
+                },
+                {
+                    "name": "included",
+                    "description": "Optional callback to mask which {{#crossLink \"Entity\"}}{{/crossLink}}'s are loaded. Entity will only be loaded when this callback returns ````true``` for the given Entity ID. |\nGLTFModel to load components from the new file (after first destroying any components loaded from a previous file path).",
+                    "type": "Function",
+                    "optional": true
                 }
             ],
             "extends": "Model"
@@ -15743,7 +15743,7 @@
             "file": "src/math/mathBoundaries.js",
             "line": 1,
             "description": "Boundary math functions.",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15753,7 +15753,7 @@
             "description": "Returns a new, uninitialized 3D axis-aligned bounding box.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15763,7 +15763,7 @@
             "description": "Returns a new, uninitialized 2D axis-aligned bounding box.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15773,7 +15773,7 @@
             "description": "Returns a new, uninitialized 3D oriented bounding box (OBB).",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15783,7 +15783,7 @@
             "description": "Returns a new, uninitialized 2D oriented bounding box (OBB).",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15793,7 +15793,7 @@
             "description": "Transforms an OBB3 by a 4x4 matrix.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15803,7 +15803,7 @@
             "description": "Gets the diagonal size of an AABB3 given as minima and maxima.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15813,7 +15813,7 @@
             "description": "Get a diagonal boundary size that is symmetrical about the given point.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15823,7 +15823,7 @@
             "description": "Gets the center of an AABB.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15833,7 +15833,7 @@
             "description": "Gets the center of a 2D AABB.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15843,7 +15843,7 @@
             "description": "Collapses a 3D axis-aligned boundary, ready to expand to fit 3D points.\nCreates new AABB if none supplied.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15853,7 +15853,7 @@
             "description": "Converts an axis-aligned 3D boundary into an oriented boundary consisting of\nan array of eight 3D positions, one for each corner of the boundary.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15863,7 +15863,7 @@
             "description": "Finds the minimum axis-aligned 3D boundary enclosing the homogeneous 3D points (x,y,z,w) given in a flattened array.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15873,7 +15873,7 @@
             "description": "Finds the minimum axis-aligned 3D boundary enclosing the homogeneous 3D points (x,y,z,w) given in a flattened array.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15883,7 +15883,7 @@
             "description": "Finds the minimum axis-aligned 3D boundary enclosing the given 3D points.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15893,7 +15893,7 @@
             "description": "Finds the minimum boundary sphere enclosing the given 3D points.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15903,7 +15903,7 @@
             "description": "Finds the minimum boundary sphere enclosing the given 3D points.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15913,7 +15913,7 @@
             "description": "Gets the center of a bounding sphere.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15923,7 +15923,7 @@
             "description": "Expands the first axis-aligned 3D boundary to enclose the second, if required.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15933,7 +15933,7 @@
             "description": "Expands an axis-aligned 3D boundary to enclose the given point, if needed.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15943,7 +15943,7 @@
             "description": "Collapses a 2D axis-aligned boundary, ready to expand to fit 2D points.\nCreates new AABB if none supplied.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15953,7 +15953,7 @@
             "description": "Finds the minimum 2D projected axis-aligned boundary enclosing the given 3D points.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15963,7 +15963,7 @@
             "description": "Expands the first axis-aligned 2D boundary to enclose the second, if required.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15973,7 +15973,7 @@
             "description": "Expands an axis-aligned 2D boundary to enclose the given point, if required.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15981,7 +15981,7 @@
             "file": "src/math/mathCurves.js",
             "line": 1,
             "description": "Curve math functions.",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15989,7 +15989,7 @@
             "file": "src/math/mathGeometry.js",
             "line": 1,
             "description": "Geometry math functions.",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15999,7 +15999,7 @@
             "description": "Calculates the normal vector of a triangle.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -16009,7 +16009,7 @@
             "description": "Finds the intersection of a 3D ray with a 3D triangle.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -16019,7 +16019,7 @@
             "description": "Finds the intersection of a 3D ray with a plane defined by 3 points.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -16029,7 +16029,7 @@
             "description": "Gets barycentric coordinates from cartesian coordinates within a triangle.\nGets barycentric coordinates from cartesian coordinates within a triangle.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -16039,7 +16039,7 @@
             "description": "Returns true if the given barycentric coordinates are within their triangle.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -16049,7 +16049,7 @@
             "description": "Gets cartesian coordinates from barycentric coordinates within a triangle.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -16057,7 +16057,7 @@
             "file": "src/math/mathGeometryBuild.js",
             "line": 1,
             "description": "Boundary math functions.",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -16067,7 +16067,7 @@
             "description": "Builds normal vectors from positions and indices.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -16077,7 +16077,7 @@
             "description": "Builds vertex tangent vectors from positions, UVs and indices.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -16087,7 +16087,7 @@
             "description": "Builds vertex and index arrays needed by color-indexed triangle picking.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -16095,7 +16095,7 @@
             "file": "src/math/mathKDTree.js",
             "line": 1,
             "description": "KD-tree functions",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -16105,7 +16105,7 @@
             "description": "Returns a KD-tree that contains the triangles of the given mesh",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -16113,7 +16113,7 @@
             "file": "src/math/mathRays.js",
             "line": 1,
             "description": "Ray casting support functions.",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -16146,7 +16146,7 @@
                     "type": "Float32Array"
                 }
             ],
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -16184,7 +16184,7 @@
                     "type": "Float32Array"
                 }
             ],
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -16222,118 +16222,9 @@
                     "type": "Float32Array"
                 }
             ],
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
-        },
-        {
-            "file": "src/models/glTFModel.js",
-            "line": 317,
-            "description": "Path to a glTF file.\n\nYou can set this to a new file path at any time (except while loading), which will cause the GLTFModel to load components from\nthe new file (after first destroying any components loaded from a previous file path).\n\nFires a {{#crossLink \"GLTFModel/loaded:event\"}}{{/crossLink}} event when the glTF has loaded.",
-            "itemtype": "property",
-            "name": "src",
-            "type": "String",
-            "class": "GLTFModel",
-            "module": "xeogl",
-            "submodule": "models"
-        },
-        {
-            "file": "src/models/glTFModel.js",
-            "line": 343,
-            "description": "Fired whenever this GLTFModel has finished loading components from the glTF file\nspecified by {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}.",
-            "itemtype": "event",
-            "name": "loaded",
-            "class": "GLTFModel",
-            "module": "xeogl",
-            "submodule": "models"
-        },
-        {
-            "file": "src/models/glTFModel.js",
-            "line": 370,
-            "description": "Loads glTF from a URL into a {{#crossLink \"Model\"}}{{/crossLink}}.",
-            "params": [
-                {
-                    "name": "model",
-                    "description": "Model to load into.",
-                    "type": "Model"
-                },
-                {
-                    "name": "src",
-                    "description": "Path to glTF file.",
-                    "type": "String"
-                },
-                {
-                    "name": "options",
-                    "description": "Loading options.",
-                    "type": "Object"
-                },
-                {
-                    "name": "ok",
-                    "description": "Completion callback.",
-                    "type": "Function",
-                    "optional": true
-                }
-            ],
-            "class": "GLTFModel",
-            "module": "xeogl",
-            "submodule": "models"
-        },
-        {
-            "file": "src/models/glTFModel.js",
-            "line": 401,
-            "description": "Fired whenever this GLTFModel fails to load the glTF file\nspecified by {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}.",
-            "itemtype": "event",
-            "name": "error",
-            "params": [
-                {
-                    "name": "msg",
-                    "description": "Description of the error",
-                    "type": "String"
-                }
-            ],
-            "class": "GLTFModel",
-            "module": "xeogl",
-            "submodule": "models"
-        },
-        {
-            "file": "src/models/glTFModel.js",
-            "line": 412,
-            "description": "Parses glTF JSON into a {{#crossLink \"Model\"}}{{/crossLink}}.",
-            "params": [
-                {
-                    "name": "model",
-                    "description": "Model to parse into.",
-                    "type": "Model"
-                },
-                {
-                    "name": "gltf",
-                    "description": "The glTF JSON.",
-                    "type": "Object"
-                },
-                {
-                    "name": "options",
-                    "description": "Parsing options",
-                    "type": "Object",
-                    "optional": true,
-                    "props": [
-                        {
-                            "name": "basePath",
-                            "description": "Base path path to find external resources on, if any.",
-                            "type": "String",
-                            "optional": true
-                        },
-                        {
-                            "name": "loadBuffer",
-                            "description": "Callback to load buffer files.",
-                            "type": "String",
-                            "optional": true
-                        }
-                    ]
-                }
-            ],
-            "class": "GLTFModel",
-            "module": "xeogl",
-            "submodule": "models"
         },
         {
             "file": "src/models/model.js",
@@ -20802,6 +20693,115 @@
             "submodule": "models"
         },
         {
+            "file": "examples/js/models/glTFModel.js",
+            "line": 317,
+            "description": "Path to a glTF file.\n\nYou can set this to a new file path at any time (except while loading), which will cause the GLTFModel to load components from\nthe new file (after first destroying any components loaded from a previous file path).\n\nFires a {{#crossLink \"GLTFModel/loaded:event\"}}{{/crossLink}} event when the glTF has loaded.",
+            "itemtype": "property",
+            "name": "src",
+            "type": "String",
+            "class": "GLTFModel",
+            "module": "xeogl",
+            "submodule": "models"
+        },
+        {
+            "file": "examples/js/models/glTFModel.js",
+            "line": 343,
+            "description": "Fired whenever this GLTFModel has finished loading components from the glTF file\nspecified by {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}.",
+            "itemtype": "event",
+            "name": "loaded",
+            "class": "GLTFModel",
+            "module": "xeogl",
+            "submodule": "models"
+        },
+        {
+            "file": "examples/js/models/glTFModel.js",
+            "line": 370,
+            "description": "Loads glTF from a URL into a {{#crossLink \"Model\"}}{{/crossLink}}.",
+            "params": [
+                {
+                    "name": "model",
+                    "description": "Model to load into.",
+                    "type": "Model"
+                },
+                {
+                    "name": "src",
+                    "description": "Path to glTF file.",
+                    "type": "String"
+                },
+                {
+                    "name": "options",
+                    "description": "Loading options.",
+                    "type": "Object"
+                },
+                {
+                    "name": "ok",
+                    "description": "Completion callback.",
+                    "type": "Function",
+                    "optional": true
+                }
+            ],
+            "class": "GLTFModel",
+            "module": "xeogl",
+            "submodule": "models"
+        },
+        {
+            "file": "examples/js/models/glTFModel.js",
+            "line": 401,
+            "description": "Fired whenever this GLTFModel fails to load the glTF file\nspecified by {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}.",
+            "itemtype": "event",
+            "name": "error",
+            "params": [
+                {
+                    "name": "msg",
+                    "description": "Description of the error",
+                    "type": "String"
+                }
+            ],
+            "class": "GLTFModel",
+            "module": "xeogl",
+            "submodule": "models"
+        },
+        {
+            "file": "examples/js/models/glTFModel.js",
+            "line": 412,
+            "description": "Parses glTF JSON into a {{#crossLink \"Model\"}}{{/crossLink}}.",
+            "params": [
+                {
+                    "name": "model",
+                    "description": "Model to parse into.",
+                    "type": "Model"
+                },
+                {
+                    "name": "gltf",
+                    "description": "The glTF JSON.",
+                    "type": "Object"
+                },
+                {
+                    "name": "options",
+                    "description": "Parsing options",
+                    "type": "Object",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "basePath",
+                            "description": "Base path path to find external resources on, if any.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "loadBuffer",
+                            "description": "Callback to load buffer files.",
+                            "type": "String",
+                            "optional": true
+                        }
+                    ]
+                }
+            ],
+            "class": "GLTFModel",
+            "module": "xeogl",
+            "submodule": "models"
+        },
+        {
             "file": "examples/js/models/sceneJSModel.js",
             "line": 247,
             "description": "Selects which xeogl material type to create from each SceneJS Phong material.\n\nCauses the SceneJSModel to attempt a best-effort conversion.\n\nUpdate this at any time to reconvert the materials.\n\nFires a {{#crossLink \"SceneJSModel/materialWorkFlow:event\"}}{{/crossLink}} event on change.",
@@ -21680,14 +21680,6 @@
             "line": " src/math/mathRays.js:1"
         },
         {
-            "message": "Missing item type\nLoads glTF from a URL into a {{#crossLink \"Model\"}}{{/crossLink}}.",
-            "line": " src/models/glTFModel.js:370"
-        },
-        {
-            "message": "Missing item type\nParses glTF JSON into a {{#crossLink \"Model\"}}{{/crossLink}}.",
-            "line": " src/models/glTFModel.js:412"
-        },
-        {
             "message": "Missing item type\nRotate 'eye' about 'look', around the 'up' vector",
             "line": " src/transforms/lookat.js:101"
         },
@@ -21846,6 +21838,14 @@
         {
             "message": "Missing item type\nParses OBJ and MTL text strings into a {{#crossLink \"Model\"}}{{/crossLink}}.",
             "line": " examples/js/models/OBJModel.js:239"
+        },
+        {
+            "message": "Missing item type\nLoads glTF from a URL into a {{#crossLink \"Model\"}}{{/crossLink}}.",
+            "line": " examples/js/models/glTFModel.js:370"
+        },
+        {
+            "message": "Missing item type\nParses glTF JSON into a {{#crossLink \"Model\"}}{{/crossLink}}.",
+            "line": " examples/js/models/glTFModel.js:412"
         },
         {
             "message": "Missing item type",
