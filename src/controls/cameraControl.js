@@ -55,7 +55,7 @@
 
             this._boundaryHelper = new xeogl.Entity(this, {
                 geometry: new xeogl.AABBGeometry(this),
-                material: new xeogl.PhongMaterial({
+                material: new xeogl.PhongMaterial(this, {
                     diffuse: [0, 0, 0],
                     ambient: [0, 0, 0],
                     specular: [0, 0, 0],
