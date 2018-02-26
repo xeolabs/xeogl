@@ -54,7 +54,7 @@
  Get the view matrix:
 
  ````javascript
- var viewMatrix = camera.matrix;
+ var viewMatrix = camera.viewMatrix;
  var viewNormalMatrix = camera.normalMatrix;
  ````
 
@@ -220,18 +220,6 @@
 
             var self = this;
 
-            this._perspective.on("matrix", function () {
-                self.fire("projMatrix", self._perspective.matrix);
-            });
-
-            this._ortho.on("matrix", function () {
-                self.fire("projMatrix", self._ortho.matrix);
-            });
-
-            this._frustum.on("matrix", function () {
-                self.fire("projMatrix", self._frustum.matrix);
-            });
-
             this._eye = math.vec3([0, 0, 10.0]);
             this._look = math.vec3([0, 0, 0]);
             this._up = math.vec3([0, 1, 0]);
@@ -247,6 +235,24 @@
             this.gimbalLock = cfg.gimbalLock;
 
             this.projection = cfg.projection;
+
+            this._perspective.on("matrix", function () {
+                if (self._projectionType === "perspective") {
+                    self.fire("projMatrix", self._perspective.matrix);
+                }
+            });
+
+            this._ortho.on("matrix", function () {
+                if (self._projectionType === "ortho") {
+                    self.fire("projMatrix", self._ortho.matrix);
+                }
+            });
+
+            this._frustum.on("matrix", function () {
+                if (self._projectionType === "frustum") {
+                    self.fire("projMatrix", self._frustum.matrix);
+                }
+            });
         },
 
         _update: (function () {
@@ -654,8 +660,29 @@
              *
              * @property matrix
              * @type {Float32Array}
+             * @deprecated
              */
             matrix: {
+
+                get: function () {
+
+                    if (this._updateScheduled) {
+                        this._doUpdate();
+                    }
+
+                    return this._state.matrix;
+                }
+            },
+
+            /**
+             * The Camera's viewing transformation matrix.
+             *
+             * Fires a {{#crossLink "Camera/matrix:event"}}{{/crossLink}} event on change.
+             *
+             * @property viewMatrix
+             * @type {Float32Array}
+             */
+            viewMatrix: {
 
                 get: function () {
 
@@ -674,8 +701,29 @@
              *
              * @property normalMatrix
              * @type {Float32Array}
+             * @deprecated
              */
             normalMatrix: {
+
+                get: function () {
+
+                    if (this._updateScheduled) {
+                        this._doUpdate();
+                    }
+
+                    return this._state.normalMatrix;
+                }
+            },
+
+            /**
+             * The Camera's viewing normal transformation matrix.
+             *
+             * Fires a {{#crossLink "Camera/matrix:event"}}{{/crossLink}} event on change.
+             *
+             * @property viewNormalMatrix
+             * @type {Float32Array}
+             */
+            viewNormalMatrix: {
 
                 get: function () {
 
