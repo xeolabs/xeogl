@@ -1294,6 +1294,34 @@
             },
 
             /**
+             * World-space 3D center of this Scene.
+             *
+             * @property center
+             * @final
+             * @type {Float32Array}
+             */
+            center: {
+
+                get: function () {
+
+                    if (this._aabbDirty) {
+
+                        if (!this._center) {
+                            this._center = xeogl.math.AABB3();
+                        }
+
+                        var aabb = this.aabb;
+
+                        this._center[0] = (aabb[0] + aabb[3] ) / 2;
+                        this._center[1] = (aabb[1] + aabb[4] ) / 2;
+                        this._center[2] = (aabb[2] + aabb[5] ) / 2;
+                    }
+
+                    return this._center;
+                }
+            },
+
+            /**
              * World-space axis-aligned 3D boundary (AABB) of this Scene.
              *
              * The AABB is represented by a six-element Float32Array containing the min/max extents of the
