@@ -21,13 +21,6 @@
     <!-- Favicon -->
     <link rel="shortcut icon" href="assets/images/favicon.ico">
 
-
-    <!-- Bootstrap core CSS -->
-    <!--<link href="assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">-->
-
-    <!-- Font Awesome CSS -->
-    <!--<link href="assets/fonts/font-awesome/css/font-awesome.css" rel="stylesheet">-->
-
     <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
     <link href='https://fonts.googleapis.com/css?family=Exo+2:400,800,900,700,600,500|Roboto:100,300,400,500,700,900'
           rel='stylesheet' type='text/css'>
@@ -154,76 +147,9 @@
 <!-- ================ -->
 <div id="banner" class="banner">
 
-    <!--<iframe id="demoLink"-->
-    <!--style="background: black; border: 0; position:absolute; right: 0; width:100%; height:100%; pointer-events:all;"-->
-    <!--src="../examples/featured_gltf_pbr_damagedHelmet.html"></iframe>-->
-
-    <!--<iframe id="demoLink"-->
-    <!--style="background: black; border: 0; position:absolute; right: 0; width:100%; height:100%; pointer-events:all;"-->
-    <!--src="../examples/importing_scenejs_tronTank.html"></iframe>-->
-
     <iframe id="demoLink"
             style="background: black; border: 0; position:absolute; right: 0; width:100%; height:100%; pointer-events:all;"
             src="../examples/featured_VianneyHouse2.html"></iframe>
-
-    <!--<iframe id="demoLink"-->
-    <!--style="background: black; border: 0; position:absolute; right: 0; width:100%; height:100%; pointer-events:all;"-->
-    <!--src=" https://media.giphy.com/media/l41JUP3kGoP58Cbuw/giphy-hd.mp4"></iframe>-->
-
-
-    <!--<iframe id="demoLink"-->
-    <!--style="background: black; border: 0; position:absolute; right: 0; width:100%; height:100%; pointer-events:all;"-->
-    <!--src="../examples/featured_VianneyHouse.html"></iframe>-->
-
-    <!--<iframe id="demoLink"-->
-    <!--style="background: black; border: 0; position:absolute; right: 0; width:100%; height:100%; pointer-events:all;"-->
-    <!--src="../examples/featured_SkyCorridor.html"></iframe>-->
-
-    <!--<iframe id="demoLink"-->
-    <!--style="background: black; border: 0; position:absolute; right: 0; width:100%; height:100%; pointer-events:all;"-->
-    <!--src="../examples/effects_emphasis_explodeXRayOutline.html"></iframe>-->
-
-
-    <!--<iframe id="demoLink" style="background: black; border: 0; position:absolute; right: 0; width:100%; height:100%; pointer-events:all;"-->
-    <!--src="../examples/effects_zspace_ReciprocatingSaw.html"></iframe>-->
-
-    <!--<iframe id="demoLink" style="background: black;  border: 0; width:100%; height:100%; pointer-events:all;"-->
-    <!--src="../examples/#featured_gltf_pbr_damagedHelmet"></iframe>-->
-
-    <!--<div class="banner-caption">-->
-    <!--<div class="container">-->
-    <!--<div class="row">-->
-    <!--<div class="col-md-8 object-non-visible" data-animation-effect="fadeIn">-->
-    <!--<h1 class="title">An open source engine<br>for Web-based 3D visualization</h1>-->
-
-    <!--<p class="lead">Created by <a target="_parent"-->
-    <!--href="http://twitter.com/xeographics">@xeographics</a></p>-->
-
-    <!--<script>!function (d, s, id) {-->
-    <!--var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/.test(d.location) ? 'http' : 'https';-->
-    <!--if (!d.getElementById(id)) {-->
-    <!--js = d.createElement(s);-->
-    <!--js.id = id;-->
-    <!--js.src = p + '://platform.twitter.com/widgets.js';-->
-    <!--fjs.parentNode.insertBefore(js, fjs);-->
-    <!--}-->
-    <!--}(document, 'script', 'twitter-wjs');</script>-->
-
-
-    <!--<br><br>-->
-    <!--<br><br>-->
-
-    <!--<p class="lead"><a href="https://github.com/xeolabs/xeogl/archive/master.zip"-->
-    <!--class="btn btn-default btn-lg">Download xeogl</a></p>-->
-
-    <!--<p class="lead">or <a href="https://github.com/xeolabs/xeogl">clone the repository</a></p>-->
-    <!--<br><br><br>-->
-
-    <!--</div>-->
-    <!--</div>-->
-    <!--</div>-->
-    <!--</div>-->
-
 
 </div>
 <!-- banner end -->
@@ -275,7 +201,7 @@
                         <iframe width="560" height="315" src="https://www.youtube.com/embed/tCHwEA2HqU8?rel=0"
                                 frameborder="0" allowfullscreen></iframe>
 
-                        <h2>Scene definition</h2>
+                        <h2>Creating a 3D scene</h2>
 
                         <p>Scene definition is designed to be convenient, with xeogl providing sensible defaults for
                             virtually everything.
@@ -334,7 +260,7 @@ var entity = new xeogl.Entity({
 
                     </div>
                     <div class="col-md-6">
-                        <h2>Editing</h2>
+                        <h2>Editing scenes</h2>
 
                         <p>You can edit most things in your scene at runtime. Create and destroy components, link
                             or unlink
@@ -357,7 +283,7 @@ entity.transform = new xeogl.Rotate({
 entity.geometry.radius *= 2.0;
 entity.geometry.tube *= 2.0; </pre>
 
-                        <h2>Animating</h2>
+                        <h2>Animating scenes</h2>
 
                         <p>Animate scenes by updating properties on components:</p>
 
@@ -370,39 +296,39 @@ entity.transform.angle = 90.0;</pre>
     entity.transform.angle += 0.5;
 });</pre>
 
-                        <h2>Importing</h2>
+                        <h2>Importing content</h2>
 
-                        <p>Got a model you want to quickly view in the browser? Use some of xeogl's higher-level
-                            components,
-                            which are built on the components we just saw in the previous example. Let's load a glTF
-                            model of a gearbox:</p>
+                        <p>Load models from glTF then navigate and update their entities to create custom visualizations:</p>
                         <pre class="prettyprint lang-javascript">var model = new xeogl.GLTFModel({
-    src: "models/gltf/gearbox/gearbox_assy.gltf"
+    id: "office",
+    src: "models/gltf/office/scene.gltf"
 });
 
-model.on("loaded", function() { // Fit to view
-    var cameraFlight = new xeogl.CameraFlight());
+model.on("loaded", function() {
+
+    // When model loaded, highlight its furniture
+    // furniture entities and fit to view
+
+    var entityIds = [
+        "office#79.0", "office#31.0", "office#105.0",
+        "office#8.0", "office#65.0", "office#65.0" //....
+    ];
+
+    for (var i = 0; i < entityIds.length; i++) {
+        var id = entityIds[i];
+        model.entities[id].highlight = true;
+    }
+
+    var cameraFlight = new xeogl.CameraFlightAnimation();
     cameraFlight.flyTo(model);
 });
 
-// Use a BIM-style camera control to navigate
-// the model with the mouse and keyboard
-var cameraControl = new xeogl.BIMCameraControl();</pre>
-                        <a href="http://xeogl.org/examples/#importing_gltf_gearbox"><img
-                                src="assets/images/glTF_gearbox_medium.png"></a>
+// Control camera with mouse and touch
+var cameraControl = new xeogl.CameraControl();</pre>
+                        <a href="http://xeogl.org/examples/#importing_gltf_OfficePlan"><img
+                                src="../assets/images/screenshots/officePlanHighlighted.png"></a>
 
-                        <h2>Effects</h2>
-
-                        <p>Need to view your model in stereo? Just drop in a component to activate the desired effect.
-                            Let's
-                            view our model with simple split-screen stereo:</p>
-                        <pre class="prettyprint lang-javascript">var stereoEffect = new xeogl.StereoEffect({
-    eyeSep: 1.2,
-    focalDist: 20,
-    aperture: 45,
-});</pre>
-                        <a href="http://xeogl.org/examples/#effects_stereo"><img
-                                src="assets/images/StereoEffect.png"></a>
+                        <em>Model by <a href="https://sketchfab.com/scann3d" target="_parent">sketchfab.com/scann3d</a></em>
 
                         <h2>Learn More</h2>
 
