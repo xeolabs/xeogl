@@ -16,7 +16,8 @@
 
  ## Usage
 
- * [Adding and Removing Components](#adding-and-removing-components)
+ * [Adding Components](#adding-components)
+ * [Removing Components](#removing-components)
  * [Finding Models in Scenes](#finding-models-in-scenes)
  * [Finding Components in Models](#finding-components-in-models)
  * [Transforming a Model](#transforming-a-model)
@@ -24,7 +25,7 @@
  * [Clearing a Model](#clearing-a-model)
  * [Destroying a Model](#destroying-a-model)
 
- ### Adding and Removing Components
+ ### Adding Components
 
  When adding components to a Model, it's usually easiest to just add their configuration objects and let the Model
  internally instantiate them, as shown below.
@@ -99,12 +100,34 @@
  });
  ````
 
+ ### Removing Components
+
+ To remove a component instance from a Model:
+
+ ````JavaScript
+ model.remove(myEntity);
+ ````
+
+ We can also remove components by ID:
+
+ ````JavaScript
+ model.remove("myEntity");
+ ````
+ Note that if the Component is owned by the Model, where it was created like this:
+
+ ````javascript
+ var myComponent = new xeogl.Rotate(myModel, {... });
+ ````
+
+ then even after removing it, calling {{#crossLink "Model/destroyAll:method"}}destroyAll{{/crossLink}} on the
+ Model will still destroy the component.
+
  ### Finding Models in Scenes
 
  Our Model will now be registered by ID on its Scene, so we can now find it like this:
 
  ````javascript
-    model = xeogl.scene.models["myModel"];
+ model = xeogl.scene.models["myModel"];
  ````
 
  That's assuming that we've created the Model in the default xeogl Scene, which we did for these examples.
@@ -448,7 +471,7 @@
             var self = this;
 
             this._onDestroyed[component.id] = component.on("destroyed", function () {
-                self._remove(component);
+                self.remove(component);
             });
 
             if (component.isType("xeogl.Entity")) {
@@ -583,14 +606,55 @@
             });
         },
 
+        /**
+         * Removes a {{#crossLink "Component"}}{{/crossLink}} from this model, without destroying it.
+         *
+         * Note that if the Component is owned by the Model, where it was created like this:
+         *
+         * ````javascript
+         * var myComponent = new xeogl.Rotate(myModel, {... });
+         * ````
+         *
+         * then even after removing it, calling {{#crossLink "Model/destroyAll:method"}}destroyAll{{/crossLink}} on the
+         * Model will still destroy the component.
+         *
+         * @param component
+         */
+        remove: function (component) {
+
+            if (xeogl._isNumeric(component) || xeogl._isString(component)) {
+
+                var id = component;
+
+                // Component ID
+
+                component = this.scene.components[id];
+
+                if (!component) {
+                    this.warn("Component not found in Scene: " + id);
+                    return;
+                }
+
+                component = this.components[id];
+
+                if (!component) {
+                    this.warn("Component " + id + " is not in this Model");
+                    return;
+                }
+            } else {
+
+                if (component.scene !== this.scene) {
+                    this.warn("Attempted to remove component that's not in same xeogl.Scene: '" + component.id + "'");
+                    return;
+                }
+            }
+
+            this._remove(component);
+        },
+
         _remove: function (component) {
 
             var componentId = component.id;
-
-            if (component.scene !== this.scene) {
-                this.warn("Attempted to remove component that's not in same xeogl.Scene: '" + componentId + "'");
-                return;
-            }
 
             delete this.components[componentId];
             delete this.entities[componentId];
