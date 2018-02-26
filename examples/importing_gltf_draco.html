@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.js"></script>
+
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - importing glTF</h1>
+    <pre id="log">model:  2 cylinder engine - [<a
+            href='https://github.com/xeolabs/xeogl/tree/master/examples/models/gltf/2CylinderEngine/README.md' target="_parent">model info</a>]</pre>
+</div>
+
+<script>
+
+    //---------------------------------------------------
+    // Load the model
+    //---------------------------------------------------
+
+    var model = new xeogl.GLTFModel({
+        src: "models/gltf/2CylinderEngine/glTF/2CylinderEngine.gltf"
+    });
+
+    //-----------------------------------------------------------------------------------------------------
+    // Camera animation and user control
+    //-----------------------------------------------------------------------------------------------------
+
+    var camera = xeogl.scene.camera;
+
+    camera.eye = [-0.8, -36.51, -871.64];
+    camera.look = [-0.8,-36.51,-2.37];
+    camera.up = [0,1,0 ];
+
+    var spinning = true;
+
+    xeogl.scene.on("tick", function () { // Slowly orbit the camera
+        if (spinning) {
+            camera.orbitYaw(-0.05);
+        }
+    });
+
+    new xeogl.CameraControl();
+
+</script>
+</body>
+</html>
