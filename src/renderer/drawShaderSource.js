@@ -1439,7 +1439,7 @@
                 } else {
                     src.push("textureCoord = texturePos.xy;");
                 }
-                src.push("vec3 viewNormal = perturbNormal2Arb( normalize(vViewPosition), normalize(vViewNormal), textureCoord );");
+                src.push("vec3 viewNormal = perturbNormal2Arb( vViewPosition, normalize(vViewNormal), textureCoord );");
             } else {
                 src.push("vec3 viewNormal = normalize(vViewNormal);");
             }

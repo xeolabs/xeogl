@@ -241,7 +241,7 @@ camera.look = [-10,0,0];
 camera.up = [0,1,0];
 </code></pre>
 <p>Get the view matrix:</p>
-<pre class="code prettyprint"><code class="lang-javascript">var viewMatrix = camera.matrix;
+<pre class="code prettyprint"><code class="lang-javascript">var viewMatrix = camera.viewMatrix;
 var viewNormalMatrix = camera.normalMatrix;
 </code></pre>
 <p>Listen for view matrix updates:</p>
@@ -546,17 +546,19 @@ camera.gimbalLock = true; // Yaw rotation now happens about World&#39;s "up" axi
                                 <a href="#property_look">look</a>
 
                             </li>
-                            <li class="index-item property">
+                            <li class="index-item property deprecated">
                                 <a href="#property_matrix">matrix</a>
 
+                                    <span class="flag deprecated">deprecated</span>
                             </li>
                             <li class="index-item property inherited">
                                 <a href="#property_metadata">metadata</a>
 
                             </li>
-                            <li class="index-item property">
+                            <li class="index-item property deprecated">
                                 <a href="#property_normalMatrix">normalMatrix</a>
 
+                                    <span class="flag deprecated">deprecated</span>
                             </li>
                             <li class="index-item property">
                                 <a href="#property_ortho">ortho</a>
@@ -592,6 +594,14 @@ camera.gimbalLock = true; // Yaw rotation now happens about World&#39;s "up" axi
                             </li>
                             <li class="index-item property">
                                 <a href="#property_up">up</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_viewMatrix">viewMatrix</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_viewNormalMatrix">viewNormalMatrix</a>
 
                             </li>
                             <li class="index-item property">
@@ -1365,7 +1375,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_camera_camera.js.html#l307"><code>src&#x2F;camera&#x2F;camera.js:307</code></a>
+        <a href="../files/src_camera_camera.js.html#l313"><code>src&#x2F;camera&#x2F;camera.js:313</code></a>
         </p>
 
 
@@ -1420,7 +1430,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_camera_camera.js.html#l288"><code>src&#x2F;camera&#x2F;camera.js:288</code></a>
+        <a href="../files/src_camera_camera.js.html#l294"><code>src&#x2F;camera&#x2F;camera.js:294</code></a>
         </p>
 
 
@@ -1475,7 +1485,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_camera_camera.js.html#l369"><code>src&#x2F;camera&#x2F;camera.js:369</code></a>
+        <a href="../files/src_camera_camera.js.html#l375"><code>src&#x2F;camera&#x2F;camera.js:375</code></a>
         </p>
 
 
@@ -1530,7 +1540,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_camera_camera.js.html#l349"><code>src&#x2F;camera&#x2F;camera.js:349</code></a>
+        <a href="../files/src_camera_camera.js.html#l355"><code>src&#x2F;camera&#x2F;camera.js:355</code></a>
         </p>
 
 
@@ -1643,7 +1653,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_camera_camera.js.html#l327"><code>src&#x2F;camera&#x2F;camera.js:327</code></a>
+        <a href="../files/src_camera_camera.js.html#l333"><code>src&#x2F;camera&#x2F;camera.js:333</code></a>
         </p>
 
 
@@ -1698,7 +1708,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_camera_camera.js.html#l407"><code>src&#x2F;camera&#x2F;camera.js:407</code></a>
+        <a href="../files/src_camera_camera.js.html#l413"><code>src&#x2F;camera&#x2F;camera.js:413</code></a>
         </p>
 
 
@@ -1772,7 +1782,7 @@ and <a href="../classes/Camera.html#property_look" class="crosslink">look</a>.</
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_camera.js.html#l431"><code>src&#x2F;camera&#x2F;camera.js:431</code></a>
+                            <a href="../files/src_camera_camera.js.html#l437"><code>src&#x2F;camera&#x2F;camera.js:437</code></a>
                             </p>
                     
                     
@@ -1799,7 +1809,7 @@ and <a href="../classes/Camera.html#property_look" class="crosslink">look</a>.</
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_camera.js.html#l635"><code>src&#x2F;camera&#x2F;camera.js:635</code></a>
+                            <a href="../files/src_camera_camera.js.html#l641"><code>src&#x2F;camera&#x2F;camera.js:641</code></a>
                             </p>
                     
                     
@@ -1825,7 +1835,7 @@ and <a href="../classes/Camera.html#property_look" class="crosslink">look</a>.</
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_camera.js.html#l738"><code>src&#x2F;camera&#x2F;camera.js:738</code></a>
+                            <a href="../files/src_camera_camera.js.html#l786"><code>src&#x2F;camera&#x2F;camera.js:786</code></a>
                             </p>
                     
                     
@@ -1851,7 +1861,7 @@ and <a href="../classes/Camera.html#property_look" class="crosslink">look</a>.</
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_camera.js.html#l606"><code>src&#x2F;camera&#x2F;camera.js:606</code></a>
+                            <a href="../files/src_camera_camera.js.html#l612"><code>src&#x2F;camera&#x2F;camera.js:612</code></a>
                             </p>
                     
                     
@@ -1929,7 +1939,7 @@ and <a href="../classes/Camera.html#property_look" class="crosslink">look</a>.</
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_camera.js.html#l461"><code>src&#x2F;camera&#x2F;camera.js:461</code></a>
+                            <a href="../files/src_camera_camera.js.html#l467"><code>src&#x2F;camera&#x2F;camera.js:467</code></a>
                             </p>
                     
                     
@@ -1945,10 +1955,11 @@ and <a href="../classes/Camera.html#property_look" class="crosslink">look</a>.</
                     
                     
                     </div>
-                    <div id="property_matrix" class="property item">
+                    <div id="property_matrix" class="property item deprecated">
                         <h3 class="name"><code>matrix</code></h3>
                         <span class="type">Float32Array</span>
                     
+                            <span class="flag deprecated">deprecated</span>
                     
                     
                     
@@ -1956,7 +1967,7 @@ and <a href="../classes/Camera.html#property_look" class="crosslink">look</a>.</
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_camera.js.html#l650"><code>src&#x2F;camera&#x2F;camera.js:650</code></a>
+                            <a href="../files/src_camera_camera.js.html#l656"><code>src&#x2F;camera&#x2F;camera.js:656</code></a>
                             </p>
                     
                     
@@ -1996,10 +2007,11 @@ and <a href="../classes/Camera.html#property_look" class="crosslink">look</a>.</
                     
                     
                     </div>
-                    <div id="property_normalMatrix" class="property item">
+                    <div id="property_normalMatrix" class="property item deprecated">
                         <h3 class="name"><code>normalMatrix</code></h3>
                         <span class="type">Float32Array</span>
                     
+                            <span class="flag deprecated">deprecated</span>
                     
                     
                     
@@ -2007,7 +2019,7 @@ and <a href="../classes/Camera.html#property_look" class="crosslink">look</a>.</
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_camera.js.html#l670"><code>src&#x2F;camera&#x2F;camera.js:670</code></a>
+                            <a href="../files/src_camera_camera.js.html#l697"><code>src&#x2F;camera&#x2F;camera.js:697</code></a>
                             </p>
                     
                     
@@ -2034,7 +2046,7 @@ and <a href="../classes/Camera.html#property_look" class="crosslink">look</a>.</
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_camera.js.html#l722"><code>src&#x2F;camera&#x2F;camera.js:722</code></a>
+                            <a href="../files/src_camera_camera.js.html#l770"><code>src&#x2F;camera&#x2F;camera.js:770</code></a>
                             </p>
                     
                     
@@ -2061,7 +2073,7 @@ and <a href="../classes/Camera.html#property_look" class="crosslink">look</a>.</
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_camera.js.html#l706"><code>src&#x2F;camera&#x2F;camera.js:706</code></a>
+                            <a href="../files/src_camera_camera.js.html#l754"><code>src&#x2F;camera&#x2F;camera.js:754</code></a>
                             </p>
                     
                     
@@ -2088,7 +2100,7 @@ and <a href="../classes/Camera.html#property_look" class="crosslink">look</a>.</
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_camera.js.html#l802"><code>src&#x2F;camera&#x2F;camera.js:802</code></a>
+                            <a href="../files/src_camera_camera.js.html#l850"><code>src&#x2F;camera&#x2F;camera.js:850</code></a>
                             </p>
                     
                     
@@ -2113,7 +2125,7 @@ and <a href="../classes/Camera.html#property_look" class="crosslink">look</a>.</
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_camera.js.html#l754"><code>src&#x2F;camera&#x2F;camera.js:754</code></a>
+                            <a href="../files/src_camera_camera.js.html#l802"><code>src&#x2F;camera&#x2F;camera.js:802</code></a>
                             </p>
                     
                     
@@ -2140,7 +2152,7 @@ and <a href="../classes/Camera.html#property_look" class="crosslink">look</a>.</
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_camera.js.html#l690"><code>src&#x2F;camera&#x2F;camera.js:690</code></a>
+                            <a href="../files/src_camera_camera.js.html#l738"><code>src&#x2F;camera&#x2F;camera.js:738</code></a>
                             </p>
                     
                     
@@ -2251,7 +2263,7 @@ and <a href="../classes/Camera.html#property_look" class="crosslink">look</a>.</
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_camera.js.html#l491"><code>src&#x2F;camera&#x2F;camera.js:491</code></a>
+                            <a href="../files/src_camera_camera.js.html#l497"><code>src&#x2F;camera&#x2F;camera.js:497</code></a>
                             </p>
                     
                     
@@ -2267,6 +2279,58 @@ and <a href="../classes/Camera.html#property_look" class="crosslink">look</a>.</
                     
                     
                     </div>
+                    <div id="property_viewMatrix" class="property item">
+                        <h3 class="name"><code>viewMatrix</code></h3>
+                        <span class="type">Float32Array</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_camera_camera.js.html#l677"><code>src&#x2F;camera&#x2F;camera.js:677</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Camera&#39;s viewing transformation matrix.</p>
+                    <p>Fires a Camera/matrix:event event on change.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_viewNormalMatrix" class="property item">
+                        <h3 class="name"><code>viewNormalMatrix</code></h3>
+                        <span class="type">Float32Array</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_camera_camera.js.html#l718"><code>src&#x2F;camera&#x2F;camera.js:718</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Camera&#39;s viewing normal transformation matrix.</p>
+                    <p>Fires a Camera/matrix:event event on change.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_worldAxis" class="property item">
                         <h3 class="name"><code>worldAxis</code></h3>
                         <span class="type">Float32Array</span>
@@ -2278,7 +2342,7 @@ and <a href="../classes/Camera.html#property_look" class="crosslink">look</a>.</
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_camera.js.html#l521"><code>src&#x2F;camera&#x2F;camera.js:521</code></a>
+                            <a href="../files/src_camera_camera.js.html#l527"><code>src&#x2F;camera&#x2F;camera.js:527</code></a>
                             </p>
                     
                     
@@ -2306,7 +2370,7 @@ and <a href="../classes/Camera.html#property_look" class="crosslink">look</a>.</
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_camera.js.html#l591"><code>src&#x2F;camera&#x2F;camera.js:591</code></a>
+                            <a href="../files/src_camera_camera.js.html#l597"><code>src&#x2F;camera&#x2F;camera.js:597</code></a>
                             </p>
                     
                     
@@ -2333,7 +2397,7 @@ and <a href="../classes/Camera.html#property_look" class="crosslink">look</a>.</
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_camera.js.html#l576"><code>src&#x2F;camera&#x2F;camera.js:576</code></a>
+                            <a href="../files/src_camera_camera.js.html#l582"><code>src&#x2F;camera&#x2F;camera.js:582</code></a>
                             </p>
                     
                     
@@ -2360,7 +2424,7 @@ and <a href="../classes/Camera.html#property_look" class="crosslink">look</a>.</
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_camera.js.html#l561"><code>src&#x2F;camera&#x2F;camera.js:561</code></a>
+                            <a href="../files/src_camera_camera.js.html#l567"><code>src&#x2F;camera&#x2F;camera.js:567</code></a>
                             </p>
                     
                     
@@ -2417,7 +2481,7 @@ and <a href="../classes/Camera.html#property_look" class="crosslink">look</a>.</
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_camera.js.html#l447"><code>src&#x2F;camera&#x2F;camera.js:447</code></a>
+                            <a href="../files/src_camera_camera.js.html#l453"><code>src&#x2F;camera&#x2F;camera.js:453</code></a>
                             </p>
                     
                     
@@ -2459,7 +2523,7 @@ and <a href="../classes/Camera.html#property_look" class="crosslink">look</a>.</
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_camera.js.html#l621"><code>src&#x2F;camera&#x2F;camera.js:621</code></a>
+                            <a href="../files/src_camera_camera.js.html#l627"><code>src&#x2F;camera&#x2F;camera.js:627</code></a>
                             </p>
                     
                     
@@ -2501,7 +2565,7 @@ and <a href="../classes/Camera.html#property_look" class="crosslink">look</a>.</
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_camera.js.html#l477"><code>src&#x2F;camera&#x2F;camera.js:477</code></a>
+                            <a href="../files/src_camera_camera.js.html#l483"><code>src&#x2F;camera&#x2F;camera.js:483</code></a>
                             </p>
                     
                     
@@ -2543,7 +2607,7 @@ and <a href="../classes/Camera.html#property_look" class="crosslink">look</a>.</
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_camera.js.html#l507"><code>src&#x2F;camera&#x2F;camera.js:507</code></a>
+                            <a href="../files/src_camera_camera.js.html#l513"><code>src&#x2F;camera&#x2F;camera.js:513</code></a>
                             </p>
                     
                     

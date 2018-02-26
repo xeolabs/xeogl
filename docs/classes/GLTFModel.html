@@ -187,7 +187,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_models_glTFModel.js.html#l1"><code>src&#x2F;models&#x2F;glTFModel.js:1</code></a>
+            Defined in: <a href="../files/examples_js_models_glTFModel.js.html#l1"><code>examples&#x2F;js&#x2F;models&#x2F;glTFModel.js:1</code></a>
         </div>
 
             Module: <a href="../modules/models.html">models</a><br>
@@ -527,7 +527,7 @@ var model = new xeogl.GLTFModel({
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_models_glTFModel.js.html#l1"><code>src&#x2F;models&#x2F;glTFModel.js:1</code></a>
+                <a href="../files/examples_js_models_glTFModel.js.html#l1"><code>examples&#x2F;js&#x2F;models&#x2F;glTFModel.js:1</code></a>
                 </p>
         
         
@@ -775,16 +775,6 @@ var model = new xeogl.GLTFModel({
                                 <a href="#method_add">add</a>
 
                             </li>
-                            <li class="index-item method">
-                                <a href="#method_canvasPosToLocalRay">canvasPosToLocalRay</a>
-
-                                    <span class="flag static">static</span>
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_canvasPosToWorldRay">canvasPosToWorldRay</a>
-
-                                    <span class="flag static">static</span>
-                            </li>
                             <li class="index-item method inherited">
                                 <a href="#method_create">create</a>
 
@@ -840,11 +830,6 @@ var model = new xeogl.GLTFModel({
                             <li class="index-item method inherited">
                                 <a href="#method_warn">warn</a>
 
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_worldRayToLocalRay">worldRayToLocalRay</a>
-
-                                    <span class="flag static">static</span>
                             </li>
                     </ul>
                 </div>
@@ -1027,218 +1012,6 @@ var model = new xeogl.GLTFModel({
 
 
 </div>
-<div id="method_canvasPosToLocalRay" class="method item">
-    <h3 class="name"><code>canvasPosToLocalRay</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>camera</code>
-                </li>
-                <li class="arg">
-                        <code>entity</code>
-                </li>
-                <li class="arg">
-                        <code>canvasPos</code>
-                </li>
-                <li class="arg">
-                        <code>localRayOrigin</code>
-                </li>
-                <li class="arg">
-                        <code>localRayDir</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-        <span class="flag static">static</span>
-
-
-
-
-    <div class="meta">
-                    <p>Provided by the <a href="../modules/xeogl.html">xeogl</a> module.</p>
-                <p>
-                Defined in
-        <a href="../files/src_math_mathRays.js.html#l73"><code>src&#x2F;math&#x2F;mathRays.js:73</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Transforms a Canvas-space position to an Entity&#39;s Local-space coordinate system, in the context of a Camera.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">camera</code>
-                        <span class="type"><a href="../classes/Camera.html" class="crosslink">Camera</a></span>
-
-
-                    <div class="param-description">
-                        <p>The Camera.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">entity</code>
-                        <span class="type"><a href="../classes/Entity.html" class="crosslink">Entity</a></span>
-
-
-                    <div class="param-description">
-                        <p>The Entity.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">canvasPos</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>The Canvas-space position.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">localRayOrigin</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>The Local-space ray origin.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">localRayDir</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>The Local-space ray direction.</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
-<div id="method_canvasPosToWorldRay" class="method item">
-    <h3 class="name"><code>canvasPosToWorldRay</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>camera</code>
-                </li>
-                <li class="arg">
-                        <code>canvasPos</code>
-                </li>
-                <li class="arg">
-                        <code>worldRayOrigin</code>
-                </li>
-                <li class="arg">
-                        <code>worldRayDir</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-        <span class="flag static">static</span>
-
-
-
-
-    <div class="meta">
-                    <p>Provided by the <a href="../modules/xeogl.html">xeogl</a> module.</p>
-                <p>
-                Defined in
-        <a href="../files/src_math_mathRays.js.html#l10"><code>src&#x2F;math&#x2F;mathRays.js:10</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Transforms a Canvas-space position into a World-space ray, in the context of a Camera.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">camera</code>
-                        <span class="type"><a href="../classes/Camera.html" class="crosslink">Camera</a></span>
-
-
-                    <div class="param-description">
-                        <p>The Camera.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">canvasPos</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>The Canvas-space position.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">worldRayOrigin</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>The World-space ray origin.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">worldRayDir</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>The World-space ray direction.</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
 <div id="method_create" class="method item inherited">
     <h3 class="name"><code>create</code></h3>
 
@@ -1272,8 +1045,8 @@ var model = new xeogl.GLTFModel({
     </div>
 
     <div class="description">
-        <p>Convenience method for creating a Component within this Component&#39;s <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
-<p>The method is given a component configuration, like so:</p>
+        <p><p>Convenience method for creating a Component within this Component&#39;s <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p></p>
+<p><p>The method is given a component configuration, like so:</p></p>
 <pre class="code prettyprint"><code class="lang-javascript">var material = myComponent.create({
      type: "xeogl.PhongMaterial",
      diffuse: [1,0,0],
@@ -1624,12 +1397,12 @@ any subsequent notifications on the event as they are made.</p>
     </div>
 
     <div class="description">
-        <p>Tests if this component is of the given type, or is a subclass of the given type.</p>
-<p>The type may be given as either a string or a component constructor.</p>
-<p>This method works by walking up the inheritance type chain, which this component provides in
+        <p><p>Tests if this component is of the given type, or is a subclass of the given type.</p></p>
+<p><p>The type may be given as either a string or a component constructor.</p></p>
+<p><p>This method works by walking up the inheritance type chain, which this component provides in
 property <a href="../classes/Component.html#property_superTypes" class="crosslink">superTypes</a>, returning true as soon as one of the type strings in
-the chain matches the given type, of false if none match.</p>
-<h4 id="examples-">Examples:</h4>
+the chain matches the given type, of false if none match.</p></p>
+<p><h4 id="examples-">Examples:</h4></p>
 <pre class="code prettyprint"><code class="lang-javascript">var myRotate = new xeogl.Rotate({ ... });
 
 myRotate.isType(xeogl.Component); // Returns true for all xeogl components
@@ -2129,119 +1902,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
 </div>
-<div id="method_worldRayToLocalRay" class="method item">
-    <h3 class="name"><code>worldRayToLocalRay</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>entity</code>
-                </li>
-                <li class="arg">
-                        <code>worldRayOrigin</code>
-                </li>
-                <li class="arg">
-                        <code>worldRayDir</code>
-                </li>
-                <li class="arg">
-                        <code>localRayOrigin</code>
-                </li>
-                <li class="arg">
-                        <code>localRayDir</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-        <span class="flag static">static</span>
-
-
-
-
-    <div class="meta">
-                    <p>Provided by the <a href="../modules/xeogl.html">xeogl</a> module.</p>
-                <p>
-                Defined in
-        <a href="../files/src_math_mathRays.js.html#l94"><code>src&#x2F;math&#x2F;mathRays.js:94</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Transforms a ray from World-space to an Entity&#39;s Local-space coordinate system.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">entity</code>
-                        <span class="type"><a href="../classes/Entity.html" class="crosslink">Entity</a></span>
-
-
-                    <div class="param-description">
-                        <p>The Entity.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">worldRayOrigin</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>The World-space ray origin.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">worldRayDir</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>The World-space ray direction.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">localRayOrigin</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>The Local-space ray origin.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">localRayDir</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>The Local-space ray direction.</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
             </div>
 
             <div id="properties" class="api-class-tabpanel">
@@ -2567,7 +2227,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_glTFModel.js.html#l317"><code>src&#x2F;models&#x2F;glTFModel.js:317</code></a>
+                            <a href="../files/examples_js_models_glTFModel.js.html#l317"><code>examples&#x2F;js&#x2F;models&#x2F;glTFModel.js:317</code></a>
                             </p>
                     
                     
@@ -2607,7 +2267,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     <p>For example, if this component is a <a href="../classes/Rotate.html" class="crosslink">Rotate</a>, which
                     extends <a href="../classes/Transform.html" class="crosslink">Transform</a>, which in turn extends <a href="../classes/Component.html" class="crosslink">Component</a>,
                     then this property will have the value:</p>
-                    <pre class="code prettyprint"><code class="lang-json">["xeogl.Component", "xeogl.Transform"]
+                    <pre class="code prettyprint"><code class="lang-json">[&quot;xeogl.Component&quot;, &quot;xeogl.Transform&quot;]
                     </code></pre>
                     <p>Note that the chain is ordered downwards in the hierarchy, ie. from super-class down towards sub-class.</p>
                     
@@ -2693,8 +2353,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         </div>
                     
                         <div class="description">
-                            <p>A map of maps; for each <a href="../classes/Component.html" class="crosslink">Component</a> type in this Model,
-                    a map to IDs to <a href="../classes/Component.html" class="crosslink">Component</a> instances, eg.</p>
+                            <p><p>A map of maps; for each <a href="../classes/Component.html" class="crosslink">Component</a> type in this Model,
+                    a map to IDs to <a href="../classes/Component.html" class="crosslink">Component</a> instances, eg.</p></p>
                     <pre class="code prettyprint"><code>"xeogl.Geometry": {
                       "alpha": &lt;xeogl.Geometry&gt;,
                       "beta": &lt;xeogl.Geometry&gt;
@@ -2847,7 +2507,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_glTFModel.js.html#l401"><code>src&#x2F;models&#x2F;glTFModel.js:401</code></a>
+                            <a href="../files/examples_js_models_glTFModel.js.html#l401"><code>examples&#x2F;js&#x2F;models&#x2F;glTFModel.js:401</code></a>
                             </p>
                     
                     
@@ -2890,7 +2550,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_glTFModel.js.html#l343"><code>src&#x2F;models&#x2F;glTFModel.js:343</code></a>
+                            <a href="../files/examples_js_models_glTFModel.js.html#l343"><code>examples&#x2F;js&#x2F;models&#x2F;glTFModel.js:343</code></a>
                             </p>
                     
                     

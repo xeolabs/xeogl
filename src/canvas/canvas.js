@@ -484,6 +484,7 @@
             if (this.gl) {
                 if (xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_standard_derivatives"]) { // For normal mapping
                     this.gl.getExtension("OES_standard_derivatives");
+                    this.gl.hint(this.gl.FRAGMENT_SHADER_DERIVATIVE_HINT_OES, this.gl.FASTEST)
                 }
             }
         },

@@ -513,15 +513,6 @@
             "fors": {},
             "namespaces": {}
         },
-        "src/models/glTFModel.js": {
-            "name": "src/models/glTFModel.js",
-            "modules": {},
-            "classes": {
-                "GLTFModel": 1
-            },
-            "fors": {},
-            "namespaces": {}
-        },
         "src/models/model.js": {
             "name": "src/models/model.js",
             "modules": {},
@@ -898,6 +889,13 @@
             "fors": {},
             "namespaces": {}
         },
+        "examples/js/models/DRACOLoader.js": {
+            "name": "examples/js/models/DRACOLoader.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
         "examples/js/models/OBJModel.js": {
             "name": "examples/js/models/OBJModel.js",
             "modules": {},
@@ -919,6 +917,15 @@
             "modules": {},
             "classes": {
                 "BuildableModel": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "examples/js/models/glTFModel.js": {
+            "name": "examples/js/models/glTFModel.js",
+            "modules": {},
+            "classes": {
+                "GLTFModel": 1
             },
             "fors": {},
             "namespaces": {}
@@ -1072,7 +1079,6 @@
                 "SpecularMaterial": 1,
                 "Texture": 1,
                 "xeogl.math.math": 1,
-                "GLTFModel": 1,
                 "Model": 1,
                 "Lookat": 1,
                 "Quaternion": 1,
@@ -1106,6 +1112,7 @@
                 "VectorTextGeometry": 1,
                 "OBJModel": 1,
                 "BuildableModel": 1,
+                "GLTFModel": 1,
                 "SceneJSModel": 1,
                 "AABBHelper": 1,
                 "AxisHelper": 1,
@@ -1336,10 +1343,10 @@
             "name": "models",
             "submodules": {},
             "classes": {
-                "GLTFModel": 1,
                 "Model": 1,
                 "OBJModel": 1,
                 "BuildableModel": 1,
+                "GLTFModel": 1,
                 "SceneJSModel": 1
             },
             "fors": {},
@@ -1573,7 +1580,7 @@
             "namespace": "",
             "file": "src/camera/camera.js",
             "line": 1,
-            "description": "A **Camera** defines viewing and projection transforms for its {{#crossLink \"Scene\"}}{{/crossLink}}.\n\n## Overview\n\n* One Camera per Scene\n* Controls viewing and projection transforms\n* Has methods to pan, zoom and orbit (or first-person rotation)\n* Dynamically configurable World-space \"up\" direction\n* Switchable between perspective, frustum and orthographic projections\n* Switchable gimbal lock\n* Can be \"flown\" to look at targets using a {{#crossLink \"CameraFlightAnimation\"}}{{/crossLink}}\n* Can be animated along a path using a {{#crossLink \"CameraPathAnimation\"}}{{/crossLink}}\n* Can follow a target using a {{#crossLink \"CameraFollowAnimation\"}}{{/crossLink}}\n\n## Examples\n\n* [Perspective projection](../../examples/#camera_perspective)\n* [Orthographic projection](../../examples/#camera_orthographic)\n* [Frustum projection](../../examples/#camera_frustum)\n* [Camera with world Z-axis as \"up\"](../../examples/#camera_zAxisUp)\n* [Camera with world Y-axis as \"up\"](../../examples/#camera_yAxisUp)\n* [Automatically following an Entity with a Camera](../../examples/#camera_follow)\n* [Animating a Camera along a path](../../examples/#camera_path_interpolation)\n* [Architectural fly-through](../../examples/#importing_gltf_ModernOffice)\n\n## Usage\n\n* [Getting the Camera](#getting)\n* [Moving around](#moving-around)\n* [Projection](#projection)\n* [Configuring World up direction](#configuring-world-up-direction)\n* [Gimbal locking](#gimbal-locking)\n\n### Getting the Camera\n\nThere is exactly one Camera per Scene:\n\n````javascript\nvar camera = myScene.camera;\n````\n\n### Moving around\n\nGet and set the Camera's absolute position at any time via its {{#crossLink \"Camera/eye:property\"}}{{/crossLink}},\n{{#crossLink \"Camera/look:property\"}}{{/crossLink}} and {{#crossLink \"Camera/up:property\"}}{{/crossLink}} properties:\n\n````javascript\ncamera.eye = [-10,0,0];\ncamera.look = [-10,0,0];\ncamera.up = [0,1,0];\n````\n\nGet the view matrix:\n\n````javascript\nvar viewMatrix = camera.matrix;\nvar viewNormalMatrix = camera.normalMatrix;\n````\n\nListen for view matrix updates:\n\n````javascript\ncamera.on(\"matrix\", function(matrix) { ... });\n````\n\nOrbiting the {{#crossLink \"Camera/look:property\"}}{{/crossLink}} position:\n\n````javascript\ncamera.orbitYaw(20.0);\ncamera.orbitPitch(10.0);\n````\n\nFirst-person rotation, rotates {{#crossLink \"Camera/look:property\"}}{{/crossLink}}\nand {{#crossLink \"Camera/up:property\"}}{{/crossLink}} about {{#crossLink \"Camera/eye:property\"}}{{/crossLink}}:\n\n````javascript\ncamera.yaw(5.0);\ncamera.pitch(-10.0);\n````\n\nPanning along the Camera's local axis (ie. left/right, up/down, forward/backward):\n\n````javascript\ncamera.pan([-20, 0, 10]);\n````\n\nZoom to vary distance between {{#crossLink \"Camera/eye:property\"}}{{/crossLink}} and {{#crossLink \"Camera/look:property\"}}{{/crossLink}}:\n\n````javascript\ncamera.zoom(-5); // Move five units closer\n````\n\nGet the current distance between {{#crossLink \"Camera/eye:property\"}}{{/crossLink}} and {{#crossLink \"Camera/look:property\"}}{{/crossLink}}:\n\n````javascript\nvar distance = camera.eyeLookDist;\n````\n\n### Projection\n\nFor each projection type, the Camera has a Component to manage that projection's configuration. You can hot-switch the Camera\nbetween those projection types, while updating the properties of each projection component at any time.\n\n````javascript\ncamera.perspective.near = 0.4;\ncamera.perspective.fov = 45;\n//...\n\ncamera.ortho.near = 0.8;\ncamera.ortho.far = 1000;\n//...\n\ncamera.frustum.left = -1.0;\ncamera.frustum.right = 1.0;\ncamera.frustum.far = 1000.0;\n//...\n\ncamera.projection = \"perspective\"; // Switch to perspective\ncamera.projection = \"frustum\"; // Switch to frustum\ncamera.projection = \"ortho\"; // Switch to ortho\n````\n\nGet the projection matrix:\n\n````javascript\nvar projMatrix = camera.projMatrix;\n````\n\nListen for projection matrix updates:\n\n````javascript\ncamera.on(\"projMatrix\", function(matrix) { ... });\n````\n\n### Configuring World up direction\n\nWe can dynamically configure the direction that we consider to be \"up\" in the World-space coordinate system.\n\nSet the +Y axis as World \"up\" (convention in some modeling software):\n\n````javascript\ncamera.worldAxis = [\n   1, 0, 0,    // Right\n   0, 1, 0,    // Up\n   0, 0,-1     // Forward\n];\n````\n\nSet the +Z axis as World \"up\" (convention in most CAD and BIM viewers):\n\n````javascript\ncamera.worldAxis = [\n   1, 0, 0, // Right\n   0, 0, 1, // Up\n   0,-1, 0  // Forward\n];\n````\n\nThe Camera has read-only convenience properties that provide each axis individually:\n\n````javascript\nvar worldRight = camera.worldRight;\nvar worldForward = camera.worldForward;\nvar worldUp = camera.worldUp;\n````\n\n### Gimbal locking\n\nBy default, the Camera locks yaw rotation to pivot about the World-space \"up\" axis. We can dynamically lock and unlock that\nat any time:\n\n````javascript\ncamera.gimbalLock = false; // Yaw rotation now happens about Camera's local Y-axis\ncamera.gimbalLock = true; // Yaw rotation now happens about World's \"up\" axis\n````\n\nSee: <a href=\"https://en.wikipedia.org/wiki/Gimbal_lock\">https://en.wikipedia.org/wiki/Gimbal_lock</a>",
+            "description": "A **Camera** defines viewing and projection transforms for its {{#crossLink \"Scene\"}}{{/crossLink}}.\n\n## Overview\n\n* One Camera per Scene\n* Controls viewing and projection transforms\n* Has methods to pan, zoom and orbit (or first-person rotation)\n* Dynamically configurable World-space \"up\" direction\n* Switchable between perspective, frustum and orthographic projections\n* Switchable gimbal lock\n* Can be \"flown\" to look at targets using a {{#crossLink \"CameraFlightAnimation\"}}{{/crossLink}}\n* Can be animated along a path using a {{#crossLink \"CameraPathAnimation\"}}{{/crossLink}}\n* Can follow a target using a {{#crossLink \"CameraFollowAnimation\"}}{{/crossLink}}\n\n## Examples\n\n* [Perspective projection](../../examples/#camera_perspective)\n* [Orthographic projection](../../examples/#camera_orthographic)\n* [Frustum projection](../../examples/#camera_frustum)\n* [Camera with world Z-axis as \"up\"](../../examples/#camera_zAxisUp)\n* [Camera with world Y-axis as \"up\"](../../examples/#camera_yAxisUp)\n* [Automatically following an Entity with a Camera](../../examples/#camera_follow)\n* [Animating a Camera along a path](../../examples/#camera_path_interpolation)\n* [Architectural fly-through](../../examples/#importing_gltf_ModernOffice)\n\n## Usage\n\n* [Getting the Camera](#getting)\n* [Moving around](#moving-around)\n* [Projection](#projection)\n* [Configuring World up direction](#configuring-world-up-direction)\n* [Gimbal locking](#gimbal-locking)\n\n### Getting the Camera\n\nThere is exactly one Camera per Scene:\n\n````javascript\nvar camera = myScene.camera;\n````\n\n### Moving around\n\nGet and set the Camera's absolute position at any time via its {{#crossLink \"Camera/eye:property\"}}{{/crossLink}},\n{{#crossLink \"Camera/look:property\"}}{{/crossLink}} and {{#crossLink \"Camera/up:property\"}}{{/crossLink}} properties:\n\n````javascript\ncamera.eye = [-10,0,0];\ncamera.look = [-10,0,0];\ncamera.up = [0,1,0];\n````\n\nGet the view matrix:\n\n````javascript\nvar viewMatrix = camera.viewMatrix;\nvar viewNormalMatrix = camera.normalMatrix;\n````\n\nListen for view matrix updates:\n\n````javascript\ncamera.on(\"matrix\", function(matrix) { ... });\n````\n\nOrbiting the {{#crossLink \"Camera/look:property\"}}{{/crossLink}} position:\n\n````javascript\ncamera.orbitYaw(20.0);\ncamera.orbitPitch(10.0);\n````\n\nFirst-person rotation, rotates {{#crossLink \"Camera/look:property\"}}{{/crossLink}}\nand {{#crossLink \"Camera/up:property\"}}{{/crossLink}} about {{#crossLink \"Camera/eye:property\"}}{{/crossLink}}:\n\n````javascript\ncamera.yaw(5.0);\ncamera.pitch(-10.0);\n````\n\nPanning along the Camera's local axis (ie. left/right, up/down, forward/backward):\n\n````javascript\ncamera.pan([-20, 0, 10]);\n````\n\nZoom to vary distance between {{#crossLink \"Camera/eye:property\"}}{{/crossLink}} and {{#crossLink \"Camera/look:property\"}}{{/crossLink}}:\n\n````javascript\ncamera.zoom(-5); // Move five units closer\n````\n\nGet the current distance between {{#crossLink \"Camera/eye:property\"}}{{/crossLink}} and {{#crossLink \"Camera/look:property\"}}{{/crossLink}}:\n\n````javascript\nvar distance = camera.eyeLookDist;\n````\n\n### Projection\n\nFor each projection type, the Camera has a Component to manage that projection's configuration. You can hot-switch the Camera\nbetween those projection types, while updating the properties of each projection component at any time.\n\n````javascript\ncamera.perspective.near = 0.4;\ncamera.perspective.fov = 45;\n//...\n\ncamera.ortho.near = 0.8;\ncamera.ortho.far = 1000;\n//...\n\ncamera.frustum.left = -1.0;\ncamera.frustum.right = 1.0;\ncamera.frustum.far = 1000.0;\n//...\n\ncamera.projection = \"perspective\"; // Switch to perspective\ncamera.projection = \"frustum\"; // Switch to frustum\ncamera.projection = \"ortho\"; // Switch to ortho\n````\n\nGet the projection matrix:\n\n````javascript\nvar projMatrix = camera.projMatrix;\n````\n\nListen for projection matrix updates:\n\n````javascript\ncamera.on(\"projMatrix\", function(matrix) { ... });\n````\n\n### Configuring World up direction\n\nWe can dynamically configure the direction that we consider to be \"up\" in the World-space coordinate system.\n\nSet the +Y axis as World \"up\" (convention in some modeling software):\n\n````javascript\ncamera.worldAxis = [\n   1, 0, 0,    // Right\n   0, 1, 0,    // Up\n   0, 0,-1     // Forward\n];\n````\n\nSet the +Z axis as World \"up\" (convention in most CAD and BIM viewers):\n\n````javascript\ncamera.worldAxis = [\n   1, 0, 0, // Right\n   0, 0, 1, // Up\n   0,-1, 0  // Forward\n];\n````\n\nThe Camera has read-only convenience properties that provide each axis individually:\n\n````javascript\nvar worldRight = camera.worldRight;\nvar worldForward = camera.worldForward;\nvar worldUp = camera.worldUp;\n````\n\n### Gimbal locking\n\nBy default, the Camera locks yaw rotation to pivot about the World-space \"up\" axis. We can dynamically lock and unlock that\nat any time:\n\n````javascript\ncamera.gimbalLock = false; // Yaw rotation now happens about Camera's local Y-axis\ncamera.gimbalLock = true; // Yaw rotation now happens about World's \"up\" axis\n````\n\nSee: <a href=\"https://en.wikipedia.org/wiki/Gimbal_lock\">https://en.wikipedia.org/wiki/Gimbal_lock</a>",
             "submodule": "camera",
             "is_constructor": 1,
             "params": [
@@ -4636,127 +4643,6 @@
             "line": 12,
             "description": "This utility object provides math functions that are used within xeogl. These functions are also part of xeogl's\npublic API and are therefore available for you to use within your application code."
         },
-        "GLTFModel": {
-            "name": "GLTFModel",
-            "shortname": "GLTFModel",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "module": "xeogl",
-            "namespace": "",
-            "file": "src/models/glTFModel.js",
-            "line": 1,
-            "description": "A **GLTFModel** is a {{#crossLink \"Model\"}}{{/crossLink}} loaded from a <a href=\"https://github.com/KhronosGroup/glTF\" target = \"_other\">glTF</a> file.\n\n<a href=\"../../examples/#importing_gltf_GearboxAssy\"><img src=\"../../../assets/images/gltf/glTF_gearbox_squashed.png\"></img></a>\n\n## Overview\n\n* A GLTFModel is a container of {{#crossLink \"Component\"}}Components{{/crossLink}} that loads itself from a glTF file.\n* It begins loading as soon as you set its {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}\nproperty to the location of a valid glTF file.\n* You can set {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}} to a new file path at any time, which causes\nthe GLTFModel to clear itself and load components from the new file.\n\nIt inherits these capabilities from its {{#crossLink \"Model\"}}{{/crossLink}} base class:\n\n* Allows you to access and manipulate the components within it.\n* Can be transformed within World-space by attaching it to a {{#crossLink \"Transform\"}}{{/crossLink}}.\n* Provides its dynamic World-space axis-aligned boundary.\n\n## Supported glTF 2.0 features\n\nSo far, GLTFModel loads only geometry, materials and modeling transform hierarchies, without animations. It does not\nload cameras or lights because its purpose is to import models into environments that have already been created using\nthe xeogl API.\n\nIn addition to glTF's core metal-roughness material workflow, GLTFModel also supports two material extensions:\n\n* [KHR_materials_pbrSpecularGlossiness](https://github.com/KhronosGroup/glTF/blob/master/extensions/Khronos/KHR_materials_pbrSpecularGlossiness/README.md)\n* [KHR_materials_common](https://github.com/KhronosGroup/glTF/blob/master/extensions/Khronos/KHR_materials_common/README.md)\n\n## Examples\n\n* [Damaged Helmet with metal/rough PBR materials](../../examples/#importing_gltf_DamagedHelmet)\n* [Hover bike with specular/glossiness PBR materials](../../examples/#importing_gltf_Hoverbike)\n* [Loading glTF with embedded assets](../../examples/#importing_gltf_embedded)\n* [Parsing glTF JSON with embedded assets](../../examples/#importing_gltf_parsing_embedded)\n* [Ignoring materials when loading](../../examples/#importing_gltf_options_ignoreMaterials)\n* [Baking transform hierarchies when loading](../../examples/#importing_gltf_options_flattenTransforms)\n* [Converting materials to simple Lambertian when loading](../../examples/#importing_gltf_options_lambertMaterials)\n* [All loading options for max performance](../../examples/#importing_gltf_options_maxPerformance)\n\n## Usage\n\n* [Loading glTF](#loading-gltf)\n* [Loading options](#loading-options)\n* [Finding loaded Entities](#finding-loaded-entities)\n* [Transforming a GLTFModel](#transforming-a-gltfmodel)\n* [Getting the World-space boundary of a GLTFModel](#getting-the-world-space-boundary-of-a-gltfmodel)\n* [Clearing a GLTFModel](#clearing-a-gltfmodel)\n* [Destroying a GLTFModel](#destroying-a-gltfmodel)\n\n### Loading glTF\n\nLoad a glTF file by creating a GLTFModel:\n\n````javascript\nvar model = new xeogl.GLTFModel({\n    id: \"gearbox\",\n    src: \"models/gltf/gearbox_conical/scene.gltf\",\n});\n````\n\nA GLTFModel prefixes its own ID to those of its components. The ID is optional, but in this example we're providing our own custom ID.\n\nThe GLTFModel begins loading the glTF file immediately.\n\nTo bind a callback to be notified when the file has loaded (which fires immediately if already loaded):\n\n````javascript\nmodel.on(\"loaded\", function() {\n       // GLTFModel has loaded!\n   });\n````\n\nYou can also bind a callback to fire if loading fails:\n\n````javascript\nmodel.on(\"error\", function(msg) {\n       // Error occurred\n   });\n````\n\nTo switch to a different glTF file, simply update {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}:\n\n````javascript\nmodel.src = \"models/gltf/Buggy/glTF/Buggy.gltf\"\n````\n\n### Loading options\n\nThe following options may be specified when loading glTF:\n\n| Option | Type | Range | Default Value | Description |\n|:--------:|:----:|:-----:|:-------------:|:-----:|:-----------:|\n| flattenTransforms | Boolean |  | true | Flattens transform hierarchies to improve rendering performance. |\n| lambertMaterials | Boolean |  | false | When true, gives each {{#crossLink \"Entity\"}}{{/crossLink}} the same {{#crossLink \"LambertMaterial\"}}{{/crossLink}} and a {{#crossLink \"Entity/colorize:property\"}}{{/crossLink}} set the to diffuse color extracted from the glTF material. This is typically used for CAD models with huge amounts of objects, and will ignore textures.|\n| quantizeGeometry | Boolean |  | true | When true, quantizes geometry to reduce memory and GPU bus usage (see {{#crossLink \"Geometry\"}}{{/crossLink}}). |\n| combineGeometry | Boolean |  | true | When true, combines geometry vertex buffers to improve rendering performance (see {{#crossLink \"Geometry\"}}{{/crossLink}}). |\n| backfaces | Boolean |  | true | When true, allows visible backfaces, wherever specified in the glTF. When false, ignores backfaces. |\n| ghost | Boolean |  | false | When true, ghosts all the model's Entities (see {{#crossLink \"Entity\"}}{{/crossLink}} and {{#crossLink \"GhostMaterial\"}}{{/crossLink}}). |\n| outline | Boolean |  | false | When true, outlines all the model's Entities (see {{#crossLink \"Entity\"}}{{/crossLink}} and {{#crossLink \"OutlineMaterial\"}}{{/crossLink}}). |\n| highlight | Boolean |  | false | When true, highlights all the model's Entities (see {{#crossLink \"Entity\"}}{{/crossLink}} and {{#crossLink \"HighlightMaterial\"}}{{/crossLink}}). |\n| ghostEdgeThreshold | Number | [0..180] | 2 | When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn. |\n| maxEntities | Number | | | Optional maximum number of {{#crossLink \"Entity\"}}{{/crossLink}}'s to load. |\n| included | Function(entityId) | | null | Optional callback to mask which {{#crossLink \"Entity\"}}{{/crossLink}}'s are loaded. Entity will only be loaded when this callback returns ````true``` for the given Entity ID. |\n\nUsing the ````flattenTransforms```` option to load a glTF model while flattening its transform hierarchy:\n\n````javascript\nvar model = new xeogl.GLTFModel({\n    id: \"gearbox\",\n    src: \"models/gltf/gearbox_conical/scene.gltf\",\n    flattenTransforms: true\n});\n````\n\nUsing the ````included```` option to load all entities except for those with IDs \"gearbox#77.0\" and \"gearbox#79.0\":\n\n````javascript\nvar model = new xeogl.GLTFModel({\n    id: \"gearbox\",\n    src: \"models/gltf/gearbox_conical/scene.gltf\",\n    included: function(entityId) {\n       return id !== (\"gearbox#77.0\") &&  (id !== \"gearbox#79.0\");\n    }\n});\n````\n\n### Finding GLTFModels in Scenes\n\nOur GLTFModel will now be registered by ID on its Scene, so we can now find it like this:\n\n````javascript\nmodel = xeogl.scene.models[\"gearbox\"];\n````\n\nThat's assuming that we've created the GLTFModel in the default xeogl Scene, which we're doing in these examples.\n\n### Finding loaded Entities\n\nOnce the GLTFModel has loaded, its {{#crossLink \"Scene\"}}{{/crossLink}} will contain various components that represent the elements of the glTF file.\nWe'll now access some of those components by ID, to query and update them programmatically.\n\nLet's highlight a couple of {{#crossLink \"Entity\"}}Entities{{/crossLink}} in our GLTFModel:\n\n````javascript\nvar entities = scene.entities;\n\nentities[\"gearbox77.0\"].highlight = true;\nentities[\"gearbox79.0\"].highlight = true;\n````\n\nA GLTFModel also has ID maps of the components within it. Its components map contains all\nits {{#crossLink \"Component\"}}Components{{/crossLink}} in one big map:\n\n````javascript\nmodel.components[\"gearbox77.0\"].highlight = true;\n````\n\nwhile its entities map contains just the {{#crossLink \"Entity\"}}Entities{{/crossLink}}:\n\n````javascript\nmodel.entities[\"gearbox77.0\"].highlight = true;\n````\n\n\nNote the format of the {{#crossLink \"Entity\"}}{{/crossLink}} IDs:\n\n````<GLTFModel ID>#<glTF node ID>.<glTF primitive index>````\n\nWithin the glTF, a node's mesh may contain multiple primitives. For each primitive, xeogl will create\na separate {{#crossLink \"Entity\"}}{{/crossLink}}. Within each Entity's ID, the part before the hash is the ID of the GLTFModel,\nfollowed by the ID of the node, then \".\", then the index of the primitive within the mesh.\n\n### Transforming a GLTFModel\n\nA GLTFModel lets us transform its Entities as a group.\n\nWe can attach a modeling {{#crossLink \"Transform\"}}{{/crossLink}} to our GLTFModel, as a either a\nconfiguration object or a component instance:\n\n```` Javascript\n// Attach transforms as a configuration object:\nmodel.transform = {\n       type: \"xeogl.Translate\",\n       xyz: [-35, 0, 0],\n       parent: {\n           type: \"xeogl.Rotate\",\n           xyz: [0, 1, 0],\n           angle: 45\n       }\n    };\n\n// Attach our own transform instances:\nmodel.transform = new xeogl.Translate({\n       xyz: [-35, 0, 0],\n       parent: new xeogl.Rotate({\n           xyz: [0, 1, 0],\n           angle: 45\n       })\n    });\n````\n\nWe can also provide the {{#crossLink \"Transform\"}}{{/crossLink}} to the GLTFModel constructor, as either configuration\nobjects or instances.\n\nHere we'll provide a Transform hierarchy as a configuration object:\n\n```` Javascript\n// Model internally instantiates our transform components:\nvar model = new xeogl.GLTFModel({\n    src: \"models/gltf/gearbox_conical/scene.gltf\",\n    transform: {\n       type: \"xeogl.Translate\",\n       xyz: [-35, 0, 0],\n       parent: {\n           type: \"xeogl.Rotate\",\n           xyz: [0, 1, 0],\n           angle: 45\n       }\n    }\n});\n\n````\n\n### Getting the World-space boundary of a GLTFModel\n\nGet the World-space axis-aligned boundary like this:\n\n```` Javascript\nmodel.on(\"boundary\", function() {\n   var aabb = model.aabb; //  [xmin, ymin,zmin,xmax,ymax, zmax]\n   //...\n});\n````\n\nWe can also subscribe to changes to that boundary, which will happen whenever\n\n* the GLTFModel's {{#crossLink \"Transform\"}}{{/crossLink}} is updated,\n* components are added or removed, or\n* the GLTF model is reloaded from a different source,\n* the {{#crossLink \"Geometry\"}}Geometries{{/crossLink}} or {{#crossLink \"Transform\"}}Transforms{{/crossLink}} of its {{#crossLink \"Entities\"}}Entities{{/crossLink}} are updated.\n\n````javascript\nmodel.on(\"boundary\", function() {\n   var aabb = model.aabb; // [xmin, ymin,zmin,xmax,ymax, zmax]\n});\n````\n\n### Clearing a GLTFModel\n\n```` Javascript\nmodel.clear();\n````\n\n### Destroying a GLTFModel\n\n```` Javascript\nmodel.destroy();\n````",
-            "submodule": "models",
-            "is_constructor": 1,
-            "params": [
-                {
-                    "name": "scene",
-                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this GLTFModel in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
-                    "type": "Scene",
-                    "optional": true
-                },
-                {
-                    "name": "cfg",
-                    "description": "Configs",
-                    "type": "*",
-                    "optional": true,
-                    "props": [
-                        {
-                            "name": "id",
-                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}},\ngenerated automatically when omitted.",
-                            "type": "String",
-                            "optional": true
-                        },
-                        {
-                            "name": "meta",
-                            "description": "Optional map of user-defined metadata to attach to this GLTFModel.",
-                            "type": "String:Object",
-                            "optional": true
-                        },
-                        {
-                            "name": "src",
-                            "description": "Path to a glTF file. You can set this to a new file path at any time, which will cause the",
-                            "type": "String",
-                            "optional": true
-                        },
-                        {
-                            "name": "transform",
-                            "description": "A Local-to-World-space (modelling) {{#crossLink \"Transform\"}}{{/crossLink}} to attach to this GLTFModel.\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this GLTFModel. Internally, the given\n{{#crossLink \"Transform\"}}{{/crossLink}} will be inserted above each top-most {{#crossLink \"Transform\"}}Transform{{/crossLink}}\nthat the GLTFModel attaches to its {{#crossLink \"Entity\"}}Entities{{/crossLink}}.",
-                            "type": "Number|String|Transform",
-                            "optional": true
-                        }
-                    ]
-                },
-                {
-                    "name": "flattenTransforms",
-                    "description": "Flattens transform hierarchies to improve rendering performance.",
-                    "type": "Boolean",
-                    "optional": true,
-                    "optdefault": "true"
-                },
-                {
-                    "name": "[lambertMaterials",
-                    "description": "| Boolean |  | false | When true, gives each }{{/crossLink}} the same {{#crossLink \"LambertMaterial\"}}{{/crossLink}} and a {{#crossLink \"Entity/colorize:property\"}}{{/crossLink}} set the to diffuse color extracted from the glTF material. This is typically used for CAD models with huge amounts of objects, and will ignore textures.|",
-                    "type": "#crossLink \"Entity\""
-                },
-                {
-                    "name": "[quantizeGeometry",
-                    "description": "| Boolean |  | true | When true, quantizes geometry to reduce memory and GPU bus usage. |"
-                },
-                {
-                    "name": "[combineGeometry",
-                    "description": "| Boolean |  | true | When true, combines geometry vertex buffers to improve rendering performance. |"
-                },
-                {
-                    "name": "[backfaces",
-                    "description": "| Boolean |  | true | When true, allows visible backfaces, wherever specified in the glTF. When false, ignores backfaces. |"
-                },
-                {
-                    "name": "ghost",
-                    "description": "When true, sets all the Model's Entities initially ghosted. |",
-                    "type": "Boolean",
-                    "optional": true,
-                    "optdefault": "false"
-                },
-                {
-                    "name": "highlight",
-                    "description": "When true, sets all the Model's Entities initially highlighted. |",
-                    "type": "Boolean",
-                    "optional": true,
-                    "optdefault": "false"
-                },
-                {
-                    "name": "outline",
-                    "description": "When true, sets all the Model's Entities initially outlined. |",
-                    "type": "Boolean",
-                    "optional": true,
-                    "optdefault": "false"
-                },
-                {
-                    "name": "ghostEdgeThreshold",
-                    "description": "When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn. |",
-                    "type": "Number",
-                    "optional": true,
-                    "optdefault": "2"
-                },
-                {
-                    "name": "maxEntities",
-                    "description": "Optional maximum number of {{#crossLink \"Entity\"}}{{/crossLink}}'s to load. |",
-                    "type": "Number",
-                    "optional": true
-                },
-                {
-                    "name": "included",
-                    "description": "Optional callback to mask which {{#crossLink \"Entity\"}}{{/crossLink}}'s are loaded. Entity will only be loaded when this callback returns ````true``` for the given Entity ID. |\nGLTFModel to load components from the new file (after first destroying any components loaded from a previous file path).",
-                    "type": "Function",
-                    "optional": true
-                }
-            ],
-            "extends": "Model"
-        },
         "Model": {
             "name": "Model",
             "shortname": "Model",
@@ -6876,6 +6762,127 @@
             ],
             "extends": "Model"
         },
+        "GLTFModel": {
+            "name": "GLTFModel",
+            "shortname": "GLTFModel",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "xeogl",
+            "namespace": "",
+            "file": "examples/js/models/glTFModel.js",
+            "line": 1,
+            "description": "A **GLTFModel** is a {{#crossLink \"Model\"}}{{/crossLink}} loaded from a <a href=\"https://github.com/KhronosGroup/glTF\" target = \"_other\">glTF</a> file.\n\n<a href=\"../../examples/#importing_gltf_GearboxAssy\"><img src=\"../../../assets/images/gltf/glTF_gearbox_squashed.png\"></img></a>\n\n## Overview\n\n* A GLTFModel is a container of {{#crossLink \"Component\"}}Components{{/crossLink}} that loads itself from a glTF file.\n* It begins loading as soon as you set its {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}\nproperty to the location of a valid glTF file.\n* You can set {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}} to a new file path at any time, which causes\nthe GLTFModel to clear itself and load components from the new file.\n\nIt inherits these capabilities from its {{#crossLink \"Model\"}}{{/crossLink}} base class:\n\n* Allows you to access and manipulate the components within it.\n* Can be transformed within World-space by attaching it to a {{#crossLink \"Transform\"}}{{/crossLink}}.\n* Provides its dynamic World-space axis-aligned boundary.\n\n## Supported glTF 2.0 features\n\nSo far, GLTFModel loads only geometry, materials and modeling transform hierarchies, without animations. It does not\nload cameras or lights because its purpose is to import models into environments that have already been created using\nthe xeogl API.\n\nIn addition to glTF's core metal-roughness material workflow, GLTFModel also supports two material extensions:\n\n* [KHR_materials_pbrSpecularGlossiness](https://github.com/KhronosGroup/glTF/blob/master/extensions/Khronos/KHR_materials_pbrSpecularGlossiness/README.md)\n* [KHR_materials_common](https://github.com/KhronosGroup/glTF/blob/master/extensions/Khronos/KHR_materials_common/README.md)\n\n## Examples\n\n* [Damaged Helmet with metal/rough PBR materials](../../examples/#importing_gltf_DamagedHelmet)\n* [Hover bike with specular/glossiness PBR materials](../../examples/#importing_gltf_Hoverbike)\n* [Loading glTF with embedded assets](../../examples/#importing_gltf_embedded)\n* [Parsing glTF JSON with embedded assets](../../examples/#importing_gltf_parsing_embedded)\n* [Ignoring materials when loading](../../examples/#importing_gltf_options_ignoreMaterials)\n* [Baking transform hierarchies when loading](../../examples/#importing_gltf_options_flattenTransforms)\n* [Converting materials to simple Lambertian when loading](../../examples/#importing_gltf_options_lambertMaterials)\n* [All loading options for max performance](../../examples/#importing_gltf_options_maxPerformance)\n\n## Usage\n\n* [Loading glTF](#loading-gltf)\n* [Loading options](#loading-options)\n* [Finding loaded Entities](#finding-loaded-entities)\n* [Transforming a GLTFModel](#transforming-a-gltfmodel)\n* [Getting the World-space boundary of a GLTFModel](#getting-the-world-space-boundary-of-a-gltfmodel)\n* [Clearing a GLTFModel](#clearing-a-gltfmodel)\n* [Destroying a GLTFModel](#destroying-a-gltfmodel)\n\n### Loading glTF\n\nLoad a glTF file by creating a GLTFModel:\n\n````javascript\nvar model = new xeogl.GLTFModel({\n    id: \"gearbox\",\n    src: \"models/gltf/gearbox_conical/scene.gltf\",\n});\n````\n\nA GLTFModel prefixes its own ID to those of its components. The ID is optional, but in this example we're providing our own custom ID.\n\nThe GLTFModel begins loading the glTF file immediately.\n\nTo bind a callback to be notified when the file has loaded (which fires immediately if already loaded):\n\n````javascript\nmodel.on(\"loaded\", function() {\n       // GLTFModel has loaded!\n   });\n````\n\nYou can also bind a callback to fire if loading fails:\n\n````javascript\nmodel.on(\"error\", function(msg) {\n       // Error occurred\n   });\n````\n\nTo switch to a different glTF file, simply update {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}:\n\n````javascript\nmodel.src = \"models/gltf/Buggy/glTF/Buggy.gltf\"\n````\n\n### Loading options\n\nThe following options may be specified when loading glTF:\n\n| Option | Type | Range | Default Value | Description |\n|:--------:|:----:|:-----:|:-------------:|:-----:|:-----------:|\n| flattenTransforms | Boolean |  | true | Flattens transform hierarchies to improve rendering performance. |\n| lambertMaterials | Boolean |  | false | When true, gives each {{#crossLink \"Entity\"}}{{/crossLink}} the same {{#crossLink \"LambertMaterial\"}}{{/crossLink}} and a {{#crossLink \"Entity/colorize:property\"}}{{/crossLink}} set the to diffuse color extracted from the glTF material. This is typically used for CAD models with huge amounts of objects, and will ignore textures.|\n| quantizeGeometry | Boolean |  | true | When true, quantizes geometry to reduce memory and GPU bus usage (see {{#crossLink \"Geometry\"}}{{/crossLink}}). |\n| combineGeometry | Boolean |  | true | When true, combines geometry vertex buffers to improve rendering performance (see {{#crossLink \"Geometry\"}}{{/crossLink}}). |\n| backfaces | Boolean |  | true | When true, allows visible backfaces, wherever specified in the glTF. When false, ignores backfaces. |\n| ghost | Boolean |  | false | When true, ghosts all the model's Entities (see {{#crossLink \"Entity\"}}{{/crossLink}} and {{#crossLink \"GhostMaterial\"}}{{/crossLink}}). |\n| outline | Boolean |  | false | When true, outlines all the model's Entities (see {{#crossLink \"Entity\"}}{{/crossLink}} and {{#crossLink \"OutlineMaterial\"}}{{/crossLink}}). |\n| highlight | Boolean |  | false | When true, highlights all the model's Entities (see {{#crossLink \"Entity\"}}{{/crossLink}} and {{#crossLink \"HighlightMaterial\"}}{{/crossLink}}). |\n| ghostEdgeThreshold | Number | [0..180] | 2 | When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn. |\n| maxEntities | Number | | | Optional maximum number of {{#crossLink \"Entity\"}}{{/crossLink}}'s to load. |\n| included | Function(entityId) | | null | Optional callback to mask which {{#crossLink \"Entity\"}}{{/crossLink}}'s are loaded. Entity will only be loaded when this callback returns ````true``` for the given Entity ID. |\n\nUsing the ````flattenTransforms```` option to load a glTF model while flattening its transform hierarchy:\n\n````javascript\nvar model = new xeogl.GLTFModel({\n    id: \"gearbox\",\n    src: \"models/gltf/gearbox_conical/scene.gltf\",\n    flattenTransforms: true\n});\n````\n\nUsing the ````included```` option to load all entities except for those with IDs \"gearbox#77.0\" and \"gearbox#79.0\":\n\n````javascript\nvar model = new xeogl.GLTFModel({\n    id: \"gearbox\",\n    src: \"models/gltf/gearbox_conical/scene.gltf\",\n    included: function(entityId) {\n       return id !== (\"gearbox#77.0\") &&  (id !== \"gearbox#79.0\");\n    }\n});\n````\n\n### Finding GLTFModels in Scenes\n\nOur GLTFModel will now be registered by ID on its Scene, so we can now find it like this:\n\n````javascript\nmodel = xeogl.scene.models[\"gearbox\"];\n````\n\nThat's assuming that we've created the GLTFModel in the default xeogl Scene, which we're doing in these examples.\n\n### Finding loaded Entities\n\nOnce the GLTFModel has loaded, its {{#crossLink \"Scene\"}}{{/crossLink}} will contain various components that represent the elements of the glTF file.\nWe'll now access some of those components by ID, to query and update them programmatically.\n\nLet's highlight a couple of {{#crossLink \"Entity\"}}Entities{{/crossLink}} in our GLTFModel:\n\n````javascript\nvar entities = scene.entities;\n\nentities[\"gearbox77.0\"].highlight = true;\nentities[\"gearbox79.0\"].highlight = true;\n````\n\nA GLTFModel also has ID maps of the components within it. Its components map contains all\nits {{#crossLink \"Component\"}}Components{{/crossLink}} in one big map:\n\n````javascript\nmodel.components[\"gearbox77.0\"].highlight = true;\n````\n\nwhile its entities map contains just the {{#crossLink \"Entity\"}}Entities{{/crossLink}}:\n\n````javascript\nmodel.entities[\"gearbox77.0\"].highlight = true;\n````\n\n\nNote the format of the {{#crossLink \"Entity\"}}{{/crossLink}} IDs:\n\n````<GLTFModel ID>#<glTF node ID>.<glTF primitive index>````\n\nWithin the glTF, a node's mesh may contain multiple primitives. For each primitive, xeogl will create\na separate {{#crossLink \"Entity\"}}{{/crossLink}}. Within each Entity's ID, the part before the hash is the ID of the GLTFModel,\nfollowed by the ID of the node, then \".\", then the index of the primitive within the mesh.\n\n### Transforming a GLTFModel\n\nA GLTFModel lets us transform its Entities as a group.\n\nWe can attach a modeling {{#crossLink \"Transform\"}}{{/crossLink}} to our GLTFModel, as a either a\nconfiguration object or a component instance:\n\n```` Javascript\n// Attach transforms as a configuration object:\nmodel.transform = {\n       type: \"xeogl.Translate\",\n       xyz: [-35, 0, 0],\n       parent: {\n           type: \"xeogl.Rotate\",\n           xyz: [0, 1, 0],\n           angle: 45\n       }\n    };\n\n// Attach our own transform instances:\nmodel.transform = new xeogl.Translate({\n       xyz: [-35, 0, 0],\n       parent: new xeogl.Rotate({\n           xyz: [0, 1, 0],\n           angle: 45\n       })\n    });\n````\n\nWe can also provide the {{#crossLink \"Transform\"}}{{/crossLink}} to the GLTFModel constructor, as either configuration\nobjects or instances.\n\nHere we'll provide a Transform hierarchy as a configuration object:\n\n```` Javascript\n// Model internally instantiates our transform components:\nvar model = new xeogl.GLTFModel({\n    src: \"models/gltf/gearbox_conical/scene.gltf\",\n    transform: {\n       type: \"xeogl.Translate\",\n       xyz: [-35, 0, 0],\n       parent: {\n           type: \"xeogl.Rotate\",\n           xyz: [0, 1, 0],\n           angle: 45\n       }\n    }\n});\n\n````\n\n### Getting the World-space boundary of a GLTFModel\n\nGet the World-space axis-aligned boundary like this:\n\n```` Javascript\nmodel.on(\"boundary\", function() {\n   var aabb = model.aabb; //  [xmin, ymin,zmin,xmax,ymax, zmax]\n   //...\n});\n````\n\nWe can also subscribe to changes to that boundary, which will happen whenever\n\n* the GLTFModel's {{#crossLink \"Transform\"}}{{/crossLink}} is updated,\n* components are added or removed, or\n* the GLTF model is reloaded from a different source,\n* the {{#crossLink \"Geometry\"}}Geometries{{/crossLink}} or {{#crossLink \"Transform\"}}Transforms{{/crossLink}} of its {{#crossLink \"Entities\"}}Entities{{/crossLink}} are updated.\n\n````javascript\nmodel.on(\"boundary\", function() {\n   var aabb = model.aabb; // [xmin, ymin,zmin,xmax,ymax, zmax]\n});\n````\n\n### Clearing a GLTFModel\n\n```` Javascript\nmodel.clear();\n````\n\n### Destroying a GLTFModel\n\n```` Javascript\nmodel.destroy();\n````",
+            "submodule": "models",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this GLTFModel in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}},\ngenerated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this GLTFModel.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "src",
+                            "description": "Path to a glTF file. You can set this to a new file path at any time, which will cause the",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "transform",
+                            "description": "A Local-to-World-space (modelling) {{#crossLink \"Transform\"}}{{/crossLink}} to attach to this GLTFModel.\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this GLTFModel. Internally, the given\n{{#crossLink \"Transform\"}}{{/crossLink}} will be inserted above each top-most {{#crossLink \"Transform\"}}Transform{{/crossLink}}\nthat the GLTFModel attaches to its {{#crossLink \"Entity\"}}Entities{{/crossLink}}.",
+                            "type": "Number|String|Transform",
+                            "optional": true
+                        }
+                    ]
+                },
+                {
+                    "name": "flattenTransforms",
+                    "description": "Flattens transform hierarchies to improve rendering performance.",
+                    "type": "Boolean",
+                    "optional": true,
+                    "optdefault": "true"
+                },
+                {
+                    "name": "[lambertMaterials",
+                    "description": "| Boolean |  | false | When true, gives each }{{/crossLink}} the same {{#crossLink \"LambertMaterial\"}}{{/crossLink}} and a {{#crossLink \"Entity/colorize:property\"}}{{/crossLink}} set the to diffuse color extracted from the glTF material. This is typically used for CAD models with huge amounts of objects, and will ignore textures.|",
+                    "type": "#crossLink \"Entity\""
+                },
+                {
+                    "name": "[quantizeGeometry",
+                    "description": "| Boolean |  | true | When true, quantizes geometry to reduce memory and GPU bus usage. |"
+                },
+                {
+                    "name": "[combineGeometry",
+                    "description": "| Boolean |  | true | When true, combines geometry vertex buffers to improve rendering performance. |"
+                },
+                {
+                    "name": "[backfaces",
+                    "description": "| Boolean |  | true | When true, allows visible backfaces, wherever specified in the glTF. When false, ignores backfaces. |"
+                },
+                {
+                    "name": "ghost",
+                    "description": "When true, sets all the Model's Entities initially ghosted. |",
+                    "type": "Boolean",
+                    "optional": true,
+                    "optdefault": "false"
+                },
+                {
+                    "name": "highlight",
+                    "description": "When true, sets all the Model's Entities initially highlighted. |",
+                    "type": "Boolean",
+                    "optional": true,
+                    "optdefault": "false"
+                },
+                {
+                    "name": "outline",
+                    "description": "When true, sets all the Model's Entities initially outlined. |",
+                    "type": "Boolean",
+                    "optional": true,
+                    "optdefault": "false"
+                },
+                {
+                    "name": "ghostEdgeThreshold",
+                    "description": "When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn. |",
+                    "type": "Number",
+                    "optional": true,
+                    "optdefault": "2"
+                },
+                {
+                    "name": "maxEntities",
+                    "description": "Optional maximum number of {{#crossLink \"Entity\"}}{{/crossLink}}'s to load. |",
+                    "type": "Number",
+                    "optional": true
+                },
+                {
+                    "name": "included",
+                    "description": "Optional callback to mask which {{#crossLink \"Entity\"}}{{/crossLink}}'s are loaded. Entity will only be loaded when this callback returns ````true``` for the given Entity ID. |\nGLTFModel to load components from the new file (after first destroying any components loaded from a previous file path).",
+                    "type": "Function",
+                    "optional": true
+                }
+            ],
+            "extends": "Model"
+        },
         "SceneJSModel": {
             "name": "SceneJSModel",
             "shortname": "SceneJSModel",
@@ -7493,7 +7500,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 288,
+            "line": 294,
             "description": "Rotates {{#crossLink \"Camera/eye:property\"}}{{/crossLink}} about {{#crossLink \"Camera/look:property\"}}{{/crossLink}}, around the {{#crossLink \"Camera/up:property\"}}{{/crossLink}} vector",
             "itemtype": "method",
             "name": "orbitYaw",
@@ -7510,7 +7517,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 307,
+            "line": 313,
             "description": "Rotates {{#crossLink \"Camera/eye:property\"}}{{/crossLink}} about {{#crossLink \"Camera/look:property\"}}{{/crossLink}} around the right axis (orthogonal to {{#crossLink \"Camera/up:property\"}}{{/crossLink}} and \"look\").",
             "itemtype": "method",
             "name": "orbitPitch",
@@ -7527,7 +7534,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 327,
+            "line": 333,
             "description": "Rotates {{#crossLink \"Camera/look:property\"}}{{/crossLink}} about {{#crossLink \"Camera/eye:property\"}}{{/crossLink}}, around the {{#crossLink \"Camera/up:property\"}}{{/crossLink}} vector.",
             "itemtype": "method",
             "name": "yaw",
@@ -7544,7 +7551,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 349,
+            "line": 355,
             "description": "Rotates {{#crossLink \"Camera/look:property\"}}{{/crossLink}} about {{#crossLink \"Camera/eye:property\"}}{{/crossLink}}, around the right axis (orthogonal to {{#crossLink \"Camera/up:property\"}}{{/crossLink}} and \"look\").",
             "itemtype": "method",
             "name": "pitch",
@@ -7561,7 +7568,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 369,
+            "line": 375,
             "description": "Pans the camera along the camera's local X, Y and Z axis.",
             "itemtype": "method",
             "name": "pan",
@@ -7577,7 +7584,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 407,
+            "line": 413,
             "description": "Increments/decrements zoom factor, ie. distance between {{#crossLink \"Camera/eye:property\"}}{{/crossLink}}\nand {{#crossLink \"Camera/look:property\"}}{{/crossLink}}.",
             "itemtype": "method",
             "name": "zoom",
@@ -7593,7 +7600,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 431,
+            "line": 437,
             "description": "Position of this Camera's eye.\n\nFires an {{#crossLink \"Camera/eye:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "eye",
@@ -7605,7 +7612,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 447,
+            "line": 453,
             "description": "Fired whenever this Camera's {{#crossLink \"Camera/eye:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "eye",
@@ -7621,7 +7628,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 461,
+            "line": 467,
             "description": "Position of this Camera's point-of-interest.\n\nFires a {{#crossLink \"Camera/look:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "look",
@@ -7633,7 +7640,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 477,
+            "line": 483,
             "description": "Fired whenever this Camera's {{#crossLink \"Camera/look:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "look",
@@ -7649,7 +7656,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 491,
+            "line": 497,
             "description": "Direction of this Camera's {{#crossLink \"Camera/up:property\"}}{{/crossLink}} vector.\n\nFires an {{#crossLink \"Camera/up:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "up",
@@ -7661,7 +7668,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 507,
+            "line": 513,
             "description": "Fired whenever this Camera's {{#crossLink \"Camera/up:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "up",
@@ -7677,7 +7684,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 521,
+            "line": 527,
             "description": "Indicates the up, right and forward axis of the World coordinate system.\n\nHas format: ````[rightX, rightY, rightZ, upX, upY, upZ, forwardX, forwardY, forwardZ]````",
             "itemtype": "property",
             "name": "worldAxis",
@@ -7689,7 +7696,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 561,
+            "line": 567,
             "description": "Direction of World-space \"up\".",
             "itemtype": "property",
             "name": "worldUp",
@@ -7702,7 +7709,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 576,
+            "line": 582,
             "description": "Direction of World-space \"right\".",
             "itemtype": "property",
             "name": "worldRight",
@@ -7715,7 +7722,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 591,
+            "line": 597,
             "description": "Direction of World-space \"forwards\".",
             "itemtype": "property",
             "name": "worldForward",
@@ -7728,7 +7735,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 606,
+            "line": 612,
             "description": "Whether to lock yaw rotation to pivot about the World-space \"up\" axis.\n\nFires a {{#crossLink \"Camera/gimbalLock:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "gimbalLock",
@@ -7740,7 +7747,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 621,
+            "line": 627,
             "description": "Fired whenever this Camera's  {{#crossLink \"Camera/gimbalLock:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "gimbalLock",
@@ -7756,7 +7763,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 635,
+            "line": 641,
             "description": "Distance from \"look\" to \"eye\".",
             "itemtype": "property",
             "name": "eyeLookDist",
@@ -7767,21 +7774,22 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 650,
+            "line": 656,
             "description": "The Camera's viewing transformation matrix.\n\nFires a {{#crossLink \"Camera/matrix:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "matrix",
             "type": "{Float32Array}",
+            "deprecated": true,
             "class": "Camera",
             "module": "xeogl",
             "submodule": "camera"
         },
         {
             "file": "src/camera/camera.js",
-            "line": 670,
-            "description": "The Camera's viewing normal transformation matrix.\n\nFires a {{#crossLink \"Camera/matrix:event\"}}{{/crossLink}} event on change.",
+            "line": 677,
+            "description": "The Camera's viewing transformation matrix.\n\nFires a {{#crossLink \"Camera/matrix:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
-            "name": "normalMatrix",
+            "name": "viewMatrix",
             "type": "{Float32Array}",
             "class": "Camera",
             "module": "xeogl",
@@ -7789,7 +7797,30 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 690,
+            "line": 697,
+            "description": "The Camera's viewing normal transformation matrix.\n\nFires a {{#crossLink \"Camera/matrix:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "normalMatrix",
+            "type": "{Float32Array}",
+            "deprecated": true,
+            "class": "Camera",
+            "module": "xeogl",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/camera/camera.js",
+            "line": 718,
+            "description": "The Camera's viewing normal transformation matrix.\n\nFires a {{#crossLink \"Camera/matrix:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "viewNormalMatrix",
+            "type": "{Float32Array}",
+            "class": "Camera",
+            "module": "xeogl",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/camera/camera.js",
+            "line": 738,
             "description": "Camera's projection transformation projMatrix.\n\nFires a {{#crossLink \"Camera/projMatrix:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "projMatrix",
@@ -7800,7 +7831,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 706,
+            "line": 754,
             "description": "The perspective projection transform for this Camera.\n\nThis is used while {{#crossLink \"Camera/projection:property\"}}{{/crossLink}} equals \"perspective\".",
             "itemtype": "property",
             "name": "perspective",
@@ -7812,7 +7843,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 722,
+            "line": 770,
             "description": "The orthographic projection transform for this Camera.\n\nThis is used while {{#crossLink \"Camera/projection:property\"}}{{/crossLink}} equals \"ortho\".",
             "itemtype": "property",
             "name": "ortho",
@@ -7824,7 +7855,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 738,
+            "line": 786,
             "description": "The frustum projection transform for this Camera.\n\nThis is used while {{#crossLink \"Camera/projection:property\"}}{{/crossLink}} equals \"frustum\".",
             "itemtype": "property",
             "name": "frustum",
@@ -7836,7 +7867,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 754,
+            "line": 802,
             "description": "The active projection type.\n\nAccepted values are \"perspective\", \"ortho\" and \"frustum\".",
             "itemtype": "property",
             "name": "projection",
@@ -7848,7 +7879,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 802,
+            "line": 850,
             "description": "The active projection transform for this Camera.",
             "itemtype": "property",
             "name": "project",
@@ -8412,7 +8443,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 491,
+            "line": 492,
             "description": "Returns a snapshot of this Canvas as a Base64-encoded image.\n\nWhen a callback is given, this method will capture the snapshot asynchronously, on the next animation frame,\nand return it via the callback.\n\nWhen no callback is given, this method captures and returns the snapshot immediately. Note that is only\npossible when you have configured the Canvas's {{#crossLink \"Scene\"}}Scene{{/crossLink}} to preserve the\nWebGL drawing buffer, which has a performance overhead.\n\n#### Usage:\n\n````javascript\n// Get snapshot asynchronously\nmyScene.canvas.getSnapshot({\n    width: 500, // Defaults to size of canvas\n    height: 500,\n    format: \"png\" // Options are \"jpeg\" (default), \"png\" and \"bmp\"\n}, function(imageDataURL) {\n    imageElement.src = imageDataURL;\n});\n\n// Get snapshot synchronously, requires that Scene be\n// configured with preserveDrawingBuffer; true\nimageElement.src = myScene.canvas.getSnapshot({\n    width: 500,\n    height: 500,\n    format: \"png\"\n});\n````",
             "itemtype": "method",
             "name": "getSnapshot",
@@ -8461,7 +8492,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 572,
+            "line": 573,
             "description": "Reads colors of pixels from the last rendered frame.\n\n<p>Call this method like this:</p>\n\n````JavaScript\n\n// Ignore transparent pixels (default is false)\nvar opaqueOnly = true;\n\nvar colors = new Float32Array(8);\n\nmyCanvas.readPixels([ 100, 22, 12, 33 ], colors, 2, opaqueOnly);\n````\n\nThen the r,g,b components of the colors will be set to the colors at those pixels.",
             "params": [
                 {
@@ -8491,7 +8522,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 600,
+            "line": 601,
             "description": "A background color for the canvas. This is overridden by {{#crossLink \"Canvas/backgroundImage:property\"}}{{/crossLink}}.\n\nYou can set this to a new color at any time.",
             "itemtype": "property",
             "name": "backgroundColor",
@@ -8503,7 +8534,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 633,
+            "line": 634,
             "description": "URL of a background image for the canvas. This is overrided by {{#crossLink \"Canvas/backgroundColor/property\"}}{{/crossLink}}.\n\nYou can set this to a new file path at any time.",
             "itemtype": "property",
             "name": "backgroundImage",
@@ -8514,7 +8545,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 672,
+            "line": 673,
             "description": "The busy {{#crossLink \"Spinner\"}}{{/crossLink}} for this Canvas.",
             "itemtype": "property",
             "name": "spinner",
@@ -8834,7 +8865,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 901,
+            "line": 1007,
             "description": "Fired whenever the pointer no longer hovers over an {{#crossLink \"Entity\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "hoverOut",
@@ -8850,7 +8881,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 911,
+            "line": 1017,
             "description": "Fired continuously while the pointer is moving while hovering over an {{#crossLink \"Entity\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "hover",
@@ -8867,7 +8898,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 922,
+            "line": 1028,
             "description": "Fired while the pointer hovers over the surface of an {{#crossLink \"Entity\"}}{{/crossLink}}.\n\nThis event provides 3D information about the point on the surface that the pointer is\nhovering over.",
             "itemtype": "event",
             "name": "hoverSurface",
@@ -8884,7 +8915,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 936,
+            "line": 1042,
             "description": "Fired whenever the pointer no longer hovers over an {{#crossLink \"Entity\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "hoverOut",
@@ -8900,7 +8931,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 946,
+            "line": 1052,
             "description": "Fired continuously while the pointer is moving but not hovering over anything.",
             "itemtype": "event",
             "name": "hoverOff",
@@ -8910,7 +8941,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 1035,
+            "line": 1141,
             "description": "Fired whenever the pointer has picked (ie. clicked or tapped) an {{#crossLink \"Entity\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "picked",
@@ -8927,7 +8958,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 1044,
+            "line": 1150,
             "description": "Fired when the pointer has picked (ie. clicked or tapped) the surface of an {{#crossLink \"Entity\"}}{{/crossLink}}.\n\nThis event provides 3D information about the point on the surface that the pointer has picked.",
             "itemtype": "event",
             "name": "pickedSurface",
@@ -8944,7 +8975,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 1057,
+            "line": 1163,
             "description": "Fired when the pointer attempted a pick (ie. clicked or tapped), but has hit nothing.",
             "itemtype": "event",
             "name": "pickedNothing",
@@ -8954,7 +8985,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 1100,
+            "line": 1206,
             "description": "Fired whenever the pointer has double-picked (ie. double-clicked or double-tapped) an {{#crossLink \"Entity\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "picked",
@@ -8971,7 +9002,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 1108,
+            "line": 1214,
             "description": "Fired when the pointer has double-picked (ie. double-clicked or double-tapped) the surface of an {{#crossLink \"Entity\"}}{{/crossLink}}.\n\nThis event provides 3D information about the point on the surface that the pointer has picked.",
             "itemtype": "event",
             "name": "doublePickedSurface",
@@ -8988,7 +9019,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 1124,
+            "line": 1230,
             "description": "Fired when the pointer attempted a double-pick (ie. double-clicked or double-tapped), but has hit nothing.",
             "itemtype": "event",
             "name": "doublePickedNothing",
@@ -15743,7 +15774,7 @@
             "file": "src/math/mathBoundaries.js",
             "line": 1,
             "description": "Boundary math functions.",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15753,7 +15784,7 @@
             "description": "Returns a new, uninitialized 3D axis-aligned bounding box.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15763,7 +15794,7 @@
             "description": "Returns a new, uninitialized 2D axis-aligned bounding box.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15773,7 +15804,7 @@
             "description": "Returns a new, uninitialized 3D oriented bounding box (OBB).",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15783,7 +15814,7 @@
             "description": "Returns a new, uninitialized 2D oriented bounding box (OBB).",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15793,7 +15824,7 @@
             "description": "Transforms an OBB3 by a 4x4 matrix.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15803,7 +15834,7 @@
             "description": "Gets the diagonal size of an AABB3 given as minima and maxima.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15813,7 +15844,7 @@
             "description": "Get a diagonal boundary size that is symmetrical about the given point.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15823,7 +15854,7 @@
             "description": "Gets the center of an AABB.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15833,7 +15864,7 @@
             "description": "Gets the center of a 2D AABB.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15843,7 +15874,7 @@
             "description": "Collapses a 3D axis-aligned boundary, ready to expand to fit 3D points.\nCreates new AABB if none supplied.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15853,7 +15884,7 @@
             "description": "Converts an axis-aligned 3D boundary into an oriented boundary consisting of\nan array of eight 3D positions, one for each corner of the boundary.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15863,7 +15894,7 @@
             "description": "Finds the minimum axis-aligned 3D boundary enclosing the homogeneous 3D points (x,y,z,w) given in a flattened array.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15873,7 +15904,7 @@
             "description": "Finds the minimum axis-aligned 3D boundary enclosing the homogeneous 3D points (x,y,z,w) given in a flattened array.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15883,7 +15914,7 @@
             "description": "Finds the minimum axis-aligned 3D boundary enclosing the given 3D points.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15893,7 +15924,7 @@
             "description": "Finds the minimum boundary sphere enclosing the given 3D points.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15903,7 +15934,7 @@
             "description": "Finds the minimum boundary sphere enclosing the given 3D points.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15913,7 +15944,7 @@
             "description": "Gets the center of a bounding sphere.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15923,7 +15954,7 @@
             "description": "Expands the first axis-aligned 3D boundary to enclose the second, if required.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15933,7 +15964,7 @@
             "description": "Expands an axis-aligned 3D boundary to enclose the given point, if needed.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15943,7 +15974,7 @@
             "description": "Collapses a 2D axis-aligned boundary, ready to expand to fit 2D points.\nCreates new AABB if none supplied.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15953,7 +15984,7 @@
             "description": "Finds the minimum 2D projected axis-aligned boundary enclosing the given 3D points.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15963,7 +15994,7 @@
             "description": "Expands the first axis-aligned 2D boundary to enclose the second, if required.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15973,7 +16004,7 @@
             "description": "Expands an axis-aligned 2D boundary to enclose the given point, if required.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15981,7 +16012,7 @@
             "file": "src/math/mathCurves.js",
             "line": 1,
             "description": "Curve math functions.",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15989,7 +16020,7 @@
             "file": "src/math/mathGeometry.js",
             "line": 1,
             "description": "Geometry math functions.",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -15999,7 +16030,7 @@
             "description": "Calculates the normal vector of a triangle.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -16009,7 +16040,7 @@
             "description": "Finds the intersection of a 3D ray with a 3D triangle.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -16019,7 +16050,7 @@
             "description": "Finds the intersection of a 3D ray with a plane defined by 3 points.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -16029,7 +16060,7 @@
             "description": "Gets barycentric coordinates from cartesian coordinates within a triangle.\nGets barycentric coordinates from cartesian coordinates within a triangle.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -16039,7 +16070,7 @@
             "description": "Returns true if the given barycentric coordinates are within their triangle.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -16049,7 +16080,7 @@
             "description": "Gets cartesian coordinates from barycentric coordinates within a triangle.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -16057,7 +16088,7 @@
             "file": "src/math/mathGeometryBuild.js",
             "line": 1,
             "description": "Boundary math functions.",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -16067,7 +16098,7 @@
             "description": "Builds normal vectors from positions and indices.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -16077,7 +16108,7 @@
             "description": "Builds vertex tangent vectors from positions, UVs and indices.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -16087,7 +16118,7 @@
             "description": "Builds vertex and index arrays needed by color-indexed triangle picking.",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -16095,7 +16126,7 @@
             "file": "src/math/mathKDTree.js",
             "line": 1,
             "description": "KD-tree functions",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -16105,7 +16136,7 @@
             "description": "Returns a KD-tree that contains the triangles of the given mesh",
             "access": "private",
             "tagname": "",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -16113,7 +16144,7 @@
             "file": "src/math/mathRays.js",
             "line": 1,
             "description": "Ray casting support functions.",
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -16146,7 +16177,7 @@
                     "type": "Float32Array"
                 }
             ],
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -16184,7 +16215,7 @@
                     "type": "Float32Array"
                 }
             ],
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
         },
@@ -16222,118 +16253,9 @@
                     "type": "Float32Array"
                 }
             ],
-            "class": "GLTFModel",
+            "class": "Model",
             "module": "xeogl",
             "namespace": "xeogl.math"
-        },
-        {
-            "file": "src/models/glTFModel.js",
-            "line": 317,
-            "description": "Path to a glTF file.\n\nYou can set this to a new file path at any time (except while loading), which will cause the GLTFModel to load components from\nthe new file (after first destroying any components loaded from a previous file path).\n\nFires a {{#crossLink \"GLTFModel/loaded:event\"}}{{/crossLink}} event when the glTF has loaded.",
-            "itemtype": "property",
-            "name": "src",
-            "type": "String",
-            "class": "GLTFModel",
-            "module": "xeogl",
-            "submodule": "models"
-        },
-        {
-            "file": "src/models/glTFModel.js",
-            "line": 343,
-            "description": "Fired whenever this GLTFModel has finished loading components from the glTF file\nspecified by {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}.",
-            "itemtype": "event",
-            "name": "loaded",
-            "class": "GLTFModel",
-            "module": "xeogl",
-            "submodule": "models"
-        },
-        {
-            "file": "src/models/glTFModel.js",
-            "line": 370,
-            "description": "Loads glTF from a URL into a {{#crossLink \"Model\"}}{{/crossLink}}.",
-            "params": [
-                {
-                    "name": "model",
-                    "description": "Model to load into.",
-                    "type": "Model"
-                },
-                {
-                    "name": "src",
-                    "description": "Path to glTF file.",
-                    "type": "String"
-                },
-                {
-                    "name": "options",
-                    "description": "Loading options.",
-                    "type": "Object"
-                },
-                {
-                    "name": "ok",
-                    "description": "Completion callback.",
-                    "type": "Function",
-                    "optional": true
-                }
-            ],
-            "class": "GLTFModel",
-            "module": "xeogl",
-            "submodule": "models"
-        },
-        {
-            "file": "src/models/glTFModel.js",
-            "line": 401,
-            "description": "Fired whenever this GLTFModel fails to load the glTF file\nspecified by {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}.",
-            "itemtype": "event",
-            "name": "error",
-            "params": [
-                {
-                    "name": "msg",
-                    "description": "Description of the error",
-                    "type": "String"
-                }
-            ],
-            "class": "GLTFModel",
-            "module": "xeogl",
-            "submodule": "models"
-        },
-        {
-            "file": "src/models/glTFModel.js",
-            "line": 412,
-            "description": "Parses glTF JSON into a {{#crossLink \"Model\"}}{{/crossLink}}.",
-            "params": [
-                {
-                    "name": "model",
-                    "description": "Model to parse into.",
-                    "type": "Model"
-                },
-                {
-                    "name": "gltf",
-                    "description": "The glTF JSON.",
-                    "type": "Object"
-                },
-                {
-                    "name": "options",
-                    "description": "Parsing options",
-                    "type": "Object",
-                    "optional": true,
-                    "props": [
-                        {
-                            "name": "basePath",
-                            "description": "Base path path to find external resources on, if any.",
-                            "type": "String",
-                            "optional": true
-                        },
-                        {
-                            "name": "loadBuffer",
-                            "description": "Callback to load buffer files.",
-                            "type": "String",
-                            "optional": true
-                        }
-                    ]
-                }
-            ],
-            "class": "GLTFModel",
-            "module": "xeogl",
-            "submodule": "models"
         },
         {
             "file": "src/models/model.js",
@@ -17915,6 +17837,17 @@
         {
             "file": "src/scene.js",
             "line": 1296,
+            "description": "World-space 3D center of this Scene.",
+            "itemtype": "property",
+            "name": "center",
+            "final": 1,
+            "type": "{Float32Array}",
+            "class": "Scene",
+            "module": "xeogl"
+        },
+        {
+            "file": "src/scene.js",
+            "line": 1324,
             "description": "World-space axis-aligned 3D boundary (AABB) of this Scene.\n\nThe AABB is represented by a six-element Float32Array containing the min/max extents of the\naxis-aligned volume, ie. ````[xmin, ymin,zmin,xmax,ymax, zmax]````.",
             "itemtype": "property",
             "name": "aabb",
@@ -17925,7 +17858,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1387,
+            "line": 1415,
             "description": "Attempts to pick an {{#crossLink \"Entity\"}}Entity{{/crossLink}} in this Scene.\n\nIgnores {{#crossLink \"Entity\"}}Entities{{/crossLink}} with {{#crossLink \"Entity/pickable:property\"}}pickable{{/crossLink}}\nset *false*.\n\nPicking the {{#crossLink \"Entity\"}}{{/crossLink}} at the given canvas coordinates:\n\n````javascript\nvar hit = scene.pick({\n    canvasPos: [23, 131]\n });\n\nif (hit) { // Picked an Entity\n    var entity = hit.entity;\n}\n````\n\n**Usage:**\n\nPicking the {{#crossLink \"Entity\"}}{{/crossLink}} that intersects a ray cast through the canvas:\n\n````javascript\nvar hit = scene.pick({\n    pickSurface: true,\n    canvasPos: [23, 131]\n });\n\nif (hit) { // Picked an Entity\n\n    var entity = hit.entity;\n\n    // These properties are only on the hit result when we do a ray-pick:\n\n    var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n    var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n    var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n    var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle\n    var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle\n    var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle\n    var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n    var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n    var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n}\n````\n\nPicking the {{#crossLink \"Entity\"}}{{/crossLink}} that intersects an arbitrarily-aligned World-space ray:\n\n````javascript\nvar hit = scene.pick({\n    pickSurface: true,       // Picking with arbitrarily-positioned ray\n    origin: [0,0,-5],    // Ray origin\n    direction: [0,0,1]   // Ray direction\n});\n\nif (hit) { // Picked an Entity with the ray\n\n    var entity = hit.entity;\n\n    var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n    var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n    var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n    var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle\n    var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle\n    var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle\n    var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n    var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n    var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n    var origin = hit.origin; // Float32Array containing the World-space ray origin\n    var direction = hit.direction; // Float32Array containing the World-space ray direction\n}\n````",
             "itemtype": "method",
             "name": "pick",
@@ -17984,7 +17917,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1773,
+            "line": 1801,
             "description": "Resets this Scene to its default state.\n\nReferences to any components in this Scene will become invalid.",
             "itemtype": "method",
             "name": "clear",
@@ -20473,6 +20406,107 @@
             "submodule": "geometry"
         },
         {
+            "file": "examples/js/models/DRACOLoader.js",
+            "line": 46,
+            "description": "Sets desired mode for generated geometry indices.\nCan be either:\n    THREE.TrianglesDrawMode\n    THREE.TriangleStripDrawMode",
+            "class": "OBJModel",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/models/DRACOLoader.js",
+            "line": 56,
+            "description": "Skips dequantization for a specific attribute.\n|attributeName| is the THREE.js name of the given attribute type.\nThe only currently supported |attributeName| is 'position', more may be\nadded in future.",
+            "class": "OBJModel",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/models/DRACOLoader.js",
+            "line": 70,
+            "description": "|attributeUniqueIdMap| specifies attribute unique id for an attribute in\nthe geometry to be decoded. The name of the attribute must be one of the\nsupported attribute type in Three.JS, including:\n    'position',\n    'color',\n    'normal',\n    'uv',\n    'uv2',\n    'skinIndex',\n    'skinWeight'.\nThe format is:\n    attributeUniqueIdMap[attributeName] = attributeId",
+            "class": "OBJModel",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/models/DRACOLoader.js",
+            "line": 331,
+            "description": "Sets the base path for decoder source files.",
+            "params": [
+                {
+                    "name": "path",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "class": "OBJModel",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/models/DRACOLoader.js",
+            "line": 339,
+            "description": "Sets decoder configuration and releases singleton decoder module. Module\nwill be recreated with the next decoding call.",
+            "params": [
+                {
+                    "name": "config",
+                    "description": "",
+                    "type": "Object"
+                }
+            ],
+            "class": "OBJModel",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/models/DRACOLoader.js",
+            "line": 355,
+            "description": "Releases the singleton DracoDecoderModule instance. Module will be recreated\nwith the next decoding call.",
+            "class": "OBJModel",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/models/DRACOLoader.js",
+            "line": 363,
+            "description": "Gets WebAssembly or asm.js singleton instance of DracoDecoderModule after testing for\nbrowser support. Returns Promise that resolves when module is available.",
+            "return": {
+                "description": ">}",
+                "type": "Promise<decoder: DracoDecoderModule"
+            },
+            "class": "OBJModel",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/models/DRACOLoader.js",
+            "line": 411,
+            "params": [
+                {
+                    "name": "src",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Promise"
+            },
+            "class": "OBJModel",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/models/DRACOLoader.js",
+            "line": 431,
+            "params": [
+                {
+                    "name": "src",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Promise"
+            },
+            "class": "OBJModel",
+            "module": "xeogl"
+        },
+        {
             "file": "examples/js/models/OBJModel.js",
             "line": 135,
             "description": "Path to a Wavefront OBJ file.\n\nYou can set this to a new file path at any time, which will cause the OBJModel to load components from\nthe new file (after first destroying any components loaded from a previous file path).\n\nAlso loads materials from any MTL files referenced in the OBJ.\n\nFires a {{#crossLink \"OBJModel/src:event\"}}{{/crossLink}} event on change.",
@@ -20798,6 +20832,115 @@
             "itemtype": "method",
             "name": "reset",
             "class": "BuildableModel",
+            "module": "xeogl",
+            "submodule": "models"
+        },
+        {
+            "file": "examples/js/models/glTFModel.js",
+            "line": 317,
+            "description": "Path to a glTF file.\n\nYou can set this to a new file path at any time (except while loading), which will cause the GLTFModel to load components from\nthe new file (after first destroying any components loaded from a previous file path).\n\nFires a {{#crossLink \"GLTFModel/loaded:event\"}}{{/crossLink}} event when the glTF has loaded.",
+            "itemtype": "property",
+            "name": "src",
+            "type": "String",
+            "class": "GLTFModel",
+            "module": "xeogl",
+            "submodule": "models"
+        },
+        {
+            "file": "examples/js/models/glTFModel.js",
+            "line": 343,
+            "description": "Fired whenever this GLTFModel has finished loading components from the glTF file\nspecified by {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}.",
+            "itemtype": "event",
+            "name": "loaded",
+            "class": "GLTFModel",
+            "module": "xeogl",
+            "submodule": "models"
+        },
+        {
+            "file": "examples/js/models/glTFModel.js",
+            "line": 370,
+            "description": "Loads glTF from a URL into a {{#crossLink \"Model\"}}{{/crossLink}}.",
+            "params": [
+                {
+                    "name": "model",
+                    "description": "Model to load into.",
+                    "type": "Model"
+                },
+                {
+                    "name": "src",
+                    "description": "Path to glTF file.",
+                    "type": "String"
+                },
+                {
+                    "name": "options",
+                    "description": "Loading options.",
+                    "type": "Object"
+                },
+                {
+                    "name": "ok",
+                    "description": "Completion callback.",
+                    "type": "Function",
+                    "optional": true
+                }
+            ],
+            "class": "GLTFModel",
+            "module": "xeogl",
+            "submodule": "models"
+        },
+        {
+            "file": "examples/js/models/glTFModel.js",
+            "line": 401,
+            "description": "Fired whenever this GLTFModel fails to load the glTF file\nspecified by {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}.",
+            "itemtype": "event",
+            "name": "error",
+            "params": [
+                {
+                    "name": "msg",
+                    "description": "Description of the error",
+                    "type": "String"
+                }
+            ],
+            "class": "GLTFModel",
+            "module": "xeogl",
+            "submodule": "models"
+        },
+        {
+            "file": "examples/js/models/glTFModel.js",
+            "line": 412,
+            "description": "Parses glTF JSON into a {{#crossLink \"Model\"}}{{/crossLink}}.",
+            "params": [
+                {
+                    "name": "model",
+                    "description": "Model to parse into.",
+                    "type": "Model"
+                },
+                {
+                    "name": "gltf",
+                    "description": "The glTF JSON.",
+                    "type": "Object"
+                },
+                {
+                    "name": "options",
+                    "description": "Parsing options",
+                    "type": "Object",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "basePath",
+                            "description": "Base path path to find external resources on, if any.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "loadBuffer",
+                            "description": "Callback to load buffer files.",
+                            "type": "String",
+                            "optional": true
+                        }
+                    ]
+                }
+            ],
+            "class": "GLTFModel",
             "module": "xeogl",
             "submodule": "models"
         },
@@ -21249,7 +21392,7 @@
     "warnings": [
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/canvas/canvas.js:491"
+            "line": " src/canvas/canvas.js:492"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -21333,7 +21476,7 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/scene.js:1387"
+            "line": " src/scene.js:1415"
         },
         {
             "message": "unknown tag: demo",
@@ -21453,7 +21596,7 @@
         },
         {
             "message": "Missing item type\nReads colors of pixels from the last rendered frame.\n\n<p>Call this method like this:</p>\n\n````JavaScript\n\n// Ignore transparent pixels (default is false)\nvar opaqueOnly = true;\n\nvar colors = new Float32Array(8);\n\nmyCanvas.readPixels([ 100, 22, 12, 33 ], colors, 2, opaqueOnly);\n````\n\nThen the r,g,b components of the colors will be set to the colors at those pixels.",
-            "line": " src/canvas/canvas.js:572"
+            "line": " src/canvas/canvas.js:573"
         },
         {
             "message": "Missing item type\nImplement protected virtual template method {{#crossLink \"Geometry/method:_update\"}}{{/crossLink}},\nto generate geometry data arrays.",
@@ -21680,14 +21823,6 @@
             "line": " src/math/mathRays.js:1"
         },
         {
-            "message": "Missing item type\nLoads glTF from a URL into a {{#crossLink \"Model\"}}{{/crossLink}}.",
-            "line": " src/models/glTFModel.js:370"
-        },
-        {
-            "message": "Missing item type\nParses glTF JSON into a {{#crossLink \"Model\"}}{{/crossLink}}.",
-            "line": " src/models/glTFModel.js:412"
-        },
-        {
             "message": "Missing item type\nRotate 'eye' about 'look', around the 'up' vector",
             "line": " src/transforms/lookat.js:101"
         },
@@ -21840,12 +21975,56 @@
             "line": " examples/js/geometry/heightmapGeometry.js:113"
         },
         {
+            "message": "Missing item type\nSets desired mode for generated geometry indices.\nCan be either:\n    THREE.TrianglesDrawMode\n    THREE.TriangleStripDrawMode",
+            "line": " examples/js/models/DRACOLoader.js:46"
+        },
+        {
+            "message": "Missing item type\nSkips dequantization for a specific attribute.\n|attributeName| is the THREE.js name of the given attribute type.\nThe only currently supported |attributeName| is 'position', more may be\nadded in future.",
+            "line": " examples/js/models/DRACOLoader.js:56"
+        },
+        {
+            "message": "Missing item type\n|attributeUniqueIdMap| specifies attribute unique id for an attribute in\nthe geometry to be decoded. The name of the attribute must be one of the\nsupported attribute type in Three.JS, including:\n    'position',\n    'color',\n    'normal',\n    'uv',\n    'uv2',\n    'skinIndex',\n    'skinWeight'.\nThe format is:\n    attributeUniqueIdMap[attributeName] = attributeId",
+            "line": " examples/js/models/DRACOLoader.js:70"
+        },
+        {
+            "message": "Missing item type\nSets the base path for decoder source files.",
+            "line": " examples/js/models/DRACOLoader.js:331"
+        },
+        {
+            "message": "Missing item type\nSets decoder configuration and releases singleton decoder module. Module\nwill be recreated with the next decoding call.",
+            "line": " examples/js/models/DRACOLoader.js:339"
+        },
+        {
+            "message": "Missing item type\nReleases the singleton DracoDecoderModule instance. Module will be recreated\nwith the next decoding call.",
+            "line": " examples/js/models/DRACOLoader.js:355"
+        },
+        {
+            "message": "Missing item type\nGets WebAssembly or asm.js singleton instance of DracoDecoderModule after testing for\nbrowser support. Returns Promise that resolves when module is available.",
+            "line": " examples/js/models/DRACOLoader.js:363"
+        },
+        {
+            "message": "Missing item type",
+            "line": " examples/js/models/DRACOLoader.js:411"
+        },
+        {
+            "message": "Missing item type",
+            "line": " examples/js/models/DRACOLoader.js:431"
+        },
+        {
             "message": "Missing item type\nLoads OBJ and MTL from file(s) into a {{#crossLink \"Model\"}}{{/crossLink}}.",
             "line": " examples/js/models/OBJModel.js:209"
         },
         {
             "message": "Missing item type\nParses OBJ and MTL text strings into a {{#crossLink \"Model\"}}{{/crossLink}}.",
             "line": " examples/js/models/OBJModel.js:239"
+        },
+        {
+            "message": "Missing item type\nLoads glTF from a URL into a {{#crossLink \"Model\"}}{{/crossLink}}.",
+            "line": " examples/js/models/glTFModel.js:370"
+        },
+        {
+            "message": "Missing item type\nParses glTF JSON into a {{#crossLink \"Model\"}}{{/crossLink}}.",
+            "line": " examples/js/models/glTFModel.js:412"
         },
         {
             "message": "Missing item type",
