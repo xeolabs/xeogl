@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2018-02-22
+ * Built on 2018-02-26
  *
  * MIT License
  * Copyright 2018, Lindsay Kay
@@ -5369,7 +5369,7 @@ xeogl.utils.Map = function (items, baseId) {
 
             var canvas = camera.scene.canvas.canvas;
 
-            var viewMat = camera.view.matrix;
+            var viewMat = camera.viewMatrix;
             var projMat = camera.projection === "ortho" ? camera.ortho.matrix : camera.perspective.matrix;
 
             var pvMat = math.mulMat4(projMat, viewMat, tempMat4b);
@@ -10037,7 +10037,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 } else {
                     src.push("textureCoord = texturePos.xy;");
                 }
-                src.push("vec3 viewNormal = perturbNormal2Arb( normalize(vViewPosition), normalize(vViewNormal), textureCoord );");
+                src.push("vec3 viewNormal = perturbNormal2Arb( vViewPosition, normalize(vViewNormal), textureCoord );");
             } else {
                 src.push("vec3 viewNormal = normalize(vViewNormal);");
             }
@@ -15590,6 +15590,34 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             },
 
             /**
+             * World-space 3D center of this Scene.
+             *
+             * @property center
+             * @final
+             * @type {Float32Array}
+             */
+            center: {
+
+                get: function () {
+
+                    if (this._aabbDirty) {
+
+                        if (!this._center) {
+                            this._center = xeogl.math.AABB3();
+                        }
+
+                        var aabb = this.aabb;
+
+                        this._center[0] = (aabb[0] + aabb[3] ) / 2;
+                        this._center[1] = (aabb[1] + aabb[4] ) / 2;
+                        this._center[2] = (aabb[2] + aabb[5] ) / 2;
+                    }
+
+                    return this._center;
+                }
+            },
+
+            /**
              * World-space axis-aligned 3D boundary (AABB) of this Scene.
              *
              * The AABB is represented by a six-element Float32Array containing the min/max extents of the
@@ -17340,6 +17368,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             if (this.gl) {
                 if (xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_standard_derivatives"]) { // For normal mapping
                     this.gl.getExtension("OES_standard_derivatives");
+                    this.gl.hint(this.gl.FRAGMENT_SHADER_DERIVATIVE_HINT_OES, this.gl.FASTEST)
                 }
             }
         },
@@ -18334,7 +18363,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
             this._boundaryHelper = new xeogl.Entity(this, {
                 geometry: new xeogl.AABBGeometry(this),
-                material: new xeogl.PhongMaterial({
+                material: new xeogl.PhongMaterial(this, {
                     diffuse: [0, 0, 0],
                     ambient: [0, 0, 0],
                     specular: [0, 0, 0],
@@ -18570,6 +18599,112 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                     return coords;
                 };
             })();
+
+            /*
+            // Returns the inverse of the camera's current view transform matrix
+            var getInverseViewMat = (function () {
+                var viewMatDirty = true;
+                camera.on("viewMatrix", function () {
+                    viewMatDirty = true;
+                });
+                var inverseViewMat = math.mat4();
+                return function () {
+                    if (viewMatDirty) {
+                        math.inverseMat4(camera.viewMatrix, inverseViewMat);
+                    }
+                    return inverseViewMat;
+                }
+            })();
+
+            // Returns the inverse of the camera's current projection transform matrix
+            var getInverseProjectMat = (function () {
+                var projMatDirty = true;
+                camera.on("projMatrix", function () {
+                    projMatDirty = true;
+                });
+                var inverseProjectMat = math.mat4();
+                return function () {
+                    if (projMatDirty) {
+                        math.inverseMat4(camera.projMatrix, inverseProjectMat);
+                    }
+                    return inverseProjectMat;
+                }
+            })();
+
+            // Returns the transposed copy the camera's current projection transform matrix
+            var getTransposedProjectMat = (function () {
+                var projMatDirty = true;
+                camera.on("projMatrix", function () {
+                    projMatDirty = true;
+                });
+                var transposedProjectMat = math.mat4();
+                return function () {
+                    if (projMatDirty) {
+                        math.transposeMat4(camera.projMatrix, transposedProjectMat);
+                    }
+                    return transposedProjectMat;
+                }
+            })();
+
+            // Get the current diagonal size of the scene
+            var getSceneDiagSize = (function () {
+                var sceneSizeDirty = true;
+                var diag = 1; // Just in case
+                scene.on("boundary", function () {
+                    sceneSizeDirty = true;
+                });
+                return function () {
+                    if (sceneSizeDirty) {
+                        diag = math.getAABB3Diag(scene.aabb);
+                    }
+                    return diag;
+                };
+            })();
+
+            function unproject() {
+
+                var sceneSize = getSceneDiagSize();
+
+                // Use normalized device coords
+                var cw2 = canvas.offsetWidth / 2.;
+                var ch2 = canvas.offsetHeight / 2.;
+
+                var inverseProjMat = getInverseProjectMat();
+                var inverseViewMat = getInverseViewMat();
+
+                // Get last two columns of projection matrix
+                var transposedProjectMat = getTransposedProjectMat();
+                var Pt3 = transposedProjectMat.subarray(8, 12);
+                var Pt4 = transposedProjectMat.subarray(12);
+
+                // TODO: Should be simpler to get the projected Z value
+                var D = [0, 0, -(lastHoverDistance || sceneSize), 1];
+                var Z = math.dotVec4(D, Pt3) / math.dotVec4(D, Pt4);
+
+                // Returns in camera space and model space as array of two points
+                var unproject = function (p) {
+                    var cp = math.vec4();
+                    cp[0] = (p[0] - cw2) / cw2;
+                    cp[1] = (p[1] - ch2) / ch2;
+                    cp[2] = Z;
+                    cp[3] = 1.;
+                    cp = math.vec4(math.mulMat4v4(inverseProjMat, cp));
+
+                    // Normalize homogeneous coord
+                    math.mulVec3Scalar(cp, 1.0 / cp[3]);
+                    cp[3] = 1.0;
+
+                    // TODO: Why is this reversed?
+                    cp[0] *= -1;
+
+                    var cp2 = math.vec4(math.mulMat4v4(inverseViewMat, cp));
+                    return [cp, cp2];
+                };
+
+                var A = unproject(canvasPos);
+                var B = unproject(lastCanvasPos);
+            }
+            */
 
             //------------------------------------------------------------------------------------
             // Mouse and touch camera control
@@ -35787,7 +35922,7 @@ TODO
  Get the view matrix:
 
  ````javascript
- var viewMatrix = camera.matrix;
+ var viewMatrix = camera.viewMatrix;
  var viewNormalMatrix = camera.normalMatrix;
  ````
 
@@ -35953,18 +36088,6 @@ TODO
 
             var self = this;
 
-            this._perspective.on("matrix", function () {
-                self.fire("projMatrix", self._perspective.matrix);
-            });
-
-            this._ortho.on("matrix", function () {
-                self.fire("projMatrix", self._ortho.matrix);
-            });
-
-            this._frustum.on("matrix", function () {
-                self.fire("projMatrix", self._frustum.matrix);
-            });
-
             this._eye = math.vec3([0, 0, 10.0]);
             this._look = math.vec3([0, 0, 0]);
             this._up = math.vec3([0, 1, 0]);
@@ -35980,6 +36103,24 @@ TODO
             this.gimbalLock = cfg.gimbalLock;
 
             this.projection = cfg.projection;
+
+            this._perspective.on("matrix", function () {
+                if (self._projectionType === "perspective") {
+                    self.fire("projMatrix", self._perspective.matrix);
+                }
+            });
+
+            this._ortho.on("matrix", function () {
+                if (self._projectionType === "ortho") {
+                    self.fire("projMatrix", self._ortho.matrix);
+                }
+            });
+
+            this._frustum.on("matrix", function () {
+                if (self._projectionType === "frustum") {
+                    self.fire("projMatrix", self._frustum.matrix);
+                }
+            });
         },
 
         _update: (function () {
@@ -36387,8 +36528,29 @@ TODO
              *
              * @property matrix
              * @type {Float32Array}
+             * @deprecated
              */
             matrix: {
+
+                get: function () {
+
+                    if (this._updateScheduled) {
+                        this._doUpdate();
+                    }
+
+                    return this._state.matrix;
+                }
+            },
+
+            /**
+             * The Camera's viewing transformation matrix.
+             *
+             * Fires a {{#crossLink "Camera/matrix:event"}}{{/crossLink}} event on change.
+             *
+             * @property viewMatrix
+             * @type {Float32Array}
+             */
+            viewMatrix: {
 
                 get: function () {
 
@@ -36407,8 +36569,29 @@ TODO
              *
              * @property normalMatrix
              * @type {Float32Array}
+             * @deprecated
              */
             normalMatrix: {
+
+                get: function () {
+
+                    if (this._updateScheduled) {
+                        this._doUpdate();
+                    }
+
+                    return this._state.normalMatrix;
+                }
+            },
+
+            /**
+             * The Camera's viewing normal transformation matrix.
+             *
+             * Fires a {{#crossLink "Camera/matrix:event"}}{{/crossLink}} event on change.
+             *
+             * @property viewNormalMatrix
+             * @type {Float32Array}
+             */
+            viewNormalMatrix: {
 
                 get: function () {
 
