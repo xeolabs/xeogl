@@ -889,6 +889,13 @@
             "fors": {},
             "namespaces": {}
         },
+        "examples/js/models/DRACOLoader.js": {
+            "name": "examples/js/models/DRACOLoader.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
         "examples/js/models/OBJModel.js": {
             "name": "examples/js/models/OBJModel.js",
             "modules": {},
@@ -1573,7 +1580,7 @@
             "namespace": "",
             "file": "src/camera/camera.js",
             "line": 1,
-            "description": "A **Camera** defines viewing and projection transforms for its {{#crossLink \"Scene\"}}{{/crossLink}}.\n\n## Overview\n\n* One Camera per Scene\n* Controls viewing and projection transforms\n* Has methods to pan, zoom and orbit (or first-person rotation)\n* Dynamically configurable World-space \"up\" direction\n* Switchable between perspective, frustum and orthographic projections\n* Switchable gimbal lock\n* Can be \"flown\" to look at targets using a {{#crossLink \"CameraFlightAnimation\"}}{{/crossLink}}\n* Can be animated along a path using a {{#crossLink \"CameraPathAnimation\"}}{{/crossLink}}\n* Can follow a target using a {{#crossLink \"CameraFollowAnimation\"}}{{/crossLink}}\n\n## Examples\n\n* [Perspective projection](../../examples/#camera_perspective)\n* [Orthographic projection](../../examples/#camera_orthographic)\n* [Frustum projection](../../examples/#camera_frustum)\n* [Camera with world Z-axis as \"up\"](../../examples/#camera_zAxisUp)\n* [Camera with world Y-axis as \"up\"](../../examples/#camera_yAxisUp)\n* [Automatically following an Entity with a Camera](../../examples/#camera_follow)\n* [Animating a Camera along a path](../../examples/#camera_path_interpolation)\n* [Architectural fly-through](../../examples/#importing_gltf_ModernOffice)\n\n## Usage\n\n* [Getting the Camera](#getting)\n* [Moving around](#moving-around)\n* [Projection](#projection)\n* [Configuring World up direction](#configuring-world-up-direction)\n* [Gimbal locking](#gimbal-locking)\n\n### Getting the Camera\n\nThere is exactly one Camera per Scene:\n\n````javascript\nvar camera = myScene.camera;\n````\n\n### Moving around\n\nGet and set the Camera's absolute position at any time via its {{#crossLink \"Camera/eye:property\"}}{{/crossLink}},\n{{#crossLink \"Camera/look:property\"}}{{/crossLink}} and {{#crossLink \"Camera/up:property\"}}{{/crossLink}} properties:\n\n````javascript\ncamera.eye = [-10,0,0];\ncamera.look = [-10,0,0];\ncamera.up = [0,1,0];\n````\n\nGet the view matrix:\n\n````javascript\nvar viewMatrix = camera.matrix;\nvar viewNormalMatrix = camera.normalMatrix;\n````\n\nListen for view matrix updates:\n\n````javascript\ncamera.on(\"matrix\", function(matrix) { ... });\n````\n\nOrbiting the {{#crossLink \"Camera/look:property\"}}{{/crossLink}} position:\n\n````javascript\ncamera.orbitYaw(20.0);\ncamera.orbitPitch(10.0);\n````\n\nFirst-person rotation, rotates {{#crossLink \"Camera/look:property\"}}{{/crossLink}}\nand {{#crossLink \"Camera/up:property\"}}{{/crossLink}} about {{#crossLink \"Camera/eye:property\"}}{{/crossLink}}:\n\n````javascript\ncamera.yaw(5.0);\ncamera.pitch(-10.0);\n````\n\nPanning along the Camera's local axis (ie. left/right, up/down, forward/backward):\n\n````javascript\ncamera.pan([-20, 0, 10]);\n````\n\nZoom to vary distance between {{#crossLink \"Camera/eye:property\"}}{{/crossLink}} and {{#crossLink \"Camera/look:property\"}}{{/crossLink}}:\n\n````javascript\ncamera.zoom(-5); // Move five units closer\n````\n\nGet the current distance between {{#crossLink \"Camera/eye:property\"}}{{/crossLink}} and {{#crossLink \"Camera/look:property\"}}{{/crossLink}}:\n\n````javascript\nvar distance = camera.eyeLookDist;\n````\n\n### Projection\n\nFor each projection type, the Camera has a Component to manage that projection's configuration. You can hot-switch the Camera\nbetween those projection types, while updating the properties of each projection component at any time.\n\n````javascript\ncamera.perspective.near = 0.4;\ncamera.perspective.fov = 45;\n//...\n\ncamera.ortho.near = 0.8;\ncamera.ortho.far = 1000;\n//...\n\ncamera.frustum.left = -1.0;\ncamera.frustum.right = 1.0;\ncamera.frustum.far = 1000.0;\n//...\n\ncamera.projection = \"perspective\"; // Switch to perspective\ncamera.projection = \"frustum\"; // Switch to frustum\ncamera.projection = \"ortho\"; // Switch to ortho\n````\n\nGet the projection matrix:\n\n````javascript\nvar projMatrix = camera.projMatrix;\n````\n\nListen for projection matrix updates:\n\n````javascript\ncamera.on(\"projMatrix\", function(matrix) { ... });\n````\n\n### Configuring World up direction\n\nWe can dynamically configure the direction that we consider to be \"up\" in the World-space coordinate system.\n\nSet the +Y axis as World \"up\" (convention in some modeling software):\n\n````javascript\ncamera.worldAxis = [\n   1, 0, 0,    // Right\n   0, 1, 0,    // Up\n   0, 0,-1     // Forward\n];\n````\n\nSet the +Z axis as World \"up\" (convention in most CAD and BIM viewers):\n\n````javascript\ncamera.worldAxis = [\n   1, 0, 0, // Right\n   0, 0, 1, // Up\n   0,-1, 0  // Forward\n];\n````\n\nThe Camera has read-only convenience properties that provide each axis individually:\n\n````javascript\nvar worldRight = camera.worldRight;\nvar worldForward = camera.worldForward;\nvar worldUp = camera.worldUp;\n````\n\n### Gimbal locking\n\nBy default, the Camera locks yaw rotation to pivot about the World-space \"up\" axis. We can dynamically lock and unlock that\nat any time:\n\n````javascript\ncamera.gimbalLock = false; // Yaw rotation now happens about Camera's local Y-axis\ncamera.gimbalLock = true; // Yaw rotation now happens about World's \"up\" axis\n````\n\nSee: <a href=\"https://en.wikipedia.org/wiki/Gimbal_lock\">https://en.wikipedia.org/wiki/Gimbal_lock</a>",
+            "description": "A **Camera** defines viewing and projection transforms for its {{#crossLink \"Scene\"}}{{/crossLink}}.\n\n## Overview\n\n* One Camera per Scene\n* Controls viewing and projection transforms\n* Has methods to pan, zoom and orbit (or first-person rotation)\n* Dynamically configurable World-space \"up\" direction\n* Switchable between perspective, frustum and orthographic projections\n* Switchable gimbal lock\n* Can be \"flown\" to look at targets using a {{#crossLink \"CameraFlightAnimation\"}}{{/crossLink}}\n* Can be animated along a path using a {{#crossLink \"CameraPathAnimation\"}}{{/crossLink}}\n* Can follow a target using a {{#crossLink \"CameraFollowAnimation\"}}{{/crossLink}}\n\n## Examples\n\n* [Perspective projection](../../examples/#camera_perspective)\n* [Orthographic projection](../../examples/#camera_orthographic)\n* [Frustum projection](../../examples/#camera_frustum)\n* [Camera with world Z-axis as \"up\"](../../examples/#camera_zAxisUp)\n* [Camera with world Y-axis as \"up\"](../../examples/#camera_yAxisUp)\n* [Automatically following an Entity with a Camera](../../examples/#camera_follow)\n* [Animating a Camera along a path](../../examples/#camera_path_interpolation)\n* [Architectural fly-through](../../examples/#importing_gltf_ModernOffice)\n\n## Usage\n\n* [Getting the Camera](#getting)\n* [Moving around](#moving-around)\n* [Projection](#projection)\n* [Configuring World up direction](#configuring-world-up-direction)\n* [Gimbal locking](#gimbal-locking)\n\n### Getting the Camera\n\nThere is exactly one Camera per Scene:\n\n````javascript\nvar camera = myScene.camera;\n````\n\n### Moving around\n\nGet and set the Camera's absolute position at any time via its {{#crossLink \"Camera/eye:property\"}}{{/crossLink}},\n{{#crossLink \"Camera/look:property\"}}{{/crossLink}} and {{#crossLink \"Camera/up:property\"}}{{/crossLink}} properties:\n\n````javascript\ncamera.eye = [-10,0,0];\ncamera.look = [-10,0,0];\ncamera.up = [0,1,0];\n````\n\nGet the view matrix:\n\n````javascript\nvar viewMatrix = camera.viewMatrix;\nvar viewNormalMatrix = camera.normalMatrix;\n````\n\nListen for view matrix updates:\n\n````javascript\ncamera.on(\"matrix\", function(matrix) { ... });\n````\n\nOrbiting the {{#crossLink \"Camera/look:property\"}}{{/crossLink}} position:\n\n````javascript\ncamera.orbitYaw(20.0);\ncamera.orbitPitch(10.0);\n````\n\nFirst-person rotation, rotates {{#crossLink \"Camera/look:property\"}}{{/crossLink}}\nand {{#crossLink \"Camera/up:property\"}}{{/crossLink}} about {{#crossLink \"Camera/eye:property\"}}{{/crossLink}}:\n\n````javascript\ncamera.yaw(5.0);\ncamera.pitch(-10.0);\n````\n\nPanning along the Camera's local axis (ie. left/right, up/down, forward/backward):\n\n````javascript\ncamera.pan([-20, 0, 10]);\n````\n\nZoom to vary distance between {{#crossLink \"Camera/eye:property\"}}{{/crossLink}} and {{#crossLink \"Camera/look:property\"}}{{/crossLink}}:\n\n````javascript\ncamera.zoom(-5); // Move five units closer\n````\n\nGet the current distance between {{#crossLink \"Camera/eye:property\"}}{{/crossLink}} and {{#crossLink \"Camera/look:property\"}}{{/crossLink}}:\n\n````javascript\nvar distance = camera.eyeLookDist;\n````\n\n### Projection\n\nFor each projection type, the Camera has a Component to manage that projection's configuration. You can hot-switch the Camera\nbetween those projection types, while updating the properties of each projection component at any time.\n\n````javascript\ncamera.perspective.near = 0.4;\ncamera.perspective.fov = 45;\n//...\n\ncamera.ortho.near = 0.8;\ncamera.ortho.far = 1000;\n//...\n\ncamera.frustum.left = -1.0;\ncamera.frustum.right = 1.0;\ncamera.frustum.far = 1000.0;\n//...\n\ncamera.projection = \"perspective\"; // Switch to perspective\ncamera.projection = \"frustum\"; // Switch to frustum\ncamera.projection = \"ortho\"; // Switch to ortho\n````\n\nGet the projection matrix:\n\n````javascript\nvar projMatrix = camera.projMatrix;\n````\n\nListen for projection matrix updates:\n\n````javascript\ncamera.on(\"projMatrix\", function(matrix) { ... });\n````\n\n### Configuring World up direction\n\nWe can dynamically configure the direction that we consider to be \"up\" in the World-space coordinate system.\n\nSet the +Y axis as World \"up\" (convention in some modeling software):\n\n````javascript\ncamera.worldAxis = [\n   1, 0, 0,    // Right\n   0, 1, 0,    // Up\n   0, 0,-1     // Forward\n];\n````\n\nSet the +Z axis as World \"up\" (convention in most CAD and BIM viewers):\n\n````javascript\ncamera.worldAxis = [\n   1, 0, 0, // Right\n   0, 0, 1, // Up\n   0,-1, 0  // Forward\n];\n````\n\nThe Camera has read-only convenience properties that provide each axis individually:\n\n````javascript\nvar worldRight = camera.worldRight;\nvar worldForward = camera.worldForward;\nvar worldUp = camera.worldUp;\n````\n\n### Gimbal locking\n\nBy default, the Camera locks yaw rotation to pivot about the World-space \"up\" axis. We can dynamically lock and unlock that\nat any time:\n\n````javascript\ncamera.gimbalLock = false; // Yaw rotation now happens about Camera's local Y-axis\ncamera.gimbalLock = true; // Yaw rotation now happens about World's \"up\" axis\n````\n\nSee: <a href=\"https://en.wikipedia.org/wiki/Gimbal_lock\">https://en.wikipedia.org/wiki/Gimbal_lock</a>",
             "submodule": "camera",
             "is_constructor": 1,
             "params": [
@@ -7493,7 +7500,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 288,
+            "line": 294,
             "description": "Rotates {{#crossLink \"Camera/eye:property\"}}{{/crossLink}} about {{#crossLink \"Camera/look:property\"}}{{/crossLink}}, around the {{#crossLink \"Camera/up:property\"}}{{/crossLink}} vector",
             "itemtype": "method",
             "name": "orbitYaw",
@@ -7510,7 +7517,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 307,
+            "line": 313,
             "description": "Rotates {{#crossLink \"Camera/eye:property\"}}{{/crossLink}} about {{#crossLink \"Camera/look:property\"}}{{/crossLink}} around the right axis (orthogonal to {{#crossLink \"Camera/up:property\"}}{{/crossLink}} and \"look\").",
             "itemtype": "method",
             "name": "orbitPitch",
@@ -7527,7 +7534,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 327,
+            "line": 333,
             "description": "Rotates {{#crossLink \"Camera/look:property\"}}{{/crossLink}} about {{#crossLink \"Camera/eye:property\"}}{{/crossLink}}, around the {{#crossLink \"Camera/up:property\"}}{{/crossLink}} vector.",
             "itemtype": "method",
             "name": "yaw",
@@ -7544,7 +7551,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 349,
+            "line": 355,
             "description": "Rotates {{#crossLink \"Camera/look:property\"}}{{/crossLink}} about {{#crossLink \"Camera/eye:property\"}}{{/crossLink}}, around the right axis (orthogonal to {{#crossLink \"Camera/up:property\"}}{{/crossLink}} and \"look\").",
             "itemtype": "method",
             "name": "pitch",
@@ -7561,7 +7568,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 369,
+            "line": 375,
             "description": "Pans the camera along the camera's local X, Y and Z axis.",
             "itemtype": "method",
             "name": "pan",
@@ -7577,7 +7584,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 407,
+            "line": 413,
             "description": "Increments/decrements zoom factor, ie. distance between {{#crossLink \"Camera/eye:property\"}}{{/crossLink}}\nand {{#crossLink \"Camera/look:property\"}}{{/crossLink}}.",
             "itemtype": "method",
             "name": "zoom",
@@ -7593,7 +7600,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 431,
+            "line": 437,
             "description": "Position of this Camera's eye.\n\nFires an {{#crossLink \"Camera/eye:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "eye",
@@ -7605,7 +7612,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 447,
+            "line": 453,
             "description": "Fired whenever this Camera's {{#crossLink \"Camera/eye:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "eye",
@@ -7621,7 +7628,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 461,
+            "line": 467,
             "description": "Position of this Camera's point-of-interest.\n\nFires a {{#crossLink \"Camera/look:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "look",
@@ -7633,7 +7640,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 477,
+            "line": 483,
             "description": "Fired whenever this Camera's {{#crossLink \"Camera/look:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "look",
@@ -7649,7 +7656,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 491,
+            "line": 497,
             "description": "Direction of this Camera's {{#crossLink \"Camera/up:property\"}}{{/crossLink}} vector.\n\nFires an {{#crossLink \"Camera/up:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "up",
@@ -7661,7 +7668,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 507,
+            "line": 513,
             "description": "Fired whenever this Camera's {{#crossLink \"Camera/up:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "up",
@@ -7677,7 +7684,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 521,
+            "line": 527,
             "description": "Indicates the up, right and forward axis of the World coordinate system.\n\nHas format: ````[rightX, rightY, rightZ, upX, upY, upZ, forwardX, forwardY, forwardZ]````",
             "itemtype": "property",
             "name": "worldAxis",
@@ -7689,7 +7696,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 561,
+            "line": 567,
             "description": "Direction of World-space \"up\".",
             "itemtype": "property",
             "name": "worldUp",
@@ -7702,7 +7709,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 576,
+            "line": 582,
             "description": "Direction of World-space \"right\".",
             "itemtype": "property",
             "name": "worldRight",
@@ -7715,7 +7722,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 591,
+            "line": 597,
             "description": "Direction of World-space \"forwards\".",
             "itemtype": "property",
             "name": "worldForward",
@@ -7728,7 +7735,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 606,
+            "line": 612,
             "description": "Whether to lock yaw rotation to pivot about the World-space \"up\" axis.\n\nFires a {{#crossLink \"Camera/gimbalLock:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "gimbalLock",
@@ -7740,7 +7747,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 621,
+            "line": 627,
             "description": "Fired whenever this Camera's  {{#crossLink \"Camera/gimbalLock:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "gimbalLock",
@@ -7756,7 +7763,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 635,
+            "line": 641,
             "description": "Distance from \"look\" to \"eye\".",
             "itemtype": "property",
             "name": "eyeLookDist",
@@ -7767,21 +7774,22 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 650,
+            "line": 656,
             "description": "The Camera's viewing transformation matrix.\n\nFires a {{#crossLink \"Camera/matrix:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "matrix",
             "type": "{Float32Array}",
+            "deprecated": true,
             "class": "Camera",
             "module": "xeogl",
             "submodule": "camera"
         },
         {
             "file": "src/camera/camera.js",
-            "line": 670,
-            "description": "The Camera's viewing normal transformation matrix.\n\nFires a {{#crossLink \"Camera/matrix:event\"}}{{/crossLink}} event on change.",
+            "line": 677,
+            "description": "The Camera's viewing transformation matrix.\n\nFires a {{#crossLink \"Camera/matrix:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
-            "name": "normalMatrix",
+            "name": "viewMatrix",
             "type": "{Float32Array}",
             "class": "Camera",
             "module": "xeogl",
@@ -7789,7 +7797,30 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 690,
+            "line": 697,
+            "description": "The Camera's viewing normal transformation matrix.\n\nFires a {{#crossLink \"Camera/matrix:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "normalMatrix",
+            "type": "{Float32Array}",
+            "deprecated": true,
+            "class": "Camera",
+            "module": "xeogl",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/camera/camera.js",
+            "line": 718,
+            "description": "The Camera's viewing normal transformation matrix.\n\nFires a {{#crossLink \"Camera/matrix:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "viewNormalMatrix",
+            "type": "{Float32Array}",
+            "class": "Camera",
+            "module": "xeogl",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/camera/camera.js",
+            "line": 738,
             "description": "Camera's projection transformation projMatrix.\n\nFires a {{#crossLink \"Camera/projMatrix:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "projMatrix",
@@ -7800,7 +7831,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 706,
+            "line": 754,
             "description": "The perspective projection transform for this Camera.\n\nThis is used while {{#crossLink \"Camera/projection:property\"}}{{/crossLink}} equals \"perspective\".",
             "itemtype": "property",
             "name": "perspective",
@@ -7812,7 +7843,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 722,
+            "line": 770,
             "description": "The orthographic projection transform for this Camera.\n\nThis is used while {{#crossLink \"Camera/projection:property\"}}{{/crossLink}} equals \"ortho\".",
             "itemtype": "property",
             "name": "ortho",
@@ -7824,7 +7855,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 738,
+            "line": 786,
             "description": "The frustum projection transform for this Camera.\n\nThis is used while {{#crossLink \"Camera/projection:property\"}}{{/crossLink}} equals \"frustum\".",
             "itemtype": "property",
             "name": "frustum",
@@ -7836,7 +7867,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 754,
+            "line": 802,
             "description": "The active projection type.\n\nAccepted values are \"perspective\", \"ortho\" and \"frustum\".",
             "itemtype": "property",
             "name": "projection",
@@ -7848,7 +7879,7 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 802,
+            "line": 850,
             "description": "The active projection transform for this Camera.",
             "itemtype": "property",
             "name": "project",
@@ -8412,7 +8443,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 491,
+            "line": 492,
             "description": "Returns a snapshot of this Canvas as a Base64-encoded image.\n\nWhen a callback is given, this method will capture the snapshot asynchronously, on the next animation frame,\nand return it via the callback.\n\nWhen no callback is given, this method captures and returns the snapshot immediately. Note that is only\npossible when you have configured the Canvas's {{#crossLink \"Scene\"}}Scene{{/crossLink}} to preserve the\nWebGL drawing buffer, which has a performance overhead.\n\n#### Usage:\n\n````javascript\n// Get snapshot asynchronously\nmyScene.canvas.getSnapshot({\n    width: 500, // Defaults to size of canvas\n    height: 500,\n    format: \"png\" // Options are \"jpeg\" (default), \"png\" and \"bmp\"\n}, function(imageDataURL) {\n    imageElement.src = imageDataURL;\n});\n\n// Get snapshot synchronously, requires that Scene be\n// configured with preserveDrawingBuffer; true\nimageElement.src = myScene.canvas.getSnapshot({\n    width: 500,\n    height: 500,\n    format: \"png\"\n});\n````",
             "itemtype": "method",
             "name": "getSnapshot",
@@ -8461,7 +8492,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 572,
+            "line": 573,
             "description": "Reads colors of pixels from the last rendered frame.\n\n<p>Call this method like this:</p>\n\n````JavaScript\n\n// Ignore transparent pixels (default is false)\nvar opaqueOnly = true;\n\nvar colors = new Float32Array(8);\n\nmyCanvas.readPixels([ 100, 22, 12, 33 ], colors, 2, opaqueOnly);\n````\n\nThen the r,g,b components of the colors will be set to the colors at those pixels.",
             "params": [
                 {
@@ -8491,7 +8522,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 600,
+            "line": 601,
             "description": "A background color for the canvas. This is overridden by {{#crossLink \"Canvas/backgroundImage:property\"}}{{/crossLink}}.\n\nYou can set this to a new color at any time.",
             "itemtype": "property",
             "name": "backgroundColor",
@@ -8503,7 +8534,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 633,
+            "line": 634,
             "description": "URL of a background image for the canvas. This is overrided by {{#crossLink \"Canvas/backgroundColor/property\"}}{{/crossLink}}.\n\nYou can set this to a new file path at any time.",
             "itemtype": "property",
             "name": "backgroundImage",
@@ -8514,7 +8545,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 672,
+            "line": 673,
             "description": "The busy {{#crossLink \"Spinner\"}}{{/crossLink}} for this Canvas.",
             "itemtype": "property",
             "name": "spinner",
@@ -8834,7 +8865,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 901,
+            "line": 1007,
             "description": "Fired whenever the pointer no longer hovers over an {{#crossLink \"Entity\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "hoverOut",
@@ -8850,7 +8881,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 911,
+            "line": 1017,
             "description": "Fired continuously while the pointer is moving while hovering over an {{#crossLink \"Entity\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "hover",
@@ -8867,7 +8898,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 922,
+            "line": 1028,
             "description": "Fired while the pointer hovers over the surface of an {{#crossLink \"Entity\"}}{{/crossLink}}.\n\nThis event provides 3D information about the point on the surface that the pointer is\nhovering over.",
             "itemtype": "event",
             "name": "hoverSurface",
@@ -8884,7 +8915,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 936,
+            "line": 1042,
             "description": "Fired whenever the pointer no longer hovers over an {{#crossLink \"Entity\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "hoverOut",
@@ -8900,7 +8931,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 946,
+            "line": 1052,
             "description": "Fired continuously while the pointer is moving but not hovering over anything.",
             "itemtype": "event",
             "name": "hoverOff",
@@ -8910,7 +8941,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 1035,
+            "line": 1141,
             "description": "Fired whenever the pointer has picked (ie. clicked or tapped) an {{#crossLink \"Entity\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "picked",
@@ -8927,7 +8958,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 1044,
+            "line": 1150,
             "description": "Fired when the pointer has picked (ie. clicked or tapped) the surface of an {{#crossLink \"Entity\"}}{{/crossLink}}.\n\nThis event provides 3D information about the point on the surface that the pointer has picked.",
             "itemtype": "event",
             "name": "pickedSurface",
@@ -8944,7 +8975,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 1057,
+            "line": 1163,
             "description": "Fired when the pointer attempted a pick (ie. clicked or tapped), but has hit nothing.",
             "itemtype": "event",
             "name": "pickedNothing",
@@ -8954,7 +8985,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 1100,
+            "line": 1206,
             "description": "Fired whenever the pointer has double-picked (ie. double-clicked or double-tapped) an {{#crossLink \"Entity\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "picked",
@@ -8971,7 +9002,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 1108,
+            "line": 1214,
             "description": "Fired when the pointer has double-picked (ie. double-clicked or double-tapped) the surface of an {{#crossLink \"Entity\"}}{{/crossLink}}.\n\nThis event provides 3D information about the point on the surface that the pointer has picked.",
             "itemtype": "event",
             "name": "doublePickedSurface",
@@ -8988,7 +9019,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 1124,
+            "line": 1230,
             "description": "Fired when the pointer attempted a double-pick (ie. double-clicked or double-tapped), but has hit nothing.",
             "itemtype": "event",
             "name": "doublePickedNothing",
@@ -17806,6 +17837,17 @@
         {
             "file": "src/scene.js",
             "line": 1296,
+            "description": "World-space 3D center of this Scene.",
+            "itemtype": "property",
+            "name": "center",
+            "final": 1,
+            "type": "{Float32Array}",
+            "class": "Scene",
+            "module": "xeogl"
+        },
+        {
+            "file": "src/scene.js",
+            "line": 1324,
             "description": "World-space axis-aligned 3D boundary (AABB) of this Scene.\n\nThe AABB is represented by a six-element Float32Array containing the min/max extents of the\naxis-aligned volume, ie. ````[xmin, ymin,zmin,xmax,ymax, zmax]````.",
             "itemtype": "property",
             "name": "aabb",
@@ -17816,7 +17858,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1387,
+            "line": 1415,
             "description": "Attempts to pick an {{#crossLink \"Entity\"}}Entity{{/crossLink}} in this Scene.\n\nIgnores {{#crossLink \"Entity\"}}Entities{{/crossLink}} with {{#crossLink \"Entity/pickable:property\"}}pickable{{/crossLink}}\nset *false*.\n\nPicking the {{#crossLink \"Entity\"}}{{/crossLink}} at the given canvas coordinates:\n\n````javascript\nvar hit = scene.pick({\n    canvasPos: [23, 131]\n });\n\nif (hit) { // Picked an Entity\n    var entity = hit.entity;\n}\n````\n\n**Usage:**\n\nPicking the {{#crossLink \"Entity\"}}{{/crossLink}} that intersects a ray cast through the canvas:\n\n````javascript\nvar hit = scene.pick({\n    pickSurface: true,\n    canvasPos: [23, 131]\n });\n\nif (hit) { // Picked an Entity\n\n    var entity = hit.entity;\n\n    // These properties are only on the hit result when we do a ray-pick:\n\n    var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n    var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n    var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n    var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle\n    var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle\n    var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle\n    var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n    var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n    var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n}\n````\n\nPicking the {{#crossLink \"Entity\"}}{{/crossLink}} that intersects an arbitrarily-aligned World-space ray:\n\n````javascript\nvar hit = scene.pick({\n    pickSurface: true,       // Picking with arbitrarily-positioned ray\n    origin: [0,0,-5],    // Ray origin\n    direction: [0,0,1]   // Ray direction\n});\n\nif (hit) { // Picked an Entity with the ray\n\n    var entity = hit.entity;\n\n    var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n    var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n    var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n    var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle\n    var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle\n    var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle\n    var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n    var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n    var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n    var origin = hit.origin; // Float32Array containing the World-space ray origin\n    var direction = hit.direction; // Float32Array containing the World-space ray direction\n}\n````",
             "itemtype": "method",
             "name": "pick",
@@ -17875,7 +17917,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1773,
+            "line": 1801,
             "description": "Resets this Scene to its default state.\n\nReferences to any components in this Scene will become invalid.",
             "itemtype": "method",
             "name": "clear",
@@ -20364,6 +20406,107 @@
             "submodule": "geometry"
         },
         {
+            "file": "examples/js/models/DRACOLoader.js",
+            "line": 46,
+            "description": "Sets desired mode for generated geometry indices.\nCan be either:\n    THREE.TrianglesDrawMode\n    THREE.TriangleStripDrawMode",
+            "class": "OBJModel",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/models/DRACOLoader.js",
+            "line": 56,
+            "description": "Skips dequantization for a specific attribute.\n|attributeName| is the THREE.js name of the given attribute type.\nThe only currently supported |attributeName| is 'position', more may be\nadded in future.",
+            "class": "OBJModel",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/models/DRACOLoader.js",
+            "line": 70,
+            "description": "|attributeUniqueIdMap| specifies attribute unique id for an attribute in\nthe geometry to be decoded. The name of the attribute must be one of the\nsupported attribute type in Three.JS, including:\n    'position',\n    'color',\n    'normal',\n    'uv',\n    'uv2',\n    'skinIndex',\n    'skinWeight'.\nThe format is:\n    attributeUniqueIdMap[attributeName] = attributeId",
+            "class": "OBJModel",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/models/DRACOLoader.js",
+            "line": 331,
+            "description": "Sets the base path for decoder source files.",
+            "params": [
+                {
+                    "name": "path",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "class": "OBJModel",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/models/DRACOLoader.js",
+            "line": 339,
+            "description": "Sets decoder configuration and releases singleton decoder module. Module\nwill be recreated with the next decoding call.",
+            "params": [
+                {
+                    "name": "config",
+                    "description": "",
+                    "type": "Object"
+                }
+            ],
+            "class": "OBJModel",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/models/DRACOLoader.js",
+            "line": 355,
+            "description": "Releases the singleton DracoDecoderModule instance. Module will be recreated\nwith the next decoding call.",
+            "class": "OBJModel",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/models/DRACOLoader.js",
+            "line": 363,
+            "description": "Gets WebAssembly or asm.js singleton instance of DracoDecoderModule after testing for\nbrowser support. Returns Promise that resolves when module is available.",
+            "return": {
+                "description": ">}",
+                "type": "Promise<decoder: DracoDecoderModule"
+            },
+            "class": "OBJModel",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/models/DRACOLoader.js",
+            "line": 411,
+            "params": [
+                {
+                    "name": "src",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Promise"
+            },
+            "class": "OBJModel",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/models/DRACOLoader.js",
+            "line": 431,
+            "params": [
+                {
+                    "name": "src",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Promise"
+            },
+            "class": "OBJModel",
+            "module": "xeogl"
+        },
+        {
             "file": "examples/js/models/OBJModel.js",
             "line": 135,
             "description": "Path to a Wavefront OBJ file.\n\nYou can set this to a new file path at any time, which will cause the OBJModel to load components from\nthe new file (after first destroying any components loaded from a previous file path).\n\nAlso loads materials from any MTL files referenced in the OBJ.\n\nFires a {{#crossLink \"OBJModel/src:event\"}}{{/crossLink}} event on change.",
@@ -21249,7 +21392,7 @@
     "warnings": [
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/canvas/canvas.js:491"
+            "line": " src/canvas/canvas.js:492"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -21333,7 +21476,7 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/scene.js:1387"
+            "line": " src/scene.js:1415"
         },
         {
             "message": "unknown tag: demo",
@@ -21453,7 +21596,7 @@
         },
         {
             "message": "Missing item type\nReads colors of pixels from the last rendered frame.\n\n<p>Call this method like this:</p>\n\n````JavaScript\n\n// Ignore transparent pixels (default is false)\nvar opaqueOnly = true;\n\nvar colors = new Float32Array(8);\n\nmyCanvas.readPixels([ 100, 22, 12, 33 ], colors, 2, opaqueOnly);\n````\n\nThen the r,g,b components of the colors will be set to the colors at those pixels.",
-            "line": " src/canvas/canvas.js:572"
+            "line": " src/canvas/canvas.js:573"
         },
         {
             "message": "Missing item type\nImplement protected virtual template method {{#crossLink \"Geometry/method:_update\"}}{{/crossLink}},\nto generate geometry data arrays.",
@@ -21830,6 +21973,42 @@
         {
             "message": "Missing item type\nImplement protected virtual template method {{#crossLink \"Geometry/method:_update\"}}{{/crossLink}},\nto generate geometry data arrays.",
             "line": " examples/js/geometry/heightmapGeometry.js:113"
+        },
+        {
+            "message": "Missing item type\nSets desired mode for generated geometry indices.\nCan be either:\n    THREE.TrianglesDrawMode\n    THREE.TriangleStripDrawMode",
+            "line": " examples/js/models/DRACOLoader.js:46"
+        },
+        {
+            "message": "Missing item type\nSkips dequantization for a specific attribute.\n|attributeName| is the THREE.js name of the given attribute type.\nThe only currently supported |attributeName| is 'position', more may be\nadded in future.",
+            "line": " examples/js/models/DRACOLoader.js:56"
+        },
+        {
+            "message": "Missing item type\n|attributeUniqueIdMap| specifies attribute unique id for an attribute in\nthe geometry to be decoded. The name of the attribute must be one of the\nsupported attribute type in Three.JS, including:\n    'position',\n    'color',\n    'normal',\n    'uv',\n    'uv2',\n    'skinIndex',\n    'skinWeight'.\nThe format is:\n    attributeUniqueIdMap[attributeName] = attributeId",
+            "line": " examples/js/models/DRACOLoader.js:70"
+        },
+        {
+            "message": "Missing item type\nSets the base path for decoder source files.",
+            "line": " examples/js/models/DRACOLoader.js:331"
+        },
+        {
+            "message": "Missing item type\nSets decoder configuration and releases singleton decoder module. Module\nwill be recreated with the next decoding call.",
+            "line": " examples/js/models/DRACOLoader.js:339"
+        },
+        {
+            "message": "Missing item type\nReleases the singleton DracoDecoderModule instance. Module will be recreated\nwith the next decoding call.",
+            "line": " examples/js/models/DRACOLoader.js:355"
+        },
+        {
+            "message": "Missing item type\nGets WebAssembly or asm.js singleton instance of DracoDecoderModule after testing for\nbrowser support. Returns Promise that resolves when module is available.",
+            "line": " examples/js/models/DRACOLoader.js:363"
+        },
+        {
+            "message": "Missing item type",
+            "line": " examples/js/models/DRACOLoader.js:411"
+        },
+        {
+            "message": "Missing item type",
+            "line": " examples/js/models/DRACOLoader.js:431"
         },
         {
             "message": "Missing item type\nLoads OBJ and MTL from file(s) into a {{#crossLink \"Model\"}}{{/crossLink}}.",

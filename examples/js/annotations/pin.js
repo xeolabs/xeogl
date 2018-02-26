@@ -526,7 +526,7 @@
 
                 get: function () {
                     this.__update();
-                    xeogl.math.transformPoint3(this.scene.camera.matrix, this.worldPos, this._viewPos);
+                    xeogl.math.transformPoint3(this.scene.camera.viewMatrix, this.worldPos, this._viewPos);
                     return this._viewPos;
                 }
             },
