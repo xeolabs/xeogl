@@ -382,6 +382,20 @@
  });
  ````
 
+ An Entity's {{#crossLink "Scene"}}{{/crossLink}} also has an {{#crossLink "Scene/getAABB:method"}}{{/crossLink}}, which returns
+ the collective World-space axis-aligned boundary of the {{#crossLink "Entity"}}Entities{{/crossLink}}
+ and/or {{#crossLink "Model"}}Models{{/crossLink}} with the given IDs:
+
+ ````JavaScript
+ var scene = entity.scene;
+
+ scene.getAABB(); // Gets collective boundary of all entities in the viewer
+ scene.getAABB("saw"); // Gets collective boundary of all entities in a model
+ scene.getAABB(["saw", "gearbox"]); // Gets collective boundary of all entities in two models
+ scene.getAABB("saw#0.1"); // Get boundary of an entity
+ scene.getAABB(["saw#0.1", "saw#0.2"]); // Get collective boundary of two entities
+ ````
+
  #### Excluding from boundary calculations
 
  The {{#crossLink "Scene/aabb:property"}}Scene aabb{{/crossLink}}
@@ -1150,7 +1164,30 @@
                     return this._state.ghost;
                 }
             },
-            
+
+
+            /**
+             * World-space 3D center of this Entity.
+             *
+             * @property center
+             * @final
+             * @type {Float32Array}
+             */
+            center: {
+                get: function () {
+                    if (this._aabbDirty) {
+                        if (!this._center) {
+                            this._center = xeogl.math.AABB3();
+                        }
+                        var aabb = this.aabb;
+                        this._center[0] = (aabb[0] + aabb[3] ) / 2;
+                        this._center[1] = (aabb[1] + aabb[4] ) / 2;
+                        this._center[2] = (aabb[2] + aabb[5] ) / 2;
+                    }
+                    return this._center;
+                }
+            },
+
             /**
              * World-space axis-aligned 3D boundary (AABB) of this Entity.
              *
