@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2018-02-26
+ * Built on 2018-02-27
  *
  * MIT License
  * Copyright 2018, Lindsay Kay
@@ -3999,6 +3999,36 @@ xeogl.utils.Map = function (items, baseId) {
             }
             return result;
         }
+
+        //
+        //
+        // lockToScreen: (function() {
+        //
+        //     var worldPos2 = math.vec4();
+        //     var viewPos = math.vec4();
+        //     var screenPosA = math.vec4();
+        //     var screenPosB = math.vec4();
+        //     var canvasPosA = math.vec2();
+        //
+        //     return function (camera, worldPos, canvas, canvasSize) {
+        //
+        //         worldPos2[0] = worldPos[0];
+        //         worldPos2[1] = worldPos[1];
+        //         worldPos2[2] = worldPos[2];
+        //         worldPos2[3] = 1.0;
+        //
+        //         math.transformPoint3(camera.viewMatrix, worldPos2, viewPos);
+        //         math.transformPoint4(camera.projMatrix, viewPos, screenPosA);
+        //
+        //         var aabb = canvas.boundary;
+        //
+        //         canvasPosA[0] = Math.floor((1 + screenPosA[0] / screenPosA[3]) * aabb[2] / 2);
+        //         canvasPosA[1] = Math.floor((1 - screenPosA[1] / screenPosA[3]) * aabb[3] / 2);
+        //
+        //
+        //         return canvasPos;
+        //     };
+        // })()
     };
 
 })();;/**
@@ -14310,6 +14340,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  * [Emphasis effects](#emphasis-effects)
  * [Picking](#picking)
  * [Pick masking](#pick-masking)
+ * [Getting the World-space boundary](#getting-the-world-space-boundary]
  * [Controlling the viewport](#controlling-the-viewport)
  * [Controlling rendering](#controlling-rendering)
  * [Gamma correction](#gamma-correction)
@@ -14597,6 +14628,17 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  });
  ````
 
+ Getting the collective World-space axis-aligned boundary of the {{#crossLink "Entity"}}Entities{{/crossLink}}
+ and/or {{#crossLink "Model"}}Models{{/crossLink}} with the given IDs: 
+ 
+ ````JavaScript
+ scene.getAABB(); // Gets collective boundary of all entities in the scene
+ scene.getAABB("saw"); // Gets collective boundary of all entities in saw model
+ scene.getAABB(["saw", "gearbox"]); // Gets collective boundary of all entities in saw and gearbox models
+ scene.getAABB("saw#0.1"); // Get boundary of an entity in the saw model
+ scene.getAABB(["saw#0.1", "saw#0.2"]); // Get collective boundary of two entities in saw model
+ ````
+ 
  ### Managing the viewport
 
  The Scene's {{#crossLink "Viewport"}}{{/crossLink}} component manages the WebGL viewport:
@@ -16093,6 +16135,106 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 }
             };
         })(),
+
+        /**
+         Convenience method which returns the collective axis-aligned boundary of the {{#crossLink "Entity"}}Entities{{/crossLink}} 
+         and/or {{#crossLink "Model"}}Models{{/crossLink}} with the given IDs.
+
+         When no arguments are given, returns the total boundary of all objects in the scene.
+
+         Only {{#crossLink "Entity"}}Entities{{/crossLink}} with {{#crossLink "Entity/collidable:property"}}collidable{{/crossLink}} 
+         set ````true```` are included in the boundary.
+         
+         ## Usage
+         
+         ````JavaScript
+         scene.getAABB(); // Gets collective boundary of all objects in the scene
+         scene.getAABB("saw"); // Gets collective boundary of all objects in saw model
+         scene.getAABB(["saw", "gearbox"]); // Gets collective boundary of all objects in saw and gearbox models
+         scene.getAABB("saw#0.1"); // Get boundary of an object in the saw model
+         scene.getAABB(["saw#0.1", "saw#0.2"]); // Get collective boundary of two objects in saw model
+         ````
+
+         @method getAABB
+         @param {String|String[]} target IDs of models, objects and/or annotations
+         @returns {[Number, Number, Number, Number, Number, Number]} An axis-aligned World-space bounding box, given as elements ````[xmin, ymin, zmin, xmax, ymax, zmax]````.
+         */
+        getAABB: function (target) {
+            if (arguments.length === 0 || target === undefined) {
+                return this.aabb;
+            }
+            if (xeogl._isArray(target) && (!xeogl._isString(target[0]))) {
+                return target; // AABB
+            }
+            if (xeogl._isString(target)) {
+                target = [target];
+            }
+            if (target.length === 0) {
+                return this.aabb;
+            }
+            var id;
+            var component;
+            if (target.length === 1) {
+                id = target[0];
+                component = this.components[id];
+                if (!component) {
+                    return this.aabb;
+                }
+                return component.aabb || this.aabb;
+            }
+            // Many ids given
+            var i;
+            var len;
+            var xmin = 100000;
+            var ymin = 100000;
+            var zmin = 100000;
+            var xmax = -100000;
+            var ymax = -100000;
+            var zmax = -100000;
+            var aabb;
+            var valid = false;
+            for (i = 0, len = target.length; i < len; i++) {
+                id = target[i];
+                component = this.components[id];
+                if (component) {
+                    aabb = component.aabb;
+                    if (!aabb) {
+                        continue;
+                    }
+                }
+                if (aabb[0] < xmin) {
+                    xmin = aabb[0];
+                }
+                if (aabb[1] < ymin) {
+                    ymin = aabb[1];
+                }
+                if (aabb[2] < zmin) {
+                    zmin = aabb[2];
+                }
+                if (aabb[3] > xmax) {
+                    xmax = aabb[3];
+                }
+                if (aabb[4] > ymax) {
+                    ymax = aabb[4];
+                }
+                if (aabb[5] > zmax) {
+                    zmax = aabb[5];
+                }
+                valid = true;
+            }
+            if (valid) {
+                var aabb2 = new xeogl.math.AABB3();
+                aabb2[0] = xmin;
+                aabb2[1] = ymin;
+                aabb2[2] = zmin;
+                aabb2[3] = xmax;
+                aabb2[1 + 3] = ymax;
+                aabb2[2 + 3] = zmax;
+                return aabb2;
+            } else {
+                return this.aabb;
+            }
+        },
 
         /**
          Resets this Scene to its default state.
@@ -18599,112 +18741,6 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                     return coords;
                 };
             })();
-
-            /*
-            // Returns the inverse of the camera's current view transform matrix
-            var getInverseViewMat = (function () {
-                var viewMatDirty = true;
-                camera.on("viewMatrix", function () {
-                    viewMatDirty = true;
-                });
-                var inverseViewMat = math.mat4();
-                return function () {
-                    if (viewMatDirty) {
-                        math.inverseMat4(camera.viewMatrix, inverseViewMat);
-                    }
-                    return inverseViewMat;
-                }
-            })();
-
-            // Returns the inverse of the camera's current projection transform matrix
-            var getInverseProjectMat = (function () {
-                var projMatDirty = true;
-                camera.on("projMatrix", function () {
-                    projMatDirty = true;
-                });
-                var inverseProjectMat = math.mat4();
-                return function () {
-                    if (projMatDirty) {
-                        math.inverseMat4(camera.projMatrix, inverseProjectMat);
-                    }
-                    return inverseProjectMat;
-                }
-            })();
-
-            // Returns the transposed copy the camera's current projection transform matrix
-            var getTransposedProjectMat = (function () {
-                var projMatDirty = true;
-                camera.on("projMatrix", function () {
-                    projMatDirty = true;
-                });
-                var transposedProjectMat = math.mat4();
-                return function () {
-                    if (projMatDirty) {
-                        math.transposeMat4(camera.projMatrix, transposedProjectMat);
-                    }
-                    return transposedProjectMat;
-                }
-            })();
-
-            // Get the current diagonal size of the scene
-            var getSceneDiagSize = (function () {
-                var sceneSizeDirty = true;
-                var diag = 1; // Just in case
-                scene.on("boundary", function () {
-                    sceneSizeDirty = true;
-                });
-                return function () {
-                    if (sceneSizeDirty) {
-                        diag = math.getAABB3Diag(scene.aabb);
-                    }
-                    return diag;
-                };
-            })();
-
-            function unproject() {
-
-                var sceneSize = getSceneDiagSize();
-
-                // Use normalized device coords
-                var cw2 = canvas.offsetWidth / 2.;
-                var ch2 = canvas.offsetHeight / 2.;
-
-                var inverseProjMat = getInverseProjectMat();
-                var inverseViewMat = getInverseViewMat();
-
-                // Get last two columns of projection matrix
-                var transposedProjectMat = getTransposedProjectMat();
-                var Pt3 = transposedProjectMat.subarray(8, 12);
-                var Pt4 = transposedProjectMat.subarray(12);
-
-                // TODO: Should be simpler to get the projected Z value
-                var D = [0, 0, -(lastHoverDistance || sceneSize), 1];
-                var Z = math.dotVec4(D, Pt3) / math.dotVec4(D, Pt4);
-
-                // Returns in camera space and model space as array of two points
-                var unproject = function (p) {
-                    var cp = math.vec4();
-                    cp[0] = (p[0] - cw2) / cw2;
-                    cp[1] = (p[1] - ch2) / ch2;
-                    cp[2] = Z;
-                    cp[3] = 1.;
-                    cp = math.vec4(math.mulMat4v4(inverseProjMat, cp));
-
-                    // Normalize homogeneous coord
-                    math.mulVec3Scalar(cp, 1.0 / cp[3]);
-                    cp[3] = 1.0;
-
-                    // TODO: Why is this reversed?
-                    cp[0] *= -1;
-
-                    var cp2 = math.vec4(math.mulMat4v4(inverseViewMat, cp));
-                    return [cp, cp2];
-                };
-
-                var A = unproject(canvasPos);
-                var B = unproject(lastCanvasPos);
-            }
-            */
 
             //------------------------------------------------------------------------------------
             // Mouse and touch camera control
@@ -26692,7 +26728,8 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
  ## Usage
 
- * [Adding and Removing Components](#adding-and-removing-components)
+ * [Adding Components](#adding-components)
+ * [Removing Components](#removing-components)
  * [Finding Models in Scenes](#finding-models-in-scenes)
  * [Finding Components in Models](#finding-components-in-models)
  * [Transforming a Model](#transforming-a-model)
@@ -26700,7 +26737,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  * [Clearing a Model](#clearing-a-model)
  * [Destroying a Model](#destroying-a-model)
 
- ### Adding and Removing Components
+ ### Adding Components
 
  When adding components to a Model, it's usually easiest to just add their configuration objects and let the Model
  internally instantiate them, as shown below.
@@ -26775,12 +26812,34 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  });
  ````
 
+ ### Removing Components
+
+ To remove a component instance from a Model:
+
+ ````JavaScript
+ model.remove(myEntity);
+ ````
+
+ We can also remove components by ID:
+
+ ````JavaScript
+ model.remove("myEntity");
+ ````
+ Note that if the Component is owned by the Model, where it was created like this:
+
+ ````javascript
+ var myComponent = new xeogl.Rotate(myModel, {... });
+ ````
+
+ then even after removing it, calling {{#crossLink "Model/destroyAll:method"}}destroyAll{{/crossLink}} on the
+ Model will still destroy the component.
+
  ### Finding Models in Scenes
 
  Our Model will now be registered by ID on its Scene, so we can now find it like this:
 
  ````javascript
-    model = xeogl.scene.models["myModel"];
+ model = xeogl.scene.models["myModel"];
  ````
 
  That's assuming that we've created the Model in the default xeogl Scene, which we did for these examples.
@@ -27124,7 +27183,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
             var self = this;
 
             this._onDestroyed[component.id] = component.on("destroyed", function () {
-                self._remove(component);
+                self.remove(component);
             });
 
             if (component.isType("xeogl.Entity")) {
@@ -27259,14 +27318,55 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
             });
         },
 
+        /**
+         * Removes a {{#crossLink "Component"}}{{/crossLink}} from this model, without destroying it.
+         *
+         * Note that if the Component is owned by the Model, where it was created like this:
+         *
+         * ````javascript
+         * var myComponent = new xeogl.Rotate(myModel, {... });
+         * ````
+         *
+         * then even after removing it, calling {{#crossLink "Model/destroyAll:method"}}destroyAll{{/crossLink}} on the
+         * Model will still destroy the component.
+         *
+         * @param component
+         */
+        remove: function (component) {
+
+            if (xeogl._isNumeric(component) || xeogl._isString(component)) {
+
+                var id = component;
+
+                // Component ID
+
+                component = this.scene.components[id];
+
+                if (!component) {
+                    this.warn("Component not found in Scene: " + id);
+                    return;
+                }
+
+                component = this.components[id];
+
+                if (!component) {
+                    this.warn("Component " + id + " is not in this Model");
+                    return;
+                }
+            } else {
+
+                if (component.scene !== this.scene) {
+                    this.warn("Attempted to remove component that's not in same xeogl.Scene: '" + component.id + "'");
+                    return;
+                }
+            }
+
+            this._remove(component);
+        },
+
         _remove: function (component) {
 
             var componentId = component.id;
-
-            if (component.scene !== this.scene) {
-                this.warn("Attempted to remove component that's not in same xeogl.Scene: '" + componentId + "'");
-                return;
-            }
 
             delete this.components[componentId];
             delete this.entities[componentId];
@@ -33641,6 +33741,20 @@ TODO
  });
  ````
 
+ An Entity's {{#crossLink "Scene"}}{{/crossLink}} also has an {{#crossLink "Scene/getAABB:method"}}{{/crossLink}}, which returns
+ the collective World-space axis-aligned boundary of the {{#crossLink "Entity"}}Entities{{/crossLink}}
+ and/or {{#crossLink "Model"}}Models{{/crossLink}} with the given IDs:
+
+ ````JavaScript
+ var scene = entity.scene;
+
+ scene.getAABB(); // Gets collective boundary of all entities in the viewer
+ scene.getAABB("saw"); // Gets collective boundary of all entities in a model
+ scene.getAABB(["saw", "gearbox"]); // Gets collective boundary of all entities in two models
+ scene.getAABB("saw#0.1"); // Get boundary of an entity
+ scene.getAABB(["saw#0.1", "saw#0.2"]); // Get collective boundary of two entities
+ ````
+
  #### Excluding from boundary calculations
 
  The {{#crossLink "Scene/aabb:property"}}Scene aabb{{/crossLink}}
@@ -34409,7 +34523,30 @@ TODO
                     return this._state.ghost;
                 }
             },
-            
+
+
+            /**
+             * World-space 3D center of this Entity.
+             *
+             * @property center
+             * @final
+             * @type {Float32Array}
+             */
+            center: {
+                get: function () {
+                    if (this._aabbDirty) {
+                        if (!this._center) {
+                            this._center = xeogl.math.AABB3();
+                        }
+                        var aabb = this.aabb;
+                        this._center[0] = (aabb[0] + aabb[3] ) / 2;
+                        this._center[1] = (aabb[1] + aabb[4] ) / 2;
+                        this._center[2] = (aabb[2] + aabb[5] ) / 2;
+                    }
+                    return this._center;
+                }
+            },
+
             /**
              * World-space axis-aligned 3D boundary (AABB) of this Entity.
              *
@@ -36009,9 +36146,9 @@ TODO
 
  ````javascript
  camera.worldAxis = [
-    1, 0, 0,    // Right
-    0, 1, 0,    // Up
-    0, 0,-1     // Forward
+ 1, 0, 0,    // Right
+ 0, 1, 0,    // Up
+ 0, 0,-1     // Forward
  ];
  ````
 
@@ -36019,9 +36156,9 @@ TODO
 
  ````javascript
  camera.worldAxis = [
-    1, 0, 0, // Right
-    0, 0, 1, // Up
-    0,-1, 0  // Forward
+ 1, 0, 0, // Right
+ 0, 0, 1, // Up
+ 0,-1, 0  // Forward
  ];
  ````
 
@@ -36734,9 +36871,129 @@ TODO
                     return this;
                 }
             }
-        }
-    });
+        },
 
+        /**
+         * Transforms a 3D World-space position to 2D canvas-space.
+         *
+         * ## Usage
+         *
+         * ````JavaScript
+         * var worldPos = xeogl.math.vec3([10,10,10]);
+         * var screenPos = xeogl.math.vec3();
+         *
+         * scene.camera.worldToScreen(worldPos, screenPos);
+         *
+         * var canvasX = screenPos[0];
+         * var canvasY = screenPos[1];
+         * var distFromEye = screenPos[2];
+         *
+         * ````
+         * @method worldToCanvas
+         * @param {Float32Array} worldPos 3D World-space coordinate.
+         * @param {Float32Array} screenPos 2D Canvas-space coordinate.
+         * @returns {Float32Array} 3D Screen-space coordinate.
+         */
+        worldToScreen: (function () {
+
+            var worldPos2 = math.vec4();
+            var viewPos = math.vec4();
+            var normPos = math.vec4();
+
+            return function (worldPos, screenPos) {
+
+                worldPos2[0] = worldPos[0];
+                worldPos2[1] = worldPos[1];
+                worldPos2[2] = worldPos[2];
+                worldPos2[3] = 1.0;
+
+                math.transformPoint3(this.viewMatrix, worldPos2, viewPos);
+                math.transformPoint4(this.projMatrix, viewPos, normPos);
+
+                var aabb = this.scene.canvas.boundary;
+
+                screenPos[0] = Math.floor((1 + normPos[0] / normPos[3]) * aabb[2] / 2);
+                screenPos[1] = Math.floor((1 - normPos[1] / normPos[3]) * aabb[3] / 2);
+                screenPos[2] = viewPos[2];
+
+                return screenPos;
+            };
+        })(),
+
+        /**
+         * Transforms a 3D World-space position to 2D canvas-space.
+         *
+         * @method screenToWorld
+         * @param {Float32Array} screenPos
+         * @param {Float32Array} worldPos
+         * @returns {Float32Array}
+         */
+        // XscreenToWorld: (function() {
+        //
+        //     var worldPos2 = math.vec4();
+        //     var viewPos = math.vec4();
+        //     var screenPos = math.vec4();
+        //
+        //     return function (screenPos, worldPos) {
+        //
+        //
+        //
+        //     };
+        // })()
+
+
+        screenToWorld: (function () {
+
+            var tempMat4b = math.mat4();
+            var tempMat4c = math.mat4();
+            var tempVec4a = math.vec4();
+            var tempVec4b = math.vec4();
+            var tempVec4c = math.vec4();
+            var tempVec4d = math.vec4();
+
+            return function (screenPos, worldPos) {
+
+                var canvas = this.scene.canvas.canvas;
+
+                var viewMat = this.viewMatrix;
+                var projMat = this.projMatrix;
+
+                var pvMat = math.mulMat4(projMat, viewMat, tempMat4b);
+                var pvMatInverse = math.inverseMat4(pvMat, tempMat4c);
+
+                // Calculate clip space coordinates, which will be in range
+                // of x=[-1..1] and y=[-1..1], with y=(+1) at top
+
+                var canvasWidth = canvas.width;
+                var canvasHeight = canvas.height;
+
+                var clipX = (screenPos[0] - canvasWidth / 2) / (canvasWidth / 2);  // Calculate clip space coordinates
+                var clipY = -(screenPos[1] - canvasHeight / 2) / (canvasHeight / 2);
+
+                tempVec4a[0] = clipX;
+                tempVec4a[1] = clipY;
+                tempVec4a[2] = -1;
+                tempVec4a[3] = 1;
+
+                math.transformVec4(pvMatInverse, tempVec4a, tempVec4b);
+                math.mulVec4Scalar(tempVec4b, 1 / tempVec4b[3]);
+
+                tempVec4c[0] = clipX;
+                tempVec4c[1] = clipY;
+                tempVec4c[2] = 1;
+                tempVec4c[3] = 1;
+
+                math.transformVec4(pvMatInverse, tempVec4c, tempVec4d);
+                math.mulVec4Scalar(tempVec4d, 1 / tempVec4d[3]);
+
+                worldPos[0] = tempVec4d[0];
+                worldPos[1] = tempVec4d[1];
+                worldPos[2] = tempVec4d[2];
+
+                return worldPos;
+            };
+        })()
+    });
 })();
 ;/**
  A **Frustum** defines a perspective projection as a frustum-shaped view volume for a {{#crossLink "Camera"}}Camera{{/crossLink}}.

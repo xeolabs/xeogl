@@ -326,9 +326,9 @@
 
  &#x60;&#x60;&#x60;&#x60;javascript
  camera.worldAxis = [
-    1, 0, 0,    // Right
-    0, 1, 0,    // Up
-    0, 0,-1     // Forward
+ 1, 0, 0,    // Right
+ 0, 1, 0,    // Up
+ 0, 0,-1     // Forward
  ];
  &#x60;&#x60;&#x60;&#x60;
 
@@ -336,9 +336,9 @@
 
  &#x60;&#x60;&#x60;&#x60;javascript
  camera.worldAxis = [
-    1, 0, 0, // Right
-    0, 0, 1, // Up
-    0,-1, 0  // Forward
+ 1, 0, 0, // Right
+ 0, 0, 1, // Up
+ 0,-1, 0  // Forward
  ];
  &#x60;&#x60;&#x60;&#x60;
 
@@ -1051,9 +1051,129 @@
                     return this;
                 }
             }
-        }
-    });
+        },
 
+        /**
+         * Transforms a 3D World-space position to 2D canvas-space.
+         *
+         * ## Usage
+         *
+         * &#x60;&#x60;&#x60;&#x60;JavaScript
+         * var worldPos = xeogl.math.vec3([10,10,10]);
+         * var screenPos = xeogl.math.vec3();
+         *
+         * scene.camera.worldToScreen(worldPos, screenPos);
+         *
+         * var canvasX = screenPos[0];
+         * var canvasY = screenPos[1];
+         * var distFromEye = screenPos[2];
+         *
+         * &#x60;&#x60;&#x60;&#x60;
+         * @method worldToCanvas
+         * @param {Float32Array} worldPos 3D World-space coordinate.
+         * @param {Float32Array} screenPos 2D Canvas-space coordinate.
+         * @returns {Float32Array} 3D Screen-space coordinate.
+         */
+        worldToScreen: (function () {
+
+            var worldPos2 = math.vec4();
+            var viewPos = math.vec4();
+            var normPos = math.vec4();
+
+            return function (worldPos, screenPos) {
+
+                worldPos2[0] = worldPos[0];
+                worldPos2[1] = worldPos[1];
+                worldPos2[2] = worldPos[2];
+                worldPos2[3] = 1.0;
+
+                math.transformPoint3(this.viewMatrix, worldPos2, viewPos);
+                math.transformPoint4(this.projMatrix, viewPos, normPos);
+
+                var aabb = this.scene.canvas.boundary;
+
+                screenPos[0] = Math.floor((1 + normPos[0] / normPos[3]) * aabb[2] / 2);
+                screenPos[1] = Math.floor((1 - normPos[1] / normPos[3]) * aabb[3] / 2);
+                screenPos[2] = viewPos[2];
+
+                return screenPos;
+            };
+        })(),
+
+        /**
+         * Transforms a 3D World-space position to 2D canvas-space.
+         *
+         * @method screenToWorld
+         * @param {Float32Array} screenPos
+         * @param {Float32Array} worldPos
+         * @returns {Float32Array}
+         */
+        // XscreenToWorld: (function() {
+        //
+        //     var worldPos2 = math.vec4();
+        //     var viewPos = math.vec4();
+        //     var screenPos = math.vec4();
+        //
+        //     return function (screenPos, worldPos) {
+        //
+        //
+        //
+        //     };
+        // })()
+
+
+        screenToWorld: (function () {
+
+            var tempMat4b = math.mat4();
+            var tempMat4c = math.mat4();
+            var tempVec4a = math.vec4();
+            var tempVec4b = math.vec4();
+            var tempVec4c = math.vec4();
+            var tempVec4d = math.vec4();
+
+            return function (screenPos, worldPos) {
+
+                var canvas = this.scene.canvas.canvas;
+
+                var viewMat = this.viewMatrix;
+                var projMat = this.projMatrix;
+
+                var pvMat = math.mulMat4(projMat, viewMat, tempMat4b);
+                var pvMatInverse = math.inverseMat4(pvMat, tempMat4c);
+
+                // Calculate clip space coordinates, which will be in range
+                // of x=[-1..1] and y=[-1..1], with y=(+1) at top
+
+                var canvasWidth = canvas.width;
+                var canvasHeight = canvas.height;
+
+                var clipX = (screenPos[0] - canvasWidth / 2) / (canvasWidth / 2);  // Calculate clip space coordinates
+                var clipY = -(screenPos[1] - canvasHeight / 2) / (canvasHeight / 2);
+
+                tempVec4a[0] = clipX;
+                tempVec4a[1] = clipY;
+                tempVec4a[2] = -1;
+                tempVec4a[3] = 1;
+
+                math.transformVec4(pvMatInverse, tempVec4a, tempVec4b);
+                math.mulVec4Scalar(tempVec4b, 1 / tempVec4b[3]);
+
+                tempVec4c[0] = clipX;
+                tempVec4c[1] = clipY;
+                tempVec4c[2] = 1;
+                tempVec4c[3] = 1;
+
+                math.transformVec4(pvMatInverse, tempVec4c, tempVec4d);
+                math.mulVec4Scalar(tempVec4d, 1 / tempVec4d[3]);
+
+                worldPos[0] = tempVec4d[0];
+                worldPos[1] = tempVec4d[1];
+                worldPos[2] = tempVec4d[2];
+
+                return worldPos;
+            };
+        })()
+    });
 })();
 
     </pre>
