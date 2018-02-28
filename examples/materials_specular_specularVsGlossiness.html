@@ -86,11 +86,11 @@
 
     // Using the default Scene and it's default Lights
 
-    var lights = new xeogl.Lights({
-        lights: dirLights,
-        lightMap: lightMap,
-        reflectionMap: reflectionMap
-    });
+    var lights = xeogl.scene.lights;
+
+    lights.lights = dirLights;
+    lights.lightMap = lightMap;
+    lights.reflectionMap = reflectionMap;
 
     //--------------------------------------------------------------------------------------
     //  Spheres
