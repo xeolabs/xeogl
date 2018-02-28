@@ -141,9 +141,9 @@
 
  ````javascript
  camera.worldAxis = [
-    1, 0, 0,    // Right
-    0, 1, 0,    // Up
-    0, 0,-1     // Forward
+ 1, 0, 0,    // Right
+ 0, 1, 0,    // Up
+ 0, 0,-1     // Forward
  ];
  ````
 
@@ -151,9 +151,9 @@
 
  ````javascript
  camera.worldAxis = [
-    1, 0, 0, // Right
-    0, 0, 1, // Up
-    0,-1, 0  // Forward
+ 1, 0, 0, // Right
+ 0, 0, 1, // Up
+ 0,-1, 0  // Forward
  ];
  ````
 
@@ -868,5 +868,4 @@
             }
         }
     });
-
 })();
