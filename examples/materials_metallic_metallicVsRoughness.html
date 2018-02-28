@@ -196,93 +196,93 @@
     //  GUI
     //------------------------------------------------------------------------------------------------------------------
 
-    <!--(function () {-->
+    (function () {
 
-    <!--var entity = entities[0];-->
-    <!--var material = entity.material;-->
+        var entity = entities[0];
+        var material = entity.material;
 
-    <!--var Menu = function () {-->
+        var Menu = function () {
 
-    <!--this.message = "xeogl.MetallicMaterial";-->
+            this.message = "xeogl.MetallicMaterial";
 
-    <!--this["baseColor"] = typedToJS(material.baseColor);-->
-    <!--this["emissive"] = typedToJS(material.emissive);-->
-    <!--this["alpha"] = material.alpha;-->
-    <!--this["specularF0"] = material.specularF0;-->
+            this["baseColor"] = typedToJS(material.baseColor);
+            this["emissive"] = typedToJS(material.emissive);
+            this["alpha"] = material.alpha;
+            this["specularF0"] = material.specularF0;
 
-    <!--this["lightMap"] = !!lights.lightMap;-->
-    <!--this["reflectionMap"] = !!lights.reflectionMap;-->
-    <!--this["dirLights"] = !!(lights.lights && lights.lights.length > 0);-->
-    <!--this["skybox"] = !!skybox.active;-->
+            this["lightMap"] = !!lights.lightMap;
+            this["reflectionMap"] = !!lights.reflectionMap;
+            this["dirLights"] = !!(lights.lights && lights.lights.length > 0);
+            this["skybox"] = !!skybox.active;
 
-    <!--var self = this;-->
+            var self = this;
 
-    <!--var update = function () {-->
+            var update = function () {
 
-    <!--for (var i = 0; i < entities.length; i++) {-->
+                for (var i = 0; i < entities.length; i++) {
 
-    <!--entity = entities[i];-->
-    <!--var material = entity.material;-->
+                    entity = entities[i];
+                    var material = entity.material;
 
-    <!--material.baseColor = JSToTyped(self["baseColor"]);-->
-    <!--material.emissive = JSToTyped(self["emissive"]);-->
-    <!--material.alpha = self["alpha"];-->
-    <!--material.specularF0 = self["specularF0"];-->
-    <!--material.alphaMode = (material.alpha < 1) ? "blend" : "opaque";-->
+                    material.baseColor = JSToTyped(self["baseColor"]);
+                    material.emissive = JSToTyped(self["emissive"]);
+                    material.alpha = self["alpha"];
+                    material.specularF0 = self["specularF0"];
+                    material.alphaMode = (material.alpha < 1) ? "blend" : "opaque";
 
-    <!--if (self["lightMap"] !== !!lights.lightMap) {-->
-    <!--lights.lightMap = self["lightMap"] ? lightMap : null;-->
-    <!--}-->
+                    if (self["lightMap"] !== !!lights.lightMap) {
+                        lights.lightMap = self["lightMap"] ? lightMap : null;
+                    }
 
-    <!--if (self["reflectionMap"] !== !!lights.reflectionMap) {-->
-    <!--lights.reflectionMap = self["reflectionMap"] ? reflectionMap : null;-->
-    <!--}-->
+                    if (self["reflectionMap"] !== !!lights.reflectionMap) {
+                        lights.reflectionMap = self["reflectionMap"] ? reflectionMap : null;
+                    }
 
-    <!--if (self["dirLights"] !== !!(lights.lights && lights.lights.length > 0)) {-->
-    <!--lights.lights = self["dirLights"] ? dirLights : [];-->
-    <!--}-->
+                    if (self["dirLights"] !== !!(lights.lights && lights.lights.length > 0)) {
+                        lights.lights = self["dirLights"] ? dirLights : [];
+                    }
 
-    <!--if (self["skybox"] !== skybox.active) {-->
-    <!--skybox.active = self["skybox"];-->
-    <!--}-->
-    <!--}-->
+                    if (self["skybox"] !== skybox.active) {
+                        skybox.active = self["skybox"];
+                    }
+                }
 
-    <!--requestAnimationFrame(update);-->
-    <!--};-->
+                requestAnimationFrame(update);
+            };
 
-    <!--update();-->
-    <!--};-->
+            update();
+        };
 
-    <!--var gui = new dat.GUI({autoPlace: false, width: 300});-->
+        var gui = new dat.GUI({autoPlace: false, width: 300});
 
-    <!--document.getElementById('dat-gui-container').appendChild(gui.domElement);-->
+        document.getElementById('dat-gui-container').appendChild(gui.domElement);
 
-    <!--var menu = new Menu();-->
+        var menu = new Menu();
 
-    <!--var materialFolder = gui.addFolder('MetallicMaterial');-->
-    <!--materialFolder.addColor(menu, 'baseColor', [255, 255, 255]);-->
-    <!--materialFolder.addColor(menu, 'emissive', [0, 0, 0]);-->
-    <!--materialFolder.add(menu, 'alpha', 0.0, 1.0);-->
-    <!--materialFolder.add(menu, 'specularF0', 0.0, 1.0);-->
+        var materialFolder = gui.addFolder('MetallicMaterial');
+        materialFolder.addColor(menu, 'baseColor', [255, 255, 255]);
+        materialFolder.addColor(menu, 'emissive', [0, 0, 0]);
+        materialFolder.add(menu, 'alpha', 0.0, 1.0);
+        materialFolder.add(menu, 'specularF0', 0.0, 1.0);
 
-    <!--var lightsFolder = gui.addFolder('Environment');-->
-    <!--lightsFolder.add(menu, 'lightMap', true);-->
-    <!--lightsFolder.add(menu, 'reflectionMap', true);-->
-    <!--lightsFolder.add(menu, 'dirLights', true);-->
-    <!--lightsFolder.add(menu, 'skybox', true);-->
+        var lightsFolder = gui.addFolder('Environment');
+        lightsFolder.add(menu, 'lightMap', true);
+        lightsFolder.add(menu, 'reflectionMap', true);
+        lightsFolder.add(menu, 'dirLights', true);
+        lightsFolder.add(menu, 'skybox', true);
 
-    <!--materialFolder.open();-->
-    <!--lightsFolder.open();-->
+        materialFolder.open();
+        lightsFolder.open();
 
-    <!--function typedToJS(arry) {-->
-    <!--return [arry[0] * 255, arry[1] * 255, arry[2] * 255];-->
-    <!--}-->
+        function typedToJS(arry) {
+            return [arry[0] * 255, arry[1] * 255, arry[2] * 255];
+        }
 
-    <!--function JSToTyped(arry) {-->
-    <!--return [arry[0] / 255, arry[1] / 255, arry[2] / 255];-->
-    <!--}-->
+        function JSToTyped(arry) {
+            return [arry[0] / 255, arry[1] / 255, arry[2] / 255];
+        }
 
-    <!--})();-->
+    })();
 
 
 </script>
