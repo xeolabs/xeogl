@@ -14,6 +14,7 @@
  * [Emphasis effects](#emphasis-effects)
  * [Picking](#picking)
  * [Pick masking](#pick-masking)
+ * [Getting the World-space boundary](#getting-the-world-space-boundary]
  * [Controlling the viewport](#controlling-the-viewport)
  * [Controlling rendering](#controlling-rendering)
  * [Gamma correction](#gamma-correction)
@@ -301,6 +302,17 @@
  });
  ````
 
+ Getting the collective World-space axis-aligned boundary of the {{#crossLink "Entity"}}Entities{{/crossLink}}
+ and/or {{#crossLink "Model"}}Models{{/crossLink}} with the given IDs: 
+ 
+ ````JavaScript
+ scene.getAABB(); // Gets collective boundary of all entities in the scene
+ scene.getAABB("saw"); // Gets collective boundary of all entities in saw model
+ scene.getAABB(["saw", "gearbox"]); // Gets collective boundary of all entities in saw and gearbox models
+ scene.getAABB("saw#0.1"); // Get boundary of an entity in the saw model
+ scene.getAABB(["saw#0.1", "saw#0.2"]); // Get collective boundary of two entities in saw model
+ ````
+ 
  ### Managing the viewport
 
  The Scene's {{#crossLink "Viewport"}}{{/crossLink}} component manages the WebGL viewport:
@@ -1797,6 +1809,106 @@
                 }
             };
         })(),
+
+        /**
+         Convenience method which returns the collective axis-aligned boundary of the {{#crossLink "Entity"}}Entities{{/crossLink}} 
+         and/or {{#crossLink "Model"}}Models{{/crossLink}} with the given IDs.
+
+         When no arguments are given, returns the total boundary of all objects in the scene.
+
+         Only {{#crossLink "Entity"}}Entities{{/crossLink}} with {{#crossLink "Entity/collidable:property"}}collidable{{/crossLink}} 
+         set ````true```` are included in the boundary.
+         
+         ## Usage
+         
+         ````JavaScript
+         scene.getAABB(); // Gets collective boundary of all objects in the scene
+         scene.getAABB("saw"); // Gets collective boundary of all objects in saw model
+         scene.getAABB(["saw", "gearbox"]); // Gets collective boundary of all objects in saw and gearbox models
+         scene.getAABB("saw#0.1"); // Get boundary of an object in the saw model
+         scene.getAABB(["saw#0.1", "saw#0.2"]); // Get collective boundary of two objects in saw model
+         ````
+
+         @method getAABB
+         @param {String|String[]} target IDs of models, objects and/or annotations
+         @returns {[Number, Number, Number, Number, Number, Number]} An axis-aligned World-space bounding box, given as elements ````[xmin, ymin, zmin, xmax, ymax, zmax]````.
+         */
+        getAABB: function (target) {
+            if (arguments.length === 0 || target === undefined) {
+                return this.aabb;
+            }
+            if (xeogl._isArray(target) && (!xeogl._isString(target[0]))) {
+                return target; // AABB
+            }
+            if (xeogl._isString(target)) {
+                target = [target];
+            }
+            if (target.length === 0) {
+                return this.aabb;
+            }
+            var id;
+            var component;
+            if (target.length === 1) {
+                id = target[0];
+                component = this.components[id];
+                if (!component) {
+                    return this.aabb;
+                }
+                return component.aabb || this.aabb;
+            }
+            // Many ids given
+            var i;
+            var len;
+            var xmin = 100000;
+            var ymin = 100000;
+            var zmin = 100000;
+            var xmax = -100000;
+            var ymax = -100000;
+            var zmax = -100000;
+            var aabb;
+            var valid = false;
+            for (i = 0, len = target.length; i < len; i++) {
+                id = target[i];
+                component = this.components[id];
+                if (component) {
+                    aabb = component.aabb;
+                    if (!aabb) {
+                        continue;
+                    }
+                }
+                if (aabb[0] < xmin) {
+                    xmin = aabb[0];
+                }
+                if (aabb[1] < ymin) {
+                    ymin = aabb[1];
+                }
+                if (aabb[2] < zmin) {
+                    zmin = aabb[2];
+                }
+                if (aabb[3] > xmax) {
+                    xmax = aabb[3];
+                }
+                if (aabb[4] > ymax) {
+                    ymax = aabb[4];
+                }
+                if (aabb[5] > zmax) {
+                    zmax = aabb[5];
+                }
+                valid = true;
+            }
+            if (valid) {
+                var aabb2 = new xeogl.math.AABB3();
+                aabb2[0] = xmin;
+                aabb2[1] = ymin;
+                aabb2[2] = zmin;
+                aabb2[3] = xmax;
+                aabb2[1 + 3] = ymax;
+                aabb2[2 + 3] = zmax;
+                return aabb2;
+            } else {
+                return this.aabb;
+            }
+        },
 
         /**
          Resets this Scene to its default state.
