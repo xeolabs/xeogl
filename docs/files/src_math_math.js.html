@@ -3029,6 +3029,36 @@
             }
             return result;
         }
+
+        //
+        //
+        // lockToScreen: (function() {
+        //
+        //     var worldPos2 = math.vec4();
+        //     var viewPos = math.vec4();
+        //     var screenPosA = math.vec4();
+        //     var screenPosB = math.vec4();
+        //     var canvasPosA = math.vec2();
+        //
+        //     return function (camera, worldPos, canvas, canvasSize) {
+        //
+        //         worldPos2[0] = worldPos[0];
+        //         worldPos2[1] = worldPos[1];
+        //         worldPos2[2] = worldPos[2];
+        //         worldPos2[3] = 1.0;
+        //
+        //         math.transformPoint3(camera.viewMatrix, worldPos2, viewPos);
+        //         math.transformPoint4(camera.projMatrix, viewPos, screenPosA);
+        //
+        //         var aabb = canvas.boundary;
+        //
+        //         canvasPosA[0] = Math.floor((1 + screenPosA[0] / screenPosA[3]) * aabb[2] / 2);
+        //         canvasPosA[1] = Math.floor((1 - screenPosA[1] / screenPosA[3]) * aabb[3] / 2);
+        //
+        //
+        //         return canvasPos;
+        //     };
+        // })()
     };
 
 })();

@@ -567,6 +567,20 @@
  });
  &#x60;&#x60;&#x60;&#x60;
 
+ An Entity&#x27;s {{#crossLink &quot;Scene&quot;}}{{/crossLink}} also has an {{#crossLink &quot;Scene/getAABB:method&quot;}}{{/crossLink}}, which returns
+ the collective World-space axis-aligned boundary of the {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}
+ and/or {{#crossLink &quot;Model&quot;}}Models{{/crossLink}} with the given IDs:
+
+ &#x60;&#x60;&#x60;&#x60;JavaScript
+ var scene = entity.scene;
+
+ scene.getAABB(); // Gets collective boundary of all entities in the viewer
+ scene.getAABB(&quot;saw&quot;); // Gets collective boundary of all entities in a model
+ scene.getAABB([&quot;saw&quot;, &quot;gearbox&quot;]); // Gets collective boundary of all entities in two models
+ scene.getAABB(&quot;saw#0.1&quot;); // Get boundary of an entity
+ scene.getAABB([&quot;saw#0.1&quot;, &quot;saw#0.2&quot;]); // Get collective boundary of two entities
+ &#x60;&#x60;&#x60;&#x60;
+
  #### Excluding from boundary calculations
 
  The {{#crossLink &quot;Scene/aabb:property&quot;}}Scene aabb{{/crossLink}}
@@ -1335,7 +1349,30 @@
                     return this._state.ghost;
                 }
             },
-            
+
+
+            /**
+             * World-space 3D center of this Entity.
+             *
+             * @property center
+             * @final
+             * @type {Float32Array}
+             */
+            center: {
+                get: function () {
+                    if (this._aabbDirty) {
+                        if (!this._center) {
+                            this._center = xeogl.math.AABB3();
+                        }
+                        var aabb = this.aabb;
+                        this._center[0] = (aabb[0] + aabb[3] ) / 2;
+                        this._center[1] = (aabb[1] + aabb[4] ) / 2;
+                        this._center[2] = (aabb[2] + aabb[5] ) / 2;
+                    }
+                    return this._center;
+                }
+            },
+
             /**
              * World-space axis-aligned 3D boundary (AABB) of this Entity.
              *
