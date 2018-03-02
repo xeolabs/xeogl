@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2018-02-27
+ * Built on 2018-03-02
  *
  * MIT License
  * Copyright 2018, Lindsay Kay
@@ -3999,36 +3999,6 @@ xeogl.utils.Map = function (items, baseId) {
             }
             return result;
         }
-
-        //
-        //
-        // lockToScreen: (function() {
-        //
-        //     var worldPos2 = math.vec4();
-        //     var viewPos = math.vec4();
-        //     var screenPosA = math.vec4();
-        //     var screenPosB = math.vec4();
-        //     var canvasPosA = math.vec2();
-        //
-        //     return function (camera, worldPos, canvas, canvasSize) {
-        //
-        //         worldPos2[0] = worldPos[0];
-        //         worldPos2[1] = worldPos[1];
-        //         worldPos2[2] = worldPos[2];
-        //         worldPos2[3] = 1.0;
-        //
-        //         math.transformPoint3(camera.viewMatrix, worldPos2, viewPos);
-        //         math.transformPoint4(camera.projMatrix, viewPos, screenPosA);
-        //
-        //         var aabb = canvas.boundary;
-        //
-        //         canvasPosA[0] = Math.floor((1 + screenPosA[0] / screenPosA[3]) * aabb[2] / 2);
-        //         canvasPosA[1] = Math.floor((1 - screenPosA[1] / screenPosA[3]) * aabb[3] / 2);
-        //
-        //
-        //         return canvasPos;
-        //     };
-        // })()
     };
 
 })();;/**
@@ -5980,8 +5950,6 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
             }
 
-            // Render opaque, non-outlined objects
-
             var numOpaqueGhostFillObjects = 0;
             var numOpaqueGhostVerticesObjects = 0;
             var numOpaqueGhostEdgesObjects = 0;
@@ -6163,7 +6131,7 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
                     // Premultiplied alpha:
-                     //gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+                    //gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
                 } else {
 
                     gl.blendEquation(gl.FUNC_ADD);
@@ -6213,7 +6181,35 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                 gl.disable(gl.BLEND);
             }
 
+            if (numOpaqueHighlightFillObjects > 0 || numOpaqueHighlightEdgesObjects > 0 || numOpaqueHighlightVerticesObjects > 0) {
+
+                // Render opaque highlighted objects
+
+                frame.lastProgramId = null;
+                gl.clear(gl.DEPTH_BUFFER_BIT);
+
+                if (numOpaqueHighlightVerticesObjects > 0) {
+                    for (i = 0; i < numOpaqueHighlightVerticesObjects; i++) {
+                        opaqueHighlightVerticesObjects[i].drawHighlightVertices(frame);
+                    }
+                }
+
+                if (numOpaqueHighlightEdgesObjects > 0) {
+                    for (i = 0; i < numOpaqueHighlightEdgesObjects; i++) {
+                        opaqueHighlightEdgesObjects[i].drawHighlightEdges(frame);
+                    }
+                }
+
+                if (numOpaqueHighlightFillObjects > 0) {
+                    for (i = 0; i < numOpaqueHighlightFillObjects; i++) {
+                        opaqueHighlightFillObjects[i].drawHighlightFill(frame);
+                    }
+                }
+            }
+
             if (numTransparentHighlightFillObjects > 0 || numTransparentHighlightEdgesObjects > 0 || numTransparentHighlightVerticesObjects > 0) {
+
+                // Render transparent highlighted objects
 
                 frame.lastProgramId = null;
 
@@ -6221,11 +6217,7 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                 gl.enable(gl.CULL_FACE);
                 gl.enable(gl.BLEND);
                 gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-
-                // gl.blendEquation(gl.FUNC_ADD);
-                // gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-
-                // Render transparent highlighted objects
+                //          gl.disable(gl.DEPTH_TEST);
 
                 if (numTransparentHighlightVerticesObjects > 0) {
                     for (i = 0; i < numTransparentHighlightVerticesObjects; i++) {
@@ -6246,30 +6238,7 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                 }
 
                 gl.disable(gl.BLEND);
-            }
-
-
-            if (numOpaqueHighlightFillObjects > 0 || numOpaqueHighlightEdgesObjects > 0 || numOpaqueHighlightVerticesObjects > 0) {
-
-                // Render opaque highlighted objects
-
-                if (numOpaqueHighlightVerticesObjects > 0) {
-                    for (i = 0; i < numOpaqueHighlightVerticesObjects; i++) {
-                        opaqueHighlightVerticesObjects[i].drawHighlightVertices(frame);
-                    }
-                }
-
-                if (numOpaqueHighlightEdgesObjects > 0) {
-                    for (i = 0; i < numOpaqueHighlightEdgesObjects; i++) {
-                        opaqueHighlightEdgesObjects[i].drawHighlightEdges(frame);
-                    }
-                }
-
-                if (numOpaqueHighlightFillObjects > 0) {
-                    for (i = 0; i < numOpaqueHighlightFillObjects; i++) {
-                        opaqueHighlightFillObjects[i].drawHighlightFill(frame);
-                    }
-                }
+                //        gl.enable(gl.DEPTH_TEST);
             }
 
             var endTime = Date.now();
@@ -18470,6 +18439,25 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  "doublePickedSurface" events. Therefore, only subscribe to those when you're OK with the overhead incurred by the
  surface intersection tests.
 
+ ## Panning
+
+ ## Rotating
+
+ ## Zooming
+
+ ## Events
+
+ ## Activating and deactivating
+
+ ## Inertia
+
+ ## First person
+
+ ## Keyboard layout
+
+ # Fly-to
+
+
  @class CameraControl
  @module xeogl
  @submodule controls
@@ -18483,6 +18471,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  @param [cfg.keyboardLayout="qwerty"] {String} Keyboard layout.
  @param [cfg.doublePickFlyTo=true] {Boolean} Whether to fly the camera to each {{#crossLink "Entity"}}{{/crossLink}} that's double-clicked.
  @param [cfg.active=true] {Boolean} Indicates whether or not this CameraControl is active.
+ @param [cfg.inertia=0.5] {Number} A factor in range [0..1] indicating how much the camera keeps moving after you finish panning or rotating it.
  @extends Component
  */
 (function () {
@@ -18525,6 +18514,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             this.keyboardLayout = cfg.keyboardLayout;
             this.doublePickFlyTo = cfg.doublePickFlyTo;
             this.active = cfg.active;
+            this.inertia = cfg.inertia;
 
             this._initEvents(); // Set up all the mouse/touch/kb handlers
         },
@@ -18658,6 +18648,43 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 }
             },
 
+
+            /**
+             * A fact in range [0..1] indicating how much the camera keeps moving after you finish
+             * panning or rotating it.
+             *
+             * A value of 0.0 causes it to immediately stop, 0.5 causes its movement to decay 50% on each tick,
+             * while 1.0 causes no decay, allowing it continue moving, by the current rate of pan or rotation.
+             *
+             * You may choose an inertia of zero when you want be able to precisely position or rotate the camera,
+             * without interference from inertia. ero inertia can also mean that less frames are rendered while
+             * you are positioning the camera.
+             *
+             * Fires a {{#crossLink "KeyboardRotateCamera/inertia:event"}}{{/crossLink}} event on change.
+             *
+             * @property inertia
+             * @default 0.5
+             * @type Number
+             */
+            inertia: {
+
+                set: function (value) {
+
+                    this._inertia = value === undefined ? 0.5 : value;
+
+                    /**
+                     * Fired whenever this CameraControl's {{#crossLink "CameraControl/inertia:property"}}{{/crossLink}} property changes.
+                     * @event inertia
+                     * @param value The property's new value
+                     */
+                    this.fire('inertia', this._inertia);
+                },
+
+                get: function () {
+                    return this._inertia;
+                }
+            },
+
             /**
              * TODO
              * Fires a {{#crossLink "KeyboardRotateCamera/keyboardLayout:event"}}{{/crossLink}} event on change.
@@ -18712,7 +18739,6 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             var touchRotateRate = 0.3;
             var touchPanRate = 0.2;
             var touchZoomRate = 0.05;
-            var cameraFriction = 0.85;
 
             canvas.oncontextmenu = function (e) {
                 e.preventDefault();
@@ -18771,8 +18797,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
                 scene.on("tick", function () {
 
-                    rotateVx *= cameraFriction;
-                    rotateVy *= cameraFriction;
+                    var cameraInertia = self._inertia;
 
                     if (Math.abs(rotateVx) < EPSILON) {
                         rotateVx = 0;
@@ -18798,9 +18823,8 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                         }
                     }
 
-                    panVx *= cameraFriction;
-                    panVy *= cameraFriction;
-                    panVz *= cameraFriction;
+                    rotateVx *= cameraInertia;
+                    rotateVy *= cameraInertia;
 
                     if (Math.abs(panVx) < EPSILON) {
                         panVx = 0;
@@ -18827,8 +18851,9 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                         }
                     }
 
-
-                    vZoom *= cameraFriction;
+                    panVx *= cameraInertia;
+                    panVy *= cameraInertia;
+                    panVz *= cameraInertia;
 
                     if (Math.abs(vZoom) < EPSILON) {
                         vZoom = 0;
@@ -18851,6 +18876,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                             camera.zoom(vZoom);
                             camera.ortho.scale = camera.ortho.scale + vZoom;
                         }
+                        vZoom *= cameraInertia;
                     }
                 });
 
@@ -27757,7 +27783,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  | {{#crossLink "PhongMaterial/alphaMode:property"}}{{/crossLink}} | String | "opaque", "blend", "mask" | "blend" |  | Alpha blend mode. |
  | {{#crossLink "PhongMaterial/alphaCutoff:property"}}{{/crossLink}} | Number | [0..1] | 0.5 |  | Alpha cutoff value. |
  | {{#crossLink "PhongMaterial/backfaces:property"}}{{/crossLink}} | Boolean |  | false |  | Whether to render {{#crossLink "Geometry"}}Geometry{{/crossLink}} backfaces. |
- | {{#crossLink "PhongMaterial/backfaces:property"}}{{/crossLink}} | String | "ccw", "cw" | "ccw" |  | The winding order for {{#crossLink "Geometry"}}Geometry{{/crossLink}} frontfaces - "cw" for clockwise, or "ccw" for counter-clockwise. |
+ | {{#crossLink "PhongMaterial/frontface:property"}}{{/crossLink}} | String | "ccw", "cw" | "ccw" |  | The winding order for {{#crossLink "Geometry"}}Geometry{{/crossLink}} frontfaces - "cw" for clockwise, or "ccw" for counter-clockwise. |
 
  ## Usage
 
@@ -29333,7 +29359,7 @@ TODO
  | {{#crossLink "SpecularMaterial/alphaMode:property"}}{{/crossLink}} | String | "opaque", "blend", "mask" | "blend" |  | Alpha blend mode. |
  | {{#crossLink "SpecularMaterial/alphaCutoff:property"}}{{/crossLink}} | Number | [0..1] | 0.5 |  | Alpha cutoff value. |
  | {{#crossLink "SpecularMaterial/backfaces:property"}}{{/crossLink}} | Boolean |  | false |  | Whether to render {{#crossLink "Geometry"}}Geometry{{/crossLink}} backfaces. |
- | {{#crossLink "SpecularMaterial/backfaces:property"}}{{/crossLink}} | String | "ccw", "cw" | "ccw" |  | The winding order for {{#crossLink "Geometry"}}Geometry{{/crossLink}} frontfaces - "cw" for clockwise, or "ccw" for counter-clockwise. |
+ | {{#crossLink "SpecularMaterial/frontface:property"}}{{/crossLink}} | String | "ccw", "cw" | "ccw" |  | The winding order for {{#crossLink "Geometry"}}Geometry{{/crossLink}} frontfaces - "cw" for clockwise, or "ccw" for counter-clockwise. |
 
  ## Usage
 
@@ -30437,7 +30463,7 @@ TODO
  | {{#crossLink "MetallicMaterial/alphaMode:property"}}{{/crossLink}} | String | "opaque", "blend", "mask" | "blend" |  | Alpha blend mode. |
  | {{#crossLink "MetallicMaterial/alphaCutoff:property"}}{{/crossLink}} | Number | [0..1] | 0.5 |  | Alpha cutoff value. |
  | {{#crossLink "MetallicMaterial/backfaces:property"}}{{/crossLink}} | Boolean |  | false |  | Whether to render {{#crossLink "Geometry"}}Geometry{{/crossLink}} backfaces. |
- | {{#crossLink "MetallicMaterial/backfaces:property"}}{{/crossLink}} | String | "ccw", "cw" | "ccw" |  | The winding order for {{#crossLink "Geometry"}}Geometry{{/crossLink}} frontfaces - "cw" for clockwise, or "ccw" for counter-clockwise. |
+ | {{#crossLink "MetallicMaterial/frontface:property"}}{{/crossLink}} | String | "ccw", "cw" | "ccw" |  | The winding order for {{#crossLink "Geometry"}}Geometry{{/crossLink}} frontfaces - "cw" for clockwise, or "ccw" for counter-clockwise. |
 
  ## Usage
 
@@ -36871,128 +36897,7 @@ TODO
                     return this;
                 }
             }
-        },
-
-        /**
-         * Transforms a 3D World-space position to 2D canvas-space.
-         *
-         * ## Usage
-         *
-         * ````JavaScript
-         * var worldPos = xeogl.math.vec3([10,10,10]);
-         * var screenPos = xeogl.math.vec3();
-         *
-         * scene.camera.worldToScreen(worldPos, screenPos);
-         *
-         * var canvasX = screenPos[0];
-         * var canvasY = screenPos[1];
-         * var distFromEye = screenPos[2];
-         *
-         * ````
-         * @method worldToCanvas
-         * @param {Float32Array} worldPos 3D World-space coordinate.
-         * @param {Float32Array} screenPos 2D Canvas-space coordinate.
-         * @returns {Float32Array} 3D Screen-space coordinate.
-         */
-        worldToScreen: (function () {
-
-            var worldPos2 = math.vec4();
-            var viewPos = math.vec4();
-            var normPos = math.vec4();
-
-            return function (worldPos, screenPos) {
-
-                worldPos2[0] = worldPos[0];
-                worldPos2[1] = worldPos[1];
-                worldPos2[2] = worldPos[2];
-                worldPos2[3] = 1.0;
-
-                math.transformPoint3(this.viewMatrix, worldPos2, viewPos);
-                math.transformPoint4(this.projMatrix, viewPos, normPos);
-
-                var aabb = this.scene.canvas.boundary;
-
-                screenPos[0] = Math.floor((1 + normPos[0] / normPos[3]) * aabb[2] / 2);
-                screenPos[1] = Math.floor((1 - normPos[1] / normPos[3]) * aabb[3] / 2);
-                screenPos[2] = viewPos[2];
-
-                return screenPos;
-            };
-        })(),
-
-        /**
-         * Transforms a 3D World-space position to 2D canvas-space.
-         *
-         * @method screenToWorld
-         * @param {Float32Array} screenPos
-         * @param {Float32Array} worldPos
-         * @returns {Float32Array}
-         */
-        // XscreenToWorld: (function() {
-        //
-        //     var worldPos2 = math.vec4();
-        //     var viewPos = math.vec4();
-        //     var screenPos = math.vec4();
-        //
-        //     return function (screenPos, worldPos) {
-        //
-        //
-        //
-        //     };
-        // })()
-
-
-        screenToWorld: (function () {
-
-            var tempMat4b = math.mat4();
-            var tempMat4c = math.mat4();
-            var tempVec4a = math.vec4();
-            var tempVec4b = math.vec4();
-            var tempVec4c = math.vec4();
-            var tempVec4d = math.vec4();
-
-            return function (screenPos, worldPos) {
-
-                var canvas = this.scene.canvas.canvas;
-
-                var viewMat = this.viewMatrix;
-                var projMat = this.projMatrix;
-
-                var pvMat = math.mulMat4(projMat, viewMat, tempMat4b);
-                var pvMatInverse = math.inverseMat4(pvMat, tempMat4c);
-
-                // Calculate clip space coordinates, which will be in range
-                // of x=[-1..1] and y=[-1..1], with y=(+1) at top
-
-                var canvasWidth = canvas.width;
-                var canvasHeight = canvas.height;
-
-                var clipX = (screenPos[0] - canvasWidth / 2) / (canvasWidth / 2);  // Calculate clip space coordinates
-                var clipY = -(screenPos[1] - canvasHeight / 2) / (canvasHeight / 2);
-
-                tempVec4a[0] = clipX;
-                tempVec4a[1] = clipY;
-                tempVec4a[2] = -1;
-                tempVec4a[3] = 1;
-
-                math.transformVec4(pvMatInverse, tempVec4a, tempVec4b);
-                math.mulVec4Scalar(tempVec4b, 1 / tempVec4b[3]);
-
-                tempVec4c[0] = clipX;
-                tempVec4c[1] = clipY;
-                tempVec4c[2] = 1;
-                tempVec4c[3] = 1;
-
-                math.transformVec4(pvMatInverse, tempVec4c, tempVec4d);
-                math.mulVec4Scalar(tempVec4d, 1 / tempVec4d[3]);
-
-                worldPos[0] = tempVec4d[0];
-                worldPos[1] = tempVec4d[1];
-                worldPos[2] = tempVec4d[2];
-
-                return worldPos;
-            };
-        })()
+        }
     });
 })();
 ;/**

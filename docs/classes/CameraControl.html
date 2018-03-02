@@ -187,7 +187,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_controls_cameraControl.js.html#l1"><code>src&#x2F;controls&#x2F;cameraControl.js:1</code></a>
+            Defined in: <a href="../files/src_controls_cameraControl.new.js.html#l1"><code>src&#x2F;controls&#x2F;cameraControl.new.js:1</code></a>
         </div>
 
             Module: <a href="../modules/controls.html">controls</a><br>
@@ -213,6 +213,15 @@
 <p>For efficiency, CameraControl only does surface intersection picking when you subscribe to "doublePicked" and
 "doublePickedSurface" events. Therefore, only subscribe to those when you&#39;re OK with the overhead incurred by the
 surface intersection tests.</p>
+<h2 id="panning">Panning</h2>
+<h2 id="rotating">Rotating</h2>
+<h2 id="zooming">Zooming</h2>
+<h2 id="events">Events</h2>
+<h2 id="activating-and-deactivating">Activating and deactivating</h2>
+<h2 id="inertia">Inertia</h2>
+<h2 id="first-person">First person</h2>
+<h2 id="keyboard-layout">Keyboard layout</h2>
+<h1 id="fly-to">Fly-to</h1>
 
 </div>
 
@@ -243,7 +252,7 @@ surface intersection tests.</p>
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_controls_cameraControl.js.html#l1"><code>src&#x2F;controls&#x2F;cameraControl.js:1</code></a>
+                <a href="../files/src_controls_cameraControl.new.js.html#l1"><code>src&#x2F;controls&#x2F;cameraControl.new.js:1</code></a>
                 </p>
         
         
@@ -359,6 +368,17 @@ surface intersection tests.</p>
                                         </div>
         
                                     </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[inertia=0.5]  A factor in range [0..1]</code>
+                                            <span class="type">Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>indicating how much the camera keeps moving after you finish panning or rotating it.</p>
+        
+                                        </div>
+        
+                                    </li>
                                 </ul>
                         </li>
                     </ul>
@@ -441,8 +461,16 @@ surface intersection tests.</p>
                                 <a href="#property_active">active</a>
 
                             </li>
+                            <li class="index-item property">
+                                <a href="#property_active">active</a>
+
+                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_destroyed">destroyed</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_doublePickFlyTo">doublePickFlyTo</a>
 
                             </li>
                             <li class="index-item property">
@@ -453,12 +481,28 @@ surface intersection tests.</p>
                                 <a href="#property_firstPerson">firstPerson</a>
 
                             </li>
+                            <li class="index-item property">
+                                <a href="#property_firstPerson">firstPerson</a>
+
+                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_id">id</a>
 
                             </li>
+                            <li class="index-item property">
+                                <a href="#property_inertia">inertia</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_inertia">inertia</a>
+
+                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_isDefault">isDefault</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_keyboardLayout">keyboardLayout</a>
 
                             </li>
                             <li class="index-item property">
@@ -482,6 +526,14 @@ surface intersection tests.</p>
 
                             </li>
                             <li class="index-item property">
+                                <a href="#property_type">type</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_walking">walking</a>
+
+                            </li>
+                            <li class="index-item property">
                                 <a href="#property_walking">walking</a>
 
                             </li>
@@ -497,8 +549,16 @@ surface intersection tests.</p>
                                 <a href="#event_active">active</a>
 
                             </li>
+                            <li class="index-item event">
+                                <a href="#event_active">active</a>
+
+                            </li>
                             <li class="index-item event inherited">
                                 <a href="#event_destroyed">destroyed</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_doublePickedNothing">doublePickedNothing</a>
 
                             </li>
                             <li class="index-item event">
@@ -510,6 +570,14 @@ surface intersection tests.</p>
 
                             </li>
                             <li class="index-item event">
+                                <a href="#event_doublePickedSurface">doublePickedSurface</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_doublePickFlyTo">doublePickFlyTo</a>
+
+                            </li>
+                            <li class="index-item event">
                                 <a href="#event_doublePickFlyTo">doublePickFlyTo</a>
 
                             </li>
@@ -518,7 +586,19 @@ surface intersection tests.</p>
 
                             </li>
                             <li class="index-item event">
+                                <a href="#event_firstPerson">firstPerson</a>
+
+                            </li>
+                            <li class="index-item event">
                                 <a href="#event_hover">hover</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_hover">hover</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_hoverOff">hoverOff</a>
 
                             </li>
                             <li class="index-item event">
@@ -534,7 +614,31 @@ surface intersection tests.</p>
 
                             </li>
                             <li class="index-item event">
+                                <a href="#event_hoverOut">hoverOut</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_hoverOut">hoverOut</a>
+
+                            </li>
+                            <li class="index-item event">
                                 <a href="#event_hoverSurface">hoverSurface</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_hoverSurface">hoverSurface</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_inertia">inertia</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_inertia">inertia</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_keyboardLayout">keyboardLayout</a>
 
                             </li>
                             <li class="index-item event">
@@ -550,11 +654,31 @@ surface intersection tests.</p>
 
                             </li>
                             <li class="index-item event">
+                                <a href="#event_picked">picked</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_picked">picked</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_pickedNothing">pickedNothing</a>
+
+                            </li>
+                            <li class="index-item event">
                                 <a href="#event_pickedNothing">pickedNothing</a>
 
                             </li>
                             <li class="index-item event">
                                 <a href="#event_pickedSurface">pickedSurface</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_pickedSurface">pickedSurface</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_walking">walking</a>
 
                             </li>
                             <li class="index-item event">
@@ -1340,7 +1464,34 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l84"><code>src&#x2F;controls&#x2F;cameraControl.js:84</code></a>
+                            <a href="../files/src_controls_cameraControl.js.html#l105"><code>src&#x2F;controls&#x2F;cameraControl.js:105</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Indicates whether this CameraControl is active or not.</p>
+                    <p>Fires a <a href="../classes/CameraControl.html#event_active" class="crosslink">active</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> true</p>
+                    
+                    
+                    </div>
+                    <div id="property_active" class="property item">
+                        <h3 class="name"><code>active</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_controls_cameraControl.new.js.html#l105"><code>src&#x2F;controls&#x2F;cameraControl.new.js:105</code></a>
                             </p>
                     
                     
@@ -1392,7 +1543,34 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l182"><code>src&#x2F;controls&#x2F;cameraControl.js:182</code></a>
+                            <a href="../files/src_controls_cameraControl.js.html#l203"><code>src&#x2F;controls&#x2F;cameraControl.js:203</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>TODO
+                    Fires a KeyboardRotateCamera/doublePickFlyTo:event event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> true</p>
+                    
+                    
+                    </div>
+                    <div id="property_doublePickFlyTo" class="property item">
+                        <h3 class="name"><code>doublePickFlyTo</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_controls_cameraControl.new.js.html#l203"><code>src&#x2F;controls&#x2F;cameraControl.new.js:203</code></a>
                             </p>
                     
                     
@@ -1419,7 +1597,36 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l113"><code>src&#x2F;controls&#x2F;cameraControl.js:113</code></a>
+                            <a href="../files/src_controls_cameraControl.js.html#l134"><code>src&#x2F;controls&#x2F;cameraControl.js:134</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Flag which indicates whether this CameraControl is in "first person" mode.</p>
+                    <p>In "first person" mode (disabled by default) the look position rotates about the eye position. Otherwise,
+                    the eye rotates about the look.</p>
+                    <p>Fires a KeyboardRotateCamera/firstPerson:event event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> false</p>
+                    
+                    
+                    </div>
+                    <div id="property_firstPerson" class="property item">
+                        <h3 class="name"><code>firstPerson</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_controls_cameraControl.new.js.html#l134"><code>src&#x2F;controls&#x2F;cameraControl.new.js:134</code></a>
                             </p>
                     
                     
@@ -1463,6 +1670,72 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_inertia" class="property item">
+                        <h3 class="name"><code>inertia</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_controls_cameraControl.js.html#l233"><code>src&#x2F;controls&#x2F;cameraControl.js:233</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>A fact in range [0..1] indicating how much the camera keeps moving after you finish
+                    panning or rotating it.</p>
+                    <p>A value of 0.0 causes it to immediately stop, 0.5 causes its movement to decay 50% on each tick,
+                    while 1.0 causes no decay, allowing it continue moving, by the current rate of pan or rotation.</p>
+                    <p>You may choose an inertia of zero when you want be able to precisely position or rotate the camera,
+                    without interference from inertia. ero inertia can also mean that less frames are rendered while
+                    you are positioning the camera.</p>
+                    <p>Fires a KeyboardRotateCamera/inertia:event event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> 0.5</p>
+                    
+                    
+                    </div>
+                    <div id="property_inertia" class="property item">
+                        <h3 class="name"><code>inertia</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_controls_cameraControl.new.js.html#l233"><code>src&#x2F;controls&#x2F;cameraControl.new.js:233</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>A fact in range [0..1] indicating how much the camera keeps moving after you finish
+                    panning or rotating it.</p>
+                    <p>A value of 0.0 causes it to immediately stop, 0.5 causes its movement to decay 50% on each tick,
+                    while 1.0 causes no decay, allowing it continue moving, by the current rate of pan or rotation.</p>
+                    <p>You may choose an inertia of zero when you want be able to precisely position or rotate the camera,
+                    without interference from inertia. ero inertia can also mean that less frames are rendered while
+                    you are positioning the camera.</p>
+                    <p>Fires a KeyboardRotateCamera/inertia:event event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> 0.5</p>
+                    
+                    
+                    </div>
                     <div id="property_isDefault" class="property item inherited">
                         <h3 class="name"><code>isDefault</code></h3>
                         <span class="type">Boolean</span>
@@ -1499,7 +1772,34 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l211"><code>src&#x2F;controls&#x2F;cameraControl.js:211</code></a>
+                            <a href="../files/src_controls_cameraControl.js.html#l269"><code>src&#x2F;controls&#x2F;cameraControl.js:269</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>TODO
+                    Fires a KeyboardRotateCamera/keyboardLayout:event event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> &quot;qwerty&quot;</p>
+                    
+                    
+                    </div>
+                    <div id="property_keyboardLayout" class="property item">
+                        <h3 class="name"><code>keyboardLayout</code></h3>
+                        <span class="type">String</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_controls_cameraControl.new.js.html#l269"><code>src&#x2F;controls&#x2F;cameraControl.new.js:269</code></a>
                             </p>
                     
                     
@@ -1613,7 +1913,33 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_controls_cameraControl.js.html#l45"><code>src&#x2F;controls&#x2F;cameraControl.js:45</code></a>
+                            <a href="../files/src_controls_cameraControl.js.html#l65"><code>src&#x2F;controls&#x2F;cameraControl.js:65</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>JavaScript class name for this Component.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_type" class="property item">
+                        <h3 class="name"><code>type</code></h3>
+                        <span class="type">String</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_controls_cameraControl.new.js.html#l65"><code>src&#x2F;controls&#x2F;cameraControl.new.js:65</code></a>
                             </p>
                     
                     
@@ -1638,7 +1964,38 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l146"><code>src&#x2F;controls&#x2F;cameraControl.js:146</code></a>
+                            <a href="../files/src_controls_cameraControl.js.html#l167"><code>src&#x2F;controls&#x2F;cameraControl.js:167</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Flag which indicates whether this CameraControl is in "walking" mode.</p>
+                    <p>When set true, this constrains eye movement to the horizontal X-Z plane. When doing a walkthrough,
+                    this is useful to allow us to look upwards or downwards as we move, while keeping us moving in the
+                    horizontal plane.</p>
+                    <p>This only has an effect when also in "first person" mode.</p>
+                    <p>Fires a KeyboardRotateCamera/walking:event event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> false</p>
+                    
+                    
+                    </div>
+                    <div id="property_walking" class="property item">
+                        <h3 class="name"><code>walking</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_controls_cameraControl.new.js.html#l167"><code>src&#x2F;controls&#x2F;cameraControl.new.js:167</code></a>
                             </p>
                     
                     
@@ -1675,7 +2032,49 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l99"><code>src&#x2F;controls&#x2F;cameraControl.js:99</code></a>
+                            <a href="../files/src_controls_cameraControl.new.js.html#l120"><code>src&#x2F;controls&#x2F;cameraControl.new.js:120</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this CameraControl&#39;s <a href="../classes/CameraControl.html#property_active" class="crosslink">active</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Boolean</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_active" class="events item">
+                        <h3 class="name"><code>active</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_controls_cameraControl.js.html#l120"><code>src&#x2F;controls&#x2F;cameraControl.js:120</code></a>
                             </p>
                     
                     
@@ -1742,7 +2141,32 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l1124"><code>src&#x2F;controls&#x2F;cameraControl.js:1124</code></a>
+                            <a href="../files/src_controls_cameraControl.new.js.html#l1181"><code>src&#x2F;controls&#x2F;cameraControl.new.js:1181</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired when the pointer attempted a double-pick (ie. double-clicked or double-tapped), but has hit nothing.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="event_doublePickedNothing" class="events item">
+                        <h3 class="name"><code>doublePickedNothing</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_controls_cameraControl.js.html#l1181"><code>src&#x2F;controls&#x2F;cameraControl.js:1181</code></a>
                             </p>
                     
                     
@@ -1767,7 +2191,51 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l1108"><code>src&#x2F;controls&#x2F;cameraControl.js:1108</code></a>
+                            <a href="../files/src_controls_cameraControl.new.js.html#l1165"><code>src&#x2F;controls&#x2F;cameraControl.new.js:1165</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired when the pointer has double-picked (ie. double-clicked or double-tapped) the surface of an <a href="../classes/Entity.html" class="crosslink">Entity</a>.</p>
+                    <p>This event provides 3D information about the point on the surface that the pointer has picked.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">hit</code>
+                                            <span class="type">#crossLink "Scene/pick:method"</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>A surface pick hit result, containing the ID of the Entity and 3D info on the
+                    surface possition - see }{{/crossLink}}.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_doublePickedSurface" class="events item">
+                        <h3 class="name"><code>doublePickedSurface</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_controls_cameraControl.js.html#l1165"><code>src&#x2F;controls&#x2F;cameraControl.js:1165</code></a>
                             </p>
                     
                     
@@ -1811,7 +2279,49 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l198"><code>src&#x2F;controls&#x2F;cameraControl.js:198</code></a>
+                            <a href="../files/src_controls_cameraControl.new.js.html#l219"><code>src&#x2F;controls&#x2F;cameraControl.new.js:219</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this CameraControl&#39;s <a href="../classes/CameraControl.html#property_doublePickFlyTo" class="crosslink">doublePickFlyTo</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_doublePickFlyTo" class="events item">
+                        <h3 class="name"><code>doublePickFlyTo</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_controls_cameraControl.js.html#l219"><code>src&#x2F;controls&#x2F;cameraControl.js:219</code></a>
                             </p>
                     
                     
@@ -1853,7 +2363,49 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l133"><code>src&#x2F;controls&#x2F;cameraControl.js:133</code></a>
+                            <a href="../files/src_controls_cameraControl.new.js.html#l154"><code>src&#x2F;controls&#x2F;cameraControl.new.js:154</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this CameraControl&#39;s <a href="../classes/CameraControl.html#property_firstPerson" class="crosslink">firstPerson</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_firstPerson" class="events item">
+                        <h3 class="name"><code>firstPerson</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_controls_cameraControl.js.html#l154"><code>src&#x2F;controls&#x2F;cameraControl.js:154</code></a>
                             </p>
                     
                     
@@ -1895,7 +2447,49 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l911"><code>src&#x2F;controls&#x2F;cameraControl.js:911</code></a>
+                            <a href="../files/src_controls_cameraControl.js.html#l968"><code>src&#x2F;controls&#x2F;cameraControl.js:968</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired continuously while the pointer is moving while hovering over an <a href="../classes/Entity.html" class="crosslink">Entity</a>.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">hit</code>
+                                            <span class="type">#crossLink "Scene/pick:method"</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>A pick hit result containing the ID of the Entity - see }{{/crossLink}}.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_hover" class="events item">
+                        <h3 class="name"><code>hover</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_controls_cameraControl.new.js.html#l968"><code>src&#x2F;controls&#x2F;cameraControl.new.js:968</code></a>
                             </p>
                     
                     
@@ -1937,7 +2531,32 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l946"><code>src&#x2F;controls&#x2F;cameraControl.js:946</code></a>
+                            <a href="../files/src_controls_cameraControl.new.js.html#l1003"><code>src&#x2F;controls&#x2F;cameraControl.new.js:1003</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired continuously while the pointer is moving but not hovering over anything.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="event_hoverOff" class="events item">
+                        <h3 class="name"><code>hoverOff</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_controls_cameraControl.js.html#l1003"><code>src&#x2F;controls&#x2F;cameraControl.js:1003</code></a>
                             </p>
                     
                     
@@ -1962,7 +2581,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l936"><code>src&#x2F;controls&#x2F;cameraControl.js:936</code></a>
+                            <a href="../files/src_controls_cameraControl.new.js.html#l993"><code>src&#x2F;controls&#x2F;cameraControl.new.js:993</code></a>
                             </p>
                     
                     
@@ -2004,7 +2623,91 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l901"><code>src&#x2F;controls&#x2F;cameraControl.js:901</code></a>
+                            <a href="../files/src_controls_cameraControl.new.js.html#l958"><code>src&#x2F;controls&#x2F;cameraControl.new.js:958</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever the pointer no longer hovers over an <a href="../classes/Entity.html" class="crosslink">Entity</a>.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">entity</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The Entity</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_hoverOut" class="events item">
+                        <h3 class="name"><code>hoverOut</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_controls_cameraControl.js.html#l993"><code>src&#x2F;controls&#x2F;cameraControl.js:993</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever the pointer no longer hovers over an <a href="../classes/Entity.html" class="crosslink">Entity</a>.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">entity</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The Entity</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_hoverOut" class="events item">
+                        <h3 class="name"><code>hoverOut</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_controls_cameraControl.js.html#l958"><code>src&#x2F;controls&#x2F;cameraControl.js:958</code></a>
                             </p>
                     
                     
@@ -2046,7 +2749,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l922"><code>src&#x2F;controls&#x2F;cameraControl.js:922</code></a>
+                            <a href="../files/src_controls_cameraControl.new.js.html#l979"><code>src&#x2F;controls&#x2F;cameraControl.new.js:979</code></a>
                             </p>
                     
                     
@@ -2080,6 +2783,135 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="event_hoverSurface" class="events item">
+                        <h3 class="name"><code>hoverSurface</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_controls_cameraControl.js.html#l979"><code>src&#x2F;controls&#x2F;cameraControl.js:979</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired while the pointer hovers over the surface of an <a href="../classes/Entity.html" class="crosslink">Entity</a>.</p>
+                    <p>This event provides 3D information about the point on the surface that the pointer is
+                    hovering over.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">hit</code>
+                                            <span class="type">#crossLink "Scene/pick:method"</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>A surface pick hit result, containing the ID of the Entity and 3D info on the
+                    surface possition - see }{{/crossLink}}.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_inertia" class="events item">
+                        <h3 class="name"><code>inertia</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_controls_cameraControl.js.html#l256"><code>src&#x2F;controls&#x2F;cameraControl.js:256</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this CameraControl&#39;s <a href="../classes/CameraControl.html#property_inertia" class="crosslink">inertia</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_inertia" class="events item">
+                        <h3 class="name"><code>inertia</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_controls_cameraControl.new.js.html#l256"><code>src&#x2F;controls&#x2F;cameraControl.new.js:256</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this CameraControl&#39;s <a href="../classes/CameraControl.html#property_inertia" class="crosslink">inertia</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
                     <div id="event_keyboardLayout" class="events item">
                         <h3 class="name"><code>keyboardLayout</code></h3>
                         <span class="type"></span>
@@ -2091,7 +2923,49 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l227"><code>src&#x2F;controls&#x2F;cameraControl.js:227</code></a>
+                            <a href="../files/src_controls_cameraControl.new.js.html#l285"><code>src&#x2F;controls&#x2F;cameraControl.new.js:285</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this CameraControl&#39;s <a href="../classes/CameraControl.html#property_keyboardLayout" class="crosslink">keyboardLayout</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_keyboardLayout" class="events item">
+                        <h3 class="name"><code>keyboardLayout</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_controls_cameraControl.js.html#l285"><code>src&#x2F;controls&#x2F;cameraControl.js:285</code></a>
                             </p>
                     
                     
@@ -2133,7 +3007,91 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l1035"><code>src&#x2F;controls&#x2F;cameraControl.js:1035</code></a>
+                            <a href="../files/src_controls_cameraControl.js.html#l1157"><code>src&#x2F;controls&#x2F;cameraControl.js:1157</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever the pointer has double-picked (ie. double-clicked or double-tapped) an <a href="../classes/Entity.html" class="crosslink">Entity</a>.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">hit</code>
+                                            <span class="type">#crossLink "Scene/pick:method"</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>A surface pick hit result containing the ID of the Entity - see }{{/crossLink}}.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_picked" class="events item">
+                        <h3 class="name"><code>picked</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_controls_cameraControl.new.js.html#l1157"><code>src&#x2F;controls&#x2F;cameraControl.new.js:1157</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever the pointer has double-picked (ie. double-clicked or double-tapped) an <a href="../classes/Entity.html" class="crosslink">Entity</a>.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">hit</code>
+                                            <span class="type">#crossLink "Scene/pick:method"</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>A surface pick hit result containing the ID of the Entity - see }{{/crossLink}}.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_picked" class="events item">
+                        <h3 class="name"><code>picked</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_controls_cameraControl.js.html#l1092"><code>src&#x2F;controls&#x2F;cameraControl.js:1092</code></a>
                             </p>
                     
                     
@@ -2175,14 +3133,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l1100"><code>src&#x2F;controls&#x2F;cameraControl.js:1100</code></a>
+                            <a href="../files/src_controls_cameraControl.new.js.html#l1092"><code>src&#x2F;controls&#x2F;cameraControl.new.js:1092</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever the pointer has double-picked (ie. double-clicked or double-tapped) an <a href="../classes/Entity.html" class="crosslink">Entity</a>.</p>
+                            <p>Fired whenever the pointer has picked (ie. clicked or tapped) an <a href="../classes/Entity.html" class="crosslink">Entity</a>.</p>
                     
                         </div>
                     
@@ -2217,7 +3175,32 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l1057"><code>src&#x2F;controls&#x2F;cameraControl.js:1057</code></a>
+                            <a href="../files/src_controls_cameraControl.new.js.html#l1114"><code>src&#x2F;controls&#x2F;cameraControl.new.js:1114</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired when the pointer attempted a pick (ie. clicked or tapped), but has hit nothing.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="event_pickedNothing" class="events item">
+                        <h3 class="name"><code>pickedNothing</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_controls_cameraControl.js.html#l1114"><code>src&#x2F;controls&#x2F;cameraControl.js:1114</code></a>
                             </p>
                     
                     
@@ -2242,7 +3225,51 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l1044"><code>src&#x2F;controls&#x2F;cameraControl.js:1044</code></a>
+                            <a href="../files/src_controls_cameraControl.new.js.html#l1101"><code>src&#x2F;controls&#x2F;cameraControl.new.js:1101</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired when the pointer has picked (ie. clicked or tapped) the surface of an <a href="../classes/Entity.html" class="crosslink">Entity</a>.</p>
+                    <p>This event provides 3D information about the point on the surface that the pointer has picked.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">hit</code>
+                                            <span class="type">#crossLink "Scene/pick:method"</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>A surface pick hit result, containing the ID of the Entity and 3D info on the
+                    surface possition - see }{{/crossLink}}.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_pickedSurface" class="events item">
+                        <h3 class="name"><code>pickedSurface</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_controls_cameraControl.js.html#l1101"><code>src&#x2F;controls&#x2F;cameraControl.js:1101</code></a>
                             </p>
                     
                     
@@ -2286,7 +3313,49 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_cameraControl.js.html#l169"><code>src&#x2F;controls&#x2F;cameraControl.js:169</code></a>
+                            <a href="../files/src_controls_cameraControl.new.js.html#l190"><code>src&#x2F;controls&#x2F;cameraControl.new.js:190</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this CameraControl&#39;s <a href="../classes/CameraControl.html#property_walking" class="crosslink">walking</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_walking" class="events item">
+                        <h3 class="name"><code>walking</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_controls_cameraControl.js.html#l190"><code>src&#x2F;controls&#x2F;cameraControl.js:190</code></a>
                             </p>
                     
                     
