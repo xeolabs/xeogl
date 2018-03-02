@@ -378,27 +378,27 @@
 
     // Ground plane
 
-    //    new xeogl.Entity({
-    //        geometry: new xeogl.PlaneGeometry({
-    //            xSize: 20,
-    //            zSize: 20
-    //        }),
-    //        material: new xeogl.PhongMaterial({
-    //            shininess: 170,
-    //            specular: [0.1, 0.1, 0.3],
-    //            diffuseMap: new xeogl.Texture({
-    //                src: "textures/diffuse/UVCheckerMap11-1024.png",
-    //                scale: [-5.0, 5.0]
-    //            }),
-    //            xalpha: 0.99,
-    //            backfaces: false
-    //        }),
-    //        transform: new xeogl.Translate({
-    //            xyz: [0, -1.1, 0]
-    //        }),
-    //        collidable: false,
-    //        pickable: false
-    //    });
+        new xeogl.Entity({
+            geometry: new xeogl.PlaneGeometry({
+                xSize: 20,
+                zSize: 20
+            }),
+            material: new xeogl.PhongMaterial({
+                shininess: 170,
+                specular: [0.1, 0.1, 0.3],
+                diffuseMap: new xeogl.Texture({
+                    src: "textures/diffuse/UVCheckerMap11-1024.png",
+                    scale: [-5.0, 5.0]
+                }),
+                xalpha: 0.99,
+                backfaces: false
+            }),
+            transform: new xeogl.Translate({
+                xyz: [0, -1.1, 0]
+            }),
+            collidable: false,
+            pickable: false
+        });
 
     // Source code vector text
     //        (function () {
