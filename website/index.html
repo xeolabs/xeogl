@@ -147,9 +147,13 @@
 <!-- ================ -->
 <div id="banner" class="banner">
 
+    <!--<iframe id="demoLink"-->
+    <!--style="background: black; border: 0; position:absolute; right: 0; width:100%; height:100%; pointer-events:all;"-->
+    <!--src="../examples/featured_VianneyHouse2.html"></iframe>-->
+
     <iframe id="demoLink"
             style="background: black; border: 0; position:absolute; right: 0; width:100%; height:100%; pointer-events:all;"
-            src="../examples/featured_VianneyHouse2.html"></iframe>
+            src="../examples/importing_gltf_BranchHouse.html"></iframe>
 
 </div>
 <!-- banner end -->
@@ -165,37 +169,66 @@
 
 
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-6 features">
 
-                        <h2>Overview</h2>
+                        <p>xeogl is a JavaScript library for 3D model visualization on WebGL.</p>
 
-                        <p>xeogl is a data-driven 3D visualization engine on WebGL.</p>
-
-                        <p>Features:</p>
+                        <h2>Features</h2>
 
                         <ul>
-                            <li>data driven,</li>
-                            <li>runtime-editable node graph,</li>
-                            <li><a href="https://www.khronos.org/gltf">glTF</a> import,</li>
-                            <li><a href="http://xeogl.org/examples/#materials_metallic_fireHydrant">physically-based
-                                rendering</a></li>
-                            <li>geometry compression</li>
-                            <li>built-in emphasis effects for CAD visualization</li>
-                            <li>easy to use, with defaults for everything,</li>
-                            <li>open source (<a href="https://github.com/xeolabs/xeogl/blob/master/MIT-LICENSE">MIT</a>).
+                            <li><b>3D engine</b>
+                                <ul>
+                                    <li class="first">Data-driven, runtime-editable component graph</li>
+                                    <li>Extensible</li>
+                                    <li>Custom components library</li>
+                                    <li class="last">Open source (<a
+                                            href="https://github.com/xeolabs/xeogl/blob/master/MIT-LICENSE">MIT</a>).
+                                </ul>
+                            </li>
+                            <li><b>Designed for CAD, BIM and Archviz</b>
+                                <ul>
+                                    <li class="first">Load multiple models</li>
+                                    <li>Show/hide/move individual elements</li>
+                                    <li>Camera controls</li>
+                                    <li>Camera animations (flight, path etc)</li>
+                                    <li>Emphasis effects (wireframe, ghost, highlight, outline)</li>
+                                    <li>Annotations</li>
+                                    <li>Cross-section views</li>
+                                    <li>Transform hierarchies</li>
+                                    <li>Boundary volumes</li>
+                                    <li>3D picking, raycasting</li>
+                                    <li class="last">Geometry compression</li>
+                                </ul>
+                            </li>
+                            <li><b>Imported formats</b>
+                                <ul>
+                                    <li class="first">glTF 2.0</li>
+                                    <li>OBJ+MTL</li>
+                                    <li class="last">SceneJS</li>
+                                </ul>
+                            </li>
+                            <li><b>Materials</b>
+                                <ul>
+                                    <li class="first">PBR metallic/roughness</li>
+                                    <li>PBR specular/glossiness</li>
+                                    <li class="last">Blinn/Phong and Lambert</li>
+                                </ul>
+                            </li>
+                            <li><b>Lighting</b>
+                                <ul>
+                                    <li class="first">Image-based lighting</li>
+                                    <li>Dynamic lights (directional, point and spot)</li>
+                                    <li class="last">Realtime shadows</li>
+                                </ul>
                             </li>
                         </ul>
                         <p></p>
 
                         <h2>Featured app</h2>
 
-                        <p>xeogl is running in production as the 3D engine within <a
+                        <p>xeogl is the 3D engine within <a
                                 href="http://xeolabs.com/articles/xeogl-in-bimsurfer">BIMSurfer</a>, the open source
-                            tool
-                            for Web-based visualization and evaluation of Building Information Models (BIM).<br><br>BIMSurfer
-                            is
-                            used within a variety of apps, so it's effectively battle-testing xeogl with large models
-                            on a variety of operating systems and hardware.</p>
+                            tool for Web-based visualization and evaluation of Building Information Models (BIM):</p>
 
 
                         <iframe width="560" height="315" src="https://www.youtube.com/embed/tCHwEA2HqU8?rel=0"
@@ -298,7 +331,8 @@ entity.transform.angle = 90.0;</pre>
 
                         <h2>Importing content</h2>
 
-                        <p>Load models from glTF then navigate and update their entities to create custom visualizations:</p>
+                        <p>Load models from glTF then navigate and update their entities to create custom
+                            visualizations:</p>
                         <pre class="prettyprint lang-javascript">var model = new xeogl.GLTFModel({
     id: "office",
     src: "models/gltf/office/scene.gltf"
@@ -334,12 +368,16 @@ var cameraControl = new xeogl.CameraControl();</pre>
 
                         <ul>
                             <li><a
-                                    href="http://xeogl.org/docs" target="_parent">API reference</a></li>
-                            <li><a
-                                    href="https://github.com/xeolabs/xeogl/wiki" target="_wiki">Wiki</a></li>
+                                    href="http://xeogl.org/docs" target="_parent">API docs</a></li>
                             <li><a
                                     href="http://xeogl.org/examples/#materials_fresnel_specular" target="_parent">Examples</a>
                             </li>
+                            <li><a
+                                    href="https://github.com/xeolabs/xeogl" target="_wiki">Source code</a></li>
+                            <li><a
+                                    href="https://github.com/xeolabs/xeogl/wiki" target="_wiki">Wiki</a></li>
+
+                            <li>Follow <a target="_parent" href="http://twitter.com/xeographics">@xeographics</a> on Twitter</li>
                         </ul>
 
                     </div>
@@ -355,14 +393,14 @@ var cameraControl = new xeogl.CameraControl();</pre>
 <!-- section start -->
 <!-- ================ -->
 <!--<div class="section features">-->
-    <!--<div id="featureList" class="container object-non-visible" data-animation-effect="fadeIn">-->
-        <!--<h1 id="features" class="title"><span>xeogl</span> Features</h1>-->
+<!--<div id="featureList" class="container object-non-visible" data-animation-effect="fadeIn">-->
+<!--<h1 id="features" class="title"><span>xeogl</span> Features</h1>-->
 
-        <!--<div class="space"></div>-->
+<!--<div class="space"></div>-->
 
-        <!--&lt;!&ndash; features get appended here by JS at the end of this page &ndash;&gt;-->
+<!--&lt;!&ndash; features get appended here by JS at the end of this page &ndash;&gt;-->
 
-    <!--</div>-->
+<!--</div>-->
 <!--</div>-->
 <!-- section end -->
 
