@@ -65,6 +65,20 @@ body {
     pointer-events: none;
 }
 
+#info-website {
+    position: absolute;
+    bottom: 0;
+    z-index: 200000;
+    right: 16px;
+    padding: 10px;
+    height: auto;
+    text-align: left;
+    font-size: 20px;
+    color: black;
+}
+
+
+
 #info a {
     z-index: 200000;
     /*text-decoration: none;*/
@@ -193,6 +207,17 @@ body {
     /*top: 120px;*/
     top:0;
     right: 0;
+    z-index: 100001;
+    float: right;
+    width: 320px;
+    margin-right : 60px !important;
+}
+
+#dat-gui-container-website {
+    position: absolute;
+    bottom: 100px;
+    /*bottom:130px;*/
+    right: 50px;
     z-index: 100001;
     float: right;
     width: 320px;
