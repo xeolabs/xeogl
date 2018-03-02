@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.js"></script>
+    <script src="js/models/glTFModel.js"></script>
+
+    <script src="js/curves/curve.js"></script>
+    <script src="js/curves/splineCurve.js"></script>
+    <script src="js/animation/cameraPath.js"></script>
+    <script src="js/animation/cameraPathAnimation.js"></script>
+    <script src="js/skyboxes/skybox.js"></script>
+
+    <script src="js/libs/dat.gui.min.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info-website">
+        <ul>
+            <li><a href="https://github.com/xeolabs/xeogl/blob/master/examples/importing_gltf_BranchHouse.html">View source code</a></li>
+        <li>Model by: <a href='https://sketchfab.com/henryr' target="_parent">https://sketchfab.com/henryr</a></li>
+    </ul>
+
+</div>
+
+<div id="dat-gui-container-website">
+</div>
+
+
+<script>
+
+    //-----------------------------------------------------------------------------------------------------
+    // Load glTF model
+    //-----------------------------------------------------------------------------------------------------
+
+    var model = new xeogl.GLTFModel({
+        id: "house",
+        src: "models/gltf/the_branch_house/scene.gltf",
+        XlambertMaterials: true,
+        Xghost: true,
+        ghostEdgeThreshold: 20
+    });
+
+    //-----------------------------------------------------------------------------------------------------
+    // Set up camera
+    //-----------------------------------------------------------------------------------------------------
+
+    var scene = model.scene;
+
+    //    scene.gammaInput = false;
+    //    scene.gammaOutput = false;
+
+    var camera = scene.camera;
+
+    camera.eye = [-1.7671842575073242, 2.231440782546997, -4.35687780380249];
+    camera.look = [0.4531812071800232, 0.48309606313705444, -0.08688834309577942];
+    camera.up = [0.11574053764343262, 0.9680269956588745, 0.22258135676383972];
+
+    var cameraControl = new xeogl.CameraControl();
+
+    scene.ghostMaterial.preset = "phosphorous";
+
+    //-----------------------------------------------------------------------------------------------------
+    // Ground plane
+    //-----------------------------------------------------------------------------------------------------
+
+    new xeogl.Entity({
+        geometry: new xeogl.PlaneGeometry({
+            xSize: 100,
+            zSize: 100
+        }),
+        material: new xeogl.PhongMaterial({
+            shininess: 170,
+            specular: [0.1, 0.1, 0.3],
+            diffuseMap: new xeogl.Texture({
+                src: "textures/diffuse/UVCheckerMap11-1024.png",
+                scale: [-25.0, 25.0]
+            }),
+            xalpha: 0.99,
+            backfaces: false
+        }),
+        transform: new xeogl.Translate({
+            xyz: [0, 0, 0]
+        }),
+        collidable: false,
+        pickable: false,
+        colorize: [0.5, 1, 0.5, 1]
+    });
+
+    //-----------------------------------------------------------------------------------------------------
+    // Lighting
+    //-----------------------------------------------------------------------------------------------------
+
+    var dirLights = [
+        new xeogl.AmbientLight({
+            color: [0.8, 0.8, 1.0]
+        }),
+
+        new xeogl.DirLight({
+            dir: [0.8, -0.6, -0.8],
+            color: [0.8, 0.8, 0.8],
+            intensity: 0.75,
+            space: "world"
+        }),
+
+        new xeogl.DirLight({
+            dir: [-0.8, -0.4, -0.4],
+            color: [0.4, 0.4, 0.5],
+            intensity: 0.5,
+            space: "world"
+        }),
+
+        new xeogl.DirLight({
+            dir: [0.2, -0.8, 0.8],
+            color: [0.99, 0.99, 0.99],
+            intensity: 0.75,
+            space: "world"
+        })
+    ];
+
+    var lightMap = new xeogl.CubeTexture({
+        src: [
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png",
+            "textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png"
+        ],
+        encoding: "linear"
+    });
+
+    var reflectionMap = new xeogl.CubeTexture({
+        src: [
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
+        ],
+        encoding: "sRGB"
+    });
+
+    var lights = scene.lights;
+    lights.lights = dirLights;
+    //   lights.lightMap = lightMap;
+    lights.reflectionMap = reflectionMap;
+    cameraControl.on("picked", function (e) {
+        console.log(e.entity.id)
+    });
+
+    var skybox = new xeogl.Skybox({
+        src: "textures/skybox/cloudySkyBox.jpg",
+        encoding: "sRGB"
+    });
+
+
+    //-----------------------------------------------------------------------------------------------------
+    // Fly-through
+    //-----------------------------------------------------------------------------------------------------
+
+    var cameraPath = new xeogl.CameraPath({
+        frames: [
+            {
+                t: 0,
+                eye: [
+                    124.86756896972656,
+                    -93.50288391113281,
+                    173.2632598876953
+                ],
+                look: [
+                    102.14186096191406,
+                    -90.24193572998047,
+                    173.4224395751953
+                ],
+                up: [
+                    0.23516440391540527,
+                    0.9719591736793518,
+                    -0.0016466031083837152
+                ]
+            }
+        ]
+    });
+
+    var cameraPathAnimation = new xeogl.CameraPathAnimation({
+        cameraPath: cameraPath,
+        playingRate: 0.3
+    });
+
+    model.on("loaded", function () { // We'll wait for the model to load first
+        setTimeout(function () {
+            //        cameraPathAnimation.play(0);
+        }, 2000);
+    });
+
+    var spinning = false;
+
+    model.on("loaded", function () {
+        scene.on("tick", function () { // Slowly orbit the camera
+            if (spinning) {
+                camera.orbitYaw(-0.1);
+            }
+        });
+    });
+
+    //-----------------------------------------------------------------------------------------------------
+    // GUI
+    //-----------------------------------------------------------------------------------------------------
+
+    model.on("loaded", function () {
+
+        var selectedEntities = [
+            "house#8.0",
+            "house#26.0"
+//            "office#73.0",
+//            "office#93.0",
+//            "office#30.0",
+//            "office#9.0",
+//            "office#66.0",
+//            "office#78.0",
+//            "office#87.0",
+//            "office#67.0",
+//            "office#88.0",
+//            "office#62.0",
+//            "office#61.0",
+//            "office#64.0",
+//            "office#86.0",
+//            "office#60.0",
+//            "office#85.0",
+//            "office#63.0",
+//            "office#79.0",
+//            "office#31.0",
+//            "office#105.0",
+//            "office#8.0",
+//            "office#65.0"
+        ];
+
+        //   model.ghost = true;
+
+//        for (var i = 0; i < selectedEntities.length; i++) {
+//            var id = selectedEntities[i];
+//            var entity = model.entities[id];
+//            entity.ghost = false;
+//            entity.highlight = true;
+//        }
+
+        var Menu = function () {
+
+            this["Ghost view"] = false;
+            this["Highlight furniture"] = false;
+
+            var self = this;
+
+            var update = function () {
+
+                model.ghost = !!self["Ghost view"];
+
+                var highlighted = !!self["Highlight furniture"];
+
+                for (var i = 0; i < selectedEntities.length; i++) {
+                    var id = selectedEntities[i];
+                    var entity = model.entities[id];
+                    entity.highlight = highlighted;
+                    //entity.ghost = !highlighted;
+                }
+
+                requestAnimationFrame(update);
+            };
+
+            update();
+        };
+
+        var gui = new dat.GUI({autoPlace: false, top: 150, width: 400});
+
+        document.getElementById('dat-gui-container-website').appendChild(gui.domElement);
+
+        var menu = new Menu();
+
+        var effectFolder = gui.addFolder('Effects');
+        effectFolder.add(menu, "Ghost view", true);
+        effectFolder.add(menu, "Highlight furniture", true);
+        effectFolder.open();
+    });
+
+</script>
+</body>
+</html>

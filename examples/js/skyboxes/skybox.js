@@ -152,7 +152,7 @@
                     xyz: [2000, 2000, 2000], // Overridden when we initialize the 'size' property, below
                     parent: new xeogl.Rotate(this, {
                         xyz: [0, 0,1 ],
-                        angle: -90,
+                        angle: 0,
                         parent: new xeogl.Rotate(this, {
                             xyz: [0, 1, 0],
                             angle: -90
