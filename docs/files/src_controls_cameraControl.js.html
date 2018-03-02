@@ -205,6 +205,25 @@
  &quot;doublePickedSurface&quot; events. Therefore, only subscribe to those when you&#x27;re OK with the overhead incurred by the
  surface intersection tests.
 
+ ## Panning
+
+ ## Rotating
+
+ ## Zooming
+
+ ## Events
+
+ ## Activating and deactivating
+
+ ## Inertia
+
+ ## First person
+
+ ## Keyboard layout
+
+ # Fly-to
+
+
  @class CameraControl
  @module xeogl
  @submodule controls
@@ -218,6 +237,7 @@
  @param [cfg.keyboardLayout=&quot;qwerty&quot;] {String} Keyboard layout.
  @param [cfg.doublePickFlyTo=true] {Boolean} Whether to fly the camera to each {{#crossLink &quot;Entity&quot;}}{{/crossLink}} that&#x27;s double-clicked.
  @param [cfg.active=true] {Boolean} Indicates whether or not this CameraControl is active.
+ @param [cfg.inertia=0.5] {Number} A factor in range [0..1] indicating how much the camera keeps moving after you finish panning or rotating it.
  @extends Component
  */
 (function () {
@@ -260,6 +280,7 @@
             this.keyboardLayout = cfg.keyboardLayout;
             this.doublePickFlyTo = cfg.doublePickFlyTo;
             this.active = cfg.active;
+            this.inertia = cfg.inertia;
 
             this._initEvents(); // Set up all the mouse/touch/kb handlers
         },
@@ -393,6 +414,43 @@
                 }
             },
 
+
+            /**
+             * A fact in range [0..1] indicating how much the camera keeps moving after you finish
+             * panning or rotating it.
+             *
+             * A value of 0.0 causes it to immediately stop, 0.5 causes its movement to decay 50% on each tick,
+             * while 1.0 causes no decay, allowing it continue moving, by the current rate of pan or rotation.
+             *
+             * You may choose an inertia of zero when you want be able to precisely position or rotate the camera,
+             * without interference from inertia. ero inertia can also mean that less frames are rendered while
+             * you are positioning the camera.
+             *
+             * Fires a {{#crossLink &quot;KeyboardRotateCamera/inertia:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property inertia
+             * @default 0.5
+             * @type Number
+             */
+            inertia: {
+
+                set: function (value) {
+
+                    this._inertia = value === undefined ? 0.5 : value;
+
+                    /**
+                     * Fired whenever this CameraControl&#x27;s {{#crossLink &quot;CameraControl/inertia:property&quot;}}{{/crossLink}} property changes.
+                     * @event inertia
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&#x27;inertia&#x27;, this._inertia);
+                },
+
+                get: function () {
+                    return this._inertia;
+                }
+            },
+
             /**
              * TODO
              * Fires a {{#crossLink &quot;KeyboardRotateCamera/keyboardLayout:event&quot;}}{{/crossLink}} event on change.
@@ -447,7 +505,6 @@
             var touchRotateRate = 0.3;
             var touchPanRate = 0.2;
             var touchZoomRate = 0.05;
-            var cameraFriction = 0.85;
 
             canvas.oncontextmenu = function (e) {
                 e.preventDefault();
@@ -506,8 +563,7 @@
 
                 scene.on(&quot;tick&quot;, function () {
 
-                    rotateVx *= cameraFriction;
-                    rotateVy *= cameraFriction;
+                    var cameraInertia = self._inertia;
 
                     if (Math.abs(rotateVx) &lt; EPSILON) {
                         rotateVx = 0;
@@ -533,9 +589,8 @@
                         }
                     }
 
-                    panVx *= cameraFriction;
-                    panVy *= cameraFriction;
-                    panVz *= cameraFriction;
+                    rotateVx *= cameraInertia;
+                    rotateVy *= cameraInertia;
 
                     if (Math.abs(panVx) &lt; EPSILON) {
                         panVx = 0;
@@ -562,8 +617,9 @@
                         }
                     }
 
-
-                    vZoom *= cameraFriction;
+                    panVx *= cameraInertia;
+                    panVy *= cameraInertia;
+                    panVz *= cameraInertia;
 
                     if (Math.abs(vZoom) &lt; EPSILON) {
                         vZoom = 0;
@@ -586,6 +642,7 @@
                             camera.zoom(vZoom);
                             camera.ortho.scale = camera.ortho.scale + vZoom;
                         }
+                        vZoom *= cameraInertia;
                     }
                 });
 
