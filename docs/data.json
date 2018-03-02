@@ -150,6 +150,13 @@
         "src/controls/cameraControl.js": {
             "name": "src/controls/cameraControl.js",
             "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/controls/cameraControl.new.js": {
+            "name": "src/controls/cameraControl.new.js",
+            "modules": {},
             "classes": {
                 "CameraControl": 1
             },
@@ -1211,7 +1218,7 @@
             "namespaces": {},
             "module": "xeogl",
             "namespace": "",
-            "file": "src/controls/cameraControl.js",
+            "file": "src/controls/cameraControl.new.js",
             "line": 1,
             "description": "Components for controlling things with user input."
         },
@@ -2018,9 +2025,9 @@
             "extension_for": [],
             "module": "xeogl",
             "namespace": "",
-            "file": "src/controls/cameraControl.js",
+            "file": "src/controls/cameraControl.new.js",
             "line": 1,
-            "description": "Rotates, pans and zooms the {{#crossLink \"Scene\"}}{{/crossLink}}'s {{#crossLink \"Camera\"}}{{/crossLink}} with keyboard, mouse and touch input.\n\nCameraControl fires these events:\n\n\"hover\" - Hover enters a new object\n\"hoverSurface\" - Hover continues over an object surface - fired continuously as mouse moves over an object\n\"hoverLeave\"  - Hover has left the last object we were hovering over\n\"hoverOff\" - Hover continues over empty space - fired continuously as mouse moves over nothing\n\"picked\" - Clicked or tapped object\n\"pickedSurface\" -  Clicked or tapped object, with event containing surface intersection details\n\"doublePicked\" - Double-clicked or double-tapped object\n\"doublePickedSurface\" - Double-clicked or double-tapped object, with event containing surface intersection details\n\"pickedNothing\" - Clicked or tapped, but not on any objects\n\"doublePickedNothing\" - Double-clicked or double-tapped, but not on any objects\n\nCameraControl only fires \"hover\" events when the mouse is up.\n\nFor efficiency, CameraControl only does surface intersection picking when you subscribe to \"doublePicked\" and\n\"doublePickedSurface\" events. Therefore, only subscribe to those when you're OK with the overhead incurred by the\nsurface intersection tests.",
+            "description": "Rotates, pans and zooms the {{#crossLink \"Scene\"}}{{/crossLink}}'s {{#crossLink \"Camera\"}}{{/crossLink}} with keyboard, mouse and touch input.\n\nCameraControl fires these events:\n\n\"hover\" - Hover enters a new object\n\"hoverSurface\" - Hover continues over an object surface - fired continuously as mouse moves over an object\n\"hoverLeave\"  - Hover has left the last object we were hovering over\n\"hoverOff\" - Hover continues over empty space - fired continuously as mouse moves over nothing\n\"picked\" - Clicked or tapped object\n\"pickedSurface\" -  Clicked or tapped object, with event containing surface intersection details\n\"doublePicked\" - Double-clicked or double-tapped object\n\"doublePickedSurface\" - Double-clicked or double-tapped object, with event containing surface intersection details\n\"pickedNothing\" - Clicked or tapped, but not on any objects\n\"doublePickedNothing\" - Double-clicked or double-tapped, but not on any objects\n\nCameraControl only fires \"hover\" events when the mouse is up.\n\nFor efficiency, CameraControl only does surface intersection picking when you subscribe to \"doublePicked\" and\n\"doublePickedSurface\" events. Therefore, only subscribe to those when you're OK with the overhead incurred by the\nsurface intersection tests.\n\n## Panning\n\n## Rotating\n\n## Zooming\n\n## Events\n\n## Activating and deactivating\n\n## Inertia\n\n## First person\n\n## Keyboard layout\n\n# Fly-to",
             "submodule": "controls",
             "is_constructor": 1,
             "params": [
@@ -2082,6 +2089,13 @@
                             "type": "Boolean",
                             "optional": true,
                             "optdefault": "true"
+                        },
+                        {
+                            "name": "inertia",
+                            "description": "indicating how much the camera keeps moving after you finish panning or rotating it.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "0.5]  A factor in range [0..1"
                         }
                     ]
                 }
@@ -3858,7 +3872,7 @@
             "namespace": "",
             "file": "src/materials/metallicMaterial.js",
             "line": 1,
-            "description": "A **MetallicMaterial** is a physically-based {{#crossLink \"Material\"}}{{/crossLink}} that defines the surface appearance of\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} using the *metallic-roughness* workflow.\n\n## Examples\n\n| <a href=\"../../examples/#importing_gltf_pbr_metallic_helmet\"><img src=\"../../assets/images/screenshots/MetallicMaterial/helmet.png\"></img></a> | <a href=\"../../examples/#materials_metallic_fireHydrant\"><img src=\"../../assets/images/screenshots/MetallicMaterial/hydrant3.png\"></img></a> | <a href=\"../../examples/#materials_metallic_samples_metals\"><img src=\"../../assets/images/screenshots/MetallicMaterial/metals.png\"></img></a> | <a href=\"../../examples/#materials_metallic_metallicVsRoughness\"><img alt=\"Metallic Vs Roughness\" src=\"../../assets/images/screenshots/MetallicMaterial/metalVsRough.png\"></img></a> |\n|:------:|:----:|:-----:|:-----:|\n|[glTF models with PBR materials](../../examples/#importing_gltf_pbr_metallic_helmet)|[Fire hydrant model](../../examples/#materials_metallic_fireHydrant)| [Sample metal materials ](../../examples/#materials_metallic_samples_metals)|[Metallic Vs. roughness](../../examples/#materials_metallic_metallicVsRoughness)|\n\n## Overview\n\n* MetallicMaterial is usually used for conductive materials, such as metal.\n* {{#crossLink \"SpecularMaterial\"}}{{/crossLink}} is usually used for insulators, such as wood, ceramics and plastic.\n* {{#crossLink \"PhongMaterial\"}}{{/crossLink}} is usually used for non-realistic objects.\n\n<img src=\"../../../assets/images/MetallicMaterial.png\"></img>\n\nFor an introduction to PBR concepts, try these articles:\n\n* Joe Wilson's [Basic Theory of Physically-Based Rendering](https://www.marmoset.co/posts/basic-theory-of-physically-based-rendering/)\n* Jeff Russel's [Physically-based Rendering, and you can too!](https://www.marmoset.co/posts/physically-based-rendering-and-you-can-too/)\n* Sebastien Legarde's [Adapting a physically-based shading model](http://seblagarde.wordpress.com/tag/physically-based-rendering/)\n\nThe following table summarizes MetallicMaterial properties:\n\n| Property | Type | Range | Default Value | Space | Description |\n|:--------:|:----:|:-----:|:-------------:|:-----:|:-----------:|\n| {{#crossLink \"MetallicMaterial/baseColor:property\"}}{{/crossLink}} | Array | [0, 1] for all components | [1,1,1,1] | linear | The RGB components of the base color of the material. |\n| {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The metallic-ness the material (1 for metals, 0 for non-metals). |\n| {{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The roughness of the material surface. |\n| {{#crossLink \"MetallicMaterial/specularF0:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The specular Fresnel of the material surface. |\n| {{#crossLink \"MetallicMaterial/emissive:property\"}}{{/crossLink}} | Array | [0, 1] for all components | [0,0,0] | linear | The RGB components of the emissive color of the material. |\n| {{#crossLink \"MetallicMaterial/alpha:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The transparency of the material surface (0 fully transparent, 1 fully opaque). |\n| {{#crossLink \"MetallicMaterial/baseColorMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink \"MetallicMaterial/baseColor:property\"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink \"MetallicMaterial/alpha:property\"}}{{/crossLink}}. |\n| {{#crossLink \"MetallicMaterial/metallicMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}}. |\n| {{#crossLink \"MetallicMaterial/roughnessMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}}. |\n| {{#crossLink \"MetallicMaterial/metallicRoughnessMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}} and second component multiplying by {{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}}. |\n| {{#crossLink \"MetallicMaterial/emissiveMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with RGB components multiplying by {{#crossLink \"MetallicMaterial/emissive:property\"}}{{/crossLink}}. |\n| {{#crossLink \"MetallicMaterial/alphaMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink \"MetallicMaterial/alpha:property\"}}{{/crossLink}}. |\n| {{#crossLink \"MetallicMaterial/occlusionMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Ambient occlusion texture multiplying by surface's reflected diffuse and specular light. |\n| {{#crossLink \"MetallicMaterial/normalMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Tangent-space normal map. |\n| {{#crossLink \"MetallicMaterial/alphaMode:property\"}}{{/crossLink}} | String | \"opaque\", \"blend\", \"mask\" | \"blend\" |  | Alpha blend mode. |\n| {{#crossLink \"MetallicMaterial/alphaCutoff:property\"}}{{/crossLink}} | Number | [0..1] | 0.5 |  | Alpha cutoff value. |\n| {{#crossLink \"MetallicMaterial/backfaces:property\"}}{{/crossLink}} | Boolean |  | false |  | Whether to render {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} backfaces. |\n| {{#crossLink \"MetallicMaterial/backfaces:property\"}}{{/crossLink}} | String | \"ccw\", \"cw\" | \"ccw\" |  | The winding order for {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} frontfaces - \"cw\" for clockwise, or \"ccw\" for counter-clockwise. |\n\n## Usage\n\nIn the example below we'll create the [yellow fire hydrant](../../examples/#materials_metallic_fireHydrant) shown in the example screen shots above. Our hydrant {{#crossLink \"Entity\"}}{{/crossLink}} has:\n\n* a {{#crossLink \"OBJGeometry\"}}{{/crossLink}} which loads the fire hydrant mesh from an .OBJ file,\n* a MetallicMaterial with {{#crossLink \"Texture\"}}Textures{{/crossLink}} providing diffuse, metallic, roughness, occlusion and normal maps.\n\nWe'll also provide its {{#crossLink \"Scene\"}}{{/crossLink}}'s {{#crossLink \"Lights\"}}{{/crossLink}} with\n{{#crossLink \"DirLight\"}}DirLights{{/crossLink}}, plus {{#crossLink \"CubeTexture\"}}CubeTextures{{/crossLink}} for light\nand reflection maps.\n\nNote that in this example we're providing separate {{#crossLink \"Texture\"}}Textures{{/crossLink}} for the {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}} and {{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}}\nchannels, which allows us a little creative flexibility. Then, in the next example further down, we'll combine those channels\nwithin the same {{#crossLink \"Texture\"}}{{/crossLink}} for efficiency.\n\n````javascript\nvar hydrant = new xeogl.Entity({\n\n   geometry: new xeogl.OBJGeometry({\n       src: \"models/obj/FireHydrantMesh.obj\"\n   }),\n\n   material: new xeogl.MetallicMaterial({\n\n       // Channels with default values, just to show them\n\n       baseColor: [1.0, 1.0, 1.0],\n       metallic: 1.0,\n       roughness: 1.0,\n       emissive: [0.0, 0.0, 0.0],\n       alpha: 1.0,\n\n       // Textures to multiply by some of the channels\n\n       baseColorMap : new xeogl.Texture({  // Multiplies by baseColor\n           src: \"textures/diffuse/fire_hydrant_Base_Color.png\"\n       }),\n\n       metallicMap : new xeogl.Texture({   // R component multiplies by metallic\n           src: \"textures/metallic/fire_hydrant_Metallic.png\"\n       }),\n\n       roughnessMap : new xeogl.Texture({  // R component multiplies by roughness\n           src: \"textures/roughness/fire_hydrant_Roughness.png\"\n       }),\n\n       occlusionMap : new xeogl.Texture({  // Multiplies by fragment alpha\n           src: \"textures/occlusion/fire_hydrant_Mixed_AO.png\"\n       }),\n\n       normalMap : new xeogl.Texture({\n           src: \"textures/normal/fire_hydrant_Normal_OpenGL.png\"\n       })\n   })\n});\n\nvar scene = hydrant.scene;\n\nscene.lights.lights = [\n    new xeogl.DirLight({\n        dir: [0.8, -0.6, -0.8],\n        color: [0.8, 0.8, 0.8],\n        space: \"view\"\n    }),\n    new xeogl.DirLight({\n        dir: [-0.8, -0.4, -0.4],\n        color: [0.4, 0.4, 0.5],\n        space: \"view\"\n    }),\n    new xeogl.DirLight({\n        dir: [0.2, -0.8, 0.8],\n        color: [0.8, 0.8, 0.8],\n        space: \"view\"\n    }\n];\n\nscene.lights.lightMap = new xeogl.CubeTexture({\n    src: [\n        \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png\",\n        \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png\",\n        \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png\",\n        \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png\",\n        \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png\",\n        \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png\"\n    ]\n});\n\nscene.lights.reflectionMap = new xeogl.CubeTexture({\n    src: [\n        \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png\",\n        \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png\",\n        \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png\",\n        \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png\",\n        \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png\",\n        \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png\"\n    ]\n});\n````\n\n### Combining channels within the same textures\n\nIn the previous example we provided separate {{#crossLink \"Texture\"}}Textures{{/crossLink}} for the {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}} and\n{{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}} channels, but we can combine those channels into the same {{#crossLink \"Texture\"}}{{/crossLink}} to reduce download time, memory footprint and rendering time (and also for glTF compatibility).\n\nHere's our MetallicMaterial again with those channels combined in the\n{{#crossLink \"MetallicMaterial/metallicRoughnessMap:property\"}}{{/crossLink}} {{#crossLink \"Texture\"}}Texture{{/crossLink}}, where the\n*R* component multiplies by {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}} and *G* multiplies by {{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}}.\n\n````javascript\nhydrant.material = new xeogl.MetallicMaterial({\n\n   baseColor: [1,1,1], // Default value\n   metallic: 1.0,      // Default value\n   roughness: 1.0,     // Default value\n\n   baseColorMap : new xeogl.Texture({\n       src: \"textures/diffuse/fire_hydrant_Base_Color.png\"\n   }),\n   metallicRoughnessMap : new xeogl.Texture({\n       src: \"textures/metallicRoughness/fire_hydrant_MetallicRoughness.png\"\n   }),\n   occlusionMap : new xeogl.Texture({\n       src: \"textures/occlusion/fire_hydrant_Mixed_AO.png\"\n   }),\n   normalMap : new xeogl.Texture({\n       src: \"textures/normal/fire_hydrant_Normal_OpenGL.png\"\n   })\n});\n````\n\nAlthough not shown in this example, we can also texture {{#crossLink \"MetallicMaterial/alpha:property\"}}{{/crossLink}} with\nthe *A* component of {{#crossLink \"MetallicMaterial/baseColorMap:property\"}}{{/crossLink}}'s {{#crossLink \"Texture\"}}{{/crossLink}},\nif required.\n\n## Transparency\n\n### Alpha Blending\n\nLet's make our hydrant transparent.\n\nWe'll update its MetallicMaterial's {{#crossLink \"MetallicMaterial/alpha:property\"}}{{/crossLink}}\nand {{#crossLink \"MetallicMaterial/alphaMode:property\"}}{{/crossLink}}, causing it to blend 50% with the background:\n\n````javascript\nhydrant.material.alpha = 0.5;\nhydrant.material.alphaMode = \"blend\";\n````\n\n<img src=\"../../../assets/images/screenshots/MetallicMaterial/alphaBlend.png\"></img>\n\n### Alpha Masking\n\nLet's apply an alpha mask to our hydrant.\n\nWe'll give its MetallicMaterial an {{#crossLink \"MetallicMaterial/alphaMap:property\"}}{{/crossLink}}\nand configure {{#crossLink \"MetallicMaterial/alpha:property\"}}{{/crossLink}}, {{#crossLink \"MetallicMaterial/alphaMode:property\"}}{{/crossLink}},\nand {{#crossLink \"MetallicMaterial/alphaCutoff:property\"}}{{/crossLink}} to treat it as an alpha mask:\n\n````javascript\nhydrant.material.alphaMap = new xeogl.Texture({\n       src: \"textures/diffuse/crossGridColorMap.jpg\"\n   });\n\nhydrant.material.alpha = 1.0;\nhydrant.material.alphaMode = \"mask\";\nhydrant.material.alphaCutoff = 0.2;\n````\n\n<img src=\"../../../assets/images/screenshots/MetallicMaterial/alphaMask.png\"></img>",
+            "description": "A **MetallicMaterial** is a physically-based {{#crossLink \"Material\"}}{{/crossLink}} that defines the surface appearance of\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} using the *metallic-roughness* workflow.\n\n## Examples\n\n| <a href=\"../../examples/#importing_gltf_pbr_metallic_helmet\"><img src=\"../../assets/images/screenshots/MetallicMaterial/helmet.png\"></img></a> | <a href=\"../../examples/#materials_metallic_fireHydrant\"><img src=\"../../assets/images/screenshots/MetallicMaterial/hydrant3.png\"></img></a> | <a href=\"../../examples/#materials_metallic_samples_metals\"><img src=\"../../assets/images/screenshots/MetallicMaterial/metals.png\"></img></a> | <a href=\"../../examples/#materials_metallic_metallicVsRoughness\"><img alt=\"Metallic Vs Roughness\" src=\"../../assets/images/screenshots/MetallicMaterial/metalVsRough.png\"></img></a> |\n|:------:|:----:|:-----:|:-----:|\n|[glTF models with PBR materials](../../examples/#importing_gltf_pbr_metallic_helmet)|[Fire hydrant model](../../examples/#materials_metallic_fireHydrant)| [Sample metal materials ](../../examples/#materials_metallic_samples_metals)|[Metallic Vs. roughness](../../examples/#materials_metallic_metallicVsRoughness)|\n\n## Overview\n\n* MetallicMaterial is usually used for conductive materials, such as metal.\n* {{#crossLink \"SpecularMaterial\"}}{{/crossLink}} is usually used for insulators, such as wood, ceramics and plastic.\n* {{#crossLink \"PhongMaterial\"}}{{/crossLink}} is usually used for non-realistic objects.\n\n<img src=\"../../../assets/images/MetallicMaterial.png\"></img>\n\nFor an introduction to PBR concepts, try these articles:\n\n* Joe Wilson's [Basic Theory of Physically-Based Rendering](https://www.marmoset.co/posts/basic-theory-of-physically-based-rendering/)\n* Jeff Russel's [Physically-based Rendering, and you can too!](https://www.marmoset.co/posts/physically-based-rendering-and-you-can-too/)\n* Sebastien Legarde's [Adapting a physically-based shading model](http://seblagarde.wordpress.com/tag/physically-based-rendering/)\n\nThe following table summarizes MetallicMaterial properties:\n\n| Property | Type | Range | Default Value | Space | Description |\n|:--------:|:----:|:-----:|:-------------:|:-----:|:-----------:|\n| {{#crossLink \"MetallicMaterial/baseColor:property\"}}{{/crossLink}} | Array | [0, 1] for all components | [1,1,1,1] | linear | The RGB components of the base color of the material. |\n| {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The metallic-ness the material (1 for metals, 0 for non-metals). |\n| {{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The roughness of the material surface. |\n| {{#crossLink \"MetallicMaterial/specularF0:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The specular Fresnel of the material surface. |\n| {{#crossLink \"MetallicMaterial/emissive:property\"}}{{/crossLink}} | Array | [0, 1] for all components | [0,0,0] | linear | The RGB components of the emissive color of the material. |\n| {{#crossLink \"MetallicMaterial/alpha:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The transparency of the material surface (0 fully transparent, 1 fully opaque). |\n| {{#crossLink \"MetallicMaterial/baseColorMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink \"MetallicMaterial/baseColor:property\"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink \"MetallicMaterial/alpha:property\"}}{{/crossLink}}. |\n| {{#crossLink \"MetallicMaterial/metallicMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}}. |\n| {{#crossLink \"MetallicMaterial/roughnessMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}}. |\n| {{#crossLink \"MetallicMaterial/metallicRoughnessMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}} and second component multiplying by {{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}}. |\n| {{#crossLink \"MetallicMaterial/emissiveMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with RGB components multiplying by {{#crossLink \"MetallicMaterial/emissive:property\"}}{{/crossLink}}. |\n| {{#crossLink \"MetallicMaterial/alphaMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink \"MetallicMaterial/alpha:property\"}}{{/crossLink}}. |\n| {{#crossLink \"MetallicMaterial/occlusionMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Ambient occlusion texture multiplying by surface's reflected diffuse and specular light. |\n| {{#crossLink \"MetallicMaterial/normalMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Tangent-space normal map. |\n| {{#crossLink \"MetallicMaterial/alphaMode:property\"}}{{/crossLink}} | String | \"opaque\", \"blend\", \"mask\" | \"blend\" |  | Alpha blend mode. |\n| {{#crossLink \"MetallicMaterial/alphaCutoff:property\"}}{{/crossLink}} | Number | [0..1] | 0.5 |  | Alpha cutoff value. |\n| {{#crossLink \"MetallicMaterial/backfaces:property\"}}{{/crossLink}} | Boolean |  | false |  | Whether to render {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} backfaces. |\n| {{#crossLink \"MetallicMaterial/frontface:property\"}}{{/crossLink}} | String | \"ccw\", \"cw\" | \"ccw\" |  | The winding order for {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} frontfaces - \"cw\" for clockwise, or \"ccw\" for counter-clockwise. |\n\n## Usage\n\nIn the example below we'll create the [yellow fire hydrant](../../examples/#materials_metallic_fireHydrant) shown in the example screen shots above. Our hydrant {{#crossLink \"Entity\"}}{{/crossLink}} has:\n\n* a {{#crossLink \"OBJGeometry\"}}{{/crossLink}} which loads the fire hydrant mesh from an .OBJ file,\n* a MetallicMaterial with {{#crossLink \"Texture\"}}Textures{{/crossLink}} providing diffuse, metallic, roughness, occlusion and normal maps.\n\nWe'll also provide its {{#crossLink \"Scene\"}}{{/crossLink}}'s {{#crossLink \"Lights\"}}{{/crossLink}} with\n{{#crossLink \"DirLight\"}}DirLights{{/crossLink}}, plus {{#crossLink \"CubeTexture\"}}CubeTextures{{/crossLink}} for light\nand reflection maps.\n\nNote that in this example we're providing separate {{#crossLink \"Texture\"}}Textures{{/crossLink}} for the {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}} and {{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}}\nchannels, which allows us a little creative flexibility. Then, in the next example further down, we'll combine those channels\nwithin the same {{#crossLink \"Texture\"}}{{/crossLink}} for efficiency.\n\n````javascript\nvar hydrant = new xeogl.Entity({\n\n   geometry: new xeogl.OBJGeometry({\n       src: \"models/obj/FireHydrantMesh.obj\"\n   }),\n\n   material: new xeogl.MetallicMaterial({\n\n       // Channels with default values, just to show them\n\n       baseColor: [1.0, 1.0, 1.0],\n       metallic: 1.0,\n       roughness: 1.0,\n       emissive: [0.0, 0.0, 0.0],\n       alpha: 1.0,\n\n       // Textures to multiply by some of the channels\n\n       baseColorMap : new xeogl.Texture({  // Multiplies by baseColor\n           src: \"textures/diffuse/fire_hydrant_Base_Color.png\"\n       }),\n\n       metallicMap : new xeogl.Texture({   // R component multiplies by metallic\n           src: \"textures/metallic/fire_hydrant_Metallic.png\"\n       }),\n\n       roughnessMap : new xeogl.Texture({  // R component multiplies by roughness\n           src: \"textures/roughness/fire_hydrant_Roughness.png\"\n       }),\n\n       occlusionMap : new xeogl.Texture({  // Multiplies by fragment alpha\n           src: \"textures/occlusion/fire_hydrant_Mixed_AO.png\"\n       }),\n\n       normalMap : new xeogl.Texture({\n           src: \"textures/normal/fire_hydrant_Normal_OpenGL.png\"\n       })\n   })\n});\n\nvar scene = hydrant.scene;\n\nscene.lights.lights = [\n    new xeogl.DirLight({\n        dir: [0.8, -0.6, -0.8],\n        color: [0.8, 0.8, 0.8],\n        space: \"view\"\n    }),\n    new xeogl.DirLight({\n        dir: [-0.8, -0.4, -0.4],\n        color: [0.4, 0.4, 0.5],\n        space: \"view\"\n    }),\n    new xeogl.DirLight({\n        dir: [0.2, -0.8, 0.8],\n        color: [0.8, 0.8, 0.8],\n        space: \"view\"\n    }\n];\n\nscene.lights.lightMap = new xeogl.CubeTexture({\n    src: [\n        \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png\",\n        \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png\",\n        \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png\",\n        \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png\",\n        \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png\",\n        \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png\"\n    ]\n});\n\nscene.lights.reflectionMap = new xeogl.CubeTexture({\n    src: [\n        \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png\",\n        \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png\",\n        \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png\",\n        \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png\",\n        \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png\",\n        \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png\"\n    ]\n});\n````\n\n### Combining channels within the same textures\n\nIn the previous example we provided separate {{#crossLink \"Texture\"}}Textures{{/crossLink}} for the {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}} and\n{{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}} channels, but we can combine those channels into the same {{#crossLink \"Texture\"}}{{/crossLink}} to reduce download time, memory footprint and rendering time (and also for glTF compatibility).\n\nHere's our MetallicMaterial again with those channels combined in the\n{{#crossLink \"MetallicMaterial/metallicRoughnessMap:property\"}}{{/crossLink}} {{#crossLink \"Texture\"}}Texture{{/crossLink}}, where the\n*R* component multiplies by {{#crossLink \"MetallicMaterial/metallic:property\"}}{{/crossLink}} and *G* multiplies by {{#crossLink \"MetallicMaterial/roughness:property\"}}{{/crossLink}}.\n\n````javascript\nhydrant.material = new xeogl.MetallicMaterial({\n\n   baseColor: [1,1,1], // Default value\n   metallic: 1.0,      // Default value\n   roughness: 1.0,     // Default value\n\n   baseColorMap : new xeogl.Texture({\n       src: \"textures/diffuse/fire_hydrant_Base_Color.png\"\n   }),\n   metallicRoughnessMap : new xeogl.Texture({\n       src: \"textures/metallicRoughness/fire_hydrant_MetallicRoughness.png\"\n   }),\n   occlusionMap : new xeogl.Texture({\n       src: \"textures/occlusion/fire_hydrant_Mixed_AO.png\"\n   }),\n   normalMap : new xeogl.Texture({\n       src: \"textures/normal/fire_hydrant_Normal_OpenGL.png\"\n   })\n});\n````\n\nAlthough not shown in this example, we can also texture {{#crossLink \"MetallicMaterial/alpha:property\"}}{{/crossLink}} with\nthe *A* component of {{#crossLink \"MetallicMaterial/baseColorMap:property\"}}{{/crossLink}}'s {{#crossLink \"Texture\"}}{{/crossLink}},\nif required.\n\n## Transparency\n\n### Alpha Blending\n\nLet's make our hydrant transparent.\n\nWe'll update its MetallicMaterial's {{#crossLink \"MetallicMaterial/alpha:property\"}}{{/crossLink}}\nand {{#crossLink \"MetallicMaterial/alphaMode:property\"}}{{/crossLink}}, causing it to blend 50% with the background:\n\n````javascript\nhydrant.material.alpha = 0.5;\nhydrant.material.alphaMode = \"blend\";\n````\n\n<img src=\"../../../assets/images/screenshots/MetallicMaterial/alphaBlend.png\"></img>\n\n### Alpha Masking\n\nLet's apply an alpha mask to our hydrant.\n\nWe'll give its MetallicMaterial an {{#crossLink \"MetallicMaterial/alphaMap:property\"}}{{/crossLink}}\nand configure {{#crossLink \"MetallicMaterial/alpha:property\"}}{{/crossLink}}, {{#crossLink \"MetallicMaterial/alphaMode:property\"}}{{/crossLink}},\nand {{#crossLink \"MetallicMaterial/alphaCutoff:property\"}}{{/crossLink}} to treat it as an alpha mask:\n\n````javascript\nhydrant.material.alphaMap = new xeogl.Texture({\n       src: \"textures/diffuse/crossGridColorMap.jpg\"\n   });\n\nhydrant.material.alpha = 1.0;\nhydrant.material.alphaMode = \"mask\";\nhydrant.material.alphaCutoff = 0.2;\n````\n\n<img src=\"../../../assets/images/screenshots/MetallicMaterial/alphaMask.png\"></img>",
             "submodule": "materials",
             "is_constructor": 1,
             "extends": "Material",
@@ -4111,7 +4125,7 @@
             "namespace": "",
             "file": "src/materials/phongMaterial.js",
             "line": 1,
-            "description": "A **PhongMaterial** is a {{#crossLink \"Material\"}}{{/crossLink}} that defines the surface appearance of\nattached {{#crossLink \"Entity\"}}Entities{{/crossLink}} using\nthe classic <a href=\"https://en.wikipedia.org/wiki/Blinn%E2%80%93Phong_shading_model\">Blinn-Phong</a> lighting model.\n\n## Examples\n\n| <a href=\"../../examples/#materials_phong_textures\"><img src=\"../../assets/images/screenshots/PhongMaterial/textures.png\"></img></a> | <a href=\"../../examples/#materials_phong_textures_video\"><img src=\"../../assets/images/screenshots/PhongMaterial/videoTexture.png\"></img></a> | <a href=\"../../examples/#materials_phong_fresnel\"><img src=\"../../assets/images/screenshots/PhongMaterial/fresnel.png\"></img></a> |\n|:------:|:----:|:-----:|:-----:|\n|[Phong textures](../../examples/#materials_phong_textures)|[Video texture](../../examples/#materials_phong_textures_video)| [Fresnels](../../examples/#materials_phong_fresnel)|\n\n## Overview\n\n* Used for rendering non-realistic objects such as \"helpers\", wireframe objects, labels etc.\n* Use the physically-based {{#crossLink \"MetallicMaterial\"}}{{/crossLink}} or {{#crossLink \"SpecularMaterial\"}}{{/crossLink}} when more realism is required.\n\n<img src=\"../../../assets/images/PhongMaterial.png\"></img>\n\nThe following table summarizes PhongMaterial properties:\n\n| Property | Type | Range | Default Value | Space | Description |\n|:--------:|:----:|:-----:|:-------------:|:-----:|:-----------:|\n|  {{#crossLink \"PhongMaterial/ambient:property\"}}{{/crossLink}} | Array | [0, 1] for all components | [1,1,1,1] | linear | The RGB components of the ambient light reflected by the material. |\n|  {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}} | Array | [0, 1] for all components | [1,1,1,1] | linear | The RGB components of the diffuse light reflected by the material. |\n|  {{#crossLink \"PhongMaterial/specular:property\"}}{{/crossLink}} | Array | [0, 1] for all components | [1,1,1,1] | linear | The RGB components of the specular light reflected by the material. |\n|  {{#crossLink \"PhongMaterial/emissive:property\"}}{{/crossLink}} | Array | [0, 1] for all components | [0,0,0] | linear | The RGB components of the light emitted by the material. |\n| {{#crossLink \"PhongMaterial/alpha:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The transparency of the material surface (0 fully transparent, 1 fully opaque). |\n| {{#crossLink \"PhongMaterial/shininess:property\"}}{{/crossLink}} | Number | [0, 128] | 80 | linear | Determines the size and sharpness of specular highlights. |\n| {{#crossLink \"PhongMaterial/reflectivity:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | Determines the amount of reflectivity. |\n| {{#crossLink \"PhongMaterial/diffuseMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink \"PhongMaterial/alpha:property\"}}{{/crossLink}}. |\n| {{#crossLink \"PhongMaterial/specularMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink \"PhongMaterial/specular:property\"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink \"PhongMaterial/alpha:property\"}}{{/crossLink}}. |\n| {{#crossLink \"PhongMaterial/emissiveMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with RGB components multiplying by {{#crossLink \"PhongMaterial/emissive:property\"}}{{/crossLink}}. |\n| {{#crossLink \"PhongMaterial/alphaMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink \"PhongMaterial/alpha:property\"}}{{/crossLink}}. |\n| {{#crossLink \"PhongMaterial/occlusionMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Ambient occlusion texture multiplying by {{#crossLink \"PhongMaterial/ambient:property\"}}{{/crossLink}}, {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}} and {{#crossLink \"PhongMaterial/specular:property\"}}{{/crossLink}}. |\n| {{#crossLink \"PhongMaterial/normalMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Tangent-space normal map. |\n| {{#crossLink \"PhongMaterial/diffuseFresnel:property\"}}{{/crossLink}} | {{#crossLink \"Fresnel\"}}{{/crossLink}} |  | null |  | Fresnel term applied to {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}}. |\n| {{#crossLink \"PhongMaterial/specularFresnel:property\"}}{{/crossLink}} | {{#crossLink \"Fresnel\"}}{{/crossLink}} |  | null |  | Fresnel term applied to {{#crossLink \"PhongMaterial/specular:property\"}}{{/crossLink}}. |\n| {{#crossLink \"PhongMaterial/emissiveFresnel:property\"}}{{/crossLink}} | {{#crossLink \"Fresnel\"}}{{/crossLink}} |  | null |  | Fresnel term applied to {{#crossLink \"PhongMaterial/emissive:property\"}}{{/crossLink}}. |\n| {{#crossLink \"PhongMaterial/reflectivityFresnel:property\"}}{{/crossLink}} | {{#crossLink \"Fresnel\"}}{{/crossLink}} |  | null |  | Fresnel term applied to {{#crossLink \"PhongMaterial/reflectivity:property\"}}{{/crossLink}}. |\n| {{#crossLink \"PhongMaterial/alphaFresnel:property\"}}{{/crossLink}} | {{#crossLink \"Fresnel\"}}{{/crossLink}} |  | null |  | Fresnel term applied to {{#crossLink \"PhongMaterial/alpha:property\"}}{{/crossLink}}. |\n| {{#crossLink \"PhongMaterial/lineWidth:property\"}}{{/crossLink}} | Number | [0..100] | 1 |  | Line width in pixels. |\n| {{#crossLink \"PhongMaterial/pointSize:property\"}}{{/crossLink}} | Number | [0..100] | 1 |  | Point size in pixels. |\n| {{#crossLink \"PhongMaterial/alphaMode:property\"}}{{/crossLink}} | String | \"opaque\", \"blend\", \"mask\" | \"blend\" |  | Alpha blend mode. |\n| {{#crossLink \"PhongMaterial/alphaCutoff:property\"}}{{/crossLink}} | Number | [0..1] | 0.5 |  | Alpha cutoff value. |\n| {{#crossLink \"PhongMaterial/backfaces:property\"}}{{/crossLink}} | Boolean |  | false |  | Whether to render {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} backfaces. |\n| {{#crossLink \"PhongMaterial/backfaces:property\"}}{{/crossLink}} | String | \"ccw\", \"cw\" | \"ccw\" |  | The winding order for {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} frontfaces - \"cw\" for clockwise, or \"ccw\" for counter-clockwise. |\n\n## Usage\n\nIn this example we have an Entity with\n\n* a {{#crossLink \"Lights\"}}{{/crossLink}} containing an {{#crossLink \"AmbientLight\"}}{{/crossLink}} and a {{#crossLink \"DirLight\"}}{{/crossLink}},\n* a {{#crossLink \"PhongMaterial\"}}{{/crossLink}} which applies a {{#crossLink \"Texture\"}}{{/crossLink}} as a diffuse map and a specular {{#crossLink \"Fresnel\"}}{{/crossLink}}, and\n* a {{#crossLink \"TorusGeometry\"}}{{/crossLink}}.\n\n```` javascript\nvar torus = new xeogl.Entity({\n\n   lights: new xeogl.Lights({\n       lights: [\n           new xeogl.AmbientLight({\n               color: [0.7, 0.7, 0.7]\n           }),\n           new xeogl.DirLight({\n               dir: [-1, -1, -1],\n               color: [0.5, 0.7, 0.5],\n               intensity: [1.0, 1.0, 1.0],\n               space: \"view\"\n           })\n       ]\n   }),\n\n   material: new xeogl.PhongMaterial({\n       ambient: [0.3, 0.3, 0.3],\n       diffuse: [0.5, 0.5, 0.0],   // Ignored, since we have assigned a Texture to diffuseMap, below\n       diffuseMap: new xeogl.Texture({\n           src: \"diffuseMap.jpg\"\n       }),\n       specular: [1, 1, 1],\n       specularFresnel: new xeogl.Fresnel({\n           leftColor: [1.0, 1.0, 1.0],\n           rightColor: [0.0, 0.0, 0.0],\n           power: 4\n       }),\n       shininess: 80, // Default\n       alpha: 1.0 // Default\n   }),\n\n   geometry: new xeogl.TorusGeometry()\n});\n````\n\n## Transparency\n\n### Alpha Blending\n\nLet's make our torus transparent. We'll update its PhongMaterial's {{#crossLink \"PhongMaterial/alpha:property\"}}{{/crossLink}}\nand {{#crossLink \"PhongMaterial/alphaMode:property\"}}{{/crossLink}}, causing it to blend 50% with the background:\n\n````javascript\ntorus.material.alpha = 0.5;\ntorus.material.alphaMode = \"blend\";\n````\n*TODO: Screenshot*\n\n### Alpha Masking\n\nNow let's make holes in our torus instead. We'll give its PhongMaterial an {{#crossLink \"PhongMaterial/alphaMap:property\"}}{{/crossLink}}\nand configure {{#crossLink \"PhongMaterial/alpha:property\"}}{{/crossLink}}, {{#crossLink \"PhongMaterial/alphaMode:property\"}}{{/crossLink}},\nand {{#crossLink \"PhongMaterial/alphaCutoff:property\"}}{{/crossLink}} to treat it as an alpha mask:\n\n````javascript\ntorus.material.alphaMap = new xeogl.Texture({\n       src: \"textures/diffuse/crossGridColorMap.jpg\"\n   });\n\ntorus.material.alpha = 1.0;\ntorus.material.alphaMode = \"mask\";\ntorus.material.alphaCutoff = 0.2;\n````\n*TODO: Screenshot*",
+            "description": "A **PhongMaterial** is a {{#crossLink \"Material\"}}{{/crossLink}} that defines the surface appearance of\nattached {{#crossLink \"Entity\"}}Entities{{/crossLink}} using\nthe classic <a href=\"https://en.wikipedia.org/wiki/Blinn%E2%80%93Phong_shading_model\">Blinn-Phong</a> lighting model.\n\n## Examples\n\n| <a href=\"../../examples/#materials_phong_textures\"><img src=\"../../assets/images/screenshots/PhongMaterial/textures.png\"></img></a> | <a href=\"../../examples/#materials_phong_textures_video\"><img src=\"../../assets/images/screenshots/PhongMaterial/videoTexture.png\"></img></a> | <a href=\"../../examples/#materials_phong_fresnel\"><img src=\"../../assets/images/screenshots/PhongMaterial/fresnel.png\"></img></a> |\n|:------:|:----:|:-----:|:-----:|\n|[Phong textures](../../examples/#materials_phong_textures)|[Video texture](../../examples/#materials_phong_textures_video)| [Fresnels](../../examples/#materials_phong_fresnel)|\n\n## Overview\n\n* Used for rendering non-realistic objects such as \"helpers\", wireframe objects, labels etc.\n* Use the physically-based {{#crossLink \"MetallicMaterial\"}}{{/crossLink}} or {{#crossLink \"SpecularMaterial\"}}{{/crossLink}} when more realism is required.\n\n<img src=\"../../../assets/images/PhongMaterial.png\"></img>\n\nThe following table summarizes PhongMaterial properties:\n\n| Property | Type | Range | Default Value | Space | Description |\n|:--------:|:----:|:-----:|:-------------:|:-----:|:-----------:|\n|  {{#crossLink \"PhongMaterial/ambient:property\"}}{{/crossLink}} | Array | [0, 1] for all components | [1,1,1,1] | linear | The RGB components of the ambient light reflected by the material. |\n|  {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}} | Array | [0, 1] for all components | [1,1,1,1] | linear | The RGB components of the diffuse light reflected by the material. |\n|  {{#crossLink \"PhongMaterial/specular:property\"}}{{/crossLink}} | Array | [0, 1] for all components | [1,1,1,1] | linear | The RGB components of the specular light reflected by the material. |\n|  {{#crossLink \"PhongMaterial/emissive:property\"}}{{/crossLink}} | Array | [0, 1] for all components | [0,0,0] | linear | The RGB components of the light emitted by the material. |\n| {{#crossLink \"PhongMaterial/alpha:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The transparency of the material surface (0 fully transparent, 1 fully opaque). |\n| {{#crossLink \"PhongMaterial/shininess:property\"}}{{/crossLink}} | Number | [0, 128] | 80 | linear | Determines the size and sharpness of specular highlights. |\n| {{#crossLink \"PhongMaterial/reflectivity:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | Determines the amount of reflectivity. |\n| {{#crossLink \"PhongMaterial/diffuseMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink \"PhongMaterial/alpha:property\"}}{{/crossLink}}. |\n| {{#crossLink \"PhongMaterial/specularMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink \"PhongMaterial/specular:property\"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink \"PhongMaterial/alpha:property\"}}{{/crossLink}}. |\n| {{#crossLink \"PhongMaterial/emissiveMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with RGB components multiplying by {{#crossLink \"PhongMaterial/emissive:property\"}}{{/crossLink}}. |\n| {{#crossLink \"PhongMaterial/alphaMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink \"PhongMaterial/alpha:property\"}}{{/crossLink}}. |\n| {{#crossLink \"PhongMaterial/occlusionMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Ambient occlusion texture multiplying by {{#crossLink \"PhongMaterial/ambient:property\"}}{{/crossLink}}, {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}} and {{#crossLink \"PhongMaterial/specular:property\"}}{{/crossLink}}. |\n| {{#crossLink \"PhongMaterial/normalMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Tangent-space normal map. |\n| {{#crossLink \"PhongMaterial/diffuseFresnel:property\"}}{{/crossLink}} | {{#crossLink \"Fresnel\"}}{{/crossLink}} |  | null |  | Fresnel term applied to {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}}. |\n| {{#crossLink \"PhongMaterial/specularFresnel:property\"}}{{/crossLink}} | {{#crossLink \"Fresnel\"}}{{/crossLink}} |  | null |  | Fresnel term applied to {{#crossLink \"PhongMaterial/specular:property\"}}{{/crossLink}}. |\n| {{#crossLink \"PhongMaterial/emissiveFresnel:property\"}}{{/crossLink}} | {{#crossLink \"Fresnel\"}}{{/crossLink}} |  | null |  | Fresnel term applied to {{#crossLink \"PhongMaterial/emissive:property\"}}{{/crossLink}}. |\n| {{#crossLink \"PhongMaterial/reflectivityFresnel:property\"}}{{/crossLink}} | {{#crossLink \"Fresnel\"}}{{/crossLink}} |  | null |  | Fresnel term applied to {{#crossLink \"PhongMaterial/reflectivity:property\"}}{{/crossLink}}. |\n| {{#crossLink \"PhongMaterial/alphaFresnel:property\"}}{{/crossLink}} | {{#crossLink \"Fresnel\"}}{{/crossLink}} |  | null |  | Fresnel term applied to {{#crossLink \"PhongMaterial/alpha:property\"}}{{/crossLink}}. |\n| {{#crossLink \"PhongMaterial/lineWidth:property\"}}{{/crossLink}} | Number | [0..100] | 1 |  | Line width in pixels. |\n| {{#crossLink \"PhongMaterial/pointSize:property\"}}{{/crossLink}} | Number | [0..100] | 1 |  | Point size in pixels. |\n| {{#crossLink \"PhongMaterial/alphaMode:property\"}}{{/crossLink}} | String | \"opaque\", \"blend\", \"mask\" | \"blend\" |  | Alpha blend mode. |\n| {{#crossLink \"PhongMaterial/alphaCutoff:property\"}}{{/crossLink}} | Number | [0..1] | 0.5 |  | Alpha cutoff value. |\n| {{#crossLink \"PhongMaterial/backfaces:property\"}}{{/crossLink}} | Boolean |  | false |  | Whether to render {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} backfaces. |\n| {{#crossLink \"PhongMaterial/frontface:property\"}}{{/crossLink}} | String | \"ccw\", \"cw\" | \"ccw\" |  | The winding order for {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} frontfaces - \"cw\" for clockwise, or \"ccw\" for counter-clockwise. |\n\n## Usage\n\nIn this example we have an Entity with\n\n* a {{#crossLink \"Lights\"}}{{/crossLink}} containing an {{#crossLink \"AmbientLight\"}}{{/crossLink}} and a {{#crossLink \"DirLight\"}}{{/crossLink}},\n* a {{#crossLink \"PhongMaterial\"}}{{/crossLink}} which applies a {{#crossLink \"Texture\"}}{{/crossLink}} as a diffuse map and a specular {{#crossLink \"Fresnel\"}}{{/crossLink}}, and\n* a {{#crossLink \"TorusGeometry\"}}{{/crossLink}}.\n\n```` javascript\nvar torus = new xeogl.Entity({\n\n   lights: new xeogl.Lights({\n       lights: [\n           new xeogl.AmbientLight({\n               color: [0.7, 0.7, 0.7]\n           }),\n           new xeogl.DirLight({\n               dir: [-1, -1, -1],\n               color: [0.5, 0.7, 0.5],\n               intensity: [1.0, 1.0, 1.0],\n               space: \"view\"\n           })\n       ]\n   }),\n\n   material: new xeogl.PhongMaterial({\n       ambient: [0.3, 0.3, 0.3],\n       diffuse: [0.5, 0.5, 0.0],   // Ignored, since we have assigned a Texture to diffuseMap, below\n       diffuseMap: new xeogl.Texture({\n           src: \"diffuseMap.jpg\"\n       }),\n       specular: [1, 1, 1],\n       specularFresnel: new xeogl.Fresnel({\n           leftColor: [1.0, 1.0, 1.0],\n           rightColor: [0.0, 0.0, 0.0],\n           power: 4\n       }),\n       shininess: 80, // Default\n       alpha: 1.0 // Default\n   }),\n\n   geometry: new xeogl.TorusGeometry()\n});\n````\n\n## Transparency\n\n### Alpha Blending\n\nLet's make our torus transparent. We'll update its PhongMaterial's {{#crossLink \"PhongMaterial/alpha:property\"}}{{/crossLink}}\nand {{#crossLink \"PhongMaterial/alphaMode:property\"}}{{/crossLink}}, causing it to blend 50% with the background:\n\n````javascript\ntorus.material.alpha = 0.5;\ntorus.material.alphaMode = \"blend\";\n````\n*TODO: Screenshot*\n\n### Alpha Masking\n\nNow let's make holes in our torus instead. We'll give its PhongMaterial an {{#crossLink \"PhongMaterial/alphaMap:property\"}}{{/crossLink}}\nand configure {{#crossLink \"PhongMaterial/alpha:property\"}}{{/crossLink}}, {{#crossLink \"PhongMaterial/alphaMode:property\"}}{{/crossLink}},\nand {{#crossLink \"PhongMaterial/alphaCutoff:property\"}}{{/crossLink}} to treat it as an alpha mask:\n\n````javascript\ntorus.material.alphaMap = new xeogl.Texture({\n       src: \"textures/diffuse/crossGridColorMap.jpg\"\n   });\n\ntorus.material.alpha = 1.0;\ntorus.material.alphaMode = \"mask\";\ntorus.material.alphaCutoff = 0.2;\n````\n*TODO: Screenshot*",
             "submodule": "materials",
             "is_constructor": 1,
             "extends": "Material",
@@ -4339,7 +4353,7 @@
             "namespace": "",
             "file": "src/materials/specularMaterial.js",
             "line": 1,
-            "description": "A **SpecularMaterial** is a physically-based {{#crossLink \"Material\"}}{{/crossLink}} that defines the surface appearance of\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} using the *specular-glossiness* workflow.\n\n## Examples\n\n| <a href=\"../../examples/#importing_gltf_pbr_specular_telephone\"><img src=\"../../assets/images/screenshots/SpecularMaterial/telephone.png\"></img></a> | <a href=\"../../examples/#materials_specular_samples\"><img src=\"../../assets/images/screenshots/SpecularMaterial/materials.png\"></img></a> | <a href=\"../../examples/#materials_specular_textures\"><img src=\"../../assets/images/screenshots/SpecularMaterial/textures.png\"></img></a> | <a href=\"../../examples/#materials_specular_specularVsGlossiness\"><img src=\"../../assets/images/screenshots/SpecularMaterial/specVsGloss.png\"></img></a> |\n|:------:|:----:|:-----:|:-----:|\n|[glTF models with PBR materials](../../examples/#importing_gltf_pbr_specular_telephone)|[Sample materials ](../../examples/#materials_specular_samples) | [Texturing spec/gloss channels](../../examples/#materials_specular_textures) | [Specular Vs. glossiness](../../examples/#materials_specular_specularVsGlossiness) |\n\n## Overview\n\n* SpecularMaterial is usually used for insulators, such as ceramic, wood and plastic.\n* {{#crossLink \"MetallicMaterial\"}}{{/crossLink}} is usually used for conductive materials, such as metal.\n* {{#crossLink \"PhongMaterial\"}}{{/crossLink}} is usually used for non-realistic objects.\n\n<img src=\"../../../assets/images/SpecularMaterial.png\"></img>\n\nFor an introduction to PBR concepts, try these articles:\n\n* Joe Wilson's [Basic Theory of Physically-Based Rendering](https://www.marmoset.co/posts/basic-theory-of-physically-based-rendering/)\n* Jeff Russel's [Physically-based Rendering, and you can too!](https://www.marmoset.co/posts/physically-based-rendering-and-you-can-too/)\n* Sebastien Legarde's [Adapting a physically-based shading model](http://seblagarde.wordpress.com/tag/physically-based-rendering/)\n\nThe following table summarizes SpecularMaterial properties:\n\n| Property | Type | Range | Default Value | Space | Description |\n|:--------:|:----:|:-----:|:-------------:|:-----:|:-----------:|\n|  {{#crossLink \"SpecularMaterial/diffuse:property\"}}{{/crossLink}} | Array | [0, 1] for all components | [1,1,1,1] | linear | The RGB components of the diffuse color of the material. |\n|  {{#crossLink \"SpecularMaterial/specular:property\"}}{{/crossLink}} | Array | [0, 1] for all components | [1,1,1,1] | linear | The RGB components of the specular color of the material. |\n| {{#crossLink \"SpecularMaterial/glossiness:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The glossiness the material. |\n| {{#crossLink \"SpecularMaterial/specularF0:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The specularF0 of the material surface. |\n|  {{#crossLink \"SpecularMaterial/emissive:property\"}}{{/crossLink}} | Array | [0, 1] for all components | [0,0,0] | linear | The RGB components of the emissive color of the material. |\n| {{#crossLink \"SpecularMaterial/alpha:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The transparency of the material surface (0 fully transparent, 1 fully opaque). |\n| {{#crossLink \"SpecularMaterial/diffuseMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink \"SpecularMaterial/diffuse:property\"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink \"SpecularMaterial/alpha:property\"}}{{/crossLink}}. |\n| {{#crossLink \"SpecularMaterial/specularMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink \"SpecularMaterial/specular:property\"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink \"SpecularMaterial/alpha:property\"}}{{/crossLink}}. |\n| {{#crossLink \"SpecularMaterial/glossinessMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink \"SpecularMaterial/glossiness:property\"}}{{/crossLink}}. |\n| {{#crossLink \"SpecularMaterial/specularGlossinessMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with first three components multiplying by {{#crossLink \"SpecularMaterial/specular:property\"}}{{/crossLink}} and fourth component multiplying by {{#crossLink \"SpecularMaterial/glossiness:property\"}}{{/crossLink}}. |\n| {{#crossLink \"SpecularMaterial/emissiveMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with RGB components multiplying by {{#crossLink \"SpecularMaterial/emissive:property\"}}{{/crossLink}}. |\n| {{#crossLink \"SpecularMaterial/alphaMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink \"SpecularMaterial/alpha:property\"}}{{/crossLink}}. |\n| {{#crossLink \"SpecularMaterial/occlusionMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Ambient occlusion texture multiplying by surface's reflected diffuse and specular light. |\n| {{#crossLink \"SpecularMaterial/normalMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Tangent-space normal map. |\n| {{#crossLink \"SpecularMaterial/alphaMode:property\"}}{{/crossLink}} | String | \"opaque\", \"blend\", \"mask\" | \"blend\" |  | Alpha blend mode. |\n| {{#crossLink \"SpecularMaterial/alphaCutoff:property\"}}{{/crossLink}} | Number | [0..1] | 0.5 |  | Alpha cutoff value. |\n| {{#crossLink \"SpecularMaterial/backfaces:property\"}}{{/crossLink}} | Boolean |  | false |  | Whether to render {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} backfaces. |\n| {{#crossLink \"SpecularMaterial/backfaces:property\"}}{{/crossLink}} | String | \"ccw\", \"cw\" | \"ccw\" |  | The winding order for {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} frontfaces - \"cw\" for clockwise, or \"ccw\" for counter-clockwise. |\n\n## Usage\n\nIn the example below we'll create the plastered sphere shown in the [Sample Materials](../../examples/#materials_specular_textures) example (see screenshots above).\n\nHere's a closeup of the sphere we'll create:\n\n<a href=\"../../examples/#materials_specular_samples\"><img src=\"../../assets/images/screenshots/SpecularMaterial/plaster.png\"></img></a>\n\nOur plastered sphere {{#crossLink \"Entity\"}}{{/crossLink}} has:\n\n* a {{#crossLink \"SphereGeometry\"}}{{/crossLink}},\n* a SpecularMaterial with {{#crossLink \"Texture\"}}Textures{{/crossLink}} providing diffuse, glossiness, specular and normal maps.\n\nWe'll also provide its {{#crossLink \"Scene\"}}{{/crossLink}}'s {{#crossLink \"Lights\"}}{{/crossLink}} with\n{{#crossLink \"DirLight\"}}DirLights{{/crossLink}}, plus {{#crossLink \"CubeTexture\"}}CubeTextures{{/crossLink}} for light\nand reflection maps.\n\nNote that in this example we're providing separate {{#crossLink \"Texture\"}}Textures{{/crossLink}} for the {{#crossLink \"SpecularMaterial/specular:property\"}}{{/crossLink}} and {{#crossLink \"SpecularMaterial/glossiness:property\"}}{{/crossLink}}\nchannels, which allows us a little creative flexibility. Then, in the next example further down, we'll combine those channels\nwithin the same {{#crossLink \"Texture\"}}{{/crossLink}} for efficiency.\n\n````javascript\nvar plasteredSphere = new xeogl.Entity({\n\n   geometry: new xeogl.SphereGeometry({\n       center: [0,0,0],\n       radius: 1.5,\n       heightSegments: 60,\n       widthSegments: 60\n   }),\n\n   material: new xeogl.SpecularMaterial({\n\n       // Channels with default values, just to show them\n\n       diffuse: [1.0, 1.0, 1.0],\n       specular: [1.0, 1.0, 1.0],\n       glossiness: 1.0,\n       emissive: [0.0, 0.0, 0.0]\n       alpha: 1.0,\n\n       // Textures to multiply some of the channels\n\n       diffuseMap: {       // RGB components multiply by diffuse\n           src: \"textures/materials/poligon/Plaster07_1k/Plaster07_COL_VAR1_1K.jpg\"\n       },\n       specularMap: {      // RGB component multiplies by specular\n           src: \"textures/materials/poligon/Plaster07_1k/Plaster07_REFL_1K.jpg\"\n       },\n       glossinessMap: {    // R component multiplies by glossiness\n           src: \"textures/materials/poligon/Plaster07_1k/Plaster07_GLOSS_1K.jpg\"\n       },\n       normalMap: {\n           src: \"textures/materials/poligon/Plaster07_1k/Plaster07_NRM_1K.jpg\"\n       }\n   })\n});\n\nvar scene = plasteredSphere.scene;\n\nscene.lights.lights = [\n    new xeogl.DirLight({\n        dir: [0.8, -0.6, -0.8],\n        color: [0.8, 0.8, 0.8],\n        space: \"view\"\n    }),\n    new xeogl.DirLight({\n        dir: [-0.8, -0.4, -0.4],\n        color: [0.4, 0.4, 0.5],\n        space: \"view\"\n    }),\n    new xeogl.DirLight({\n        dir: [0.2, -0.8, 0.8],\n        color: [0.8, 0.8, 0.8],\n        space: \"view\"\n    }\n];\n\nscene.lights.lightMap = new xeogl.CubeTexture({\n    src: [\n        \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png\",\n        \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png\",\n        \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png\",\n        \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png\",\n        \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png\",\n        \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png\"\n    ]\n});\n\nscene.lights.reflectionMap = new xeogl.CubeTexture({\n    src: [\n        \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png\",\n        \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png\",\n        \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png\",\n        \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png\",\n        \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png\",\n        \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png\"\n    ]\n});\n````\n\n### Combining channels within the same textures\n\nIn the previous example we provided separate {{#crossLink \"Texture\"}}Textures{{/crossLink}} for the {{#crossLink \"SpecularMaterial/specular:property\"}}{{/crossLink}} and\n{{#crossLink \"SpecularMaterial/glossiness:property\"}}{{/crossLink}} channels, but we can combine those channels into the same {{#crossLink \"Texture\"}}{{/crossLink}} to reduce download time, memory footprint and rendering time (and also for glTF compatibility).\n\nHere's our SpecularMaterial again with those channels combined in the\n{{#crossLink \"SpecularMaterial/specularGlossinessMap:property\"}}{{/crossLink}} {{#crossLink \"Texture\"}}Texture{{/crossLink}}, where the\n*RGB* component multiplies by {{#crossLink \"SpecularMaterial/specular:property\"}}{{/crossLink}} and *A* multiplies by {{#crossLink \"SpecularMaterial/glossiness:property\"}}{{/crossLink}}.\n\n````javascript\nplasteredSphere.material = new xeogl.SpecularMaterial({\n\n   // Default values\n   diffuse: [1.0, 1.0, 1.0],\n   specular: [1.0, 1.0, 1.0],\n   glossiness: 1.0,\n   emissive: [0.0, 0.0, 0.0]\n   alpha: 1.0,\n\n   diffuseMap: {\n       src: \"textures/materials/poligon/Plaster07_1k/Plaster07_COL_VAR1_1K.jpg\"\n   },\n   specularGlossinessMap: { // RGB multiplies by specular, A by glossiness\n       src: \"textures/materials/poligon/Plaster07_1k/Plaster07_REFL_GLOSS_1K.jpg\"\n   },\n   normalMap: {\n       src: \"textures/materials/poligon/Plaster07_1k/Plaster07_NRM_1K.jpg\"\n   }\n});\n````\n\nAlthough not shown in this example, we can also texture {{#crossLink \"SpecularMaterial/alpha:property\"}}{{/crossLink}} with\nthe *A* component of {{#crossLink \"SpecularMaterial/diffuseMap:property\"}}{{/crossLink}}'s {{#crossLink \"Texture\"}}{{/crossLink}},\nif required.\n\n## Transparency\n\n### Alpha Blending\n\nLet's make our plastered sphere transparent. We'll update its SpecularMaterial's {{#crossLink \"SpecularMaterial/alpha:property\"}}{{/crossLink}}\nand {{#crossLink \"SpecularMaterial/alphaMode:property\"}}{{/crossLink}}, causing it to blend 50% with the background:\n\n````javascript\nplasteredSphere.material.alpha = 0.5;\nplasteredSphere.material.alphaMode = \"blend\";\n````\n\n*TODO: Screenshot*\n\n### Alpha Masking\n\nNow let's make holes in our plastered sphere. We'll give its SpecularMaterial an {{#crossLink \"SpecularMaterial/alphaMap:property\"}}{{/crossLink}}\nand configure {{#crossLink \"SpecularMaterial/alpha:property\"}}{{/crossLink}}, {{#crossLink \"SpecularMaterial/alphaMode:property\"}}{{/crossLink}},\nand {{#crossLink \"SpecularMaterial/alphaCutoff:property\"}}{{/crossLink}} to treat it as an alpha mask:\n\n````javascript\nplasteredSphere.material.alphaMap = new xeogl.Texture({\n    src: \"textures/diffuse/crossGridColorMap.jpg\"\n});\n\nplasteredSphere.material.alpha = 1.0;\nplasteredSphere.material.alphaMode = \"mask\";\nplasteredSphere.material.alphaCutoff = 0.2;\n````\n\n*TODO: Screenshot*",
+            "description": "A **SpecularMaterial** is a physically-based {{#crossLink \"Material\"}}{{/crossLink}} that defines the surface appearance of\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} using the *specular-glossiness* workflow.\n\n## Examples\n\n| <a href=\"../../examples/#importing_gltf_pbr_specular_telephone\"><img src=\"../../assets/images/screenshots/SpecularMaterial/telephone.png\"></img></a> | <a href=\"../../examples/#materials_specular_samples\"><img src=\"../../assets/images/screenshots/SpecularMaterial/materials.png\"></img></a> | <a href=\"../../examples/#materials_specular_textures\"><img src=\"../../assets/images/screenshots/SpecularMaterial/textures.png\"></img></a> | <a href=\"../../examples/#materials_specular_specularVsGlossiness\"><img src=\"../../assets/images/screenshots/SpecularMaterial/specVsGloss.png\"></img></a> |\n|:------:|:----:|:-----:|:-----:|\n|[glTF models with PBR materials](../../examples/#importing_gltf_pbr_specular_telephone)|[Sample materials ](../../examples/#materials_specular_samples) | [Texturing spec/gloss channels](../../examples/#materials_specular_textures) | [Specular Vs. glossiness](../../examples/#materials_specular_specularVsGlossiness) |\n\n## Overview\n\n* SpecularMaterial is usually used for insulators, such as ceramic, wood and plastic.\n* {{#crossLink \"MetallicMaterial\"}}{{/crossLink}} is usually used for conductive materials, such as metal.\n* {{#crossLink \"PhongMaterial\"}}{{/crossLink}} is usually used for non-realistic objects.\n\n<img src=\"../../../assets/images/SpecularMaterial.png\"></img>\n\nFor an introduction to PBR concepts, try these articles:\n\n* Joe Wilson's [Basic Theory of Physically-Based Rendering](https://www.marmoset.co/posts/basic-theory-of-physically-based-rendering/)\n* Jeff Russel's [Physically-based Rendering, and you can too!](https://www.marmoset.co/posts/physically-based-rendering-and-you-can-too/)\n* Sebastien Legarde's [Adapting a physically-based shading model](http://seblagarde.wordpress.com/tag/physically-based-rendering/)\n\nThe following table summarizes SpecularMaterial properties:\n\n| Property | Type | Range | Default Value | Space | Description |\n|:--------:|:----:|:-----:|:-------------:|:-----:|:-----------:|\n|  {{#crossLink \"SpecularMaterial/diffuse:property\"}}{{/crossLink}} | Array | [0, 1] for all components | [1,1,1,1] | linear | The RGB components of the diffuse color of the material. |\n|  {{#crossLink \"SpecularMaterial/specular:property\"}}{{/crossLink}} | Array | [0, 1] for all components | [1,1,1,1] | linear | The RGB components of the specular color of the material. |\n| {{#crossLink \"SpecularMaterial/glossiness:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The glossiness the material. |\n| {{#crossLink \"SpecularMaterial/specularF0:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The specularF0 of the material surface. |\n|  {{#crossLink \"SpecularMaterial/emissive:property\"}}{{/crossLink}} | Array | [0, 1] for all components | [0,0,0] | linear | The RGB components of the emissive color of the material. |\n| {{#crossLink \"SpecularMaterial/alpha:property\"}}{{/crossLink}} | Number | [0, 1] | 1 | linear | The transparency of the material surface (0 fully transparent, 1 fully opaque). |\n| {{#crossLink \"SpecularMaterial/diffuseMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink \"SpecularMaterial/diffuse:property\"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink \"SpecularMaterial/alpha:property\"}}{{/crossLink}}. |\n| {{#crossLink \"SpecularMaterial/specularMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | sRGB | Texture RGB components multiplying by {{#crossLink \"SpecularMaterial/specular:property\"}}{{/crossLink}}. If the fourth component (A) is present, it multiplies by {{#crossLink \"SpecularMaterial/alpha:property\"}}{{/crossLink}}. |\n| {{#crossLink \"SpecularMaterial/glossinessMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink \"SpecularMaterial/glossiness:property\"}}{{/crossLink}}. |\n| {{#crossLink \"SpecularMaterial/specularGlossinessMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with first three components multiplying by {{#crossLink \"SpecularMaterial/specular:property\"}}{{/crossLink}} and fourth component multiplying by {{#crossLink \"SpecularMaterial/glossiness:property\"}}{{/crossLink}}. |\n| {{#crossLink \"SpecularMaterial/emissiveMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with RGB components multiplying by {{#crossLink \"SpecularMaterial/emissive:property\"}}{{/crossLink}}. |\n| {{#crossLink \"SpecularMaterial/alphaMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Texture with first component multiplying by {{#crossLink \"SpecularMaterial/alpha:property\"}}{{/crossLink}}. |\n| {{#crossLink \"SpecularMaterial/occlusionMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Ambient occlusion texture multiplying by surface's reflected diffuse and specular light. |\n| {{#crossLink \"SpecularMaterial/normalMap:property\"}}{{/crossLink}} | {{#crossLink \"Texture\"}}{{/crossLink}} |  | null | linear | Tangent-space normal map. |\n| {{#crossLink \"SpecularMaterial/alphaMode:property\"}}{{/crossLink}} | String | \"opaque\", \"blend\", \"mask\" | \"blend\" |  | Alpha blend mode. |\n| {{#crossLink \"SpecularMaterial/alphaCutoff:property\"}}{{/crossLink}} | Number | [0..1] | 0.5 |  | Alpha cutoff value. |\n| {{#crossLink \"SpecularMaterial/backfaces:property\"}}{{/crossLink}} | Boolean |  | false |  | Whether to render {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} backfaces. |\n| {{#crossLink \"SpecularMaterial/frontface:property\"}}{{/crossLink}} | String | \"ccw\", \"cw\" | \"ccw\" |  | The winding order for {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} frontfaces - \"cw\" for clockwise, or \"ccw\" for counter-clockwise. |\n\n## Usage\n\nIn the example below we'll create the plastered sphere shown in the [Sample Materials](../../examples/#materials_specular_textures) example (see screenshots above).\n\nHere's a closeup of the sphere we'll create:\n\n<a href=\"../../examples/#materials_specular_samples\"><img src=\"../../assets/images/screenshots/SpecularMaterial/plaster.png\"></img></a>\n\nOur plastered sphere {{#crossLink \"Entity\"}}{{/crossLink}} has:\n\n* a {{#crossLink \"SphereGeometry\"}}{{/crossLink}},\n* a SpecularMaterial with {{#crossLink \"Texture\"}}Textures{{/crossLink}} providing diffuse, glossiness, specular and normal maps.\n\nWe'll also provide its {{#crossLink \"Scene\"}}{{/crossLink}}'s {{#crossLink \"Lights\"}}{{/crossLink}} with\n{{#crossLink \"DirLight\"}}DirLights{{/crossLink}}, plus {{#crossLink \"CubeTexture\"}}CubeTextures{{/crossLink}} for light\nand reflection maps.\n\nNote that in this example we're providing separate {{#crossLink \"Texture\"}}Textures{{/crossLink}} for the {{#crossLink \"SpecularMaterial/specular:property\"}}{{/crossLink}} and {{#crossLink \"SpecularMaterial/glossiness:property\"}}{{/crossLink}}\nchannels, which allows us a little creative flexibility. Then, in the next example further down, we'll combine those channels\nwithin the same {{#crossLink \"Texture\"}}{{/crossLink}} for efficiency.\n\n````javascript\nvar plasteredSphere = new xeogl.Entity({\n\n   geometry: new xeogl.SphereGeometry({\n       center: [0,0,0],\n       radius: 1.5,\n       heightSegments: 60,\n       widthSegments: 60\n   }),\n\n   material: new xeogl.SpecularMaterial({\n\n       // Channels with default values, just to show them\n\n       diffuse: [1.0, 1.0, 1.0],\n       specular: [1.0, 1.0, 1.0],\n       glossiness: 1.0,\n       emissive: [0.0, 0.0, 0.0]\n       alpha: 1.0,\n\n       // Textures to multiply some of the channels\n\n       diffuseMap: {       // RGB components multiply by diffuse\n           src: \"textures/materials/poligon/Plaster07_1k/Plaster07_COL_VAR1_1K.jpg\"\n       },\n       specularMap: {      // RGB component multiplies by specular\n           src: \"textures/materials/poligon/Plaster07_1k/Plaster07_REFL_1K.jpg\"\n       },\n       glossinessMap: {    // R component multiplies by glossiness\n           src: \"textures/materials/poligon/Plaster07_1k/Plaster07_GLOSS_1K.jpg\"\n       },\n       normalMap: {\n           src: \"textures/materials/poligon/Plaster07_1k/Plaster07_NRM_1K.jpg\"\n       }\n   })\n});\n\nvar scene = plasteredSphere.scene;\n\nscene.lights.lights = [\n    new xeogl.DirLight({\n        dir: [0.8, -0.6, -0.8],\n        color: [0.8, 0.8, 0.8],\n        space: \"view\"\n    }),\n    new xeogl.DirLight({\n        dir: [-0.8, -0.4, -0.4],\n        color: [0.4, 0.4, 0.5],\n        space: \"view\"\n    }),\n    new xeogl.DirLight({\n        dir: [0.2, -0.8, 0.8],\n        color: [0.8, 0.8, 0.8],\n        space: \"view\"\n    }\n];\n\nscene.lights.lightMap = new xeogl.CubeTexture({\n    src: [\n        \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PX.png\",\n        \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NX.png\",\n        \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PY.png\",\n        \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NY.png\",\n        \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_PZ.png\",\n        \"textures/light/Uffizi_Gallery/Uffizi_Gallery_Irradiance_NZ.png\"\n    ]\n});\n\nscene.lights.reflectionMap = new xeogl.CubeTexture({\n    src: [\n        \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png\",\n        \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png\",\n        \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png\",\n        \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png\",\n        \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png\",\n        \"textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png\"\n    ]\n});\n````\n\n### Combining channels within the same textures\n\nIn the previous example we provided separate {{#crossLink \"Texture\"}}Textures{{/crossLink}} for the {{#crossLink \"SpecularMaterial/specular:property\"}}{{/crossLink}} and\n{{#crossLink \"SpecularMaterial/glossiness:property\"}}{{/crossLink}} channels, but we can combine those channels into the same {{#crossLink \"Texture\"}}{{/crossLink}} to reduce download time, memory footprint and rendering time (and also for glTF compatibility).\n\nHere's our SpecularMaterial again with those channels combined in the\n{{#crossLink \"SpecularMaterial/specularGlossinessMap:property\"}}{{/crossLink}} {{#crossLink \"Texture\"}}Texture{{/crossLink}}, where the\n*RGB* component multiplies by {{#crossLink \"SpecularMaterial/specular:property\"}}{{/crossLink}} and *A* multiplies by {{#crossLink \"SpecularMaterial/glossiness:property\"}}{{/crossLink}}.\n\n````javascript\nplasteredSphere.material = new xeogl.SpecularMaterial({\n\n   // Default values\n   diffuse: [1.0, 1.0, 1.0],\n   specular: [1.0, 1.0, 1.0],\n   glossiness: 1.0,\n   emissive: [0.0, 0.0, 0.0]\n   alpha: 1.0,\n\n   diffuseMap: {\n       src: \"textures/materials/poligon/Plaster07_1k/Plaster07_COL_VAR1_1K.jpg\"\n   },\n   specularGlossinessMap: { // RGB multiplies by specular, A by glossiness\n       src: \"textures/materials/poligon/Plaster07_1k/Plaster07_REFL_GLOSS_1K.jpg\"\n   },\n   normalMap: {\n       src: \"textures/materials/poligon/Plaster07_1k/Plaster07_NRM_1K.jpg\"\n   }\n});\n````\n\nAlthough not shown in this example, we can also texture {{#crossLink \"SpecularMaterial/alpha:property\"}}{{/crossLink}} with\nthe *A* component of {{#crossLink \"SpecularMaterial/diffuseMap:property\"}}{{/crossLink}}'s {{#crossLink \"Texture\"}}{{/crossLink}},\nif required.\n\n## Transparency\n\n### Alpha Blending\n\nLet's make our plastered sphere transparent. We'll update its SpecularMaterial's {{#crossLink \"SpecularMaterial/alpha:property\"}}{{/crossLink}}\nand {{#crossLink \"SpecularMaterial/alphaMode:property\"}}{{/crossLink}}, causing it to blend 50% with the background:\n\n````javascript\nplasteredSphere.material.alpha = 0.5;\nplasteredSphere.material.alphaMode = \"blend\";\n````\n\n*TODO: Screenshot*\n\n### Alpha Masking\n\nNow let's make holes in our plastered sphere. We'll give its SpecularMaterial an {{#crossLink \"SpecularMaterial/alphaMap:property\"}}{{/crossLink}}\nand configure {{#crossLink \"SpecularMaterial/alpha:property\"}}{{/crossLink}}, {{#crossLink \"SpecularMaterial/alphaMode:property\"}}{{/crossLink}},\nand {{#crossLink \"SpecularMaterial/alphaCutoff:property\"}}{{/crossLink}} to treat it as an alpha mask:\n\n````javascript\nplasteredSphere.material.alphaMap = new xeogl.Texture({\n    src: \"textures/diffuse/crossGridColorMap.jpg\"\n});\n\nplasteredSphere.material.alpha = 1.0;\nplasteredSphere.material.alphaMode = \"mask\";\nplasteredSphere.material.alphaCutoff = 0.2;\n````\n\n*TODO: Screenshot*",
             "submodule": "materials",
             "is_constructor": 1,
             "extends": "Material",
@@ -7890,58 +7904,6 @@
             "submodule": "camera"
         },
         {
-            "file": "src/camera/camera.js",
-            "line": 871,
-            "description": "Transforms a 3D World-space position to 2D canvas-space.\n\n## Usage\n\n````JavaScript\nvar worldPos = xeogl.math.vec3([10,10,10]);\nvar screenPos = xeogl.math.vec3();\n\nscene.camera.worldToScreen(worldPos, screenPos);\n\nvar canvasX = screenPos[0];\nvar canvasY = screenPos[1];\nvar distFromEye = screenPos[2];\n\n````",
-            "itemtype": "method",
-            "name": "worldToCanvas",
-            "params": [
-                {
-                    "name": "worldPos",
-                    "description": "3D World-space coordinate.",
-                    "type": "Float32Array"
-                },
-                {
-                    "name": "screenPos",
-                    "description": "2D Canvas-space coordinate.",
-                    "type": "Float32Array"
-                }
-            ],
-            "return": {
-                "description": "3D Screen-space coordinate.",
-                "type": "Float32Array"
-            },
-            "class": "Camera",
-            "module": "xeogl",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/camera.js",
-            "line": 918,
-            "description": "Transforms a 3D World-space position to 2D canvas-space.",
-            "itemtype": "method",
-            "name": "screenToWorld",
-            "params": [
-                {
-                    "name": "screenPos",
-                    "description": "",
-                    "type": "Float32Array"
-                },
-                {
-                    "name": "worldPos",
-                    "description": "",
-                    "type": "Float32Array"
-                }
-            ],
-            "return": {
-                "description": "",
-                "type": "Float32Array"
-            },
-            "class": "Camera",
-            "module": "xeogl",
-            "submodule": "camera"
-        },
-        {
             "file": "src/camera/frustum.js",
             "line": 80,
             "description": "Position of this Frustum's left plane on the View-space X-axis.\n\nFires a {{#crossLink \"Frustum/left:event\"}}{{/crossLink}} event on change.",
@@ -8764,7 +8726,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 45,
+            "line": 65,
             "description": "JavaScript class name for this Component.",
             "itemtype": "property",
             "name": "type",
@@ -8776,7 +8738,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 84,
+            "line": 105,
             "description": "Indicates whether this CameraControl is active or not.\n\nFires a {{#crossLink \"CameraControl/active:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "active",
@@ -8788,7 +8750,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 99,
+            "line": 120,
             "description": "Fired whenever this CameraControl's {{#crossLink \"CameraControl/active:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "active",
@@ -8805,7 +8767,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 113,
+            "line": 134,
             "description": "Flag which indicates whether this CameraControl is in \"first person\" mode.\n\nIn \"first person\" mode (disabled by default) the look position rotates about the eye position. Otherwise,\nthe eye rotates about the look.\n\nFires a {{#crossLink \"KeyboardRotateCamera/firstPerson:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "firstPerson",
@@ -8817,7 +8779,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 133,
+            "line": 154,
             "description": "Fired whenever this CameraControl's {{#crossLink \"CameraControl/firstPerson:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "firstPerson",
@@ -8833,7 +8795,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 146,
+            "line": 167,
             "description": "Flag which indicates whether this CameraControl is in \"walking\" mode.\n\nWhen set true, this constrains eye movement to the horizontal X-Z plane. When doing a walkthrough,\nthis is useful to allow us to look upwards or downwards as we move, while keeping us moving in the\nhorizontal plane.\n\nThis only has an effect when also in \"first person\" mode.\n\nFires a {{#crossLink \"KeyboardRotateCamera/walking:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "walking",
@@ -8845,7 +8807,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 169,
+            "line": 190,
             "description": "Fired whenever this CameraControl's {{#crossLink \"CameraControl/walking:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "walking",
@@ -8861,7 +8823,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 182,
+            "line": 203,
             "description": "TODO\nFires a {{#crossLink \"KeyboardRotateCamera/doublePickFlyTo:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "doublePickFlyTo",
@@ -8873,7 +8835,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 198,
+            "line": 219,
             "description": "Fired whenever this CameraControl's {{#crossLink \"CameraControl/doublePickFlyTo:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "doublePickFlyTo",
@@ -8889,7 +8851,35 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 211,
+            "line": 233,
+            "description": "A fact in range [0..1] indicating how much the camera keeps moving after you finish\npanning or rotating it.\n\nA value of 0.0 causes it to immediately stop, 0.5 causes its movement to decay 50% on each tick,\nwhile 1.0 causes no decay, allowing it continue moving, by the current rate of pan or rotation.\n\nYou may choose an inertia of zero when you want be able to precisely position or rotate the camera,\nwithout interference from inertia. ero inertia can also mean that less frames are rendered while\nyou are positioning the camera.\n\nFires a {{#crossLink \"KeyboardRotateCamera/inertia:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "inertia",
+            "default": "0.5",
+            "type": "Number",
+            "class": "CameraControl",
+            "module": "xeogl",
+            "submodule": "controls"
+        },
+        {
+            "file": "src/controls/cameraControl.js",
+            "line": 256,
+            "description": "Fired whenever this CameraControl's {{#crossLink \"CameraControl/inertia:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "inertia",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "CameraControl",
+            "module": "xeogl",
+            "submodule": "controls"
+        },
+        {
+            "file": "src/controls/cameraControl.js",
+            "line": 269,
             "description": "TODO\nFires a {{#crossLink \"KeyboardRotateCamera/keyboardLayout:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "keyboardLayout",
@@ -8901,7 +8891,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 227,
+            "line": 285,
             "description": "Fired whenever this CameraControl's {{#crossLink \"CameraControl/keyboardLayout:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "keyboardLayout",
@@ -8917,7 +8907,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 901,
+            "line": 958,
             "description": "Fired whenever the pointer no longer hovers over an {{#crossLink \"Entity\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "hoverOut",
@@ -8933,7 +8923,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 911,
+            "line": 968,
             "description": "Fired continuously while the pointer is moving while hovering over an {{#crossLink \"Entity\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "hover",
@@ -8950,7 +8940,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 922,
+            "line": 979,
             "description": "Fired while the pointer hovers over the surface of an {{#crossLink \"Entity\"}}{{/crossLink}}.\n\nThis event provides 3D information about the point on the surface that the pointer is\nhovering over.",
             "itemtype": "event",
             "name": "hoverSurface",
@@ -8967,7 +8957,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 936,
+            "line": 993,
             "description": "Fired whenever the pointer no longer hovers over an {{#crossLink \"Entity\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "hoverOut",
@@ -8983,7 +8973,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 946,
+            "line": 1003,
             "description": "Fired continuously while the pointer is moving but not hovering over anything.",
             "itemtype": "event",
             "name": "hoverOff",
@@ -8993,7 +8983,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 1035,
+            "line": 1092,
             "description": "Fired whenever the pointer has picked (ie. clicked or tapped) an {{#crossLink \"Entity\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "picked",
@@ -9010,7 +9000,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 1044,
+            "line": 1101,
             "description": "Fired when the pointer has picked (ie. clicked or tapped) the surface of an {{#crossLink \"Entity\"}}{{/crossLink}}.\n\nThis event provides 3D information about the point on the surface that the pointer has picked.",
             "itemtype": "event",
             "name": "pickedSurface",
@@ -9027,7 +9017,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 1057,
+            "line": 1114,
             "description": "Fired when the pointer attempted a pick (ie. clicked or tapped), but has hit nothing.",
             "itemtype": "event",
             "name": "pickedNothing",
@@ -9037,7 +9027,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 1100,
+            "line": 1157,
             "description": "Fired whenever the pointer has double-picked (ie. double-clicked or double-tapped) an {{#crossLink \"Entity\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "picked",
@@ -9054,7 +9044,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 1108,
+            "line": 1165,
             "description": "Fired when the pointer has double-picked (ie. double-clicked or double-tapped) the surface of an {{#crossLink \"Entity\"}}{{/crossLink}}.\n\nThis event provides 3D information about the point on the surface that the pointer has picked.",
             "itemtype": "event",
             "name": "doublePickedSurface",
@@ -9071,7 +9061,352 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 1124,
+            "line": 1181,
+            "description": "Fired when the pointer attempted a double-pick (ie. double-clicked or double-tapped), but has hit nothing.",
+            "itemtype": "event",
+            "name": "doublePickedNothing",
+            "class": "CameraControl",
+            "module": "xeogl",
+            "submodule": "controls"
+        },
+        {
+            "file": "src/controls/cameraControl.new.js",
+            "line": 65,
+            "description": "JavaScript class name for this Component.",
+            "itemtype": "property",
+            "name": "type",
+            "type": "String",
+            "final": 1,
+            "class": "CameraControl",
+            "module": "xeogl",
+            "submodule": "controls"
+        },
+        {
+            "file": "src/controls/cameraControl.new.js",
+            "line": 105,
+            "description": "Indicates whether this CameraControl is active or not.\n\nFires a {{#crossLink \"CameraControl/active:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "active",
+            "default": "true",
+            "type": "Boolean",
+            "class": "CameraControl",
+            "module": "xeogl",
+            "submodule": "controls"
+        },
+        {
+            "file": "src/controls/cameraControl.new.js",
+            "line": 120,
+            "description": "Fired whenever this CameraControl's {{#crossLink \"CameraControl/active:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "active",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value",
+                    "type": "Boolean"
+                }
+            ],
+            "class": "CameraControl",
+            "module": "xeogl",
+            "submodule": "controls"
+        },
+        {
+            "file": "src/controls/cameraControl.new.js",
+            "line": 134,
+            "description": "Flag which indicates whether this CameraControl is in \"first person\" mode.\n\nIn \"first person\" mode (disabled by default) the look position rotates about the eye position. Otherwise,\nthe eye rotates about the look.\n\nFires a {{#crossLink \"KeyboardRotateCamera/firstPerson:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "firstPerson",
+            "default": "false",
+            "type": "Boolean",
+            "class": "CameraControl",
+            "module": "xeogl",
+            "submodule": "controls"
+        },
+        {
+            "file": "src/controls/cameraControl.new.js",
+            "line": 154,
+            "description": "Fired whenever this CameraControl's {{#crossLink \"CameraControl/firstPerson:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "firstPerson",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "CameraControl",
+            "module": "xeogl",
+            "submodule": "controls"
+        },
+        {
+            "file": "src/controls/cameraControl.new.js",
+            "line": 167,
+            "description": "Flag which indicates whether this CameraControl is in \"walking\" mode.\n\nWhen set true, this constrains eye movement to the horizontal X-Z plane. When doing a walkthrough,\nthis is useful to allow us to look upwards or downwards as we move, while keeping us moving in the\nhorizontal plane.\n\nThis only has an effect when also in \"first person\" mode.\n\nFires a {{#crossLink \"KeyboardRotateCamera/walking:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "walking",
+            "default": "false",
+            "type": "Boolean",
+            "class": "CameraControl",
+            "module": "xeogl",
+            "submodule": "controls"
+        },
+        {
+            "file": "src/controls/cameraControl.new.js",
+            "line": 190,
+            "description": "Fired whenever this CameraControl's {{#crossLink \"CameraControl/walking:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "walking",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "CameraControl",
+            "module": "xeogl",
+            "submodule": "controls"
+        },
+        {
+            "file": "src/controls/cameraControl.new.js",
+            "line": 203,
+            "description": "TODO\nFires a {{#crossLink \"KeyboardRotateCamera/doublePickFlyTo:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "doublePickFlyTo",
+            "default": "true",
+            "type": "Boolean",
+            "class": "CameraControl",
+            "module": "xeogl",
+            "submodule": "controls"
+        },
+        {
+            "file": "src/controls/cameraControl.new.js",
+            "line": 219,
+            "description": "Fired whenever this CameraControl's {{#crossLink \"CameraControl/doublePickFlyTo:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "doublePickFlyTo",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "CameraControl",
+            "module": "xeogl",
+            "submodule": "controls"
+        },
+        {
+            "file": "src/controls/cameraControl.new.js",
+            "line": 233,
+            "description": "A fact in range [0..1] indicating how much the camera keeps moving after you finish\npanning or rotating it.\n\nA value of 0.0 causes it to immediately stop, 0.5 causes its movement to decay 50% on each tick,\nwhile 1.0 causes no decay, allowing it continue moving, by the current rate of pan or rotation.\n\nYou may choose an inertia of zero when you want be able to precisely position or rotate the camera,\nwithout interference from inertia. ero inertia can also mean that less frames are rendered while\nyou are positioning the camera.\n\nFires a {{#crossLink \"KeyboardRotateCamera/inertia:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "inertia",
+            "default": "0.5",
+            "type": "Number",
+            "class": "CameraControl",
+            "module": "xeogl",
+            "submodule": "controls"
+        },
+        {
+            "file": "src/controls/cameraControl.new.js",
+            "line": 256,
+            "description": "Fired whenever this CameraControl's {{#crossLink \"CameraControl/inertia:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "inertia",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "CameraControl",
+            "module": "xeogl",
+            "submodule": "controls"
+        },
+        {
+            "file": "src/controls/cameraControl.new.js",
+            "line": 269,
+            "description": "TODO\nFires a {{#crossLink \"KeyboardRotateCamera/keyboardLayout:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "keyboardLayout",
+            "default": "\"qwerty\"",
+            "type": "String",
+            "class": "CameraControl",
+            "module": "xeogl",
+            "submodule": "controls"
+        },
+        {
+            "file": "src/controls/cameraControl.new.js",
+            "line": 285,
+            "description": "Fired whenever this CameraControl's {{#crossLink \"CameraControl/keyboardLayout:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "keyboardLayout",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "CameraControl",
+            "module": "xeogl",
+            "submodule": "controls"
+        },
+        {
+            "file": "src/controls/cameraControl.new.js",
+            "line": 958,
+            "description": "Fired whenever the pointer no longer hovers over an {{#crossLink \"Entity\"}}{{/crossLink}}.",
+            "itemtype": "event",
+            "name": "hoverOut",
+            "params": [
+                {
+                    "name": "entity",
+                    "description": "The Entity"
+                }
+            ],
+            "class": "CameraControl",
+            "module": "xeogl",
+            "submodule": "controls"
+        },
+        {
+            "file": "src/controls/cameraControl.new.js",
+            "line": 968,
+            "description": "Fired continuously while the pointer is moving while hovering over an {{#crossLink \"Entity\"}}{{/crossLink}}.",
+            "itemtype": "event",
+            "name": "hover",
+            "params": [
+                {
+                    "name": "hit",
+                    "description": "A pick hit result containing the ID of the Entity - see }{{/crossLink}}.",
+                    "type": "#crossLink \"Scene/pick:method\""
+                }
+            ],
+            "class": "CameraControl",
+            "module": "xeogl",
+            "submodule": "controls"
+        },
+        {
+            "file": "src/controls/cameraControl.new.js",
+            "line": 979,
+            "description": "Fired while the pointer hovers over the surface of an {{#crossLink \"Entity\"}}{{/crossLink}}.\n\nThis event provides 3D information about the point on the surface that the pointer is\nhovering over.",
+            "itemtype": "event",
+            "name": "hoverSurface",
+            "params": [
+                {
+                    "name": "hit",
+                    "description": "A surface pick hit result, containing the ID of the Entity and 3D info on the\nsurface possition - see }{{/crossLink}}.",
+                    "type": "#crossLink \"Scene/pick:method\""
+                }
+            ],
+            "class": "CameraControl",
+            "module": "xeogl",
+            "submodule": "controls"
+        },
+        {
+            "file": "src/controls/cameraControl.new.js",
+            "line": 993,
+            "description": "Fired whenever the pointer no longer hovers over an {{#crossLink \"Entity\"}}{{/crossLink}}.",
+            "itemtype": "event",
+            "name": "hoverOut",
+            "params": [
+                {
+                    "name": "entity",
+                    "description": "The Entity"
+                }
+            ],
+            "class": "CameraControl",
+            "module": "xeogl",
+            "submodule": "controls"
+        },
+        {
+            "file": "src/controls/cameraControl.new.js",
+            "line": 1003,
+            "description": "Fired continuously while the pointer is moving but not hovering over anything.",
+            "itemtype": "event",
+            "name": "hoverOff",
+            "class": "CameraControl",
+            "module": "xeogl",
+            "submodule": "controls"
+        },
+        {
+            "file": "src/controls/cameraControl.new.js",
+            "line": 1092,
+            "description": "Fired whenever the pointer has picked (ie. clicked or tapped) an {{#crossLink \"Entity\"}}{{/crossLink}}.",
+            "itemtype": "event",
+            "name": "picked",
+            "params": [
+                {
+                    "name": "hit",
+                    "description": "A surface pick hit result containing the ID of the Entity - see }{{/crossLink}}.",
+                    "type": "#crossLink \"Scene/pick:method\""
+                }
+            ],
+            "class": "CameraControl",
+            "module": "xeogl",
+            "submodule": "controls"
+        },
+        {
+            "file": "src/controls/cameraControl.new.js",
+            "line": 1101,
+            "description": "Fired when the pointer has picked (ie. clicked or tapped) the surface of an {{#crossLink \"Entity\"}}{{/crossLink}}.\n\nThis event provides 3D information about the point on the surface that the pointer has picked.",
+            "itemtype": "event",
+            "name": "pickedSurface",
+            "params": [
+                {
+                    "name": "hit",
+                    "description": "A surface pick hit result, containing the ID of the Entity and 3D info on the\nsurface possition - see }{{/crossLink}}.",
+                    "type": "#crossLink \"Scene/pick:method\""
+                }
+            ],
+            "class": "CameraControl",
+            "module": "xeogl",
+            "submodule": "controls"
+        },
+        {
+            "file": "src/controls/cameraControl.new.js",
+            "line": 1114,
+            "description": "Fired when the pointer attempted a pick (ie. clicked or tapped), but has hit nothing.",
+            "itemtype": "event",
+            "name": "pickedNothing",
+            "class": "CameraControl",
+            "module": "xeogl",
+            "submodule": "controls"
+        },
+        {
+            "file": "src/controls/cameraControl.new.js",
+            "line": 1157,
+            "description": "Fired whenever the pointer has double-picked (ie. double-clicked or double-tapped) an {{#crossLink \"Entity\"}}{{/crossLink}}.",
+            "itemtype": "event",
+            "name": "picked",
+            "params": [
+                {
+                    "name": "hit",
+                    "description": "A surface pick hit result containing the ID of the Entity - see }{{/crossLink}}.",
+                    "type": "#crossLink \"Scene/pick:method\""
+                }
+            ],
+            "class": "CameraControl",
+            "module": "xeogl",
+            "submodule": "controls"
+        },
+        {
+            "file": "src/controls/cameraControl.new.js",
+            "line": 1165,
+            "description": "Fired when the pointer has double-picked (ie. double-clicked or double-tapped) the surface of an {{#crossLink \"Entity\"}}{{/crossLink}}.\n\nThis event provides 3D information about the point on the surface that the pointer has picked.",
+            "itemtype": "event",
+            "name": "doublePickedSurface",
+            "params": [
+                {
+                    "name": "hit",
+                    "description": "A surface pick hit result, containing the ID of the Entity and 3D info on the\nsurface possition - see }{{/crossLink}}.",
+                    "type": "#crossLink \"Scene/pick:method\""
+                }
+            ],
+            "class": "CameraControl",
+            "module": "xeogl",
+            "submodule": "controls"
+        },
+        {
+            "file": "src/controls/cameraControl.new.js",
+            "line": 1181,
             "description": "Fired when the pointer attempted a double-pick (ie. double-clicked or double-tapped), but has hit nothing.",
             "itemtype": "event",
             "name": "doublePickedNothing",
@@ -21488,14 +21823,6 @@
         }
     ],
     "warnings": [
-        {
-            "message": "replacing incorrect tag: returns with return",
-            "line": " src/camera/camera.js:871"
-        },
-        {
-            "message": "replacing incorrect tag: returns with return",
-            "line": " src/camera/camera.js:918"
-        },
         {
             "message": "replacing incorrect tag: returns with return",
             "line": " src/canvas/canvas.js:492"
