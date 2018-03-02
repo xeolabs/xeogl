@@ -356,8 +356,6 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
             }
 
-            // Render opaque, non-outlined objects
-
             var numOpaqueGhostFillObjects = 0;
             var numOpaqueGhostVerticesObjects = 0;
             var numOpaqueGhostEdgesObjects = 0;
@@ -539,7 +537,7 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
                     // Premultiplied alpha:
-                     //gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+                    //gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
                 } else {
 
                     gl.blendEquation(gl.FUNC_ADD);
@@ -589,7 +587,35 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                 gl.disable(gl.BLEND);
             }
 
+            if (numOpaqueHighlightFillObjects > 0 || numOpaqueHighlightEdgesObjects > 0 || numOpaqueHighlightVerticesObjects > 0) {
+
+                // Render opaque highlighted objects
+
+                frame.lastProgramId = null;
+                gl.clear(gl.DEPTH_BUFFER_BIT);
+
+                if (numOpaqueHighlightVerticesObjects > 0) {
+                    for (i = 0; i < numOpaqueHighlightVerticesObjects; i++) {
+                        opaqueHighlightVerticesObjects[i].drawHighlightVertices(frame);
+                    }
+                }
+
+                if (numOpaqueHighlightEdgesObjects > 0) {
+                    for (i = 0; i < numOpaqueHighlightEdgesObjects; i++) {
+                        opaqueHighlightEdgesObjects[i].drawHighlightEdges(frame);
+                    }
+                }
+
+                if (numOpaqueHighlightFillObjects > 0) {
+                    for (i = 0; i < numOpaqueHighlightFillObjects; i++) {
+                        opaqueHighlightFillObjects[i].drawHighlightFill(frame);
+                    }
+                }
+            }
+
             if (numTransparentHighlightFillObjects > 0 || numTransparentHighlightEdgesObjects > 0 || numTransparentHighlightVerticesObjects > 0) {
+
+                // Render transparent highlighted objects
 
                 frame.lastProgramId = null;
 
@@ -597,11 +623,7 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                 gl.enable(gl.CULL_FACE);
                 gl.enable(gl.BLEND);
                 gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-
-                // gl.blendEquation(gl.FUNC_ADD);
-                // gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-
-                // Render transparent highlighted objects
+                //          gl.disable(gl.DEPTH_TEST);
 
                 if (numTransparentHighlightVerticesObjects > 0) {
                     for (i = 0; i < numTransparentHighlightVerticesObjects; i++) {
@@ -622,30 +644,7 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                 }
 
                 gl.disable(gl.BLEND);
-            }
-
-
-            if (numOpaqueHighlightFillObjects > 0 || numOpaqueHighlightEdgesObjects > 0 || numOpaqueHighlightVerticesObjects > 0) {
-
-                // Render opaque highlighted objects
-
-                if (numOpaqueHighlightVerticesObjects > 0) {
-                    for (i = 0; i < numOpaqueHighlightVerticesObjects; i++) {
-                        opaqueHighlightVerticesObjects[i].drawHighlightVertices(frame);
-                    }
-                }
-
-                if (numOpaqueHighlightEdgesObjects > 0) {
-                    for (i = 0; i < numOpaqueHighlightEdgesObjects; i++) {
-                        opaqueHighlightEdgesObjects[i].drawHighlightEdges(frame);
-                    }
-                }
-
-                if (numOpaqueHighlightFillObjects > 0) {
-                    for (i = 0; i < numOpaqueHighlightFillObjects; i++) {
-                        opaqueHighlightFillObjects[i].drawHighlightFill(frame);
-                    }
-                }
+                //        gl.enable(gl.DEPTH_TEST);
             }
 
             var endTime = Date.now();
