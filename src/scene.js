@@ -14,7 +14,7 @@
  * [Emphasis effects](#emphasis-effects)
  * [Picking](#picking)
  * [Pick masking](#pick-masking)
- * [Getting the World-space boundary](#getting-the-world-space-boundary]
+ * [Getting the World-space boundary](#getting-the-world-space-boundary)
  * [Controlling the viewport](#controlling-the-viewport)
  * [Controlling rendering](#controlling-rendering)
  * [Gamma correction](#gamma-correction)
@@ -24,17 +24,17 @@
  Creating a Scene with its own default canvas:
 
  ````javascript
- var scene = new Scene();
+ var scene = new xeogl.Scene();
  ````
 
  Creating a Scene with an existing canvas.
 
  ````javascript
- var scene2 = new Scene({
+ var scene2 = new xeogl.Scene({
     canvas: "myCanvas"
  });
 
- var scene3 = new Scene({
+ var scene3 = new xeogl.Scene({
     canvas: document.getElementById("myCanvas");
  });
  ````
@@ -303,8 +303,8 @@
  ````
 
  Getting the collective World-space axis-aligned boundary of the {{#crossLink "Entity"}}Entities{{/crossLink}}
- and/or {{#crossLink "Model"}}Models{{/crossLink}} with the given IDs: 
- 
+ and/or {{#crossLink "Model"}}Models{{/crossLink}} with the given IDs:
+
  ````JavaScript
  scene.getAABB(); // Gets collective boundary of all entities in the scene
  scene.getAABB("saw"); // Gets collective boundary of all entities in saw model
@@ -312,7 +312,7 @@
  scene.getAABB("saw#0.1"); // Get boundary of an entity in the saw model
  scene.getAABB(["saw#0.1", "saw#0.2"]); // Get collective boundary of two entities in saw model
  ````
- 
+
  ### Managing the viewport
 
  The Scene's {{#crossLink "Viewport"}}{{/crossLink}} component manages the WebGL viewport:
@@ -1811,12 +1811,12 @@
         })(),
 
         /**
-         Convenience method which returns the collective axis-aligned boundary of the {{#crossLink "Entity"}}Entities{{/crossLink}} 
+         Convenience method which returns the collective axis-aligned boundary of the {{#crossLink "Entity"}}Entities{{/crossLink}}
          and/or {{#crossLink "Model"}}Models{{/crossLink}} with the given IDs.
 
          When no arguments are given, returns the total boundary of all objects in the scene.
 
-         Only {{#crossLink "Entity"}}Entities{{/crossLink}} with {{#crossLink "Entity/collidable:property"}}collidable{{/crossLink}} 
+         Only {{#crossLink "Entity"}}Entities{{/crossLink}} with {{#crossLink "Entity/collidable:property"}}collidable{{/crossLink}}
          set ````true```` are included in the boundary.
          
          ## Usage
