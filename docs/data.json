@@ -179,6 +179,15 @@
             "fors": {},
             "namespaces": {}
         },
+        "src/entities/object.js": {
+            "name": "src/entities/object.js",
+            "modules": {},
+            "classes": {
+                "Object": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
         "src/geometry/_module.js": {
             "name": "src/geometry/_module.js",
             "modules": {
@@ -1059,6 +1068,7 @@
                 "Clips": 1,
                 "CameraControl": 1,
                 "Entity": 1,
+                "Object": 1,
                 "AABBGeometry": 1,
                 "BoxGeometry": 1,
                 "CylinderGeometry": 1,
@@ -1229,7 +1239,8 @@
             },
             "classes": {
                 "SplineCurveHelper": 1,
-                "Entity": 1
+                "Entity": 1,
+                "Object": 1
             },
             "fors": {},
             "is_submodule": 1,
@@ -2114,7 +2125,7 @@
             "namespace": "",
             "file": "src/entities/entity.js",
             "line": 1,
-            "description": "An **Entity** is a 3D object within a {{#crossLink \"Scene\"}}Scene{{/crossLink}}.\n\n## Overview\n\n* An Entity represents a WebGL draw call.\n* Each Entity has six components: {{#crossLink \"Geometry\"}}{{/crossLink}}, {{#crossLink \"Material\"}}{{/crossLink}},\n{{#crossLink \"Transform\"}}{{/crossLink}}, {{#crossLink \"GhostMaterial\"}}{{/crossLink}},\n{{#crossLink \"OutlineMaterial\"}}{{/crossLink}} and {{#crossLink \"HighlightMaterial\"}}{{/crossLink}}.\n* By default, Entities in the same Scene share the same \"global\" flyweight instances of those components amongst themselves. The default\ncomponent instances are provided by the {{#crossLink \"Scene\"}}{{/crossLink}}'s {{#crossLink \"Scene/geometry:property\"}}{{/crossLink}},\n{{#crossLink \"Scene/material:property\"}}{{/crossLink}}, {{#crossLink \"Scene/transform:property\"}}{{/crossLink}},\n{{#crossLink \"Scene/ghostMaterial:property\"}}{{/crossLink}}, {{#crossLink \"Scene/outlineMaterial:property\"}}{{/crossLink}},\n{{#crossLink \"Scene/highlightMaterial:property\"}}{{/crossLink}} properties, respectively.\n* An Entity with all defaults is a white unit-sized box centered at the World-space origin.\n* Customize your Entities by attaching your own instances of those component types, to override the defaults as needed.\n* For best performance, reuse as many of the same component instances among your Entities as possible.\n\n## Usage\n\n* [Creating an Entity](#creating-an-entity)\n* [Controlling visibility](#controlling-visibility)\n* [Controlling clipping](#controlling-clipping)\n* [Controlling rendering order](#controlling-rendering-order)\n* [Geometry](#geometry)\n* [Material](#material)\n* [Transforming](#transforming)\n* [Ghosting](#ghosting)\n* [Highlighting](#highlighting)\n* [Outlining](#outlining)\n* [Local-space boundary](#local-space-boundary)\n* [World-space boundary](#world-space-boundary)\n* [Skyboxing](#skyboxing)\n* [Billboarding](#billboarding)\n* [Shadows](#shadows) TODO\n\n### Creating an Entity\n\nCreating a minimal Entity that has all the default components:\n\n<img src=\"../../assets/images/screenshots/Scene/defaultEntity.png\"></img>\n\n````javascript\nvar entity = new xeogl.Entity(); // A white unit-sized box centered at the World-space origin\n````\n\nSince our Entity has all the default components, we can get those off either the Entity or its Scene:\n\n````javascript\nentity.material.diffuse = [1.0, 0.0, 0.0];  // This is the same Material component...\n\nvar scene = entity.scene;\nscene.material.diffuse  = [1.0, 0.0, 0.0];  // ...as this one.\n````\n\nIn practice, we would provide (at least) our own Geometry and Material for the Entity:\n\n<a href=\"../../examples/#geometry_primitives_teapot\"><img src=\"../../assets/images/screenshots/Scene/teapot.png\"></img></a>\n\n````javascript\nvar entity = new xeogl.Entity({\n    geometry: new xeogl.TeapotGeometry(),\n    material: new xeogl.MetallicMaterial({\n        baseColor: [1.0, 1.0, 1.0]\n    })\n});\n````\n\n### Controlling visibility\n\nShow or hide an Entity by setting its {{#crossLink \"Entity/visible:property\"}}{{/crossLink}} property:\n\n````javascript\nentity.visible = false; // Hide\nentity.visible = true; // Show (default)\n````\n\n### Controlling clipping\n\nBy default, an Entity will be clipped by the\nScene's {{#crossLink \"Scene/clips:property\"}}clipping planes{{/crossLink}} (if you've created some).\n\nMake an Entity unclippable by setting its {{#crossLink \"Entity/clippable:property\"}}{{/crossLink}} property false:\n\n````javascript\nentity.clippable = false; // Default is true\n````\n\n### Controlling rendering order\n\nControl the order in which an Entity is rendered relative to others by setting its {{#crossLink \"Entity/layer:property\"}}{{/crossLink}}\nproperty. You would normally do this when you need to ensure that transparent Entities are rendered in back-to-front order for correct alpha blending.\n\nAssign entity to layer 0 (all Entities are in layer 0 by default):\n\n````javascript\nentity.layer = 0;\n````\n\nCreate another Entity in a higher layer, that will get rendered after layer 0:\n\n````javascript\nvar entity2 = new xeogl.Entity({\n    geometry: new xeogl.Sphere(),\n    layer: 1\n});\n````\n\n### Geometry\n\nAn Entity has a {{#crossLink \"Geometry\"}}{{/crossLink}} which describes its shape. When we don't provide it with a\nGeometry, it will have the Scene's {{#crossLink \"Scene/geometry:property\"}}{{/crossLink}} by default.\n\nCreating an Entity with its own Geometry:\n\n````javascript\nvar entity = new xeogl.Entity({\n    geometry: new xeogl.TeapotGeometry()\n});\n````\n\nDynamically replacing the Geometry:\n\n````javascript\nentity.geometry = new xeogl.CylinderGeometry();\n````\n\nGetting geometry arrays:\n\n````javascript\nver geometry = entity.geometry;\n\nvar primitive = geometry,primitive;        // Default is \"triangles\"\nvar positions = geometry.positions;        // Local-space vertex positions\nvar normals = geometry.normals;            // Local-space vertex Normals\nvar uv = geometry.uv;                      // UV coordinates\nvar indices = entity.geometry.indices;     // Vertex indices for pimitives\n````\n\nThe Entity also has a convenience property which provides the vertex positions in World-space, ie. after they have been\ntransformed by the Entity's Transform:\n\n````javascript\n// These are internally generated on-demand and cached. To free the cached\n// vertex World positions when you're done with them, set this property to null or undefined\nvar worldPositions = entity.worldPositions;\n````\n\n### Material\n\nAn Entity has a {{#crossLink \"Material\"}}{{/crossLink}}, which describes its appearance. When we don't provide it with\na Material, it will have the Scene's {{#crossLink \"Scene/material:property\"}}{{/crossLink}} by default.\n\nCreating an Entity with its own custom Geometry and Material:\n\n````javascript\nvar entity = new xeogl.Entity({\n    geometry: new xeogl.TeapotGeometry(),\n    material: new xeogl.MetallicMaterial({\n        baseColor: [0.0, 0.0, 1.0],\n        metallic: 1.0,\n        roughness: 1.0,\n        emissive: [0.0, 0.0, 0.0],\n        alpha: 1.0\n    })\n});\n````\n\nDynamically replacing the Material:\n\n````javascript\nentity.material = new xeogl.SpecularMaterial({\n    diffuse: [1.0, 1.0, 1.0],\n    specular: [1.0, 1.0, 1.0],\n    glossiness: 1.0,\n    emissive: [0.0, 0.0, 0.0]\n    alpha: 1.0\n})\n````\n\nAnimating the Material's diffuse color - making the Entity rapidly pulse red:\n\n````javascript\nentity.scene.on(\"tick\", function(e) {\n   var t = e.time - e.startTime; // Millisecs\n   entity.material.diffuse = [0.5 + Math.sin(t * 0.01), 0.0, 0.0]; // RGB\n});\n````\n\n### Transforming\n\nAn Entity has a {{#crossLink \"Transform\"}}{{/crossLink}}, which positions, sizes and orients it within the World-space\ncoordinate system. When we don't provide it with a Transform, it will have the Scene's {{#crossLink \"Scene/transform:property\"}}{{/crossLink}}\nby default (which is the identity transform unless modified).\n\nTransforms can also be connected into hierarchies.\n\nCreating an Entity with its own Geometry and Transform hierarchy:\n\n````javascript\nvar entity = new xeogl.Entity({\n\n    geometry: new xeogl.TGeometry(),\n\n    transform: new xeogl.Translate({eapot\n       xyz: [-5, 0, 0],\n       parent: new xeogl.Rotate({\n           xyz: [0,1,0],\n           angle: 45\n       })\n    })\n});\n````\n\nDynamically replacing the Entity's Transform hierarchy:\n\n````javascript\nentity.transform = new xeogl.Rotate({\n    xyz: [0,1,0],\n    angle: 45\n    parent: new xeogl.Rotate({\n        xyz: [1,0,0],\n        angle: 180\n    })\n});\n````\n\nAnimating the Transform hierarchy:\n\n````javascript\nentity.scene.on(\"tick\", function() {\n   entity.transform.angle += 0.5;\n   entity.transform.parent.angle += 0.5;\n});\n````\n\n### Ghosting\n\nGhost an Entity by setting its {{#crossLink \"Entity/ghost:property\"}}{{/crossLink}} property true. The Entity's\n{{#crossLink \"GhostMaterial\"}}{{/crossLink}} then controls its appearance while ghosted.\n\nWhen we don't provide it with a GhostMaterial, it will have the Scene's {{#crossLink \"Scene/ghostMaterial:property\"}}{{/crossLink}}\nby default.\n\nIn the example below, we'll create a ghosted Entity with its own GhostMaterial.\n\n<a href=\"../../examples/#effects_ghost\"><img src=\"../../assets/images/screenshots/HighlightMaterial/teapot.png\"></img></a>\n\n````javascript\nvar entity = new xeogl.Entity({\n   geometry: new xeogl.TeapotGeometry(),\n   material: new xeogl.PhongMaterial({\n       diffuse: [0.2, 0.2, 1.0]\n   }),\n   ghostMaterial: new xeogl.GhostMaterial({\n       edges: true,\n       edgeColor: [0.2, 1.0, 0.2],\n       edgeAlpha: 1.0,\n       edgeWidth: 2,\n       vertices: true,\n       vertexColor: [0.6, 1.0, 0.6],\n       vertexAlpha: 1.0,\n       vertexSize: 8,\n       fill: true,\n       fillColor: [0, 0, 0],\n       fillAlpha: 0.7\n   }),\n   ghost: true\n});\n````\n\n#### Examples\n\n* [Ghosted teapot](../../examples/#effects_ghost)\n\n### Highlighting\n\nHighlight an Entity by setting its {{#crossLink \"Entity/highlight:property\"}}{{/crossLink}} property true. The Entity's\n{{#crossLink \"HighlightMaterial\"}}{{/crossLink}} then controls its appearance while highlighted.\n\nWhen we don't provide it with a HighlightMaterial, it will have the Scene's {{#crossLink \"Scene/highlightMaterial:property\"}}{{/crossLink}}\nby default.\n\nIn the example below, we'll create a highlighted Entity with its own HighlightMaterial.\n\n<a href=\"../../examples/#effects_highlight\"><img src=\"../../assets/images/screenshots/HighlightMaterial/teapotHighlighted.png\"></img></a>\n\n````javascript\nvar entity = new xeogl.Entity({\n   geometry: new xeogl.TeapotGeometry(),\n   material: new xeogl.PhongMaterial({\n       diffuse: [0.2, 0.2, 1.0]\n   }),\n   highlightMaterial: new xeogl.HighlightMaterial({\n       color: [1.0, 1.0, 0.0],\n       alpha: 0.6\n   }),\n   highlight: true\n});\n````\n\n#### Examples\n\n* [Ghost and highlight effects](../../examples/#effects_demo_gearbox)\n\n### Outlining\n\nOutline an Entity by setting its {{#crossLink \"Entity/outline:property\"}}{{/crossLink}} property true. The Entity's\n{{#crossLink \"OutlineMaterial\"}}{{/crossLink}} then controls its appearance while outlined.\n\nWhen we don't provide it with an OutlineMaterial, it will have the Scene's {{#crossLink \"Scene/outlineMaterial:property\"}}{{/crossLink}}\nby default.\n\nIn the example below, we'll create a outlineed Entity with its own OutlineMaterial.\n\n<a href=\"../../examples/#effects_outline\"><img src=\"../../assets/images/screenshots/OutlineMaterial/teapot.png\"></img></a>\n\n````javascript\nvar entity = new xeogl.Entity({\n   geometry: new xeogl.TeapotGeometry(),\n   material: new xeogl.PhongMaterial({\n       diffuse: [0.2, 0.2, 1.0]\n   }),\n   outlineMaterial: new xeogl.OutlineMaterial({\n       color: [1.0, 1.0, 0.0],\n       alpha: 0.6,\n       width: 5\n   }),\n   outline: true\n});\n````\n\n### Local-space boundary\n\nWe can get an Entity's Local-space boundary at any time, as both an axis-aligned bounding box (AABB) and\nan object-aligned bounding box (OBB).\n\nThe Local-space boundary is the boundary of the Entity's Geometry, without any transforms applied.\n\nGetting the Local-space boundary as an AABB:\n\n````\nvar aabb = entity.geometry.aabb; // [xmin, ymin, zmin, xmax, ymax, zmax]\n````\n\nGetting the Local-space boundary as an OBB:\n\n```` javascript\nvar obb = entity.geometry.obb; // Flat array containing eight 3D corner vertices of a box\n````\n\n#### Examples\n\n* [Local-space Geometry AABB](../../examples/#boundaries_geometry_aabb)\n* [Local-space Geometry OBB](../../examples/#boundaries_geometry_obb)\n\n### World-space boundary\n\nWe can get an Entity's World-space boundary at any time, as both an axis-aligned bounding box (AABB) and\nan object-aligned bounding box (OBB).\n\nThe World-space boundary is the boundary of the Entity's Geometry after the Entity's Transform has been applied to it.\n\nGetting the World-space boundary as an AABB:\n\n````javascript\nvar aabb = entity.aabb; // [xmin, ymin, zmin, xmax, ymax, zmax]\n````\n\nGetting the World-space boundary as an OBB:\n\n```` javascript\nvar obb = entity.obb; // Flat array containing eight 3D corner vertices of a box\n````\n\nSubscribing to updates of the World-space boundary, which occur whenever the Entity's Transform or Geometry have been updated.\n\n````javascript\nentity.on(\"boundary\", function() {\n    var aabb = entity.aabb;\n    var obb = entity.obb;\n});\n````\n\nAn Entity's {{#crossLink \"Scene\"}}{{/crossLink}} also has an {{#crossLink \"Scene/getAABB:method\"}}{{/crossLink}}, which returns\nthe collective World-space axis-aligned boundary of the {{#crossLink \"Entity\"}}Entities{{/crossLink}}\nand/or {{#crossLink \"Model\"}}Models{{/crossLink}} with the given IDs:\n\n````JavaScript\nvar scene = entity.scene;\n\nscene.getAABB(); // Gets collective boundary of all entities in the viewer\nscene.getAABB(\"saw\"); // Gets collective boundary of all entities in a model\nscene.getAABB([\"saw\", \"gearbox\"]); // Gets collective boundary of all entities in two models\nscene.getAABB(\"saw#0.1\"); // Get boundary of an entity\nscene.getAABB([\"saw#0.1\", \"saw#0.2\"]); // Get collective boundary of two entities\n````\n\n#### Excluding from boundary calculations\n\nThe {{#crossLink \"Scene/aabb:property\"}}Scene aabb{{/crossLink}}\nand {{#crossLink \"Model/aabb:property\"}}Model aabb{{/crossLink}} properties provide AABBs that include the boundaries of all\ncontained Entities, except those Entities that have their {{#crossLink \"Entity/collidable:property\"}}collidable{{/crossLink}} properties set ````false````.\n\nToggle that inclusion like so:\n\n````javascript\nentity.collidable = false; // Exclude entity from calculation of its Scene/Model boundary\nentity.collidable = true; // Include entity in calculation of its Scene/Model boundary\n````\nSetting this false is useful when an Entity represents some object, such as a control gizmo, that you don't want to consider as\nbeing a contributor to a Scene or Model boundary. It also helps performance, since boundaries will not need dynamically re-calculated\nwhenever the Entity's boundary changes after a Transform or Geometry update.\n\n#### Examples\n\n* [World-space Entity AABB](../../examples/#boundaries_entity_aabb)\n* [World-space Entity OBB](../../examples/#boundaries_entity_obb)\n\n### Skyboxing\n\nAn Entity has a {{#crossLink \"Entity/stationary:property\"}}{{/crossLink}} property\nthat will cause it to never translate with respect to the viewpoint, while still rotationg, as if always far away.\n\nThis is useful for using Entities as skyboxes, like this:\n\n````javascript\nnew xeogl.Entity({\n\n    geometry: new xeogl.BoxGeometry({\n        xSize: 1000,\n        ySize: 1000,\n        zSize: 1000\n    }),\n\n    material: new xeogl.PhongMaterial({\n        diffuseMap: new xeogl.Texture({\n           src: \"textures/diffuse/uvGrid2.jpg\"\n        })\n    }),\n\n    stationary: true // Locks position with respect to viewpoint\n});\n````\n\n#### Examples\n\n* [Skybox component](../../examples/#skyboxes_skybox)\n* [Custom skybox](../../examples/#skyboxes_skybox_custom)\n\n### Billboarding\n\nAn Entity has a {{#crossLink \"Entity/billboard:property\"}}{{/crossLink}} property\nthat can make it behave as a billboard.\n\nTwo billboard types are supported:\n\n* **Spherical** billboards are free to rotate their Entities in any direction and always face the {{#crossLink \"Camera\"}}{{/crossLink}} perfectly.\n* **Cylindrical** billboards rotate their Entities towards the {{#crossLink \"Camera\"}}{{/crossLink}}, but only about the Y-axis.\n\nNote that {{#crossLink \"Scale\"}}{{/crossLink}} transformations to have no effect on billboarded Entities.\n\nThe example below shows a box that remains rotated directly towards the viewpoint, using spherical billboarding:\n\n````javascript\nnew xeogl.Entity({\n\n    geometry: new xeogl.BoxGeometry(),\n\n    material: new xeogl.PhongMaterial({\n        diffuseMap: new xeogl.Texture({\n           src: \"textures/diffuse/uvGrid2.jpg\"\n        })\n    }),\n\n    billboard: \"spherical\" // Or \"cylindrical\"\n});\n````\n\n#### Examples\n\n* [Spherical billboards](../../examples/#billboards_spherical)\n* [Cylindrical billboards](../../examples/#billboards_cylindrical)\n* [Clouds using billboards](../../examples/#billboards_spherical_clouds)\n\n\n### Shadows\n\n[Work-in-progress]",
+            "description": "An **Entity** is a 3D object within a {{#crossLink \"Scene\"}}Scene{{/crossLink}}.\n\n## Overview\n\n* An Entity represents a WebGL draw call.\n* Each Entity has six components: {{#crossLink \"Geometry\"}}{{/crossLink}}, {{#crossLink \"Material\"}}{{/crossLink}},\n{{#crossLink \"Transform\"}}{{/crossLink}}, a {{#crossLink \"GhostMaterial\"}}{{/crossLink}} for ghosting, a {{#crossLink \"GhostMaterial\"}}{{/crossLink}} for highlighting,\nand a {{#crossLink \"OutlineMaterial\"}}{{/crossLink}} for outlining.\n* By default, Entities in the same Scene share the same \"global\" flyweight instances of those components amongst themselves. The default\ncomponent instances are provided by the {{#crossLink \"Scene\"}}{{/crossLink}}'s {{#crossLink \"Scene/geometry:property\"}}{{/crossLink}},\n{{#crossLink \"Scene/material:property\"}}{{/crossLink}}, {{#crossLink \"Scene/transform:property\"}}{{/crossLink}},\n{{#crossLink \"Scene/ghostMaterial:property\"}}{{/crossLink}}, {{#crossLink \"Scene/outlineMaterial:property\"}}{{/crossLink}},\n{{#crossLink \"Scene/highlightMaterial:property\"}}{{/crossLink}} properties, respectively.\n* An Entity with all defaults is a white unit-sized box centered at the World-space origin.\n* Customize your Entities by attaching your own instances of those component types, to override the defaults as needed.\n* For best performance, reuse as many of the same component instances among your Entities as possible.\n\n## Usage\n\n* [Creating an Entity](#creating-an-entity)\n* [Controlling visibility](#controlling-visibility)\n* [Controlling clipping](#controlling-clipping)\n* [Controlling rendering order](#controlling-rendering-order)\n* [Geometry](#geometry)\n* [Material](#material)\n* [Transforming](#transforming)\n* [Ghosting](#ghosting)\n* [Highlighting](#highlighting)\n* [Outlining](#outlining)\n* [Local-space boundary](#local-space-boundary)\n* [World-space boundary](#world-space-boundary)\n* [Skyboxing](#skyboxing)\n* [Billboarding](#billboarding)\n* [Shadows](#shadows) TODO\n\n### Creating an Entity\n\nCreating a minimal Entity that has all the default components:\n\n<img src=\"../../assets/images/screenshots/Scene/defaultEntity.png\"></img>\n\n````javascript\nvar entity = new xeogl.Entity(); // A white unit-sized box centered at the World-space origin\n````\n\nSince our Entity has all the default components, we can get those off either the Entity or its Scene:\n\n````javascript\nentity.material.diffuse = [1.0, 0.0, 0.0];  // This is the same Material component...\n\nvar scene = entity.scene;\nscene.material.diffuse  = [1.0, 0.0, 0.0];  // ...as this one.\n````\n\nIn practice, we would provide (at least) our own Geometry and Material for the Entity:\n\n<a href=\"../../examples/#geometry_primitives_teapot\"><img src=\"../../assets/images/screenshots/Scene/teapot.png\"></img></a>\n\n````javascript\nvar entity = new xeogl.Entity({\n    geometry: new xeogl.TeapotGeometry(),\n    material: new xeogl.MetallicMaterial({\n        baseColor: [1.0, 1.0, 1.0]\n    })\n});\n````\n\n### Controlling visibility\n\nShow or hide an Entity by setting its {{#crossLink \"Entity/visible:property\"}}{{/crossLink}} property:\n\n````javascript\nentity.visible = false; // Hide\nentity.visible = true; // Show (default)\n````\n\n### Controlling clipping\n\nBy default, an Entity will be clipped by the\nScene's {{#crossLink \"Scene/clips:property\"}}clipping planes{{/crossLink}} (if you've created some).\n\nMake an Entity unclippable by setting its {{#crossLink \"Entity/clippable:property\"}}{{/crossLink}} property false:\n\n````javascript\nentity.clippable = false; // Default is true\n````\n\n### Controlling rendering order\n\nControl the order in which an Entity is rendered relative to others by setting its {{#crossLink \"Entity/layer:property\"}}{{/crossLink}}\nproperty. You would normally do this when you need to ensure that transparent Entities are rendered in back-to-front order for correct alpha blending.\n\nAssign entity to layer 0 (all Entities are in layer 0 by default):\n\n````javascript\nentity.layer = 0;\n````\n\nCreate another Entity in a higher layer, that will get rendered after layer 0:\n\n````javascript\nvar entity2 = new xeogl.Entity({\n    geometry: new xeogl.Sphere(),\n    layer: 1\n});\n````\n\n### Geometry\n\nAn Entity has a {{#crossLink \"Geometry\"}}{{/crossLink}} which describes its shape. When we don't provide it with a\nGeometry, it will have the Scene's {{#crossLink \"Scene/geometry:property\"}}{{/crossLink}} by default.\n\nCreating an Entity with its own Geometry:\n\n````javascript\nvar entity = new xeogl.Entity({\n    geometry: new xeogl.TeapotGeometry()\n});\n````\n\nDynamically replacing the Geometry:\n\n````javascript\nentity.geometry = new xeogl.CylinderGeometry();\n````\n\nGetting geometry arrays:\n\n````javascript\nver geometry = entity.geometry;\n\nvar primitive = geometry,primitive;        // Default is \"triangles\"\nvar positions = geometry.positions;        // Local-space vertex positions\nvar normals = geometry.normals;            // Local-space vertex Normals\nvar uv = geometry.uv;                      // UV coordinates\nvar indices = entity.geometry.indices;     // Vertex indices for pimitives\n````\n\nThe Entity also has a convenience property which provides the vertex positions in World-space, ie. after they have been\ntransformed by the Entity's Transform:\n\n````javascript\n// These are internally generated on-demand and cached. To free the cached\n// vertex World positions when you're done with them, set this property to null or undefined\nvar worldPositions = entity.worldPositions;\n````\n\n### Material\n\nAn Entity has a {{#crossLink \"Material\"}}{{/crossLink}}, which describes its appearance. When we don't provide it with\na Material, it will have the Scene's {{#crossLink \"Scene/material:property\"}}{{/crossLink}} by default.\n\nCreating an Entity with its own custom Geometry and Material:\n\n````javascript\nvar entity = new xeogl.Entity({\n    geometry: new xeogl.TeapotGeometry(),\n    material: new xeogl.MetallicMaterial({\n        baseColor: [0.0, 0.0, 1.0],\n        metallic: 1.0,\n        roughness: 1.0,\n        emissive: [0.0, 0.0, 0.0],\n        alpha: 1.0\n    })\n});\n````\n\nDynamically replacing the Material:\n\n````javascript\nentity.material = new xeogl.SpecularMaterial({\n    diffuse: [1.0, 1.0, 1.0],\n    specular: [1.0, 1.0, 1.0],\n    glossiness: 1.0,\n    emissive: [0.0, 0.0, 0.0]\n    alpha: 1.0\n})\n````\n\nAnimating the Material's diffuse color - making the Entity rapidly pulse red:\n\n````javascript\nentity.scene.on(\"tick\", function(e) {\n   var t = e.time - e.startTime; // Millisecs\n   entity.material.diffuse = [0.5 + Math.sin(t * 0.01), 0.0, 0.0]; // RGB\n});\n````\n\n### Transforming\n\nAn Entity has a {{#crossLink \"Transform\"}}{{/crossLink}}, which positions, sizes and orients it within the World-space\ncoordinate system. When we don't provide it with a Transform, it will have the Scene's {{#crossLink \"Scene/transform:property\"}}{{/crossLink}}\nby default (which is the identity transform unless modified).\n\nTransforms can also be connected into hierarchies.\n\nCreating an Entity with its own Geometry and Transform hierarchy:\n\n````javascript\nvar entity = new xeogl.Entity({\n\n    geometry: new xeogl.TGeometry(),\n\n    transform: new xeogl.Translate({eapot\n       xyz: [-5, 0, 0],\n       parent: new xeogl.Rotate({\n           xyz: [0,1,0],\n           angle: 45\n       })\n    })\n});\n````\n\nDynamically replacing the Entity's Transform hierarchy:\n\n````javascript\nentity.transform = new xeogl.Rotate({\n    xyz: [0,1,0],\n    angle: 45\n    parent: new xeogl.Rotate({\n        xyz: [1,0,0],\n        angle: 180\n    })\n});\n````\n\nAnimating the Transform hierarchy:\n\n````javascript\nentity.scene.on(\"tick\", function() {\n   entity.transform.angle += 0.5;\n   entity.transform.parent.angle += 0.5;\n});\n````\n\n### Ghosting\n\nGhost an Entity by setting its {{#crossLink \"Entity/ghost:property\"}}{{/crossLink}} property true. The Entity's\n{{#crossLink \"GhostMaterial\"}}{{/crossLink}} then controls its appearance while ghosted.\n\nWhen we don't provide it with a GhostMaterial, it will have the Scene's {{#crossLink \"Scene/ghostMaterial:property\"}}{{/crossLink}}\nby default.\n\nIn the example below, we'll create a ghosted Entity with its own GhostMaterial.\n\n<a href=\"../../examples/#effects_ghost\"><img src=\"../../assets/images/screenshots/GhostMaterial/teapot.png\"></img></a>\n\n````javascript\nvar entity = new xeogl.Entity({\n   geometry: new xeogl.TeapotGeometry(),\n   material: new xeogl.PhongMaterial({\n       diffuse: [0.2, 0.2, 1.0]\n   }),\n   ghostMaterial: new xeogl.GhostMaterial({\n       edges: true,\n       edgeColor: [0.2, 1.0, 0.2],\n       edgeAlpha: 1.0,\n       edgeWidth: 2,\n       vertices: true,\n       vertexColor: [0.6, 1.0, 0.6],\n       vertexAlpha: 1.0,\n       vertexSize: 8,\n       fill: true,\n       fillColor: [0, 0, 0],\n       fillAlpha: 0.7\n   }),\n   ghost: true\n});\n````\n\n#### Examples\n\n* [Ghosted teapot](../../examples/#effects_ghost)\n\n### Highlighting\n\nHighlight an Entity by setting its {{#crossLink \"Entity/highlight:property\"}}{{/crossLink}} property true. The Entity's\nhighlighting {{#crossLink \"GhostMaterial\"}}{{/crossLink}} then controls its appearance while highlighted.\n\nWhen we don't provide it with a GhostMaterial for highlighting, it will have the Scene's {{#crossLink \"Scene/highlightMaterial:property\"}}{{/crossLink}}\nby default.\n\nIn the example below, we'll create a highlighted Entity with its own GhostMaterial.\n\n<a href=\"../../examples/#effects_highlight\"><img src=\"../../assets/images/screenshots/GhostMaterial/teapotHighlighted.png\"></img></a>\n\n````javascript\nvar entity = new xeogl.Entity({\n   geometry: new xeogl.TeapotGeometry(),\n   material: new xeogl.PhongMaterial({\n       diffuse: [0.2, 0.2, 1.0]\n   }),\n   highlightMaterial: new xeogl.GhostMaterial({\n       color: [1.0, 1.0, 0.0],\n       alpha: 0.6\n   }),\n   highlight: true\n});\n````\n\n#### Examples\n\n* [Ghost and highlight effects](../../examples/#effects_demo_gearbox)\n\n### Outlining\n\nOutline an Entity by setting its {{#crossLink \"Entity/outline:property\"}}{{/crossLink}} property true. The Entity's\n{{#crossLink \"OutlineMaterial\"}}{{/crossLink}} then controls its appearance while outlined.\n\nWhen we don't provide it with an OutlineMaterial, it will have the Scene's {{#crossLink \"Scene/outlineMaterial:property\"}}{{/crossLink}}\nby default.\n\nIn the example below, we'll create a outlined Entity with its own OutlineMaterial.\n\n<a href=\"../../examples/#effects_outline\"><img src=\"../../assets/images/screenshots/OutlineMaterial/teapot.png\"></img></a>\n\n````javascript\nvar entity = new xeogl.Entity({\n   geometry: new xeogl.TeapotGeometry(),\n   material: new xeogl.PhongMaterial({\n       diffuse: [0.2, 0.2, 1.0]\n   }),\n   outlineMaterial: new xeogl.OutlineMaterial({\n       color: [1.0, 1.0, 0.0],\n       alpha: 0.6,\n       width: 5\n   }),\n   outline: true\n});\n````\n\n### Local-space boundary\n\nWe can get an Entity's Local-space boundary at any time, as both an axis-aligned bounding box (AABB) and\nan object-aligned bounding box (OBB).\n\nThe Local-space boundary is the boundary of the Entity's Geometry, without any transforms applied.\n\nGetting the Local-space boundary as an AABB:\n\n````\nvar aabb = entity.geometry.aabb; // [xmin, ymin, zmin, xmax, ymax, zmax]\n````\n\nGetting the Local-space boundary as an OBB:\n\n```` javascript\nvar obb = entity.geometry.obb; // Flat array containing eight 3D corner vertices of a box\n````\n\n#### Examples\n\n* [Local-space Geometry AABB](../../examples/#boundaries_geometry_aabb)\n* [Local-space Geometry OBB](../../examples/#boundaries_geometry_obb)\n\n### World-space boundary\n\nWe can get an Entity's World-space boundary at any time, as both an axis-aligned bounding box (AABB) and\nan object-aligned bounding box (OBB).\n\nThe World-space boundary is the boundary of the Entity's Geometry after the Entity's Transform has been applied to it.\n\nGetting the World-space boundary as an AABB:\n\n````javascript\nvar aabb = entity.aabb; // [xmin, ymin, zmin, xmax, ymax, zmax]\n````\n\nGetting the World-space boundary as an OBB:\n\n```` javascript\nvar obb = entity.obb; // Flat array containing eight 3D corner vertices of a box\n````\n\nSubscribing to updates of the World-space boundary, which occur whenever the Entity's Transform or Geometry have been updated.\n\n````javascript\nentity.on(\"boundary\", function() {\n    var aabb = entity.aabb;\n    var obb = entity.obb;\n});\n````\n\nAn Entity's {{#crossLink \"Scene\"}}{{/crossLink}} also has an {{#crossLink \"Scene/getAABB:method\"}}{{/crossLink}}, which returns\nthe collective World-space axis-aligned boundary of the {{#crossLink \"Entity\"}}Entities{{/crossLink}}\nand/or {{#crossLink \"Model\"}}Models{{/crossLink}} with the given IDs:\n\n````JavaScript\nvar scene = entity.scene;\n\nscene.getAABB(); // Gets collective boundary of all entities in the viewer\nscene.getAABB(\"saw\"); // Gets collective boundary of all entities in a model\nscene.getAABB([\"saw\", \"gearbox\"]); // Gets collective boundary of all entities in two models\nscene.getAABB(\"saw#0.1\"); // Get boundary of an entity\nscene.getAABB([\"saw#0.1\", \"saw#0.2\"]); // Get collective boundary of two entities\n````\n\n#### Excluding from boundary calculations\n\nThe {{#crossLink \"Scene/aabb:property\"}}Scene aabb{{/crossLink}}\nand {{#crossLink \"Model/aabb:property\"}}Model aabb{{/crossLink}} properties provide AABBs that include the boundaries of all\ncontained Entities, except those Entities that have their {{#crossLink \"Entity/collidable:property\"}}collidable{{/crossLink}} properties set ````false````.\n\nToggle that inclusion like so:\n\n````javascript\nentity.collidable = false; // Exclude entity from calculation of its Scene/Model boundary\nentity.collidable = true; // Include entity in calculation of its Scene/Model boundary\n````\nSetting this false is useful when an Entity represents some object, such as a control gizmo, that you don't want to consider as\nbeing a contributor to a Scene or Model boundary. It also helps performance, since boundaries will not need dynamically re-calculated\nwhenever the Entity's boundary changes after a Transform or Geometry update.\n\n#### Examples\n\n* [World-space Entity AABB](../../examples/#boundaries_entity_aabb)\n* [World-space Entity OBB](../../examples/#boundaries_entity_obb)\n\n### Skyboxing\n\nAn Entity has a {{#crossLink \"Entity/stationary:property\"}}{{/crossLink}} property\nthat will cause it to never translate with respect to the viewpoint, while still rotationg, as if always far away.\n\nThis is useful for using Entities as skyboxes, like this:\n\n````javascript\nnew xeogl.Entity({\n\n    geometry: new xeogl.BoxGeometry({\n        xSize: 1000,\n        ySize: 1000,\n        zSize: 1000\n    }),\n\n    material: new xeogl.PhongMaterial({\n        diffuseMap: new xeogl.Texture({\n           src: \"textures/diffuse/uvGrid2.jpg\"\n        })\n    }),\n\n    stationary: true // Locks position with respect to viewpoint\n});\n````\n\n#### Examples\n\n* [Skybox component](../../examples/#skyboxes_skybox)\n* [Custom skybox](../../examples/#skyboxes_skybox_custom)\n\n### Billboarding\n\nAn Entity has a {{#crossLink \"Entity/billboard:property\"}}{{/crossLink}} property\nthat can make it behave as a billboard.\n\nTwo billboard types are supported:\n\n* **Spherical** billboards are free to rotate their Entities in any direction and always face the {{#crossLink \"Camera\"}}{{/crossLink}} perfectly.\n* **Cylindrical** billboards rotate their Entities towards the {{#crossLink \"Camera\"}}{{/crossLink}}, but only about the Y-axis.\n\nNote that {{#crossLink \"Scale\"}}{{/crossLink}} transformations to have no effect on billboarded Entities.\n\nThe example below shows a box that remains rotated directly towards the viewpoint, using spherical billboarding:\n\n````javascript\nnew xeogl.Entity({\n\n    geometry: new xeogl.BoxGeometry(),\n\n    material: new xeogl.PhongMaterial({\n        diffuseMap: new xeogl.Texture({\n           src: \"textures/diffuse/uvGrid2.jpg\"\n        })\n    }),\n\n    billboard: \"spherical\" // Or \"cylindrical\"\n});\n````\n\n#### Examples\n\n* [Spherical billboards](../../examples/#billboards_spherical)\n* [Cylindrical billboards](../../examples/#billboards_cylindrical)\n* [Clouds using billboards](../../examples/#billboards_spherical_clouds)\n\n\n### Shadows\n\n[Work-in-progress]",
             "submodule": "entities",
             "is_constructor": 1,
             "params": [
@@ -2237,15 +2248,15 @@
                         },
                         {
                             "name": "highlight",
-                            "description": "Whether this entity is rendered highlighted, as configured by the Entity's {{#crossLink \"HighlightMaterial\"}}{{/crossLink}} component.",
+                            "description": "Whether this entity is rendered highlighted, as configured by the Entity's {{#crossLink \"GhostMaterial\"}}{{/crossLink}} component.",
                             "type": "Boolean",
                             "optional": true,
                             "optdefault": "false"
                         },
                         {
                             "name": "highlightMaterial",
-                            "description": "ID or instance of a {{#crossLink \"HighlightMaterial\"}}{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default instance, {{#crossLink \"Scene/highlightMaterial:property\"}}highlightMaterial{{/crossLink}}.",
-                            "type": "String|HighlightMaterial",
+                            "description": "ID or instance of a {{#crossLink \"GhostMaterial\"}}{{/crossLink}} to attach to this Entity to define highlighted appearance. Must be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default instance, {{#crossLink \"Scene/highlightMaterial:property\"}}highlightMaterial{{/crossLink}}.",
+                            "type": "String|GhostMaterial",
                             "optional": true
                         },
                         {
@@ -2273,7 +2284,187 @@
                             "name": "loading",
                             "description": "Flag which indicates that this Entity is freshly loaded.",
                             "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
+                        }
+                    ]
+                }
+            ],
+            "extends": "Component"
+        },
+        "Object": {
+            "name": "Object",
+            "shortname": "Object",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "xeogl",
+            "namespace": "",
+            "file": "src/entities/object.js",
+            "line": 1,
+            "description": "A **xeogl.Object** is a 3D object within a {{#crossLink \"Scene\"}}Scene{{/crossLink}}.\n\n## Overview\n\n* An Object represents a WebGL draw call.\n* Each Object has six components: {{#crossLink \"Geometry\"}}{{/crossLink}}, {{#crossLink \"Material\"}}{{/crossLink}},\n{{#crossLink \"Transform\"}}{{/crossLink}}, {{#crossLink \"GhostMaterial\"}}{{/crossLink}},\n{{#crossLink \"OutlineMaterial\"}}{{/crossLink}} and {{#crossLink \"HighlightMaterial\"}}{{/crossLink}}.\n* By default, Entities in the same Scene share the same \"global\" flyweight instances of those components amongst themselves. The default\ncomponent instances are provided by the {{#crossLink \"Scene\"}}{{/crossLink}}'s {{#crossLink \"Scene/geometry:property\"}}{{/crossLink}},\n{{#crossLink \"Scene/material:property\"}}{{/crossLink}}, {{#crossLink \"Scene/transform:property\"}}{{/crossLink}},\n{{#crossLink \"Scene/ghostMaterial:property\"}}{{/crossLink}}, {{#crossLink \"Scene/outlineMaterial:property\"}}{{/crossLink}},\n{{#crossLink \"Scene/highlightMaterial:property\"}}{{/crossLink}} properties, respectively.\n* An Object with all defaults is a white unit-sized box centered at the World-space origin.\n* Customize your Entities by attaching your own instances of those component types, to override the defaults as needed.\n* For best performance, reuse as many of the same component instances among your Entities as possible.\n\n## Usage\n\n* [Creating an Object](#creating-an-object)\n* [Controlling visibility](#controlling-visibility)\n* [Controlling clipping](#controlling-clipping)\n* [Controlling rendering order](#controlling-rendering-order)\n* [Geometry](#geometry)\n* [Material](#material)\n* [Transforming](#transforming)\n* [Ghosting](#ghosting)\n* [Highlighting](#highlighting)\n* [Outlining](#outlining)\n* [Local-space boundary](#local-space-boundary)\n* [World-space boundary](#world-space-boundary)\n* [Skyboxing](#skyboxing)\n* [Billboarding](#billboarding)\n* [Shadows](#shadows) TODO\n\n### Creating an Object\n\nCreating a minimal Object that has all the default components:\n\n<img src=\"../../assets/images/screenshots/Scene/defaultObject.png\"></img>\n\n````javascript\nvar object = new xeogl.Object(); // A white unit-sized box centered at the World-space origin\n````\n\nSince our Object has all the default components, we can get those off either the Object or its Scene:\n\n````javascript\nobject.material.diffuse = [1.0, 0.0, 0.0];  // This is the same Material component...\n\nvar scene = object.scene;\nscene.material.diffuse  = [1.0, 0.0, 0.0];  // ...as this one.\n````\n\nIn practice, we would provide (at least) our own Geometry and Material for the Object:\n\n<a href=\"../../examples/#geometry_primitives_teapot\"><img src=\"../../assets/images/screenshots/Scene/teapot.png\"></img></a>\n\n````javascript\nvar object = new xeogl.Object({\n    geometry: new xeogl.TeapotGeometry(),\n    material: new xeogl.MetallicMaterial({\n        baseColor: [1.0, 1.0, 1.0]\n    })\n});\n````\n\n### Controlling visibility\n\nShow or hide an Object by setting its {{#crossLink \"Object/visible:property\"}}{{/crossLink}} property:\n\n````javascript\nobject.visible = false; // Hide\nobject.visible = true; // Show (default)\n````\n\n### Controlling clipping\n\nBy default, an Object will be clipped by the\nScene's {{#crossLink \"Scene/clips:property\"}}clipping planes{{/crossLink}} (if you've created some).\n\nMake an Object unclippable by setting its {{#crossLink \"Object/clippable:property\"}}{{/crossLink}} property false:\n\n````javascript\nobject.clippable = false; // Default is true\n````\n\n### Controlling rendering order\n\nControl the order in which an Object is rendered relative to others by setting its {{#crossLink \"Object/layer:property\"}}{{/crossLink}}\nproperty. You would normally do this when you need to ensure that transparent Entities are rendered in back-to-front order for correct alpha blending.\n\nAssign object to layer 0 (all Entities are in layer 0 by default):\n\n````javascript\nobject.layer = 0;\n````\n\nCreate another Object in a higher layer, that will get rendered after layer 0:\n\n````javascript\nvar object2 = new xeogl.Object({\n    geometry: new xeogl.Sphere(),\n    layer: 1\n});\n````\n\n### Geometry\n\nAn Object has a {{#crossLink \"Geometry\"}}{{/crossLink}} which describes its shape. When we don't provide it with a\nGeometry, it will have the Scene's {{#crossLink \"Scene/geometry:property\"}}{{/crossLink}} by default.\n\nCreating an Object with its own Geometry:\n\n````javascript\nvar object = new xeogl.Object({\n    geometry: new xeogl.TeapotGeometry()\n});\n````\n\nDynamically replacing the Geometry:\n\n````javascript\nobject.geometry = new xeogl.CylinderGeometry();\n````\n\nGetting geometry arrays:\n\n````javascript\nver geometry = object.geometry;\n\nvar primitive = geometry,primitive;        // Default is \"triangles\"\nvar positions = geometry.positions;        // Local-space vertex positions\nvar normals = geometry.normals;            // Local-space vertex Normals\nvar uv = geometry.uv;                      // UV coordinates\nvar indices = object.geometry.indices;     // Vertex indices for pimitives\n````\n\nThe Object also has a convenience property which provides the vertex positions in World-space, ie. after they have been\ntransformed by the Object's Transform:\n\n````javascript\n// These are internally generated on-demand and cached. To free the cached\n// vertex World positions when you're done with them, set this property to null or undefined\nvar worldPositions = object.worldPositions;\n````\n\n### Material\n\nAn Object has a {{#crossLink \"Material\"}}{{/crossLink}}, which describes its appearance. When we don't provide it with\na Material, it will have the Scene's {{#crossLink \"Scene/material:property\"}}{{/crossLink}} by default.\n\nCreating an Object with its own custom Geometry and Material:\n\n````javascript\nvar object = new xeogl.Object({\n    geometry: new xeogl.TeapotGeometry(),\n    material: new xeogl.MetallicMaterial({\n        baseColor: [0.0, 0.0, 1.0],\n        metallic: 1.0,\n        roughness: 1.0,\n        emissive: [0.0, 0.0, 0.0],\n        alpha: 1.0\n    })\n});\n````\n\nDynamically replacing the Material:\n\n````javascript\nobject.material = new xeogl.SpecularMaterial({\n    diffuse: [1.0, 1.0, 1.0],\n    specular: [1.0, 1.0, 1.0],\n    glossiness: 1.0,\n    emissive: [0.0, 0.0, 0.0]\n    alpha: 1.0\n})\n````\n\nAnimating the Material's diffuse color - making the Object rapidly pulse red:\n\n````javascript\nobject.scene.on(\"tick\", function(e) {\n   var t = e.time - e.startTime; // Millisecs\n   object.material.diffuse = [0.5 + Math.sin(t * 0.01), 0.0, 0.0]; // RGB\n});\n````\n\n### Transforming\n\nAn Object has a {{#crossLink \"Transform\"}}{{/crossLink}}, which positions, sizes and orients it within the World-space\ncoordinate system. When we don't provide it with a Transform, it will have the Scene's {{#crossLink \"Scene/transform:property\"}}{{/crossLink}}\nby default (which is the idobject transform unless modified).\n\nTransforms can also be connected into hierarchies.\n\nCreating an Object with its own Geometry and Transform hierarchy:\n\n````javascript\nvar object = new xeogl.Object({\n\n    geometry: new xeogl.TGeometry(),\n\n    transform: new xeogl.Translate({eapot\n       xyz: [-5, 0, 0],\n       parent: new xeogl.Rotate({\n           xyz: [0,1,0],\n           angle: 45\n       })\n    })\n});\n````\n\nDynamically replacing the Object's Transform hierarchy:\n\n````javascript\nobject.transform = new xeogl.Rotate({\n    xyz: [0,1,0],\n    angle: 45\n    parent: new xeogl.Rotate({\n        xyz: [1,0,0],\n        angle: 180\n    })\n});\n````\n\nAnimating the Transform hierarchy:\n\n````javascript\nobject.scene.on(\"tick\", function() {\n   object.transform.angle += 0.5;\n   object.transform.parent.angle += 0.5;\n});\n````\n\n### Ghosting\n\nGhost an Object by setting its {{#crossLink \"Object/ghost:property\"}}{{/crossLink}} property true. The Object's\n{{#crossLink \"GhostMaterial\"}}{{/crossLink}} then controls its appearance while ghosted.\n\nWhen we don't provide it with a GhostMaterial, it will have the Scene's {{#crossLink \"Scene/ghostMaterial:property\"}}{{/crossLink}}\nby default.\n\nIn the example below, we'll create a ghosted Object with its own GhostMaterial.\n\n<a href=\"../../examples/#effects_ghost\"><img src=\"../../assets/images/screenshots/HighlightMaterial/teapot.png\"></img></a>\n\n````javascript\nvar object = new xeogl.Object({\n   geometry: new xeogl.TeapotGeometry(),\n   material: new xeogl.PhongMaterial({\n       diffuse: [0.2, 0.2, 1.0]\n   }),\n   ghostMaterial: new xeogl.GhostMaterial({\n       edges: true,\n       edgeColor: [0.2, 1.0, 0.2],\n       edgeAlpha: 1.0,\n       edgeWidth: 2,\n       vertices: true,\n       vertexColor: [0.6, 1.0, 0.6],\n       vertexAlpha: 1.0,\n       vertexSize: 8,\n       fill: true,\n       fillColor: [0, 0, 0],\n       fillAlpha: 0.7\n   }),\n   ghost: true\n});\n````\n\n#### Examples\n\n* [Ghosted teapot](../../examples/#effects_ghost)\n\n### Highlighting\n\nHighlight an Object by setting its {{#crossLink \"Object/highlight:property\"}}{{/crossLink}} property true. The Object's\n{{#crossLink \"HighlightMaterial\"}}{{/crossLink}} then controls its appearance while highlighted.\n\nWhen we don't provide it with a HighlightMaterial, it will have the Scene's {{#crossLink \"Scene/highlightMaterial:property\"}}{{/crossLink}}\nby default.\n\nIn the example below, we'll create a highlighted Object with its own HighlightMaterial.\n\n<a href=\"../../examples/#effects_highlight\"><img src=\"../../assets/images/screenshots/HighlightMaterial/teapotHighlighted.png\"></img></a>\n\n````javascript\nvar object = new xeogl.Object({\n   geometry: new xeogl.TeapotGeometry(),\n   material: new xeogl.PhongMaterial({\n       diffuse: [0.2, 0.2, 1.0]\n   }),\n   highlightMaterial: new xeogl.HighlightMaterial({\n       color: [1.0, 1.0, 0.0],\n       alpha: 0.6\n   }),\n   highlight: true\n});\n````\n\n#### Examples\n\n* [Ghost and highlight effects](../../examples/#effects_demo_gearbox)\n\n### Outlining\n\nOutline an Object by setting its {{#crossLink \"Object/outline:property\"}}{{/crossLink}} property true. The Object's\n{{#crossLink \"OutlineMaterial\"}}{{/crossLink}} then controls its appearance while outlined.\n\nWhen we don't provide it with an OutlineMaterial, it will have the Scene's {{#crossLink \"Scene/outlineMaterial:property\"}}{{/crossLink}}\nby default.\n\nIn the example below, we'll create a outlineed Object with its own OutlineMaterial.\n\n<a href=\"../../examples/#effects_outline\"><img src=\"../../assets/images/screenshots/OutlineMaterial/teapot.png\"></img></a>\n\n````javascript\nvar object = new xeogl.Object({\n   geometry: new xeogl.TeapotGeometry(),\n   material: new xeogl.PhongMaterial({\n       diffuse: [0.2, 0.2, 1.0]\n   }),\n   outlineMaterial: new xeogl.OutlineMaterial({\n       color: [1.0, 1.0, 0.0],\n       alpha: 0.6,\n       width: 5\n   }),\n   outline: true\n});\n````\n\n### Local-space boundary\n\nWe can get an Object's Local-space boundary at any time, as both an axis-aligned bounding box (AABB) and\nan object-aligned bounding box (OBB).\n\nThe Local-space boundary is the boundary of the Object's Geometry, without any transforms applied.\n\nGetting the Local-space boundary as an AABB:\n\n````\nvar aabb = object.geometry.aabb; // [xmin, ymin, zmin, xmax, ymax, zmax]\n````\n\nGetting the Local-space boundary as an OBB:\n\n```` javascript\nvar obb = object.geometry.obb; // Flat array containing eight 3D corner vertices of a box\n````\n\n#### Examples\n\n* [Local-space Geometry AABB](../../examples/#boundaries_geometry_aabb)\n* [Local-space Geometry OBB](../../examples/#boundaries_geometry_obb)\n\n### World-space boundary\n\nWe can get an Object's World-space boundary at any time, as both an axis-aligned bounding box (AABB) and\nan object-aligned bounding box (OBB).\n\nThe World-space boundary is the boundary of the Object's Geometry after the Object's Transform has been applied to it.\n\nGetting the World-space boundary as an AABB:\n\n````javascript\nvar aabb = object.aabb; // [xmin, ymin, zmin, xmax, ymax, zmax]\n````\n\nGetting the World-space boundary as an OBB:\n\n```` javascript\nvar obb = object.obb; // Flat array containing eight 3D corner vertices of a box\n````\n\nSubscribing to updates of the World-space boundary, which occur whenever the Object's Transform or Geometry have been updated.\n\n````javascript\nobject.on(\"boundary\", function() {\n    var aabb = object.aabb;\n    var obb = object.obb;\n});\n````\n\nAn Object's {{#crossLink \"Scene\"}}{{/crossLink}} also has an {{#crossLink \"Scene/getAABB:method\"}}{{/crossLink}}, which returns\nthe collective World-space axis-aligned boundary of the {{#crossLink \"Object\"}}Entities{{/crossLink}}\nand/or {{#crossLink \"Model\"}}Models{{/crossLink}} with the given IDs:\n\n````JavaScript\nvar scene = object.scene;\n\nscene.getAABB(); // Gets collective boundary of all entities in the viewer\nscene.getAABB(\"saw\"); // Gets collective boundary of all entities in a model\nscene.getAABB([\"saw\", \"gearbox\"]); // Gets collective boundary of all entities in two models\nscene.getAABB(\"saw#0.1\"); // Get boundary of an object\nscene.getAABB([\"saw#0.1\", \"saw#0.2\"]); // Get collective boundary of two entities\n````\n\n#### Excluding from boundary calculations\n\nThe {{#crossLink \"Scene/aabb:property\"}}Scene aabb{{/crossLink}}\nand {{#crossLink \"Model/aabb:property\"}}Model aabb{{/crossLink}} properties provide AABBs that include the boundaries of all\ncontained Entities, except those Entities that have their {{#crossLink \"Object/collidable:property\"}}collidable{{/crossLink}} properties set ````false````.\n\nToggle that inclusion like so:\n\n````javascript\nobject.collidable = false; // Exclude object from calculation of its Scene/Model boundary\nobject.collidable = true; // Include object in calculation of its Scene/Model boundary\n````\nSetting this false is useful when an Object represents some object, such as a control gizmo, that you don't want to consider as\nbeing a contributor to a Scene or Model boundary. It also helps performance, since boundaries will not need dynamically re-calculated\nwhenever the Object's boundary changes after a Transform or Geometry update.\n\n#### Examples\n\n* [World-space Object AABB](../../examples/#boundaries_object_aabb)\n* [World-space Object OBB](../../examples/#boundaries_object_obb)\n\n### Skyboxing\n\nAn Object has a {{#crossLink \"Object/stationary:property\"}}{{/crossLink}} property\nthat will cause it to never translate with respect to the viewpoint, while still rotationg, as if always far away.\n\nThis is useful for using Entities as skyboxes, like this:\n\n````javascript\nnew xeogl.Object({\n\n    geometry: new xeogl.BoxGeometry({\n        xSize: 1000,\n        ySize: 1000,\n        zSize: 1000\n    }),\n\n    material: new xeogl.PhongMaterial({\n        diffuseMap: new xeogl.Texture({\n           src: \"textures/diffuse/uvGrid2.jpg\"\n        })\n    }),\n\n    stationary: true // Locks position with respect to viewpoint\n});\n````\n\n#### Examples\n\n* [Skybox component](../../examples/#skyboxes_skybox)\n* [Custom skybox](../../examples/#skyboxes_skybox_custom)\n\n### Billboarding\n\nAn Object has a {{#crossLink \"Object/billboard:property\"}}{{/crossLink}} property\nthat can make it behave as a billboard.\n\nTwo billboard types are supported:\n\n* **Spherical** billboards are free to rotate their Entities in any direction and always face the {{#crossLink \"Camera\"}}{{/crossLink}} perfectly.\n* **Cylindrical** billboards rotate their Entities towards the {{#crossLink \"Camera\"}}{{/crossLink}}, but only about the Y-axis.\n\nNote that {{#crossLink \"Scale\"}}{{/crossLink}} transformations to have no effect on billboarded Entities.\n\nThe example below shows a box that remains rotated directly towards the viewpoint, using spherical billboarding:\n\n````javascript\nnew xeogl.Object({\n\n    geometry: new xeogl.BoxGeometry(),\n\n    material: new xeogl.PhongMaterial({\n        diffuseMap: new xeogl.Texture({\n           src: \"textures/diffuse/uvGrid2.jpg\"\n        })\n    }),\n\n    billboard: \"spherical\" // Or \"cylindrical\"\n});\n````\n\n#### Examples\n\n* [Spherical billboards](../../examples/#billboards_spherical)\n* [Cylindrical billboards](../../examples/#billboards_cylindrical)\n* [Clouds using billboards](../../examples/#billboards_spherical_clouds)\n\n\n### Shadows\n\n[Work-in-progress]",
+            "submodule": "entities",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this Object within xeogl's default {{#crossLink \"xeogl/scene:property\"}}scene{{/crossLink}} by default.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, generated automatically when omitted.",
+                            "type": "String",
                             "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this Object.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "geometry",
+                            "description": "ID or instance of a {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} to attach to this Object. Must be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Object. Defaults to the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default instance, {{#crossLink \"Scene/geometry:property\"}}geometry{{/crossLink}}, which is a 2x2x2 box.",
+                            "type": "String|Geometry",
+                            "optional": true
+                        },
+                        {
+                            "name": "material",
+                            "description": "ID or instance of a {{#crossLink \"Material\"}}Material{{/crossLink}} to attach to this Object. Must be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Object. Defaults to the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default instance, {{#crossLink \"Scene/material:property\"}}material{{/crossLink}}.",
+                            "type": "String|Material",
+                            "optional": true
+                        },
+                        {
+                            "name": "transform",
+                            "description": "ID or instance of a modelling transform to attach to this Object. Must be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Object. Defaults to the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default instance,\n{{#crossLink \"Scene/transform:property\"}}transform{{/crossLink}} (which is an idobject matrix which performs no transformation).",
+                            "type": "String|Transform",
+                            "optional": true
+                        },
+                        {
+                            "name": "visible",
+                            "description": "Indicates if this Object is visible.",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "true"
+                        },
+                        {
+                            "name": "culled",
+                            "description": "Indicates if this Object is culled from view.",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "true"
+                        },
+                        {
+                            "name": "pickable",
+                            "description": "Indicates if this Object is pickable.",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "true"
+                        },
+                        {
+                            "name": "clippable",
+                            "description": "Indicates if this Object is clippable by {{#crossLink \"Clips\"}}{{/crossLink}}.",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "true"
+                        },
+                        {
+                            "name": "collidable",
+                            "description": "Whether this Object is included in boundary calculations.",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "true"
+                        },
+                        {
+                            "name": "castShadow",
+                            "description": "Whether this Object casts shadows.",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "true"
+                        },
+                        {
+                            "name": "receiveShadow",
+                            "description": "Whether this Object receives shadows.",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "true"
+                        },
+                        {
+                            "name": "outline",
+                            "description": "Whether an outline is rendered around this object, as configured by the Object's {{#crossLink \"OutlineMaterial\"}}{{/crossLink}} component.",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
+                        },
+                        {
+                            "name": "outlineMaterial",
+                            "description": "ID or instance of a {{#crossLink \"OutlineMaterial\"}}{{/crossLink}} to attach to this Object. Must be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Object. Defaults to the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default instance, {{#crossLink \"Scene/outlineMaterial:property\"}}outlineMaterial{{/crossLink}}.",
+                            "type": "String|OutlineMaterial",
+                            "optional": true
+                        },
+                        {
+                            "name": "ghost",
+                            "description": "Whether this object is rendered ghosted, as configured by the Object's {{#crossLink \"GhostMaterial\"}}{{/crossLink}} component.",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
+                        },
+                        {
+                            "name": "ghostMaterial",
+                            "description": "ID or instance of a {{#crossLink \"GhostMaterial\"}}{{/crossLink}} to attach to this Object. Must be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Object. Defaults to the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default instance, {{#crossLink \"Scene/ghostMaterial:property\"}}ghostMaterial{{/crossLink}}.",
+                            "type": "String|GhostMaterial",
+                            "optional": true
+                        },
+                        {
+                            "name": "highlight",
+                            "description": "Whether this object is rendered highlighted, as configured by the Object's {{#crossLink \"HighlightMaterial\"}}{{/crossLink}} component.",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
+                        },
+                        {
+                            "name": "highlightMaterial",
+                            "description": "ID or instance of a {{#crossLink \"HighlightMaterial\"}}{{/crossLink}} to attach to this Object. Must be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Object. Defaults to the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default instance, {{#crossLink \"Scene/highlightMaterial:property\"}}highlightMaterial{{/crossLink}}.",
+                            "type": "String|HighlightMaterial",
+                            "optional": true
+                        },
+                        {
+                            "name": "layer",
+                            "description": "Indicates this Object's rendering priority, typically used for transparency sorting,",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "0"
+                        },
+                        {
+                            "name": "stationary",
+                            "description": "Disables the effect of {{#crossLink \"Lookat\"}}view transform{{/crossLink}} translations for this Object. This is useful for skybox Entities.",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
+                        },
+                        {
+                            "name": "billboard",
+                            "description": "Specifies the billboarding behaviour for this Object. Options are \"none\", \"spherical\" and \"cylindrical\".",
+                            "type": "String",
+                            "optional": true,
+                            "optdefault": "\"none\""
+                        },
+                        {
+                            "name": "loading",
+                            "description": "Flag which indicates that this Object is freshly loaded.",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
                         }
                     ]
                 }
@@ -5252,7 +5443,7 @@
             "namespace": "",
             "file": "src/scene.js",
             "line": 1,
-            "description": "A Scene represents a 3D world.\n\n## Usage\n\n* [Creating a Scene](#creating-a-scene)\n* [Creating entities](#creating-entities)\n* [Loading models](#loading-models)\n* [Accessing content](#accessing-content)\n* [Controlling the camera](#controlling-the-camera)\n* [Taking snapshots](#taking-snapshots)\n* [Lighting](#lighting)\n* [Clipping](#clipping)\n* [Emphasis effects](#emphasis-effects)\n* [Picking](#picking)\n* [Pick masking](#pick-masking)\n* [Getting the World-space boundary](#getting-the-world-space-boundary]\n* [Controlling the viewport](#controlling-the-viewport)\n* [Controlling rendering](#controlling-rendering)\n* [Gamma correction](#gamma-correction)\n\n### Creating a Scene\n\nCreating a Scene with its own default canvas:\n\n````javascript\nvar scene = new Scene();\n````\n\nCreating a Scene with an existing canvas.\n\n````javascript\nvar scene2 = new Scene({\n   canvas: \"myCanvas\"\n});\n\nvar scene3 = new Scene({\n   canvas: document.getElementById(\"myCanvas\");\n});\n````\n\n### Creating entities\n\nCreating an {{#crossLink \"Entity\"}}{{/crossLink}} within a Scene:\n\n<a href=\"../../examples/#geometry_primitives_teapot\"><img src=\"../../assets/images/screenshots/Scene/teapot.png\"></img></a>\n\n````javascript\nvar entity = new xeogl.Entity(scene, {\n   geometry: new xeogl.TeapotGeometry(scene),\n   material: new xeogl.PhongMaterial(scene, {\n       diffuse: [0.2, 0.2, 1.0]\n   })\n});\n````\n\nCreating an entity within the default Scene (which will be automatically created if not yet existing):\n````javascript\nentity = new xeogl.Entity({\n   geometry: new xeogl.TeapotGeometry(),\n   material: new xeogl.PhongMaterial({\n       diffuse: [0.2, 0.2, 1.0]\n   })\n});\n\nentity.scene.camera.eye = [45, 45, 45];\n````\n\nThe default Scene can be got from either the Entity or the xeogl namespace:\n\n````javascript\nscene = entity.scene;\nscene = xeogl.scene;\n````\n\n### Loading models\n\nUse {{#crossLink \"GLTFModel\"}}{{/crossLink}} components to load glTF models into a Scene:\n\n````javascript\nvar model = new xeogl.GLTFModel(scene, { // If we don't provide the Scene, will create in default Scene\n   id: \"gearbox\",\n   src: \"models/gltf/gearbox/gearbox_assy.gltf\"\n});\n````\n\n### Accessing content\n\nFind components by ID in their Scene's {{#crossLink \"Scene/components:property\"}}{{/crossLink}} map:\n\n````javascript\nvar gear1 = scene.components[\"gearbox#gear99\"];\ngear1.visible = false;\n//...\n````\n\nA Scene also has a map of component instances for each {{#crossLink \"Component\"}}{{/crossLink}} subtype:\n\n````javascript\nvar entities = scene.types[\"xeogl.Entity\"];\nvar gear = entities[\"gearbox#gear99\"];\ngear.ghost = true;\n//...\n\nvar glTFModels = scene.types[\"xeogl.GLTFModel\"];\nvar gearbox = glTFModels[\"gearbox\"];\ngearbox.visible = false;\n//...\n````\na map containing just the {{#crossLink \"Model\"}}{{/crossLink}} instances:\n\n````javascript\ngearbox = scene.models[\"gearbox\"];\n````\n\nand a map containing just the {{#crossLink \"Entity\"}}{{/crossLink}} instances:\n\n````javascript\ngear = scene.entities[\"gearbox#gear99\"];\n````\n\n### Controlling the camera\n\nUse the Scene's {{#crossLink \"Camera\"}}{{/crossLink}} to control the current viewpoint and projection:\n\n````javascript\nvar camera = myScene.camera;\n\ncamera.eye = [-10,0,0];\ncamera.look = [-10,0,0];\ncamera.up = [0,1,0];\n\ncamera.projection = \"perspective\";\ncamera.perspective.fov = 45;\n//...\n````\n\n### Managing the canvas, taking snapshots\n\nThe Scene's {{#crossLink \"Canvas\"}}{{/crossLink}} component provides various conveniences relevant to the WebGL canvas, such\nas getting getting snapshots, firing resize events etc:\n\n````javascript\nvar canvas = scene.canvas;\n\ncanvas.on(\"boundary\", function(boundary) {\n   //...\n});\n\nvar imageData = canvas.getSnapshot({\n   width: 500,\n   height: 500,\n   format: \"png\"\n});\n````\n\n### Lighting\n\nThe Scene's {{#crossLink \"Lights\"}}{{/crossLink}} component manages lighting:\n\n````javascript\nvar lights = scene.lights;\nlights[1].color = [0.9, 0.9, 0.9];\n//...\n````\n\n### Clipping\n\nThe Scene's {{#crossLink \"Clips\"}}{{/crossLink}} component manages clipping planes for custom cross-sections:\n\n````javascript\nvar clips = scene.clips;\nclips.clips = [\nnew xeogl.Clip({  // Clip plane on negative diagonal\n       pos: [1.0, 1.0, 1.0],\n       dir: [-1.0, -1.0, -1.0],\n       active: true\n   }),\nnew xeogl.Clip({ // Clip plane on positive diagonal\n       pos: [-1.0, -1.0, -1.0],\n       dir: [1.0, 1.0, 1.0],\n       active: true\n   }),\n//...\n];\n````\n\n### Emphasis effects\n\nThe Scene's {{#crossLink \"Scene/ghostMaterial:property\"}}{{/crossLink}} provides the default {{#crossLink \"GhostMaterial\"}}{{/crossLink}}\nfor controlling ghost effects:\n\n````javascript\nvar ghostMaterial = scene.ghostMaterial;\nghostMaterial.edgeColor = [0.9, 0.9, 0.0];\n//...\n````\n\nThe Scene's {{#crossLink \"Scene/highlightMaterial:property\"}}{{/crossLink}} provides the default {{#crossLink \"GhostMaterial\"}}{{/crossLink}}\nfor controlling highlight effects:\n\n````javascript\nvar highlightMaterial = scene.highlightMaterial;\nhighlightMaterial.color = [0.9, 0.9, 0.0];\n//...\n````\n\nThe Scene's {{#crossLink \"Scene/outlineMaterial:property\"}}{{/crossLink}} provides the default {{#crossLink \"OutlineMaterial\"}}{{/crossLink}}\nfor controlling outline effects:\n\n\n````javascript\nvar outlineMaterial = scene.outlineMaterial;\noutlineMaterial.edgeWidth = 6;\n````\n\n### Picking entities\n\nUse the Scene's {{#crossLink \"Scene/pick:method\"}}pick(){{/crossLink}} method to pick and raycast entities.\n\nFor example, to pick a point on the surface of the closest entity at the given canvas coordinates:\n\n````javascript\nvar hit = scene.pick({\n    pickSurface: true,\n    canvasPos: [23, 131]\n});\n\nif (hit) { // Picked an Entity\n\n     var entity = hit.entity;\n\n     var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n     var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n     var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n     var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle\n     var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle\n     var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle\n     var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n     var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n     var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n}\n````\n\n### Pick masking\n\nWe can use the {{#crossLink \"Scene/pick:method\"}}pick(){{/crossLink}} method's ````include```` and ````exclude````\noptions to mask which Entities we attempt to pick.\n\nThis is useful for picking <em>through</em> things, to pick only the Entities of interest.\n\n#### Including entities\n\nTo pick only Entities ````\"gearbox#77.0\"```` and ````\"gearbox#79.0\"````, picking through any other Entities that are\nin the way, as if they weren't there:\n\n````javascript\nvar hit = scene.pick({\n    canvasPos: [23, 131],\n    include: [\"gearbox#77.0\", \"gearbox#79.0\"]\n});\n\nif (hit) {\n     // Entity will always be either \"gearbox#77.0\" or \"gearbox#79.0\"\n     var entity = hit.entity;\n}\n````\n\n#### Excluding entities\n\nTo pick any pickable Entity, except for ````\"gearbox#77.0\"```` and ````\"gearbox#79.0\"````, picking through those\nEntities if they happen to be in the way:\n\n````javascript\nvar hit = scene.pick({\n    canvasPos: [23, 131],\n    exclude: [\"gearbox#77.0\", \"gearbox#79.0\"]\n});\n\nif (hit) {\n     // Entity will never be \"gearbox#77.0\" or \"gearbox#79.0\"\n     var entity = hit.entity;\n}\n````\n\nSee {{#crossLink \"Scene/pick:method\"}}pick(){{/crossLink}} for more info on picking.\n\n### Getting the World-space boundary\n\nGetting a Scene's World-space boundary as an AABB:\n\n````javascript\nvar aabb = scene.aabb; // [xmin, ymin, zmin, xmax, ymax, zmax]\n````\n\nSubscribing to updates to the World-space boundary, which occur whenever Entities are Transformed, or their Geometries have been updated.\n\n````javascript\nscene.on(\"boundary\", function() {\n    var aabb = scene.aabb;\n    var obb = scene.obb;\n});\n````\n\nGetting the collective World-space axis-aligned boundary of the {{#crossLink \"Entity\"}}Entities{{/crossLink}}\nand/or {{#crossLink \"Model\"}}Models{{/crossLink}} with the given IDs: \n\n````JavaScript\nscene.getAABB(); // Gets collective boundary of all entities in the scene\nscene.getAABB(\"saw\"); // Gets collective boundary of all entities in saw model\nscene.getAABB([\"saw\", \"gearbox\"]); // Gets collective boundary of all entities in saw and gearbox models\nscene.getAABB(\"saw#0.1\"); // Get boundary of an entity in the saw model\nscene.getAABB([\"saw#0.1\", \"saw#0.2\"]); // Get collective boundary of two entities in saw model\n````\n\n### Managing the viewport\n\nThe Scene's {{#crossLink \"Viewport\"}}{{/crossLink}} component manages the WebGL viewport:\n\n````javascript\nvar viewport = scene.viewport\nviewport.boundary = [0, 0, 500, 400];;\n````\n\n### Controlling rendering\n\nYou can configure a Scene to perform multiple \"passes\" (renders) per frame. This is useful when we want to render the\nscene to multiple viewports, such as for stereo effects.\n\nIn the example, below, we'll configure the Scene to render twice on each frame, each time to different viewport. We'll do this\nwith a callback that intercepts the Scene before each render and sets its {{#crossLink \"Viewport\"}}{{/crossLink}} to a\ndifferent portion of the canvas. By default, the Scene will clear the canvas only before the first render, allowing the\ntwo views to be shown on the canvas at the same time.\n\n````Javascript\n// Load glTF model\nvar model = new xeogl.GLTFModel({\n   src: \"models/gltf/GearboxAssy/glTF/GearboxAssy.gltf\"\n});\n\nvar scene = model.scene;\nvar viewport = scene.viewport;\n\n// Configure Scene to render twice for each frame\nscene.passes = 2; // Default is 1\nscene.clearEachPass = false; // Default is false\n\n// Render to a separate viewport on each render\n\nvar viewport = scene.viewport;\nviewport.autoBoundary = false;\n\nscene.on(\"rendering\", function (e) {\n    switch (e.pass) {\n        case 0:\n            viewport.boundary = [0, 0, 200, 200]; // xmin, ymin, width, height\n            break;\n\n        case 1:\n            viewport.boundary = [200, 0, 200, 200];\n            break;\n    }\n});\n\n// We can also intercept the Scene after each render,\n// (though we're not using this for anything here)\nscene.on(\"rendered\", function (e) {\n    switch (e.pass) {\n        case 0:\n            break;\n\n        case 1:\n            break;\n    }\n});\n````\n\n### Gamma correction\n\nWithin its shaders, xeogl performs shading calculations in linear space.\n\nBy default, the Scene expects color textures (ie. {{#crossLink \"PhongMaterial/diffuseMap:property\"}}{{/crossLink}},\n{{#crossLink \"MetallicMaterial/baseColorMap:property\"}}{{/crossLink}} and {{#crossLink \"SpecularMaterial/diffuseMap:property\"}}{{/crossLink}}) to\nbe in pre-multipled gamma space, so will convert those to linear space before they are used in shaders. Other textures are\nalways expected to be in linear space.\n\nBy default, the Scene will also gamma-correct its rendered output.\n\nYou can configure the Scene to expect all those color textures to be linear space, so that it does not gamma-correct them:\n\n````javascript\nscene.gammaInput = false;\n````\n\nYou would still need to gamma-correct the output, though, if it's going straight to the canvas, so normally we would\nleave that enabled:\n\n````javascript\nscene.gammaOutput = true;\n````\n\nSee {{#crossLink \"Texture\"}}{{/crossLink}} for more information on texture encoding and gamma.",
+            "description": "A Scene represents a 3D world.\n\n## Usage\n\n* [Creating a Scene](#creating-a-scene)\n* [Creating entities](#creating-entities)\n* [Loading models](#loading-models)\n* [Accessing content](#accessing-content)\n* [Controlling the camera](#controlling-the-camera)\n* [Taking snapshots](#taking-snapshots)\n* [Lighting](#lighting)\n* [Clipping](#clipping)\n* [Emphasis effects](#emphasis-effects)\n* [Picking](#picking)\n* [Pick masking](#pick-masking)\n* [Getting the World-space boundary](#getting-the-world-space-boundary)\n* [Controlling the viewport](#controlling-the-viewport)\n* [Controlling rendering](#controlling-rendering)\n* [Gamma correction](#gamma-correction)\n\n### Creating a Scene\n\nCreating a Scene with its own default canvas:\n\n````javascript\nvar scene = new xeogl.Scene();\n````\n\nCreating a Scene with an existing canvas.\n\n````javascript\nvar scene2 = new xeogl.Scene({\n   canvas: \"myCanvas\"\n});\n\nvar scene3 = new xeogl.Scene({\n   canvas: document.getElementById(\"myCanvas\");\n});\n````\n\n### Creating entities\n\nCreating an {{#crossLink \"Entity\"}}{{/crossLink}} within a Scene:\n\n<a href=\"../../examples/#geometry_primitives_teapot\"><img src=\"../../assets/images/screenshots/Scene/teapot.png\"></img></a>\n\n````javascript\nvar entity = new xeogl.Entity(scene, {\n   geometry: new xeogl.TeapotGeometry(scene),\n   material: new xeogl.PhongMaterial(scene, {\n       diffuse: [0.2, 0.2, 1.0]\n   })\n});\n````\n\nCreating an entity within the default Scene (which will be automatically created if not yet existing):\n````javascript\nentity = new xeogl.Entity({\n   geometry: new xeogl.TeapotGeometry(),\n   material: new xeogl.PhongMaterial({\n       diffuse: [0.2, 0.2, 1.0]\n   })\n});\n\nentity.scene.camera.eye = [45, 45, 45];\n````\n\nThe default Scene can be got from either the Entity or the xeogl namespace:\n\n````javascript\nscene = entity.scene;\nscene = xeogl.scene;\n````\n\n### Loading models\n\nUse {{#crossLink \"GLTFModel\"}}{{/crossLink}} components to load glTF models into a Scene:\n\n````javascript\nvar model = new xeogl.GLTFModel(scene, { // If we don't provide the Scene, will create in default Scene\n   id: \"gearbox\",\n   src: \"models/gltf/gearbox/gearbox_assy.gltf\"\n});\n````\n\n### Accessing content\n\nFind components by ID in their Scene's {{#crossLink \"Scene/components:property\"}}{{/crossLink}} map:\n\n````javascript\nvar gear1 = scene.components[\"gearbox#gear99\"];\ngear1.visible = false;\n//...\n````\n\nA Scene also has a map of component instances for each {{#crossLink \"Component\"}}{{/crossLink}} subtype:\n\n````javascript\nvar entities = scene.types[\"xeogl.Entity\"];\nvar gear = entities[\"gearbox#gear99\"];\ngear.ghost = true;\n//...\n\nvar glTFModels = scene.types[\"xeogl.GLTFModel\"];\nvar gearbox = glTFModels[\"gearbox\"];\ngearbox.visible = false;\n//...\n````\na map containing just the {{#crossLink \"Model\"}}{{/crossLink}} instances:\n\n````javascript\ngearbox = scene.models[\"gearbox\"];\n````\n\nand a map containing just the {{#crossLink \"Entity\"}}{{/crossLink}} instances:\n\n````javascript\ngear = scene.entities[\"gearbox#gear99\"];\n````\n\n### Controlling the camera\n\nUse the Scene's {{#crossLink \"Camera\"}}{{/crossLink}} to control the current viewpoint and projection:\n\n````javascript\nvar camera = myScene.camera;\n\ncamera.eye = [-10,0,0];\ncamera.look = [-10,0,0];\ncamera.up = [0,1,0];\n\ncamera.projection = \"perspective\";\ncamera.perspective.fov = 45;\n//...\n````\n\n### Managing the canvas, taking snapshots\n\nThe Scene's {{#crossLink \"Canvas\"}}{{/crossLink}} component provides various conveniences relevant to the WebGL canvas, such\nas getting getting snapshots, firing resize events etc:\n\n````javascript\nvar canvas = scene.canvas;\n\ncanvas.on(\"boundary\", function(boundary) {\n   //...\n});\n\nvar imageData = canvas.getSnapshot({\n   width: 500,\n   height: 500,\n   format: \"png\"\n});\n````\n\n### Lighting\n\nThe Scene's {{#crossLink \"Lights\"}}{{/crossLink}} component manages lighting:\n\n````javascript\nvar lights = scene.lights;\nlights[1].color = [0.9, 0.9, 0.9];\n//...\n````\n\n### Clipping\n\nThe Scene's {{#crossLink \"Clips\"}}{{/crossLink}} component manages clipping planes for custom cross-sections:\n\n````javascript\nvar clips = scene.clips;\nclips.clips = [\nnew xeogl.Clip({  // Clip plane on negative diagonal\n       pos: [1.0, 1.0, 1.0],\n       dir: [-1.0, -1.0, -1.0],\n       active: true\n   }),\nnew xeogl.Clip({ // Clip plane on positive diagonal\n       pos: [-1.0, -1.0, -1.0],\n       dir: [1.0, 1.0, 1.0],\n       active: true\n   }),\n//...\n];\n````\n\n### Emphasis effects\n\nThe Scene's {{#crossLink \"Scene/ghostMaterial:property\"}}{{/crossLink}} provides the default {{#crossLink \"GhostMaterial\"}}{{/crossLink}}\nfor controlling ghost effects:\n\n````javascript\nvar ghostMaterial = scene.ghostMaterial;\nghostMaterial.edgeColor = [0.9, 0.9, 0.0];\n//...\n````\n\nThe Scene's {{#crossLink \"Scene/highlightMaterial:property\"}}{{/crossLink}} provides the default {{#crossLink \"GhostMaterial\"}}{{/crossLink}}\nfor controlling highlight effects:\n\n````javascript\nvar highlightMaterial = scene.highlightMaterial;\nhighlightMaterial.color = [0.9, 0.9, 0.0];\n//...\n````\n\nThe Scene's {{#crossLink \"Scene/outlineMaterial:property\"}}{{/crossLink}} provides the default {{#crossLink \"OutlineMaterial\"}}{{/crossLink}}\nfor controlling outline effects:\n\n\n````javascript\nvar outlineMaterial = scene.outlineMaterial;\noutlineMaterial.edgeWidth = 6;\n````\n\n### Picking entities\n\nUse the Scene's {{#crossLink \"Scene/pick:method\"}}pick(){{/crossLink}} method to pick and raycast entities.\n\nFor example, to pick a point on the surface of the closest entity at the given canvas coordinates:\n\n````javascript\nvar hit = scene.pick({\n    pickSurface: true,\n    canvasPos: [23, 131]\n});\n\nif (hit) { // Picked an Entity\n\n     var entity = hit.entity;\n\n     var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n     var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n     var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n     var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle\n     var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle\n     var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle\n     var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n     var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n     var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n}\n````\n\n### Pick masking\n\nWe can use the {{#crossLink \"Scene/pick:method\"}}pick(){{/crossLink}} method's ````include```` and ````exclude````\noptions to mask which Entities we attempt to pick.\n\nThis is useful for picking <em>through</em> things, to pick only the Entities of interest.\n\n#### Including entities\n\nTo pick only Entities ````\"gearbox#77.0\"```` and ````\"gearbox#79.0\"````, picking through any other Entities that are\nin the way, as if they weren't there:\n\n````javascript\nvar hit = scene.pick({\n    canvasPos: [23, 131],\n    include: [\"gearbox#77.0\", \"gearbox#79.0\"]\n});\n\nif (hit) {\n     // Entity will always be either \"gearbox#77.0\" or \"gearbox#79.0\"\n     var entity = hit.entity;\n}\n````\n\n#### Excluding entities\n\nTo pick any pickable Entity, except for ````\"gearbox#77.0\"```` and ````\"gearbox#79.0\"````, picking through those\nEntities if they happen to be in the way:\n\n````javascript\nvar hit = scene.pick({\n    canvasPos: [23, 131],\n    exclude: [\"gearbox#77.0\", \"gearbox#79.0\"]\n});\n\nif (hit) {\n     // Entity will never be \"gearbox#77.0\" or \"gearbox#79.0\"\n     var entity = hit.entity;\n}\n````\n\nSee {{#crossLink \"Scene/pick:method\"}}pick(){{/crossLink}} for more info on picking.\n\n### Getting the World-space boundary\n\nGetting a Scene's World-space boundary as an AABB:\n\n````javascript\nvar aabb = scene.aabb; // [xmin, ymin, zmin, xmax, ymax, zmax]\n````\n\nSubscribing to updates to the World-space boundary, which occur whenever Entities are Transformed, or their Geometries have been updated.\n\n````javascript\nscene.on(\"boundary\", function() {\n    var aabb = scene.aabb;\n    var obb = scene.obb;\n});\n````\n\nGetting the collective World-space axis-aligned boundary of the {{#crossLink \"Entity\"}}Entities{{/crossLink}}\nand/or {{#crossLink \"Model\"}}Models{{/crossLink}} with the given IDs:\n\n````JavaScript\nscene.getAABB(); // Gets collective boundary of all entities in the scene\nscene.getAABB(\"saw\"); // Gets collective boundary of all entities in saw model\nscene.getAABB([\"saw\", \"gearbox\"]); // Gets collective boundary of all entities in saw and gearbox models\nscene.getAABB(\"saw#0.1\"); // Get boundary of an entity in the saw model\nscene.getAABB([\"saw#0.1\", \"saw#0.2\"]); // Get collective boundary of two entities in saw model\n````\n\n### Managing the viewport\n\nThe Scene's {{#crossLink \"Viewport\"}}{{/crossLink}} component manages the WebGL viewport:\n\n````javascript\nvar viewport = scene.viewport\nviewport.boundary = [0, 0, 500, 400];;\n````\n\n### Controlling rendering\n\nYou can configure a Scene to perform multiple \"passes\" (renders) per frame. This is useful when we want to render the\nscene to multiple viewports, such as for stereo effects.\n\nIn the example, below, we'll configure the Scene to render twice on each frame, each time to different viewport. We'll do this\nwith a callback that intercepts the Scene before each render and sets its {{#crossLink \"Viewport\"}}{{/crossLink}} to a\ndifferent portion of the canvas. By default, the Scene will clear the canvas only before the first render, allowing the\ntwo views to be shown on the canvas at the same time.\n\n````Javascript\n// Load glTF model\nvar model = new xeogl.GLTFModel({\n   src: \"models/gltf/GearboxAssy/glTF/GearboxAssy.gltf\"\n});\n\nvar scene = model.scene;\nvar viewport = scene.viewport;\n\n// Configure Scene to render twice for each frame\nscene.passes = 2; // Default is 1\nscene.clearEachPass = false; // Default is false\n\n// Render to a separate viewport on each render\n\nvar viewport = scene.viewport;\nviewport.autoBoundary = false;\n\nscene.on(\"rendering\", function (e) {\n    switch (e.pass) {\n        case 0:\n            viewport.boundary = [0, 0, 200, 200]; // xmin, ymin, width, height\n            break;\n\n        case 1:\n            viewport.boundary = [200, 0, 200, 200];\n            break;\n    }\n});\n\n// We can also intercept the Scene after each render,\n// (though we're not using this for anything here)\nscene.on(\"rendered\", function (e) {\n    switch (e.pass) {\n        case 0:\n            break;\n\n        case 1:\n            break;\n    }\n});\n````\n\n### Gamma correction\n\nWithin its shaders, xeogl performs shading calculations in linear space.\n\nBy default, the Scene expects color textures (ie. {{#crossLink \"PhongMaterial/diffuseMap:property\"}}{{/crossLink}},\n{{#crossLink \"MetallicMaterial/baseColorMap:property\"}}{{/crossLink}} and {{#crossLink \"SpecularMaterial/diffuseMap:property\"}}{{/crossLink}}) to\nbe in pre-multipled gamma space, so will convert those to linear space before they are used in shaders. Other textures are\nalways expected to be in linear space.\n\nBy default, the Scene will also gamma-correct its rendered output.\n\nYou can configure the Scene to expect all those color textures to be linear space, so that it does not gamma-correct them:\n\n````javascript\nscene.gammaInput = false;\n````\n\nYou would still need to gamma-correct the output, though, if it's going straight to the canvas, so normally we would\nleave that enabled:\n\n````javascript\nscene.gammaOutput = true;\n````\n\nSee {{#crossLink \"Texture\"}}{{/crossLink}} for more information on texture encoding and gamma.",
             "is_constructor": 1,
             "params": [
                 {
@@ -5522,7 +5713,7 @@
             "namespace": "",
             "file": "examples/js/animation/cameraPathAnimation.js",
             "line": 1,
-            "description": "A **CameraPathAnimation** animates the {{#crossLink \"Scene\"}}{{/crossLink}}'s {{#crossLink \"Camera\"}}{{/crossLink}} along a {{#crossLink \"CameraPath\"}}{{/crossLink}}.\n\n## Examples\n\n* [Interpolating the Camera along a path](../../examples/#camera_path_interpolation)\n* [Flying directly to each frame on a path](../../examples/#camera_path_flyToFrame)\n* [Jumping directly to each frame on a path](../../examples/#camera_path_scrubToFrame)\n* [A menu of Camera waypoints to fly to](../../examples/#camera_path_frameMenu)\n\n## Usage\n\n### Interpolating the Camera along a path\n\nIn this example we'll use the CameraPathAnimation's\n{{#crossLink \"CameraPathAnimation/play\"}}{{/crossLink}} method to smoothly <b>interpolate</b>\nthe {{#crossLink \"Camera\"}}{{/crossLink}}'s {{#crossLink \"Camera\"}}{{/crossLink}} along a {{#crossLink \"CameraPath\"}}{{/crossLink}}:\n\n<a href=\"../../examples/#camera_path_interpolation\"><img src=\"http://i.giphy.com/l0MYDGMYzdFf6TqRW.gif\"></img></a>\n\n````Javascript\n// Load a model from glTF\n\nvar gearbox = new xeogl.GLTFModel({\n        src: \"models/gltf/GearboxAssy/glTF/GearboxAssy.gltf\"\n});\n\n// Define a CameraPath\n\nvar cameraPath = new xeogl.CameraPath({\n    frames: [\n        {t: 0, eye: [184.21, 10.54, -7.03], look: [159.2, 17.02, 3.21], up: [-0.15, 0.97, 0.13]},\n        {t: 1, eye: [184.91, 10.10, -11.26], look: [171.03, 13.69, -5.57], up: [-0.15, 0.97, 0.12]},\n        {t: 2, eye: [181.37, 12.35, -16.93], look: [171.03, 13.69, -5.57], up: [-0.17, 0.93, 0.28]},\n        {t: 2, eye: [174.01, 13.55, -20.70], look: [171.03, 13.69, -5.57], up: [-0.01, 0.90, 0.40]},\n        {t: 4, eye: [166.48, 14.36, -20.30], look: [171.03, 13.69, -5.57], up: [0.19, 0.88, 0.40]},\n        {t: 5, eye: [160.32, 14.69, -16.63], look: [171.03, 13.69, -5.57], up: [0.36, 0.87, 0.29]},\n        {t: 6, eye: [156.67, 17.97, -4.77], look: [162.53, 17.42, 1.28], up: [0.36, 0.87, 0.29]},\n        {t: 7, eye: [151.14, 16.68, -10.04], look: [158.94, 15.95, -1.99], up: [0.36, 0.87, 0.29]},\n        {t: 8, eye: [146.26, 17.56, -4.77], look: [152.13, 17.05, 1.28], up: [0.36, 0.87, 0.28]},\n        {t: 9, eye: [137.26, 18.36, -9.65], look: [149.76, 17.27, 3.24], up: [0.36, 0.87, 0.28]},\n        {t: 10, eye: [139.04, 18.29, -11.17], look: [149.76, 17.27, 3.24], up: [0.32, 0.87, 0.33]},\n        {t: 11, eye: [140.66, 18.13, -12.26], look: [149.76, 17.27, 3.24], up: [0.28, 0.87, 0.35]},\n        {t: 12, eye: [147.18, 17.66, -14.56], look: [149.76, 17.27, 3.24], up: [0.12, 0.89, 0.41]},\n        {t: 13, eye: [158.05, 16.33, -12.69], look: [149.76, 17.27, 3.24], up: [-0.11, 0.91, 0.34]},\n        {t: 14, eye: [150.11, 13.26, -6.69], look: [147.95, 13.50, -2.52], up: [-0.11, 0.91, 0.34]},\n        {t: 15, eye: [149.27, 13.00, -3.34], look: [148.72, 13.05, -2.29], up: [-0.11, 0.91, 0.35]},\n        {t: 16, eye: [152.62, 11.65, -4.87], look: [148.47, 12.08, 3.08], up: [-0.11, 0.91, 0.35]},\n        {t: 17, eye: [153.35, 12.24, -1.84], look: [148.69, 12.72, 7.01], up: [-0.11, 0.91, 0.35]},\n        {t: 18, eye: [156.49, 12.11, 0.74], look: [148.69, 12.72, 7.012], up: [-0.23, 0.92, 0.26]},\n        {t: 19, eye: [158.52, 11.98, 5.21], look: [148.69, 12.72, 7.01], up: [-0.32, 0.92, 0.12]},\n        {t: 20, eye: [158.60, 11.50, 7.91], look: [148.69, 12.72, 7.01], up: [-0.30, 0.94, 0.035]},\n        {t: 21, eye: [157.60, 11.76, 11.51], look: [148.69, 12.72, 7.01], up: [-0.31, 0.93, -0.089]},\n        {t: 22, eye: [152.67, 18.35, 14.29], look: [148.69, 12.72, 7.01], up: [-0.46, 0.51, -0.70]},\n        {t: 23, eye: [148.79, 21.67, 11.52], look: [148.69, 12.72, 7.01], up: [-0.15, 0.036, -0.97]},\n        {t: 24, eye: [147.11, 22.40, 9.07], look: [148.69, 12.72, 7.01], up: [0.38, -0.16, -0.89]},\n        {t: 25, eye: [144.80, 21.92, 6.23], look: [148.69, 12.72, 7.01], up: [0.98, -0.02, 0.03]},\n        {t: 26, eye: [144.11, 20.18, 2.13], look: [148.69, 12.72, 7.01], up: [0.71, 0.29, 0.62]},\n        {t: 27, eye: [145.87, 17.37, -1.40], look: [148.69, 12.72, 7.01], up: [0.31, 0.60, 0.71]},\n        {t: 28, eye: [144.37, 19.17, -7.33], look: [146.13, 16.27, -2.08], up: [0.31, 0.60, 0.71]},\n        {t: 29, eye: [142.54, 21.91, -17.26], look: [146.89, 14.81, -4.28], up: [0.31, 0.60, 0.71]}\n    ]\n});\n\n// Once the model has loaded, animate the\n// (default Scene's default Camera) along the CameraPath\n\nvar cameraPathAnimation = new xeogl.CameraPathAnimation({\n    cameraPath: cameraPath\n});\n\ngearbox.on(\"loaded\", function () {\n    cameraPathAnimation.play();\n});\n````\n\n<br>\n### Flying directly to each frame on a path\n\nIn this example, we'll use the CameraPathAnimation's {{#crossLink \"CameraPathAnimation/flyToFrame\"}}{{/crossLink}} method\nto <b>fly</b> the {{#crossLink \"Camera\"}}{{/crossLink}} directly to each frame on the {{#crossLink \"CameraPath\"}}{{/crossLink}}:\n\n<a href=\"../../examples/#camera_path_flyToFrame\"><img src=\"http://i.giphy.com/l3vQYNjsnAQwPBeYU.gif\"></img></a>\n\n````javascript\nvar i = 0;\nvar dir = 1;\n\ngearbox.on(\"loaded\", function () {\n    function nextFrame() {\n        cameraPathAnimation.flyToFrame(i += dir, function() { setTimeout(nextFrame, 1000); });\n\n        if (i <= 0 || i >= 29) {\n            dir = -dir;\n        }\n    }\n    nextFrame();\n});\n````\n<br>\n### Jumping directly to each frame on a path\n\nIn this example, we'll use the CameraPathAnimation's {{#crossLink \"CameraPathAnimation/scrubToFrame\"}}{{/crossLink}} method\nto <b>jump</b> the {{#crossLink \"Camera\"}}{{/crossLink}} directly to each frame on the {{#crossLink \"CameraPath\"}}{{/crossLink}}:\n\n<a href=\"../../examples/#camera_path_scrubToFrame\"><img src=\"http://i.giphy.com/l0Hlyqk7kewTjSBZ6.gif\"></img></a>\n\n````javascript\nvar i = 0;\nvar dir = 1;\n\ngearbox.on(\"loaded\", function () {\n    function nextFrame() {\n        cameraPathAnimation.scrubToFrame(i += dir);\n\n        if (i <= 0 || i >= 29) {\n            dir = -dir;\n        }\n        setTimeout(nextFrame, 1000);\n    }\n    nextFrame();\n});\n````",
+            "description": "A **CameraPathAnimation** animates the {{#crossLink \"Scene\"}}{{/crossLink}}'s {{#crossLink \"Camera\"}}{{/crossLink}} along a {{#crossLink \"CameraPath\"}}{{/crossLink}}.\n\n## Examples\n\n* [Interpolating the Camera along a path](../../examples/#camera_path_interpolation)\n* [Flying directly to each frame on a path](../../examples/#camera_path_flyToFrame)\n* [Jumping directly to each frame on a path](../../examples/#camera_path_scrubToFrame)\n* [A menu of Camera waypoints to fly to](../../examples/#camera_path_frameMenu)\n\n## Usage\n\n### Interpolating the Camera along a path\n\nIn this example we'll use the CameraPathAnimation's\n{{#crossLink \"CameraPathAnimation/play\"}}{{/crossLink}} method to smoothly <b>interpolate</b>\nthe {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s {{#crossLink \"Camera\"}}{{/crossLink}} along a {{#crossLink \"CameraPath\"}}{{/crossLink}}:\n\n<a href=\"../../examples/#camera_path_interpolation\"><img src=\"http://i.giphy.com/l0MYDGMYzdFf6TqRW.gif\"></img></a>\n\n````Javascript\n// Load a model from glTF\n\nvar gearbox = new xeogl.GLTFModel({\n        src: \"models/gltf/GearboxAssy/glTF/GearboxAssy.gltf\"\n});\n\n// Define a CameraPath\n\nvar cameraPath = new xeogl.CameraPath({\n    frames: [\n        {t: 0, eye: [184.21, 10.54, -7.03], look: [159.2, 17.02, 3.21], up: [-0.15, 0.97, 0.13]},\n        {t: 1, eye: [184.91, 10.10, -11.26], look: [171.03, 13.69, -5.57], up: [-0.15, 0.97, 0.12]},\n        {t: 2, eye: [181.37, 12.35, -16.93], look: [171.03, 13.69, -5.57], up: [-0.17, 0.93, 0.28]},\n        {t: 2, eye: [174.01, 13.55, -20.70], look: [171.03, 13.69, -5.57], up: [-0.01, 0.90, 0.40]},\n        {t: 4, eye: [166.48, 14.36, -20.30], look: [171.03, 13.69, -5.57], up: [0.19, 0.88, 0.40]},\n        {t: 5, eye: [160.32, 14.69, -16.63], look: [171.03, 13.69, -5.57], up: [0.36, 0.87, 0.29]},\n        {t: 6, eye: [156.67, 17.97, -4.77], look: [162.53, 17.42, 1.28], up: [0.36, 0.87, 0.29]},\n        {t: 7, eye: [151.14, 16.68, -10.04], look: [158.94, 15.95, -1.99], up: [0.36, 0.87, 0.29]},\n        {t: 8, eye: [146.26, 17.56, -4.77], look: [152.13, 17.05, 1.28], up: [0.36, 0.87, 0.28]},\n        {t: 9, eye: [137.26, 18.36, -9.65], look: [149.76, 17.27, 3.24], up: [0.36, 0.87, 0.28]},\n        {t: 10, eye: [139.04, 18.29, -11.17], look: [149.76, 17.27, 3.24], up: [0.32, 0.87, 0.33]},\n        {t: 11, eye: [140.66, 18.13, -12.26], look: [149.76, 17.27, 3.24], up: [0.28, 0.87, 0.35]},\n        {t: 12, eye: [147.18, 17.66, -14.56], look: [149.76, 17.27, 3.24], up: [0.12, 0.89, 0.41]},\n        {t: 13, eye: [158.05, 16.33, -12.69], look: [149.76, 17.27, 3.24], up: [-0.11, 0.91, 0.34]},\n        {t: 14, eye: [150.11, 13.26, -6.69], look: [147.95, 13.50, -2.52], up: [-0.11, 0.91, 0.34]},\n        {t: 15, eye: [149.27, 13.00, -3.34], look: [148.72, 13.05, -2.29], up: [-0.11, 0.91, 0.35]},\n        {t: 16, eye: [152.62, 11.65, -4.87], look: [148.47, 12.08, 3.08], up: [-0.11, 0.91, 0.35]},\n        {t: 17, eye: [153.35, 12.24, -1.84], look: [148.69, 12.72, 7.01], up: [-0.11, 0.91, 0.35]},\n        {t: 18, eye: [156.49, 12.11, 0.74], look: [148.69, 12.72, 7.012], up: [-0.23, 0.92, 0.26]},\n        {t: 19, eye: [158.52, 11.98, 5.21], look: [148.69, 12.72, 7.01], up: [-0.32, 0.92, 0.12]},\n        {t: 20, eye: [158.60, 11.50, 7.91], look: [148.69, 12.72, 7.01], up: [-0.30, 0.94, 0.035]},\n        {t: 21, eye: [157.60, 11.76, 11.51], look: [148.69, 12.72, 7.01], up: [-0.31, 0.93, -0.089]},\n        {t: 22, eye: [152.67, 18.35, 14.29], look: [148.69, 12.72, 7.01], up: [-0.46, 0.51, -0.70]},\n        {t: 23, eye: [148.79, 21.67, 11.52], look: [148.69, 12.72, 7.01], up: [-0.15, 0.036, -0.97]},\n        {t: 24, eye: [147.11, 22.40, 9.07], look: [148.69, 12.72, 7.01], up: [0.38, -0.16, -0.89]},\n        {t: 25, eye: [144.80, 21.92, 6.23], look: [148.69, 12.72, 7.01], up: [0.98, -0.02, 0.03]},\n        {t: 26, eye: [144.11, 20.18, 2.13], look: [148.69, 12.72, 7.01], up: [0.71, 0.29, 0.62]},\n        {t: 27, eye: [145.87, 17.37, -1.40], look: [148.69, 12.72, 7.01], up: [0.31, 0.60, 0.71]},\n        {t: 28, eye: [144.37, 19.17, -7.33], look: [146.13, 16.27, -2.08], up: [0.31, 0.60, 0.71]},\n        {t: 29, eye: [142.54, 21.91, -17.26], look: [146.89, 14.81, -4.28], up: [0.31, 0.60, 0.71]}\n    ]\n});\n\n// Once the model has loaded, animate the\n// (default Scene's default Camera) along the CameraPath\n\nvar cameraPathAnimation = new xeogl.CameraPathAnimation({\n    cameraPath: cameraPath\n});\n\ngearbox.on(\"loaded\", function () {\n    cameraPathAnimation.play();\n});\n````\n\n<br>\n### Flying directly to each frame on a path\n\nIn this example, we'll use the CameraPathAnimation's {{#crossLink \"CameraPathAnimation/flyToFrame\"}}{{/crossLink}} method\nto <b>fly</b> the {{#crossLink \"Camera\"}}{{/crossLink}} directly to each frame on the {{#crossLink \"CameraPath\"}}{{/crossLink}}:\n\n<a href=\"../../examples/#camera_path_flyToFrame\"><img src=\"http://i.giphy.com/l3vQYNjsnAQwPBeYU.gif\"></img></a>\n\n````javascript\nvar i = 0;\nvar dir = 1;\n\ngearbox.on(\"loaded\", function () {\n    function nextFrame() {\n        cameraPathAnimation.flyToFrame(i += dir, function() { setTimeout(nextFrame, 1000); });\n\n        if (i <= 0 || i >= 29) {\n            dir = -dir;\n        }\n    }\n    nextFrame();\n});\n````\n<br>\n### Jumping directly to each frame on a path\n\nIn this example, we'll use the CameraPathAnimation's {{#crossLink \"CameraPathAnimation/scrubToFrame\"}}{{/crossLink}} method\nto <b>jump</b> the {{#crossLink \"Camera\"}}{{/crossLink}} directly to each frame on the {{#crossLink \"CameraPath\"}}{{/crossLink}}:\n\n<a href=\"../../examples/#camera_path_scrubToFrame\"><img src=\"http://i.giphy.com/l0Hlyqk7kewTjSBZ6.gif\"></img></a>\n\n````javascript\nvar i = 0;\nvar dir = 1;\n\ngearbox.on(\"loaded\", function () {\n    function nextFrame() {\n        cameraPathAnimation.scrubToFrame(i += dir);\n\n        if (i <= 0 || i >= 29) {\n            dir = -dir;\n        }\n        setTimeout(nextFrame, 1000);\n    }\n    nextFrame();\n});\n````",
             "submodule": "animation",
             "is_constructor": 1,
             "params": [
@@ -6823,76 +7014,84 @@
                             "optional": true
                         },
                         {
+                            "name": "flattenTransforms",
+                            "description": "Flattens transform hierarchies to improve rendering performance.",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "true"
+                        },
+                        {
+                            "name": "lambertMaterials",
+                            "description": "When true, gives each }{{/crossLink}} the same {{#crossLink \"LambertMaterial\"}}{{/crossLink}} and a {{#crossLink \"Entity/colorize:property\"}}{{/crossLink}} set the to diffuse color extracted from the glTF material. This is typically used for CAD models with huge amounts of objects, and will ignore textures.|",
+                            "type": "#crossLink \"Entity\"",
+                            "optional": true,
+                            "optdefault": "false"
+                        },
+                        {
+                            "name": "quantizeGeometry",
+                            "description": "When true, quantizes geometry to reduce memory and GPU bus usage. |",
+                            "optional": true,
+                            "optdefault": "true"
+                        },
+                        {
+                            "name": "combineGeometry",
+                            "description": "When true, combines geometry vertex buffers to improve rendering performance. |",
+                            "optional": true,
+                            "optdefault": "true"
+                        },
+                        {
+                            "name": "backfaces",
+                            "description": "When true, allows visible backfaces, wherever specified in the glTF. When false, ignores backfaces. |",
+                            "optional": true,
+                            "optdefault": "false"
+                        },
+                        {
+                            "name": "ghost",
+                            "description": "When true, sets all the Model's Entities initially ghosted. |",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
+                        },
+                        {
+                            "name": "highlight",
+                            "description": "When true, sets all the Model's Entities initially highlighted. |",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
+                        },
+                        {
+                            "name": "outline",
+                            "description": "When true, sets all the Model's Entities initially outlined. |",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
+                        },
+                        {
+                            "name": "ghostEdgeThreshold",
+                            "description": "When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn. |",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "2"
+                        },
+                        {
+                            "name": "maxEntities",
+                            "description": "Optional maximum number of {{#crossLink \"Entity\"}}{{/crossLink}}'s to load. |",
+                            "type": "Number",
+                            "optional": true
+                        },
+                        {
+                            "name": "included",
+                            "description": "Optional callback to mask which {{#crossLink \"Entity\"}}{{/crossLink}}'s are loaded. Entity will only be loaded when this callback returns ````true``` for the given Entity ID. |\nGLTFModel to load components from the new file (after first destroying any components loaded from a previous file path).",
+                            "type": "Function",
+                            "optional": true
+                        },
+                        {
                             "name": "transform",
                             "description": "A Local-to-World-space (modelling) {{#crossLink \"Transform\"}}{{/crossLink}} to attach to this GLTFModel.\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this GLTFModel. Internally, the given\n{{#crossLink \"Transform\"}}{{/crossLink}} will be inserted above each top-most {{#crossLink \"Transform\"}}Transform{{/crossLink}}\nthat the GLTFModel attaches to its {{#crossLink \"Entity\"}}Entities{{/crossLink}}.",
                             "type": "Number|String|Transform",
                             "optional": true
                         }
                     ]
-                },
-                {
-                    "name": "flattenTransforms",
-                    "description": "Flattens transform hierarchies to improve rendering performance.",
-                    "type": "Boolean",
-                    "optional": true,
-                    "optdefault": "true"
-                },
-                {
-                    "name": "[lambertMaterials",
-                    "description": "| Boolean |  | false | When true, gives each }{{/crossLink}} the same {{#crossLink \"LambertMaterial\"}}{{/crossLink}} and a {{#crossLink \"Entity/colorize:property\"}}{{/crossLink}} set the to diffuse color extracted from the glTF material. This is typically used for CAD models with huge amounts of objects, and will ignore textures.|",
-                    "type": "#crossLink \"Entity\""
-                },
-                {
-                    "name": "[quantizeGeometry",
-                    "description": "| Boolean |  | true | When true, quantizes geometry to reduce memory and GPU bus usage. |"
-                },
-                {
-                    "name": "[combineGeometry",
-                    "description": "| Boolean |  | true | When true, combines geometry vertex buffers to improve rendering performance. |"
-                },
-                {
-                    "name": "[backfaces",
-                    "description": "| Boolean |  | true | When true, allows visible backfaces, wherever specified in the glTF. When false, ignores backfaces. |"
-                },
-                {
-                    "name": "ghost",
-                    "description": "When true, sets all the Model's Entities initially ghosted. |",
-                    "type": "Boolean",
-                    "optional": true,
-                    "optdefault": "false"
-                },
-                {
-                    "name": "highlight",
-                    "description": "When true, sets all the Model's Entities initially highlighted. |",
-                    "type": "Boolean",
-                    "optional": true,
-                    "optdefault": "false"
-                },
-                {
-                    "name": "outline",
-                    "description": "When true, sets all the Model's Entities initially outlined. |",
-                    "type": "Boolean",
-                    "optional": true,
-                    "optdefault": "false"
-                },
-                {
-                    "name": "ghostEdgeThreshold",
-                    "description": "When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn. |",
-                    "type": "Number",
-                    "optional": true,
-                    "optdefault": "2"
-                },
-                {
-                    "name": "maxEntities",
-                    "description": "Optional maximum number of {{#crossLink \"Entity\"}}{{/crossLink}}'s to load. |",
-                    "type": "Number",
-                    "optional": true
-                },
-                {
-                    "name": "included",
-                    "description": "Optional callback to mask which {{#crossLink \"Entity\"}}{{/crossLink}}'s are loaded. Entity will only be loaded when this callback returns ````true``` for the given Entity ID. |\nGLTFModel to load components from the new file (after first destroying any components loaded from a previous file path).",
-                    "type": "Function",
-                    "optional": true
                 }
             ],
             "extends": "Model"
@@ -9477,10 +9676,10 @@
         {
             "file": "src/entities/entity.js",
             "line": 702,
-            "description": "The {{#crossLink \"HighlightMaterial\"}}HighlightMaterial{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/highlightMaterial:property\"}}highlightMaterial{{/crossLink}} when set to\na null or undefined value.",
+            "description": "The {{#crossLink \"GhostMaterial\"}}GhostMaterial{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/highlightMaterial:property\"}}highlightMaterial{{/crossLink}} when set to\na null or undefined value.",
             "itemtype": "property",
             "name": "highlightMaterial",
-            "type": "HighlightMaterial",
+            "type": "GhostMaterial",
             "class": "Entity",
             "module": "xeogl",
             "submodule": "entities"
@@ -9730,6 +9929,325 @@
             "itemtype": "event",
             "name": "boundary",
             "class": "Entity",
+            "module": "xeogl",
+            "submodule": "entities"
+        },
+        {
+            "file": "src/entities/object.js",
+            "line": 529,
+            "description": "Fired when this Object is *picked* via a call to the {{#crossLink \"Canvas/pick:method\"}}{{/crossLink}} method\non the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s {{#crossLink \"Canvas\"}}Canvas {{/crossLink}}.",
+            "itemtype": "event",
+            "name": "picked",
+            "params": [
+                {
+                    "name": "objectId",
+                    "description": "The ID of this Object.",
+                    "type": "String"
+                },
+                {
+                    "name": "canvasX",
+                    "description": "The X-axis Canvas coordinate that was picked.",
+                    "type": "Number"
+                },
+                {
+                    "name": "canvasY",
+                    "description": "The Y-axis Canvas coordinate that was picked.",
+                    "type": "Number"
+                }
+            ],
+            "class": "Object",
+            "module": "xeogl",
+            "submodule": "entities"
+        },
+        {
+            "file": "src/entities/object.js",
+            "line": 605,
+            "description": "The {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} attached to this Object.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Object. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/geometry:property\"}}geometry{{/crossLink}}\n(a simple box) when set to a null or undefined value.\n\nUpdates {{#crossLink \"Object/boundary\"}}{{/crossLink}},\n{{#crossLink \"Object/worldObb\"}}{{/crossLink}} and\n{{#crossLink \"Object/center\"}}{{/crossLink}}",
+            "itemtype": "property",
+            "name": "geometry",
+            "type": "Geometry",
+            "class": "Object",
+            "module": "xeogl",
+            "submodule": "entities"
+        },
+        {
+            "file": "src/entities/object.js",
+            "line": 648,
+            "description": "The {{#crossLink \"Material\"}}Material{{/crossLink}} attached to this Object.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Object. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/material:property\"}}material{{/crossLink}} when set to\na null or undefined value.",
+            "itemtype": "property",
+            "name": "material",
+            "type": "Material",
+            "class": "Object",
+            "module": "xeogl",
+            "submodule": "entities"
+        },
+        {
+            "file": "src/entities/object.js",
+            "line": 675,
+            "description": "The {{#crossLink \"GhostMaterial\"}}GhostMaterial{{/crossLink}} attached to this Object.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Object. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/ghostMaterial:property\"}}ghostMaterial{{/crossLink}} when set to\na null or undefined value.",
+            "itemtype": "property",
+            "name": "ghostMaterial",
+            "type": "GhostMaterial",
+            "class": "Object",
+            "module": "xeogl",
+            "submodule": "entities"
+        },
+        {
+            "file": "src/entities/object.js",
+            "line": 702,
+            "description": "The {{#crossLink \"HighlightMaterial\"}}HighlightMaterial{{/crossLink}} attached to this Object.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Object. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/highlightMaterial:property\"}}highlightMaterial{{/crossLink}} when set to\na null or undefined value.",
+            "itemtype": "property",
+            "name": "highlightMaterial",
+            "type": "HighlightMaterial",
+            "class": "Object",
+            "module": "xeogl",
+            "submodule": "entities"
+        },
+        {
+            "file": "src/entities/object.js",
+            "line": 729,
+            "description": "The {{#crossLink \"OutlineMaterial\"}}OutlineMaterial{{/crossLink}} attached to this Object.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Object. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/outlineMaterial:property\"}}outlineMaterial{{/crossLink}} when set to\na null or undefined value.",
+            "itemtype": "property",
+            "name": "outlineMaterial",
+            "type": "OutlineMaterial",
+            "class": "Object",
+            "module": "xeogl",
+            "submodule": "entities"
+        },
+        {
+            "file": "src/entities/object.js",
+            "line": 756,
+            "description": "The Local-to-World-space (modelling) {{#crossLink \"Transform\"}}{{/crossLink}} attached to this Object.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Object. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/transform:property\"}}transform{{/crossLink}}\n(an identity matrix) when set to a null or undefined value.\n\nUpdates {{#crossLink \"Object/boundary\"}}{{/crossLink}},\n{{#crossLink \"Object/worldObb\"}}{{/crossLink}} and\n{{#crossLink \"Object/center\"}}{{/crossLink}}",
+            "itemtype": "property",
+            "name": "transform",
+            "type": "Transform",
+            "class": "Object",
+            "module": "xeogl",
+            "submodule": "entities"
+        },
+        {
+            "file": "src/entities/object.js",
+            "line": 807,
+            "description": "Indicates whether this Object is visible or not.\n\nThe Object is only rendered when {{#crossLink \"Object/visible:property\"}}{{/crossLink}} is true and\n{{#crossLink \"Object/culled:property\"}}{{/crossLink}} is false.",
+            "itemtype": "property",
+            "name": "visible",
+            "default": "true",
+            "type": "Boolean",
+            "class": "Object",
+            "module": "xeogl",
+            "submodule": "entities"
+        },
+        {
+            "file": "src/entities/object.js",
+            "line": 829,
+            "description": "Indicates whether or not this Object is currently culled from view.\n\nThe Object is only rendered when {{#crossLink \"Object/visible:property\"}}{{/crossLink}} is true and\n{{#crossLink \"Object/culled:property\"}}{{/crossLink}} is false.",
+            "itemtype": "property",
+            "name": "culled",
+            "default": "false",
+            "type": "Boolean",
+            "class": "Object",
+            "module": "xeogl",
+            "submodule": "entities"
+        },
+        {
+            "file": "src/entities/object.js",
+            "line": 851,
+            "description": "Indicates whether this object is pickable or not.\n\nPicking is done via calls to {{#crossLink \"Canvas/pick:method\"}}Canvas#pick{{/crossLink}}.",
+            "itemtype": "property",
+            "name": "pickable",
+            "default": "true",
+            "type": "Boolean",
+            "class": "Object",
+            "module": "xeogl",
+            "submodule": "entities"
+        },
+        {
+            "file": "src/entities/object.js",
+            "line": 878,
+            "description": "Indicates whether this Object is clippable by {{#crossLink \"Clips\"}}{{/crossLink}} components.",
+            "itemtype": "property",
+            "name": "clippable",
+            "default": "true",
+            "type": "Boolean",
+            "class": "Object",
+            "module": "xeogl",
+            "submodule": "entities"
+        },
+        {
+            "file": "src/entities/object.js",
+            "line": 901,
+            "description": "Indicates whether this Object is included in boundary calculations.",
+            "itemtype": "property",
+            "name": "collidable",
+            "default": "true",
+            "type": "Boolean",
+            "class": "Object",
+            "module": "xeogl",
+            "submodule": "entities"
+        },
+        {
+            "file": "src/entities/object.js",
+            "line": 924,
+            "description": "Indicates whether this Object casts shadows.",
+            "itemtype": "property",
+            "name": "castShadow",
+            "default": "true",
+            "type": "Boolean",
+            "class": "Object",
+            "module": "xeogl",
+            "submodule": "entities"
+        },
+        {
+            "file": "src/entities/object.js",
+            "line": 947,
+            "description": "Indicates whether this Object receives shadows.",
+            "itemtype": "property",
+            "name": "receiveShadow",
+            "default": "true",
+            "type": "Boolean",
+            "class": "Object",
+            "module": "xeogl",
+            "submodule": "entities"
+        },
+        {
+            "file": "src/entities/object.js",
+            "line": 971,
+            "description": "Indicates whether this Object is rendered with an outline.\n\nThe outline effect is configured via the Object's {{#crossLink \"Object/outlineMaterial:property\"}}outlineMaterial{{/crossLink}} component.",
+            "itemtype": "property",
+            "name": "outline",
+            "default": "false",
+            "type": "Boolean",
+            "class": "Object",
+            "module": "xeogl",
+            "submodule": "entities"
+        },
+        {
+            "file": "src/entities/object.js",
+            "line": 996,
+            "description": "Indicates whether this Object is highlighted.\n\nThe highlight effect is configured via the Object's {{#crossLink \"Object/highlightMaterial:property\"}}highlightMaterial{{/crossLink}}.",
+            "itemtype": "property",
+            "name": "highlight",
+            "default": "false",
+            "type": "Boolean",
+            "class": "Object",
+            "module": "xeogl",
+            "submodule": "entities"
+        },
+        {
+            "file": "src/entities/object.js",
+            "line": 1021,
+            "description": "RGBA colorize color, multiplies by the outgoing fragment color and transparency.",
+            "itemtype": "property",
+            "name": "colorize",
+            "default": "[1.0, 1.0, 1.0, 1.0]",
+            "type": "Float32Array",
+            "class": "Object",
+            "module": "xeogl",
+            "submodule": "entities"
+        },
+        {
+            "file": "src/entities/object.js",
+            "line": 1054,
+            "description": "Indicates this Object's rendering order.\n\nThis can be set on multiple transparent Entities, to make them render in a specific order\nfor correct alpha blending.",
+            "itemtype": "property",
+            "name": "layer",
+            "default": "0",
+            "type": "Number",
+            "class": "Object",
+            "module": "xeogl",
+            "submodule": "entities"
+        },
+        {
+            "file": "src/entities/object.js",
+            "line": 1082,
+            "description": "Flag which indicates whether this Object is stationary or not.\n\nSetting this true will disable the effect of {{#crossLink \"Lookat\"}}view transform{{/crossLink}}\ntranslations for this Object, while still alowing it to rotate. This is useful for skybox Entities.",
+            "itemtype": "property",
+            "name": "stationary",
+            "default": "false",
+            "type": "Boolean",
+            "class": "Object",
+            "module": "xeogl",
+            "submodule": "entities"
+        },
+        {
+            "file": "src/entities/object.js",
+            "line": 1108,
+            "description": "Specifies the billboarding behaviour for this Object.\n\nOptions are:\n\n* **\"none\"** -  **(default)** - No billboarding.\n* **\"spherical\"** - Object is billboarded to face the viewpoint, rotating both vertically and horizontally.\n* **\"cylindrical\"** - Object is billboarded to face the viewpoint, rotating only about its vertically\naxis. Use this mode for things like trees on a landscape.",
+            "itemtype": "property",
+            "name": "billboard",
+            "default": "\"none\"",
+            "type": "String",
+            "class": "Object",
+            "module": "xeogl",
+            "submodule": "entities"
+        },
+        {
+            "file": "src/entities/object.js",
+            "line": 1143,
+            "description": "Flag which indicates if this Object is rendered with ghosting effect.\n\nThe ghost effect is configured via the Object's {{#crossLink \"Object/ghostMaterial:property\"}}ghostMaterial{{/crossLink}}.",
+            "itemtype": "property",
+            "name": "ghost",
+            "default": "false",
+            "type": "Boolean",
+            "class": "Object",
+            "module": "xeogl",
+            "submodule": "entities"
+        },
+        {
+            "file": "src/entities/object.js",
+            "line": 1169,
+            "description": "World-space 3D center of this Object.",
+            "itemtype": "property",
+            "name": "center",
+            "final": 1,
+            "type": "{Float32Array}",
+            "class": "Object",
+            "module": "xeogl",
+            "submodule": "entities"
+        },
+        {
+            "file": "src/entities/object.js",
+            "line": 1191,
+            "description": "World-space axis-aligned 3D boundary (AABB) of this Object.\n\nThe AABB is represented by a six-element Float32Array containing the min/max extents of the\naxis-aligned volume, ie. ````[xmin, ymin,zmin,xmax,ymax, zmax]````.",
+            "itemtype": "property",
+            "name": "aabb",
+            "final": 1,
+            "type": "{Float32Array}",
+            "class": "Object",
+            "module": "xeogl",
+            "submodule": "entities"
+        },
+        {
+            "file": "src/entities/object.js",
+            "line": 1224,
+            "description": "World-space oriented 3D boundary (OBB) of this Object.\n\nThe OBB is represented by a 32-element Float32Array containing the eight vertices of the box,\nwhere each vertex is a homogeneous coordinate having [x,y,z,w] elements.",
+            "itemtype": "property",
+            "name": "obb",
+            "final": 1,
+            "type": "{Float32Array}",
+            "class": "Object",
+            "module": "xeogl",
+            "submodule": "entities"
+        },
+        {
+            "file": "src/entities/object.js",
+            "line": 1252,
+            "description": "World-space vertex positions of this Object.\n\nThese are internally generated on-demand and cached. To free the cached\nvertex World positions when you're done with them, set this property to null or undefined.",
+            "itemtype": "property",
+            "name": "worpdPositions",
+            "type": "Float32Array",
+            "final": 1,
+            "class": "Object",
+            "module": "xeogl",
+            "submodule": "entities"
+        },
+        {
+            "file": "src/entities/object.js",
+            "line": 1310,
+            "description": "Fired whenever this Object's World-space boundary changes.\n\nGet the latest boundary from the Object's {{#crossLink \"Object/aabb:property\"}}{{/crossLink}}\nand {{#crossLink \"Object/obb:property\"}}{{/crossLink}} properties.",
+            "itemtype": "event",
+            "name": "boundary",
+            "class": "Object",
             "module": "xeogl",
             "submodule": "entities"
         },
@@ -18331,7 +18849,7 @@
         {
             "file": "src/scene.js",
             "line": 1813,
-            "description": "Convenience method which returns the collective axis-aligned boundary of the {{#crossLink \"Entity\"}}Entities{{/crossLink}} \nand/or {{#crossLink \"Model\"}}Models{{/crossLink}} with the given IDs.\n\nWhen no arguments are given, returns the total boundary of all objects in the scene.\n\nOnly {{#crossLink \"Entity\"}}Entities{{/crossLink}} with {{#crossLink \"Entity/collidable:property\"}}collidable{{/crossLink}} \nset ````true```` are included in the boundary.\n\n## Usage\n\n````JavaScript\nscene.getAABB(); // Gets collective boundary of all objects in the scene\nscene.getAABB(\"saw\"); // Gets collective boundary of all objects in saw model\nscene.getAABB([\"saw\", \"gearbox\"]); // Gets collective boundary of all objects in saw and gearbox models\nscene.getAABB(\"saw#0.1\"); // Get boundary of an object in the saw model\nscene.getAABB([\"saw#0.1\", \"saw#0.2\"]); // Get collective boundary of two objects in saw model\n````",
+            "description": "Convenience method which returns the collective axis-aligned boundary of the {{#crossLink \"Entity\"}}Entities{{/crossLink}}\nand/or {{#crossLink \"Model\"}}Models{{/crossLink}} with the given IDs.\n\nWhen no arguments are given, returns the total boundary of all objects in the scene.\n\nOnly {{#crossLink \"Entity\"}}Entities{{/crossLink}} with {{#crossLink \"Entity/collidable:property\"}}collidable{{/crossLink}}\nset ````true```` are included in the boundary.\n\n## Usage\n\n````JavaScript\nscene.getAABB(); // Gets collective boundary of all objects in the scene\nscene.getAABB(\"saw\"); // Gets collective boundary of all objects in saw model\nscene.getAABB([\"saw\", \"gearbox\"]); // Gets collective boundary of all objects in saw and gearbox models\nscene.getAABB(\"saw#0.1\"); // Get boundary of an object in the saw model\nscene.getAABB([\"saw#0.1\", \"saw#0.2\"]); // Get collective boundary of two objects in saw model\n````",
             "itemtype": "method",
             "name": "getAABB",
             "params": [

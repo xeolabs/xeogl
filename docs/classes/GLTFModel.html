@@ -84,6 +84,7 @@
                                 <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBBHelper.html">OBBHelper</a></li>
+                                <li><a href="../classes/Object.html">Object</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
                                 <li><a href="../classes/OBJModel.html">OBJModel</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -480,39 +481,6 @@ var model = new xeogl.GLTFModel({
                         <li class="arg">
                                 <code class="optional">[cfg]</code>
                         </li>
-                        <li class="arg">
-                                <code class="optional">[flattenTransforms=true]</code>
-                        </li>
-                        <li class="arg">
-                                <code>[lambertMaterials</code>
-                        </li>
-                        <li class="arg">
-                                <code>[quantizeGeometry</code>
-                        </li>
-                        <li class="arg">
-                                <code>[combineGeometry</code>
-                        </li>
-                        <li class="arg">
-                                <code>[backfaces</code>
-                        </li>
-                        <li class="arg">
-                                <code class="optional">[ghost=false]</code>
-                        </li>
-                        <li class="arg">
-                                <code class="optional">[highlight=false]</code>
-                        </li>
-                        <li class="arg">
-                                <code class="optional">[outline=false]</code>
-                        </li>
-                        <li class="arg">
-                                <code class="optional">[ghostEdgeThreshold=2]</code>
-                        </li>
-                        <li class="arg">
-                                <code class="optional">[maxEntities]</code>
-                        </li>
-                        <li class="arg">
-                                <code class="optional">[included]</code>
-                        </li>
                     </ul><span class="paren">)</span>
                 </div>
         
@@ -602,6 +570,128 @@ var model = new xeogl.GLTFModel({
         
                                     </li>
                                     <li class="param">
+                                            <code class="param-name optional">[flattenTransforms=true]</code>
+                                            <span class="type">Boolean</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Flattens transform hierarchies to improve rendering performance.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[lambertMaterials=false]</code>
+                                            <span class="type">#crossLink "Entity"</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>When true, gives each }{{/crossLink}} the same {{#crossLink "LambertMaterial"}}{{/crossLink}} and a {{#crossLink "Entity/colorize:property"}}{{/crossLink}} set the to diffuse color extracted from the glTF material. This is typically used for CAD models with huge amounts of objects, and will ignore textures.|</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[quantizeGeometry=true]</code>
+                                            <span class="type"></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>When true, quantizes geometry to reduce memory and GPU bus usage. |</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[combineGeometry=true]</code>
+                                            <span class="type"></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>When true, combines geometry vertex buffers to improve rendering performance. |</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[backfaces=false]</code>
+                                            <span class="type"></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>When true, allows visible backfaces, wherever specified in the glTF. When false, ignores backfaces. |</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[ghost=false]</code>
+                                            <span class="type">Boolean</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>When true, sets all the Model&#39;s Entities initially ghosted. |</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[highlight=false]</code>
+                                            <span class="type">Boolean</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>When true, sets all the Model&#39;s Entities initially highlighted. |</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[outline=false]</code>
+                                            <span class="type">Boolean</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>When true, sets all the Model&#39;s Entities initially outlined. |</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[ghostEdgeThreshold=2]</code>
+                                            <span class="type">Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn. |</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[maxEntities]</code>
+                                            <span class="type">Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Optional maximum number of <a href="../classes/Entity.html" class="crosslink">Entity</a>&#39;s to load. |</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[included]</code>
+                                            <span class="type">Function</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Optional callback to mask which <a href="../classes/Entity.html" class="crosslink">Entity</a>&#39;s are loaded. Entity will only be loaded when this callback returns <code>`true</code> for the given Entity ID. |
+        GLTFModel to load components from the new file (after first destroying any components loaded from a previous file path).</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
                                             <code class="param-name optional">[transform]</code>
                                             <span class="type">Number | String | <a href="../classes/Transform.html" class="crosslink">Transform</a></span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
@@ -616,135 +706,6 @@ var model = new xeogl.GLTFModel({
         
                                     </li>
                                 </ul>
-                        </li>
-                        <li class="param">
-                                <code class="param-name optional">[flattenTransforms=true]</code>
-                                <span class="type">Boolean</span>
-                                <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-        
-                            <div class="param-description">
-                                <p>Flattens transform hierarchies to improve rendering performance.</p>
-        
-                            </div>
-        
-                        </li>
-                        <li class="param">
-                                <code class="param-name">[lambertMaterials</code>
-                                <span class="type">#crossLink "Entity"</span>
-        
-        
-                            <div class="param-description">
-                                <p>| Boolean |  | false | When true, gives each }{{/crossLink}} the same {{#crossLink "LambertMaterial"}}{{/crossLink}} and a {{#crossLink "Entity/colorize:property"}}{{/crossLink}} set the to diffuse color extracted from the glTF material. This is typically used for CAD models with huge amounts of objects, and will ignore textures.|</p>
-        
-                            </div>
-        
-                        </li>
-                        <li class="param">
-                                <code class="param-name">[quantizeGeometry</code>
-                                <span class="type">Object</span>
-        
-        
-                            <div class="param-description">
-                                <p>| Boolean |  | true | When true, quantizes geometry to reduce memory and GPU bus usage. |</p>
-        
-                            </div>
-        
-                        </li>
-                        <li class="param">
-                                <code class="param-name">[combineGeometry</code>
-                                <span class="type">Object</span>
-        
-        
-                            <div class="param-description">
-                                <p>| Boolean |  | true | When true, combines geometry vertex buffers to improve rendering performance. |</p>
-        
-                            </div>
-        
-                        </li>
-                        <li class="param">
-                                <code class="param-name">[backfaces</code>
-                                <span class="type">Object</span>
-        
-        
-                            <div class="param-description">
-                                <p>| Boolean |  | true | When true, allows visible backfaces, wherever specified in the glTF. When false, ignores backfaces. |</p>
-        
-                            </div>
-        
-                        </li>
-                        <li class="param">
-                                <code class="param-name optional">[ghost=false]</code>
-                                <span class="type">Boolean</span>
-                                <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-        
-                            <div class="param-description">
-                                <p>When true, sets all the Model&#39;s Entities initially ghosted. |</p>
-        
-                            </div>
-        
-                        </li>
-                        <li class="param">
-                                <code class="param-name optional">[highlight=false]</code>
-                                <span class="type">Boolean</span>
-                                <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-        
-                            <div class="param-description">
-                                <p>When true, sets all the Model&#39;s Entities initially highlighted. |</p>
-        
-                            </div>
-        
-                        </li>
-                        <li class="param">
-                                <code class="param-name optional">[outline=false]</code>
-                                <span class="type">Boolean</span>
-                                <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-        
-                            <div class="param-description">
-                                <p>When true, sets all the Model&#39;s Entities initially outlined. |</p>
-        
-                            </div>
-        
-                        </li>
-                        <li class="param">
-                                <code class="param-name optional">[ghostEdgeThreshold=2]</code>
-                                <span class="type">Number</span>
-                                <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-        
-                            <div class="param-description">
-                                <p>When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn. |</p>
-        
-                            </div>
-        
-                        </li>
-                        <li class="param">
-                                <code class="param-name optional">[maxEntities]</code>
-                                <span class="type">Number</span>
-                                <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-        
-                            <div class="param-description">
-                                <p>Optional maximum number of <a href="../classes/Entity.html" class="crosslink">Entity</a>&#39;s to load. |</p>
-        
-                            </div>
-        
-                        </li>
-                        <li class="param">
-                                <code class="param-name optional">[included]</code>
-                                <span class="type">Function</span>
-                                <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-        
-                            <div class="param-description">
-                                <p>Optional callback to mask which <a href="../classes/Entity.html" class="crosslink">Entity</a>&#39;s are loaded. Entity will only be loaded when this callback returns <code>`true</code> for the given Entity ID. |
-        GLTFModel to load components from the new file (after first destroying any components loaded from a previous file path).</p>
-        
-                            </div>
-        
                         </li>
                     </ul>
                 </div>
@@ -1270,7 +1231,7 @@ any subsequent notifications on the event as they are made.</p>
                 </li>
                 <li class="param">
                         <code class="param-name">value</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
 
 
                     <div class="param-description">
@@ -1499,7 +1460,7 @@ myRotate.isType(xeogl.Entity); // Returns false, because xeogl.Rotate does not (
                 </li>
                 <li class="param">
                         <code class="param-name optional">[scope=this]</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
                         <span class="flag optional" title="This parameter is optional.">optional</span>
 
 
@@ -1701,7 +1662,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                 </li>
                 <li class="param">
                         <code class="param-name optional">[scope=this]</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
                         <span class="flag optional" title="This parameter is optional.">optional</span>
 
 
@@ -1796,7 +1757,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                 </li>
                 <li class="param">
                         <code class="param-name optional">[scope=this]</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
                         <span class="flag optional" title="This parameter is optional.">optional</span>
 
 
@@ -2116,7 +2077,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     </div>
                     <div id="property_metadata" class="property item inherited">
                         <h3 class="name"><code>metadata</code></h3>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
                     
                     
                     
@@ -2635,7 +2596,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                 <ul class="params-list">
                                     <li class="param">
                                             <code class="param-name">value</code>
-                                            <span class="type">Object</span>
+                                            <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
                     
                     
                                         <div class="param-description">
