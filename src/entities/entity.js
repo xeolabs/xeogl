@@ -5,8 +5,8 @@
 
  * An Entity represents a WebGL draw call.
  * Each Entity has six components: {{#crossLink "Geometry"}}{{/crossLink}}, {{#crossLink "Material"}}{{/crossLink}},
- {{#crossLink "Transform"}}{{/crossLink}}, {{#crossLink "GhostMaterial"}}{{/crossLink}},
- {{#crossLink "OutlineMaterial"}}{{/crossLink}} and {{#crossLink "HighlightMaterial"}}{{/crossLink}}.
+ {{#crossLink "Transform"}}{{/crossLink}}, a {{#crossLink "GhostMaterial"}}{{/crossLink}} for ghosting, a {{#crossLink "GhostMaterial"}}{{/crossLink}} for highlighting,
+ and a {{#crossLink "OutlineMaterial"}}{{/crossLink}} for outlining.
  * By default, Entities in the same Scene share the same "global" flyweight instances of those components amongst themselves. The default
  component instances are provided by the {{#crossLink "Scene"}}{{/crossLink}}'s {{#crossLink "Scene/geometry:property"}}{{/crossLink}},
  {{#crossLink "Scene/material:property"}}{{/crossLink}}, {{#crossLink "Scene/transform:property"}}{{/crossLink}},
@@ -244,7 +244,7 @@
 
  In the example below, we'll create a ghosted Entity with its own GhostMaterial.
 
- <a href="../../examples/#effects_ghost"><img src="../../assets/images/screenshots/HighlightMaterial/teapot.png"></img></a>
+ <a href="../../examples/#effects_ghost"><img src="../../assets/images/screenshots/GhostMaterial/teapot.png"></img></a>
 
  ````javascript
  var entity = new xeogl.Entity({
@@ -276,14 +276,14 @@
  ### Highlighting
 
  Highlight an Entity by setting its {{#crossLink "Entity/highlight:property"}}{{/crossLink}} property true. The Entity's
- {{#crossLink "HighlightMaterial"}}{{/crossLink}} then controls its appearance while highlighted.
+ highlighting {{#crossLink "GhostMaterial"}}{{/crossLink}} then controls its appearance while highlighted.
 
- When we don't provide it with a HighlightMaterial, it will have the Scene's {{#crossLink "Scene/highlightMaterial:property"}}{{/crossLink}}
+ When we don't provide it with a GhostMaterial for highlighting, it will have the Scene's {{#crossLink "Scene/highlightMaterial:property"}}{{/crossLink}}
  by default.
 
- In the example below, we'll create a highlighted Entity with its own HighlightMaterial.
+ In the example below, we'll create a highlighted Entity with its own GhostMaterial.
 
- <a href="../../examples/#effects_highlight"><img src="../../assets/images/screenshots/HighlightMaterial/teapotHighlighted.png"></img></a>
+ <a href="../../examples/#effects_highlight"><img src="../../assets/images/screenshots/GhostMaterial/teapotHighlighted.png"></img></a>
 
  ````javascript
  var entity = new xeogl.Entity({
@@ -291,7 +291,7 @@
     material: new xeogl.PhongMaterial({
         diffuse: [0.2, 0.2, 1.0]
     }),
-    highlightMaterial: new xeogl.HighlightMaterial({
+    highlightMaterial: new xeogl.GhostMaterial({
         color: [1.0, 1.0, 0.0],
         alpha: 0.6
     }),
@@ -311,7 +311,7 @@
  When we don't provide it with an OutlineMaterial, it will have the Scene's {{#crossLink "Scene/outlineMaterial:property"}}{{/crossLink}}
  by default.
 
- In the example below, we'll create a outlineed Entity with its own OutlineMaterial.
+ In the example below, we'll create a outlined Entity with its own OutlineMaterial.
 
  <a href="../../examples/#effects_outline"><img src="../../assets/images/screenshots/OutlineMaterial/teapot.png"></img></a>
 
@@ -516,13 +516,13 @@
  @param [cfg.ghost=false] {Boolean} Whether this entity is rendered ghosted, as configured by the Entity's {{#crossLink "GhostMaterial"}}{{/crossLink}} component.
  @param [cfg.ghostMaterial] {String|GhostMaterial} ID or instance of a {{#crossLink "GhostMaterial"}}{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/ghostMaterial:property"}}ghostMaterial{{/crossLink}}.
- @param [cfg.highlight=false] {Boolean} Whether this entity is rendered highlighted, as configured by the Entity's {{#crossLink "HighlightMaterial"}}{{/crossLink}} component.
- @param [cfg.highlightMaterial] {String|HighlightMaterial} ID or instance of a {{#crossLink "HighlightMaterial"}}{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
+ @param [cfg.highlight=false] {Boolean} Whether this entity is rendered highlighted, as configured by the Entity's {{#crossLink "GhostMaterial"}}{{/crossLink}} component.
+ @param [cfg.highlightMaterial] {String|GhostMaterial} ID or instance of a {{#crossLink "GhostMaterial"}}{{/crossLink}} to attach to this Entity to define highlighted appearance. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/highlightMaterial:property"}}highlightMaterial{{/crossLink}}.
  @param [cfg.layer=0] {Number} Indicates this Entity's rendering priority, typically used for transparency sorting,
  @param [cfg.stationary=false] {Boolean} Disables the effect of {{#crossLink "Lookat"}}view transform{{/crossLink}} translations for this Entity. This is useful for skybox Entities.
  @param [cfg.billboard="none"] {String} Specifies the billboarding behaviour for this Entity. Options are "none", "spherical" and "cylindrical".
- @param [cfg.loading] {Boolean} Flag which indicates that this Entity is freshly loaded.
+ @param [cfg.loading=false] {Boolean} Flag which indicates that this Entity is freshly loaded.
  @extends Component
  */
 
@@ -700,14 +700,14 @@
             },
 
             /**
-             * The {{#crossLink "HighlightMaterial"}}HighlightMaterial{{/crossLink}} attached to this Entity.
+             * The {{#crossLink "GhostMaterial"}}GhostMaterial{{/crossLink}} attached to this Entity.
              *
              * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
              * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/highlightMaterial:property"}}highlightMaterial{{/crossLink}} when set to
              * a null or undefined value.
              *
              * @property highlightMaterial
-             * @type HighlightMaterial
+             * @type GhostMaterial
              */
             highlightMaterial: {
 
