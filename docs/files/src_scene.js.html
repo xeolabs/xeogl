@@ -84,6 +84,7 @@
                                 <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBBHelper.html">OBBHelper</a></li>
+                                <li><a href="../classes/Object.html">Object</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
                                 <li><a href="../classes/OBJModel.html">OBJModel</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -199,7 +200,7 @@
  * [Emphasis effects](#emphasis-effects)
  * [Picking](#picking)
  * [Pick masking](#pick-masking)
- * [Getting the World-space boundary](#getting-the-world-space-boundary]
+ * [Getting the World-space boundary](#getting-the-world-space-boundary)
  * [Controlling the viewport](#controlling-the-viewport)
  * [Controlling rendering](#controlling-rendering)
  * [Gamma correction](#gamma-correction)
@@ -209,17 +210,17 @@
  Creating a Scene with its own default canvas:
 
  &#x60;&#x60;&#x60;&#x60;javascript
- var scene = new Scene();
+ var scene = new xeogl.Scene();
  &#x60;&#x60;&#x60;&#x60;
 
  Creating a Scene with an existing canvas.
 
  &#x60;&#x60;&#x60;&#x60;javascript
- var scene2 = new Scene({
+ var scene2 = new xeogl.Scene({
     canvas: &quot;myCanvas&quot;
  });
 
- var scene3 = new Scene({
+ var scene3 = new xeogl.Scene({
     canvas: document.getElementById(&quot;myCanvas&quot;);
  });
  &#x60;&#x60;&#x60;&#x60;
@@ -488,8 +489,8 @@
  &#x60;&#x60;&#x60;&#x60;
 
  Getting the collective World-space axis-aligned boundary of the {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}
- and/or {{#crossLink &quot;Model&quot;}}Models{{/crossLink}} with the given IDs: 
- 
+ and/or {{#crossLink &quot;Model&quot;}}Models{{/crossLink}} with the given IDs:
+
  &#x60;&#x60;&#x60;&#x60;JavaScript
  scene.getAABB(); // Gets collective boundary of all entities in the scene
  scene.getAABB(&quot;saw&quot;); // Gets collective boundary of all entities in saw model
@@ -497,7 +498,7 @@
  scene.getAABB(&quot;saw#0.1&quot;); // Get boundary of an entity in the saw model
  scene.getAABB([&quot;saw#0.1&quot;, &quot;saw#0.2&quot;]); // Get collective boundary of two entities in saw model
  &#x60;&#x60;&#x60;&#x60;
- 
+
  ### Managing the viewport
 
  The Scene&#x27;s {{#crossLink &quot;Viewport&quot;}}{{/crossLink}} component manages the WebGL viewport:
@@ -1996,12 +1997,12 @@
         })(),
 
         /**
-         Convenience method which returns the collective axis-aligned boundary of the {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} 
+         Convenience method which returns the collective axis-aligned boundary of the {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}
          and/or {{#crossLink &quot;Model&quot;}}Models{{/crossLink}} with the given IDs.
 
          When no arguments are given, returns the total boundary of all objects in the scene.
 
-         Only {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} with {{#crossLink &quot;Entity/collidable:property&quot;}}collidable{{/crossLink}} 
+         Only {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} with {{#crossLink &quot;Entity/collidable:property&quot;}}collidable{{/crossLink}}
          set &#x60;&#x60;&#x60;&#x60;true&#x60;&#x60;&#x60;&#x60; are included in the boundary.
          
          ## Usage

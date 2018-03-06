@@ -270,17 +270,17 @@
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this GLTFModel.
  @param [cfg.src] {String} Path to a glTF file. You can set this to a new file path at any time, which will cause the
- @param [flattenTransforms=true] {Boolean} Flattens transform hierarchies to improve rendering performance.
- @param [lambertMaterials | Boolean |  | false | When true, gives each {{#crossLink "Entity"}}{{/crossLink}} the same {{#crossLink "LambertMaterial"}}{{/crossLink}} and a {{#crossLink "Entity/colorize:property"}}{{/crossLink}} set the to diffuse color extracted from the glTF material. This is typically used for CAD models with huge amounts of objects, and will ignore textures.|
- @param [quantizeGeometry | Boolean |  | true | When true, quantizes geometry to reduce memory and GPU bus usage. |
- @param [combineGeometry | Boolean |  | true | When true, combines geometry vertex buffers to improve rendering performance. |
- @param [backfaces | Boolean |  | true | When true, allows visible backfaces, wherever specified in the glTF. When false, ignores backfaces. |
- @param [ghost=false] {Boolean} When true, sets all the Model's Entities initially ghosted. |
- @param [highlight=false] {Boolean} When true, sets all the Model's Entities initially highlighted. |
- @param [outline=false] {Boolean} When true, sets all the Model's Entities initially outlined. |
- @param [ghostEdgeThreshold=2] {Number} When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn. |
- @param [maxEntities] {Number} Optional maximum number of {{#crossLink "Entity"}}{{/crossLink}}'s to load. |
- @param [included] {Function} Optional callback to mask which {{#crossLink "Entity"}}{{/crossLink}}'s are loaded. Entity will only be loaded when this callback returns ````true``` for the given Entity ID. |
+ @param [cfg.flattenTransforms=true] {Boolean} Flattens transform hierarchies to improve rendering performance.
+ @param [cfg.lambertMaterials=false] When true, gives each {{#crossLink "Entity"}}{{/crossLink}} the same {{#crossLink "LambertMaterial"}}{{/crossLink}} and a {{#crossLink "Entity/colorize:property"}}{{/crossLink}} set the to diffuse color extracted from the glTF material. This is typically used for CAD models with huge amounts of objects, and will ignore textures.|
+ @param [cfg.quantizeGeometry=true] When true, quantizes geometry to reduce memory and GPU bus usage. |
+ @param [cfg.combineGeometry=true] When true, combines geometry vertex buffers to improve rendering performance. |
+ @param [cfg.backfaces=false] When true, allows visible backfaces, wherever specified in the glTF. When false, ignores backfaces. |
+ @param [cfg.ghost=false] {Boolean} When true, sets all the Model's Entities initially ghosted. |
+ @param [cfg.highlight=false] {Boolean} When true, sets all the Model's Entities initially highlighted. |
+ @param [cfg.outline=false] {Boolean} When true, sets all the Model's Entities initially outlined. |
+ @param [cfg.ghostEdgeThreshold=2] {Number} When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn. |
+ @param [cfg.maxEntities] {Number} Optional maximum number of {{#crossLink "Entity"}}{{/crossLink}}'s to load. |
+ @param [cfg.included] {Function} Optional callback to mask which {{#crossLink "Entity"}}{{/crossLink}}'s are loaded. Entity will only be loaded when this callback returns ````true``` for the given Entity ID. |
  GLTFModel to load components from the new file (after first destroying any components loaded from a previous file path).
  @param [cfg.transform] {Number|String|Transform} A Local-to-World-space (modelling) {{#crossLink "Transform"}}{{/crossLink}} to attach to this GLTFModel.
  Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this GLTFModel. Internally, the given
