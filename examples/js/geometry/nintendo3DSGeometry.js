@@ -7,7 +7,6 @@
  ## Overview
 
  * A Nintendo3DSGeometry mesh is defined by the .3DS file referenced by the Nintendo3DSGeometry's {{#crossLink "Nintendo3DSGeometry/src:property"}}{{/crossLink}} property.
- * Set the {{#crossLink "Nintendo3DSGeometry/src:property"}}{{/crossLink}} property to a different file at any time, to regenerate the Nintendo3DSGeometry's mesh from the new file.
  * Internally uses the <a href="http://k3d.ivank.net/">k3d.js</a> library for parsing .3DS files.
 
  ## Examples
@@ -79,97 +78,53 @@
 
         _init: function (cfg) {
 
-            this._super(cfg);
+            if (!cfg.src) {
+                this.error("property required: 'src'");
+                return;
+            }
 
-            this.src = cfg.src;
-        },
+            var spinner = this.scene.canvas.spinner;
+            spinner.processes++;
 
-        _props: {
+            var self = this;
+            var _super = self._super;
 
-            /**
-             Path to the .OBJ file.
+            load(cfg.src, function (data) {
 
-             Fires a {{#crossLink "Nintendo3DSGeometry/src:event"}}{{/crossLink}} event on change.
-
-             @property src
-             @type String
-             */
-            src: {
-
-                set: function (value) {
-
-                    if (!value) {
-                        return;
+                    if (!data.length) {
+                        //    return;
                     }
 
-                    if (!xeogl._isString(value)) {
-                        this.error("Value for 'src' should be a string");
-                        return;
-                    }
+                    var m = K3D.parse.from3DS(data);
+                    var mesh = m.edit.objects[0].mesh;
+                    var positions = mesh.vertices;
+                    var uv = mesh.uvt;
+                    var normals = null;
+                    var indices = mesh.indices;
+                    var tangents = null;
 
-                    // Increment processes represented by loading spinner
-                    // Spinner appears as soon as count is non-zero
+                    _super.call(self, xeogl._apply(cfg, {
+                        primitive: "triangles",
+                        positions: positions,
+                        normals: normals && normals.length > 0 ? normals : null,
+                        autoNormals: !normals || normals.length === 0,
+                        uv: uv,
+                        indices: indices
+                    }));
 
-                    var spinner = this.scene.canvas.spinner;
-                    spinner.processes++;
+                    spinner.processes--;
 
-                    this._src = value;
-
-                    var self = this;
-
-                    load(this._src, function (data) {
-
-                            if (!data.length) {
-                                //    return;
-                            }
-
-                            xeogl.scheduleTask(function () {
-
-                                var m = K3D.parse.from3DS(data);
-
-                                var mesh = m.edit.objects[0].mesh;
-
-                                self.primitive = "triangles";
-                                self.positions = mesh.vertices;
-                                self.uv = mesh.uvt;
-                                self.normals = null;
-                                //   self.autoNormals = true;
-                                self.indices = mesh.indices;
-                                self.tangents = null;
-
-                                spinner.processes--;
-
-                                self.fire("loaded", true);
-                            });
-                        },
-
-                        function (msg) {
-
-                            spinner.processes--;
-
-                            self.error("Failed to load .3DS file: " + msg);
-
-                            self.fire("failed", msg);
-                        });
-
-                    /**
-                     Fired whenever this Nintendo3DSGeometry's  {{#crossLink "Nintendo3DSGeometry/src:property"}}{{/crossLink}} property changes.
-                     @event src
-                     @param value The property's new value
-                     */
-                    this.fire("src", this._src);
+                    self.fire("loaded", true);
                 },
 
-                get: function () {
-                    return this._src;
-                }
-            }
-        },
+                function (msg) {
 
-        _getJSON: function () {
-            return {
-                src: this._src
-            };
+                    spinner.processes--;
+
+                    self.error("Failed to load .3DS file: " + msg);
+
+                    self.fire("failed", msg);
+                });
         }
     });
 
