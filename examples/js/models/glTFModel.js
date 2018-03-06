@@ -42,6 +42,7 @@
  ## Usage
 
  * [Loading glTF](#loading-gltf)
+ * [Parsing glTF](#parsing-gltf)
  * [Loading options](#loading-options)
  * [Finding loaded Entities](#finding-loaded-entities)
  * [Transforming a GLTFModel](#transforming-a-gltfmodel)
@@ -85,6 +86,14 @@
  ````javascript
  model.src = "models/gltf/Buggy/glTF/Buggy.gltf"
  ````
+
+ ### Parsing glTF
+
+ If we have a glTF JSON with embedded assets in memory, then we can parse it straight into a GLTFModel using the
+ static {{#crossLink "GLTFModel/parse:method"}}{{/crossLink}}:
+
+ ````javascript
+ xeogl.GLTFModel.parse(model, json); // Clears the target model first
 
  ### Loading options
 

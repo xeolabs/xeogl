@@ -200,7 +200,7 @@
  ````javascript
  var entity = new xeogl.Entity({
 
-     geometry: new xeogl.TGeometry(),
+     geometry: new xeogl.TeapotGeometry(),
 
      transform: new xeogl.Translate({eapot
         xyz: [-5, 0, 0],
