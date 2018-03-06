@@ -147,13 +147,13 @@
 <!-- ================ -->
 <div id="banner" class="banner">
 
+    <iframe id="demoLink"
+    style="background: black; border: 0; position:absolute; right: 0; width:100%; height:100%; pointer-events:all;"
+    src="../examples/featured_VianneyHouse2.html"></iframe>
+
     <!--<iframe id="demoLink"-->
     <!--style="background: black; border: 0; position:absolute; right: 0; width:100%; height:100%; pointer-events:all;"-->
-    <!--src="../examples/featured_VianneyHouse2.html"></iframe>-->
-
-    <iframe id="demoLink"
-            style="background: black; border: 0; position:absolute; right: 0; width:100%; height:100%; pointer-events:all;"
-            src="../examples/importing_gltf_BranchHouse.html"></iframe>
+    <!--src="../examples/importing_gltf_BranchHouse.html"></iframe>-->
 
 </div>
 <!-- banner end -->
@@ -164,110 +164,99 @@
 <div class="section introduction clearfix object-non-visible" data-animation-effect="fadeIn">
     <div class="container">
         <div class="row">
-            <div class="col-md-12">
-                <h1 id="introduction" class="title"><span>xeogl</span> Introduction</h1>
+
+            <h1 id="introduction" class="title"><span>xeogl</span> introduction</h1>
+
+            <p>xeogl is an open source JavaScript library from <a target="_parent"
+                                                              href="http://twitter.com/xeographics">@xeographics</a> for 3D model visualization on WebGL.</p>
+
+            <p>It gives you the tools to create interactive 3D worlds in your browser. Build your objects
+                programmatically, or load them from glTF. Navigate them with the camera, and script them with Javascript,
+                to create cool presentations.</p>
+
+            <h2>Contents</h2>
+
+            <ul>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#features">Creating a 3D scene</a></li>
+                <li><a href="#features">Editing scenes</a></li>
+                <li><a href="#animating-scenes">Animating scenes</a></li>
+                <li><a href="#loading-models">Loading models</a></li>
+                <li><a href="#xeogl-in-the-wild">xeogl in the wild</a></li>
+                <li><a href="#learn-more">Learn more</a></li>
+            </ul>
+
+            <h2>Features</h2>
+
+            <ul class="features">
+                <li><b>3D engine:</b>
+                    <ul>
+                        <li>Uses WebGL for rendering</li>
+                        <li>Declarative, dynamically-editable 3D scene representation</li>
+                        <li>No external dependencies; library and tool agnostic</li>
+                        <li>Optimized for high-detail visualization</li>
+                        <li class="last">Open source (<a href="https://github.com/xeolabs/xeogl/blob/master/MIT-LICENSE">MIT</a>).
+                    </ul>
+                </li>
+                <li><b>Designed for CAD, BIM and Archviz:</b>
+                    <ul>
+                        <li class="first">Load multiple models</li>
+                        <li>Isolate/move/emphasize objects</li>
+                        <li>Camera navigation controls</li>
+                        <li>Camera animations (flyto, follow, path etc)</li>
+                        <li>Emphasis effects (wireframe, ghost, highlight, outline)</li>
+                        <li>Annotations</li>
+                        <li>Cross-section views</li>
+                        <li>Transform hierarchies</li>
+                        <li>Bounding volumes</li>
+                        <li>Fast 3D picking, raycasting</li>
+                        <li>Screenshots</li>
+                    </ul>
+                </li>
+                <li><b>Imported formats:</b>
+                    <ul>
+                        <li class="first">glTF 2.0</li>
+                        <li>OBJ</li>
+                        <li class="last">SceneJS</li>
+                    </ul>
+                </li>
+                <li><b>Materials</b>
+                    <ul>
+                        <li class="first">PBR (metal/rough and specular/gloss)</li>
+                        <li class="last">Blinn/Phong and Lambert</li>
+                    </ul>
+                </li>
+                <li><b>Lighting</b>
+                    <ul>
+                        <li class="first">Image-based lighting</li>
+                        <li>Dynamic lights (directional, point and spot)</li>
+                        <li class="last">Realtime shadows</li>
+                    </ul>
+                </li>
+            </ul>
+            <p></p>
 
 
-                <div class="row">
-                    <div class="col-md-6 features">
+            <h2>Creating a 3D scene</h2>
 
-                        <p>xeogl is a JavaScript library for 3D model visualization on WebGL.</p>
+            <p>To get started, first include <a
+                    href="https://github.com/xeolabs/xeogl/tree/master/build/">xeogl.js</a>
+                in your
+                HTML
+                page:</p>
+            <pre>&lt;script src="xeogl.js"&gt;&lt;/script&gt;</pre>
+            <br>
 
-                        <h2>Features</h2>
+            <p>Then define your 3D scene as an entity-component graph, as shown below.</p>
+            <p>Your scene is basically a bunch of <a href="http://xeogl.org/docs/classes/Component.html"
+                                                              target="_parent">components</a> that are
+                tied together by <a href="http://xeogl.org/docs/classes/Entity.html" target="_parent">entities</a>. Each
+                entity represents a WebGL draw call.</p>
 
-                        <ul>
-                            <li><b>3D engine</b>
-                                <ul>
-                                    <li class="first">Data-driven, runtime-editable component graph</li>
-                                    <li>Extensible</li>
-                                    <li>Custom components library</li>
-                                    <li class="last">Open source (<a
-                                            href="https://github.com/xeolabs/xeogl/blob/master/MIT-LICENSE">MIT</a>).
-                                </ul>
-                            </li>
-                            <li><b>Designed for CAD, BIM and Archviz</b>
-                                <ul>
-                                    <li class="first">Load multiple models</li>
-                                    <li>Show/hide/move individual elements</li>
-                                    <li>Camera controls</li>
-                                    <li>Camera animations (flight, path etc)</li>
-                                    <li>Emphasis effects (wireframe, ghost, highlight, outline)</li>
-                                    <li>Annotations</li>
-                                    <li>Cross-section views</li>
-                                    <li>Transform hierarchies</li>
-                                    <li>Boundary volumes</li>
-                                    <li>3D picking, raycasting</li>
-                                    <li class="last">Geometry compression</li>
-                                </ul>
-                            </li>
-                            <li><b>Imported formats</b>
-                                <ul>
-                                    <li class="first">glTF 2.0</li>
-                                    <li>OBJ+MTL</li>
-                                    <li class="last">SceneJS</li>
-                                </ul>
-                            </li>
-                            <li><b>Materials</b>
-                                <ul>
-                                    <li class="first">PBR metallic/roughness</li>
-                                    <li>PBR specular/glossiness</li>
-                                    <li class="last">Blinn/Phong and Lambert</li>
-                                </ul>
-                            </li>
-                            <li><b>Lighting</b>
-                                <ul>
-                                    <li class="first">Image-based lighting</li>
-                                    <li>Dynamic lights (directional, point and spot)</li>
-                                    <li class="last">Realtime shadows</li>
-                                </ul>
-                            </li>
-                        </ul>
-                        <p></p>
-
-                        <h2>Featured app</h2>
-
-                        <p>xeogl is the 3D engine within <a
-                                href="http://xeolabs.com/articles/xeogl-in-bimsurfer">BIMSurfer</a>, the open source
-                            tool for Web-based visualization and evaluation of Building Information Models (BIM):</p>
-
-
-                        <iframe width="560" height="315" src="https://www.youtube.com/embed/tCHwEA2HqU8?rel=0"
-                                frameborder="0" allowfullscreen></iframe>
-
-                        <h2>Creating a 3D scene</h2>
-
-                        <p>Scene definition is designed to be convenient, with xeogl providing sensible defaults for
-                            virtually everything.
-                            If you get stuck, xeogl has detailed <a
-                                    href="http://xeogl.org/docs">API docs</a> and <a
-                                    href="http://xeogl.org/examples">examples</a>, plus a
-                            <a href="https://github.com/xeolabs/xeogl/wiki" target="_wiki">wiki</a> with tutorials.</p>
-                        <br>
-
-                        <p>To get started, first include <a
-                                href="https://github.com/xeolabs/xeogl/tree/master/build/">xeogl.js</a>
-                            in your
-                            HTML
-                            page:</p>
-                        <pre>&lt;script src="xeogl.min.js"&gt;&lt;/script&gt;</pre>
-                        <br>
-
-                        <p>Then define your 3D scene as a component graph, as shown below. See how a scene is
-                            basically a bunch of <a href="http://xeogl.org/docs/classes/Component.html"
-                                                    target="_parent">components</a> that are
-                            tied
-                            together by <a href="http://xeogl.org/docs/classes/Entity.html"
-                                           target="_parent">entities</a>. In this example xeogl is quietly providing
-                            lots of
-                            default components for us, but we can override those with our own when we need more control.
-                        </p>
-
-                        <pre class="prettyprint lang-javascript">
+            <pre class="prettyprint lang-javascript">
 var geometry = new xeogl.TorusGeometry({
     radius: 1.0,
-    tube: 0.3,
-    radialSegments: 120,
-    tubeSegments: 60
+    tube: 0.3
 });
 
 var material = new xeogl.MetallicMaterial({
@@ -283,27 +272,27 @@ var entity = new xeogl.Entity({
     geometry: geometry,
     material: material
 });</pre>
+            <br>
+            <p>Here's what we just created:</p>
+
+            <a href="http://xeogl.org/examples/#entities_examples_metallicTorus"><img
+                    src="assets/images/example1.png"></a>
+
+            <a href="http://xeogl.org/examples/#importing_gltf_GearboxAssy"><img
+                    src="assets/images/conceptScene.png"></a>
 
 
-                        <a href="http://xeogl.org/examples/#entities_examples_metallicTorus"><img
-                                src="assets/images/example1.png"></a>
+            <h2>Editing scenes</h2>
 
-                        <a href="http://xeogl.org/examples/#importing_gltf_GearboxAssy"><img
-                                src="assets/images/conceptScene.png"></a>
+            <p>You can dynamically edit most things in your scene at runtime. Create and destroy components, link
+                or unlink
+                them, update their properties etc.<br><br>Let's add <a
+                        href="http://xeogl.org/docs/classes/Rotate.html" target="_parent">rotation</a> and
+                <a
+                        href="http://xeogl.org/docs/classes/Scale.html" target="_parent">scale</a> transforms to our
+                torus, then increase its size:</p>
 
-                    </div>
-                    <div class="col-md-6">
-                        <h2>Editing scenes</h2>
-
-                        <p>You can edit most things in your scene at runtime. Create and destroy components, link
-                            or unlink
-                            them, update their properties etc.<br><br>Let's add <a
-                                    href="http://xeogl.org/docs/classes/Rotate.html" target="_parent">rotation</a> and
-                            <a
-                                    href="http://xeogl.org/docs/classes/Scale.html" target="_parent">scale</a> to our
-                            torus, then increase its size:</p>
-
-                        <pre class="prettyprint lang-javascript">// Rotate and scale our torus entity
+            <pre class="prettyprint lang-javascript">// Rotate and scale our torus entity
 entity.transform = new xeogl.Rotate({
     xyz: [0,1,0],
     angle : 0,
@@ -312,32 +301,33 @@ entity.transform = new xeogl.Rotate({
     })
 });
 
-// Bump up its thickness and radius
-entity.geometry.radius *= 2.0;
-entity.geometry.tube *= 2.0; </pre>
+// Increase the size
+entity.transform.parent.[1.5,  1.5, 1.5]; </pre>
 
-                        <h2>Animating scenes</h2>
+            <h2>Animating scenes</h2>
 
-                        <p>Animate scenes by updating properties on components:</p>
+            <p>Animate your scenes by updating the properties of their components:</p>
 
-                        <pre class="prettyprint lang-javascript">// Update the rotation angle
+            <pre class="prettyprint lang-javascript">// Update the rotation angle
 entity.transform.angle = 90.0;</pre>
-                        <br>
+            <br>
 
-                        <p>Let's start our torus spinning:</p>
-                        <pre class="prettyprint lang-javascript">entity.scene.on("tick", function () {
+            <p>Let's start our torus spinning:</p>
+            <pre class="prettyprint lang-javascript">entity.scene.on("tick", function () {
     entity.transform.angle += 0.5;
 });</pre>
 
-                        <h2>Importing content</h2>
+            <h2>Loading models</h2>
 
-                        <p>Load models from glTF then navigate and update their entities to create custom
-                            visualizations:</p>
-                        <pre class="prettyprint lang-javascript">var model = new xeogl.GLTFModel({
+            <p>Load 3D models into your scene from glTF:</p>
+
+            <pre class="prettyprint lang-javascript">var model = new xeogl.GLTFModel({
     id: "office",
     src: "models/gltf/office/scene.gltf"
-});
-
+});</pre>
+            <br>
+            <p>Then animate and navigate their entities to create custom visualizations:</p>
+            <pre>
 model.on("loaded", function() {
 
     // When model loaded, highlight its furniture
@@ -350,7 +340,9 @@ model.on("loaded", function() {
 
     for (var i = 0; i < entityIds.length; i++) {
         var id = entityIds[i];
-        model.entities[id].highlight = true;
+        var entity = model.entities[id];
+
+        entity.highlight = true;
     }
 
     var cameraFlight = new xeogl.CameraFlightAnimation();
@@ -359,36 +351,49 @@ model.on("loaded", function() {
 
 // Control camera with mouse and touch
 var cameraControl = new xeogl.CameraControl();</pre>
-                        <a href="http://xeogl.org/examples/#importing_gltf_OfficePlan"><img
-                                src="../assets/images/screenshots/officePlanHighlighted.png"></a>
+            <br>
+            <p>Here's what we just created:</p>
+            <a href="http://xeogl.org/examples/#importing_gltf_OfficePlan"><img
+                    src="../assets/images/screenshots/officePlanHighlighted.png"></a>
 
-                        <em>Model by <a href="https://sketchfab.com/scann3d" target="_parent">sketchfab.com/scann3d</a></em>
+            <em>Model by <a href="https://sketchfab.com/scann3d" target="_parent">sketchfab.com/scann3d</a></em>
 
-                        <h2>Learn More</h2>
 
-                        <ul>
-                            <li><a
-                                    href="http://xeogl.org/docs" target="_parent">API docs</a></li>
-                            <li><a
-                                    href="http://xeogl.org/examples/#materials_fresnel_specular" target="_parent">Examples</a>
-                            </li>
-                            <li><a
-                                    href="https://github.com/xeolabs/xeogl" target="_wiki">Source code</a></li>
-                            <li><a
-                                    href="https://github.com/xeolabs/xeogl/wiki" target="_wiki">Wiki</a></li>
+            <h2>xeogl in the wild</h2>
 
-                            <li>Follow <a target="_parent" href="http://twitter.com/xeographics">@xeographics</a> on Twitter</li>
-                        </ul>
+            <p>xeogl is the 3D engine within <a
+                    href="http://xeolabs.com/articles/xeogl-in-bimsurfer">BIMSurfer</a>, the open source
+                tool for Web-based visualization and evaluation of Building Information Models (BIM):</p>
 
-                    </div>
-                </div>
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/tCHwEA2HqU8?rel=0"
+                    frameborder="0" allowfullscreen></iframe>
 
-            </div>
+            <h2>Learn more</h2>
+
+            <ul>
+                <li><a
+                        href="http://xeogl.org/docs" target="_parent">API docs</a></li>
+                <li><a
+                        href="http://xeogl.org/examples/#materials_fresnel_specular"
+                        target="_parent">Examples</a>
+                </li>
+                <li><a
+                        href="https://github.com/xeolabs/xeogl" target="_wiki">Source code</a></li>
+                <li><a
+                        href="https://github.com/xeolabs/xeogl/wiki" target="_wiki">Wiki</a></li>
+
+                <li>Follow <a target="_parent" href="http://twitter.com/xeographics">@xeographics</a> on Twitter for updates
+                </li>
+            </ul>
+
+
         </div>
     </div>
-</div>
-<!-- section end -->
 
+</div>
+</div>
+
+<!-- section end -->
 
 <!-- section start -->
 <!-- ================ -->
