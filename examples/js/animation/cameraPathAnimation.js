@@ -14,7 +14,7 @@
 
  In this example we'll use the CameraPathAnimation's
  {{#crossLink "CameraPathAnimation/play"}}{{/crossLink}} method to smoothly <b>interpolate</b>
- the {{#crossLink "Camera"}}{{/crossLink}}'s {{#crossLink "Camera"}}{{/crossLink}} along a {{#crossLink "CameraPath"}}{{/crossLink}}:
+ the {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Camera"}}{{/crossLink}} along a {{#crossLink "CameraPath"}}{{/crossLink}}:
 
  <a href="../../examples/#camera_path_interpolation"><img src="http://i.giphy.com/l0MYDGMYzdFf6TqRW.gif"></img></a>
 
