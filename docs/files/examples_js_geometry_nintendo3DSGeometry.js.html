@@ -112,6 +112,7 @@
                                 <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/SpotLight.html">SpotLight</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
+                                <li><a href="../classes/STLModel.html">STLModel</a></li>
                                 <li><a href="../classes/Story.html">Story</a></li>
                                 <li><a href="../classes/TeapotGeometry.html">TeapotGeometry</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
@@ -193,7 +194,6 @@
  ## Overview
 
  * A Nintendo3DSGeometry mesh is defined by the .3DS file referenced by the Nintendo3DSGeometry&#x27;s {{#crossLink &quot;Nintendo3DSGeometry/src:property&quot;}}{{/crossLink}} property.
- * Set the {{#crossLink &quot;Nintendo3DSGeometry/src:property&quot;}}{{/crossLink}} property to a different file at any time, to regenerate the Nintendo3DSGeometry&#x27;s mesh from the new file.
  * Internally uses the &lt;a href=&quot;http://k3d.ivank.net/&quot;&gt;k3d.js&lt;/a&gt; library for parsing .3DS files.
 
  ## Examples
@@ -265,97 +265,53 @@
 
         _init: function (cfg) {
 
-            this._super(cfg);
+            if (!cfg.src) {
+                this.error(&quot;property required: &#x27;src&#x27;&quot;);
+                return;
+            }
 
-            this.src = cfg.src;
-        },
+            var spinner = this.scene.canvas.spinner;
+            spinner.processes++;
 
-        _props: {
+            var self = this;
+            var _super = self._super;
 
-            /**
-             Path to the .OBJ file.
+            load(cfg.src, function (data) {
 
-             Fires a {{#crossLink &quot;Nintendo3DSGeometry/src:event&quot;}}{{/crossLink}} event on change.
-
-             @property src
-             @type String
-             */
-            src: {
-
-                set: function (value) {
-
-                    if (!value) {
-                        return;
+                    if (!data.length) {
+                        //    return;
                     }
 
-                    if (!xeogl._isString(value)) {
-                        this.error(&quot;Value for &#x27;src&#x27; should be a string&quot;);
-                        return;
-                    }
+                    var m = K3D.parse.from3DS(data);
+                    var mesh = m.edit.objects[0].mesh;
+                    var positions = mesh.vertices;
+                    var uv = mesh.uvt;
+                    var normals = null;
+                    var indices = mesh.indices;
+                    var tangents = null;
 
-                    // Increment processes represented by loading spinner
-                    // Spinner appears as soon as count is non-zero
+                    _super.call(self, xeogl._apply(cfg, {
+                        primitive: &quot;triangles&quot;,
+                        positions: positions,
+                        normals: normals &amp;&amp; normals.length &gt; 0 ? normals : null,
+                        autoNormals: !normals || normals.length === 0,
+                        uv: uv,
+                        indices: indices
+                    }));
 
-                    var spinner = this.scene.canvas.spinner;
-                    spinner.processes++;
+                    spinner.processes--;
 
-                    this._src = value;
-
-                    var self = this;
-
-                    load(this._src, function (data) {
-
-                            if (!data.length) {
-                                //    return;
-                            }
-
-                            xeogl.scheduleTask(function () {
-
-                                var m = K3D.parse.from3DS(data);
-
-                                var mesh = m.edit.objects[0].mesh;
-
-                                self.primitive = &quot;triangles&quot;;
-                                self.positions = mesh.vertices;
-                                self.uv = mesh.uvt;
-                                self.normals = null;
-                                //   self.autoNormals = true;
-                                self.indices = mesh.indices;
-                                self.tangents = null;
-
-                                spinner.processes--;
-
-                                self.fire(&quot;loaded&quot;, true);
-                            });
-                        },
-
-                        function (msg) {
-
-                            spinner.processes--;
-
-                            self.error(&quot;Failed to load .3DS file: &quot; + msg);
-
-                            self.fire(&quot;failed&quot;, msg);
-                        });
-
-                    /**
-                     Fired whenever this Nintendo3DSGeometry&#x27;s  {{#crossLink &quot;Nintendo3DSGeometry/src:property&quot;}}{{/crossLink}} property changes.
-                     @event src
-                     @param value The property&#x27;s new value
-                     */
-                    this.fire(&quot;src&quot;, this._src);
+                    self.fire(&quot;loaded&quot;, true);
                 },
 
-                get: function () {
-                    return this._src;
-                }
-            }
-        },
+                function (msg) {
 
-        _getJSON: function () {
-            return {
-                src: this._src
-            };
+                    spinner.processes--;
+
+                    self.error(&quot;Failed to load .3DS file: &quot; + msg);
+
+                    self.fire(&quot;failed&quot;, msg);
+                });
         }
     });
 

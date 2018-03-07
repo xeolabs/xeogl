@@ -112,6 +112,7 @@
                                 <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/SpotLight.html">SpotLight</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
+                                <li><a href="../classes/STLModel.html">STLModel</a></li>
                                 <li><a href="../classes/Story.html">Story</a></li>
                                 <li><a href="../classes/TeapotGeometry.html">TeapotGeometry</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
@@ -237,6 +238,7 @@ the xeogl API.</p>
 <h2 id="usage">Usage</h2>
 <ul>
 <li><a href="#loading-gltf">Loading glTF</a></li>
+<li><a href="#parsing-gltf">Parsing glTF</a></li>
 <li><a href="#loading-options">Loading options</a></li>
 <li><a href="#finding-loaded-entities">Finding loaded Entities</a></li>
 <li><a href="#transforming-a-gltfmodel">Transforming a GLTFModel</a></li>
@@ -265,6 +267,11 @@ the xeogl API.</p>
 </code></pre>
 <p>To switch to a different glTF file, simply update <a href="../classes/GLTFModel.html#property_src" class="crosslink">src</a>:</p>
 <pre class="code prettyprint"><code class="lang-javascript">model.src = "models/gltf/Buggy/glTF/Buggy.gltf"
+</code></pre>
+<h3 id="parsing-gltf">Parsing glTF</h3>
+<p>If we have a glTF JSON with embedded assets in memory, then we can parse it straight into a GLTFModel using the
+static GLTFModel/parse:method:</p>
+<pre class="code prettyprint"><code class="lang-javascript">xeogl.GLTFModel.parse(model, json); // Clears the target model first
 </code></pre>
 <h3 id="loading-options">Loading options</h3>
 <p>The following options may be specified when loading glTF:</p>
@@ -2188,7 +2195,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_models_glTFModel.js.html#l317"><code>examples&#x2F;js&#x2F;models&#x2F;glTFModel.js:317</code></a>
+                            <a href="../files/examples_js_models_glTFModel.js.html#l327"><code>examples&#x2F;js&#x2F;models&#x2F;glTFModel.js:327</code></a>
                             </p>
                     
                     
@@ -2468,7 +2475,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_models_glTFModel.js.html#l401"><code>examples&#x2F;js&#x2F;models&#x2F;glTFModel.js:401</code></a>
+                            <a href="../files/examples_js_models_glTFModel.js.html#l416"><code>examples&#x2F;js&#x2F;models&#x2F;glTFModel.js:416</code></a>
                             </p>
                     
                     
@@ -2511,7 +2518,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_models_glTFModel.js.html#l343"><code>examples&#x2F;js&#x2F;models&#x2F;glTFModel.js:343</code></a>
+                            <a href="../files/examples_js_models_glTFModel.js.html#l353"><code>examples&#x2F;js&#x2F;models&#x2F;glTFModel.js:353</code></a>
                             </p>
                     
                     
