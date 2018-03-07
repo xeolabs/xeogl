@@ -112,6 +112,7 @@
                                 <li><a href="../classes/SplineCurveHelper.html">SplineCurveHelper</a></li>
                                 <li><a href="../classes/SpotLight.html">SpotLight</a></li>
                                 <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
+                                <li><a href="../classes/STLModel.html">STLModel</a></li>
                                 <li><a href="../classes/Story.html">Story</a></li>
                                 <li><a href="../classes/TeapotGeometry.html">TeapotGeometry</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
@@ -203,8 +204,7 @@
 <p><a href="../../examples/#importing_3ds_lexus"><img src="../../assets/images/screenshots/Nintendo3DSGeometry.png"></img></a></p>
 <h2 id="overview">Overview</h2>
 <ul>
-<li>A Nintendo3DSGeometry mesh is defined by the .3DS file referenced by the Nintendo3DSGeometry&#39;s <a href="../classes/Nintendo3DSGeometry.html#property_src" class="crosslink">src</a> property.</li>
-<li>Set the <a href="../classes/Nintendo3DSGeometry.html#property_src" class="crosslink">src</a> property to a different file at any time, to regenerate the Nintendo3DSGeometry&#39;s mesh from the new file.</li>
+<li>A Nintendo3DSGeometry mesh is defined by the .3DS file referenced by the Nintendo3DSGeometry&#39;s Nintendo3DSGeometry/src:property property.</li>
 <li>Internally uses the <a href="http://k3d.ivank.net/">k3d.js</a> library for parsing .3DS files.</li>
 </ul>
 <h2 id="examples">Examples</h2>
@@ -497,10 +497,6 @@ entity.geometry.on("loaded", function () {
                                 <a href="#property_scene">scene</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_src">src</a>
-
-                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_superTypes">superTypes</a>
 
@@ -527,10 +523,6 @@ entity.geometry.on("loaded", function () {
                             </li>
                             <li class="index-item event inherited">
                                 <a href="#event_destroyed">destroyed</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_src">src</a>
 
                             </li>
                     </ul>
@@ -1678,32 +1670,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_src" class="property item">
-                        <h3 class="name"><code>src</code></h3>
-                        <span class="type">String</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_geometry_nintendo3DSGeometry.js.html#l89"><code>examples&#x2F;js&#x2F;geometry&#x2F;nintendo3DSGeometry.js:89</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Path to the .OBJ file.</p>
-                    <p>Fires a <a href="../classes/Nintendo3DSGeometry.html#event_src" class="crosslink">src</a> event on change.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
                     <div id="property_superTypes" class="property item inherited">
                         <h3 class="name"><code>superTypes</code></h3>
                         <span class="type">Array of String</span>
@@ -1844,48 +1810,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         </div>
                     
-                    
-                    
-                    </div>
-                    <div id="event_src" class="events item">
-                        <h3 class="name"><code>src</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_geometry_nintendo3DSGeometry.js.html#l155"><code>examples&#x2F;js&#x2F;geometry&#x2F;nintendo3DSGeometry.js:155</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Nintendo3DSGeometry&#39;s  <a href="../classes/Nintendo3DSGeometry.html#property_src" class="crosslink">src</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
                     
                     
                     </div>
