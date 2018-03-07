@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.js"></script>
+
+    <script src="js/models/STLModel.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <h1><a href="../docs/classes/STLModel.html" target="_parent">STLModel</a> - importing binary and ASCII-encoded STL
+    </h1>
+    <pre id="log">PR2 head model from <a href='http://wiki.ros.org/pr2_description'
+                                         target="_parent">www.ros.org</a></pre>
+</div>
+
+<script>
+
+    // Load ASCII STL model
+
+    var slottedDDiskModel = new xeogl.STLModel({
+        src: "models/stl/ascii/slotted_disk.stl",
+        transform: new xeogl.Translate({
+            xyz: [2.1, 0, -1.2],
+            parent: new xeogl.Rotate({
+                angle: -90,
+                xyz: [0, 0, 1],
+                parent: new xeogl.Scale({
+                    xyz: [.5, .5, .5]
+                })
+            })
+        })
+    });
+
+    // Load binary STL models
+
+    var coloredModel = new xeogl.STLModel({
+        src: "models/stl/binary/colored.stl",
+        transform: new xeogl.Translate({
+            xyz: [2.0, 0, 0],
+            parent: new xeogl.Rotate({
+                angle: -90,
+                xyz: [0, 0, 1],
+                parent: new xeogl.Scale({
+                    xyz: [.3, .3, .3]
+                })
+            })
+        })
+    });
+
+    var headPanModel = new xeogl.STLModel({
+        src: "models/stl/binary/pr2_head_pan.stl",
+        transform: new xeogl.Translate({
+            xyz: [-0.37, 0.0, -0.6],
+            parent: new xeogl.Rotate({
+                angle: -90,
+                xyz: [1, 0, 0],
+                parent: new xeogl.Scale({
+                    xyz: [2, 2, 2]
+                })
+            })
+        })
+    });
+
+    var headTiltModel = new xeogl.STLModel({
+        src: "models/stl/binary/pr2_head_tilt.stl",
+        transform: new xeogl.Translate({
+            xyz: [-0.2, 0.0, -0.64],
+            parent: new xeogl.Rotate({
+                angle: 10,
+                xyz: [0, 1, 0],
+                parent: new xeogl.Rotate({
+                    angle: -90,
+                    xyz: [1, 0, 0],
+                    parent: new xeogl.Scale({
+                        xyz: [2, 2, 2]
+                    })
+                })
+            })
+        })
+    });
+
+    // Ground plane
+
+    new xeogl.Entity({
+        geometry: new xeogl.PlaneGeometry({
+            xSize: 3,
+            zSize: 3
+        }),
+        material: new xeogl.PhongMaterial({
+            shininess: 170,
+            specular: [0.1, 0.1, 0.3],
+            diffuseMap: new xeogl.Texture({
+                src: "textures/diffuse/UVCheckerMap11-1024.png",
+                scale: [-5.0, 5.0]
+            }),
+            xalpha: 0.99,
+            backfaces: false
+        }),
+        transform: new xeogl.Translate({
+            xyz: [0, -1.35, 0]
+        }),
+        collidable: false,
+        pickable: false
+    });
+
+    // User camera control
+
+    new xeogl.CameraControl();
+
+    // Initial camera position
+
+    var scene = xeogl.scene;
+    var camera = scene.camera;
+
+    camera.eye = [-0.4242762625217438, -0.9033153057098389, 1.6837693452835083];
+    camera.look = [-0.3751119375228882, -0.8857831954956055, -0.18439169228076935];
+    camera.up = [-0.0002467985323164612, 0.9999560117721558, 0.00937776081264019];
+
+    // Orbit camera
+
+    scene.on("tick", function () {
+        camera.orbitYaw(-0.2);
+    });
+
+</script>
+</body>
+</html>
