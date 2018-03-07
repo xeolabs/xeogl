@@ -94,6 +94,7 @@
 
  ````javascript
  xeogl.GLTFModel.parse(model, json); // Clears the target model first
+````
 
  ### Loading options
 
@@ -383,8 +384,9 @@
      * @param {String} src Path to glTF file.
      * @param {Object} options Loading options.
      * @param {Function} [ok] Completion callback.
+     * @param {Function} [error] Error callback.
      */
-    xeogl.GLTFModel.load = function (model, src, options, ok) {
+    xeogl.GLTFModel.load = function (model, src, options, ok, error) {
 
         var spinner = model.scene.canvas.spinner;
         spinner.processes++;
@@ -406,6 +408,10 @@
                 spinner.processes--;
 
                 model.error(msg);
+
+                if (error) {
+                    error(msg);
+                }
 
                 /**
                  Fired whenever this GLTFModel fails to load the glTF file
