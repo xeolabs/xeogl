@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2018-03-06
+ * Built on 2018-03-08
  *
  * MIT License
  * Copyright 2018, Lindsay Kay
@@ -33585,7 +33585,7 @@ TODO
  ````javascript
  var entity = new xeogl.Entity({
 
-     geometry: new xeogl.TGeometry(),
+     geometry: new xeogl.TeapotGeometry(),
 
      transform: new xeogl.Translate({eapot
         xyz: [-5, 0, 0],
