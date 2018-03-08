@@ -26749,6 +26749,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
  * {{#crossLink "GLTFModel"}}{{/crossLink}}, which loads its components from glTF files.
  * {{#crossLink "OBJModel"}}{{/crossLink}}, which loads its components from .OBJ and .MTL files.
+ * {{#crossLink "STLModel"}}{{/crossLink}}, which loads its components from .STL files.
  * {{#crossLink "SceneJSModel"}}{{/crossLink}}, which loads its components from SceneJS scene definitions.
  * {{#crossLink "BuildableModel"}}{{/crossLink}}, which provides a fluent API for building its components.
 

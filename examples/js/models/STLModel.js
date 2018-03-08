@@ -1,7 +1,7 @@
 /**
  An **STLModel** is a {{#crossLink "Model"}}{{/crossLink}} loaded from an <a href="https://github.com/KhronosGroup/STL" target = "_other">STL</a> file.
 
- <a href="../../examples/#importing_gltf_GearboxAssy"><img src="../../../assets/images/gltf/STL_gearbox_squashed.png"></img></a>
+ <a href="../../examples/examples/#importing_stl_shapes"><img src="../../../assets/images/screenshots/STLModel.png"></img></a>
 
  ## Overview
 
