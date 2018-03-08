@@ -921,13 +921,6 @@
             "fors": {},
             "namespaces": {}
         },
-        "examples/js/models/STLLoader.js": {
-            "name": "examples/js/models/STLLoader.js",
-            "modules": {},
-            "classes": {},
-            "fors": {},
-            "namespaces": {}
-        },
         "examples/js/models/STLModel.js": {
             "name": "examples/js/models/STLModel.js",
             "modules": {},
@@ -4878,7 +4871,7 @@
             "namespace": "",
             "file": "src/models/model.js",
             "line": 1,
-            "description": "A **Model** is a collection of {{#crossLink \"Component\"}}Components{{/crossLink}}.\n\n## Overview\n\n* A Model owns the components that are added to it, automatically destroying them when the Model is destroyed.\n* Can be attached to a {{#crossLink \"Transform\"}}{{/crossLink}} hierarchy, to transform its components as a group, within World-space.\n* Provides the collective axis-aligned World-space boundary of its components.\n\nA Model is subclassed by (at least):\n\n* {{#crossLink \"GLTFModel\"}}{{/crossLink}}, which loads its components from glTF files.\n* {{#crossLink \"OBJModel\"}}{{/crossLink}}, which loads its components from .OBJ and .MTL files.\n* {{#crossLink \"SceneJSModel\"}}{{/crossLink}}, which loads its components from SceneJS scene definitions.\n* {{#crossLink \"BuildableModel\"}}{{/crossLink}}, which provides a fluent API for building its components.\n\n## Usage\n\n* [Adding Components](#adding-components)\n* [Removing Components](#removing-components)\n* [Finding Models in Scenes](#finding-models-in-scenes)\n* [Finding Components in Models](#finding-components-in-models)\n* [Transforming a Model](#transforming-a-model)\n* [Getting the World-space boundary of a Model](#getting-the-world-space-boundary-of-a-model)\n* [Clearing a Model](#clearing-a-model)\n* [Destroying a Model](#destroying-a-model)\n\n### Adding Components\n\nWhen adding components to a Model, it's usually easiest to just add their configuration objects and let the Model\ninternally instantiate them, as shown below.\n\nAs mentioned, a Model owns all the components added to it, destroying them when we destroy\nthe Model or call the Model's {{#crossLink \"Model/destroyAll:method\"}}{{/crossLink}} method.\n\n````javascript\nvar model = new xeogl.Model({ // Create Model in xeogl's default Scene\n    id: \"myModel\"\n});\n\nvar geometry = model.add({\n   type: \"xeogl.TorusGeometry\"\n});\n\nvar material = model.add({\n   type: \"xeogl.PhongMaterial\"\n   diffuse: [0.4, 0.4, 9.0]\n});\n\nmodel.add({\n   type: \"xeogl.Entity\",\n   geometry: geometry,\n   material: material\n});\n````\n\nAs shown below, we can also add our own component instances, supplying them either by reference or ID.\n\nNote that the components must be in the same {{#crossLink \"Scene\"}}{{/crossLink}} as the model.\n\n````javascript\n// Add by instance\nvar myEntity = new xeogl.Entity({\n   geometry: geometry,\n   material: material\n});\nmodel.add(myEntity);\n\n// Add by ID\nnew xeogl.Entity({\n   id: \"myEntity\",\n   geometry: geometry,\n   material: material\n})\nmodel.add(\"myEntity\");\n````\n\nWe can also add components all in one shot,  via the Model's constructor:\n\n````javascript\nmodel = new xeogl.Model({\n   id: \"myModel\",\n   components: [\n       {\n           type: \"xeogl.TorusGeometry\",\n           id: \"myGeometry\"\n       },\n       {\n           type: \"xeogl.PhongMaterial\",\n           id: \"myMaterial\",\n           diffuse: [0.4, 0.4, 0.9]\n       },\n       {\n           type: \"xeogl.Entity\",\n           id: \"myEntity\",\n           geometry: \"myGeometry\",\n           material: \"myMaterial\"\n       }\n   ]\n});\n````\n\n### Removing Components\n\nTo remove a component instance from a Model:\n\n````JavaScript\nmodel.remove(myEntity);\n````\n\nWe can also remove components by ID:\n\n````JavaScript\nmodel.remove(\"myEntity\");\n````\nNote that if the Component is owned by the Model, where it was created like this:\n\n````javascript\nvar myComponent = new xeogl.Rotate(myModel, {... });\n````\n\nthen even after removing it, calling {{#crossLink \"Model/destroyAll:method\"}}destroyAll{{/crossLink}} on the\nModel will still destroy the component.\n\n### Finding Models in Scenes\n\nOur Model will now be registered by ID on its Scene, so we can now find it like this:\n\n````javascript\nmodel = xeogl.scene.models[\"myModel\"];\n````\n\nThat's assuming that we've created the Model in the default xeogl Scene, which we did for these examples.\n\n### Finding Components in Models\n\nOur Model now has various components within itself, which we can find by their IDs.\n\nTo find the components grouped by their types, drop this expression into the browser's JavaScript\ndebug console (we're using Chrome here):\n\n````\nmodel.types;\n````\n\nThe result is the value of the Model's {{#crossLink \"Model/types:property\"}}types{{/crossLink}} map, which\ncontains its components, mapped to their types:\n\n<img src=\"../../../assets/images/screenshots/Model_findingComponents.png\"></img>\n\nHere we've expanded the {{#crossLink \"PhongMaterial\"}}{{/crossLink}} components, and we can see\nour {{#crossLink \"PhongMaterial\"}}{{/crossLink}}.\n\nLet's get that {{#crossLink \"PhongMaterial\"}}{{/crossLink}} from our Model's\n{{#crossLink \"Model/components:property\"}}{{/crossLink}} map and change its diffuse color:\n\n```` JavaScript\nvar material = model.components[\"myMaterial\"];\nmaterial.diffuse = [0.9, 0.4, 0.4];\n````\n\nThe Model also has an {{#crossLink \"Model/entities:property\"}}{{/crossLink}} map, in which we can find our {{#crossLink \"Entity\"}}{{/crossLink}}:\n\n<img src=\"../../../assets/images/screenshots/Model.entities.png\"></img>\n\n### Transforming a Model\n\nA Model lets us transform its Entities as a group.\n\nWe can attach a modeling {{#crossLink \"Transform\"}}{{/crossLink}} to our Model, as a either a\nconfiguration object or a component instance:\n\n```` Javascript\n// Attach transforms as a configuration object:\nmodel.transform = {\n       type: \"xeogl.Translate\",\n       xyz: [-35, 0, 0],\n       parent: {\n           type: \"xeogl.Rotate\",\n           xyz: [0, 1, 0],\n           angle: 45\n       }\n    };\n\n// Attach our own transform instances:\nmodel.transform = new xeogl.Translate({\n       xyz: [-35, 0, 0],\n       parent: new xeogl.Rotate({\n           xyz: [0, 1, 0],\n           angle: 45\n       })\n    });\n````\n\nWe can also provide the {{#crossLink \"Transform\"}}{{/crossLink}} to the Model constructor, as either configuration\nobjects or instances.\n\nHere we'll provide them as configuration objects:\n\n```` Javascript\n// Model internally instantiates our transform components:\nvar model3 = new xeogl.Model({\n       transform: {\n           type: \"xeogl.Translate\",\n           xyz: [-35, 0, 0],\n           parent: {\n               type: \"xeogl.Rotate\",\n               xyz: [0, 1, 0],\n               angle: 45\n           }\n       }\n    });\n\n````\n\nNote that, as with the components we added before, the Model will manage the lifecycles of our {{#crossLink \"Transform\"}}{{/crossLink}} components,\ndestroying them when we destroy the Model or call its {{#crossLink \"Model/destroyAll:method\"}}{{/crossLink}} method. Also, when we call {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} on a Model component, the component will remove itself from the Model first.\n\n### Getting the World-space boundary of a Model\n\nGet the World-space axis-aligned boundary of a MOdel like this:\n\n```` Javascript\nmodel.on(\"boundary\", function() {\n   var aabb = model.aabb; //  [xmin, ymin,zmin,xmax,ymax, zmax]\n   //...\n});\n````\n\nWe can also subscribe to changes to that boundary, which will happen whenever\n\n* the Model's {{#crossLink \"Transform\"}}{{/crossLink}} is updated,\n* components are added or removed from the Model, or\n* the {{#crossLink \"Geometry\"}}Geometries{{/crossLink}} or {{#crossLink \"Transform\"}}Transforms{{/crossLink}} of its Entities are switched or modified.\n\n````javascript\nmodel.on(\"boundary\", function() {\n   var aabb = model.aabb; // [xmin, ymin,zmin,xmax,ymax, zmax]\n});\n````\n\n### Clearing a Model\n\n```` Javascript\nmodel.clear();\n````\n\n### Destroying a Model\n\n```` Javascript\nmodel.destroy();\n````",
+            "description": "A **Model** is a collection of {{#crossLink \"Component\"}}Components{{/crossLink}}.\n\n## Overview\n\n* A Model owns the components that are added to it, automatically destroying them when the Model is destroyed.\n* Can be attached to a {{#crossLink \"Transform\"}}{{/crossLink}} hierarchy, to transform its components as a group, within World-space.\n* Provides the collective axis-aligned World-space boundary of its components.\n\nA Model is subclassed by (at least):\n\n* {{#crossLink \"GLTFModel\"}}{{/crossLink}}, which loads its components from glTF files.\n* {{#crossLink \"OBJModel\"}}{{/crossLink}}, which loads its components from .OBJ and .MTL files.\n* {{#crossLink \"STLModel\"}}{{/crossLink}}, which loads its components from .STL files.\n* {{#crossLink \"SceneJSModel\"}}{{/crossLink}}, which loads its components from SceneJS scene definitions.\n* {{#crossLink \"BuildableModel\"}}{{/crossLink}}, which provides a fluent API for building its components.\n\n## Usage\n\n* [Adding Components](#adding-components)\n* [Removing Components](#removing-components)\n* [Finding Models in Scenes](#finding-models-in-scenes)\n* [Finding Components in Models](#finding-components-in-models)\n* [Transforming a Model](#transforming-a-model)\n* [Getting the World-space boundary of a Model](#getting-the-world-space-boundary-of-a-model)\n* [Clearing a Model](#clearing-a-model)\n* [Destroying a Model](#destroying-a-model)\n\n### Adding Components\n\nWhen adding components to a Model, it's usually easiest to just add their configuration objects and let the Model\ninternally instantiate them, as shown below.\n\nAs mentioned, a Model owns all the components added to it, destroying them when we destroy\nthe Model or call the Model's {{#crossLink \"Model/destroyAll:method\"}}{{/crossLink}} method.\n\n````javascript\nvar model = new xeogl.Model({ // Create Model in xeogl's default Scene\n    id: \"myModel\"\n});\n\nvar geometry = model.add({\n   type: \"xeogl.TorusGeometry\"\n});\n\nvar material = model.add({\n   type: \"xeogl.PhongMaterial\"\n   diffuse: [0.4, 0.4, 9.0]\n});\n\nmodel.add({\n   type: \"xeogl.Entity\",\n   geometry: geometry,\n   material: material\n});\n````\n\nAs shown below, we can also add our own component instances, supplying them either by reference or ID.\n\nNote that the components must be in the same {{#crossLink \"Scene\"}}{{/crossLink}} as the model.\n\n````javascript\n// Add by instance\nvar myEntity = new xeogl.Entity({\n   geometry: geometry,\n   material: material\n});\nmodel.add(myEntity);\n\n// Add by ID\nnew xeogl.Entity({\n   id: \"myEntity\",\n   geometry: geometry,\n   material: material\n})\nmodel.add(\"myEntity\");\n````\n\nWe can also add components all in one shot,  via the Model's constructor:\n\n````javascript\nmodel = new xeogl.Model({\n   id: \"myModel\",\n   components: [\n       {\n           type: \"xeogl.TorusGeometry\",\n           id: \"myGeometry\"\n       },\n       {\n           type: \"xeogl.PhongMaterial\",\n           id: \"myMaterial\",\n           diffuse: [0.4, 0.4, 0.9]\n       },\n       {\n           type: \"xeogl.Entity\",\n           id: \"myEntity\",\n           geometry: \"myGeometry\",\n           material: \"myMaterial\"\n       }\n   ]\n});\n````\n\n### Removing Components\n\nTo remove a component instance from a Model:\n\n````JavaScript\nmodel.remove(myEntity);\n````\n\nWe can also remove components by ID:\n\n````JavaScript\nmodel.remove(\"myEntity\");\n````\nNote that if the Component is owned by the Model, where it was created like this:\n\n````javascript\nvar myComponent = new xeogl.Rotate(myModel, {... });\n````\n\nthen even after removing it, calling {{#crossLink \"Model/destroyAll:method\"}}destroyAll{{/crossLink}} on the\nModel will still destroy the component.\n\n### Finding Models in Scenes\n\nOur Model will now be registered by ID on its Scene, so we can now find it like this:\n\n````javascript\nmodel = xeogl.scene.models[\"myModel\"];\n````\n\nThat's assuming that we've created the Model in the default xeogl Scene, which we did for these examples.\n\n### Finding Components in Models\n\nOur Model now has various components within itself, which we can find by their IDs.\n\nTo find the components grouped by their types, drop this expression into the browser's JavaScript\ndebug console (we're using Chrome here):\n\n````\nmodel.types;\n````\n\nThe result is the value of the Model's {{#crossLink \"Model/types:property\"}}types{{/crossLink}} map, which\ncontains its components, mapped to their types:\n\n<img src=\"../../../assets/images/screenshots/Model_findingComponents.png\"></img>\n\nHere we've expanded the {{#crossLink \"PhongMaterial\"}}{{/crossLink}} components, and we can see\nour {{#crossLink \"PhongMaterial\"}}{{/crossLink}}.\n\nLet's get that {{#crossLink \"PhongMaterial\"}}{{/crossLink}} from our Model's\n{{#crossLink \"Model/components:property\"}}{{/crossLink}} map and change its diffuse color:\n\n```` JavaScript\nvar material = model.components[\"myMaterial\"];\nmaterial.diffuse = [0.9, 0.4, 0.4];\n````\n\nThe Model also has an {{#crossLink \"Model/entities:property\"}}{{/crossLink}} map, in which we can find our {{#crossLink \"Entity\"}}{{/crossLink}}:\n\n<img src=\"../../../assets/images/screenshots/Model.entities.png\"></img>\n\n### Transforming a Model\n\nA Model lets us transform its Entities as a group.\n\nWe can attach a modeling {{#crossLink \"Transform\"}}{{/crossLink}} to our Model, as a either a\nconfiguration object or a component instance:\n\n```` Javascript\n// Attach transforms as a configuration object:\nmodel.transform = {\n       type: \"xeogl.Translate\",\n       xyz: [-35, 0, 0],\n       parent: {\n           type: \"xeogl.Rotate\",\n           xyz: [0, 1, 0],\n           angle: 45\n       }\n    };\n\n// Attach our own transform instances:\nmodel.transform = new xeogl.Translate({\n       xyz: [-35, 0, 0],\n       parent: new xeogl.Rotate({\n           xyz: [0, 1, 0],\n           angle: 45\n       })\n    });\n````\n\nWe can also provide the {{#crossLink \"Transform\"}}{{/crossLink}} to the Model constructor, as either configuration\nobjects or instances.\n\nHere we'll provide them as configuration objects:\n\n```` Javascript\n// Model internally instantiates our transform components:\nvar model3 = new xeogl.Model({\n       transform: {\n           type: \"xeogl.Translate\",\n           xyz: [-35, 0, 0],\n           parent: {\n               type: \"xeogl.Rotate\",\n               xyz: [0, 1, 0],\n               angle: 45\n           }\n       }\n    });\n\n````\n\nNote that, as with the components we added before, the Model will manage the lifecycles of our {{#crossLink \"Transform\"}}{{/crossLink}} components,\ndestroying them when we destroy the Model or call its {{#crossLink \"Model/destroyAll:method\"}}{{/crossLink}} method. Also, when we call {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} on a Model component, the component will remove itself from the Model first.\n\n### Getting the World-space boundary of a Model\n\nGet the World-space axis-aligned boundary of a MOdel like this:\n\n```` Javascript\nmodel.on(\"boundary\", function() {\n   var aabb = model.aabb; //  [xmin, ymin,zmin,xmax,ymax, zmax]\n   //...\n});\n````\n\nWe can also subscribe to changes to that boundary, which will happen whenever\n\n* the Model's {{#crossLink \"Transform\"}}{{/crossLink}} is updated,\n* components are added or removed from the Model, or\n* the {{#crossLink \"Geometry\"}}Geometries{{/crossLink}} or {{#crossLink \"Transform\"}}Transforms{{/crossLink}} of its Entities are switched or modified.\n\n````javascript\nmodel.on(\"boundary\", function() {\n   var aabb = model.aabb; // [xmin, ymin,zmin,xmax,ymax, zmax]\n});\n````\n\n### Clearing a Model\n\n```` Javascript\nmodel.clear();\n````\n\n### Destroying a Model\n\n```` Javascript\nmodel.destroy();\n````",
             "submodule": "models",
             "is_constructor": 1,
             "params": [
@@ -6946,7 +6939,7 @@
             "namespace": "",
             "file": "examples/js/models/STLModel.js",
             "line": 1,
-            "description": "An **STLModel** is a {{#crossLink \"Model\"}}{{/crossLink}} loaded from an <a href=\"https://github.com/KhronosGroup/STL\" target = \"_other\">STL</a> file.\n\n<a href=\"../../examples/#importing_gltf_GearboxAssy\"><img src=\"../../../assets/images/gltf/STL_gearbox_squashed.png\"></img></a>\n\n## Overview\n\n* An STLModel is a container of {{#crossLink \"Component\"}}Components{{/crossLink}} that loads itself from an STL file.\n* It begins loading as soon as you set its {{#crossLink \"STLModel/src:property\"}}{{/crossLink}}\nproperty to the location of a valid STL file.\n* You can set {{#crossLink \"STLModel/src:property\"}}{{/crossLink}} to a new file path at any time, which causes\nthe STLModel to clear itself and load components from the new file.\n\nIt inherits these capabilities from its {{#crossLink \"Model\"}}{{/crossLink}} base class:\n\n* Allows you to access and manipulate the components within it.\n* Can be transformed within World-space by attaching it to a {{#crossLink \"Transform\"}}{{/crossLink}}.\n* Provides its dynamic World-space axis-aligned boundary.\n\n## Examples\n\n* TODO\n\n## Usage\n\n* [Loading STL](#loading-gltf)\n* [Parsing STL](#parsing-gltf)\n* [Loading options](#loading-options)\n* [Finding loaded Entities](#finding-loaded-entities)\n* [Transforming an STLModel](#transforming-a-gltfmodel)\n* [Getting the World-space boundary of an STLModel](#getting-the-world-space-boundary-of-a-gltfmodel)\n* [Clearing an STLModel](#clearing-a-gltfmodel)\n* [Destroying an STLModel](#destroying-a-gltfmodel)\n\n### Loading STL\n\nLoad an STL file by creating an STLModel:\n\n````javascript\nvar model = new xeogl.STLModel({\n    id: \"gearbox\",\n    src: \"models/STL/gearbox_conical/scene.gltf\",\n});\n````\n\nAn STLModel prefixes its own ID to those of its components. The ID is optional, but in this example we're providing our own custom ID.\n\nThe STLModel begins loading the STL file immediately.\n\nTo bind a callback to be notified when the file has loaded (which fires immediately if already loaded):\n\n````javascript\nmodel.on(\"loaded\", function() {\n       // STLModel has loaded!\n   });\n````\n\nYou can also bind a callback to fire if loading fails:\n\n````javascript\nmodel.on(\"error\", function(msg) {\n       // Error occurred\n   });\n````\n\nTo switch to a different STL file, simply update {{#crossLink \"STLModel/src:property\"}}{{/crossLink}}:\n\n````javascript\nmodel.src = \"models/gltf/Buggy/STL/Buggy.gltf\"\n````\n\n### Parsing STL\n\nIf we have an STL JSON with embedded assets in memory, then we can parse it straight into an STLModel using the\nstatic {{#crossLink \"STLModel/parse:method\"}}{{/crossLink}}:\n\n````javascript\nxeogl.STLModel.parse(model, json); // Clears the target model first\n````\n\n### Loading options\n\nThe following options may be specified when loading STL:\n\n| Option | Type | Range | Default Value | Description |\n|:--------:|:----:|:-----:|:-------------:|:-----:|:-----------:|\n| quantizeGeometry | Boolean |  | true | When true, quantizes geometry to reduce memory and GPU bus usage (see {{#crossLink \"Geometry\"}}{{/crossLink}}). |\n| combineGeometry | Boolean |  | true | When true, combines geometry vertex buffers to improve rendering performance (see {{#crossLink \"Geometry\"}}{{/crossLink}}). |\n| backfaces | Boolean |  | true | When true, allows visible backfaces, wherever specified in the STL. When false, ignores backfaces. |\n| ghost | Boolean |  | false | When true, ghosts all the model's Entities (see {{#crossLink \"Entity\"}}{{/crossLink}} and {{#crossLink \"GhostMaterial\"}}{{/crossLink}}). |\n| outline | Boolean |  | false | When true, outlines all the model's Entities (see {{#crossLink \"Entity\"}}{{/crossLink}} and {{#crossLink \"OutlineMaterial\"}}{{/crossLink}}). |\n| highlight | Boolean |  | false | When true, highlights all the model's Entities (see {{#crossLink \"Entity\"}}{{/crossLink}} and {{#crossLink \"HighlightMaterial\"}}{{/crossLink}}). |\n| ghostEdgeThreshold | Number | [0..180] | 2 | When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn. |\n\n### Finding STLModels in Scenes\n\nOur STLModel will now be registered by ID on its Scene, so we can now find it like this:\n\n````javascript\nmodel = xeogl.scene.models[\"gearbox\"];\n````\n\nThat's assuming that we've created the STLModel in the default xeogl Scene, which we're doing in these examples.\n\n### Finding loaded Entities\n\nOnce the STLModel has loaded, its {{#crossLink \"Scene\"}}{{/crossLink}} will contain various components that represent the elements of the STL file.\nWe'll now access some of those components by ID, to query and update them programmatically.\n\nLet's highlight an {{#crossLink \"Entity\"}}Entities{{/crossLink}} in our STLModel:\n\n````javascript\nvar entities = scene.entities;\n\nentities[\"gearbox#1\"].highlight = true;\n````\n\nAn STLModel also has ID maps of the components within it. Its components map contains all\nits {{#crossLink \"Component\"}}Components{{/crossLink}} in one big map:\n\n````javascript\nmodel.components[\"gearbox#1\"].highlight = true;\n````\n\nwhile its entities map contains just the {{#crossLink \"Entity\"}}Entities{{/crossLink}}:\n\n````javascript\nmodel.entities[\"gearbox#1\"].highlight = true;\n````\n\nTODO: ID format description\n\n### Transforming an STLModel\n\nAn STLModel lets us transform its Entities as a group.\n\nWe can attach a modeling {{#crossLink \"Transform\"}}{{/crossLink}} to our STLModel, as a either a\nconfiguration object or a component instance:\n\n```` Javascript\n// Attach transforms as a configuration object:\nmodel.transform = {\n       type: \"xeogl.Translate\",\n       xyz: [-35, 0, 0],\n       parent: {\n           type: \"xeogl.Rotate\",\n           xyz: [0, 1, 0],\n           angle: 45\n       }\n    };\n\n// Attach our own transform instances:\nmodel.transform = new xeogl.Translate({\n       xyz: [-35, 0, 0],\n       parent: new xeogl.Rotate({\n           xyz: [0, 1, 0],\n           angle: 45\n       })\n    });\n````\n\nWe can also provide the {{#crossLink \"Transform\"}}{{/crossLink}} to the STLModel constructor, as either configuration\nobjects or instances.\n\nHere we'll provide a Transform hierarchy as a configuration object:\n\n```` Javascript\n// Model internally instantiates our transform components:\nvar model = new xeogl.STLModel({\n    src: \"models/gltf/gearbox_conical/scene.gltf\",\n    transform: {\n       type: \"xeogl.Translate\",\n       xyz: [-35, 0, 0],\n       parent: {\n           type: \"xeogl.Rotate\",\n           xyz: [0, 1, 0],\n           angle: 45\n       }\n    }\n});\n\n````\n\n### Getting the World-space boundary of an STLModel\n\nGet the World-space axis-aligned boundary like this:\n\n```` Javascript\nmodel.on(\"boundary\", function() {\n   var aabb = model.aabb; //  [xmin, ymin,zmin,xmax,ymax, zmax]\n   //...\n});\n````\n\nWe can also subscribe to changes to that boundary, which will happen whenever\n\n* the STLModel's {{#crossLink \"Transform\"}}{{/crossLink}} is updated,\n* components are added or removed, or\n* the STLModel is reloaded from a different source,\n* the {{#crossLink \"Geometry\"}}Geometries{{/crossLink}} or {{#crossLink \"Transform\"}}Transforms{{/crossLink}} of its {{#crossLink \"Entities\"}}Entities{{/crossLink}} are updated.\n\n````javascript\nmodel.on(\"boundary\", function() {\n   var aabb = model.aabb; // [xmin, ymin,zmin,xmax,ymax, zmax]\n});\n````\n\n### Clearing an STLModel\n\n```` Javascript\nmodel.clear();\n````\n\n### Destroying an STLModel\n\n```` Javascript\nmodel.destroy();\n````",
+            "description": "An **STLModel** is a {{#crossLink \"Model\"}}{{/crossLink}} loaded from an <a href=\"https://github.com/KhronosGroup/STL\" target = \"_other\">STL</a> file.\n\n<a href=\"../../examples/examples/#importing_stl_shapes\"><img src=\"../../../assets/images/screenshots/STLModel.png\"></img></a>\n\n## Overview\n\n* An STLModel is a container of {{#crossLink \"Component\"}}Components{{/crossLink}} that loads itself from an [STL](https://en.wikipedia.org/wiki/STL_(file_format)) file.\n* It begins loading as soon as you set its {{#crossLink \"STLModel/src:property\"}}{{/crossLink}}\nproperty to the location of a valid STL file.\n* You can set {{#crossLink \"STLModel/src:property\"}}{{/crossLink}} to a new file path at any time, which causes\nthe STLModel to clear itself and load components from the new file.\n* For binary STL, has the option to create a separate {{#crossLink \"Entity\"}}{{/crossLink}} for each group of faces\nthat share the same vertex colors. This allows us to treat STL models as parts assemblies.\n\nIt inherits these capabilities from its {{#crossLink \"Model\"}}{{/crossLink}} base class:\n\n* Allows you to access and manipulate the components within it.\n* Can be transformed within World-space by attaching it to a {{#crossLink \"Transform\"}}{{/crossLink}}.\n* Provides its dynamic World-space axis-aligned boundary.\n\n## Examples\n\n* TODO\n\n## Usage\n\n* [Loading STL](#loading-gltf)\n* [Parsing STL](#parsing-gltf)\n* [Loading options](#loading-options)\n* [Finding loaded Entities](#finding-loaded-entities)\n* [Transforming an STLModel](#transforming-a-gltfmodel)\n* [Getting the World-space boundary of an STLModel](#getting-the-world-space-boundary-of-a-gltfmodel)\n* [Clearing an STLModel](#clearing-a-gltfmodel)\n* [Destroying an STLModel](#destroying-a-gltfmodel)\n\n### Loading STL\n\nLoad an STL file by creating an STLModel:\n\n````javascript\nvar model = new xeogl.STLModel({\n    id: \"gearbox\",\n    src: \"models/STL/gearbox_conical/scene.gltf\",\n});\n````\n\nAn STLModel prefixes its own ID to those of its components. The ID is optional, but in this example we're providing our own custom ID.\n\nThe STLModel begins loading the STL file immediately.\n\nTo bind a callback to be notified when the file has loaded (which fires immediately if already loaded):\n\n````javascript\nmodel.on(\"loaded\", function() {\n       // STLModel has loaded!\n   });\n````\n\nYou can also bind a callback to fire if loading fails:\n\n````javascript\nmodel.on(\"error\", function(msg) {\n       // Error occurred\n   });\n````\n\nTo switch to a different STL file, simply update {{#crossLink \"STLModel/src:property\"}}{{/crossLink}}:\n\n````javascript\nmodel.src = \"models/gltf/Buggy/STL/Buggy.gltf\"\n````\n\n### Parsing STL\n\nIf we have an STL JSON with embedded assets in memory, then we can parse it straight into an STLModel using the\nstatic {{#crossLink \"STLModel/parse:method\"}}{{/crossLink}}:\n\n````javascript\nxeogl.STLModel.parse(model, json); // Clears the target model first\n````\n\n### Loading options\n\nThe following options may be specified when loading STL:\n\n| Option | Type | Range | Default Value | Description |\n|:--------:|:----:|:-----:|:-------------:|:-----:|:-----------:|\n| quantizeGeometry | Boolean |  | true | When true, quantizes geometry to reduce memory and GPU bus usage (see {{#crossLink \"Geometry\"}}{{/crossLink}}). |\n| combineGeometry | Boolean |  | true | When true, combines geometry vertex buffers to improve rendering performance (see {{#crossLink \"Geometry\"}}{{/crossLink}}). |\n| backfaces | Boolean |  | true | When true, allows visible backfaces, wherever specified in the STL. When false, ignores backfaces. |\n| ghost | Boolean |  | false | When true, ghosts all the model's Entities (see {{#crossLink \"Entity\"}}{{/crossLink}} and {{#crossLink \"GhostMaterial\"}}{{/crossLink}}). |\n| outline | Boolean |  | false | When true, outlines all the model's Entities (see {{#crossLink \"Entity\"}}{{/crossLink}} and {{#crossLink \"OutlineMaterial\"}}{{/crossLink}}). |\n| highlight | Boolean |  | false | When true, highlights all the model's Entities (see {{#crossLink \"Entity\"}}{{/crossLink}} and {{#crossLink \"HighlightMaterial\"}}{{/crossLink}}). |\n| ghostEdgeThreshold | Number | [0..180] | 2 | When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn. |\n| splitEntities | Boolean |  | true | When true, creates a separate {{#crossLink \"Entity\"}}{{/crossLink}} for each group of faces that share the same vertex colors. Only works with binary STL.| |\n\n### Finding STLModels in Scenes\n\nOur STLModel will now be registered by ID on its Scene, so we can now find it like this:\n\n````javascript\nmodel = xeogl.scene.models[\"gearbox\"];\n````\n\nThat's assuming that we've created the STLModel in the default xeogl Scene, which we're doing in these examples.\n\n### Finding loaded Entities\n\nOnce the STLModel has loaded, its {{#crossLink \"Scene\"}}{{/crossLink}} will contain various components that represent the elements of the STL file.\nWe'll now access some of those components by ID, to query and update them programmatically.\n\nLet's highlight an {{#crossLink \"Entity\"}}Entities{{/crossLink}} in our STLModel:\n\n````javascript\nvar entities = scene.entities;\n\nentities[\"gearbox#1\"].highlight = true;\n````\n\nAn STLModel also has ID maps of the components within it. Its components map contains all\nits {{#crossLink \"Component\"}}Components{{/crossLink}} in one big map:\n\n````javascript\nmodel.components[\"gearbox#1\"].highlight = true;\n````\n\nwhile its entities map contains just the {{#crossLink \"Entity\"}}Entities{{/crossLink}}:\n\n````javascript\nmodel.entities[\"gearbox#1\"].highlight = true;\n````\n\nTODO: ID format description\n\n### Transforming an STLModel\n\nAn STLModel lets us transform its Entities as a group.\n\nWe can attach a modeling {{#crossLink \"Transform\"}}{{/crossLink}} to our STLModel, as a either a\nconfiguration object or a component instance:\n\n```` Javascript\n// Attach transforms as a configuration object:\nmodel.transform = {\n       type: \"xeogl.Translate\",\n       xyz: [-35, 0, 0],\n       parent: {\n           type: \"xeogl.Rotate\",\n           xyz: [0, 1, 0],\n           angle: 45\n       }\n    };\n\n// Attach our own transform instances:\nmodel.transform = new xeogl.Translate({\n       xyz: [-35, 0, 0],\n       parent: new xeogl.Rotate({\n           xyz: [0, 1, 0],\n           angle: 45\n       })\n    });\n````\n\nWe can also provide the {{#crossLink \"Transform\"}}{{/crossLink}} to the STLModel constructor, as either configuration\nobjects or instances.\n\nHere we'll provide a Transform hierarchy as a configuration object:\n\n```` Javascript\n// Model internally instantiates our transform components:\nvar model = new xeogl.STLModel({\n    src: \"models/gltf/gearbox_conical/scene.gltf\",\n    transform: {\n       type: \"xeogl.Translate\",\n       xyz: [-35, 0, 0],\n       parent: {\n           type: \"xeogl.Rotate\",\n           xyz: [0, 1, 0],\n           angle: 45\n       }\n    }\n});\n\n````\n\n### Getting the World-space boundary of an STLModel\n\nGet the World-space axis-aligned boundary like this:\n\n```` Javascript\nmodel.on(\"boundary\", function() {\n   var aabb = model.aabb; //  [xmin, ymin,zmin,xmax,ymax, zmax]\n   //...\n});\n````\n\nWe can also subscribe to changes to that boundary, which will happen whenever\n\n* the STLModel's {{#crossLink \"Transform\"}}{{/crossLink}} is updated,\n* components are added or removed, or\n* the STLModel is reloaded from a different source,\n* the {{#crossLink \"Geometry\"}}Geometries{{/crossLink}} or {{#crossLink \"Transform\"}}Transforms{{/crossLink}} of its {{#crossLink \"Entities\"}}Entities{{/crossLink}} are updated.\n\n````javascript\nmodel.on(\"boundary\", function() {\n   var aabb = model.aabb; // [xmin, ymin,zmin,xmax,ymax, zmax]\n});\n````\n\n### Clearing an STLModel\n\n```` Javascript\nmodel.clear();\n````\n\n### Destroying an STLModel\n\n```` Javascript\nmodel.destroy();\n````",
             "submodule": "models",
             "is_constructor": 1,
             "params": [
@@ -7031,6 +7024,13 @@
                             "description": "A Local-to-World-space (modelling) {{#crossLink \"Transform\"}}{{/crossLink}} to attach to this STLModel.\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this STLModel. Internally, the given\n{{#crossLink \"Transform\"}}{{/crossLink}} will be inserted above each top-most {{#crossLink \"Transform\"}}Transform{{/crossLink}}\nthat the STLModel attaches to its {{#crossLink \"Entity\"}}Entities{{/crossLink}}.",
                             "type": "Number|String|Transform",
                             "optional": true
+                        },
+                        {
+                            "name": "splitEntities",
+                            "description": "When true, creates a separate {{#crossLink \"Entity\"}}{{/crossLink}} for each group of faces that share the same vertex colors. Only works with binary STL.|",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "true"
                         }
                     ]
                 }
@@ -17297,7 +17297,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 282,
+            "line": 283,
             "description": "JavaScript class name for this Component.",
             "itemtype": "property",
             "name": "type",
@@ -17309,7 +17309,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 293,
+            "line": 294,
             "description": "The {{#crossLink \"Components\"}}{{/crossLink}} within this Model, mapped to their IDs.\n\nFires an {{#crossLink \"Model/updated:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "components",
@@ -17320,7 +17320,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 303,
+            "line": 304,
             "description": "The number of {{#crossLink \"Components\"}}{{/crossLink}} within this Model.",
             "itemtype": "property",
             "name": "numComponents",
@@ -17331,7 +17331,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 311,
+            "line": 312,
             "description": "A map of maps; for each {{#crossLink \"Component\"}}{{/crossLink}} type in this Model,\na map to IDs to {{#crossLink \"Component\"}}{{/crossLink}} instances, eg.\n\n````\n\"xeogl.Geometry\": {\n  \"alpha\": <xeogl.Geometry>,\n  \"beta\": <xeogl.Geometry>\n},\n\"xeogl.Rotate\": {\n  \"charlie\": <xeogl.Rotate>,\n  \"delta\": <xeogl.Rotate>,\n  \"echo\": <xeogl.Rotate>,\n},\n//...\n````",
             "itemtype": "property",
             "name": "types",
@@ -17342,7 +17342,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 333,
+            "line": 334,
             "description": "The {{#crossLink \"Entity\"}}Entity{{/crossLink}} component instances within this Model, mapped to their IDs.",
             "itemtype": "property",
             "name": "entities",
@@ -17353,7 +17353,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 371,
+            "line": 372,
             "description": "Adds a {{#crossLink \"Component\"}}Component{{/crossLink}} or subtype to this Model.\n\nThe {{#crossLink \"Component\"}}Component(s){{/crossLink}} may be specified by ID, instance, JSON definition or type.\n\nSee class comment for usage examples.\n\nThe {{#crossLink \"Component\"}}Components{{/crossLink}} must be in the same {{#crossLink \"Scene\"}}{{/crossLink}} as this Model.\n\nFires an {{#crossLink \"Model/added:event\"}}{{/crossLink}} event.",
             "itemtype": "method",
             "name": "add",
@@ -17370,7 +17370,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 522,
+            "line": 523,
             "description": "Fired whenever an individual {{#crossLink \"Component\"}}{{/crossLink}} is added to this {{#crossLink \"Model\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "added",
@@ -17387,7 +17387,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 561,
+            "line": 562,
             "description": "Destroys all {{#crossLink \"Component\"}}Components{{/crossLink}} in this Model.",
             "itemtype": "method",
             "name": "destroyAll",
@@ -17397,7 +17397,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 597,
+            "line": 598,
             "description": "Removes all {{#crossLink \"Component\"}}Components{{/crossLink}} from this Model.",
             "itemtype": "method",
             "name": "removeAll",
@@ -17407,7 +17407,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 609,
+            "line": 610,
             "description": "Removes a {{#crossLink \"Component\"}}{{/crossLink}} from this model, without destroying it.\n\nNote that if the Component is owned by the Model, where it was created like this:\n\n````javascript\nvar myComponent = new xeogl.Rotate(myModel, {... });\n````\n\nthen even after removing it, calling {{#crossLink \"Model/destroyAll:method\"}}destroyAll{{/crossLink}} on the\nModel will still destroy the component.",
             "params": [
                 {
@@ -17421,7 +17421,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 684,
+            "line": 685,
             "description": "Fired whenever an individual {{#crossLink \"Component\"}}{{/crossLink}} is removed from this {{#crossLink \"Model\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "removed",
@@ -17438,7 +17438,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 696,
+            "line": 697,
             "description": "Iterates with a callback over the {{#crossLink \"Component\"}}Components{{/crossLink}} in this Model.",
             "itemtype": "method",
             "name": "iterate",
@@ -17462,7 +17462,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 715,
+            "line": 716,
             "description": "The Local-to-World-space (modelling) {{#crossLink \"Transform\"}}{{/crossLink}} attached to this Model.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this Model.\n\nInternally, the given {{#crossLink \"Transform\"}}{{/crossLink}} will be inserted above each top-most\n{{#crossLink \"Transform\"}}Transform{{/crossLink}} that the Model attaches to\nits {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nFires an {{#crossLink \"Model/transform:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "transform",
@@ -17473,7 +17473,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 733,
+            "line": 734,
             "description": "Fired whenever this Model's {{#crossLink \"Model/transform:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "transform",
@@ -17489,7 +17489,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 756,
+            "line": 757,
             "description": "World-space axis-aligned 3D boundary (AABB) of this Model.\n\nThe AABB is represented by a six-element Float32Array containing the min/max extents of the\naxis-aligned volume, ie. ````[xmin, ymin,zmin,xmax,ymax, zmax]````.",
             "itemtype": "property",
             "name": "aabb",
@@ -17501,7 +17501,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 823,
+            "line": 824,
             "description": "Indicates whether this Model's Entities are visible or not.",
             "itemtype": "property",
             "name": "visible",
@@ -17513,7 +17513,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 850,
+            "line": 851,
             "description": "Flag which indicates if this Model's Entities are rendered with ghost effect.",
             "itemtype": "property",
             "name": "ghost",
@@ -17525,7 +17525,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 877,
+            "line": 878,
             "description": "Flag which indicates if this Model's Entities are rendered with highlight effect.",
             "itemtype": "property",
             "name": "highlight",
@@ -17537,7 +17537,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 904,
+            "line": 905,
             "description": "Flag which indicates if this Model's Entities are rendered with outline effect.",
             "itemtype": "property",
             "name": "outline",
@@ -17549,7 +17549,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 943,
+            "line": 944,
             "description": "Fired whenever this Model's World-space boundary changes.\n\nGet the latest boundary from the Model's {{#crossLink \"Model/aabb:property\"}}{{/crossLink}} property.",
             "itemtype": "event",
             "name": "boundary",
@@ -21647,22 +21647,8 @@
             "submodule": "models"
         },
         {
-            "file": "examples/js/models/STLLoader.js",
-            "line": 1,
-            "description": "Created by lindsay on 07.03.18.",
-            "class": "STLModel",
-            "module": "xeogl"
-        },
-        {
-            "file": "examples/js/models/STLLoader.js",
-            "line": 4,
-            "author": "Mugen87 / https://github.com/Mugen87\n\nDescription: A THREE loader for STL ASCII files, as created by Solidworks and other CAD programs.\n\nSupports both binary and ASCII encoded files, with automatic detection of type.\n\nThe loader returns a non-indexed buffer geometry.\n\nLimitations:\n Binary decoding supports \"Magics\" color format (http://en.wikipedia.org/wiki/STL_(file_format)#Color_in_binary_STL).\n There is perhaps some question as to how valid it is to always assume little-endian-ness.\n ASCII decoding assumes file is UTF-8.\n\nUsage:\n var loader = new THREE.STLLoader();\n loader.load( './models/stl/slotted_disk.stl', function ( geometry ) {\n   scene.add( new THREE.Mesh( geometry ) );\n });\n\nFor binary STLs geometry might contain colors for vertices. To use it:\n // use the same code to load STL as above\n if (geometry.hasColors) {\n   material = new THREE.MeshPhongMaterial({ opacity: geometry.alpha, vertexColors: THREE.VertexColors });\n } else { .... }\n var mesh = new THREE.Mesh( geometry, material );",
-            "class": "STLModel",
-            "module": "xeogl"
-        },
-        {
             "file": "examples/js/models/STLModel.js",
-            "line": 265,
+            "line": 270,
             "description": "Path to an STL file.\n\nYou can set this to a new file path at any time (except while loading), which will cause the STLModel to load components from\nthe new file (after first destroying any components loaded from a previous file path).\n\nFires a {{#crossLink \"STLModel/loaded:event\"}}{{/crossLink}} event when the STL has loaded.",
             "itemtype": "property",
             "name": "src",
@@ -21673,7 +21659,7 @@
         },
         {
             "file": "examples/js/models/STLModel.js",
-            "line": 287,
+            "line": 292,
             "description": "Fired whenever this STLModel has finished loading components from the STL file\nspecified by {{#crossLink \"STLModel/src:property\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "loaded",
@@ -21683,7 +21669,7 @@
         },
         {
             "file": "examples/js/models/STLModel.js",
-            "line": 311,
+            "line": 316,
             "description": "Loads STL from a URL into a {{#crossLink \"Model\"}}{{/crossLink}}.",
             "params": [
                 {
@@ -21720,7 +21706,7 @@
         },
         {
             "file": "examples/js/models/STLModel.js",
-            "line": 338,
+            "line": 343,
             "description": "Fired whenever this STLModel fails to load the STL file\nspecified by {{#crossLink \"STLModel/src:property\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "error",
@@ -21737,7 +21723,7 @@
         },
         {
             "file": "examples/js/models/STLModel.js",
-            "line": 349,
+            "line": 354,
             "description": "Parses STL into a {{#crossLink \"Model\"}}{{/crossLink}}.",
             "params": [
                 {
@@ -23008,7 +22994,7 @@
         },
         {
             "message": "Missing item type\nRemoves a {{#crossLink \"Component\"}}{{/crossLink}} from this model, without destroying it.\n\nNote that if the Component is owned by the Model, where it was created like this:\n\n````javascript\nvar myComponent = new xeogl.Rotate(myModel, {... });\n````\n\nthen even after removing it, calling {{#crossLink \"Model/destroyAll:method\"}}destroyAll{{/crossLink}} on the\nModel will still destroy the component.",
-            "line": " src/models/model.js:609"
+            "line": " src/models/model.js:610"
         },
         {
             "message": "Missing item type\nRotate 'eye' about 'look', around the 'up' vector",
@@ -23207,20 +23193,12 @@
             "line": " examples/js/models/OBJModel.js:239"
         },
         {
-            "message": "Missing item type\nCreated by lindsay on 07.03.18.",
-            "line": " examples/js/models/STLLoader.js:1"
-        },
-        {
-            "message": "Missing item type",
-            "line": " examples/js/models/STLLoader.js:4"
-        },
-        {
             "message": "Missing item type\nLoads STL from a URL into a {{#crossLink \"Model\"}}{{/crossLink}}.",
-            "line": " examples/js/models/STLModel.js:311"
+            "line": " examples/js/models/STLModel.js:316"
         },
         {
             "message": "Missing item type\nParses STL into a {{#crossLink \"Model\"}}{{/crossLink}}.",
-            "line": " examples/js/models/STLModel.js:349"
+            "line": " examples/js/models/STLModel.js:354"
         },
         {
             "message": "Missing item type\nLoads glTF from a URL into a {{#crossLink \"Model\"}}{{/crossLink}}.",
