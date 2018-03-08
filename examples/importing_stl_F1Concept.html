@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.js"></script>
+
+    <script src="js/models/STLModel.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <h1><a href="../docs/classes/STLModel.html" target="_parent">STLModel</a> - importing STL
+    </h1>
+    <pre id="log">model from <a href='https://grabcad.com/library/f1-2018-concept-1' target="_parent">www.grabcad.com</a></pre>
+</div>
+
+<script>
+
+    // Load ASCII STL model
+
+    var f1Concept = new xeogl.STLModel({
+        src: "models/stl/binary/F1Concept.stl"
+    });
+
+    // Ground plane
+
+    new xeogl.Entity({
+        geometry: new xeogl.PlaneGeometry({
+            xSize: 3,
+            zSize: 3
+        }),
+        material: new xeogl.PhongMaterial({
+            shininess: 170,
+            specular: [0.1, 0.1, 0.3],
+            diffuseMap: new xeogl.Texture({
+                src: "textures/diffuse/UVCheckerMap11-1024.png",
+                scale: [-5.0, 5.0]
+            }),
+            xalpha: 0.99,
+            backfaces: false
+        }),
+        transform: new xeogl.Translate({
+            xyz: [0, -1.35, 0]
+        }),
+        collidable: false,
+        pickable: false
+    });
+
+    // User camera control
+
+    new xeogl.CameraControl();
+
+    // Initial camera position
+
+    var scene = xeogl.scene;
+    var camera = scene.camera;
+
+    camera.eye = [19.926904678344727, 19.534618377685547, 56.288639068603516];
+    camera.look = [24.912691116333008, 3.727811098098755, 0.49942779541015625];
+    camera.up = [0.02958599664270878, 0.9539235234260559, -0.29858821630477905];
+
+    // Orbit camera
+
+    scene.on("tick", function () {
+               camera.orbitYaw(-0.2);
+    });
+
+</script>
+</body>
+</html>
