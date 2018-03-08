@@ -203,11 +203,12 @@
 <p><a href="../../examples/#importing_gltf_GearboxAssy"><img src="../../../assets/images/gltf/STL_gearbox_squashed.png"></img></a></p>
 <h2 id="overview">Overview</h2>
 <ul>
-<li>An STLModel is a container of <a href="../classes/Component.html" class="crosslink">Components</a> that loads itself from an STL file.</li>
+<li>An STLModel is a container of <a href="../classes/Component.html" class="crosslink">Components</a> that loads itself from an <a href="https://en.wikipedia.org/wiki/STL_(file_format">STL</a>) file.</li>
 <li>It begins loading as soon as you set its <a href="../classes/STLModel.html#property_src" class="crosslink">src</a>
 property to the location of a valid STL file.</li>
 <li>You can set <a href="../classes/STLModel.html#property_src" class="crosslink">src</a> to a new file path at any time, which causes
 the STLModel to clear itself and load components from the new file.</li>
+<li>Has the ability to parse an STL file into multiple <a href="../classes/Entity.html" class="crosslink">Entities</a>, demarcated by vertex colors.</li>
 </ul>
 <p>It inherits these capabilities from its <a href="../classes/Model.html" class="crosslink">Model</a> base class:</p>
 <ul>
@@ -318,6 +319,13 @@ static STLModel/parse:method:</p>
 <td style="text-align:center">[0..180]</td>
 <td style="text-align:center">2</td>
 <td style="text-align:center">When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn.</td>
+</tr>
+<tr>
+<td style="text-align:center">splitEntities</td>
+<td style="text-align:center">Boolean</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">true</td>
+<td style="text-align:center">When true, creates a separate <a href="../classes/Entity.html" class="crosslink">Entity</a> for each group of faces that share the same vertex colors. Only works with binary STL.</td>
 </tr>
 </tbody>
 </table>
@@ -598,6 +606,17 @@ var model = new xeogl.STLModel({
         Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this STLModel. Internally, the given
         <a href="../classes/Transform.html" class="crosslink">Transform</a> will be inserted above each top-most <a href="../classes/Transform.html" class="crosslink">Transform</a>
         that the STLModel attaches to its <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[splitEntities=true]</code>
+                                            <span class="type">Boolean</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>When true, creates a separate <a href="../classes/Entity.html" class="crosslink">Entity</a> for each group of faces that share the same vertex colors. Only works with binary STL.|</p>
         
                                         </div>
         
@@ -2085,7 +2104,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_models_STLModel.js.html#l265"><code>examples&#x2F;js&#x2F;models&#x2F;STLModel.js:265</code></a>
+                            <a href="../files/examples_js_models_STLModel.js.html#l269"><code>examples&#x2F;js&#x2F;models&#x2F;STLModel.js:269</code></a>
                             </p>
                     
                     
@@ -2365,7 +2384,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_models_STLModel.js.html#l338"><code>examples&#x2F;js&#x2F;models&#x2F;STLModel.js:338</code></a>
+                            <a href="../files/examples_js_models_STLModel.js.html#l342"><code>examples&#x2F;js&#x2F;models&#x2F;STLModel.js:342</code></a>
                             </p>
                     
                     
@@ -2408,7 +2427,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_models_STLModel.js.html#l287"><code>examples&#x2F;js&#x2F;models&#x2F;STLModel.js:287</code></a>
+                            <a href="../files/examples_js_models_STLModel.js.html#l291"><code>examples&#x2F;js&#x2F;models&#x2F;STLModel.js:291</code></a>
                             </p>
                     
                     

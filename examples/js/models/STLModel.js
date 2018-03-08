@@ -5,11 +5,13 @@
 
  ## Overview
 
- * An STLModel is a container of {{#crossLink "Component"}}Components{{/crossLink}} that loads itself from an STL file.
+ * An STLModel is a container of {{#crossLink "Component"}}Components{{/crossLink}} that loads itself from an [STL](https://en.wikipedia.org/wiki/STL_(file_format)) file.
  * It begins loading as soon as you set its {{#crossLink "STLModel/src:property"}}{{/crossLink}}
  property to the location of a valid STL file.
  * You can set {{#crossLink "STLModel/src:property"}}{{/crossLink}} to a new file path at any time, which causes
  the STLModel to clear itself and load components from the new file.
+ * For binary STL, has the option to create a separate {{#crossLink "Entity"}}{{/crossLink}} for each group of faces
+ that share the same vertex colors. This allows us to treat STL models as parts assemblies.
 
  It inherits these capabilities from its {{#crossLink "Model"}}{{/crossLink}} base class:
 
@@ -91,6 +93,7 @@
  | outline | Boolean |  | false | When true, outlines all the model's Entities (see {{#crossLink "Entity"}}{{/crossLink}} and {{#crossLink "OutlineMaterial"}}{{/crossLink}}). |
  | highlight | Boolean |  | false | When true, highlights all the model's Entities (see {{#crossLink "Entity"}}{{/crossLink}} and {{#crossLink "HighlightMaterial"}}{{/crossLink}}). |
  | ghostEdgeThreshold | Number | [0..180] | 2 | When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn. |
+ | splitEntities | Boolean |  | true | When true, creates a separate {{#crossLink "Entity"}}{{/crossLink}} for each group of faces that share the same vertex colors. Only works with binary STL.| |
 
  ### Finding STLModels in Scenes
 
@@ -239,6 +242,7 @@
  Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this STLModel. Internally, the given
  {{#crossLink "Transform"}}{{/crossLink}} will be inserted above each top-most {{#crossLink "Transform"}}Transform{{/crossLink}}
  that the STLModel attaches to its {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ @param [cfg.splitEntities=true] {Boolean} When true, creates a separate {{#crossLink "Entity"}}{{/crossLink}} for each group of faces that share the same vertex colors. Only works with binary STL.|
  @extends Model
  */
 (function () {
@@ -255,7 +259,8 @@
             this._options = {
                 combineGeometry: cfg.combineGeometry !== false,
                 quantizeGeometry: cfg.quantizeGeometry !== false,
-                ghostEdgeThreshold: cfg.ghostEdgeThreshold
+                ghostEdgeThreshold: cfg.ghostEdgeThreshold,
+                splitEntities: cfg.splitEntities
             };
             this.src = cfg.src;
         },
@@ -422,8 +427,16 @@
             var colors;
             var defaultR;
             var defaultG;
-            var defaultB; 
+            var defaultB;
+            var lastR = null;
+            var lastG = null;
+            var lastB = null;
+            var newEntity = false;
             var alpha;
+            var entityCount = 0;
+            var indices;
+            var geometry;
+            var entity;
             for (var index = 0; index < 80 - 10; index++) {
                 if (( reader.getUint32(index, false) == 0x434F4C4F /*COLO*/ ) &&
                     ( reader.getUint8(index + 4) == 0x52 /*'R'*/ ) &&
@@ -436,10 +449,15 @@
                     alpha = reader.getUint8(index + 9) / 255;
                 }
             }
+            var material = new xeogl.MetallicMaterial(model, {
+                roughness: 0.5
+            });
+            model.add(material);
             var dataOffset = 84;
             var faceLength = 12 * 4 + 2;
             var positions = [];
             var normals = [];
+            var splitEntities = options.splitEntities;
             for (var face = 0; face < faces; face++) {
                 var start = dataOffset + face * faceLength;
                 var normalX = reader.getFloat32(start, true);
@@ -456,6 +474,14 @@
                         g = defaultG;
                         b = defaultB;
                     }
+                    if (splitEntities && r !== lastR || g !== lastG || b !== lastB) {
+                        if (lastR !== null) {
+                            newEntity = true;
+                        }
+                        lastR = r;
+                        lastG = g;
+                        lastB = b;
+                    }
                 }
                 for (var i = 1; i <= 3; i++) {
                     var vertexstart = start + i * 12;
@@ -467,29 +493,51 @@
                         colors.push(r, g, b, 1); // TODO: handle alpha
                     }
                 }
+                if (splitEntities && newEntity) {
+                    indices = new Int32Array(positions.length / 3);
+                    for (var ni = 0, len = indices.length; ni < len; ni++) {
+                        indices[ni] = ni;
+                    }
+                    geometry = new xeogl.Geometry(model, {
+                        primitive: "triangles",
+                        positions: positions,
+                        normals: normals,
+                        colors: colors,
+                        indices: indices
+                    });
+                    entity = new xeogl.Entity(model, {
+                        id: model.id + "#" + entityCount++,
+                        geometry: geometry,
+                        material: material
+                    });
+                    model.add(geometry);
+                    model.add(entity);
+                    positions = [];
+                    normals = [];
+                    colors = colors ? [] : null;
+                    newEntity = false;
+                }
             }
-            var indices = new Int32Array(positions.length / 3);
-            for (var ni = 0, len = indices.length; ni < len; ni++) {
-                indices[ni] = ni;
+            if (positions.length > 0) {
+                indices = new Int32Array(positions.length / 3);
+                for (var ni = 0, len = indices.length; ni < len; ni++) {
+                    indices[ni] = ni;
+                }
+                geometry = new xeogl.Geometry(model, {
+                    primitive: "triangles",
+                    positions: positions,
+                    normals: normals,
+                    colors: colors,
+                    indices: indices
+                });
+                entity = new xeogl.Entity(model, {
+                    id: model.id + "#" + entityCount++,
+                    geometry: geometry,
+                    material: material
+                });
+                model.add(geometry);
+                model.add(entity);
             }
-            var material = new xeogl.MetallicMaterial(model, {
-                roughness: 0.5
-            });
-            var geometry = new xeogl.Geometry(model, {
-                primitive: "triangles",
-                positions: positions,
-                normals: normals,
-                colors: colors,
-                indices: indices
-            });
-            var entity = new xeogl.Entity({
-                id: model.id + "#1",
-                geometry: geometry,
-                material: material
-            });
-            model.add(material);
-            model.add(geometry);
-            model.add(entity);
         }
 
         function parseASCII(data) {
@@ -541,7 +589,7 @@
                 normals: normals,
                 indices: indices
             });
-            var entity = new xeogl.Entity({
+            var entity = new xeogl.Entity(model, {
                 id: model.id + "#1",
                 geometry: geometry,
                 material: material
