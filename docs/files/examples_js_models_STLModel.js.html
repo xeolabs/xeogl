@@ -188,7 +188,7 @@
 /**
  An **STLModel** is a {{#crossLink &quot;Model&quot;}}{{/crossLink}} loaded from an &lt;a href=&quot;https://github.com/KhronosGroup/STL&quot; target = &quot;_other&quot;&gt;STL&lt;/a&gt; file.
 
- &lt;a href=&quot;../../examples/#importing_gltf_GearboxAssy&quot;&gt;&lt;img src=&quot;../../../assets/images/gltf/STL_gearbox_squashed.png&quot;&gt;&lt;/img&gt;&lt;/a&gt;
+ &lt;a href=&quot;../../examples/examples/#importing_stl_shapes&quot;&gt;&lt;img src=&quot;../../../assets/images/screenshots/STLModel.png&quot;&gt;&lt;/img&gt;&lt;/a&gt;
 
  ## Overview
 
@@ -197,7 +197,8 @@
  property to the location of a valid STL file.
  * You can set {{#crossLink &quot;STLModel/src:property&quot;}}{{/crossLink}} to a new file path at any time, which causes
  the STLModel to clear itself and load components from the new file.
- * Has the ability to parse an STL file into multiple {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}, demarcated by vertex colors.
+ * For binary STL, has the option to create a separate {{#crossLink &quot;Entity&quot;}}{{/crossLink}} for each group of faces
+ that share the same vertex colors. This allows us to treat STL models as parts assemblies.
 
  It inherits these capabilities from its {{#crossLink &quot;Model&quot;}}{{/crossLink}} base class:
 
