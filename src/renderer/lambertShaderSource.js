@@ -35,7 +35,7 @@
 
     function hasNormals(object) {
         var primitive = object.geometry.primitiveName;
-        if ((object.geometry.autoNormals || object.geometry.normals) && (primitive === "triangles" || primitive === "triangle-strip" || primitive === "triangle-fan")) {
+        if ((object.geometry.autoVertexNormals || object.geometry.normals) && (primitive === "triangles" || primitive === "triangle-strip" || primitive === "triangle-fan")) {
             return true;
         }
         return false;

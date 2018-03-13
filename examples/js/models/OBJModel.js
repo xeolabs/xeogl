@@ -891,7 +891,7 @@
                 if (geometry.normals.length > 0) {
                     geometryCfg.normals = geometry.normals;
                 } else {
-                    geometryCfg.autoNormals = true;
+                    geometryCfg.autoVertexNormals = true;
                 }
 
                 if (geometry.uv.length > 0) {
