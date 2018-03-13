@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2018-03-08
+ * Built on 2018-03-12
  *
  * MIT License
  * Copyright 2018, Lindsay Kay
@@ -5256,6 +5256,286 @@ xeogl.utils.Map = function (items, baseId) {
             colors: pickColors
         };
     };
+
+    /**
+     * Removes duplicate vertices from a triangle mesh.
+     * @returns {{positions: Array, uv: *, normals: *,indices: *}}
+     */
+    math.mergeVertices = function (positions, uv, normals, colors, indices) {
+
+        var positionsMap = {}; // Hashmap for looking up vertices by position coordinates (and making sure they are unique)
+        var uniquePositions = [];
+        var uniqueUV = uv ? [] : null;
+        var uniqueNormals = normals ? [] : null;
+        var changes = [];
+        var vx;
+        var vy;
+        var vz;
+        var key;
+        var precisionPoints = 4; // number of decimal points, e.g. 4 for epsilon of 0.0001
+        var precision = Math.pow(10, precisionPoints);
+        var i;
+        var il;
+
+        for (i = 0, il = positions.length; i < il; i += 3) {
+
+            vx = positions[i];
+            vy = positions[i + 1];
+            vz = positions[i + 2];
+
+            key = Math.round(vx * precision) + '_' + Math.round(vy * precision) + '_' + Math.round(vz * precision);
+
+            if (positionsMap[key] === undefined) {
+
+                positionsMap[key] = i / 3;
+
+                uniquePositions.push(vx);
+                uniquePositions.push(vy);
+                uniquePositions.push(vz);
+
+                if (uv) {
+                    // uniqueUV.push(uv[i]);
+                    // uniqueUV.push(uv[i + 1]);
+                    // uniqueUV.push(uv[i + 2]);
+                }
+
+                if (normals) {
+                    uniqueNormals.push(normals[i]);
+                    uniqueNormals.push(normals[i + 1]);
+                    uniqueNormals.push(normals[i + 2]);
+                }
+
+                changes[i / 3] = (uniquePositions.length - 3) / 3;
+
+            } else {
+
+                changes[i / 3] = changes[positionsMap[key]];
+            }
+        }
+
+        var faceIndicesToRemove = [];
+
+        for (i = 0, il = indices.length; i < il; i += 3) {
+
+            indices[i + 0] = changes[indices[i + 0]];
+            indices[i + 1] = changes[indices[i + 1]];
+            indices[i + 2] = changes[indices[i + 2]];
+
+            var indicesDup = [indices[i + 0], indices[i + 1], indices[i + 2]];
+
+            for (var n = 0; n < 3; n++) {
+                if (indicesDup[n] === indicesDup[( n + 1 ) % 3]) {
+                    faceIndicesToRemove.push(i);
+                    break;
+                }
+            }
+        }
+
+        if (faceIndicesToRemove.length > 0) {
+            indices = Array.prototype.slice.call(indices); // splice is not available on typed arrays
+            for (i = faceIndicesToRemove.length - 1; i >= 0; i--) {
+                var idx = faceIndicesToRemove[i];
+                indices.splice(idx, 3);
+            }
+        }
+
+        var result = {
+            positions: uniquePositions,
+            indices: indices
+        };
+
+        if (uv) {
+            result.uv = uniqueUV;
+        }
+
+        if (normals) {
+            result.normals = uniqueNormals;
+        }
+
+        return result;
+    };
+
+    /**
+     * Converts surface-perpendicular face normals to vertex normals. Assumes that the mesh contains disjoint triangles
+     * that don't share vertex array elements. Works by finding groups of vertices that have the same location and
+     * averaging their normal vectors.
+     *
+     * @returns {{positions: Array, normals: *}}
+     */
+    math.faceToVertexNormalsX = function (positions, normals) {
+        var positionsMap = {}; // Hashmap for looking up vertices by position coordinates (and making sure they are unique)
+        var vertexNormals = {};
+        var blacklisted = {};
+        var vx;
+        var vy;
+        var vz;
+        var key;
+        var precisionPoints = 4; // number of decimal points, e.g. 4 for epsilon of 0.0001
+        var precision = Math.pow(10, precisionPoints);
+
+        var i;
+        var il;
+        var a;
+        var b;
+
+        for (i = 0, il = positions.length; i < il; i += 3) {
+
+            vx = positions[i];
+            vy = positions[i + 1];
+            vz = positions[i + 2];
+
+            key = Math.round(vx * precision) + '_' + Math.round(vy * precision) + '_' + Math.round(vz * precision);
+
+            if (blacklisted[key]) {
+                continue;
+            }
+
+            if (positionsMap[key] === undefined) {
+
+                positionsMap[key] = [normals[i], normals[i + 1], normals[i + 2], 1];
+
+                vertexNormals[key] = [normals[i], normals[i + 1], normals[i + 2]];
+
+            } else {
+
+                a = math.normalizeVec3(vertexNormals[key]);
+                b = math.normalizeVec3([normals[i], normals[i + 1], normals[i + 2]]);
+
+                var angle = Math.abs(math.angleVec3(a, b) / math.DEGTORAD);
+
+                console.log(angle);
+
+                if (angle < 60) {
+                    a = positionsMap[key];
+                    a[0] += normals[i];
+                    a[1] += normals[i + 1];
+                    a[2] += normals[i + 2];
+                    a[3]++;
+                } else {
+                    blacklisted[i] = true;
+                    // delete positionsMap[key];
+                    // delete vertexNormals[key];
+                }
+            }
+        }
+
+        for (var key in positionsMap) {
+            if (positionsMap.hasOwnProperty(key)) {
+                //   math.normalizeVec3(positionsMap[key]);
+            }
+        }
+
+        for (i = 0, il = positions.length; i < il; i += 3) {
+            if (blacklisted[i]) {
+                continue;
+            }
+            vx = positions[i];
+            vy = positions[i + 1];
+            vz = positions[i + 2];
+            key = Math.round(vx * precision) + '_' + Math.round(vy * precision) + '_' + Math.round(vz * precision);
+            a = positionsMap[key];
+            if (a) {
+                normals[i] = a[0] / a[3];
+                normals[i + 1] = a[1] / a[3];
+                normals[i + 2] = a[2] / a[3];
+            }
+        }
+    };
+
+    math.faceToVertexNormals = function (positions, normals) {
+        var vertexMap = {};
+        var vertexNormals = [];
+        var vertexNormalAccum = {};
+        var acc;
+        var vx;
+        var vy;
+        var vz;
+        var key;
+        var precisionPoints = 4; // number of decimal points, e.g. 4 for epsilon of 0.0001
+        var precision = Math.pow(10, precisionPoints);
+        var posi;
+        var i;
+        var j;
+        var len;
+        var a;
+        var b;
+        var c;
+
+        // Build adjacency lookup
+
+        for (i = 0, len = positions.length; i < len; i += 3) {
+
+            posi = i / 3;
+
+            vx = positions[i];
+            vy = positions[i + 1];
+            vz = positions[i + 2];
+
+            key = Math.round(vx * precision) + '_' + Math.round(vy * precision) + '_' + Math.round(vz * precision);
+
+            if (vertexMap[key] === undefined) {
+                vertexMap[key] = [posi];
+            } else {
+                vertexMap[key].push(posi);
+            }
+
+            var normal = math.normalizeVec3([normals[i], normals[i + 1], normals[i + 2]]);
+
+            vertexNormals[posi] = normal;
+
+            acc = math.vec4([normal[0], normal[1], normal[2], 1]);
+
+            vertexNormalAccum[posi] = acc;
+        }
+
+        for (key in vertexMap) {
+
+            if (vertexMap.hasOwnProperty(key)) {
+
+                var vertices = vertexMap[key];
+                var numVerts = vertices.length;
+
+                for (i = 0; i < numVerts; i++) {
+
+                    var ii = vertices[i];
+
+                    acc = vertexNormalAccum[ii];
+
+                    for (j = 0; j < numVerts; j++) {
+
+                        if (i === j) {
+                            continue;
+                        }
+
+                        var jj = vertices[j];
+
+                        a = vertexNormals[ii];
+                        b = vertexNormals[jj];
+
+                        var angle = Math.abs(math.angleVec3(a, b) / math.DEGTORAD);
+
+                        if (angle < 20) {
+
+                        acc[0] += b[0];
+                        acc[1] += b[1];
+                        acc[2] += b[2];
+                        acc[3] += 1.0;
+                        }
+                    }
+                }
+            }
+        }
+
+        for (i = 0, len = normals.length; i < len; i += 3) {
+
+            acc = vertexNormalAccum[i / 3];
+
+            normals[i + 0] = acc[0] / acc[3];
+            normals[i + 1] = acc[1] / acc[3];
+            normals[i + 2] = acc[2] / acc[3];
+
+        }
+    };
 }());;/**
  * Curve math functions.
  */
@@ -8668,7 +8948,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
     function hasNormals(object) {
         var primitive = object.geometry.primitiveName;
-        if ((object.geometry.autoNormals || object.geometry.normals) && (primitive === "triangles" || primitive === "triangle-strip" || primitive === "triangle-fan")) {
+        if ((object.geometry.autoVertexNormals || object.geometry.normals) && (primitive === "triangles" || primitive === "triangle-strip" || primitive === "triangle-fan")) {
             return true;
         }
         return false;
@@ -10573,7 +10853,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
     function hasNormals(object) {
         var primitive = object.geometry.primitiveName;
-        if ((object.geometry.autoNormals || object.geometry.normals) && (primitive === "triangles" || primitive === "triangle-strip" || primitive === "triangle-fan")) {
+        if ((object.geometry.autoVertexNormals || object.geometry.normals) && (primitive === "triangles" || primitive === "triangle-strip" || primitive === "triangle-fan")) {
             return true;
         }
         return false;
@@ -12113,7 +12393,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
     function hasNormals(object) {
         var primitive = object.geometry.primitiveName;
-        if ((object.geometry.autoNormals || object.geometry.normals) && (primitive === "triangles" || primitive === "triangle-strip" || primitive === "triangle-fan")) {
+        if ((object.geometry.autoVertexNormals || object.geometry.normals) && (primitive === "triangles" || primitive === "triangle-strip" || primitive === "triangle-fan")) {
             return true;
         }
         return false;
@@ -12644,7 +12924,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
     function hasNormals(object) {
         var primitive = object.geometry.primitiveName;
-        if ((object.geometry.autoNormals || object.geometry.normals) && (primitive === "triangles" || primitive === "triangle-strip" || primitive === "triangle-fan")) {
+        if ((object.geometry.autoVertexNormals || object.geometry.normals) && (primitive === "triangles" || primitive === "triangle-strip" || primitive === "triangle-fan")) {
             return true;
         }
         return false;
@@ -13062,7 +13342,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
     function hasNormals(object) {
         var primitive = object.geometry.primitiveName;
-        if ((object.geometry.autoNormals || object.geometry.normals) && (primitive === "triangles" || primitive === "triangle-strip" || primitive === "triangle-fan")) {
+        if ((object.geometry.autoVertexNormals || object.geometry.normals) && (primitive === "triangles" || primitive === "triangle-strip" || primitive === "triangle-fan")) {
             return true;
         }
         return false;
@@ -20001,7 +20281,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  @param [cfg.uv] {Array of Number} UVs array.
  @param [cfg.colors] {Array of Number} Vertex colors.
  @param [cfg.indices] {Array of Number} Indices array.
- @param [cfg.autoNormals=false] {Boolean} Set true to automatically generate normal vectors from the positions and
+ @param [cfg.autoVertexNormals=false] {Boolean} Set true to automatically generate normal vectors from the positions and
  indices, if those are supplied.
  @param [cfg.quantized=true] {Boolean} Stores positions, colors, normals and UVs in quantized and oct-encoded formats
  for reduced memory footprint and GPU bus usage.
@@ -20309,7 +20589,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
                 combined: !!cfg.combined,
                 quantized: !!cfg.quantized,
-                autoNormals: !!cfg.autoNormals,
+                autoVertexNormals: !!cfg.autoVertexNormals,
 
                 primitive: null, // WebGL enum
                 primitiveName: null, // String
@@ -20530,7 +20810,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             if (state.colors) {
                 hash.push("c");
             }
-            if (state.normals || state.autoNormals) {
+            if (state.normals || state.autoVertexNormals) {
                 hash.push("n");
             }
             if (state.uv) {
