@@ -287,6 +287,13 @@ static STLModel/parse:method:</p>
 <td style="text-align:center">When true, combines geometry vertex buffers to improve rendering performance (see <a href="../classes/Geometry.html" class="crosslink">Geometry</a>).</td>
 </tr>
 <tr>
+<td style="text-align:center">autoVertexNormals</td>
+<td style="text-align:center">Boolean</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">false</td>
+<td style="text-align:center">When true, automatically generates normal vectors from indices and positions (see <a href="../classes/Geometry.html" class="crosslink">Geometry</a>).</td>
+</tr>
+<tr>
 <td style="text-align:center">backfaces</td>
 <td style="text-align:center">Boolean</td>
 <td style="text-align:center"></td>
@@ -526,7 +533,7 @@ var model = new xeogl.STLModel({
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>When true, quantizes geometry to reduce memory and GPU bus usage. |</p>
+                                            <p>When true, quantizes geometry to reduce memory and GPU bus usage.</p>
         
                                         </div>
         
@@ -537,7 +544,18 @@ var model = new xeogl.STLModel({
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>When true, combines geometry vertex buffers to improve rendering performance. |</p>
+                                            <p>When true, combines geometry vertex buffers to improve rendering performance.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[autoVertexNormals=false]</code>
+                                            <span class="type">Boolean</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>When true, automatically generates normal vectors from positions and indices.</p>
         
                                         </div>
         
@@ -548,7 +566,7 @@ var model = new xeogl.STLModel({
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>When true, allows visible backfaces, wherever specified in the STL. When false, ignores backfaces. |</p>
+                                            <p>When true, allows visible backfaces, wherever specified in the STL. When false, ignores backfaces.</p>
         
                                         </div>
         
@@ -559,7 +577,7 @@ var model = new xeogl.STLModel({
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>When true, sets all the Model&#39;s Entities initially ghosted. |</p>
+                                            <p>When true, sets all the Model&#39;s Entities initially ghosted.</p>
         
                                         </div>
         
@@ -570,7 +588,7 @@ var model = new xeogl.STLModel({
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>When true, sets all the Model&#39;s Entities initially highlighted. |</p>
+                                            <p>When true, sets all the Model&#39;s Entities initially highlighted.</p>
         
                                         </div>
         
@@ -581,7 +599,7 @@ var model = new xeogl.STLModel({
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>When true, sets all the Model&#39;s Entities initially outlined. |</p>
+                                            <p>When true, sets all the Model&#39;s Entities initially outlined.</p>
         
                                         </div>
         
@@ -592,7 +610,7 @@ var model = new xeogl.STLModel({
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn. |</p>
+                                            <p>When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn.</p>
         
                                         </div>
         
@@ -2105,7 +2123,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_models_STLModel.js.html#l270"><code>examples&#x2F;js&#x2F;models&#x2F;STLModel.js:270</code></a>
+                            <a href="../files/examples_js_models_STLModel.js.html#l275"><code>examples&#x2F;js&#x2F;models&#x2F;STLModel.js:275</code></a>
                             </p>
                     
                     
@@ -2385,7 +2403,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_models_STLModel.js.html#l343"><code>examples&#x2F;js&#x2F;models&#x2F;STLModel.js:343</code></a>
+                            <a href="../files/examples_js_models_STLModel.js.html#l348"><code>examples&#x2F;js&#x2F;models&#x2F;STLModel.js:348</code></a>
                             </p>
                     
                     
@@ -2428,7 +2446,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_models_STLModel.js.html#l292"><code>examples&#x2F;js&#x2F;models&#x2F;STLModel.js:292</code></a>
+                            <a href="../files/examples_js_models_STLModel.js.html#l297"><code>examples&#x2F;js&#x2F;models&#x2F;STLModel.js:297</code></a>
                             </p>
                     
                     
