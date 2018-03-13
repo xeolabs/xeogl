@@ -26,6 +26,7 @@
 
     var slottedDDiskModel = new xeogl.STLModel({
         src: "models/stl/ascii/slotted_disk.stl",
+        smoothNormals: true,
         transform: new xeogl.Translate({
             xyz: [2.1, 0, -1.2],
             parent: new xeogl.Rotate({
@@ -42,6 +43,7 @@
 
     var coloredModel = new xeogl.STLModel({
         src: "models/stl/binary/colored.stl",
+        smoothNormals: true,
         transform: new xeogl.Translate({
             xyz: [2.0, 0, 0],
             parent: new xeogl.Rotate({
@@ -56,6 +58,7 @@
 
     var headPanModel = new xeogl.STLModel({
         src: "models/stl/binary/pr2_head_pan.stl",
+        smoothNormals: true,
         transform: new xeogl.Translate({
             xyz: [-0.37, 0.0, -0.6],
             parent: new xeogl.Rotate({
@@ -70,6 +73,7 @@
 
     var headTiltModel = new xeogl.STLModel({
         src: "models/stl/binary/pr2_head_tilt.stl",
+        smoothNormals: true,
         transform: new xeogl.Translate({
             xyz: [-0.2, 0.0, -0.64],
             parent: new xeogl.Rotate({

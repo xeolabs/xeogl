@@ -88,6 +88,7 @@
  |:--------:|:----:|:-----:|:-------------:|:-----:|:-----------:|
  | quantizeGeometry | Boolean |  | true | When true, quantizes geometry to reduce memory and GPU bus usage (see {{#crossLink "Geometry"}}{{/crossLink}}). |
  | combineGeometry | Boolean |  | true | When true, combines geometry vertex buffers to improve rendering performance (see {{#crossLink "Geometry"}}{{/crossLink}}). |
+ | autoVertexNormals | Boolean |  | false | When true, automatically generates normal vectors from indices and positions (see {{#crossLink "Geometry"}}{{/crossLink}}). |
  | backfaces | Boolean |  | true | When true, allows visible backfaces, wherever specified in the STL. When false, ignores backfaces. |
  | ghost | Boolean |  | false | When true, ghosts all the model's Entities (see {{#crossLink "Entity"}}{{/crossLink}} and {{#crossLink "GhostMaterial"}}{{/crossLink}}). |
  | outline | Boolean |  | false | When true, outlines all the model's Entities (see {{#crossLink "Entity"}}{{/crossLink}} and {{#crossLink "OutlineMaterial"}}{{/crossLink}}). |
@@ -231,13 +232,14 @@
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this STLModel.
  @param [cfg.src] {String} Path to an STL file. You can set this to a new file path at any time, which will cause the
- @param [cfg.quantizeGeometry=true] When true, quantizes geometry to reduce memory and GPU bus usage. |
- @param [cfg.combineGeometry=true] When true, combines geometry vertex buffers to improve rendering performance. |
- @param [cfg.backfaces=false] When true, allows visible backfaces, wherever specified in the STL. When false, ignores backfaces. |
- @param [cfg.ghost=false] {Boolean} When true, sets all the Model's Entities initially ghosted. |
- @param [cfg.highlight=false] {Boolean} When true, sets all the Model's Entities initially highlighted. |
- @param [cfg.outline=false] {Boolean} When true, sets all the Model's Entities initially outlined. |
- @param [cfg.ghostEdgeThreshold=2] {Number} When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn. |
+ @param [cfg.quantizeGeometry=true] When true, quantizes geometry to reduce memory and GPU bus usage.
+ @param [cfg.combineGeometry=true] When true, combines geometry vertex buffers to improve rendering performance.
+ @param [cfg.autoVertexNormals=false] {Boolean} When true, automatically generates normal vectors from positions and indices.
+ @param [cfg.backfaces=false] When true, allows visible backfaces, wherever specified in the STL. When false, ignores backfaces.
+ @param [cfg.ghost=false] {Boolean} When true, sets all the Model's Entities initially ghosted.
+ @param [cfg.highlight=false] {Boolean} When true, sets all the Model's Entities initially highlighted.
+ @param [cfg.outline=false] {Boolean} When true, sets all the Model's Entities initially outlined.
+ @param [cfg.ghostEdgeThreshold=2] {Number} When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn.
  @param [cfg.transform] {Number|String|Transform} A Local-to-World-space (modelling) {{#crossLink "Transform"}}{{/crossLink}} to attach to this STLModel.
  Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this STLModel. Internally, the given
  {{#crossLink "Transform"}}{{/crossLink}} will be inserted above each top-most {{#crossLink "Transform"}}Transform{{/crossLink}}
@@ -260,7 +262,10 @@
                 combineGeometry: cfg.combineGeometry !== false,
                 quantizeGeometry: cfg.quantizeGeometry !== false,
                 ghostEdgeThreshold: cfg.ghostEdgeThreshold,
-                splitEntities: cfg.splitEntities
+                splitEntities: cfg.splitEntities,
+                autoVertexNormals: cfg.autoVertexNormals,
+                smoothNormals: cfg.smoothNormals,
+                joinTriangles: cfg.joinTriangles
             };
             this.src = cfg.src;
         },
@@ -350,7 +355,6 @@
             });
     };
 
-
     /**
      * Parses STL into a {{#crossLink "Model"}}{{/crossLink}}.
      *
@@ -400,6 +404,8 @@
 
     function parse(data, model, options) {
 
+        var entityCount = 0;
+
         function isBinary(data) {
             var reader = new DataView(data);
             var numFaces = reader.getUint32(80, true);
@@ -418,6 +424,7 @@
         }
 
         function parseBinary(data, model, options) {
+            var autoVertexNormals = options.autoVertexNormals;
             var reader = new DataView(data);
             var faces = reader.getUint32(80, true);
             var r;
@@ -433,7 +440,6 @@
             var lastB = null;
             var newEntity = false;
             var alpha;
-            var entityCount = 0;
             var indices;
             var geometry;
             var entity;
@@ -449,7 +455,7 @@
                     alpha = reader.getUint8(index + 9) / 255;
                 }
             }
-            var material = new xeogl.MetallicMaterial(model, {
+            var material = new xeogl.MetallicMaterial(model, { // Share material with all entities
                 roughness: 0.5
             });
             model.add(material);
@@ -488,30 +494,15 @@
                     positions.push(reader.getFloat32(vertexstart, true));
                     positions.push(reader.getFloat32(vertexstart + 4, true));
                     positions.push(reader.getFloat32(vertexstart + 8, true));
-                    normals.push(normalX, normalY, normalZ);
+                    if (!autoVertexNormals) {
+                        normals.push(normalX, normalY, normalZ);
+                    }
                     if (hasColors) {
                         colors.push(r, g, b, 1); // TODO: handle alpha
                     }
                 }
                 if (splitEntities && newEntity) {
-                    indices = new Int32Array(positions.length / 3);
-                    for (var ni = 0, len = indices.length; ni < len; ni++) {
-                        indices[ni] = ni;
-                    }
-                    geometry = new xeogl.Geometry(model, {
-                        primitive: "triangles",
-                        positions: positions,
-                        normals: normals,
-                        colors: colors,
-                        indices: indices
-                    });
-                    entity = new xeogl.Entity(model, {
-                        id: model.id + "#" + entityCount++,
-                        geometry: geometry,
-                        material: material
-                    });
-                    model.add(geometry);
-                    model.add(entity);
+                    addEntity(model, positions, normals, colors, material, options);
                     positions = [];
                     normals = [];
                     colors = colors ? [] : null;
@@ -519,28 +510,11 @@
                 }
             }
             if (positions.length > 0) {
-                indices = new Int32Array(positions.length / 3);
-                for (var ni = 0, len = indices.length; ni < len; ni++) {
-                    indices[ni] = ni;
-                }
-                geometry = new xeogl.Geometry(model, {
-                    primitive: "triangles",
-                    positions: positions,
-                    normals: normals,
-                    colors: colors,
-                    indices: indices
-                });
-                entity = new xeogl.Entity(model, {
-                    id: model.id + "#" + entityCount++,
-                    geometry: geometry,
-                    material: material
-                });
-                model.add(geometry);
-                model.add(entity);
+                addEntity(model, positions, normals, colors, material, options);
             }
         }
 
-        function parseASCII(data) {
+        function parseASCII(data, model, options) {
             var faceRegex = /facet([\s\S]*?)endfacet/g;
             var faceCounter = 0;
             var floatRegex = /[\s]+([+-]?(?:\d+.\d+|\d+.|\d+|.\d+)(?:[eE][+-]?\d+)?)/.source;
@@ -548,7 +522,10 @@
             var normalRegex = new RegExp('normal' + floatRegex + floatRegex + floatRegex, 'g');
             var positions = [];
             var normals = [];
-            var normal = xeogl.math.vec3();
+            var colors = null;
+            var normalx;
+            var normaly;
+            var normalz;
             var result;
             var verticesPerFace;
             var normalsPerFace;
@@ -558,14 +535,14 @@
                 normalsPerFace = 0;
                 text = result[0];
                 while (( result = normalRegex.exec(text) ) !== null) {
-                    normal.x = parseFloat(result[1]);
-                    normal.y = parseFloat(result[2]);
-                    normal.z = parseFloat(result[3]);
+                    normalx = parseFloat(result[1]);
+                    normaly = parseFloat(result[2]);
+                    normalz = parseFloat(result[3]);
                     normalsPerFace++;
                 }
                 while (( result = vertexRegex.exec(text) ) !== null) {
                     positions.push(parseFloat(result[1]), parseFloat(result[2]), parseFloat(result[3]));
-                    normals.push(normal.x, normal.y, normal.z);
+                    normals.push(normalx, normaly, normalz);
                     verticesPerFace++;
                 }
                 if (normalsPerFace !== 1) {
@@ -576,25 +553,42 @@
                 }
                 faceCounter++;
             }
+            var material = new xeogl.MetallicMaterial(model, {
+                roughness: 0.5
+            });
+            model.add(material);
+            addEntity(model, positions, normals, colors, material, options);
+        }
+
+        function addEntity(model, positions, normals, colors, material, options) {
+
             var indices = new Int32Array(positions.length / 3);
             for (var ni = 0, len = indices.length; ni < len; ni++) {
                 indices[ni] = ni;
             }
-            var material = new xeogl.MetallicMaterial(model, {
-                roughness: 0.5
-            });
+
+            normals = normals && normals.length > 0 ? normals : null;
+            colors = colors && colors.length > 0 ? colors : null;
+
+            if (options.smoothNormals) {
+                xeogl.math.faceToVertexNormals(positions, normals, {/* TODO: angle threshold etc */});
+            }
+
             var geometry = new xeogl.Geometry(model, {
                 primitive: "triangles",
                 positions: positions,
                 normals: normals,
+               // autoVertexNormals: !normals,
+                colors: colors,
                 indices: indices
             });
+
             var entity = new xeogl.Entity(model, {
-                id: model.id + "#1",
+                id: model.id + "#" + entityCount++,
                 geometry: geometry,
                 material: material
             });
-            model.add(material);
+
             model.add(geometry);
             model.add(entity);
         }
@@ -632,5 +626,6 @@
         var binData = ensureBinary(data);
 
         return isBinary(binData) ? parseBinary(binData, model, options) : parseASCII(ensureString(data), model, options);
+
     }
 })();
