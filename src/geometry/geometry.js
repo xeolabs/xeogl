@@ -82,7 +82,7 @@
  @param [cfg.uv] {Array of Number} UVs array.
  @param [cfg.colors] {Array of Number} Vertex colors.
  @param [cfg.indices] {Array of Number} Indices array.
- @param [cfg.autoNormals=false] {Boolean} Set true to automatically generate normal vectors from the positions and
+ @param [cfg.autoVertexNormals=false] {Boolean} Set true to automatically generate normal vectors from the positions and
  indices, if those are supplied.
  @param [cfg.quantized=true] {Boolean} Stores positions, colors, normals and UVs in quantized and oct-encoded formats
  for reduced memory footprint and GPU bus usage.
@@ -390,7 +390,7 @@
 
                 combined: !!cfg.combined,
                 quantized: !!cfg.quantized,
-                autoNormals: !!cfg.autoNormals,
+                autoVertexNormals: !!cfg.autoVertexNormals,
 
                 primitive: null, // WebGL enum
                 primitiveName: null, // String
@@ -611,7 +611,7 @@
             if (state.colors) {
                 hash.push("c");
             }
-            if (state.normals || state.autoNormals) {
+            if (state.normals || state.autoVertexNormals) {
                 hash.push("n");
             }
             if (state.uv) {
