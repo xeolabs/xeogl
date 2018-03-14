@@ -557,6 +557,14 @@
                     this._worldForward[0] = this._worldAxis[6];
                     this._worldForward[1] = this._worldAxis[7];
                     this._worldForward[2] = this._worldAxis[8];
+
+                    /**
+                     * Fired whenever this Camera's {{#crossLink "Camera/worldAxis:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event worldAxis
+                     * @param value The property's new value
+                     */
+                    this.fire("worldAxis", this._worldAxis);
                 },
 
                 get: function () {
