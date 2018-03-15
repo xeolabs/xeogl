@@ -230,8 +230,8 @@ that share the same vertex colors. This allows us to treat STL models as parts a
 <ul>
 <li><a href="#loading-stl">Loading STL</a></li>
 <li><a href="#parsing-stl">Parsing STL</a></li>
-<li><a href="#loading-options">Loading options</a></li>
-<li><a href="#smoothing-normals">Smoothing</a></li>
+<li><a href="#options">Options</a></li>
+<li><a href="#smoothing-normals">Smoothing Normals</a></li>
 <li><a href="#finding-loaded-entities">Finding loaded Entities</a></li>
 <li><a href="#transforming-a-gltfmodel">Transforming an STLModel</a></li>
 <li><a href="#getting-the-world-space-boundary-of-a-gltfmodel">Getting the World-space boundary of an STLModel</a></li>
@@ -242,7 +242,11 @@ that share the same vertex colors. This allows us to treat STL models as parts a
 <p>Load an STL file by creating an STLModel:</p>
 <pre class="code prettyprint"><code class="lang-javascript">var model = new xeogl.STLModel({
     id: "myModel",
-    src: "models/stl/F1Concept.stl"
+    src: "models/stl/F1Concept.stl",
+
+    // Some example loading options (see "Options" below)
+    smoothNormals: true,
+    smoothNormalsAngleThreshold: 45
 });
 </code></pre>
 <p>An STLModel prefixes its own ID to those of its components. The ID is optional, but in this example we&#39;re providing our own custom ID.</p>
@@ -260,19 +264,22 @@ that share the same vertex colors. This allows us to treat STL models as parts a
 <p>To switch to a different STL file, you can dynamically update <a href="../classes/STLModel.html#property_src" class="crosslink">src</a>:</p>
 <pre class="code prettyprint"><code class="lang-javascript">model.src = "models/stl/F1Concept.stl"
 </code></pre>
-<p>Don&#39;t do that while a model is currently loading, though.</p>
+<p>That will apply whatever options were specified to the constructor.</p>
 <h3 id="parsing-stl">Parsing STL</h3>
 <p>If we have STL data in memory, then we can parse it directly into an existing STLModel instance using the
 static <a href="../classes/STLModel.html#method_parse" class="crosslink">parse</a>:</p>
 <pre class="code prettyprint"><code class="lang-javascript">xeogl.STLModel.parse(model, stlData, {
 
-   // Parsing options - see "Loading Options" below
-
+   // Some example parsing options (see "Options" below)
+    smoothNormals: true,
+    smoothNormalsAngleThreshold: 45,
+    combineGeometry: true,
+    quantizeGeometry: true
 });
 </code></pre>
 <p>That&#39;s asynchronous, because STL is self-contained and does not need to load any external assets.</p>
-<h3 id="loading-options">Loading options</h3>
-<p>The following options may be specified when loading STL:</p>
+<h3 id="options">Options</h3>
+<p>The following options may be specified when loading or parsing STL:</p>
 <table>
 <thead>
 <tr>
@@ -303,7 +310,7 @@ static <a href="../classes/STLModel.html#method_parse" class="crosslink">parse</
 <td style="text-align:center">Boolean</td>
 <td style="text-align:center"></td>
 <td style="text-align:center">false</td>
-<td style="text-align:center">When true, automatically converts face-oriented normals to vertex normals for a smooth appearance.</td>
+<td style="text-align:center">When true, automatically converts face-oriented normals to vertex normals for a smooth appearance. See <a href="#smoothing-normals">Smoothing Normals</a>.</td>
 </tr>
 <tr>
 <td style="text-align:center">smoothNormalsAngleThreshold</td>
@@ -1501,7 +1508,7 @@ myRotate.isType(xeogl.Entity); // Returns false, because xeogl.Rotate does not (
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/examples_js_models_STLModel.js.html#l359"><code>examples&#x2F;js&#x2F;models&#x2F;STLModel.js:359</code></a>
+        <a href="../files/examples_js_models_STLModel.js.html#l366"><code>examples&#x2F;js&#x2F;models&#x2F;STLModel.js:366</code></a>
         </p>
 
 
@@ -1906,7 +1913,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/examples_js_models_STLModel.js.html#l398"><code>examples&#x2F;js&#x2F;models&#x2F;STLModel.js:398</code></a>
+        <a href="../files/examples_js_models_STLModel.js.html#l405"><code>examples&#x2F;js&#x2F;models&#x2F;STLModel.js:405</code></a>
         </p>
 
 
@@ -2401,7 +2408,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_models_STLModel.js.html#l313"><code>examples&#x2F;js&#x2F;models&#x2F;STLModel.js:313</code></a>
+                            <a href="../files/examples_js_models_STLModel.js.html#l320"><code>examples&#x2F;js&#x2F;models&#x2F;STLModel.js:320</code></a>
                             </p>
                     
                     
@@ -2681,7 +2688,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_models_STLModel.js.html#l388"><code>examples&#x2F;js&#x2F;models&#x2F;STLModel.js:388</code></a>
+                            <a href="../files/examples_js_models_STLModel.js.html#l395"><code>examples&#x2F;js&#x2F;models&#x2F;STLModel.js:395</code></a>
                             </p>
                     
                     
@@ -2724,7 +2731,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_models_STLModel.js.html#l335"><code>examples&#x2F;js&#x2F;models&#x2F;STLModel.js:335</code></a>
+                            <a href="../files/examples_js_models_STLModel.js.html#l342"><code>examples&#x2F;js&#x2F;models&#x2F;STLModel.js:342</code></a>
                             </p>
                     
                     

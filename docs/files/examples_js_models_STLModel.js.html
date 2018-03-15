@@ -219,8 +219,8 @@
 
  * [Loading STL](#loading-stl)
  * [Parsing STL](#parsing-stl)
- * [Loading options](#loading-options)
- * [Smoothing](#smoothing-normals)
+ * [Options](#options)
+ * [Smoothing Normals](#smoothing-normals)
  * [Finding loaded Entities](#finding-loaded-entities)
  * [Transforming an STLModel](#transforming-a-gltfmodel)
  * [Getting the World-space boundary of an STLModel](#getting-the-world-space-boundary-of-a-gltfmodel)
@@ -234,7 +234,11 @@
  &#x60;&#x60;&#x60;&#x60;javascript
  var model = new xeogl.STLModel({
      id: &quot;myModel&quot;,
-     src: &quot;models/stl/F1Concept.stl&quot;
+     src: &quot;models/stl/F1Concept.stl&quot;,
+
+     // Some example loading options (see &quot;Options&quot; below)
+     smoothNormals: true,
+     smoothNormalsAngleThreshold: 45
  });
  &#x60;&#x60;&#x60;&#x60;
 
@@ -264,7 +268,7 @@
  model.src = &quot;models/stl/F1Concept.stl&quot;
  &#x60;&#x60;&#x60;&#x60;
 
- Don&#x27;t do that while a model is currently loading, though.
+ That will apply whatever options were specified to the constructor.
 
  ### Parsing STL
 
@@ -274,22 +278,25 @@
  &#x60;&#x60;&#x60;&#x60;javascript
  xeogl.STLModel.parse(model, stlData, {
 
-    // Parsing options - see &quot;Loading Options&quot; below
-
+    // Some example parsing options (see &quot;Options&quot; below)
+     smoothNormals: true,
+     smoothNormalsAngleThreshold: 45,
+     combineGeometry: true,
+     quantizeGeometry: true
  });
  &#x60;&#x60;&#x60;&#x60;
 
  That&#x27;s asynchronous, because STL is self-contained and does not need to load any external assets.
 
- ### Loading options
+ ### Options
 
- The following options may be specified when loading STL:
+ The following options may be specified when loading or parsing STL:
 
  | Option | Type | Range | Default Value | Description |
  |:--------:|:----:|:-----:|:-------------:|:-----:|:-----------:|
  | quantizeGeometry | Boolean |  | true | When true, quantizes geometry to reduce memory and GPU bus usage (see {{#crossLink &quot;Geometry&quot;}}{{/crossLink}}). |
  | combineGeometry | Boolean |  | true | When true, internally combines geometry vertex buffers to improve rendering performance (see {{#crossLink &quot;Geometry&quot;}}{{/crossLink}}). |
- | smoothNormals | Boolean |  | false | When true, automatically converts face-oriented normals to vertex normals for a smooth appearance. |
+ | smoothNormals | Boolean |  | false | When true, automatically converts face-oriented normals to vertex normals for a smooth appearance. See [Smoothing Normals](#smoothing-normals). |
  | smoothNormalsAngleThreshold | Number (degrees) | [0..180] | 20 | See [Smoothing Normals](#smoothing-normals). |
  | backfaces | Boolean |  | true | When true, allows visible backfaces, wherever specified in the STL. When false, ignores backfaces. |
  | ghost | Boolean |  | false | When true, ghosts all the model&#x27;s Entities (see {{#crossLink &quot;Entity&quot;}}{{/crossLink}} and {{#crossLink &quot;GhostMaterial&quot;}}{{/crossLink}}). |
