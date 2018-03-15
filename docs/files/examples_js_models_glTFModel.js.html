@@ -333,6 +333,14 @@
 
  That&#x27;s assuming that we&#x27;ve created the GLTFModel in the default xeogl Scene, which we&#x27;re doing in these examples.
 
+ We can also get all the GLTFModels in a Scene, using the Scene&#x27;s {{#crossLink &quot;Scene/types:property&quot;}}{{/crossLink}} map:
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ var gltfModels = xeogl.scene.types[&quot;xeogl.GLTFModel&quot;];
+
+ model = gltfModels[&quot;myModel&quot;];
+ &#x60;&#x60;&#x60;&#x60;
+
  ### Finding loaded Entities
 
  Once the GLTFModel has loaded, its {{#crossLink &quot;Scene&quot;}}{{/crossLink}} will contain various components that represent the elements of the glTF file.
@@ -359,7 +367,6 @@
  &#x60;&#x60;&#x60;&#x60;javascript
  model.entities[&quot;gearbox77.0&quot;].highlight = true;
  &#x60;&#x60;&#x60;&#x60;
-
 
  Note the format of the {{#crossLink &quot;Entity&quot;}}{{/crossLink}} IDs:
 
@@ -567,6 +574,8 @@
     /**
      * Loads glTF from a URL into a {{#crossLink &quot;Model&quot;}}{{/crossLink}}.
      *
+     * @method load
+     * @static
      * @param {Model} model Model to load into.
      * @param {String} src Path to glTF file.
      * @param {Object} options Loading options.
@@ -614,6 +623,8 @@
     /**
      * Parses glTF JSON into a {{#crossLink &quot;Model&quot;}}{{/crossLink}}.
      *
+     * @method parse
+     * @static
      * @param {Model} model Model to parse into.
      * @param {Object} gltf The glTF JSON.
      * @param {Object} [options] Parsing options

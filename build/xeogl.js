@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2018-03-12
+ * Built on 2018-03-15
  *
  * MIT License
  * Copyright 2018, Lindsay Kay
@@ -5362,87 +5362,9 @@ xeogl.utils.Map = function (items, baseId) {
      *
      * @returns {{positions: Array, normals: *}}
      */
-    math.faceToVertexNormalsX = function (positions, normals) {
-        var positionsMap = {}; // Hashmap for looking up vertices by position coordinates (and making sure they are unique)
-        var vertexNormals = {};
-        var blacklisted = {};
-        var vx;
-        var vy;
-        var vz;
-        var key;
-        var precisionPoints = 4; // number of decimal points, e.g. 4 for epsilon of 0.0001
-        var precision = Math.pow(10, precisionPoints);
-
-        var i;
-        var il;
-        var a;
-        var b;
-
-        for (i = 0, il = positions.length; i < il; i += 3) {
-
-            vx = positions[i];
-            vy = positions[i + 1];
-            vz = positions[i + 2];
-
-            key = Math.round(vx * precision) + '_' + Math.round(vy * precision) + '_' + Math.round(vz * precision);
-
-            if (blacklisted[key]) {
-                continue;
-            }
-
-            if (positionsMap[key] === undefined) {
-
-                positionsMap[key] = [normals[i], normals[i + 1], normals[i + 2], 1];
-
-                vertexNormals[key] = [normals[i], normals[i + 1], normals[i + 2]];
-
-            } else {
-
-                a = math.normalizeVec3(vertexNormals[key]);
-                b = math.normalizeVec3([normals[i], normals[i + 1], normals[i + 2]]);
-
-                var angle = Math.abs(math.angleVec3(a, b) / math.DEGTORAD);
-
-                console.log(angle);
-
-                if (angle < 60) {
-                    a = positionsMap[key];
-                    a[0] += normals[i];
-                    a[1] += normals[i + 1];
-                    a[2] += normals[i + 2];
-                    a[3]++;
-                } else {
-                    blacklisted[i] = true;
-                    // delete positionsMap[key];
-                    // delete vertexNormals[key];
-                }
-            }
-        }
-
-        for (var key in positionsMap) {
-            if (positionsMap.hasOwnProperty(key)) {
-                //   math.normalizeVec3(positionsMap[key]);
-            }
-        }
-
-        for (i = 0, il = positions.length; i < il; i += 3) {
-            if (blacklisted[i]) {
-                continue;
-            }
-            vx = positions[i];
-            vy = positions[i + 1];
-            vz = positions[i + 2];
-            key = Math.round(vx * precision) + '_' + Math.round(vy * precision) + '_' + Math.round(vz * precision);
-            a = positionsMap[key];
-            if (a) {
-                normals[i] = a[0] / a[3];
-                normals[i + 1] = a[1] / a[3];
-                normals[i + 2] = a[2] / a[3];
-            }
-        }
-    };
-
-    math.faceToVertexNormals = function (positions, normals) {
+    math.faceToVertexNormals = function (positions, normals, options) {
+        options = options || {};
+        var smoothNormalsAngleThreshold = options.smoothNormalsAngleThreshold || 20;
         var vertexMap = {};
         var vertexNormals = [];
         var vertexNormalAccum = {};
@@ -5460,8 +5382,6 @@ xeogl.utils.Map = function (items, baseId) {
         var a;
         var b;
         var c;
-
-        // Build adjacency lookup
 
         for (i = 0, len = positions.length; i < len; i += 3) {
 
@@ -5514,12 +5434,12 @@ xeogl.utils.Map = function (items, baseId) {
 
                         var angle = Math.abs(math.angleVec3(a, b) / math.DEGTORAD);
 
-                        if (angle < 20) {
+                        if (angle < smoothNormalsAngleThreshold) {
 
-                        acc[0] += b[0];
-                        acc[1] += b[1];
-                        acc[2] += b[2];
-                        acc[3] += 1.0;
+                            acc[0] += b[0];
+                            acc[1] += b[1];
+                            acc[2] += b[2];
+                            acc[3] += 1.0;
                         }
                     }
                 }
@@ -36869,6 +36789,14 @@ TODO
                     this._worldForward[0] = this._worldAxis[6];
                     this._worldForward[1] = this._worldAxis[7];
                     this._worldForward[2] = this._worldAxis[8];
+
+                    /**
+                     * Fired whenever this Camera's {{#crossLink "Camera/worldAxis:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event worldAxis
+                     * @param value The property's new value
+                     */
+                    this.fire("worldAxis", this._worldAxis);
                 },
 
                 get: function () {

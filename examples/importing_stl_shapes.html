@@ -59,6 +59,7 @@
     var headPanModel = new xeogl.STLModel({
         src: "models/stl/binary/pr2_head_pan.stl",
         smoothNormals: true,
+        smoothNormalsAngleThreshold: 40,
         transform: new xeogl.Translate({
             xyz: [-0.37, 0.0, -0.6],
             parent: new xeogl.Rotate({
@@ -74,6 +75,7 @@
     var headTiltModel = new xeogl.STLModel({
         src: "models/stl/binary/pr2_head_tilt.stl",
         smoothNormals: true,
+        smoothNormalsAngleThreshold: 40,
         transform: new xeogl.Translate({
             xyz: [-0.2, 0.0, -0.64],
             parent: new xeogl.Rotate({
