@@ -32,7 +32,7 @@
 
  * [Loading STL](#loading-stl)
  * [Parsing STL](#parsing-stl)
- * [Loading options](#loading-options)
+ * [Options](#options)
  * [Smoothing Normals](#smoothing-normals)
  * [Finding loaded Entities](#finding-loaded-entities)
  * [Transforming an STLModel](#transforming-a-gltfmodel)
@@ -47,7 +47,11 @@
  ````javascript
  var model = new xeogl.STLModel({
      id: "myModel",
-     src: "models/stl/F1Concept.stl"
+     src: "models/stl/F1Concept.stl",
+
+     // Some example loading options (see "Options" below)
+     smoothNormals: true,
+     smoothNormalsAngleThreshold: 45
  });
  ````
 
@@ -77,7 +81,7 @@
  model.src = "models/stl/F1Concept.stl"
  ````
 
- Don't do that while a model is currently loading, though.
+ That will apply whatever options were specified to the constructor.
 
  ### Parsing STL
 
@@ -87,16 +91,19 @@
  ````javascript
  xeogl.STLModel.parse(model, stlData, {
 
-    // Parsing options - see "Loading Options" below
-
+    // Some example parsing options (see "Options" below)
+     smoothNormals: true,
+     smoothNormalsAngleThreshold: 45,
+     combineGeometry: true,
+     quantizeGeometry: true
  });
  ````
 
- That's asynchronous, because STL is self-contained and does not need to load any external assets.
+ That's asynchronous because STL is self-contained and does not need to load any external assets.
 
- ### Loading options
+ ### Options
 
- The following options may be specified when loading STL:
+ The following options may be specified when loading or parsing STL:
 
  | Option | Type | Range | Default Value | Description |
  |:--------:|:----:|:-----:|:-------------:|:-----:|:-----------:|
