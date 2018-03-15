@@ -365,7 +365,9 @@
      *
      * @returns {{positions: Array, normals: *}}
      */
-    math.faceToVertexNormals = function (positions, normals) {
+    math.faceToVertexNormals = function (positions, normals, options) {
+        options = options || {};
+        var smoothNormalsAngleThreshold = options.smoothNormalsAngleThreshold || 20;
         var vertexMap = {};
         var vertexNormals = [];
         var vertexNormalAccum = {};
@@ -435,7 +437,7 @@
 
                         var angle = Math.abs(math.angleVec3(a, b) / math.DEGTORAD);
 
-                        if (angle < 20) {
+                        if (angle < smoothNormalsAngleThreshold) {
 
                             acc[0] += b[0];
                             acc[1] += b[1];

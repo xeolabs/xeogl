@@ -209,6 +209,8 @@
     /**
      * Loads OBJ and MTL from file(s) into a {{#crossLink "Model"}}{{/crossLink}}.
      *
+     * @method load
+     * @static
      * @param {Model} model Model to load into.
      * @param {String} src Path to OBJ file.
      * @param {Function} [ok] Completion callback.
@@ -239,6 +241,8 @@
     /**
      * Parses OBJ and MTL text strings into a {{#crossLink "Model"}}{{/crossLink}}.
      *
+     * @method parse
+     * @static
      * @param {Model} model Model to load into.
      * @param {String} objText OBJ text string.
      * @param {String} [mtlText] MTL text string.
