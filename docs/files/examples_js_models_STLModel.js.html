@@ -273,7 +273,7 @@
  ### Parsing STL
 
  If we have STL data in memory, then we can parse it directly into an existing STLModel instance using the
- static {{#crossLink &quot;STLModel/parse:method&quot;}}{{/crossLink}}:
+ static {{#crossLink &quot;STLModel/parse:method&quot;}}{{/crossLink}} method:
 
  &#x60;&#x60;&#x60;&#x60;javascript
  xeogl.STLModel.parse(model, stlData, {
@@ -301,7 +301,7 @@
  | backfaces | Boolean |  | true | When true, allows visible backfaces, wherever specified in the STL. When false, ignores backfaces. |
  | ghost | Boolean |  | false | When true, ghosts all the model&#x27;s Entities (see {{#crossLink &quot;Entity&quot;}}{{/crossLink}} and {{#crossLink &quot;GhostMaterial&quot;}}{{/crossLink}}). |
  | outline | Boolean |  | false | When true, outlines all the model&#x27;s Entities (see {{#crossLink &quot;Entity&quot;}}{{/crossLink}} and {{#crossLink &quot;OutlineMaterial&quot;}}{{/crossLink}}). |
- | highlight | Boolean |  | false | When true, highlights all the model&#x27;s Entities (see {{#crossLink &quot;Entity&quot;}}{{/crossLink}} and {{#crossLink &quot;HighlightMaterial&quot;}}{{/crossLink}}). |
+ | highlight | Boolean |  | false | When true, highlights all the model&#x27;s Entities (see {{#crossLink &quot;Entity&quot;}}{{/crossLink}} and {{#crossLink &quot;GhostMaterial&quot;}}{{/crossLink}}). |
  | ghostEdgeThreshold | Number | [0..180] | 2 | When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn. |
  | splitEntities | Boolean |  | true | When true, creates a separate {{#crossLink &quot;Entity&quot;}}{{/crossLink}} for each group of faces that share the same vertex colors. Only works with binary STL.| |
 
