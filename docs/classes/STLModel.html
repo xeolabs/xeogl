@@ -267,7 +267,7 @@ that share the same vertex colors. This allows us to treat STL models as parts a
 <p>That will apply whatever options were specified to the constructor.</p>
 <h3 id="parsing-stl">Parsing STL</h3>
 <p>If we have STL data in memory, then we can parse it directly into an existing STLModel instance using the
-static <a href="../classes/STLModel.html#method_parse" class="crosslink">parse</a>:</p>
+static <a href="../classes/STLModel.html#method_parse" class="crosslink">parse</a> method:</p>
 <pre class="code prettyprint"><code class="lang-javascript">xeogl.STLModel.parse(model, stlData, {
 
    // Some example parsing options (see "Options" below)
@@ -277,7 +277,7 @@ static <a href="../classes/STLModel.html#method_parse" class="crosslink">parse</
     quantizeGeometry: true
 });
 </code></pre>
-<p>That&#39;s asynchronous, because STL is self-contained and does not need to load any external assets.</p>
+<p>That&#39;s asynchronous because STL is self-contained and does not need to load any external assets.</p>
 <h3 id="options">Options</h3>
 <p>The following options may be specified when loading or parsing STL:</p>
 <table>
@@ -345,7 +345,7 @@ static <a href="../classes/STLModel.html#method_parse" class="crosslink">parse</
 <td style="text-align:center">Boolean</td>
 <td style="text-align:center"></td>
 <td style="text-align:center">false</td>
-<td style="text-align:center">When true, highlights all the model&#39;s Entities (see <a href="../classes/Entity.html" class="crosslink">Entity</a> and HighlightMaterial).</td>
+<td style="text-align:center">When true, highlights all the model&#39;s Entities (see <a href="../classes/Entity.html" class="crosslink">Entity</a> and <a href="../classes/GhostMaterial.html" class="crosslink">GhostMaterial</a>).</td>
 </tr>
 <tr>
 <td style="text-align:center">ghostEdgeThreshold</td>

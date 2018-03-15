@@ -277,7 +277,7 @@
  ### Parsing glTF
 
  If we have a glTF JSON with embedded assets in memory, then we can parse it straight into a GLTFModel using the
- static {{#crossLink &quot;GLTFModel/parse:method&quot;}}{{/crossLink}}:
+ static {{#crossLink &quot;GLTFModel/parse:method&quot;}}{{/crossLink}} method:
 
  &#x60;&#x60;&#x60;&#x60;javascript
  xeogl.GLTFModel.parse(model, json); // Clears the target model first
@@ -296,7 +296,7 @@
  | backfaces | Boolean |  | true | When true, allows visible backfaces, wherever specified in the glTF. When false, ignores backfaces. |
  | ghost | Boolean |  | false | When true, ghosts all the model&#x27;s Entities (see {{#crossLink &quot;Entity&quot;}}{{/crossLink}} and {{#crossLink &quot;GhostMaterial&quot;}}{{/crossLink}}). |
  | outline | Boolean |  | false | When true, outlines all the model&#x27;s Entities (see {{#crossLink &quot;Entity&quot;}}{{/crossLink}} and {{#crossLink &quot;OutlineMaterial&quot;}}{{/crossLink}}). |
- | highlight | Boolean |  | false | When true, highlights all the model&#x27;s Entities (see {{#crossLink &quot;Entity&quot;}}{{/crossLink}} and {{#crossLink &quot;HighlightMaterial&quot;}}{{/crossLink}}). |
+ | highlight | Boolean |  | false | When true, highlights all the model&#x27;s Entities (see {{#crossLink &quot;Entity&quot;}}{{/crossLink}} and {{#crossLink &quot;GhostMaterial&quot;}}{{/crossLink}}). |
  | ghostEdgeThreshold | Number | [0..180] | 2 | When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn. |
  | maxEntities | Number | | | Optional maximum number of {{#crossLink &quot;Entity&quot;}}{{/crossLink}}&#x27;s to load. |
  | included | Function(entityId) | | null | Optional callback to mask which {{#crossLink &quot;Entity&quot;}}{{/crossLink}}&#x27;s are loaded. Entity will only be loaded when this callback returns &#x60;&#x60;&#x60;&#x60;true&#x60;&#x60;&#x60; for the given Entity ID. |
