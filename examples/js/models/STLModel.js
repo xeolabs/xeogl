@@ -1,17 +1,21 @@
 /**
- An **STLModel** is a {{#crossLink "Model"}}{{/crossLink}} loaded from an <a href="https://github.com/KhronosGroup/STL" target = "_other">STL</a> file.
+ An **STLModel** is a {{#crossLink "Model"}}{{/crossLink}} that's loaded from an <a href="https://github.com/KhronosGroup/STL" target = "_other">STL</a> file.
 
  <a href="../../examples/#importing_stl_shapes"><img src="../../../assets/images/screenshots/STLModel.png"></img></a>
 
  ## Overview
 
- * An STLModel is a container of {{#crossLink "Component"}}Components{{/crossLink}} that loads itself from an [STL](https://en.wikipedia.org/wiki/STL_(file_format)) file.
+ * An [STL](https://en.wikipedia.org/wiki/STL_(file_format) (“StereoLithography”) file is a triangular representation of a 3-dimensional surface geometry. The surface is
+ tessellated logically into a series of triangles. Each facet is described by a perpendicular
+ direction and three points representing the vertices (corners) of the triangle.
+ * An STLModel is a container of {{#crossLink "Component"}}Components{{/crossLink}} that loads itself from an STL file.
  * It begins loading as soon as you set its {{#crossLink "STLModel/src:property"}}{{/crossLink}}
  property to the location of a valid STL file.
  * You can set {{#crossLink "STLModel/src:property"}}{{/crossLink}} to a new file path at any time, which causes
  the STLModel to clear itself and load components from the new file.
  * For binary STL, has the option to create a separate {{#crossLink "Entity"}}{{/crossLink}} for each group of faces
  that share the same vertex colors. This allows us to treat STL models as parts assemblies.
+ * Can be configured to automatically smooth STL models by converting their face-oriented normals to vertex-oriented.
 
  It inherits these capabilities from its {{#crossLink "Model"}}{{/crossLink}} base class:
 
@@ -21,13 +25,15 @@
 
  ## Examples
 
- * TODO
+ * [Simple shapes with smoothing](../../examples/#importing_stl_shapes)
+ * [F1 concept car with smoothing](../../examples/#importing_stl_F1Concept)
 
  ## Usage
 
- * [Loading STL](#loading-gltf)
- * [Parsing STL](#parsing-gltf)
+ * [Loading STL](#loading-stl)
+ * [Parsing STL](#parsing-stl)
  * [Loading options](#loading-options)
+ * [Smoothing Normals](#smoothing-normals)
  * [Finding loaded Entities](#finding-loaded-entities)
  * [Transforming an STLModel](#transforming-a-gltfmodel)
  * [Getting the World-space boundary of an STLModel](#getting-the-world-space-boundary-of-a-gltfmodel)
@@ -40,8 +46,8 @@
 
  ````javascript
  var model = new xeogl.STLModel({
-     id: "gearbox",
-     src: "models/STL/gearbox_conical/scene.gltf",
+     id: "myModel",
+     src: "models/stl/F1Concept.stl"
  });
  ````
 
@@ -65,20 +71,28 @@
     });
  ````
 
- To switch to a different STL file, simply update {{#crossLink "STLModel/src:property"}}{{/crossLink}}:
+ To switch to a different STL file, you can dynamically update {{#crossLink "STLModel/src:property"}}{{/crossLink}}:
 
  ````javascript
- model.src = "models/gltf/Buggy/STL/Buggy.gltf"
+ model.src = "models/stl/F1Concept.stl"
  ````
+
+ Don't do that while a model is currently loading, though.
 
  ### Parsing STL
 
- If we have an STL JSON with embedded assets in memory, then we can parse it straight into an STLModel using the
+ If we have STL data in memory, then we can parse it directly into an existing STLModel instance using the
  static {{#crossLink "STLModel/parse:method"}}{{/crossLink}}:
 
  ````javascript
- xeogl.STLModel.parse(model, json); // Clears the target model first
+ xeogl.STLModel.parse(model, stlData, {
+
+    // Parsing options - see "Loading Options" below
+
+ });
  ````
+
+ That's asynchronous, because STL is self-contained and does not need to load any external assets.
 
  ### Loading options
 
@@ -87,8 +101,9 @@
  | Option | Type | Range | Default Value | Description |
  |:--------:|:----:|:-----:|:-------------:|:-----:|:-----------:|
  | quantizeGeometry | Boolean |  | true | When true, quantizes geometry to reduce memory and GPU bus usage (see {{#crossLink "Geometry"}}{{/crossLink}}). |
- | combineGeometry | Boolean |  | true | When true, combines geometry vertex buffers to improve rendering performance (see {{#crossLink "Geometry"}}{{/crossLink}}). |
- | autoVertexNormals | Boolean |  | false | When true, automatically generates normal vectors from indices and positions (see {{#crossLink "Geometry"}}{{/crossLink}}). |
+ | combineGeometry | Boolean |  | true | When true, internally combines geometry vertex buffers to improve rendering performance (see {{#crossLink "Geometry"}}{{/crossLink}}). |
+ | smoothNormals | Boolean |  | false | When true, automatically converts face-oriented normals to vertex normals for a smooth appearance. See [Smoothing Normals](#smoothing-normals). |
+ | smoothNormalsAngleThreshold | Number (degrees) | [0..180] | 20 | See [Smoothing Normals](#smoothing-normals). |
  | backfaces | Boolean |  | true | When true, allows visible backfaces, wherever specified in the STL. When false, ignores backfaces. |
  | ghost | Boolean |  | false | When true, ghosts all the model's Entities (see {{#crossLink "Entity"}}{{/crossLink}} and {{#crossLink "GhostMaterial"}}{{/crossLink}}). |
  | outline | Boolean |  | false | When true, outlines all the model's Entities (see {{#crossLink "Entity"}}{{/crossLink}} and {{#crossLink "OutlineMaterial"}}{{/crossLink}}). |
@@ -96,40 +111,63 @@
  | ghostEdgeThreshold | Number | [0..180] | 2 | When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn. |
  | splitEntities | Boolean |  | true | When true, creates a separate {{#crossLink "Entity"}}{{/crossLink}} for each group of faces that share the same vertex colors. Only works with binary STL.| |
 
+ ### Smoothing Normals
+
+ As mentioned above, providing a ````smoothNormals```` flag to the constructor gives our STLModel a smooth appearance. Triangles in STL
+ are disjoint, where each triangle has its own separate vertex positions, normals and (optionally) colors. This means that you can
+ have gaps between triangles. Normals for each triangle are perpendicular to the triangle's surface, which gives the model a faceted appearance by default.
+
+ The ```smoothNormals``` flag causes the STLModel to recalculate its normals, so that each normal's direction is the average
+ of the orientations of the triangles adjacent to its vertex. When smoothing, each vertex normal is set to the average of the
+ orientations of all other triangles that have a vertex at the same position, excluding those triangles whose direction deviates from
+ the direction of the vertice's triangle by a threshold given in ````smoothNormalsAngleThreshold````. This makes
+ smoothing robust for hard edges, which you can see on the cylindrical objects in one of the examples:
+
+ <a href="../../examples/#importing_stl_shapes"><img src="../../../assets/images/screenshots/STLModelHardEdges.png"></img></a>
+
+ Note how the rim is smooth, yet the there is still a sharp edge adjacent to the flat portions.
+
  ### Finding STLModels in Scenes
 
  Our STLModel will now be registered by ID on its Scene, so we can now find it like this:
 
  ````javascript
- model = xeogl.scene.models["gearbox"];
+ model = xeogl.scene.models["myModel"];
  ````
 
  That's assuming that we've created the STLModel in the default xeogl Scene, which we're doing in these examples.
+
+ We can also get all the STLModels in a Scene, using the Scene's {{#crossLink "Scene/types:property"}}{{/crossLink}} map:
+
+ ````javascript
+ var stlModels = xeogl.scene.types["xeogl.STLModel"];
+
+ model = stlModels["myModel"];
+ ````
 
  ### Finding loaded Entities
 
  Once the STLModel has loaded, its {{#crossLink "Scene"}}{{/crossLink}} will contain various components that represent the elements of the STL file.
  We'll now access some of those components by ID, to query and update them programmatically.
 
- Let's highlight an {{#crossLink "Entity"}}Entities{{/crossLink}} in our STLModel:
+ Let's highlight an {{#crossLink "Entity"}}Entity{{/crossLink}} in our STLModel:
 
  ````javascript
  var entities = scene.entities;
 
- entities["gearbox#1"].highlight = true;
+ entities["myModel#1"].highlight = true;
  ````
 
- An STLModel also has ID maps of the components within it. Its components map contains all
- its {{#crossLink "Component"}}Components{{/crossLink}} in one big map:
+ An STLModel also has an ID map of the components within it. Let's highlight an {{#crossLink "Entity"}}Entities{{/crossLink}}:
 
  ````javascript
- model.components["gearbox#1"].highlight = true;
+ model.components["myModel#1"].highlight = true;
  ````
 
- while its entities map contains just the {{#crossLink "Entity"}}Entities{{/crossLink}}:
+ An STLModel also has a map containing just the {{#crossLink "Entity"}}Entities{{/crossLink}}:
 
  ````javascript
- model.entities["gearbox#1"].highlight = true;
+ model.entities["myModel#1"].highlight = true;
  ````
 
  TODO: ID format description
@@ -138,7 +176,7 @@
 
  An STLModel lets us transform its Entities as a group.
 
- We can attach a modeling {{#crossLink "Transform"}}{{/crossLink}} to our STLModel, as a either a
+ We can attach a modeling {{#crossLink "Transform"}}{{/crossLink}}, as a either a
  configuration object or a component instance:
 
  ```` Javascript
@@ -171,7 +209,7 @@
  ```` Javascript
  // Model internally instantiates our transform components:
  var model = new xeogl.STLModel({
-     src: "models/gltf/gearbox_conical/scene.gltf",
+     src: "models/stl/F1Concept.stl",
      transform: {
         type: "xeogl.Translate",
         xyz: [-35, 0, 0],
@@ -234,7 +272,8 @@
  @param [cfg.src] {String} Path to an STL file. You can set this to a new file path at any time, which will cause the
  @param [cfg.quantizeGeometry=true] When true, quantizes geometry to reduce memory and GPU bus usage.
  @param [cfg.combineGeometry=true] When true, combines geometry vertex buffers to improve rendering performance.
- @param [cfg.autoVertexNormals=false] {Boolean} When true, automatically generates normal vectors from positions and indices.
+ @param [cfg.smoothNormals=false] {Boolean} When true, automatically converts face-oriented normals to vertex normals for a smooth appearance - see <a href="#smoothing-normals">Smoothing Normals</a>.
+ @param [cfg.smoothNormalsAngleThreshold=20] {Number} See <a href="#smoothing-normals">Smoothing Normals</a>.
  @param [cfg.backfaces=false] When true, allows visible backfaces, wherever specified in the STL. When false, ignores backfaces.
  @param [cfg.ghost=false] {Boolean} When true, sets all the Model's Entities initially ghosted.
  @param [cfg.highlight=false] {Boolean} When true, sets all the Model's Entities initially highlighted.
@@ -263,9 +302,8 @@
                 quantizeGeometry: cfg.quantizeGeometry !== false,
                 ghostEdgeThreshold: cfg.ghostEdgeThreshold,
                 splitEntities: cfg.splitEntities,
-                autoVertexNormals: cfg.autoVertexNormals,
                 smoothNormals: cfg.smoothNormals,
-                joinTriangles: cfg.joinTriangles
+                smoothNormalsAngleThreshold:cfg.smoothNormalsAngleThreshold
             };
             this.src = cfg.src;
         },
@@ -321,6 +359,8 @@
     /**
      * Loads STL from a URL into a {{#crossLink "Model"}}{{/crossLink}}.
      *
+     * @method load
+     * @static
      * @param {Model} model Model to load into.
      * @param {String} src Path to STL file.
      * @param {Object} options Loading options.
@@ -358,6 +398,8 @@
     /**
      * Parses STL into a {{#crossLink "Model"}}{{/crossLink}}.
      *
+     * @method parse
+     * @static
      * @param {Model} model Model to parse into.
      * @param {ArrayBuffer} data The STL data.
      * @param {Object} [options] Parsing options
@@ -571,7 +613,7 @@
             colors = colors && colors.length > 0 ? colors : null;
 
             if (options.smoothNormals) {
-                xeogl.math.faceToVertexNormals(positions, normals, {/* TODO: angle threshold etc */});
+                xeogl.math.faceToVertexNormals(positions, normals, options);
             }
 
             var geometry = new xeogl.Geometry(model, {
