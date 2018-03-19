@@ -85,9 +85,9 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
         // imageDirty = true;
     };
 
-    this.createObject = function (entityId, material, ghostMaterial, outlineMaterial, highlightMaterial, vertexBufs, geometry, modelTransform, modes) {
+    this.createObject = function (entityId, material, ghostMaterial, outlineMaterial, highlightMaterial, selectedMaterial, vertexBufs, geometry, modelTransform, modes) {
         var objectId = ids.addItem({});
-        var object = new xeogl.renderer.Object(objectId, entityId, gl, self, material, ghostMaterial, outlineMaterial, highlightMaterial, vertexBufs, geometry, modelTransform, modes);
+        var object = new xeogl.renderer.Object(objectId, entityId, gl, self, material, ghostMaterial, outlineMaterial, highlightMaterial, selectedMaterial, vertexBufs, geometry, modelTransform, modes);
         if (object.errors) {
             object.destroy();
             ids.removeItem(objectId);
@@ -299,8 +299,16 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
         var transparentHighlightVerticesObjects = [];
         var transparentHighlightEdgesObjects = [];
 
+        var opaqueSelectedFillObjects = [];
+        var opaqueSelectedVerticesObjects = [];
+        var opaqueSelectedEdgesObjects = [];
+        var transparentSelectedFillObjects = [];
+        var transparentSelectedVerticesObjects = [];
+        var transparentSelectedEdgesObjects = [];
+
         var outlinedObjects = [];
         var highlightObjects = [];
+        var selectedObjects = [];
         var transparentObjects = [];
         var numTransparentObjects = 0;
 
@@ -364,6 +372,7 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
             var numTransparentGhostEdgesObjects = 0;
             var numOutlinedObjects = 0;
             var numHighlightObjects = 0;
+            var numSelectedObjects = 0;
 
             var numOpaqueHighlightFillObjects = 0;
             var numOpaqueHighlightVerticesObjects = 0;
@@ -371,6 +380,13 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
             var numTransparentHighlightFillObjects = 0;
             var numTransparentHighlightVerticesObjects = 0;
             var numTransparentHighlightEdgesObjects = 0;
+
+            var numOpaqueSelectedFillObjects = 0;
+            var numOpaqueSelectedVerticesObjects = 0;
+            var numOpaqueSelectedEdgesObjects = 0;
+            var numTransparentSelectedFillObjects = 0;
+            var numTransparentSelectedVerticesObjects = 0;
+            var numTransparentSelectedEdgesObjects = 0;
 
             numTransparentObjects = 0;
 
@@ -388,39 +404,7 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                     continue;
                 }
 
-                if (modes.highlight) {
-
-                    var highlightMaterial = object.highlightMaterial;
-
-                    if (highlightMaterial.edges) {
-                        if (highlightMaterial.edgeAlpha < 1.0) {
-                            transparentHighlightEdgesObjects[numTransparentHighlightEdgesObjects++] = object;
-                        } else {
-                            opaqueHighlightEdgesObjects[numOpaqueHighlightEdgesObjects++] = object;
-                        }
-                    }
-
-                    if (highlightMaterial.vertices) {
-                        if (highlightMaterial.vertexAlpha < 1.0) {
-                            transparentHighlightVerticesObjects[numTransparentHighlightVerticesObjects++] = object;
-                        } else {
-                            opaqueHighlightVerticesObjects[numOpaqueHighlightVerticesObjects++] = object;
-                        }
-                    }
-
-                    if (highlightMaterial.fill) {
-                        if (highlightMaterial.fillAlpha < 1.0) {
-                            transparentHighlightFillObjects[numTransparentHighlightFillObjects++] = object;
-                        } else {
-                            opaqueHighlightFillObjects[numOpaqueHighlightFillObjects++] = object;
-                        }
-                    }
-
-                    if (modes.highlight) {
-                        highlightObjects[numHighlightObjects++] = object;
-                    }
-
-                } else if (modes.ghost) {
+                if (modes.ghost) {
 
                     var ghostMaterial = object.ghostMaterial;
 
@@ -448,9 +432,76 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                         }
                     }
 
-                }
+                } else {
 
-                if (!modes.ghost) {
+                    if (modes.highlight) {
+
+                        var highlightMaterial = object.highlightMaterial;
+
+                        if (highlightMaterial.edges) {
+                            if (highlightMaterial.edgeAlpha < 1.0) {
+                                transparentHighlightEdgesObjects[numTransparentHighlightEdgesObjects++] = object;
+                            } else {
+                                opaqueHighlightEdgesObjects[numOpaqueHighlightEdgesObjects++] = object;
+                            }
+                        }
+
+                        if (highlightMaterial.vertices) {
+                            if (highlightMaterial.vertexAlpha < 1.0) {
+                                transparentHighlightVerticesObjects[numTransparentHighlightVerticesObjects++] = object;
+                            } else {
+                                opaqueHighlightVerticesObjects[numOpaqueHighlightVerticesObjects++] = object;
+                            }
+                        }
+
+                        if (highlightMaterial.fill) {
+                            if (highlightMaterial.fillAlpha < 1.0) {
+                                transparentHighlightFillObjects[numTransparentHighlightFillObjects++] = object;
+                            } else {
+                                opaqueHighlightFillObjects[numOpaqueHighlightFillObjects++] = object;
+                            }
+                        }
+
+                        if (modes.highlight) {
+                            highlightObjects[numHighlightObjects++] = object;
+                        }
+
+                    }
+
+                    else
+
+                    if (modes.selected) {
+
+                        var selectedMaterial = object.selectedMaterial;
+
+                        if (selectedMaterial.edges) {
+                            if (selectedMaterial.edgeAlpha < 1.0) {
+                                transparentSelectedEdgesObjects[numTransparentSelectedEdgesObjects++] = object;
+                            } else {
+                                opaqueSelectedEdgesObjects[numOpaqueSelectedEdgesObjects++] = object;
+                            }
+                        }
+
+                        if (selectedMaterial.vertices) {
+                            if (selectedMaterial.vertexAlpha < 1.0) {
+                                transparentSelectedVerticesObjects[numTransparentSelectedVerticesObjects++] = object;
+                            } else {
+                                opaqueSelectedVerticesObjects[numOpaqueSelectedVerticesObjects++] = object;
+                            }
+                        }
+
+                        if (selectedMaterial.fill) {
+                            if (selectedMaterial.fillAlpha < 1.0) {
+                                transparentSelectedFillObjects[numTransparentSelectedFillObjects++] = object;
+                            } else {
+                                opaqueSelectedFillObjects[numOpaqueSelectedFillObjects++] = object;
+                            }
+                        }
+
+                        if (modes.selected) {
+                            selectedObjects[numSelectedObjects++] = object;
+                        }
+                    }
 
                     transparent = object.material.alphaMode === 2 /* blend */ || modes.xray || modes.colorize[3] < 1;
 
@@ -529,7 +580,7 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                 gl.enable(gl.CULL_FACE);
                 gl.enable(gl.BLEND);
 
-                if ( blendOneMinusSrcAlpha) {
+                if (blendOneMinusSrcAlpha) {
 
                     // Makes glTF windows appear correct
 
@@ -585,6 +636,66 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                 // Transparent outlined objects are not supported yet
 
                 gl.disable(gl.BLEND);
+            }
+
+            if (numOpaqueSelectedFillObjects > 0 || numOpaqueSelectedEdgesObjects > 0 || numOpaqueSelectedVerticesObjects > 0) {
+
+                // Render opaque selected objects
+
+                frame.lastProgramId = null;
+                gl.clear(gl.DEPTH_BUFFER_BIT);
+
+                if (numOpaqueSelectedVerticesObjects > 0) {
+                    for (i = 0; i < numOpaqueSelectedVerticesObjects; i++) {
+                        opaqueSelectedVerticesObjects[i].drawSelectedVertices(frame);
+                    }
+                }
+
+                if (numOpaqueSelectedEdgesObjects > 0) {
+                    for (i = 0; i < numOpaqueSelectedEdgesObjects; i++) {
+                        opaqueSelectedEdgesObjects[i].drawSelectedEdges(frame);
+                    }
+                }
+
+                if (numOpaqueSelectedFillObjects > 0) {
+                    for (i = 0; i < numOpaqueSelectedFillObjects; i++) {
+                        opaqueSelectedFillObjects[i].drawSelectedFill(frame);
+                    }
+                }
+            }
+
+            if (numTransparentSelectedFillObjects > 0 || numTransparentSelectedEdgesObjects > 0 || numTransparentSelectedVerticesObjects > 0) {
+
+                // Render transparent selected objects
+
+                frame.lastProgramId = null;
+
+                gl.clear(gl.DEPTH_BUFFER_BIT);
+                gl.enable(gl.CULL_FACE);
+                gl.enable(gl.BLEND);
+                gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+                //          gl.disable(gl.DEPTH_TEST);
+
+                if (numTransparentSelectedVerticesObjects > 0) {
+                    for (i = 0; i < numTransparentSelectedVerticesObjects; i++) {
+                        transparentSelectedVerticesObjects[i].drawSelectedVertices(frame);
+                    }
+                }
+
+                if (numTransparentSelectedEdgesObjects > 0) {
+                    for (i = 0; i < numTransparentSelectedEdgesObjects; i++) {
+                        transparentSelectedEdgesObjects[i].drawSelectedEdges(frame);
+                    }
+                }
+
+                if (numTransparentSelectedFillObjects > 0) {
+                    for (i = 0; i < numTransparentSelectedFillObjects; i++) {
+                        transparentSelectedFillObjects[i].drawSelectedFill(frame);
+                    }
+                }
+
+                gl.disable(gl.BLEND);
+                //        gl.enable(gl.DEPTH_TEST);
             }
 
             if (numOpaqueHighlightFillObjects > 0 || numOpaqueHighlightEdgesObjects > 0 || numOpaqueHighlightVerticesObjects > 0) {
