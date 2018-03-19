@@ -2,7 +2,7 @@
  * @author xeolabs / https://github.com/xeolabs
  */
 
-xeogl.renderer.Object = function (id, entityId, gl, scene, material, ghostMaterial, outlineMaterial, highlightMaterial, vertexBufs, geometry, modelTransform, modes) {
+xeogl.renderer.Object = function (id, entityId, gl, scene, material, ghostMaterial, outlineMaterial, highlightMaterial, selectedMaterial, vertexBufs, geometry, modelTransform, modes) {
 
     this.id = id;
     this.entityId = entityId;
@@ -13,6 +13,7 @@ xeogl.renderer.Object = function (id, entityId, gl, scene, material, ghostMateri
     this.ghostMaterial = ghostMaterial;
     this.outlineMaterial = outlineMaterial;
     this.highlightMaterial = highlightMaterial;
+    this.selectedMaterial = selectedMaterial;
     this.vertexBufs = vertexBufs;
     this.geometry = geometry;
     this.modelTransform = modelTransform;
@@ -72,7 +73,7 @@ xeogl.renderer.Object.prototype.drawGhostFill = function (frame) {
             return;
         }
     }
-    this._ghostFill.drawObject(frame, this, false); // highlight == false
+    this._ghostFill.drawObject(frame, this, 0); // 0 == ghost
 };
 
 xeogl.renderer.Object.prototype.drawGhostEdges = function (frame) {
@@ -84,7 +85,7 @@ xeogl.renderer.Object.prototype.drawGhostEdges = function (frame) {
             return;
         }
     }
-    this._ghostEdges.drawObject(frame, this, false); // highlight == false
+    this._ghostEdges.drawObject(frame, this, 0); // 0 == ghost
 };
 
 xeogl.renderer.Object.prototype.drawGhostVertices = function (frame) {
@@ -96,7 +97,7 @@ xeogl.renderer.Object.prototype.drawGhostVertices = function (frame) {
             return;
         }
     }
-    this._ghostVertices.drawObject(frame, this, false); // highlight == false
+    this._ghostVertices.drawObject(frame, this, 0); // 0 == ghost
 };
 
 xeogl.renderer.Object.prototype.drawHighlightFill = function (frame) {
@@ -108,7 +109,7 @@ xeogl.renderer.Object.prototype.drawHighlightFill = function (frame) {
             return;
         }
     }
-    this._ghostFill.drawObject(frame, this, true);
+    this._ghostFill.drawObject(frame, this, 1); // 1 == highlight
 };
 
 xeogl.renderer.Object.prototype.drawHighlightEdges = function (frame) {
@@ -120,7 +121,7 @@ xeogl.renderer.Object.prototype.drawHighlightEdges = function (frame) {
             return;
         }
     }
-    this._ghostEdges.drawObject(frame, this, true);
+    this._ghostEdges.drawObject(frame, this, 1); // 1 == highlight
 };
 
 xeogl.renderer.Object.prototype.drawHighlightVertices = function (frame) {
@@ -132,7 +133,43 @@ xeogl.renderer.Object.prototype.drawHighlightVertices = function (frame) {
             return;
         }
     }
-    this._ghostVertices.drawObject(frame, this, true);
+    this._ghostVertices.drawObject(frame, this, 1); // 1 == highlight
+};
+
+xeogl.renderer.Object.prototype.drawSelectedFill = function (frame) {
+    if (!this._ghostFill) {
+        this._ghostFill = xeogl.renderer.GhostFillRenderer.create(this.gl, [this._getSceneHash(), this.scene.clips.hash, this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
+        if (this._ghostFill.errors) {
+            this.errors = (this.errors || []).concat(this._ghostFill.errors);
+            console.error(this._ghostFill.errors.join("\n"));
+            return;
+        }
+    }
+    this._ghostFill.drawObject(frame, this, 2); // 2 == selected
+};
+
+xeogl.renderer.Object.prototype.drawSelectedEdges = function (frame) {
+    if (!this._ghostEdges) {
+        this._ghostEdges = xeogl.renderer.GhostEdgesRenderer.create(this.gl, [this._getSceneHash(), this.scene.clips.hash, this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
+        if (this._ghostEdges.errors) {
+            this.errors = (this.errors || []).concat(this._ghostEdges.errors);
+            console.error(this._ghostEdges.errors.join("\n"));
+            return;
+        }
+    }
+    this._ghostEdges.drawObject(frame, this, 2); // 2 == selected
+};
+
+xeogl.renderer.Object.prototype.drawSelectedVertices = function (frame) {
+    if (!this._ghostVertices) {
+        this._ghostVertices = xeogl.renderer.GhostVerticesRenderer.create(this.gl, [this._getSceneHash(), this.scene.clips.hash, this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
+        if (this._ghostVertices.errors) {
+            this.errors = (this.errors || []).concat(this._ghostVertices.errors);
+            console.error(this._ghostVertices.errors.join("\n"));
+            return;
+        }
+    }
+    this._ghostVertices.drawObject(frame, this, 2); // 2 == selected
 };
 
 xeogl.renderer.Object.prototype.drawShadow = function (frame, light) {

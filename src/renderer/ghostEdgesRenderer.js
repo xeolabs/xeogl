@@ -129,7 +129,7 @@
         }
     };
 
-    xeogl.renderer.GhostEdgesRenderer.prototype.drawObject = function (frame, object, highlight) {
+    xeogl.renderer.GhostEdgesRenderer.prototype.drawObject = function (frame, object, mode) {
 
         if (frame.lastProgramId !== this._program.id) {
             frame.lastProgramId = this._program.id;
@@ -137,7 +137,7 @@
         }
 
         var gl = this._gl;
-        var material = highlight ? object.highlightMaterial :  object.ghostMaterial;
+        var material = mode === 0 ? object.ghostMaterial : (mode === 1 ? object.highlightMaterial : object.selectedMaterial);
         var modelTransform = object.modelTransform;
         var geometry = object.geometry;
 

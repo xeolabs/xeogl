@@ -209,7 +209,11 @@
             }
         }
 
-        src.push("vColor = vec4((reflectedColor * fillColor.rgb), fillColor.a);");
+        // TODO: A blending mode for emphasis materials, to select add/multiply/mix
+
+        //src.push("vColor = vec4((mix(reflectedColor, fillColor.rgb, 0.7)), fillColor.a);");
+        src.push("vColor = vec4(reflectedColor * fillColor.rgb, fillColor.a);");
+        //src.push("vColor = vec4(reflectedColor + fillColor.rgb, fillColor.a);");
 
         if (cfg.clipping) {
             src.push("vWorldPosition = worldPosition;");
