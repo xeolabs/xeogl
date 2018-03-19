@@ -966,13 +966,19 @@
                             }
 
                             /**
-                             * Fired continuously while the pointer is moving while hovering over an {{#crossLink "Entity"}}{{/crossLink}}.
-                             * @event hover
+                             * Fired when the pointer is over a new {{#crossLink "Entity"}}{{/crossLink}}.
+                             * @event hoverEnter
                              * @param hit A pick hit result containing the ID of the Entity - see {{#crossLink "Scene/pick:method"}}{{/crossLink}}.
                              */
-                            self.fire("hover", hit);
+                            self.fire("hoverEnter", hit);
                             lastPickedEntityId = pickedEntityId;
                         }
+                        /**
+                         * Fired continuously while the pointer is moving while hovering over an {{#crossLink "Entity"}}{{/crossLink}}.
+                         * @event hover
+                         * @param hit A pick hit result containing the ID of the Entity - see {{#crossLink "Scene/pick:method"}}{{/crossLink}}.
+                         */
+                        self.fire("hover", hit);
                         if (hit.worldPos) {
                             pickedSurface = true;
 
