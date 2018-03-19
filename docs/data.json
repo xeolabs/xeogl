@@ -2246,7 +2246,7 @@
                         },
                         {
                             "name": "ghost",
-                            "description": "Whether this entity is rendered ghosted, as configured by the Entity's {{#crossLink \"GhostMaterial\"}}{{/crossLink}} component.",
+                            "description": "Whether this entity is rendered ghosted, as configured by {{#crossLink \"Entity/ghostMaterial:property\"}}ghostMaterial{{/crossLink}}.",
                             "type": "Boolean",
                             "optional": true,
                             "optdefault": "false"
@@ -2259,7 +2259,7 @@
                         },
                         {
                             "name": "highlight",
-                            "description": "Whether this entity is rendered highlighted, as configured by the Entity's {{#crossLink \"GhostMaterial\"}}{{/crossLink}} component.",
+                            "description": "Whether this entity is rendered highlighted, as configured by {{#crossLink \"Entity/highlightMaterial:property\"}}highlightMaterial{{/crossLink}}.",
                             "type": "Boolean",
                             "optional": true,
                             "optdefault": "false"
@@ -2267,6 +2267,19 @@
                         {
                             "name": "highlightMaterial",
                             "description": "ID or instance of a {{#crossLink \"GhostMaterial\"}}{{/crossLink}} to attach to this Entity to define highlighted appearance. Must be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default instance, {{#crossLink \"Scene/highlightMaterial:property\"}}highlightMaterial{{/crossLink}}.",
+                            "type": "String|GhostMaterial",
+                            "optional": true
+                        },
+                        {
+                            "name": "selected",
+                            "description": "Whether this entity is rendered selected, as configured by {{#crossLink \"Entity/selectedMaterial:property\"}}selectedMaterial{{/crossLink}}.",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
+                        },
+                        {
+                            "name": "selectedMaterial",
+                            "description": "ID or instance of a {{#crossLink \"GhostMaterial\"}}{{/crossLink}} to attach to this Entity to define selected appearance. Must be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default instance, {{#crossLink \"Scene/selectedMaterial:property\"}}selectedMaterial{{/crossLink}}.",
                             "type": "String|GhostMaterial",
                             "optional": true
                         },
@@ -6939,7 +6952,7 @@
             "namespace": "",
             "file": "examples/js/models/STLModel.js",
             "line": 1,
-            "description": "An **STLModel** is a {{#crossLink \"Model\"}}{{/crossLink}} that's loaded from an <a href=\"https://github.com/KhronosGroup/STL\" target = \"_other\">STL</a> file.\n\n<a href=\"../../examples/#importing_stl_shapes\"><img src=\"../../../assets/images/screenshots/STLModel.png\"></img></a>\n\n## Overview\n\n* An [STL](https://en.wikipedia.org/wiki/STL_(file_format) (“StereoLithography”) file is a triangular representation of a 3-dimensional surface geometry. The surface is\ntessellated logically into a series of triangles. Each facet is described by a perpendicular\ndirection and three points representing the vertices (corners) of the triangle.\n* An STLModel is a container of {{#crossLink \"Component\"}}Components{{/crossLink}} that loads itself from an STL file.\n* It begins loading as soon as you set its {{#crossLink \"STLModel/src:property\"}}{{/crossLink}}\nproperty to the location of a valid STL file.\n* You can set {{#crossLink \"STLModel/src:property\"}}{{/crossLink}} to a new file path at any time, which causes\nthe STLModel to clear itself and load components from the new file.\n* For binary STL, has the option to create a separate {{#crossLink \"Entity\"}}{{/crossLink}} for each group of faces\nthat share the same vertex colors. This allows us to treat STL models as parts assemblies.\n* Can be configured to automatically smooth STL models by converting their face-oriented normals to vertex-oriented.\n\nIt inherits these capabilities from its {{#crossLink \"Model\"}}{{/crossLink}} base class:\n\n* Allows you to access and manipulate the components within it.\n* Can be transformed within World-space by attaching it to a {{#crossLink \"Transform\"}}{{/crossLink}}.\n* Provides its dynamic World-space axis-aligned boundary.\n\n## Examples\n\n* [Simple shapes with smoothing](../../examples/#importing_stl_shapes)\n* [F1 concept car with smoothing](../../examples/#importing_stl_F1Concept)\n\n## Usage\n\n* [Loading STL](#loading-stl)\n* [Parsing STL](#parsing-stl)\n* [Options](#options)\n* [Smoothing Normals](#smoothing-normals)\n* [Finding loaded Entities](#finding-loaded-entities)\n* [Transforming an STLModel](#transforming-a-gltfmodel)\n* [Getting the World-space boundary of an STLModel](#getting-the-world-space-boundary-of-a-gltfmodel)\n* [Clearing an STLModel](#clearing-a-gltfmodel)\n* [Destroying an STLModel](#destroying-a-gltfmodel)\n\n### Loading STL\n\nLoad an STL file by creating an STLModel:\n\n````javascript\nvar model = new xeogl.STLModel({\n    id: \"myModel\",\n    src: \"models/stl/F1Concept.stl\",\n\n    // Some example loading options (see \"Options\" below)\n    smoothNormals: true,\n    smoothNormalsAngleThreshold: 45\n});\n````\n\nAn STLModel prefixes its own ID to those of its components. The ID is optional, but in this example we're providing our own custom ID.\n\nThe STLModel begins loading the STL file immediately.\n\nTo bind a callback to be notified when the file has loaded (which fires immediately if already loaded):\n\n````javascript\nmodel.on(\"loaded\", function() {\n       // STLModel has loaded!\n   });\n````\n\nYou can also bind a callback to fire if loading fails:\n\n````javascript\nmodel.on(\"error\", function(msg) {\n       // Error occurred\n   });\n````\n\nTo switch to a different STL file, you can dynamically update {{#crossLink \"STLModel/src:property\"}}{{/crossLink}}:\n\n````javascript\nmodel.src = \"models/stl/F1Concept.stl\"\n````\n\nThat will apply whatever options were specified to the constructor.\n\n### Parsing STL\n\nIf we have STL data in memory, then we can parse it directly into an existing STLModel instance using the\nstatic {{#crossLink \"STLModel/parse:method\"}}{{/crossLink}} method:\n\n````javascript\nxeogl.STLModel.parse(model, stlData, {\n\n   // Some example parsing options (see \"Options\" below)\n    smoothNormals: true,\n    smoothNormalsAngleThreshold: 45,\n    combineGeometry: true,\n    quantizeGeometry: true\n});\n````\n\nThat's asynchronous because STL is self-contained and does not need to load any external assets.\n\n### Options\n\nThe following options may be specified when loading or parsing STL:\n\n| Option | Type | Range | Default Value | Description |\n|:--------:|:----:|:-----:|:-------------:|:-----:|:-----------:|\n| quantizeGeometry | Boolean |  | true | When true, quantizes geometry to reduce memory and GPU bus usage (see {{#crossLink \"Geometry\"}}{{/crossLink}}). |\n| combineGeometry | Boolean |  | true | When true, internally combines geometry vertex buffers to improve rendering performance (see {{#crossLink \"Geometry\"}}{{/crossLink}}). |\n| smoothNormals | Boolean |  | false | When true, automatically converts face-oriented normals to vertex normals for a smooth appearance. See [Smoothing Normals](#smoothing-normals). |\n| smoothNormalsAngleThreshold | Number (degrees) | [0..180] | 20 | See [Smoothing Normals](#smoothing-normals). |\n| backfaces | Boolean |  | true | When true, allows visible backfaces, wherever specified in the STL. When false, ignores backfaces. |\n| ghost | Boolean |  | false | When true, ghosts all the model's Entities (see {{#crossLink \"Entity\"}}{{/crossLink}} and {{#crossLink \"GhostMaterial\"}}{{/crossLink}}). |\n| outline | Boolean |  | false | When true, outlines all the model's Entities (see {{#crossLink \"Entity\"}}{{/crossLink}} and {{#crossLink \"OutlineMaterial\"}}{{/crossLink}}). |\n| highlight | Boolean |  | false | When true, highlights all the model's Entities (see {{#crossLink \"Entity\"}}{{/crossLink}} and {{#crossLink \"GhostMaterial\"}}{{/crossLink}}). |\n| ghostEdgeThreshold | Number | [0..180] | 2 | When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn. |\n| splitEntities | Boolean |  | true | When true, creates a separate {{#crossLink \"Entity\"}}{{/crossLink}} for each group of faces that share the same vertex colors. Only works with binary STL.| |\n\n### Smoothing Normals\n\nAs mentioned above, providing a ````smoothNormals```` flag to the constructor gives our STLModel a smooth appearance. Triangles in STL\nare disjoint, where each triangle has its own separate vertex positions, normals and (optionally) colors. This means that you can\nhave gaps between triangles. Normals for each triangle are perpendicular to the triangle's surface, which gives the model a faceted appearance by default.\n\nThe ```smoothNormals``` flag causes the STLModel to recalculate its normals, so that each normal's direction is the average\nof the orientations of the triangles adjacent to its vertex. When smoothing, each vertex normal is set to the average of the\norientations of all other triangles that have a vertex at the same position, excluding those triangles whose direction deviates from\nthe direction of the vertice's triangle by a threshold given in ````smoothNormalsAngleThreshold````. This makes\nsmoothing robust for hard edges, which you can see on the cylindrical objects in one of the examples:\n\n<a href=\"../../examples/#importing_stl_shapes\"><img src=\"../../../assets/images/screenshots/STLModelHardEdges.png\"></img></a>\n\nNote how the rim is smooth, yet the there is still a sharp edge adjacent to the flat portions.\n\n### Finding STLModels in Scenes\n\nOur STLModel will now be registered by ID on its Scene, so we can now find it like this:\n\n````javascript\nmodel = xeogl.scene.models[\"myModel\"];\n````\n\nThat's assuming that we've created the STLModel in the default xeogl Scene, which we're doing in these examples.\n\nWe can also get all the STLModels in a Scene, using the Scene's {{#crossLink \"Scene/types:property\"}}{{/crossLink}} map:\n\n````javascript\nvar stlModels = xeogl.scene.types[\"xeogl.STLModel\"];\n\nmodel = stlModels[\"myModel\"];\n````\n\n### Finding loaded Entities\n\nOnce the STLModel has loaded, its {{#crossLink \"Scene\"}}{{/crossLink}} will contain various components that represent the elements of the STL file.\nWe'll now access some of those components by ID, to query and update them programmatically.\n\nLet's highlight an {{#crossLink \"Entity\"}}Entity{{/crossLink}} in our STLModel:\n\n````javascript\nvar entities = scene.entities;\n\nentities[\"myModel#1\"].highlight = true;\n````\n\nAn STLModel also has an ID map of the components within it. Let's highlight an {{#crossLink \"Entity\"}}Entities{{/crossLink}}:\n\n````javascript\nmodel.components[\"myModel#1\"].highlight = true;\n````\n\nAn STLModel also has a map containing just the {{#crossLink \"Entity\"}}Entities{{/crossLink}}:\n\n````javascript\nmodel.entities[\"myModel#1\"].highlight = true;\n````\n\nTODO: ID format description\n\n### Transforming an STLModel\n\nAn STLModel lets us transform its Entities as a group.\n\nWe can attach a modeling {{#crossLink \"Transform\"}}{{/crossLink}}, as a either a\nconfiguration object or a component instance:\n\n```` Javascript\n// Attach transforms as a configuration object:\nmodel.transform = {\n       type: \"xeogl.Translate\",\n       xyz: [-35, 0, 0],\n       parent: {\n           type: \"xeogl.Rotate\",\n           xyz: [0, 1, 0],\n           angle: 45\n       }\n    };\n\n// Attach our own transform instances:\nmodel.transform = new xeogl.Translate({\n       xyz: [-35, 0, 0],\n       parent: new xeogl.Rotate({\n           xyz: [0, 1, 0],\n           angle: 45\n       })\n    });\n````\n\nWe can also provide the {{#crossLink \"Transform\"}}{{/crossLink}} to the STLModel constructor, as either configuration\nobjects or instances.\n\nHere we'll provide a Transform hierarchy as a configuration object:\n\n```` Javascript\n// Model internally instantiates our transform components:\nvar model = new xeogl.STLModel({\n    src: \"models/stl/F1Concept.stl\",\n    transform: {\n       type: \"xeogl.Translate\",\n       xyz: [-35, 0, 0],\n       parent: {\n           type: \"xeogl.Rotate\",\n           xyz: [0, 1, 0],\n           angle: 45\n       }\n    }\n});\n\n````\n\n### Getting the World-space boundary of an STLModel\n\nGet the World-space axis-aligned boundary like this:\n\n```` Javascript\nmodel.on(\"boundary\", function() {\n   var aabb = model.aabb; //  [xmin, ymin,zmin,xmax,ymax, zmax]\n   //...\n});\n````\n\nWe can also subscribe to changes to that boundary, which will happen whenever\n\n* the STLModel's {{#crossLink \"Transform\"}}{{/crossLink}} is updated,\n* components are added or removed, or\n* the STLModel is reloaded from a different source,\n* the {{#crossLink \"Geometry\"}}Geometries{{/crossLink}} or {{#crossLink \"Transform\"}}Transforms{{/crossLink}} of its {{#crossLink \"Entities\"}}Entities{{/crossLink}} are updated.\n\n````javascript\nmodel.on(\"boundary\", function() {\n   var aabb = model.aabb; // [xmin, ymin,zmin,xmax,ymax, zmax]\n});\n````\n\n### Clearing an STLModel\n\n```` Javascript\nmodel.clear();\n````\n\n### Destroying an STLModel\n\n```` Javascript\nmodel.destroy();\n````",
+            "description": "An **STLModel** is a {{#crossLink \"Model\"}}{{/crossLink}} that's loaded from an <a href=\"https://en.wikipedia.org/wiki/STL_(file_format)\">STL</a> file.\n\n<a href=\"../../examples/#importing_stl_shapes\"><img src=\"../../../assets/images/screenshots/STLModel.png\"></img></a>\n\n## Overview\n\n* An <a href=\"https://en.wikipedia.org/wiki/STL_(file_format)\">STL</a> (“StereoLithography”) file is a triangular representation of a 3-dimensional surface geometry. The surface is\ntessellated logically into a series of triangles. Each facet is described by a perpendicular\ndirection and three points representing the vertices (corners) of the triangle.\n* An STLModel is a container of {{#crossLink \"Component\"}}Components{{/crossLink}} that loads itself from an STL file.\n* It begins loading as soon as you set its {{#crossLink \"STLModel/src:property\"}}{{/crossLink}}\nproperty to the location of a valid STL file.\n* You can set {{#crossLink \"STLModel/src:property\"}}{{/crossLink}} to a new file path at any time, which causes\nthe STLModel to clear itself and load components from the new file.\n* For binary STL, has the option to create a separate {{#crossLink \"Entity\"}}{{/crossLink}} for each group of faces\nthat share the same vertex colors. This allows us to treat STL models as parts assemblies.\n* Can be configured to automatically smooth STL models by converting their face-oriented normals to vertex-oriented.\n\nIt inherits these capabilities from its {{#crossLink \"Model\"}}{{/crossLink}} base class:\n\n* Allows you to access and manipulate the components within it.\n* Can be transformed within World-space by attaching it to a {{#crossLink \"Transform\"}}{{/crossLink}}.\n* Provides its dynamic World-space axis-aligned boundary.\n\n## Examples\n\n* [Simple shapes with smoothing](../../examples/#importing_stl_shapes)\n* [F1 concept car with smoothing](../../examples/#importing_stl_F1Concept)\n\n## Usage\n\n* [Loading STL](#loading-stl)\n* [Parsing STL](#parsing-stl)\n* [Options](#options)\n* [Smoothing Normals](#smoothing-normals)\n* [Finding loaded Entities](#finding-loaded-entities)\n* [Transforming an STLModel](#transforming-a-gltfmodel)\n* [Getting the World-space boundary of an STLModel](#getting-the-world-space-boundary-of-a-gltfmodel)\n* [Clearing an STLModel](#clearing-a-gltfmodel)\n* [Destroying an STLModel](#destroying-a-gltfmodel)\n\n### Loading STL\n\nLoad an STL file by creating an STLModel:\n\n````javascript\nvar model = new xeogl.STLModel({\n    id: \"myModel\",\n    src: \"models/stl/F1Concept.stl\",\n\n    // Some example loading options (see \"Options\" below)\n    smoothNormals: true,\n    smoothNormalsAngleThreshold: 45\n});\n````\n\nAn STLModel prefixes its own ID to those of its components. The ID is optional, but in this example we're providing our own custom ID.\n\nThe STLModel begins loading the STL file immediately.\n\nTo bind a callback to be notified when the file has loaded (which fires immediately if already loaded):\n\n````javascript\nmodel.on(\"loaded\", function() {\n       // STLModel has loaded!\n   });\n````\n\nYou can also bind a callback to fire if loading fails:\n\n````javascript\nmodel.on(\"error\", function(msg) {\n       // Error occurred\n   });\n````\n\nTo switch to a different STL file, you can dynamically update {{#crossLink \"STLModel/src:property\"}}{{/crossLink}}:\n\n````javascript\nmodel.src = \"models/stl/F1Concept.stl\"\n````\n\nThat will apply whatever options were specified to the constructor.\n\n### Parsing STL\n\nIf we have STL data in memory, then we can parse it directly into an existing STLModel instance using the\nstatic {{#crossLink \"STLModel/parse:method\"}}{{/crossLink}} method:\n\n````javascript\nxeogl.STLModel.parse(model, stlData, {\n\n   // Some example parsing options (see \"Options\" below)\n    smoothNormals: true,\n    smoothNormalsAngleThreshold: 45,\n    combineGeometry: true,\n    quantizeGeometry: true\n});\n````\n\nThat's asynchronous because STL is self-contained and does not need to load any external assets.\n\n### Options\n\nThe following options may be specified when loading or parsing STL:\n\n| Option | Type | Range | Default Value | Description |\n|:--------:|:----:|:-----:|:-------------:|:-----:|:-----------:|\n| quantizeGeometry | Boolean |  | true | When true, quantizes geometry to reduce memory and GPU bus usage (see {{#crossLink \"Geometry\"}}{{/crossLink}}). |\n| combineGeometry | Boolean |  | true | When true, internally combines geometry vertex buffers to improve rendering performance (see {{#crossLink \"Geometry\"}}{{/crossLink}}). |\n| smoothNormals | Boolean |  | false | When true, automatically converts face-oriented normals to vertex normals for a smooth appearance. See [Smoothing Normals](#smoothing-normals). |\n| smoothNormalsAngleThreshold | Number (degrees) | [0..180] | 20 | See [Smoothing Normals](#smoothing-normals). |\n| backfaces | Boolean |  | true | When true, allows visible backfaces, wherever specified in the STL. When false, ignores backfaces. |\n| ghost | Boolean |  | false | When true, ghosts all the model's Entities (see {{#crossLink \"Entity\"}}{{/crossLink}} and {{#crossLink \"GhostMaterial\"}}{{/crossLink}}). |\n| outline | Boolean |  | false | When true, outlines all the model's Entities (see {{#crossLink \"Entity\"}}{{/crossLink}} and {{#crossLink \"OutlineMaterial\"}}{{/crossLink}}). |\n| highlight | Boolean |  | false | When true, highlights all the model's Entities (see {{#crossLink \"Entity\"}}{{/crossLink}} and {{#crossLink \"GhostMaterial\"}}{{/crossLink}}). |\n| ghostEdgeThreshold | Number | [0..180] | 2 | When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn. |\n| splitEntities | Boolean |  | true | When true, creates a separate {{#crossLink \"Entity\"}}{{/crossLink}} for each group of faces that share the same vertex colors. Only works with binary STL.| |\n\n### Smoothing Normals\n\nAs mentioned above, providing a ````smoothNormals```` flag to the constructor gives our STLModel a smooth appearance. Triangles in STL\nare disjoint, where each triangle has its own separate vertex positions, normals and (optionally) colors. This means that you can\nhave gaps between triangles. Normals for each triangle are perpendicular to the triangle's surface, which gives the model a faceted appearance by default.\n\nThe ```smoothNormals``` flag causes the STLModel to recalculate its normals, so that each normal's direction is the average\nof the orientations of the triangles adjacent to its vertex. When smoothing, each vertex normal is set to the average of the\norientations of all other triangles that have a vertex at the same position, excluding those triangles whose direction deviates from\nthe direction of the vertice's triangle by a threshold given in ````smoothNormalsAngleThreshold````. This makes\nsmoothing robust for hard edges, which you can see on the cylindrical objects in one of the examples:\n\n<a href=\"../../examples/#importing_stl_shapes\"><img src=\"../../../assets/images/screenshots/STLModelHardEdges.png\"></img></a>\n\nNote how the rim is smooth, yet the there is still a sharp edge adjacent to the flat portions.\n\n### Finding STLModels in Scenes\n\nOur STLModel will now be registered by ID on its Scene, so we can now find it like this:\n\n````javascript\nmodel = xeogl.scene.models[\"myModel\"];\n````\n\nThat's assuming that we've created the STLModel in the default xeogl Scene, which we're doing in these examples.\n\nWe can also get all the STLModels in a Scene, using the Scene's {{#crossLink \"Scene/types:property\"}}{{/crossLink}} map:\n\n````javascript\nvar stlModels = xeogl.scene.types[\"xeogl.STLModel\"];\n\nmodel = stlModels[\"myModel\"];\n````\n\n### Finding loaded Entities\n\nOnce the STLModel has loaded, its {{#crossLink \"Scene\"}}{{/crossLink}} will contain various components that represent the elements of the STL file.\nWe'll now access some of those components by ID, to query and update them programmatically.\n\nLet's highlight an {{#crossLink \"Entity\"}}Entity{{/crossLink}} in our STLModel:\n\n````javascript\nvar entities = scene.entities;\n\nentities[\"myModel#1\"].highlight = true;\n````\n\nAn STLModel also has an ID map of the components within it. Let's highlight an {{#crossLink \"Entity\"}}Entities{{/crossLink}}:\n\n````javascript\nmodel.components[\"myModel#1\"].highlight = true;\n````\n\nAn STLModel also has a map containing just the {{#crossLink \"Entity\"}}Entities{{/crossLink}}:\n\n````javascript\nmodel.entities[\"myModel#1\"].highlight = true;\n````\n\nTODO: ID format description\n\n### Transforming an STLModel\n\nAn STLModel lets us transform its Entities as a group.\n\nWe can attach a modeling {{#crossLink \"Transform\"}}{{/crossLink}}, as a either a\nconfiguration object or a component instance:\n\n```` Javascript\n// Attach transforms as a configuration object:\nmodel.transform = {\n       type: \"xeogl.Translate\",\n       xyz: [-35, 0, 0],\n       parent: {\n           type: \"xeogl.Rotate\",\n           xyz: [0, 1, 0],\n           angle: 45\n       }\n    };\n\n// Attach our own transform instances:\nmodel.transform = new xeogl.Translate({\n       xyz: [-35, 0, 0],\n       parent: new xeogl.Rotate({\n           xyz: [0, 1, 0],\n           angle: 45\n       })\n    });\n````\n\nWe can also provide the {{#crossLink \"Transform\"}}{{/crossLink}} to the STLModel constructor, as either configuration\nobjects or instances.\n\nHere we'll provide a Transform hierarchy as a configuration object:\n\n```` Javascript\n// Model internally instantiates our transform components:\nvar model = new xeogl.STLModel({\n    src: \"models/stl/F1Concept.stl\",\n    transform: {\n       type: \"xeogl.Translate\",\n       xyz: [-35, 0, 0],\n       parent: {\n           type: \"xeogl.Rotate\",\n           xyz: [0, 1, 0],\n           angle: 45\n       }\n    }\n});\n\n````\n\n### Getting the World-space boundary of an STLModel\n\nGet the World-space axis-aligned boundary like this:\n\n```` Javascript\nmodel.on(\"boundary\", function() {\n   var aabb = model.aabb; //  [xmin, ymin,zmin,xmax,ymax, zmax]\n   //...\n});\n````\n\nWe can also subscribe to changes to that boundary, which will happen whenever\n\n* the STLModel's {{#crossLink \"Transform\"}}{{/crossLink}} is updated,\n* components are added or removed, or\n* the STLModel is reloaded from a different source,\n* the {{#crossLink \"Geometry\"}}Geometries{{/crossLink}} or {{#crossLink \"Transform\"}}Transforms{{/crossLink}} of its {{#crossLink \"Entities\"}}Entities{{/crossLink}} are updated.\n\n````javascript\nmodel.on(\"boundary\", function() {\n   var aabb = model.aabb; // [xmin, ymin,zmin,xmax,ymax, zmax]\n});\n````\n\n### Clearing an STLModel\n\n```` Javascript\nmodel.clear();\n````\n\n### Destroying an STLModel\n\n```` Javascript\nmodel.destroy();\n````",
             "submodule": "models",
             "is_constructor": 1,
             "params": [
@@ -9274,6 +9287,23 @@
         {
             "file": "src/controls/cameraControl.js",
             "line": 968,
+            "description": "Fired when the pointer is over a new {{#crossLink \"Entity\"}}{{/crossLink}}.",
+            "itemtype": "event",
+            "name": "hoverEnter",
+            "params": [
+                {
+                    "name": "hit",
+                    "description": "A pick hit result containing the ID of the Entity - see }{{/crossLink}}.",
+                    "type": "#crossLink \"Scene/pick:method\""
+                }
+            ],
+            "class": "CameraControl",
+            "module": "xeogl",
+            "submodule": "controls"
+        },
+        {
+            "file": "src/controls/cameraControl.js",
+            "line": 976,
             "description": "Fired continuously while the pointer is moving while hovering over an {{#crossLink \"Entity\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "hover",
@@ -9290,7 +9320,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 979,
+            "line": 985,
             "description": "Fired while the pointer hovers over the surface of an {{#crossLink \"Entity\"}}{{/crossLink}}.\n\nThis event provides 3D information about the point on the surface that the pointer is\nhovering over.",
             "itemtype": "event",
             "name": "hoverSurface",
@@ -9307,7 +9337,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 993,
+            "line": 999,
             "description": "Fired whenever the pointer no longer hovers over an {{#crossLink \"Entity\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "hoverOut",
@@ -9323,7 +9353,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 1003,
+            "line": 1009,
             "description": "Fired continuously while the pointer is moving but not hovering over anything.",
             "itemtype": "event",
             "name": "hoverOff",
@@ -9333,7 +9363,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 1092,
+            "line": 1098,
             "description": "Fired whenever the pointer has picked (ie. clicked or tapped) an {{#crossLink \"Entity\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "picked",
@@ -9350,7 +9380,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 1101,
+            "line": 1107,
             "description": "Fired when the pointer has picked (ie. clicked or tapped) the surface of an {{#crossLink \"Entity\"}}{{/crossLink}}.\n\nThis event provides 3D information about the point on the surface that the pointer has picked.",
             "itemtype": "event",
             "name": "pickedSurface",
@@ -9367,7 +9397,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 1114,
+            "line": 1120,
             "description": "Fired when the pointer attempted a pick (ie. clicked or tapped), but has hit nothing.",
             "itemtype": "event",
             "name": "pickedNothing",
@@ -9377,7 +9407,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 1157,
+            "line": 1163,
             "description": "Fired whenever the pointer has double-picked (ie. double-clicked or double-tapped) an {{#crossLink \"Entity\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "picked",
@@ -9394,7 +9424,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 1165,
+            "line": 1171,
             "description": "Fired when the pointer has double-picked (ie. double-clicked or double-tapped) the surface of an {{#crossLink \"Entity\"}}{{/crossLink}}.\n\nThis event provides 3D information about the point on the surface that the pointer has picked.",
             "itemtype": "event",
             "name": "doublePickedSurface",
@@ -9411,7 +9441,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 1181,
+            "line": 1187,
             "description": "Fired when the pointer attempted a double-pick (ie. double-clicked or double-tapped), but has hit nothing.",
             "itemtype": "event",
             "name": "doublePickedNothing",
@@ -9766,7 +9796,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 529,
+            "line": 532,
             "description": "Fired when this Entity is *picked* via a call to the {{#crossLink \"Canvas/pick:method\"}}{{/crossLink}} method\non the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s {{#crossLink \"Canvas\"}}Canvas {{/crossLink}}.",
             "itemtype": "event",
             "name": "picked",
@@ -9793,7 +9823,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 605,
+            "line": 610,
             "description": "The {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/geometry:property\"}}geometry{{/crossLink}}\n(a simple box) when set to a null or undefined value.\n\nUpdates {{#crossLink \"Entity/boundary\"}}{{/crossLink}},\n{{#crossLink \"Entity/worldObb\"}}{{/crossLink}} and\n{{#crossLink \"Entity/center\"}}{{/crossLink}}",
             "itemtype": "property",
             "name": "geometry",
@@ -9804,7 +9834,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 648,
+            "line": 653,
             "description": "The {{#crossLink \"Material\"}}Material{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/material:property\"}}material{{/crossLink}} when set to\na null or undefined value.",
             "itemtype": "property",
             "name": "material",
@@ -9815,7 +9845,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 675,
+            "line": 680,
             "description": "The {{#crossLink \"GhostMaterial\"}}GhostMaterial{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/ghostMaterial:property\"}}ghostMaterial{{/crossLink}} when set to\na null or undefined value.",
             "itemtype": "property",
             "name": "ghostMaterial",
@@ -9826,7 +9856,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 702,
+            "line": 707,
             "description": "The {{#crossLink \"GhostMaterial\"}}GhostMaterial{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/highlightMaterial:property\"}}highlightMaterial{{/crossLink}} when set to\na null or undefined value.",
             "itemtype": "property",
             "name": "highlightMaterial",
@@ -9837,7 +9867,18 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 729,
+            "line": 734,
+            "description": "The {{#crossLink \"GhostMaterial\"}}GhostMaterial{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/selectedMaterial:property\"}}selectedMaterial{{/crossLink}} when set to\na null or undefined value.",
+            "itemtype": "property",
+            "name": "selectedMaterial",
+            "type": "GhostMaterial",
+            "class": "Entity",
+            "module": "xeogl",
+            "submodule": "entities"
+        },
+        {
+            "file": "src/entities/entity.js",
+            "line": 761,
             "description": "The {{#crossLink \"OutlineMaterial\"}}OutlineMaterial{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/outlineMaterial:property\"}}outlineMaterial{{/crossLink}} when set to\na null or undefined value.",
             "itemtype": "property",
             "name": "outlineMaterial",
@@ -9848,7 +9889,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 756,
+            "line": 788,
             "description": "The Local-to-World-space (modelling) {{#crossLink \"Transform\"}}{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/transform:property\"}}transform{{/crossLink}}\n(an identity matrix) when set to a null or undefined value.\n\nUpdates {{#crossLink \"Entity/boundary\"}}{{/crossLink}},\n{{#crossLink \"Entity/worldObb\"}}{{/crossLink}} and\n{{#crossLink \"Entity/center\"}}{{/crossLink}}",
             "itemtype": "property",
             "name": "transform",
@@ -9859,7 +9900,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 807,
+            "line": 839,
             "description": "Indicates whether this Entity is visible or not.\n\nThe Entity is only rendered when {{#crossLink \"Entity/visible:property\"}}{{/crossLink}} is true and\n{{#crossLink \"Entity/culled:property\"}}{{/crossLink}} is false.",
             "itemtype": "property",
             "name": "visible",
@@ -9871,7 +9912,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 829,
+            "line": 861,
             "description": "Indicates whether or not this Entity is currently culled from view.\n\nThe Entity is only rendered when {{#crossLink \"Entity/visible:property\"}}{{/crossLink}} is true and\n{{#crossLink \"Entity/culled:property\"}}{{/crossLink}} is false.",
             "itemtype": "property",
             "name": "culled",
@@ -9883,7 +9924,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 851,
+            "line": 883,
             "description": "Indicates whether this entity is pickable or not.\n\nPicking is done via calls to {{#crossLink \"Canvas/pick:method\"}}Canvas#pick{{/crossLink}}.",
             "itemtype": "property",
             "name": "pickable",
@@ -9895,7 +9936,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 878,
+            "line": 910,
             "description": "Indicates whether this Entity is clippable by {{#crossLink \"Clips\"}}{{/crossLink}} components.",
             "itemtype": "property",
             "name": "clippable",
@@ -9907,7 +9948,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 901,
+            "line": 933,
             "description": "Indicates whether this Entity is included in boundary calculations.",
             "itemtype": "property",
             "name": "collidable",
@@ -9919,7 +9960,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 924,
+            "line": 956,
             "description": "Indicates whether this Entity casts shadows.",
             "itemtype": "property",
             "name": "castShadow",
@@ -9931,7 +9972,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 947,
+            "line": 979,
             "description": "Indicates whether this Entity receives shadows.",
             "itemtype": "property",
             "name": "receiveShadow",
@@ -9943,7 +9984,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 971,
+            "line": 1003,
             "description": "Indicates whether this Entity is rendered with an outline.\n\nThe outline effect is configured via the Entity's {{#crossLink \"Entity/outlineMaterial:property\"}}outlineMaterial{{/crossLink}} component.",
             "itemtype": "property",
             "name": "outline",
@@ -9955,7 +9996,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 996,
+            "line": 1028,
             "description": "Indicates whether this Entity is highlighted.\n\nThe highlight effect is configured via the Entity's {{#crossLink \"Entity/highlightMaterial:property\"}}highlightMaterial{{/crossLink}}.",
             "itemtype": "property",
             "name": "highlight",
@@ -9967,7 +10008,19 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1021,
+            "line": 1053,
+            "description": "Indicates whether this Entity is selected.\n\nThe selected effect is configured via the Entity's {{#crossLink \"Entity/selectedMaterial:property\"}}selectedMaterial{{/crossLink}}.",
+            "itemtype": "property",
+            "name": "selected",
+            "default": "false",
+            "type": "Boolean",
+            "class": "Entity",
+            "module": "xeogl",
+            "submodule": "entities"
+        },
+        {
+            "file": "src/entities/entity.js",
+            "line": 1078,
             "description": "RGBA colorize color, multiplies by the outgoing fragment color and transparency.",
             "itemtype": "property",
             "name": "colorize",
@@ -9979,7 +10032,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1054,
+            "line": 1111,
             "description": "Indicates this Entity's rendering order.\n\nThis can be set on multiple transparent Entities, to make them render in a specific order\nfor correct alpha blending.",
             "itemtype": "property",
             "name": "layer",
@@ -9991,7 +10044,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1082,
+            "line": 1139,
             "description": "Flag which indicates whether this Entity is stationary or not.\n\nSetting this true will disable the effect of {{#crossLink \"Lookat\"}}view transform{{/crossLink}}\ntranslations for this Entity, while still alowing it to rotate. This is useful for skybox Entities.",
             "itemtype": "property",
             "name": "stationary",
@@ -10003,7 +10056,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1108,
+            "line": 1165,
             "description": "Specifies the billboarding behaviour for this Entity.\n\nOptions are:\n\n* **\"none\"** -  **(default)** - No billboarding.\n* **\"spherical\"** - Entity is billboarded to face the viewpoint, rotating both vertically and horizontally.\n* **\"cylindrical\"** - Entity is billboarded to face the viewpoint, rotating only about its vertically\naxis. Use this mode for things like trees on a landscape.",
             "itemtype": "property",
             "name": "billboard",
@@ -10015,7 +10068,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1143,
+            "line": 1200,
             "description": "Flag which indicates if this Entity is rendered with ghosting effect.\n\nThe ghost effect is configured via the Entity's {{#crossLink \"Entity/ghostMaterial:property\"}}ghostMaterial{{/crossLink}}.",
             "itemtype": "property",
             "name": "ghost",
@@ -10027,7 +10080,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1169,
+            "line": 1226,
             "description": "World-space 3D center of this Entity.",
             "itemtype": "property",
             "name": "center",
@@ -10039,7 +10092,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1191,
+            "line": 1248,
             "description": "World-space axis-aligned 3D boundary (AABB) of this Entity.\n\nThe AABB is represented by a six-element Float32Array containing the min/max extents of the\naxis-aligned volume, ie. ````[xmin, ymin,zmin,xmax,ymax, zmax]````.",
             "itemtype": "property",
             "name": "aabb",
@@ -10051,7 +10104,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1224,
+            "line": 1281,
             "description": "World-space oriented 3D boundary (OBB) of this Entity.\n\nThe OBB is represented by a 32-element Float32Array containing the eight vertices of the box,\nwhere each vertex is a homogeneous coordinate having [x,y,z,w] elements.",
             "itemtype": "property",
             "name": "obb",
@@ -10063,7 +10116,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1252,
+            "line": 1309,
             "description": "World-space vertex positions of this Entity.\n\nThese are internally generated on-demand and cached. To free the cached\nvertex World positions when you're done with them, set this property to null or undefined.",
             "itemtype": "property",
             "name": "worpdPositions",
@@ -10075,7 +10128,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1310,
+            "line": 1367,
             "description": "Fired whenever this Entity's World-space boundary changes.\n\nGet the latest boundary from the Entity's {{#crossLink \"Entity/aabb:property\"}}{{/crossLink}}\nand {{#crossLink \"Entity/obb:property\"}}{{/crossLink}} properties.",
             "itemtype": "event",
             "name": "boundary",
@@ -18866,7 +18919,7 @@
         {
             "file": "src/scene.js",
             "line": 1185,
-            "description": "The default {{#crossLink \"GhostMaterial\"}}GhostMaterial{{/crossLink}} for this Scene.\n\nThis {{#crossLink \"GhostMaterial\"}}GhostMaterial{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.ghostMaterial\", with all\nother properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"GhostMaterial\"}}GhostMaterial{{/crossLink}} by default.",
+            "description": "The Scene's default {{#crossLink \"GhostMaterial\"}}GhostMaterial{{/crossLink}} for the appearance of {{#crossLink \"Entities\"}}Entities{{/crossLink}} when they are ghosted.\n\nThis {{#crossLink \"GhostMaterial\"}}GhostMaterial{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.ghostMaterial\", with all\nother properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"GhostMaterial\"}}GhostMaterial{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "ghostMaterial",
             "final": 1,
@@ -18877,7 +18930,7 @@
         {
             "file": "src/scene.js",
             "line": 1209,
-            "description": "The default {{#crossLink \"HighlightMaterial\"}}HighlightMaterial{{/crossLink}} for this Scene.\n\nThis {{#crossLink \"HighlightMaterial\"}}HighlightMaterial{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.highlightMaterial\", with all\nother properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"HighlightMaterial\"}}HighlightMaterial{{/crossLink}} by default.",
+            "description": "The Scene's default {{#crossLink \"GhostMaterial\"}}GhostMaterial{{/crossLink}} for the appearance of {{#crossLink \"Entities\"}}Entities{{/crossLink}} when they are highlighted.\n\nThis {{#crossLink \"HighlightMaterial\"}}HighlightMaterial{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.highlightMaterial\", with all\nother properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"HighlightMaterial\"}}HighlightMaterial{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "highlightMaterial",
             "final": 1,
@@ -18888,7 +18941,18 @@
         {
             "file": "src/scene.js",
             "line": 1233,
-            "description": "The default {{#crossLink \"OutlineMaterial\"}}OutlineMaterial{{/crossLink}} for this Scene.\n\nThis {{#crossLink \"OutlineMaterial\"}}OutlineMaterial{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.outlineMaterial\", with all\nother properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"OutlineMaterial\"}}OutlineMaterial{{/crossLink}} by default.",
+            "description": "The Scene's default {{#crossLink \"GhostMaterial\"}}GhostMaterial{{/crossLink}} for the appearance of {{#crossLink \"Entities\"}}Entities{{/crossLink}} when they are selected.\n\nThis {{#crossLink \"SelectedMaterial\"}}SelectedMaterial{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.selectedMaterial\", with all\nother properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"SelectedMaterial\"}}SelectedMaterial{{/crossLink}} by default.",
+            "itemtype": "property",
+            "name": "selectedMaterial",
+            "final": 1,
+            "type": "SelectedMaterial",
+            "class": "Scene",
+            "module": "xeogl"
+        },
+        {
+            "file": "src/scene.js",
+            "line": 1257,
+            "description": "The Scene's default {{#crossLink \"OutlineMaterial\"}}OutlineMaterial{{/crossLink}} for the appearance of {{#crossLink \"Entities\"}}Entities{{/crossLink}} when they are outlined.\n\nThis {{#crossLink \"OutlineMaterial\"}}OutlineMaterial{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.outlineMaterial\", with all\nother properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"OutlineMaterial\"}}OutlineMaterial{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "outlineMaterial",
             "final": 1,
@@ -18898,7 +18962,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1256,
+            "line": 1280,
             "description": "The {{#crossLink \"Viewport\"}}{{/crossLink}} belonging to this Scene.",
             "itemtype": "property",
             "name": "viewport",
@@ -18909,7 +18973,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1269,
+            "line": 1293,
             "description": "The {{#crossLink \"Lights\"}}Lights{{/crossLink}} belonging to this Scene.",
             "itemtype": "property",
             "name": "lights",
@@ -18920,7 +18984,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1282,
+            "line": 1306,
             "description": "The {{#crossLink \"Camera\"}}Camera{{/crossLink}} belonging to this Scene.",
             "itemtype": "property",
             "name": "camera",
@@ -18931,7 +18995,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1295,
+            "line": 1319,
             "description": "The {{#crossLink \"Clips\"}}Clips{{/crossLink}} belonging to this Scene.",
             "itemtype": "property",
             "name": "clips",
@@ -18942,7 +19006,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1308,
+            "line": 1332,
             "description": "World-space 3D center of this Scene.",
             "itemtype": "property",
             "name": "center",
@@ -18953,7 +19017,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1336,
+            "line": 1360,
             "description": "World-space axis-aligned 3D boundary (AABB) of this Scene.\n\nThe AABB is represented by a six-element Float32Array containing the min/max extents of the\naxis-aligned volume, ie. ````[xmin, ymin,zmin,xmax,ymax, zmax]````.",
             "itemtype": "property",
             "name": "aabb",
@@ -18964,7 +19028,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1427,
+            "line": 1451,
             "description": "Attempts to pick an {{#crossLink \"Entity\"}}Entity{{/crossLink}} in this Scene.\n\nIgnores {{#crossLink \"Entity\"}}Entities{{/crossLink}} with {{#crossLink \"Entity/pickable:property\"}}pickable{{/crossLink}}\nset *false*.\n\nPicking the {{#crossLink \"Entity\"}}{{/crossLink}} at the given canvas coordinates:\n\n````javascript\nvar hit = scene.pick({\n    canvasPos: [23, 131]\n });\n\nif (hit) { // Picked an Entity\n    var entity = hit.entity;\n}\n````\n\n**Usage:**\n\nPicking the {{#crossLink \"Entity\"}}{{/crossLink}} that intersects a ray cast through the canvas:\n\n````javascript\nvar hit = scene.pick({\n    pickSurface: true,\n    canvasPos: [23, 131]\n });\n\nif (hit) { // Picked an Entity\n\n    var entity = hit.entity;\n\n    // These properties are only on the hit result when we do a ray-pick:\n\n    var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n    var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n    var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n    var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle\n    var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle\n    var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle\n    var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n    var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n    var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n}\n````\n\nPicking the {{#crossLink \"Entity\"}}{{/crossLink}} that intersects an arbitrarily-aligned World-space ray:\n\n````javascript\nvar hit = scene.pick({\n    pickSurface: true,       // Picking with arbitrarily-positioned ray\n    origin: [0,0,-5],    // Ray origin\n    direction: [0,0,1]   // Ray direction\n});\n\nif (hit) { // Picked an Entity with the ray\n\n    var entity = hit.entity;\n\n    var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n    var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n    var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n    var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle\n    var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle\n    var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle\n    var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n    var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n    var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n    var origin = hit.origin; // Float32Array containing the World-space ray origin\n    var direction = hit.direction; // Float32Array containing the World-space ray direction\n}\n````",
             "itemtype": "method",
             "name": "pick",
@@ -19023,7 +19087,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1813,
+            "line": 1837,
             "description": "Convenience method which returns the collective axis-aligned boundary of the {{#crossLink \"Entity\"}}Entities{{/crossLink}}\nand/or {{#crossLink \"Model\"}}Models{{/crossLink}} with the given IDs.\n\nWhen no arguments are given, returns the total boundary of all objects in the scene.\n\nOnly {{#crossLink \"Entity\"}}Entities{{/crossLink}} with {{#crossLink \"Entity/collidable:property\"}}collidable{{/crossLink}}\nset ````true```` are included in the boundary.\n\n## Usage\n\n````JavaScript\nscene.getAABB(); // Gets collective boundary of all objects in the scene\nscene.getAABB(\"saw\"); // Gets collective boundary of all objects in saw model\nscene.getAABB([\"saw\", \"gearbox\"]); // Gets collective boundary of all objects in saw and gearbox models\nscene.getAABB(\"saw#0.1\"); // Get boundary of an object in the saw model\nscene.getAABB([\"saw#0.1\", \"saw#0.2\"]); // Get collective boundary of two objects in saw model\n````",
             "itemtype": "method",
             "name": "getAABB",
@@ -19043,7 +19107,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1913,
+            "line": 1937,
             "description": "Resets this Scene to its default state.\n\nReferences to any components in this Scene will become invalid.",
             "itemtype": "method",
             "name": "clear",
@@ -22722,11 +22786,11 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/scene.js:1427"
+            "line": " src/scene.js:1451"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/scene.js:1813"
+            "line": " src/scene.js:1837"
         },
         {
             "message": "unknown tag: demo",

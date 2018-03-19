@@ -700,12 +700,15 @@
  @param [cfg.outline=false] {Boolean} Whether an outline is rendered around this entity, as configured by the Entity&#x27;s {{#crossLink &quot;OutlineMaterial&quot;}}{{/crossLink}} component.
  @param [cfg.outlineMaterial] {String|OutlineMaterial} ID or instance of a {{#crossLink &quot;OutlineMaterial&quot;}}{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/outlineMaterial:property&quot;}}outlineMaterial{{/crossLink}}.
- @param [cfg.ghost=false] {Boolean} Whether this entity is rendered ghosted, as configured by the Entity&#x27;s {{#crossLink &quot;GhostMaterial&quot;}}{{/crossLink}} component.
+ @param [cfg.ghost=false] {Boolean} Whether this entity is rendered ghosted, as configured by {{#crossLink &quot;Entity/ghostMaterial:property&quot;}}ghostMaterial{{/crossLink}}.
  @param [cfg.ghostMaterial] {String|GhostMaterial} ID or instance of a {{#crossLink &quot;GhostMaterial&quot;}}{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/ghostMaterial:property&quot;}}ghostMaterial{{/crossLink}}.
- @param [cfg.highlight=false] {Boolean} Whether this entity is rendered highlighted, as configured by the Entity&#x27;s {{#crossLink &quot;GhostMaterial&quot;}}{{/crossLink}} component.
+ @param [cfg.highlight=false] {Boolean} Whether this entity is rendered highlighted, as configured by {{#crossLink &quot;Entity/highlightMaterial:property&quot;}}highlightMaterial{{/crossLink}}.
  @param [cfg.highlightMaterial] {String|GhostMaterial} ID or instance of a {{#crossLink &quot;GhostMaterial&quot;}}{{/crossLink}} to attach to this Entity to define highlighted appearance. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/highlightMaterial:property&quot;}}highlightMaterial{{/crossLink}}.
+ @param [cfg.selected=false] {Boolean} Whether this entity is rendered selected, as configured by {{#crossLink &quot;Entity/selectedMaterial:property&quot;}}selectedMaterial{{/crossLink}}.
+ @param [cfg.selectedMaterial] {String|GhostMaterial} ID or instance of a {{#crossLink &quot;GhostMaterial&quot;}}{{/crossLink}} to attach to this Entity to define selected appearance. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this Entity. Defaults to the
+ parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/selectedMaterial:property&quot;}}selectedMaterial{{/crossLink}}.
  @param [cfg.layer=0] {Number} Indicates this Entity&#x27;s rendering priority, typically used for transparency sorting,
  @param [cfg.stationary=false] {Boolean} Disables the effect of {{#crossLink &quot;Lookat&quot;}}view transform{{/crossLink}} translations for this Entity. This is useful for skybox Entities.
  @param [cfg.billboard=&quot;none&quot;] {String} Specifies the billboarding behaviour for this Entity. Options are &quot;none&quot;, &quot;spherical&quot; and &quot;cylindrical&quot;.
@@ -744,6 +747,7 @@
                 outline: null,
                 ghost: false,
                 highlight: false,
+                selected: false,
                 layer: null,
                 billboard: null,
                 hash: &quot;&quot;
@@ -766,6 +770,7 @@
             this.ghostMaterial = cfg.ghostMaterial;
             this.outlineMaterial = cfg.outlineMaterial;
             this.highlightMaterial = cfg.highlightMaterial;
+            this.selectedMaterial = cfg.selectedMaterial;
 
             // Properties
 
@@ -910,6 +915,33 @@
 
                 get: function () {
                     return this._attached.highlightMaterial;
+                }
+            },
+
+            /**
+             * The {{#crossLink &quot;GhostMaterial&quot;}}GhostMaterial{{/crossLink}} attached to this Entity.
+             *
+             * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this Entity. Defaults to the parent
+             * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/selectedMaterial:property&quot;}}selectedMaterial{{/crossLink}} when set to
+             * a null or undefined value.
+             *
+             * @property selectedMaterial
+             * @type GhostMaterial
+             */
+            selectedMaterial: {
+
+                set: function (value) {
+
+                    this._attach({
+                        name: &quot;selectedMaterial&quot;,
+                        type: &quot;xeogl.GhostMaterial&quot;,
+                        component: value,
+                        sceneDefault: true
+                    });
+                },
+
+                get: function () {
+                    return this._attached.selectedMaterial;
                 }
             },
 
@@ -1202,6 +1234,31 @@
 
                 get: function () {
                     return this._state.highlight;
+                }
+            },
+
+            /**
+             Indicates whether this Entity is selected.
+
+             The selected effect is configured via the Entity&#x27;s {{#crossLink &quot;Entity/selectedMaterial:property&quot;}}selectedMaterial{{/crossLink}}.
+
+             @property selected
+             @default false
+             @type Boolean
+             */
+            selected: {
+
+                set: function (value) {
+                    value = !!value;
+                    if (value === this._state.selected) {
+                        return;
+                    }
+                    this._state.selected = value;
+                    this._renderer.imageDirty();
+                },
+
+                get: function () {
+                    return this._state.selected;
                 }
             },
 
@@ -1531,12 +1588,13 @@
             var ghostMaterial = this.ghostMaterial._state;
             var outlineMaterial = this.outlineMaterial._state;
             var highlightMaterial = this.highlightMaterial._state;
+            var selectedMaterial = this.selectedMaterial._state;
             var vertexBufs = this.geometry._getVertexBufs();
             var geometry = this.geometry._state;
             var modelTransform = this.transform._state;
             var modes = this._getState();
 
-            var result = this._renderer.createObject(this.id, material, ghostMaterial, outlineMaterial, highlightMaterial,  vertexBufs, geometry, modelTransform, modes);
+            var result = this._renderer.createObject(this.id, material, ghostMaterial, outlineMaterial, highlightMaterial, selectedMaterial,  vertexBufs, geometry, modelTransform, modes);
 
             if (this._loading) {
                 this._loading = false;
