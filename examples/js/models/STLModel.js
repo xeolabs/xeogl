@@ -1,11 +1,11 @@
 /**
- An **STLModel** is a {{#crossLink "Model"}}{{/crossLink}} that's loaded from an <a href="https://github.com/KhronosGroup/STL" target = "_other">STL</a> file.
+ An **STLModel** is a {{#crossLink "Model"}}{{/crossLink}} that's loaded from an <a href="https://en.wikipedia.org/wiki/STL_(file_format)">STL</a> file.
 
  <a href="../../examples/#importing_stl_shapes"><img src="../../../assets/images/screenshots/STLModel.png"></img></a>
 
  ## Overview
 
- * An [STL](https://en.wikipedia.org/wiki/STL_(file_format) (“StereoLithography”) file is a triangular representation of a 3-dimensional surface geometry. The surface is
+ * An <a href="https://en.wikipedia.org/wiki/STL_(file_format)">STL</a> (“StereoLithography”) file is a triangular representation of a 3-dimensional surface geometry. The surface is
  tessellated logically into a series of triangles. Each facet is described by a perpendicular
  direction and three points representing the vertices (corners) of the triangle.
  * An STLModel is a container of {{#crossLink "Component"}}Components{{/crossLink}} that loads itself from an STL file.
