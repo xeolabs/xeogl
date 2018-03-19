@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2018-03-15
+ * Built on 2018-03-16
  *
  * MIT License
  * Copyright 2018, Lindsay Kay
@@ -5879,9 +5879,9 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
         // imageDirty = true;
     };
 
-    this.createObject = function (entityId, material, ghostMaterial, outlineMaterial, highlightMaterial, vertexBufs, geometry, modelTransform, modes) {
+    this.createObject = function (entityId, material, ghostMaterial, outlineMaterial, highlightMaterial, selectedMaterial, vertexBufs, geometry, modelTransform, modes) {
         var objectId = ids.addItem({});
-        var object = new xeogl.renderer.Object(objectId, entityId, gl, self, material, ghostMaterial, outlineMaterial, highlightMaterial, vertexBufs, geometry, modelTransform, modes);
+        var object = new xeogl.renderer.Object(objectId, entityId, gl, self, material, ghostMaterial, outlineMaterial, highlightMaterial, selectedMaterial, vertexBufs, geometry, modelTransform, modes);
         if (object.errors) {
             object.destroy();
             ids.removeItem(objectId);
@@ -6093,8 +6093,16 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
         var transparentHighlightVerticesObjects = [];
         var transparentHighlightEdgesObjects = [];
 
+        var opaqueSelectedFillObjects = [];
+        var opaqueSelectedVerticesObjects = [];
+        var opaqueSelectedEdgesObjects = [];
+        var transparentSelectedFillObjects = [];
+        var transparentSelectedVerticesObjects = [];
+        var transparentSelectedEdgesObjects = [];
+
         var outlinedObjects = [];
         var highlightObjects = [];
+        var selectedObjects = [];
         var transparentObjects = [];
         var numTransparentObjects = 0;
 
@@ -6158,6 +6166,7 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
             var numTransparentGhostEdgesObjects = 0;
             var numOutlinedObjects = 0;
             var numHighlightObjects = 0;
+            var numSelectedObjects = 0;
 
             var numOpaqueHighlightFillObjects = 0;
             var numOpaqueHighlightVerticesObjects = 0;
@@ -6165,6 +6174,13 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
             var numTransparentHighlightFillObjects = 0;
             var numTransparentHighlightVerticesObjects = 0;
             var numTransparentHighlightEdgesObjects = 0;
+
+            var numOpaqueSelectedFillObjects = 0;
+            var numOpaqueSelectedVerticesObjects = 0;
+            var numOpaqueSelectedEdgesObjects = 0;
+            var numTransparentSelectedFillObjects = 0;
+            var numTransparentSelectedVerticesObjects = 0;
+            var numTransparentSelectedEdgesObjects = 0;
 
             numTransparentObjects = 0;
 
@@ -6182,39 +6198,7 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                     continue;
                 }
 
-                if (modes.highlight) {
-
-                    var highlightMaterial = object.highlightMaterial;
-
-                    if (highlightMaterial.edges) {
-                        if (highlightMaterial.edgeAlpha < 1.0) {
-                            transparentHighlightEdgesObjects[numTransparentHighlightEdgesObjects++] = object;
-                        } else {
-                            opaqueHighlightEdgesObjects[numOpaqueHighlightEdgesObjects++] = object;
-                        }
-                    }
-
-                    if (highlightMaterial.vertices) {
-                        if (highlightMaterial.vertexAlpha < 1.0) {
-                            transparentHighlightVerticesObjects[numTransparentHighlightVerticesObjects++] = object;
-                        } else {
-                            opaqueHighlightVerticesObjects[numOpaqueHighlightVerticesObjects++] = object;
-                        }
-                    }
-
-                    if (highlightMaterial.fill) {
-                        if (highlightMaterial.fillAlpha < 1.0) {
-                            transparentHighlightFillObjects[numTransparentHighlightFillObjects++] = object;
-                        } else {
-                            opaqueHighlightFillObjects[numOpaqueHighlightFillObjects++] = object;
-                        }
-                    }
-
-                    if (modes.highlight) {
-                        highlightObjects[numHighlightObjects++] = object;
-                    }
-
-                } else if (modes.ghost) {
+                if (modes.ghost) {
 
                     var ghostMaterial = object.ghostMaterial;
 
@@ -6242,9 +6226,76 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                         }
                     }
 
-                }
+                } else {
 
-                if (!modes.ghost) {
+                    if (modes.highlight) {
+
+                        var highlightMaterial = object.highlightMaterial;
+
+                        if (highlightMaterial.edges) {
+                            if (highlightMaterial.edgeAlpha < 1.0) {
+                                transparentHighlightEdgesObjects[numTransparentHighlightEdgesObjects++] = object;
+                            } else {
+                                opaqueHighlightEdgesObjects[numOpaqueHighlightEdgesObjects++] = object;
+                            }
+                        }
+
+                        if (highlightMaterial.vertices) {
+                            if (highlightMaterial.vertexAlpha < 1.0) {
+                                transparentHighlightVerticesObjects[numTransparentHighlightVerticesObjects++] = object;
+                            } else {
+                                opaqueHighlightVerticesObjects[numOpaqueHighlightVerticesObjects++] = object;
+                            }
+                        }
+
+                        if (highlightMaterial.fill) {
+                            if (highlightMaterial.fillAlpha < 1.0) {
+                                transparentHighlightFillObjects[numTransparentHighlightFillObjects++] = object;
+                            } else {
+                                opaqueHighlightFillObjects[numOpaqueHighlightFillObjects++] = object;
+                            }
+                        }
+
+                        if (modes.highlight) {
+                            highlightObjects[numHighlightObjects++] = object;
+                        }
+
+                    }
+
+                    else
+
+                    if (modes.selected) {
+
+                        var selectedMaterial = object.selectedMaterial;
+
+                        if (selectedMaterial.edges) {
+                            if (selectedMaterial.edgeAlpha < 1.0) {
+                                transparentSelectedEdgesObjects[numTransparentSelectedEdgesObjects++] = object;
+                            } else {
+                                opaqueSelectedEdgesObjects[numOpaqueSelectedEdgesObjects++] = object;
+                            }
+                        }
+
+                        if (selectedMaterial.vertices) {
+                            if (selectedMaterial.vertexAlpha < 1.0) {
+                                transparentSelectedVerticesObjects[numTransparentSelectedVerticesObjects++] = object;
+                            } else {
+                                opaqueSelectedVerticesObjects[numOpaqueSelectedVerticesObjects++] = object;
+                            }
+                        }
+
+                        if (selectedMaterial.fill) {
+                            if (selectedMaterial.fillAlpha < 1.0) {
+                                transparentSelectedFillObjects[numTransparentSelectedFillObjects++] = object;
+                            } else {
+                                opaqueSelectedFillObjects[numOpaqueSelectedFillObjects++] = object;
+                            }
+                        }
+
+                        if (modes.selected) {
+                            selectedObjects[numSelectedObjects++] = object;
+                        }
+                    }
 
                     transparent = object.material.alphaMode === 2 /* blend */ || modes.xray || modes.colorize[3] < 1;
 
@@ -6323,7 +6374,7 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                 gl.enable(gl.CULL_FACE);
                 gl.enable(gl.BLEND);
 
-                if ( blendOneMinusSrcAlpha) {
+                if (blendOneMinusSrcAlpha) {
 
                     // Makes glTF windows appear correct
 
@@ -6379,6 +6430,66 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                 // Transparent outlined objects are not supported yet
 
                 gl.disable(gl.BLEND);
+            }
+
+            if (numOpaqueSelectedFillObjects > 0 || numOpaqueSelectedEdgesObjects > 0 || numOpaqueSelectedVerticesObjects > 0) {
+
+                // Render opaque selected objects
+
+                frame.lastProgramId = null;
+                gl.clear(gl.DEPTH_BUFFER_BIT);
+
+                if (numOpaqueSelectedVerticesObjects > 0) {
+                    for (i = 0; i < numOpaqueSelectedVerticesObjects; i++) {
+                        opaqueSelectedVerticesObjects[i].drawSelectedVertices(frame);
+                    }
+                }
+
+                if (numOpaqueSelectedEdgesObjects > 0) {
+                    for (i = 0; i < numOpaqueSelectedEdgesObjects; i++) {
+                        opaqueSelectedEdgesObjects[i].drawSelectedEdges(frame);
+                    }
+                }
+
+                if (numOpaqueSelectedFillObjects > 0) {
+                    for (i = 0; i < numOpaqueSelectedFillObjects; i++) {
+                        opaqueSelectedFillObjects[i].drawSelectedFill(frame);
+                    }
+                }
+            }
+
+            if (numTransparentSelectedFillObjects > 0 || numTransparentSelectedEdgesObjects > 0 || numTransparentSelectedVerticesObjects > 0) {
+
+                // Render transparent selected objects
+
+                frame.lastProgramId = null;
+
+                gl.clear(gl.DEPTH_BUFFER_BIT);
+                gl.enable(gl.CULL_FACE);
+                gl.enable(gl.BLEND);
+                gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+                //          gl.disable(gl.DEPTH_TEST);
+
+                if (numTransparentSelectedVerticesObjects > 0) {
+                    for (i = 0; i < numTransparentSelectedVerticesObjects; i++) {
+                        transparentSelectedVerticesObjects[i].drawSelectedVertices(frame);
+                    }
+                }
+
+                if (numTransparentSelectedEdgesObjects > 0) {
+                    for (i = 0; i < numTransparentSelectedEdgesObjects; i++) {
+                        transparentSelectedEdgesObjects[i].drawSelectedEdges(frame);
+                    }
+                }
+
+                if (numTransparentSelectedFillObjects > 0) {
+                    for (i = 0; i < numTransparentSelectedFillObjects; i++) {
+                        transparentSelectedFillObjects[i].drawSelectedFill(frame);
+                    }
+                }
+
+                gl.disable(gl.BLEND);
+                //        gl.enable(gl.DEPTH_TEST);
             }
 
             if (numOpaqueHighlightFillObjects > 0 || numOpaqueHighlightEdgesObjects > 0 || numOpaqueHighlightVerticesObjects > 0) {
@@ -6727,7 +6838,7 @@ xeogl.renderer.webgl = {
  * @author xeolabs / https://github.com/xeolabs
  */
 
-xeogl.renderer.Object = function (id, entityId, gl, scene, material, ghostMaterial, outlineMaterial, highlightMaterial, vertexBufs, geometry, modelTransform, modes) {
+xeogl.renderer.Object = function (id, entityId, gl, scene, material, ghostMaterial, outlineMaterial, highlightMaterial, selectedMaterial, vertexBufs, geometry, modelTransform, modes) {
 
     this.id = id;
     this.entityId = entityId;
@@ -6738,6 +6849,7 @@ xeogl.renderer.Object = function (id, entityId, gl, scene, material, ghostMateri
     this.ghostMaterial = ghostMaterial;
     this.outlineMaterial = outlineMaterial;
     this.highlightMaterial = highlightMaterial;
+    this.selectedMaterial = selectedMaterial;
     this.vertexBufs = vertexBufs;
     this.geometry = geometry;
     this.modelTransform = modelTransform;
@@ -6797,7 +6909,7 @@ xeogl.renderer.Object.prototype.drawGhostFill = function (frame) {
             return;
         }
     }
-    this._ghostFill.drawObject(frame, this, false); // highlight == false
+    this._ghostFill.drawObject(frame, this, 0); // 0 == ghost
 };
 
 xeogl.renderer.Object.prototype.drawGhostEdges = function (frame) {
@@ -6809,7 +6921,7 @@ xeogl.renderer.Object.prototype.drawGhostEdges = function (frame) {
             return;
         }
     }
-    this._ghostEdges.drawObject(frame, this, false); // highlight == false
+    this._ghostEdges.drawObject(frame, this, 0); // 0 == ghost
 };
 
 xeogl.renderer.Object.prototype.drawGhostVertices = function (frame) {
@@ -6821,7 +6933,7 @@ xeogl.renderer.Object.prototype.drawGhostVertices = function (frame) {
             return;
         }
     }
-    this._ghostVertices.drawObject(frame, this, false); // highlight == false
+    this._ghostVertices.drawObject(frame, this, 0); // 0 == ghost
 };
 
 xeogl.renderer.Object.prototype.drawHighlightFill = function (frame) {
@@ -6833,7 +6945,7 @@ xeogl.renderer.Object.prototype.drawHighlightFill = function (frame) {
             return;
         }
     }
-    this._ghostFill.drawObject(frame, this, true);
+    this._ghostFill.drawObject(frame, this, 1); // 1 == highlight
 };
 
 xeogl.renderer.Object.prototype.drawHighlightEdges = function (frame) {
@@ -6845,7 +6957,7 @@ xeogl.renderer.Object.prototype.drawHighlightEdges = function (frame) {
             return;
         }
     }
-    this._ghostEdges.drawObject(frame, this, true);
+    this._ghostEdges.drawObject(frame, this, 1); // 1 == highlight
 };
 
 xeogl.renderer.Object.prototype.drawHighlightVertices = function (frame) {
@@ -6857,7 +6969,43 @@ xeogl.renderer.Object.prototype.drawHighlightVertices = function (frame) {
             return;
         }
     }
-    this._ghostVertices.drawObject(frame, this, true);
+    this._ghostVertices.drawObject(frame, this, 1); // 1 == highlight
+};
+
+xeogl.renderer.Object.prototype.drawSelectedFill = function (frame) {
+    if (!this._ghostFill) {
+        this._ghostFill = xeogl.renderer.GhostFillRenderer.create(this.gl, [this._getSceneHash(), this.scene.clips.hash, this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
+        if (this._ghostFill.errors) {
+            this.errors = (this.errors || []).concat(this._ghostFill.errors);
+            console.error(this._ghostFill.errors.join("\n"));
+            return;
+        }
+    }
+    this._ghostFill.drawObject(frame, this, 2); // 2 == selected
+};
+
+xeogl.renderer.Object.prototype.drawSelectedEdges = function (frame) {
+    if (!this._ghostEdges) {
+        this._ghostEdges = xeogl.renderer.GhostEdgesRenderer.create(this.gl, [this._getSceneHash(), this.scene.clips.hash, this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
+        if (this._ghostEdges.errors) {
+            this.errors = (this.errors || []).concat(this._ghostEdges.errors);
+            console.error(this._ghostEdges.errors.join("\n"));
+            return;
+        }
+    }
+    this._ghostEdges.drawObject(frame, this, 2); // 2 == selected
+};
+
+xeogl.renderer.Object.prototype.drawSelectedVertices = function (frame) {
+    if (!this._ghostVertices) {
+        this._ghostVertices = xeogl.renderer.GhostVerticesRenderer.create(this.gl, [this._getSceneHash(), this.scene.clips.hash, this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
+        if (this._ghostVertices.errors) {
+            this.errors = (this.errors || []).concat(this._ghostVertices.errors);
+            console.error(this._ghostVertices.errors.join("\n"));
+            return;
+        }
+    }
+    this._ghostVertices.drawObject(frame, this, 2); // 2 == selected
 };
 
 xeogl.renderer.Object.prototype.drawShadow = function (frame, light) {
@@ -12184,17 +12332,15 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         }
     };
 
-    xeogl.renderer.GhostFillRenderer.prototype.drawObject = function (frame, object, highlight) {
+    xeogl.renderer.GhostFillRenderer.prototype.drawObject = function (frame, object, mode) {
 
         if (frame.lastProgramId !== this._program.id) {
             frame.lastProgramId = this._program.id;
             this._bindProgram(frame);
         }
 
-        var maxTextureUnits = xeogl.WEBGL_INFO.MAX_TEXTURE_UNITS;
         var gl = this._gl;
-        var program = this._program;
-        var material = highlight ? object.highlightMaterial :  object.ghostMaterial;
+        var material = mode === 0 ? object.ghostMaterial : (mode === 1 ? object.highlightMaterial : object.selectedMaterial);
         var modelTransform = object.modelTransform;
         var geometry = object.geometry;
 
@@ -12503,7 +12649,9 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             }
         }
 
-        src.push("vColor = vec4((reflectedColor * fillColor.rgb), fillColor.a);");
+        //src.push("vColor = vec4((mix(reflectedColor, fillColor.rgb, 0.7)), fillColor.a);");
+        src.push("vColor = vec4(reflectedColor * fillColor.rgb, fillColor.a);");
+        //src.push("vColor = vec4(reflectedColor + fillColor.rgb, fillColor.a);");
 
         if (cfg.clipping) {
             src.push("vWorldPosition = worldPosition;");
@@ -12712,7 +12860,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         }
     };
 
-    xeogl.renderer.GhostVerticesRenderer.prototype.drawObject = function (frame, object, highlight) {
+    xeogl.renderer.GhostVerticesRenderer.prototype.drawObject = function (frame, object, mode) {
 
         if (frame.lastProgramId !== this._program.id) {
             frame.lastProgramId = this._program.id;
@@ -12720,7 +12868,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         }
 
         var gl = this._gl;
-        var material = highlight ? object.highlightMaterial :  object.ghostMaterial;
+        var material = mode === 0 ? object.ghostMaterial : (mode === 1 ? object.highlightMaterial : object.selectedMaterial);
         var modelTransform = object.modelTransform;
         var geometry = object.geometry;
 
@@ -13144,7 +13292,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         }
     };
 
-    xeogl.renderer.GhostEdgesRenderer.prototype.drawObject = function (frame, object, highlight) {
+    xeogl.renderer.GhostEdgesRenderer.prototype.drawObject = function (frame, object, mode) {
 
         if (frame.lastProgramId !== this._program.id) {
             frame.lastProgramId = this._program.id;
@@ -13152,7 +13300,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
         }
 
         var gl = this._gl;
-        var material = highlight ? object.highlightMaterial :  object.ghostMaterial;
+        var material = mode === 0 ? object.ghostMaterial : (mode === 1 ? object.highlightMaterial : object.selectedMaterial);
         var modelTransform = object.modelTransform;
         var geometry = object.geometry;
 
@@ -15678,7 +15826,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             },
 
             /**
-             * The default {{#crossLink "GhostMaterial"}}GhostMaterial{{/crossLink}} for this Scene.
+             * The Scene's default {{#crossLink "GhostMaterial"}}GhostMaterial{{/crossLink}} for the appearance of {{#crossLink "Entities"}}Entities{{/crossLink}} when they are ghosted.
              *
              * This {{#crossLink "GhostMaterial"}}GhostMaterial{{/crossLink}} has
              * an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.ghostMaterial", with all
@@ -15702,7 +15850,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             },
 
             /**
-             * The default {{#crossLink "HighlightMaterial"}}HighlightMaterial{{/crossLink}} for this Scene.
+             * The Scene's default {{#crossLink "GhostMaterial"}}GhostMaterial{{/crossLink}} for the appearance of {{#crossLink "Entities"}}Entities{{/crossLink}} when they are highlighted.
              *
              * This {{#crossLink "HighlightMaterial"}}HighlightMaterial{{/crossLink}} has
              * an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.highlightMaterial", with all
@@ -15726,7 +15874,31 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             },
 
             /**
-             * The default {{#crossLink "OutlineMaterial"}}OutlineMaterial{{/crossLink}} for this Scene.
+             * The Scene's default {{#crossLink "GhostMaterial"}}GhostMaterial{{/crossLink}} for the appearance of {{#crossLink "Entities"}}Entities{{/crossLink}} when they are selected.
+             *
+             * This {{#crossLink "SelectedMaterial"}}SelectedMaterial{{/crossLink}} has
+             * an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.selectedMaterial", with all
+             * other properties initialised to their default values.
+             *
+             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink "SelectedMaterial"}}SelectedMaterial{{/crossLink}} by default.
+             * @property selectedMaterial
+             * @final
+             * @type SelectedMaterial
+             */
+            selectedMaterial: {
+                get: function () {
+                    return this.components["default.selectedMaterial"] ||
+                        new xeogl.GhostMaterial(this, {
+                            id: "default.selectedMaterial",
+                            preset: "greenSelected",
+                            isDefault: true
+                        });
+                }
+            },
+
+            /**
+             * The Scene's default {{#crossLink "OutlineMaterial"}}OutlineMaterial{{/crossLink}} for the appearance of {{#crossLink "Entities"}}Entities{{/crossLink}} when they are outlined.
              *
              * This {{#crossLink "OutlineMaterial"}}OutlineMaterial{{/crossLink}} has
              * an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.outlineMaterial", with all
@@ -19585,13 +19757,19 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                             }
 
                             /**
-                             * Fired continuously while the pointer is moving while hovering over an {{#crossLink "Entity"}}{{/crossLink}}.
-                             * @event hover
+                             * Fired when the pointer is over a new {{#crossLink "Entity"}}{{/crossLink}}.
+                             * @event hoverEnter
                              * @param hit A pick hit result containing the ID of the Entity - see {{#crossLink "Scene/pick:method"}}{{/crossLink}}.
                              */
-                            self.fire("hover", hit);
+                            self.fire("hoverEnter", hit);
                             lastPickedEntityId = pickedEntityId;
                         }
+                        /**
+                         * Fired continuously while the pointer is moving while hovering over an {{#crossLink "Entity"}}{{/crossLink}}.
+                         * @event hover
+                         * @param hit A pick hit result containing the ID of the Entity - see {{#crossLink "Scene/pick:method"}}{{/crossLink}}.
+                         */
+                        self.fire("hover", hit);
                         if (hit.worldPos) {
                             pickedSurface = true;
 
@@ -32504,7 +32682,7 @@ TODO
         },
 
         "yellowHighlight": {
-            edges: false,
+            edges: true,
             edgeColor: [0.529411792755127, 0.4577854573726654, 0.4100345969200134],
             edgeAlpha: 1.0,
             edgeWidth: 1,
@@ -32514,6 +32692,20 @@ TODO
             vertexSize: 4.0,
             fill: true,
             fillColor: [1.0, 1.0, 0.0],
+            fillAlpha: 0.5
+        },
+
+        "greenSelected": {
+            edges: true,
+            edgeColor: [0.4577854573726654, 0.529411792755127, 0.4100345969200134],
+            edgeAlpha: 1.0,
+            edgeWidth: 1,
+            vertices: false,
+            vertexColor: [0.7, 1.0, 0.7],
+            vertexAlpha: 0.9,
+            vertexSize: 4.0,
+            fill: true,
+            fillColor: [0.0, 1.0, 0.0],
             fillAlpha: 0.5
         },
 
@@ -34099,12 +34291,15 @@ TODO
  @param [cfg.outline=false] {Boolean} Whether an outline is rendered around this entity, as configured by the Entity's {{#crossLink "OutlineMaterial"}}{{/crossLink}} component.
  @param [cfg.outlineMaterial] {String|OutlineMaterial} ID or instance of a {{#crossLink "OutlineMaterial"}}{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/outlineMaterial:property"}}outlineMaterial{{/crossLink}}.
- @param [cfg.ghost=false] {Boolean} Whether this entity is rendered ghosted, as configured by the Entity's {{#crossLink "GhostMaterial"}}{{/crossLink}} component.
+ @param [cfg.ghost=false] {Boolean} Whether this entity is rendered ghosted, as configured by {{#crossLink "Entity/ghostMaterial:property"}}ghostMaterial{{/crossLink}}.
  @param [cfg.ghostMaterial] {String|GhostMaterial} ID or instance of a {{#crossLink "GhostMaterial"}}{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/ghostMaterial:property"}}ghostMaterial{{/crossLink}}.
- @param [cfg.highlight=false] {Boolean} Whether this entity is rendered highlighted, as configured by the Entity's {{#crossLink "GhostMaterial"}}{{/crossLink}} component.
+ @param [cfg.highlight=false] {Boolean} Whether this entity is rendered highlighted, as configured by {{#crossLink "Entity/highlightMaterial:property"}}highlightMaterial{{/crossLink}}.
  @param [cfg.highlightMaterial] {String|GhostMaterial} ID or instance of a {{#crossLink "GhostMaterial"}}{{/crossLink}} to attach to this Entity to define highlighted appearance. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/highlightMaterial:property"}}highlightMaterial{{/crossLink}}.
+ @param [cfg.selected=false] {Boolean} Whether this entity is rendered selected, as configured by {{#crossLink "Entity/selectedMaterial:property"}}selectedMaterial{{/crossLink}}.
+ @param [cfg.selectedMaterial] {String|GhostMaterial} ID or instance of a {{#crossLink "GhostMaterial"}}{{/crossLink}} to attach to this Entity to define selected appearance. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
+ parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/selectedMaterial:property"}}selectedMaterial{{/crossLink}}.
  @param [cfg.layer=0] {Number} Indicates this Entity's rendering priority, typically used for transparency sorting,
  @param [cfg.stationary=false] {Boolean} Disables the effect of {{#crossLink "Lookat"}}view transform{{/crossLink}} translations for this Entity. This is useful for skybox Entities.
  @param [cfg.billboard="none"] {String} Specifies the billboarding behaviour for this Entity. Options are "none", "spherical" and "cylindrical".
@@ -34143,6 +34338,7 @@ TODO
                 outline: null,
                 ghost: false,
                 highlight: false,
+                selected: false,
                 layer: null,
                 billboard: null,
                 hash: ""
@@ -34165,6 +34361,7 @@ TODO
             this.ghostMaterial = cfg.ghostMaterial;
             this.outlineMaterial = cfg.outlineMaterial;
             this.highlightMaterial = cfg.highlightMaterial;
+            this.selectedMaterial = cfg.selectedMaterial;
 
             // Properties
 
@@ -34309,6 +34506,33 @@ TODO
 
                 get: function () {
                     return this._attached.highlightMaterial;
+                }
+            },
+
+            /**
+             * The {{#crossLink "GhostMaterial"}}GhostMaterial{{/crossLink}} attached to this Entity.
+             *
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
+             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/selectedMaterial:property"}}selectedMaterial{{/crossLink}} when set to
+             * a null or undefined value.
+             *
+             * @property selectedMaterial
+             * @type GhostMaterial
+             */
+            selectedMaterial: {
+
+                set: function (value) {
+
+                    this._attach({
+                        name: "selectedMaterial",
+                        type: "xeogl.GhostMaterial",
+                        component: value,
+                        sceneDefault: true
+                    });
+                },
+
+                get: function () {
+                    return this._attached.selectedMaterial;
                 }
             },
 
@@ -34601,6 +34825,31 @@ TODO
 
                 get: function () {
                     return this._state.highlight;
+                }
+            },
+
+            /**
+             Indicates whether this Entity is selected.
+
+             The selected effect is configured via the Entity's {{#crossLink "Entity/selectedMaterial:property"}}selectedMaterial{{/crossLink}}.
+
+             @property selected
+             @default false
+             @type Boolean
+             */
+            selected: {
+
+                set: function (value) {
+                    value = !!value;
+                    if (value === this._state.selected) {
+                        return;
+                    }
+                    this._state.selected = value;
+                    this._renderer.imageDirty();
+                },
+
+                get: function () {
+                    return this._state.selected;
                 }
             },
 
@@ -34930,12 +35179,13 @@ TODO
             var ghostMaterial = this.ghostMaterial._state;
             var outlineMaterial = this.outlineMaterial._state;
             var highlightMaterial = this.highlightMaterial._state;
+            var selectedMaterial = this.selectedMaterial._state;
             var vertexBufs = this.geometry._getVertexBufs();
             var geometry = this.geometry._state;
             var modelTransform = this.transform._state;
             var modes = this._getState();
 
-            var result = this._renderer.createObject(this.id, material, ghostMaterial, outlineMaterial, highlightMaterial,  vertexBufs, geometry, modelTransform, modes);
+            var result = this._renderer.createObject(this.id, material, ghostMaterial, outlineMaterial, highlightMaterial, selectedMaterial,  vertexBufs, geometry, modelTransform, modes);
 
             if (this._loading) {
                 this._loading = false;

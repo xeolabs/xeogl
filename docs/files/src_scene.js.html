@@ -1370,7 +1370,7 @@
             },
 
             /**
-             * The default {{#crossLink &quot;GhostMaterial&quot;}}GhostMaterial{{/crossLink}} for this Scene.
+             * The Scene&#x27;s default {{#crossLink &quot;GhostMaterial&quot;}}GhostMaterial{{/crossLink}} for the appearance of {{#crossLink &quot;Entities&quot;}}Entities{{/crossLink}} when they are ghosted.
              *
              * This {{#crossLink &quot;GhostMaterial&quot;}}GhostMaterial{{/crossLink}} has
              * an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.ghostMaterial&quot;, with all
@@ -1394,7 +1394,7 @@
             },
 
             /**
-             * The default {{#crossLink &quot;HighlightMaterial&quot;}}HighlightMaterial{{/crossLink}} for this Scene.
+             * The Scene&#x27;s default {{#crossLink &quot;GhostMaterial&quot;}}GhostMaterial{{/crossLink}} for the appearance of {{#crossLink &quot;Entities&quot;}}Entities{{/crossLink}} when they are highlighted.
              *
              * This {{#crossLink &quot;HighlightMaterial&quot;}}HighlightMaterial{{/crossLink}} has
              * an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.highlightMaterial&quot;, with all
@@ -1418,7 +1418,31 @@
             },
 
             /**
-             * The default {{#crossLink &quot;OutlineMaterial&quot;}}OutlineMaterial{{/crossLink}} for this Scene.
+             * The Scene&#x27;s default {{#crossLink &quot;GhostMaterial&quot;}}GhostMaterial{{/crossLink}} for the appearance of {{#crossLink &quot;Entities&quot;}}Entities{{/crossLink}} when they are selected.
+             *
+             * This {{#crossLink &quot;SelectedMaterial&quot;}}SelectedMaterial{{/crossLink}} has
+             * an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.selectedMaterial&quot;, with all
+             * other properties initialised to their default values.
+             *
+             * {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink &quot;SelectedMaterial&quot;}}SelectedMaterial{{/crossLink}} by default.
+             * @property selectedMaterial
+             * @final
+             * @type SelectedMaterial
+             */
+            selectedMaterial: {
+                get: function () {
+                    return this.components[&quot;default.selectedMaterial&quot;] ||
+                        new xeogl.GhostMaterial(this, {
+                            id: &quot;default.selectedMaterial&quot;,
+                            preset: &quot;greenSelected&quot;,
+                            isDefault: true
+                        });
+                }
+            },
+
+            /**
+             * The Scene&#x27;s default {{#crossLink &quot;OutlineMaterial&quot;}}OutlineMaterial{{/crossLink}} for the appearance of {{#crossLink &quot;Entities&quot;}}Entities{{/crossLink}} when they are outlined.
              *
              * This {{#crossLink &quot;OutlineMaterial&quot;}}OutlineMaterial{{/crossLink}} has
              * an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.outlineMaterial&quot;, with all

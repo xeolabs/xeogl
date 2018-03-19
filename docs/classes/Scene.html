@@ -900,6 +900,10 @@ leave that enabled:</p>
                                 <a href="#property_scene">scene</a>
 
                             </li>
+                            <li class="index-item property">
+                                <a href="#property_selectedMaterial">selectedMaterial</a>
+
+                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_superTypes">superTypes</a>
 
@@ -983,7 +987,7 @@ leave that enabled:</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_scene.js.html#l1913"><code>src&#x2F;scene.js:1913</code></a>
+        <a href="../files/src_scene.js.html#l1937"><code>src&#x2F;scene.js:1937</code></a>
         </p>
 
 
@@ -1278,7 +1282,7 @@ any subsequent notifications on the event as they are made.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_scene.js.html#l1813"><code>src&#x2F;scene.js:1813</code></a>
+        <a href="../files/src_scene.js.html#l1837"><code>src&#x2F;scene.js:1837</code></a>
         </p>
 
 
@@ -1801,7 +1805,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_scene.js.html#l1427"><code>src&#x2F;scene.js:1427</code></a>
+        <a href="../files/src_scene.js.html#l1451"><code>src&#x2F;scene.js:1451</code></a>
         </p>
 
 
@@ -2108,7 +2112,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_scene.js.html#l1336"><code>src&#x2F;scene.js:1336</code></a>
+                            <a href="../files/src_scene.js.html#l1360"><code>src&#x2F;scene.js:1360</code></a>
                             </p>
                     
                     
@@ -2136,7 +2140,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_scene.js.html#l1282"><code>src&#x2F;scene.js:1282</code></a>
+                            <a href="../files/src_scene.js.html#l1306"><code>src&#x2F;scene.js:1306</code></a>
                             </p>
                     
                     
@@ -2188,7 +2192,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_scene.js.html#l1308"><code>src&#x2F;scene.js:1308</code></a>
+                            <a href="../files/src_scene.js.html#l1332"><code>src&#x2F;scene.js:1332</code></a>
                             </p>
                     
                     
@@ -2241,7 +2245,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_scene.js.html#l1295"><code>src&#x2F;scene.js:1295</code></a>
+                            <a href="../files/src_scene.js.html#l1319"><code>src&#x2F;scene.js:1319</code></a>
                             </p>
                     
                     
@@ -2390,32 +2394,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     </div>
                     <div id="property_gammaOutput" class="property item">
                         <h3 class="name"><code>gammaOutput</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_scene.js.html#l1059"><code>src&#x2F;scene.js:1059</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Whether or not to render pixels with pre-multiplied gama.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> true</p>
-                    
-                    
-                    </div>
-                    <div id="property_gammaOutput" class="property item">
-                        <h3 class="name"><code>gammaOutput</code></h3>
                         <span class="type">Number</span>
                     
                     
@@ -2437,6 +2415,32 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         </div>
                     
                             <p><strong>Default:</strong> 1.0</p>
+                    
+                    
+                    </div>
+                    <div id="property_gammaOutput" class="property item">
+                        <h3 class="name"><code>gammaOutput</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_scene.js.html#l1059"><code>src&#x2F;scene.js:1059</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Whether or not to render pixels with pre-multiplied gama.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> true</p>
                     
                     
                     </div>
@@ -2488,7 +2492,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         </div>
                     
                         <div class="description">
-                            <p>The default <a href="../classes/GhostMaterial.html" class="crosslink">GhostMaterial</a> for this Scene.</p>
+                            <p>The Scene&#39;s default <a href="../classes/GhostMaterial.html" class="crosslink">GhostMaterial</a> for the appearance of Entities when they are ghosted.</p>
                     <p>This <a href="../classes/GhostMaterial.html" class="crosslink">GhostMaterial</a> has
                     an <a href="../classes/Component.html#property_id" class="crosslink">id</a> equal to "default.ghostMaterial", with all
                     other properties initialised to their default values.</p>
@@ -2519,7 +2523,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         </div>
                     
                         <div class="description">
-                            <p>The default HighlightMaterial for this Scene.</p>
+                            <p>The Scene&#39;s default <a href="../classes/GhostMaterial.html" class="crosslink">GhostMaterial</a> for the appearance of Entities when they are highlighted.</p>
                     <p>This HighlightMaterial has
                     an <a href="../classes/Component.html#property_id" class="crosslink">id</a> equal to "default.highlightMaterial", with all
                     other properties initialised to their default values.</p>
@@ -2620,7 +2624,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_scene.js.html#l1269"><code>src&#x2F;scene.js:1269</code></a>
+                            <a href="../files/src_scene.js.html#l1293"><code>src&#x2F;scene.js:1293</code></a>
                             </p>
                     
                     
@@ -2727,14 +2731,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_scene.js.html#l1233"><code>src&#x2F;scene.js:1233</code></a>
+                            <a href="../files/src_scene.js.html#l1257"><code>src&#x2F;scene.js:1257</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The default <a href="../classes/OutlineMaterial.html" class="crosslink">OutlineMaterial</a> for this Scene.</p>
+                            <p>The Scene&#39;s default <a href="../classes/OutlineMaterial.html" class="crosslink">OutlineMaterial</a> for the appearance of Entities when they are outlined.</p>
                     <p>This <a href="../classes/OutlineMaterial.html" class="crosslink">OutlineMaterial</a> has
                     an <a href="../classes/Component.html#property_id" class="crosslink">id</a> equal to "default.outlineMaterial", with all
                     other properties initialised to their default values.</p>
@@ -2792,6 +2796,37 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>The parent <a href="../classes/Scene.html" class="crosslink">Scene</a> that contains this Component.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_selectedMaterial" class="property item">
+                        <h3 class="name"><code>selectedMaterial</code></h3>
+                        <span class="type">SelectedMaterial</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_scene.js.html#l1233"><code>src&#x2F;scene.js:1233</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Scene&#39;s default <a href="../classes/GhostMaterial.html" class="crosslink">GhostMaterial</a> for the appearance of Entities when they are selected.</p>
+                    <p>This SelectedMaterial has
+                    an <a href="../classes/Component.html#property_id" class="crosslink">id</a> equal to "default.selectedMaterial", with all
+                    other properties initialised to their default values.</p>
+                    <p><a href="../classes/Entity.html" class="crosslink">Entities</a> within this Scene are attached to this
+                    SelectedMaterial by default.</p>
                     
                         </div>
                     
@@ -2976,7 +3011,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_scene.js.html#l1256"><code>src&#x2F;scene.js:1256</code></a>
+                            <a href="../files/src_scene.js.html#l1280"><code>src&#x2F;scene.js:1280</code></a>
                             </p>
                     
                     
