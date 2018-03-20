@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="../build/xeogl.js"></script>
+    <script src="js/models/buildableModel.js"></script>
+    <script src="js/models/cityTestModel.js"></script>
+    <script src="js/animation/cameraFollowAnimation.js"></script>
+
+<body>
+
+<div id="info">
+    <h1>using a <a href="../docs/classes/CityTestModel.html" target="_parent">CityTestModel</a> to procedurally generate a simple test model</h1>
+</div>
+
+<script>
+    
+    var model = new xeogl.CityTestModel({
+        size: 1000,
+        density: 10
+    });
+    
+    new xeogl.CameraFollowAnimation({
+        target: model,
+        fit: true,
+        fitFOV: 55
+    });
+    
+    new xeogl.CameraControl();
+
+    var camera = model.scene.camera;
+
+    camera.orbitPitch(10);
+
+    model.scene.on("tick", function () {
+        camera.orbitYaw(0.1);
+    });
+
+</script>
+</body>
+</html>
