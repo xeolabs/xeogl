@@ -9897,7 +9897,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 610,
+            "line": 611,
             "description": "The {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/geometry:property\"}}geometry{{/crossLink}}\n(a simple box) when set to a null or undefined value.\n\nUpdates {{#crossLink \"Entity/boundary\"}}{{/crossLink}},\n{{#crossLink \"Entity/worldObb\"}}{{/crossLink}} and\n{{#crossLink \"Entity/center\"}}{{/crossLink}}",
             "itemtype": "property",
             "name": "geometry",
@@ -9908,7 +9908,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 653,
+            "line": 654,
             "description": "The {{#crossLink \"Material\"}}Material{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/material:property\"}}material{{/crossLink}} when set to\na null or undefined value.",
             "itemtype": "property",
             "name": "material",
@@ -9919,7 +9919,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 680,
+            "line": 681,
             "description": "The {{#crossLink \"EmphasisMaterial\"}}EmphasisMaterial{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/ghostMaterial:property\"}}ghostMaterial{{/crossLink}} when set to\na null or undefined value.",
             "itemtype": "property",
             "name": "ghostMaterial",
@@ -9930,7 +9930,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 707,
+            "line": 708,
             "description": "The {{#crossLink \"EmphasisMaterial\"}}EmphasisMaterial{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/highlightMaterial:property\"}}highlightMaterial{{/crossLink}} when set to\na null or undefined value.",
             "itemtype": "property",
             "name": "highlightMaterial",
@@ -9941,7 +9941,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 734,
+            "line": 735,
             "description": "The {{#crossLink \"EmphasisMaterial\"}}EmphasisMaterial{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/selectedMaterial:property\"}}selectedMaterial{{/crossLink}} when set to\na null or undefined value.",
             "itemtype": "property",
             "name": "selectedMaterial",
@@ -9952,7 +9952,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 761,
+            "line": 762,
             "description": "The {{#crossLink \"OutlineMaterial\"}}OutlineMaterial{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/outlineMaterial:property\"}}outlineMaterial{{/crossLink}} when set to\na null or undefined value.",
             "itemtype": "property",
             "name": "outlineMaterial",
@@ -9963,7 +9963,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 788,
+            "line": 789,
             "description": "The Local-to-World-space (modelling) {{#crossLink \"Transform\"}}{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/transform:property\"}}transform{{/crossLink}}\n(an identity matrix) when set to a null or undefined value.\n\nUpdates {{#crossLink \"Entity/boundary\"}}{{/crossLink}},\n{{#crossLink \"Entity/worldObb\"}}{{/crossLink}} and\n{{#crossLink \"Entity/center\"}}{{/crossLink}}",
             "itemtype": "property",
             "name": "transform",
@@ -9974,7 +9974,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 839,
+            "line": 840,
             "description": "Indicates whether this Entity is visible or not.\n\nThe Entity is only rendered when {{#crossLink \"Entity/visible:property\"}}{{/crossLink}} is true and\n{{#crossLink \"Entity/culled:property\"}}{{/crossLink}} is false.",
             "itemtype": "property",
             "name": "visible",
@@ -9986,7 +9986,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 861,
+            "line": 862,
             "description": "Indicates whether or not this Entity is currently culled from view.\n\nThe Entity is only rendered when {{#crossLink \"Entity/visible:property\"}}{{/crossLink}} is true and\n{{#crossLink \"Entity/culled:property\"}}{{/crossLink}} is false.",
             "itemtype": "property",
             "name": "culled",
@@ -9998,7 +9998,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 883,
+            "line": 884,
             "description": "Indicates whether this entity is pickable or not.\n\nPicking is done via calls to {{#crossLink \"Canvas/pick:method\"}}Canvas#pick{{/crossLink}}.",
             "itemtype": "property",
             "name": "pickable",
@@ -10010,7 +10010,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 910,
+            "line": 911,
             "description": "Indicates whether this Entity is clippable by {{#crossLink \"Clips\"}}{{/crossLink}} components.",
             "itemtype": "property",
             "name": "clippable",
@@ -10022,7 +10022,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 933,
+            "line": 934,
             "description": "Indicates whether this Entity is included in boundary calculations.",
             "itemtype": "property",
             "name": "collidable",
@@ -10034,7 +10034,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 956,
+            "line": 957,
             "description": "Indicates whether this Entity casts shadows.",
             "itemtype": "property",
             "name": "castShadow",
@@ -10046,7 +10046,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 979,
+            "line": 980,
             "description": "Indicates whether this Entity receives shadows.",
             "itemtype": "property",
             "name": "receiveShadow",
@@ -10058,7 +10058,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1003,
+            "line": 1004,
             "description": "Indicates whether this Entity is rendered with an outline.\n\nThe outline effect is configured via the Entity's {{#crossLink \"Entity/outlineMaterial:property\"}}outlineMaterial{{/crossLink}} component.",
             "itemtype": "property",
             "name": "outline",
@@ -10070,7 +10070,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1028,
+            "line": 1029,
             "description": "Indicates whether this Entity is highlighted.\n\nThe highlight effect is configured via the Entity's {{#crossLink \"Entity/highlightMaterial:property\"}}highlightMaterial{{/crossLink}}.",
             "itemtype": "property",
             "name": "highlight",
@@ -10082,7 +10082,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1053,
+            "line": 1054,
             "description": "Indicates whether this Entity is selected.\n\nThe selected effect is configured via the Entity's {{#crossLink \"Entity/selectedMaterial:property\"}}selectedMaterial{{/crossLink}}.",
             "itemtype": "property",
             "name": "selected",
@@ -10094,7 +10094,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1078,
+            "line": 1079,
             "description": "RGBA colorize color, multiplies by the outgoing fragment color and transparency.",
             "itemtype": "property",
             "name": "colorize",
@@ -10106,7 +10106,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1111,
+            "line": 1112,
             "description": "Indicates this Entity's rendering order.\n\nThis can be set on multiple transparent Entities, to make them render in a specific order\nfor correct alpha blending.",
             "itemtype": "property",
             "name": "layer",
@@ -10118,7 +10118,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1139,
+            "line": 1140,
             "description": "Flag which indicates whether this Entity is stationary or not.\n\nSetting this true will disable the effect of {{#crossLink \"Lookat\"}}view transform{{/crossLink}}\ntranslations for this Entity, while still alowing it to rotate. This is useful for skybox Entities.",
             "itemtype": "property",
             "name": "stationary",
@@ -10130,7 +10130,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1165,
+            "line": 1166,
             "description": "Specifies the billboarding behaviour for this Entity.\n\nOptions are:\n\n* **\"none\"** -  **(default)** - No billboarding.\n* **\"spherical\"** - Entity is billboarded to face the viewpoint, rotating both vertically and horizontally.\n* **\"cylindrical\"** - Entity is billboarded to face the viewpoint, rotating only about its vertically\naxis. Use this mode for things like trees on a landscape.",
             "itemtype": "property",
             "name": "billboard",
@@ -10142,7 +10142,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1200,
+            "line": 1201,
             "description": "Flag which indicates if this Entity is rendered with ghosting effect.\n\nThe ghost effect is configured via the Entity's {{#crossLink \"Entity/ghostMaterial:property\"}}ghostMaterial{{/crossLink}}.",
             "itemtype": "property",
             "name": "ghost",
@@ -10154,7 +10154,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1226,
+            "line": 1227,
             "description": "World-space 3D center of this Entity.",
             "itemtype": "property",
             "name": "center",
@@ -10166,7 +10166,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1248,
+            "line": 1249,
             "description": "World-space axis-aligned 3D boundary (AABB) of this Entity.\n\nThe AABB is represented by a six-element Float32Array containing the min/max extents of the\naxis-aligned volume, ie. ````[xmin, ymin,zmin,xmax,ymax, zmax]````.",
             "itemtype": "property",
             "name": "aabb",
@@ -10178,7 +10178,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1281,
+            "line": 1282,
             "description": "World-space oriented 3D boundary (OBB) of this Entity.\n\nThe OBB is represented by a 32-element Float32Array containing the eight vertices of the box,\nwhere each vertex is a homogeneous coordinate having [x,y,z,w] elements.",
             "itemtype": "property",
             "name": "obb",
@@ -10190,7 +10190,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1309,
+            "line": 1310,
             "description": "World-space vertex positions of this Entity.\n\nThese are internally generated on-demand and cached. To free the cached\nvertex World positions when you're done with them, set this property to null or undefined.",
             "itemtype": "property",
             "name": "worpdPositions",
@@ -10202,7 +10202,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1367,
+            "line": 1368,
             "description": "Fired whenever this Entity's World-space boundary changes.\n\nGet the latest boundary from the Entity's {{#crossLink \"Entity/aabb:property\"}}{{/crossLink}}\nand {{#crossLink \"Entity/obb:property\"}}{{/crossLink}} properties.",
             "itemtype": "event",
             "name": "boundary",
@@ -17534,7 +17534,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 372,
+            "line": 373,
             "description": "Adds a {{#crossLink \"Component\"}}Component{{/crossLink}} or subtype to this Model.\n\nThe {{#crossLink \"Component\"}}Component(s){{/crossLink}} may be specified by ID, instance, JSON definition or type.\n\nSee class comment for usage examples.\n\nThe {{#crossLink \"Component\"}}Components{{/crossLink}} must be in the same {{#crossLink \"Scene\"}}{{/crossLink}} as this Model.\n\nFires an {{#crossLink \"Model/added:event\"}}{{/crossLink}} event.",
             "itemtype": "method",
             "name": "add",
@@ -17551,7 +17551,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 523,
+            "line": 525,
             "description": "Fired whenever an individual {{#crossLink \"Component\"}}{{/crossLink}} is added to this {{#crossLink \"Model\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "added",
@@ -17568,7 +17568,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 562,
+            "line": 564,
             "description": "Destroys all {{#crossLink \"Component\"}}Components{{/crossLink}} in this Model.",
             "itemtype": "method",
             "name": "destroyAll",
@@ -17578,7 +17578,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 598,
+            "line": 600,
             "description": "Removes all {{#crossLink \"Component\"}}Components{{/crossLink}} from this Model.",
             "itemtype": "method",
             "name": "removeAll",
@@ -17588,7 +17588,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 610,
+            "line": 612,
             "description": "Removes a {{#crossLink \"Component\"}}{{/crossLink}} from this model, without destroying it.\n\nNote that if the Component is owned by the Model, where it was created like this:\n\n````javascript\nvar myComponent = new xeogl.Rotate(myModel, {... });\n````\n\nthen even after removing it, calling {{#crossLink \"Model/destroyAll:method\"}}destroyAll{{/crossLink}} on the\nModel will still destroy the component.",
             "params": [
                 {
@@ -17602,7 +17602,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 685,
+            "line": 687,
             "description": "Fired whenever an individual {{#crossLink \"Component\"}}{{/crossLink}} is removed from this {{#crossLink \"Model\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "removed",
@@ -17619,7 +17619,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 697,
+            "line": 699,
             "description": "Iterates with a callback over the {{#crossLink \"Component\"}}Components{{/crossLink}} in this Model.",
             "itemtype": "method",
             "name": "iterate",
@@ -17643,7 +17643,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 716,
+            "line": 718,
             "description": "The Local-to-World-space (modelling) {{#crossLink \"Transform\"}}{{/crossLink}} attached to this Model.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this Model.\n\nInternally, the given {{#crossLink \"Transform\"}}{{/crossLink}} will be inserted above each top-most\n{{#crossLink \"Transform\"}}Transform{{/crossLink}} that the Model attaches to\nits {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nFires an {{#crossLink \"Model/transform:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "transform",
@@ -17654,7 +17654,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 734,
+            "line": 736,
             "description": "Fired whenever this Model's {{#crossLink \"Model/transform:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "transform",
@@ -17670,7 +17670,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 757,
+            "line": 759,
             "description": "World-space axis-aligned 3D boundary (AABB) of this Model.\n\nThe AABB is represented by a six-element Float32Array containing the min/max extents of the\naxis-aligned volume, ie. ````[xmin, ymin,zmin,xmax,ymax, zmax]````.",
             "itemtype": "property",
             "name": "aabb",
@@ -17682,7 +17682,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 824,
+            "line": 826,
             "description": "Indicates whether this Model's Entities are visible or not.",
             "itemtype": "property",
             "name": "visible",
@@ -17694,7 +17694,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 851,
+            "line": 853,
             "description": "Flag which indicates if this Model's Entities are rendered with ghost effect.",
             "itemtype": "property",
             "name": "ghost",
@@ -17706,7 +17706,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 878,
+            "line": 880,
             "description": "Flag which indicates if this Model's Entities are rendered with highlight effect.",
             "itemtype": "property",
             "name": "highlight",
@@ -17718,7 +17718,19 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 905,
+            "line": 907,
+            "description": "Flag which indicates if this Model's Entities are rendered as selected.",
+            "itemtype": "property",
+            "name": "selected",
+            "default": "false",
+            "type": "Boolean",
+            "class": "Model",
+            "module": "xeogl",
+            "submodule": "models"
+        },
+        {
+            "file": "src/models/model.js",
+            "line": 934,
             "description": "Flag which indicates if this Model's Entities are rendered with outline effect.",
             "itemtype": "property",
             "name": "outline",
@@ -17730,7 +17742,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 944,
+            "line": 973,
             "description": "Fired whenever this Model's World-space boundary changes.\n\nGet the latest boundary from the Model's {{#crossLink \"Model/aabb:property\"}}{{/crossLink}} property.",
             "itemtype": "event",
             "name": "boundary",
@@ -23220,7 +23232,7 @@
         },
         {
             "message": "Missing item type\nRemoves a {{#crossLink \"Component\"}}{{/crossLink}} from this model, without destroying it.\n\nNote that if the Component is owned by the Model, where it was created like this:\n\n````javascript\nvar myComponent = new xeogl.Rotate(myModel, {... });\n````\n\nthen even after removing it, calling {{#crossLink \"Model/destroyAll:method\"}}destroyAll{{/crossLink}} on the\nModel will still destroy the component.",
-            "line": " src/models/model.js:610"
+            "line": " src/models/model.js:612"
         },
         {
             "message": "Missing item type\nRotate 'eye' about 'look', around the 'up' vector",
