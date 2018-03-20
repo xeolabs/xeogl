@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>examples/js/models/cityTestModel.js - xeogl</title>
+    <title>examples/js/models/testModel.js - xeogl</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link href='https://fonts.googleapis.com/css?family=Exo+2:400,800,900,700,600,500|Roboto:100,300,400,500,700,900'  rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
@@ -56,7 +56,6 @@
                                 <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
-                                <li><a href="../classes/CityTestModel.html">CityTestModel</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/ClipHelper.html">ClipHelper</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
@@ -116,6 +115,7 @@
                                 <li><a href="../classes/STLModel.html">STLModel</a></li>
                                 <li><a href="../classes/Story.html">Story</a></li>
                                 <li><a href="../classes/TeapotGeometry.html">TeapotGeometry</a></li>
+                                <li><a href="../classes/TestModel.html">TestModel</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
                                 <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
                                 <li><a href="../classes/Transform.html">Transform</a></li>
@@ -182,14 +182,14 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1 class="file-heading">File: examples/js/models/cityTestModel.js</h1>
+<h1 class="file-heading">File: examples/js/models/testModel.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
- A **CityTestModel** is a procedurally-generated test {{#crossLink &quot;Model&quot;}}{{/crossLink}} containing {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} that represent city buildings.
+ A **TestModel** is a procedurally-generated test {{#crossLink &quot;Model&quot;}}{{/crossLink}} containing {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} that represent city buildings.
 
- &lt;a href=&quot;../../examples/#models_generation_CityTestModel&quot;&gt;&lt;img src=&quot;http://i.giphy.com/l0HlPJO1AN01Lz27e.gif&quot;&gt;&lt;/img&gt;&lt;/a&gt;
+ &lt;a href=&quot;../../examples/#models_generation_TestModel&quot;&gt;&lt;img src=&quot;http://i.giphy.com/l0HlPJO1AN01Lz27e.gif&quot;&gt;&lt;/img&gt;&lt;/a&gt;
 
  ## Overview
 
@@ -208,29 +208,29 @@
  ## Usage
 
  &#x60;&#x60;&#x60;&#x60;javascript
- var model = new xeogl.CityTestModel({
+ var model = new xeogl.TestModel({
      id: &quot;myModel&quot;,
      size: 5000, // Width of each axis
      density: 4 // How many buildings on each axis
  });
  &#x60;&#x60;&#x60;&#x60;
  
- @class CityTestModel
+ @class TestModel
  @module xeogl
  @submodule models
  @constructor
- @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this CityTestModel in the default
+ @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this TestModel in the default
  {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}},
  generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this CityTestModel.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this TestModel.
  @param [cfg.size] {Number} World-space width of each axis.
  @param [cfg.density] {Number} Number of buildings on each axis.
- @param [cfg.transform] {Number|String|Transform} A Local-to-World-space (modelling) {{#crossLink &quot;Transform&quot;}}{{/crossLink}} to attach to this CityTestModel.
- Must be within the same {{#crossLink &quot;Scene&quot;}}{{/crossLink}} as this CityTestModel. Internally, the given
+ @param [cfg.transform] {Number|String|Transform} A Local-to-World-space (modelling) {{#crossLink &quot;Transform&quot;}}{{/crossLink}} to attach to this TestModel.
+ Must be within the same {{#crossLink &quot;Scene&quot;}}{{/crossLink}} as this TestModel. Internally, the given
  {{#crossLink &quot;Transform&quot;}}{{/crossLink}} will be inserted above each top-most {{#crossLink &quot;Transform&quot;}}Transform{{/crossLink}}
- that the CityTestModel attaches to its {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
+ that the TestModel attaches to its {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
  @param [cfg.splitEntities=true] {Boolean} When true, creates a separate {{#crossLink &quot;Entity&quot;}}{{/crossLink}} for each group of faces that share the same vertex colors. Only works with binary STL.|
  @extends Model
  */
@@ -238,9 +238,9 @@
 
     &quot;use strict&quot;;
 
-    xeogl.CityTestModel = xeogl.BuildableModel.extend({
+    xeogl.TestModel = xeogl.BuildableModel.extend({
 
-        type: &quot;xeogl.CityTestModel&quot;,
+        type: &quot;xeogl.TestModel&quot;,
 
         _init: function (cfg) {
             

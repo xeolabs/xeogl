@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>CityTestModel - xeogl</title>
+    <title>TestModel - xeogl</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link href='https://fonts.googleapis.com/css?family=Exo+2:400,800,900,700,600,500|Roboto:100,300,400,500,700,900'  rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
@@ -56,7 +56,6 @@
                                 <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
-                                <li><a href="../classes/CityTestModel.html">CityTestModel</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/ClipHelper.html">ClipHelper</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
@@ -116,6 +115,7 @@
                                 <li><a href="../classes/STLModel.html">STLModel</a></li>
                                 <li><a href="../classes/Story.html">Story</a></li>
                                 <li><a href="../classes/TeapotGeometry.html">TeapotGeometry</a></li>
+                                <li><a href="../classes/TestModel.html">TestModel</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
                                 <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
                                 <li><a href="../classes/Transform.html">Transform</a></li>
@@ -182,7 +182,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>CityTestModel</h1>
+<h1>TestModel</h1>
 <div class="box meta">
 
         <div class="extends">
@@ -190,7 +190,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/examples_js_models_cityTestModel.js.html#l1"><code>examples&#x2F;js&#x2F;models&#x2F;cityTestModel.js:1</code></a>
+            Defined in: <a href="../files/examples_js_models_testModel.js.html#l1"><code>examples&#x2F;js&#x2F;models&#x2F;testModel.js:1</code></a>
         </div>
 
             Module: <a href="../modules/models.html">models</a><br>
@@ -200,8 +200,8 @@
 
 
 <div class="box intro">
-    <p>A <strong>CityTestModel</strong> is a procedurally-generated test <a href="../classes/Model.html" class="crosslink">Model</a> containing <a href="../classes/Entity.html" class="crosslink">Entities</a> that represent city buildings.</p>
-<p><a href="../../examples/#models_generation_CityTestModel"><img src="http://i.giphy.com/l0HlPJO1AN01Lz27e.gif"></img></a></p>
+    <p>A <strong>TestModel</strong> is a procedurally-generated test <a href="../classes/Model.html" class="crosslink">Model</a> containing <a href="../classes/Entity.html" class="crosslink">Entities</a> that represent city buildings.</p>
+<p><a href="../../examples/#models_generation_TestModel"><img src="http://i.giphy.com/l0HlPJO1AN01Lz27e.gif"></img></a></p>
 <h2 id="overview">Overview</h2>
 <ul>
 <li>Allows you to develop basic capabilities of your app without needing to load any models.</li>
@@ -217,7 +217,7 @@
 <li>TODO</li>
 </ul>
 <h2 id="usage">Usage</h2>
-<pre class="code prettyprint"><code class="lang-javascript">var model = new xeogl.CityTestModel({
+<pre class="code prettyprint"><code class="lang-javascript">var model = new xeogl.TestModel({
     id: "myModel",
     size: 5000, // Width of each axis
     density: 4 // How many buildings on each axis
@@ -228,8 +228,8 @@
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_CityTestModel" class="method item">
-            <h3 class="name"><code>CityTestModel</code></h3>
+        <div id="method_TestModel" class="method item">
+            <h3 class="name"><code>TestModel</code></h3>
         
                 <div class="args">
                     <span class="paren">(</span><ul class="args-list inline commas">
@@ -253,7 +253,7 @@
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/examples_js_models_cityTestModel.js.html#l1"><code>examples&#x2F;js&#x2F;models&#x2F;cityTestModel.js:1</code></a>
+                <a href="../files/examples_js_models_testModel.js.html#l1"><code>examples&#x2F;js&#x2F;models&#x2F;testModel.js:1</code></a>
                 </p>
         
         
@@ -275,7 +275,7 @@
         
         
                             <div class="param-description">
-                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a> - creates this CityTestModel in the default
+                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a> - creates this TestModel in the default
         <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted.</p>
         
                             </div>
@@ -311,7 +311,7 @@
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Optional map of user-defined metadata to attach to this CityTestModel.</p>
+                                            <p>Optional map of user-defined metadata to attach to this TestModel.</p>
         
                                         </div>
         
@@ -344,10 +344,10 @@
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>A Local-to-World-space (modelling) <a href="../classes/Transform.html" class="crosslink">Transform</a> to attach to this CityTestModel.
-        Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this CityTestModel. Internally, the given
+                                            <p>A Local-to-World-space (modelling) <a href="../classes/Transform.html" class="crosslink">Transform</a> to attach to this TestModel.
+        Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this TestModel. Internally, the given
         <a href="../classes/Transform.html" class="crosslink">Transform</a> will be inserted above each top-most <a href="../classes/Transform.html" class="crosslink">Transform</a>
-        that the CityTestModel attaches to its <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
+        that the TestModel attaches to its <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
         
                                         </div>
         
