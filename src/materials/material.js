@@ -9,7 +9,7 @@
  * {{#crossLink "PhongMaterial"}}{{/crossLink}} - material for classic Blinn-Phong shading. This is less demanding of graphics hardware than the physically-based materials.
  * {{#crossLink "LambertMaterial"}}{{/crossLink}} - material for fast, flat-shaded CAD rendering without textures. Use
  this for navigating huge CAD or BIM models interactively. This material gives the best rendering performance and uses the least memory.
- * {{#crossLink "GhostMaterial"}}{{/crossLink}} - defines the appearance of Entities when "ghosted" or "highlighted".
+ * {{#crossLink "EmphasisMaterial"}}{{/crossLink}} - defines the appearance of Entities when "ghosted" or "highlighted".
  * {{#crossLink "OutlineMaterial"}}{{/crossLink}} - defines the appearance of outlines drawn around Entities.
 
  A {{#crossLink "Scene"}}Scene{{/crossLink}} is allowed to contain a mixture of these material types.

@@ -187,7 +187,7 @@
 
  ### Emphasis effects
 
- The Scene's {{#crossLink "Scene/ghostMaterial:property"}}{{/crossLink}} provides the default {{#crossLink "GhostMaterial"}}{{/crossLink}}
+ The Scene's {{#crossLink "Scene/ghostMaterial:property"}}{{/crossLink}} provides the default {{#crossLink "EmphasisMaterial"}}{{/crossLink}}
  for controlling ghost effects:
 
  ````javascript
@@ -196,7 +196,7 @@
  //...
  ````
 
- The Scene's {{#crossLink "Scene/highlightMaterial:property"}}{{/crossLink}} provides the default {{#crossLink "GhostMaterial"}}{{/crossLink}}
+ The Scene's {{#crossLink "Scene/highlightMaterial:property"}}{{/crossLink}} provides the default {{#crossLink "EmphasisMaterial"}}{{/crossLink}}
  for controlling highlight effects:
 
  ````javascript
@@ -1183,22 +1183,22 @@
             },
 
             /**
-             * The Scene's default {{#crossLink "GhostMaterial"}}GhostMaterial{{/crossLink}} for the appearance of {{#crossLink "Entities"}}Entities{{/crossLink}} when they are ghosted.
+             * The Scene's default {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} for the appearance of {{#crossLink "Entities"}}Entities{{/crossLink}} when they are ghosted.
              *
-             * This {{#crossLink "GhostMaterial"}}GhostMaterial{{/crossLink}} has
+             * This {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} has
              * an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.ghostMaterial", with all
              * other properties initialised to their default values.
              *
              * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "GhostMaterial"}}GhostMaterial{{/crossLink}} by default.
+             * {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} by default.
              * @property ghostMaterial
              * @final
-             * @type GhostMaterial
+             * @type EmphasisMaterial
              */
             ghostMaterial: {
                 get: function () {
                     return this.components["default.ghostMaterial"] ||
-                        new xeogl.GhostMaterial(this, {
+                        new xeogl.EmphasisMaterial(this, {
                             id: "default.ghostMaterial",
                             preset: "sepia",
                             isDefault: true
@@ -1207,7 +1207,7 @@
             },
 
             /**
-             * The Scene's default {{#crossLink "GhostMaterial"}}GhostMaterial{{/crossLink}} for the appearance of {{#crossLink "Entities"}}Entities{{/crossLink}} when they are highlighted.
+             * The Scene's default {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} for the appearance of {{#crossLink "Entities"}}Entities{{/crossLink}} when they are highlighted.
              *
              * This {{#crossLink "HighlightMaterial"}}HighlightMaterial{{/crossLink}} has
              * an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.highlightMaterial", with all
@@ -1222,7 +1222,7 @@
             highlightMaterial: {
                 get: function () {
                     return this.components["default.highlightMaterial"] ||
-                        new xeogl.GhostMaterial(this, {
+                        new xeogl.EmphasisMaterial(this, {
                             id: "default.highlightMaterial",
                             preset: "yellowHighlight",
                             isDefault: true
@@ -1231,7 +1231,7 @@
             },
 
             /**
-             * The Scene's default {{#crossLink "GhostMaterial"}}GhostMaterial{{/crossLink}} for the appearance of {{#crossLink "Entities"}}Entities{{/crossLink}} when they are selected.
+             * The Scene's default {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} for the appearance of {{#crossLink "Entities"}}Entities{{/crossLink}} when they are selected.
              *
              * This {{#crossLink "SelectedMaterial"}}SelectedMaterial{{/crossLink}} has
              * an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.selectedMaterial", with all
@@ -1246,7 +1246,7 @@
             selectedMaterial: {
                 get: function () {
                     return this.components["default.selectedMaterial"] ||
-                        new xeogl.GhostMaterial(this, {
+                        new xeogl.EmphasisMaterial(this, {
                             id: "default.selectedMaterial",
                             preset: "greenSelected",
                             isDefault: true
