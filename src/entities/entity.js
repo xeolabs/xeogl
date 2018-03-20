@@ -602,6 +602,7 @@
             this.solid = cfg.solid;
             this.ghost = cfg.ghost;
             this.highlight = cfg.highlight;
+            this.selected = cfg.selected;
             this.colorize = cfg.colorize;
         },
 
