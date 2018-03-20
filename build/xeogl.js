@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2018-03-16
+ * Built on 2018-03-20
  *
  * MIT License
  * Copyright 2018, Lindsay Kay
@@ -7398,7 +7398,7 @@ xeogl.renderer.PhongMaterial = xeogl.renderer.State.extend({_ids: new xeogl.util
 xeogl.renderer.SpecularMaterial = xeogl.renderer.State.extend({_ids: new xeogl.utils.Map({})});
 xeogl.renderer.MetallicMaterial = xeogl.renderer.State.extend({_ids: new xeogl.utils.Map({})});
 xeogl.renderer.VerticesMaterial = xeogl.renderer.State.extend({_ids: new xeogl.utils.Map({})});
-xeogl.renderer.GhostMaterial = xeogl.renderer.State.extend({_ids: new xeogl.utils.Map({})});
+xeogl.renderer.EmphasisMaterial = xeogl.renderer.State.extend({_ids: new xeogl.utils.Map({})});
 xeogl.renderer.OutlineMaterial = xeogl.renderer.State.extend({_ids: new xeogl.utils.Map({})});
 xeogl.renderer.HighlightMaterial = xeogl.renderer.State.extend({_ids: new xeogl.utils.Map({})});
 xeogl.renderer.ViewTransform = xeogl.renderer.State.extend({_ids: new xeogl.utils.Map({})});
@@ -12649,6 +12649,8 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             }
         }
 
+        // TODO: A blending mode for emphasis materials, to select add/multiply/mix
+
         //src.push("vColor = vec4((mix(reflectedColor, fillColor.rgb, 0.7)), fillColor.a);");
         src.push("vColor = vec4(reflectedColor * fillColor.rgb, fillColor.a);");
         //src.push("vColor = vec4(reflectedColor + fillColor.rgb, fillColor.a);");
@@ -14830,7 +14832,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
  ### Emphasis effects
 
- The Scene's {{#crossLink "Scene/ghostMaterial:property"}}{{/crossLink}} provides the default {{#crossLink "GhostMaterial"}}{{/crossLink}}
+ The Scene's {{#crossLink "Scene/ghostMaterial:property"}}{{/crossLink}} provides the default {{#crossLink "EmphasisMaterial"}}{{/crossLink}}
  for controlling ghost effects:
 
  ````javascript
@@ -14839,7 +14841,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  //...
  ````
 
- The Scene's {{#crossLink "Scene/highlightMaterial:property"}}{{/crossLink}} provides the default {{#crossLink "GhostMaterial"}}{{/crossLink}}
+ The Scene's {{#crossLink "Scene/highlightMaterial:property"}}{{/crossLink}} provides the default {{#crossLink "EmphasisMaterial"}}{{/crossLink}}
  for controlling highlight effects:
 
  ````javascript
@@ -15826,22 +15828,22 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             },
 
             /**
-             * The Scene's default {{#crossLink "GhostMaterial"}}GhostMaterial{{/crossLink}} for the appearance of {{#crossLink "Entities"}}Entities{{/crossLink}} when they are ghosted.
+             * The Scene's default {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} for the appearance of {{#crossLink "Entities"}}Entities{{/crossLink}} when they are ghosted.
              *
-             * This {{#crossLink "GhostMaterial"}}GhostMaterial{{/crossLink}} has
+             * This {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} has
              * an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.ghostMaterial", with all
              * other properties initialised to their default values.
              *
              * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
-             * {{#crossLink "GhostMaterial"}}GhostMaterial{{/crossLink}} by default.
+             * {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} by default.
              * @property ghostMaterial
              * @final
-             * @type GhostMaterial
+             * @type EmphasisMaterial
              */
             ghostMaterial: {
                 get: function () {
                     return this.components["default.ghostMaterial"] ||
-                        new xeogl.GhostMaterial(this, {
+                        new xeogl.EmphasisMaterial(this, {
                             id: "default.ghostMaterial",
                             preset: "sepia",
                             isDefault: true
@@ -15850,7 +15852,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             },
 
             /**
-             * The Scene's default {{#crossLink "GhostMaterial"}}GhostMaterial{{/crossLink}} for the appearance of {{#crossLink "Entities"}}Entities{{/crossLink}} when they are highlighted.
+             * The Scene's default {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} for the appearance of {{#crossLink "Entities"}}Entities{{/crossLink}} when they are highlighted.
              *
              * This {{#crossLink "HighlightMaterial"}}HighlightMaterial{{/crossLink}} has
              * an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.highlightMaterial", with all
@@ -15865,7 +15867,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             highlightMaterial: {
                 get: function () {
                     return this.components["default.highlightMaterial"] ||
-                        new xeogl.GhostMaterial(this, {
+                        new xeogl.EmphasisMaterial(this, {
                             id: "default.highlightMaterial",
                             preset: "yellowHighlight",
                             isDefault: true
@@ -15874,7 +15876,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             },
 
             /**
-             * The Scene's default {{#crossLink "GhostMaterial"}}GhostMaterial{{/crossLink}} for the appearance of {{#crossLink "Entities"}}Entities{{/crossLink}} when they are selected.
+             * The Scene's default {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} for the appearance of {{#crossLink "Entities"}}Entities{{/crossLink}} when they are selected.
              *
              * This {{#crossLink "SelectedMaterial"}}SelectedMaterial{{/crossLink}} has
              * an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.selectedMaterial", with all
@@ -15889,7 +15891,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             selectedMaterial: {
                 get: function () {
                     return this.components["default.selectedMaterial"] ||
-                        new xeogl.GhostMaterial(this, {
+                        new xeogl.EmphasisMaterial(this, {
                             id: "default.selectedMaterial",
                             preset: "greenSelected",
                             isDefault: true
@@ -28088,7 +28090,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  * {{#crossLink "PhongMaterial"}}{{/crossLink}} - material for classic Blinn-Phong shading. This is less demanding of graphics hardware than the physically-based materials.
  * {{#crossLink "LambertMaterial"}}{{/crossLink}} - material for fast, flat-shaded CAD rendering without textures. Use
  this for navigating huge CAD or BIM models interactively. This material gives the best rendering performance and uses the least memory.
- * {{#crossLink "GhostMaterial"}}{{/crossLink}} - defines the appearance of Entities when "ghosted" or "highlighted".
+ * {{#crossLink "EmphasisMaterial"}}{{/crossLink}} - defines the appearance of Entities when "ghosted" or "highlighted".
  * {{#crossLink "OutlineMaterial"}}{{/crossLink}} - defines the appearance of outlines drawn around Entities.
 
  A {{#crossLink "Scene"}}Scene{{/crossLink}} is allowed to contain a mixture of these material types.
@@ -31888,8 +31890,8 @@ TODO
     });
 
 })();;/**
- A **GhostMaterial** is a {{#crossLink "Material"}}{{/crossLink}} that defines the appearance of attached
- {{#crossLink "Entity"}}Entities{{/crossLink}} when they are highlighted (emphasized) or ghosted (de-emphasized).
+ An **EmphasisMaterial** is a {{#crossLink "Material"}}{{/crossLink}} that defines the appearance of attached
+ {{#crossLink "Entity"}}Entities{{/crossLink}} when they are highlighted, selected or ghosted.
 
  ## Examples
 
@@ -31900,11 +31902,11 @@ TODO
  ## Overview
 
  * Ghost an {{#crossLink "Entity"}}{{/crossLink}} by setting its {{#crossLink "Entity/ghost:property"}}{{/crossLink}} property ````true````.
- * When ghosted, an Entity's appearance is controlled by its GhostMaterial.
- * A GhostMaterial provides several preset configurations that you can set it to. Select a preset by setting {{#crossLink "GhostMaterial/preset:property"}}{{/crossLink}} to the preset's ID. A map of available presets is provided in {{#crossLink "GhostMaterial/presets:property"}}xeogl.GhostMaterial.presets{{/crossLink}}.
- * By default, an Entity has the {{#crossLink "Scene"}}{{/crossLink}}'s global GhostMaterial, but you can give each Entity its own GhostMaterial when you want to customize the effect per-Entity.
- * Ghost all Entities in a {{#crossLink "Model"}}{{/crossLink}} by setting the Model's {{#crossLink "Model/ghost:property"}}{{/crossLink}} property ````true````. Note that all Entities in a Model have the Scene's global GhostMaterial by default.
- * Modify the Scene's global GhostMaterial to customize it.
+ * When ghosted, an Entity's appearance is controlled by its EmphasisMaterial.
+ * An EmphasisMaterial provides several preset configurations that you can set it to. Select a preset by setting {{#crossLink "EmphasisMaterial/preset:property"}}{{/crossLink}} to the preset's ID. A map of available presets is provided in {{#crossLink "EmphasisMaterial/presets:property"}}xeogl.EmphasisMaterial.presets{{/crossLink}}.
+ * By default, an Entity uses the {{#crossLink "Scene"}}{{/crossLink}}'s global EmphasisMaterials, but you can give each Entity its own EmphasisMaterial when you want to customize the effect per-Entity.
+ * Ghost all Entities in a {{#crossLink "Model"}}{{/crossLink}} by setting the Model's {{#crossLink "Model/ghost:property"}}{{/crossLink}} property ````true````. Note that all Entities in a Model have the Scene's global EmphasisMaterial by default.
+ * Modify the Scene's global EmphasisMaterial to customize it.
 
  ## Usage
 
@@ -31913,7 +31915,7 @@ TODO
 
  ### Ghosting
 
- In the usage example below, we'll create an Entity with a ghost effect applied to it. The Entity gets its own GhostMaterial, and
+ In the usage example below, we'll create an Entity with a ghost effect applied to it. The Entity gets its own EmphasisMaterial for ghosting, and
  has its {{#crossLink "Entity/ghost:property"}}{{/crossLink}} property set ````true```` to activate the effect.
 
  <a href="../../examples/#effects_ghost"><img src="../../assets/images/screenshots/HighlightMaterial/teapot.png"></img></a>
@@ -31926,7 +31928,7 @@ TODO
     material: new xeogl.PhongMaterial({
         diffuse: [0.2, 0.2, 1.0]
     }),
-    ghostMaterial: new xeogl.GhostMaterial({
+    ghostMaterial: new xeogl.EmphasisMaterial({
         edges: true,
         edgeColor: [0.2, 1.0, 0.2],
         edgeAlpha: 1.0,
@@ -31944,12 +31946,12 @@ TODO
  ````
 
  Note the **ghostEdgeThreshold** configuration on the {{#crossLink "Geometry"}}{{/crossLink}} we've created for our
- Entity. Our GhostMaterial is configured to draw a wireframe representation of the Geometry, which will have inner edges (ie. edges between
+ Entity. Our EmphasisMaterial is configured to draw a wireframe representation of the Geometry, which will have inner edges (ie. edges between
  adjacent co-planar triangles) removed for visual clarity. The ````ghostEdgeThreshold```` configuration indicates
  that, for this particular Geometry, an inner edge is one where the angle between the surface normals of adjacent triangles is not
  greater than ````5```` degrees. That's set to ````2```` by default, but we can override it to tweak the effect as needed for particular Geometries.
 
- Here's the example again, this time using the Scene's global GhostMaterial by default. We'll also modify that GhostMaterial
+ Here's the example again, this time using the Scene's global EmphasisMaterial by default. We'll also modify that EmphasisMaterial
  to customize the effect.
 
  ````javascript
@@ -31978,10 +31980,11 @@ TODO
  ghostMaterial.fillAlpha = 0.7;
  ````
 
- In the next example, we'll use a GhostMaterial in conjunction with a {{#crossLink "HighlightMaterial"}}{{/crossLink}}, to emphasise a couple of objects within
- a gearbox {{#crossLink "Model"}}{{/crossLink}}. We'll load the Model from glTF, then ghost all of its Entities except for two gears, which we'll highlight instead. The ghosted
- Entities have the Scene's global GhostMaterial, which we'll modify. The  highlighted Entities also have the Scene's global HighlightMaterial, which we'll modify as well.
+ ### Highlighting
 
+ In the next example, we'll use a ghosting in conjunction with highlighting, to emphasise a couple of objects within
+ a gearbox {{#crossLink "Model"}}{{/crossLink}}. We'll load the Model from glTF, then ghost all of its Entities except for two gears, which we'll highlight instead. The ghosted
+ Entities have the Scene's global ghosting EmphasisMaterial, which we'll modify. The  highlighted Entities also have the Scene's global highlighting EmphasisMaterial, which we'll modify as well.
 
  <a href="../../examples/#effects_demo_gearbox"><img src="../../assets/images/screenshots/HighlightMaterial/gearbox.png"></img></a>
 
@@ -32024,11 +32027,11 @@ TODO
 
  ## Presets
 
- For convenience, a GhostMaterial provides several preset configurations that you can set it to, which are provided in
- {{#crossLink "GhostMaterial/presets:property"}}xeogl.GhostMaterial.presets{{/crossLink}}:
+ For convenience, an EmphasisMaterial provides several preset configurations that you can set it to, which are provided in
+ {{#crossLink "EmphasisMaterial/presets:property"}}xeogl.EmphasisMaterial.presets{{/crossLink}}:
 
  ````javascript
- var presets = xeogl.GhostMaterial.presets;
+ var presets = xeogl.EmphasisMaterial.presets;
  ````
 
  The presets look something like this:
@@ -32067,13 +32070,13 @@ TODO
  }
  ````
 
- Let's switch the Scene's global default  GhostMaterial over to the "sepia" preset used in <a href="/examples/#effects_demo_adam">Example 4: Ghost effect for CAD</a>.
+ Let's switch the Scene's global default  EmphasisMaterial over to the "sepia" preset used in <a href="/examples/#effects_demo_adam">Example 4: Ghost effect for CAD</a>.
 
  ````javascript
  scene.ghostMaterial.preset = "sepia";
  ````
 
- You can also just create a GhostMaterial from a preset:
+ You can also just create an EmphasisMaterial from a preset:
 
  ````javascript
  var entity = new xeogl.Entity({
@@ -32083,25 +32086,25 @@ TODO
     material: new xeogl.PhongMaterial({
         diffuse: [0.2, 0.2, 1.0]
     }),
-    ghostMaterial: new xeogl.GhostMaterial({
+    ghostMaterial: new xeogl.EmphasisMaterial({
         preset: "sepia"
     });
     ghost: true
  });
  ````
 
- Note that applying a preset just sets the GhostMaterial's property values, which you are then free to modify afterwards.
+ Note that applying a preset just sets the EmphasisMaterial's property values, which you are then free to modify afterwards.
 
- @class GhostMaterial
+ @class EmphasisMaterial
  @module xeogl
  @submodule materials
  @constructor
  @extends Material
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this GhostMaterial within the
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this EmphasisMaterial within the
  default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted
- @param [cfg] {*} The GhostMaterial configuration
+ @param [cfg] {*} The EmphasisMaterial configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
- @param [cfg.meta=null] {String:Object} Metadata to attach to this GhostMaterial.
+ @param [cfg.meta=null] {String:Object} Metadata to attach to this EmphasisMaterial.
 
  @param [cfg.edges=true] {Boolean} Indicates whether or not ghost edges are visible.
  @param [cfg.edgeColor=[0.2,0.2,0.2]] {Array of Number}  RGB color of ghost edges.
@@ -32114,26 +32117,26 @@ TODO
  @param [cfg.vertexSize=4.0] {Number} Pixel size of ghost vertices.
 
  @param [cfg.fill=true] {Boolean} Indicates whether or not ghost surfaces are filled with color.
- @param [cfg.fillColor=[0.4,0.4,0.4]] {Array of Number} GhostMaterial fill color.
+ @param [cfg.fillColor=[0.4,0.4,0.4]] {Array of Number} EmphasisMaterial fill color.
  @param [cfg.fillAlpha=0.2] {Number}  Transparency of filled ghost faces. A value of 0.0 indicates fully transparent, 1.0 is fully opaque.
 
- @param [cfg.preset] {String} Selects a preset GhostMaterial configuration - see {{#crossLink "GhostMaterial/preset:method"}}preset(){{/crossLink}}.
+ @param [cfg.preset] {String} Selects a preset EmphasisMaterial configuration - see {{#crossLink "EmphasisMaterial/preset:method"}}preset(){{/crossLink}}.
  */
 (function () {
 
     "use strict";
 
-    xeogl.GhostMaterial = xeogl.Material.extend({
+    xeogl.EmphasisMaterial = xeogl.Material.extend({
 
-        type: "xeogl.GhostMaterial",
+        type: "xeogl.EmphasisMaterial",
 
         _init: function (cfg) {
 
             this._super(cfg);
 
-            this._state = new xeogl.renderer.GhostMaterial({
+            this._state = new xeogl.renderer.EmphasisMaterial({
 
-                type: "GhostMaterial",
+                type: "EmphasisMaterial",
 
                 edges: null,
                 edgeColor: null,
@@ -32488,7 +32491,7 @@ TODO
 
 
             /**
-             Selects a preset GhostMaterial configuration.
+             Selects a preset EmphasisMaterial configuration.
 
              Available presets are:
 
@@ -32512,9 +32515,9 @@ TODO
                     if (this._preset === value) {
                         return;
                     }
-                    var preset = xeogl.GhostMaterial.presets[value];
+                    var preset = xeogl.EmphasisMaterial.presets[value];
                     if (!preset) {
-                        this.error("unsupported preset: '" + value + "' - supported values are " + Object.keys(xeogl.GhostMaterial.presets).join(", "));
+                        this.error("unsupported preset: '" + value + "' - supported values are " + Object.keys(xeogl.EmphasisMaterial.presets).join(", "));
                         return;
                     }
                     this.edges = preset.edges;
@@ -32548,13 +32551,13 @@ TODO
     });
 
     /**
-     Available GhostMaterial presets.
+     Available EmphasisMaterial presets.
 
      @property presets
      @type {Object}
      @static
      */
-    xeogl.GhostMaterial.presets = {
+    xeogl.EmphasisMaterial.presets = {
 
         "default": {
             edges: true,
@@ -32723,6 +32726,8 @@ TODO
             fillAlpha: 0.9
         }
     };
+
+    xeogl.GhostMaterial = xeogl.EmphasisMaterial; // Backward compatibility
 
 })();;/**
  An **OutlineMaterial** is a {{#crossLink "Material"}}{{/crossLink}} that's applied to {{#crossLink "Entity"}}Entities{{/crossLink}}
@@ -33783,8 +33788,8 @@ TODO
 
  * An Entity represents a WebGL draw call.
  * Each Entity has six components: {{#crossLink "Geometry"}}{{/crossLink}}, {{#crossLink "Material"}}{{/crossLink}},
- {{#crossLink "Transform"}}{{/crossLink}}, a {{#crossLink "GhostMaterial"}}{{/crossLink}} for ghosting, a {{#crossLink "GhostMaterial"}}{{/crossLink}} for highlighting,
- and a {{#crossLink "OutlineMaterial"}}{{/crossLink}} for outlining.
+ {{#crossLink "Transform"}}{{/crossLink}}, an {{#crossLink "EmphasisMaterial"}}{{/crossLink}} for ghosting, an {{#crossLink "EmphasisMaterial"}}{{/crossLink}} for highlighting,
+ and an {{#crossLink "OutlineMaterial"}}{{/crossLink}} for outlining.
  * By default, Entities in the same Scene share the same "global" flyweight instances of those components amongst themselves. The default
  component instances are provided by the {{#crossLink "Scene"}}{{/crossLink}}'s {{#crossLink "Scene/geometry:property"}}{{/crossLink}},
  {{#crossLink "Scene/material:property"}}{{/crossLink}}, {{#crossLink "Scene/transform:property"}}{{/crossLink}},
@@ -34015,14 +34020,14 @@ TODO
  ### Ghosting
 
  Ghost an Entity by setting its {{#crossLink "Entity/ghost:property"}}{{/crossLink}} property true. The Entity's
- {{#crossLink "GhostMaterial"}}{{/crossLink}} then controls its appearance while ghosted.
+ {{#crossLink "EmphasisMaterial"}}{{/crossLink}} then controls its appearance while ghosted.
 
- When we don't provide it with a GhostMaterial, it will have the Scene's {{#crossLink "Scene/ghostMaterial:property"}}{{/crossLink}}
+ When we don't provide it with a EmphasisMaterial, it will have the Scene's {{#crossLink "Scene/ghostMaterial:property"}}{{/crossLink}}
  by default.
 
- In the example below, we'll create a ghosted Entity with its own GhostMaterial.
+ In the example below, we'll create a ghosted Entity with its own EmphasisMaterial.
 
- <a href="../../examples/#effects_ghost"><img src="../../assets/images/screenshots/GhostMaterial/teapot.png"></img></a>
+ <a href="../../examples/#effects_ghost"><img src="../../assets/images/screenshots/EmphasisMaterial/teapot.png"></img></a>
 
  ````javascript
  var entity = new xeogl.Entity({
@@ -34030,7 +34035,7 @@ TODO
     material: new xeogl.PhongMaterial({
         diffuse: [0.2, 0.2, 1.0]
     }),
-    ghostMaterial: new xeogl.GhostMaterial({
+    ghostMaterial: new xeogl.EmphasisMaterial({
         edges: true,
         edgeColor: [0.2, 1.0, 0.2],
         edgeAlpha: 1.0,
@@ -34054,14 +34059,14 @@ TODO
  ### Highlighting
 
  Highlight an Entity by setting its {{#crossLink "Entity/highlight:property"}}{{/crossLink}} property true. The Entity's
- highlighting {{#crossLink "GhostMaterial"}}{{/crossLink}} then controls its appearance while highlighted.
+ highlighting {{#crossLink "EmphasisMaterial"}}{{/crossLink}} then controls its appearance while highlighted.
 
- When we don't provide it with a GhostMaterial for highlighting, it will have the Scene's {{#crossLink "Scene/highlightMaterial:property"}}{{/crossLink}}
+ When we don't provide it with a EmphasisMaterial for highlighting, it will have the Scene's {{#crossLink "Scene/highlightMaterial:property"}}{{/crossLink}}
  by default.
 
- In the example below, we'll create a highlighted Entity with its own GhostMaterial.
+ In the example below, we'll create a highlighted Entity with its own EmphasisMaterial.
 
- <a href="../../examples/#effects_highlight"><img src="../../assets/images/screenshots/GhostMaterial/teapotHighlighted.png"></img></a>
+ <a href="../../examples/#effects_highlight"><img src="../../assets/images/screenshots/EmphasisMaterial/teapotHighlighted.png"></img></a>
 
  ````javascript
  var entity = new xeogl.Entity({
@@ -34069,7 +34074,7 @@ TODO
     material: new xeogl.PhongMaterial({
         diffuse: [0.2, 0.2, 1.0]
     }),
-    highlightMaterial: new xeogl.GhostMaterial({
+    highlightMaterial: new xeogl.EmphasisMaterial({
         color: [1.0, 1.0, 0.0],
         alpha: 0.6
     }),
@@ -34289,16 +34294,16 @@ TODO
  @param [cfg.castShadow=true] {Boolean} Whether this Entity casts shadows.
  @param [cfg.receiveShadow=true] {Boolean} Whether this Entity receives shadows.
  @param [cfg.outline=false] {Boolean} Whether an outline is rendered around this entity, as configured by the Entity's {{#crossLink "OutlineMaterial"}}{{/crossLink}} component.
- @param [cfg.outlineMaterial] {String|OutlineMaterial} ID or instance of a {{#crossLink "OutlineMaterial"}}{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
+ @param [cfg.outlineMaterial] {String|OutlineMaterial} ID or instance of an {{#crossLink "OutlineMaterial"}}{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/outlineMaterial:property"}}outlineMaterial{{/crossLink}}.
  @param [cfg.ghost=false] {Boolean} Whether this entity is rendered ghosted, as configured by {{#crossLink "Entity/ghostMaterial:property"}}ghostMaterial{{/crossLink}}.
- @param [cfg.ghostMaterial] {String|GhostMaterial} ID or instance of a {{#crossLink "GhostMaterial"}}{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
+ @param [cfg.ghostMaterial] {String|EmphasisMaterial} ID or instance of an {{#crossLink "EmphasisMaterial"}}{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/ghostMaterial:property"}}ghostMaterial{{/crossLink}}.
  @param [cfg.highlight=false] {Boolean} Whether this entity is rendered highlighted, as configured by {{#crossLink "Entity/highlightMaterial:property"}}highlightMaterial{{/crossLink}}.
- @param [cfg.highlightMaterial] {String|GhostMaterial} ID or instance of a {{#crossLink "GhostMaterial"}}{{/crossLink}} to attach to this Entity to define highlighted appearance. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
+ @param [cfg.highlightMaterial] {String|EmphasisMaterial} ID or instance of an {{#crossLink "EmphasisMaterial"}}{{/crossLink}} to attach to this Entity to define highlighted appearance. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/highlightMaterial:property"}}highlightMaterial{{/crossLink}}.
  @param [cfg.selected=false] {Boolean} Whether this entity is rendered selected, as configured by {{#crossLink "Entity/selectedMaterial:property"}}selectedMaterial{{/crossLink}}.
- @param [cfg.selectedMaterial] {String|GhostMaterial} ID or instance of a {{#crossLink "GhostMaterial"}}{{/crossLink}} to attach to this Entity to define selected appearance. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
+ @param [cfg.selectedMaterial] {String|EmphasisMaterial} ID or instance of an {{#crossLink "EmphasisMaterial"}}{{/crossLink}} to attach to this Entity to define selected appearance. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/selectedMaterial:property"}}selectedMaterial{{/crossLink}}.
  @param [cfg.layer=0] {Number} Indicates this Entity's rendering priority, typically used for transparency sorting,
  @param [cfg.stationary=false] {Boolean} Disables the effect of {{#crossLink "Lookat"}}view transform{{/crossLink}} translations for this Entity. This is useful for skybox Entities.
@@ -34456,14 +34461,14 @@ TODO
             },
 
             /**
-             * The {{#crossLink "GhostMaterial"}}GhostMaterial{{/crossLink}} attached to this Entity.
+             * The {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} attached to this Entity.
              *
              * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
              * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/ghostMaterial:property"}}ghostMaterial{{/crossLink}} when set to
              * a null or undefined value.
              *
              * @property ghostMaterial
-             * @type GhostMaterial
+             * @type EmphasisMaterial
              */
             ghostMaterial: {
 
@@ -34471,7 +34476,7 @@ TODO
 
                     this._attach({
                         name: "ghostMaterial",
-                        type: "xeogl.GhostMaterial",
+                        type: "xeogl.EmphasisMaterial",
                         component: value,
                         sceneDefault: true
                     });
@@ -34483,14 +34488,14 @@ TODO
             },
 
             /**
-             * The {{#crossLink "GhostMaterial"}}GhostMaterial{{/crossLink}} attached to this Entity.
+             * The {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} attached to this Entity.
              *
              * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
              * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/highlightMaterial:property"}}highlightMaterial{{/crossLink}} when set to
              * a null or undefined value.
              *
              * @property highlightMaterial
-             * @type GhostMaterial
+             * @type EmphasisMaterial
              */
             highlightMaterial: {
 
@@ -34498,7 +34503,7 @@ TODO
 
                     this._attach({
                         name: "highlightMaterial",
-                        type: "xeogl.GhostMaterial",
+                        type: "xeogl.EmphasisMaterial",
                         component: value,
                         sceneDefault: true
                     });
@@ -34510,14 +34515,14 @@ TODO
             },
 
             /**
-             * The {{#crossLink "GhostMaterial"}}GhostMaterial{{/crossLink}} attached to this Entity.
+             * The {{#crossLink "EmphasisMaterial"}}EmphasisMaterial{{/crossLink}} attached to this Entity.
              *
              * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
              * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/selectedMaterial:property"}}selectedMaterial{{/crossLink}} when set to
              * a null or undefined value.
              *
              * @property selectedMaterial
-             * @type GhostMaterial
+             * @type EmphasisMaterial
              */
             selectedMaterial: {
 
@@ -34525,7 +34530,7 @@ TODO
 
                     this._attach({
                         name: "selectedMaterial",
-                        type: "xeogl.GhostMaterial",
+                        type: "xeogl.EmphasisMaterial",
                         component: value,
                         sceneDefault: true
                     });

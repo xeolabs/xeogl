@@ -65,12 +65,12 @@
                                 <li><a href="../classes/Curve.html">Curve</a></li>
                                 <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
+                                <li><a href="../classes/EmphasisMaterial.html">EmphasisMaterial</a></li>
                                 <li><a href="../classes/Entity.html">Entity</a></li>
                                 <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
                                 <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
-                                <li><a href="../classes/GhostMaterial.html">GhostMaterial</a></li>
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
@@ -204,8 +204,8 @@
 <ul>
 <li>An Entity represents a WebGL draw call.</li>
 <li>Each Entity has six components: <a href="../classes/Geometry.html" class="crosslink">Geometry</a>, <a href="../classes/Material.html" class="crosslink">Material</a>,
-<a href="../classes/Transform.html" class="crosslink">Transform</a>, a <a href="../classes/GhostMaterial.html" class="crosslink">GhostMaterial</a> for ghosting, a <a href="../classes/GhostMaterial.html" class="crosslink">GhostMaterial</a> for highlighting,
-and a <a href="../classes/OutlineMaterial.html" class="crosslink">OutlineMaterial</a> for outlining.</li>
+<a href="../classes/Transform.html" class="crosslink">Transform</a>, an <a href="../classes/EmphasisMaterial.html" class="crosslink">EmphasisMaterial</a> for ghosting, an <a href="../classes/EmphasisMaterial.html" class="crosslink">EmphasisMaterial</a> for highlighting,
+and an <a href="../classes/OutlineMaterial.html" class="crosslink">OutlineMaterial</a> for outlining.</li>
 <li>By default, Entities in the same Scene share the same "global" flyweight instances of those components amongst themselves. The default
 component instances are provided by the <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s <a href="../classes/Scene.html#property_geometry" class="crosslink">geometry</a>,
 <a href="../classes/Scene.html#property_material" class="crosslink">material</a>, <a href="../classes/Scene.html#property_transform" class="crosslink">transform</a>,
@@ -369,17 +369,17 @@ by default (which is the identity transform unless modified).</p>
 </code></pre>
 <h3 id="ghosting">Ghosting</h3>
 <p>Ghost an Entity by setting its <a href="../classes/Entity.html#property_ghost" class="crosslink">ghost</a> property true. The Entity&#39;s
-<a href="../classes/GhostMaterial.html" class="crosslink">GhostMaterial</a> then controls its appearance while ghosted.</p>
-<p>When we don&#39;t provide it with a GhostMaterial, it will have the Scene&#39;s <a href="../classes/Scene.html#property_ghostMaterial" class="crosslink">ghostMaterial</a>
+<a href="../classes/EmphasisMaterial.html" class="crosslink">EmphasisMaterial</a> then controls its appearance while ghosted.</p>
+<p>When we don&#39;t provide it with a EmphasisMaterial, it will have the Scene&#39;s <a href="../classes/Scene.html#property_ghostMaterial" class="crosslink">ghostMaterial</a>
 by default.</p>
-<p>In the example below, we&#39;ll create a ghosted Entity with its own GhostMaterial.</p>
-<p><a href="../../examples/#effects_ghost"><img src="../../assets/images/screenshots/GhostMaterial/teapot.png"></img></a></p>
+<p>In the example below, we&#39;ll create a ghosted Entity with its own EmphasisMaterial.</p>
+<p><a href="../../examples/#effects_ghost"><img src="../../assets/images/screenshots/EmphasisMaterial/teapot.png"></img></a></p>
 <pre class="code prettyprint"><code class="lang-javascript">var entity = new xeogl.Entity({
    geometry: new xeogl.TeapotGeometry(),
    material: new xeogl.PhongMaterial({
        diffuse: [0.2, 0.2, 1.0]
    }),
-   ghostMaterial: new xeogl.GhostMaterial({
+   ghostMaterial: new xeogl.EmphasisMaterial({
        edges: true,
        edgeColor: [0.2, 1.0, 0.2],
        edgeAlpha: 1.0,
@@ -401,17 +401,17 @@ by default.</p>
 </ul>
 <h3 id="highlighting">Highlighting</h3>
 <p>Highlight an Entity by setting its <a href="../classes/Entity.html#property_highlight" class="crosslink">highlight</a> property true. The Entity&#39;s
-highlighting <a href="../classes/GhostMaterial.html" class="crosslink">GhostMaterial</a> then controls its appearance while highlighted.</p>
-<p>When we don&#39;t provide it with a GhostMaterial for highlighting, it will have the Scene&#39;s <a href="../classes/Scene.html#property_highlightMaterial" class="crosslink">highlightMaterial</a>
+highlighting <a href="../classes/EmphasisMaterial.html" class="crosslink">EmphasisMaterial</a> then controls its appearance while highlighted.</p>
+<p>When we don&#39;t provide it with a EmphasisMaterial for highlighting, it will have the Scene&#39;s <a href="../classes/Scene.html#property_highlightMaterial" class="crosslink">highlightMaterial</a>
 by default.</p>
-<p>In the example below, we&#39;ll create a highlighted Entity with its own GhostMaterial.</p>
-<p><a href="../../examples/#effects_highlight"><img src="../../assets/images/screenshots/GhostMaterial/teapotHighlighted.png"></img></a></p>
+<p>In the example below, we&#39;ll create a highlighted Entity with its own EmphasisMaterial.</p>
+<p><a href="../../examples/#effects_highlight"><img src="../../assets/images/screenshots/EmphasisMaterial/teapotHighlighted.png"></img></a></p>
 <pre class="code prettyprint"><code class="lang-javascript">var entity = new xeogl.Entity({
    geometry: new xeogl.TeapotGeometry(),
    material: new xeogl.PhongMaterial({
        diffuse: [0.2, 0.2, 1.0]
    }),
-   highlightMaterial: new xeogl.GhostMaterial({
+   highlightMaterial: new xeogl.EmphasisMaterial({
        color: [1.0, 1.0, 0.0],
        alpha: 0.6
    }),
@@ -777,7 +777,7 @@ that can make it behave as a billboard.</p>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>ID or instance of a <a href="../classes/OutlineMaterial.html" class="crosslink">OutlineMaterial</a> to attach to this Entity. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Entity. Defaults to the
+                                            <p>ID or instance of an <a href="../classes/OutlineMaterial.html" class="crosslink">OutlineMaterial</a> to attach to this Entity. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Entity. Defaults to the
         parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default instance, <a href="../classes/Scene.html#property_outlineMaterial" class="crosslink">outlineMaterial</a>.</p>
         
                                         </div>
@@ -796,11 +796,11 @@ that can make it behave as a billboard.</p>
                                     </li>
                                     <li class="param">
                                             <code class="param-name optional">[ghostMaterial]</code>
-                                            <span class="type">String | <a href="../classes/GhostMaterial.html" class="crosslink">GhostMaterial</a></span>
+                                            <span class="type">String | <a href="../classes/EmphasisMaterial.html" class="crosslink">EmphasisMaterial</a></span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>ID or instance of a <a href="../classes/GhostMaterial.html" class="crosslink">GhostMaterial</a> to attach to this Entity. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Entity. Defaults to the
+                                            <p>ID or instance of an <a href="../classes/EmphasisMaterial.html" class="crosslink">EmphasisMaterial</a> to attach to this Entity. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Entity. Defaults to the
         parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default instance, <a href="../classes/Scene.html#property_ghostMaterial" class="crosslink">ghostMaterial</a>.</p>
         
                                         </div>
@@ -819,11 +819,11 @@ that can make it behave as a billboard.</p>
                                     </li>
                                     <li class="param">
                                             <code class="param-name optional">[highlightMaterial]</code>
-                                            <span class="type">String | <a href="../classes/GhostMaterial.html" class="crosslink">GhostMaterial</a></span>
+                                            <span class="type">String | <a href="../classes/EmphasisMaterial.html" class="crosslink">EmphasisMaterial</a></span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>ID or instance of a <a href="../classes/GhostMaterial.html" class="crosslink">GhostMaterial</a> to attach to this Entity to define highlighted appearance. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Entity. Defaults to the
+                                            <p>ID or instance of an <a href="../classes/EmphasisMaterial.html" class="crosslink">EmphasisMaterial</a> to attach to this Entity to define highlighted appearance. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Entity. Defaults to the
         parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default instance, <a href="../classes/Scene.html#property_highlightMaterial" class="crosslink">highlightMaterial</a>.</p>
         
                                         </div>
@@ -842,11 +842,11 @@ that can make it behave as a billboard.</p>
                                     </li>
                                     <li class="param">
                                             <code class="param-name optional">[selectedMaterial]</code>
-                                            <span class="type">String | <a href="../classes/GhostMaterial.html" class="crosslink">GhostMaterial</a></span>
+                                            <span class="type">String | <a href="../classes/EmphasisMaterial.html" class="crosslink">EmphasisMaterial</a></span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>ID or instance of a <a href="../classes/GhostMaterial.html" class="crosslink">GhostMaterial</a> to attach to this Entity to define selected appearance. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Entity. Defaults to the
+                                            <p>ID or instance of an <a href="../classes/EmphasisMaterial.html" class="crosslink">EmphasisMaterial</a> to attach to this Entity to define selected appearance. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Entity. Defaults to the
         parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default instance, <a href="../classes/Scene.html#property_selectedMaterial" class="crosslink">selectedMaterial</a>.</p>
         
                                         </div>
@@ -2198,7 +2198,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     </div>
                     <div id="property_ghostMaterial" class="property item">
                         <h3 class="name"><code>ghostMaterial</code></h3>
-                        <span class="type"><a href="../classes/GhostMaterial.html" class="crosslink">GhostMaterial</a></span>
+                        <span class="type"><a href="../classes/EmphasisMaterial.html" class="crosslink">EmphasisMaterial</a></span>
                     
                     
                     
@@ -2214,7 +2214,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         </div>
                     
                         <div class="description">
-                            <p>The <a href="../classes/GhostMaterial.html" class="crosslink">GhostMaterial</a> attached to this Entity.</p>
+                            <p>The <a href="../classes/EmphasisMaterial.html" class="crosslink">EmphasisMaterial</a> attached to this Entity.</p>
                     <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Entity. Defaults to the parent
                     <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_ghostMaterial" class="crosslink">ghostMaterial</a> when set to
                     a null or undefined value.</p>
@@ -2253,7 +2253,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     </div>
                     <div id="property_highlightMaterial" class="property item">
                         <h3 class="name"><code>highlightMaterial</code></h3>
-                        <span class="type"><a href="../classes/GhostMaterial.html" class="crosslink">GhostMaterial</a></span>
+                        <span class="type"><a href="../classes/EmphasisMaterial.html" class="crosslink">EmphasisMaterial</a></span>
                     
                     
                     
@@ -2269,7 +2269,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         </div>
                     
                         <div class="description">
-                            <p>The <a href="../classes/GhostMaterial.html" class="crosslink">GhostMaterial</a> attached to this Entity.</p>
+                            <p>The <a href="../classes/EmphasisMaterial.html" class="crosslink">EmphasisMaterial</a> attached to this Entity.</p>
                     <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Entity. Defaults to the parent
                     <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_highlightMaterial" class="crosslink">highlightMaterial</a> when set to
                     a null or undefined value.</p>
@@ -2602,7 +2602,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     </div>
                     <div id="property_selectedMaterial" class="property item">
                         <h3 class="name"><code>selectedMaterial</code></h3>
-                        <span class="type"><a href="../classes/GhostMaterial.html" class="crosslink">GhostMaterial</a></span>
+                        <span class="type"><a href="../classes/EmphasisMaterial.html" class="crosslink">EmphasisMaterial</a></span>
                     
                     
                     
@@ -2618,7 +2618,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         </div>
                     
                         <div class="description">
-                            <p>The <a href="../classes/GhostMaterial.html" class="crosslink">GhostMaterial</a> attached to this Entity.</p>
+                            <p>The <a href="../classes/EmphasisMaterial.html" class="crosslink">EmphasisMaterial</a> attached to this Entity.</p>
                     <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Entity. Defaults to the parent
                     <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_selectedMaterial" class="crosslink">selectedMaterial</a> when set to
                     a null or undefined value.</p>
