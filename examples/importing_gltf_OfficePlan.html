@@ -262,7 +262,7 @@
 
         var ghostFolder = gui.addFolder('scene.ghostMaterial');
         ghostFolder.add(menu, 'ghost', true);
-        ghostFolder.add(menu, 'ghostMaterial.preset', Object.keys(xeogl.GhostMaterial.presets));
+        ghostFolder.add(menu, 'ghostMaterial.preset', Object.keys(xeogl.EmphasisMaterial.presets));
         ghostFolder.add(menu, 'ghostMaterial.edges', true).listen();
         ghostFolder.addColor(menu, 'ghostMaterial.edgeColor', [255, 255, 255]).listen();
         ghostFolder.add(menu, 'ghostMaterial.edgeAlpha', 0.0, 1.0).listen();
@@ -278,7 +278,7 @@
 
         var highlightFolder = gui.addFolder('scene.highlight');
         highlightFolder.add(menu, 'highlight', true);
-        highlightFolder.add(menu, 'highlightMaterial.preset', Object.keys(xeogl.GhostMaterial.presets));
+        highlightFolder.add(menu, 'highlightMaterial.preset', Object.keys(xeogl.EmphasisMaterial.presets));
         highlightFolder.add(menu, 'highlightMaterial.edges', true).listen();
         highlightFolder.addColor(menu, 'highlightMaterial.edgeColor', [255, 255, 255]).listen();
         highlightFolder.add(menu, 'highlightMaterial.edgeAlpha', 0.0, 1.0).listen();

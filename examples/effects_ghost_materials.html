@@ -13,7 +13,7 @@
 <body>
 
 <div id="info" class="dark">
-    <h1>ghost effect applied to a <a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a>, with two <a href="../docs/classes/Entity.html" target="_parent">Entities</a> having custom <a href="../docs/classes/GhostMaterial.html" target="_parent">GhostMaterials</a></h1>
+    <h1>ghost effect applied to a <a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a>, with two <a href="../docs/classes/Entity.html" target="_parent">Entities</a> having custom <a href="../docs/classes/EmphasisMaterial.html" target="_parent">EmphasisMaterials</a></h1>
     <pre id="log">model:  adam head - [<a
             href='https://github.com/xeolabs/xeogl/tree/master/examples/models/gltf/adamHead/README.md'
             target="_parent">model info</a>]</pre>
@@ -93,7 +93,7 @@
         var maskObject = model.entities["adam#node_mesh_Adam_mask_-4108.0"];
         var guardObject = model.entities["adam#node_Object001_-4112.5"];
 
-        maskObject.ghostMaterial = new xeogl.GhostMaterial({
+        maskObject.ghostMaterial = new xeogl.EmphasisMaterial({
             edgeColor: [0.5, 0.1, 0.1],
             edgeWidth: 2,
             fill: true,
@@ -101,7 +101,7 @@
             fillColor: [1.0, 0.0, 0.0]
         });
 
-        guardObject.ghostMaterial = new xeogl.GhostMaterial({
+        guardObject.ghostMaterial = new xeogl.EmphasisMaterial({
             edgeColor: [.1, 0.4, 0.1],
             fill: true,
             fillAlpha: 0.6,

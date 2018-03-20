@@ -32,7 +32,7 @@
         material: new xeogl.PhongMaterial({
             diffuse: [0.5, 0.5, 1.0]
         }),
-        highlightMaterial: new xeogl.GhostMaterial({
+        highlightMaterial: new xeogl.EmphasisMaterial({
             edges: false,
             edgeColor: [0.529411792755127, 0.4577854573726654, 0.4100345969200134],
             edgeAlpha: 1.0,
@@ -143,7 +143,7 @@
 
     var highlightFolder = gui.addFolder('highlight');
     highlightFolder.add(menu, 'highlight', true);
-    highlightFolder.add(menu, 'highlightMaterial.preset', Object.keys(xeogl.GhostMaterial.presets));
+    highlightFolder.add(menu, 'highlightMaterial.preset', Object.keys(xeogl.EmphasisMaterial.presets));
     highlightFolder.add(menu, 'highlightMaterial.edges', true).listen();
     highlightFolder.addColor(menu, 'highlightMaterial.edgeColor', [255, 255, 255]).listen();
     highlightFolder.add(menu, 'highlightMaterial.edgeAlpha', 0.0, 1.0).listen();

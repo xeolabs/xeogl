@@ -89,7 +89,7 @@
     "src/materials/lambertMaterial.js",
     "src/materials/specularMaterial.js",
     "src/materials/metallicMaterial.js",
-    "src/materials/ghostMaterial.js",
+    "src/materials/emphasisMaterial.js",
     "src/materials/outlineMaterial.js",
     "src/materials/texture.js",
     "src/materials/fresnel.js",

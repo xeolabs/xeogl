@@ -21,8 +21,8 @@
         <li>ghost effect applied to a <a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a></li>
         <li>highlight effect applied to some gear <a href="../docs/classes/Entity.html" target="_parent">Entities</a>
         </li>
-        <li>customized by modifying the default <a href="../docs/classes/GhostMaterial.html" target="_parent">GhostMaterial</a>
-            and <a href="../docs/classes/GhostMaterial.html" target="_parent">GhostMaterial</a></li>
+        <li>customized by modifying the default <a href="../docs/classes/EmphasisMaterial.html" target="_parent">EmphasisMaterial</a>
+            and <a href="../docs/classes/EmphasisMaterial.html" target="_parent">EmphasisMaterial</a></li>
         <li>model by <a href="https://sketchfab.com/tflexcad" target="_parent">https://sketchfab.com/tflexcad</a></li>
     </ul>
 </div>
@@ -269,7 +269,7 @@
 
         var ghostFolder = gui.addFolder('ghost');
         ghostFolder.add(menu, 'ghost', true);
-        ghostFolder.add(menu, 'ghostMaterial.preset', Object.keys(xeogl.GhostMaterial.presets));
+        ghostFolder.add(menu, 'ghostMaterial.preset', Object.keys(xeogl.EmphasisMaterial.presets));
         ghostFolder.add(menu, 'ghostMaterial.edges', true).listen();
         ghostFolder.addColor(menu, 'ghostMaterial.edgeColor', [255, 255, 255]).listen();
         ghostFolder.add(menu, 'ghostMaterial.edgeAlpha', 0.0, 1.0).listen();
@@ -285,7 +285,7 @@
 
         var highlightFolder = gui.addFolder('scene.highlight');
         highlightFolder.add(menu, 'highlight', true);
-        highlightFolder.add(menu, 'highlightMaterial.preset', Object.keys(xeogl.GhostMaterial.presets));
+        highlightFolder.add(menu, 'highlightMaterial.preset', Object.keys(xeogl.EmphasisMaterial.presets));
         highlightFolder.add(menu, 'highlightMaterial.edges', true).listen();
         highlightFolder.addColor(menu, 'highlightMaterial.edgeColor', [255, 255, 255]).listen();
         highlightFolder.add(menu, 'highlightMaterial.edgeAlpha', 0.0, 1.0).listen();
