@@ -7330,7 +7330,7 @@
             "namespace": "",
             "file": "examples/js/models/testModel.js",
             "line": 1,
-            "description": "A **TestModel** is a procedurally-generated test {{#crossLink \"Model\"}}{{/crossLink}} containing {{#crossLink \"Entity\"}}Entities{{/crossLink}} that represent city buildings.\n\n<a href=\"../../examples/#models_generation_TestModel\"><img src=\"http://i.giphy.com/l0HlPJO1AN01Lz27e.gif\"></img></a>\n\n## Overview\n\n* Allows you to develop basic capabilities of your app without needing to load any models.\n\nIt inherits these capabilities from its {{#crossLink \"Model\"}}{{/crossLink}} base class:\n\n* Allows you to access and manipulate the components within it.\n* Can be transformed within World-space by attaching it to a {{#crossLink \"Transform\"}}{{/crossLink}}.\n* Provides its dynamic World-space axis-aligned boundary.\n\n## Examples\n\n* TODO\n\n## Usage\n\n````javascript\nvar model = new xeogl.TestModel({\n    id: \"myModel\",\n    size: 5000, // Width of each axis\n    density: 4 // How many buildings on each axis\n});\n````",
+            "description": "A **TestModel** is a procedurally-generated test {{#crossLink \"Model\"}}{{/crossLink}} containing {{#crossLink \"Entity\"}}Entities{{/crossLink}} that represent city buildings.\n\n<a href=\"../../examples/#models_generation_TestModel\"><img src=\"http://i.giphy.com/l0HlPJO1AN01Lz27e.gif\"></img></a>\n\n## Overview\n\n* Procedurally generates simple content for development and testing.\n* Allows you to develop some basic capabilities of your app without needing to load any models.\n\nIt inherits these capabilities from its {{#crossLink \"Model\"}}{{/crossLink}} base class:\n\n* Allows you to access and manipulate the components within it.\n* Can be transformed within World-space by attaching it to a {{#crossLink \"Transform\"}}{{/crossLink}}.\n* Provides its dynamic World-space axis-aligned boundary.\n\n## Examples\n\n* TODO\n\n## Usage\n\n````javascript\nvar model = new xeogl.TestModel({\n    id: \"myModel\",\n    size: 5000, // Width of each axis\n    density: 4 // How many buildings on each axis\n});\n````",
             "submodule": "models",
             "is_constructor": 1,
             "params": [
@@ -7375,13 +7375,6 @@
                             "description": "A Local-to-World-space (modelling) {{#crossLink \"Transform\"}}{{/crossLink}} to attach to this TestModel.\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this TestModel. Internally, the given\n{{#crossLink \"Transform\"}}{{/crossLink}} will be inserted above each top-most {{#crossLink \"Transform\"}}Transform{{/crossLink}}\nthat the TestModel attaches to its {{#crossLink \"Entity\"}}Entities{{/crossLink}}.",
                             "type": "Number|String|Transform",
                             "optional": true
-                        },
-                        {
-                            "name": "splitEntities",
-                            "description": "When true, creates a separate {{#crossLink \"Entity\"}}{{/crossLink}} for each group of faces that share the same vertex colors. Only works with binary STL.|",
-                            "type": "Boolean",
-                            "optional": true,
-                            "optdefault": "true"
                         }
                     ]
                 }
