@@ -44,7 +44,6 @@
  Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this TestModel. Internally, the given
  {{#crossLink "Transform"}}{{/crossLink}} will be inserted above each top-most {{#crossLink "Transform"}}Transform{{/crossLink}}
  that the TestModel attaches to its {{#crossLink "Entity"}}Entities{{/crossLink}}.
- @param [cfg.splitEntities=true] {Boolean} When true, creates a separate {{#crossLink "Entity"}}{{/crossLink}} for each group of faces that share the same vertex colors. Only works with binary STL.|
  @extends Model
  */
 (function () {
