@@ -65,12 +65,12 @@
                                 <li><a href="../classes/Curve.html">Curve</a></li>
                                 <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
+                                <li><a href="../classes/EmphasisMaterial.html">EmphasisMaterial</a></li>
                                 <li><a href="../classes/Entity.html">Entity</a></li>
                                 <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
                                 <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
-                                <li><a href="../classes/GhostMaterial.html">GhostMaterial</a></li>
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
@@ -192,7 +192,7 @@
 
  * An Object represents a WebGL draw call.
  * Each Object has six components: {{#crossLink &quot;Geometry&quot;}}{{/crossLink}}, {{#crossLink &quot;Material&quot;}}{{/crossLink}},
- {{#crossLink &quot;Transform&quot;}}{{/crossLink}}, {{#crossLink &quot;GhostMaterial&quot;}}{{/crossLink}},
+ {{#crossLink &quot;Transform&quot;}}{{/crossLink}}, {{#crossLink &quot;EmphasisMaterial&quot;}}{{/crossLink}},
  {{#crossLink &quot;OutlineMaterial&quot;}}{{/crossLink}} and {{#crossLink &quot;HighlightMaterial&quot;}}{{/crossLink}}.
  * By default, Entities in the same Scene share the same &quot;global&quot; flyweight instances of those components amongst themselves. The default
  component instances are provided by the {{#crossLink &quot;Scene&quot;}}{{/crossLink}}&#x27;s {{#crossLink &quot;Scene/geometry:property&quot;}}{{/crossLink}},
@@ -424,12 +424,12 @@
  ### Ghosting
 
  Ghost an Object by setting its {{#crossLink &quot;Object/ghost:property&quot;}}{{/crossLink}} property true. The Object&#x27;s
- {{#crossLink &quot;GhostMaterial&quot;}}{{/crossLink}} then controls its appearance while ghosted.
+ {{#crossLink &quot;EmphasisMaterial&quot;}}{{/crossLink}} then controls its appearance while ghosted.
 
- When we don&#x27;t provide it with a GhostMaterial, it will have the Scene&#x27;s {{#crossLink &quot;Scene/ghostMaterial:property&quot;}}{{/crossLink}}
+ When we don&#x27;t provide it with a EmphasisMaterial, it will have the Scene&#x27;s {{#crossLink &quot;Scene/ghostMaterial:property&quot;}}{{/crossLink}}
  by default.
 
- In the example below, we&#x27;ll create a ghosted Object with its own GhostMaterial.
+ In the example below, we&#x27;ll create a ghosted Object with its own EmphasisMaterial.
 
  &lt;a href=&quot;../../examples/#effects_ghost&quot;&gt;&lt;img src=&quot;../../assets/images/screenshots/HighlightMaterial/teapot.png&quot;&gt;&lt;/img&gt;&lt;/a&gt;
 
@@ -439,7 +439,7 @@
     material: new xeogl.PhongMaterial({
         diffuse: [0.2, 0.2, 1.0]
     }),
-    ghostMaterial: new xeogl.GhostMaterial({
+    ghostMaterial: new xeogl.EmphasisMaterial({
         edges: true,
         edgeColor: [0.2, 1.0, 0.2],
         edgeAlpha: 1.0,
@@ -698,10 +698,10 @@
  @param [cfg.castShadow=true] {Boolean} Whether this Object casts shadows.
  @param [cfg.receiveShadow=true] {Boolean} Whether this Object receives shadows.
  @param [cfg.outline=false] {Boolean} Whether an outline is rendered around this object, as configured by the Object&#x27;s {{#crossLink &quot;OutlineMaterial&quot;}}{{/crossLink}} component.
- @param [cfg.outlineMaterial] {String|OutlineMaterial} ID or instance of a {{#crossLink &quot;OutlineMaterial&quot;}}{{/crossLink}} to attach to this Object. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this Object. Defaults to the
+ @param [cfg.outlineMaterial] {String|OutlineMaterial} ID or instance of an {{#crossLink &quot;OutlineMaterial&quot;}}{{/crossLink}} to attach to this Object. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this Object. Defaults to the
  parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/outlineMaterial:property&quot;}}outlineMaterial{{/crossLink}}.
- @param [cfg.ghost=false] {Boolean} Whether this object is rendered ghosted, as configured by the Object&#x27;s {{#crossLink &quot;GhostMaterial&quot;}}{{/crossLink}} component.
- @param [cfg.ghostMaterial] {String|GhostMaterial} ID or instance of a {{#crossLink &quot;GhostMaterial&quot;}}{{/crossLink}} to attach to this Object. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this Object. Defaults to the
+ @param [cfg.ghost=false] {Boolean} Whether this object is rendered ghosted, as configured by the Object&#x27;s {{#crossLink &quot;EmphasisMaterial&quot;}}{{/crossLink}} component.
+ @param [cfg.ghostMaterial] {String|EmphasisMaterial} ID or instance of an {{#crossLink &quot;EmphasisMaterial&quot;}}{{/crossLink}} to attach to this Object. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this Object. Defaults to the
  parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/ghostMaterial:property&quot;}}ghostMaterial{{/crossLink}}.
  @param [cfg.highlight=false] {Boolean} Whether this object is rendered highlighted, as configured by the Object&#x27;s {{#crossLink &quot;HighlightMaterial&quot;}}{{/crossLink}} component.
  @param [cfg.highlightMaterial] {String|HighlightMaterial} ID or instance of a {{#crossLink &quot;HighlightMaterial&quot;}}{{/crossLink}} to attach to this Object. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this Object. Defaults to the
@@ -860,14 +860,14 @@
             },
 
             /**
-             * The {{#crossLink &quot;GhostMaterial&quot;}}GhostMaterial{{/crossLink}} attached to this Object.
+             * The {{#crossLink &quot;EmphasisMaterial&quot;}}EmphasisMaterial{{/crossLink}} attached to this Object.
              *
              * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this Object. Defaults to the parent
              * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/ghostMaterial:property&quot;}}ghostMaterial{{/crossLink}} when set to
              * a null or undefined value.
              *
              * @property ghostMaterial
-             * @type GhostMaterial
+             * @type EmphasisMaterial
              */
             ghostMaterial: {
 
@@ -875,7 +875,7 @@
 
                     this._attach({
                         name: &quot;ghostMaterial&quot;,
-                        type: &quot;xeogl.GhostMaterial&quot;,
+                        type: &quot;xeogl.EmphasisMaterial&quot;,
                         component: value,
                         sceneDefault: true
                     });
@@ -902,7 +902,7 @@
 
                     this._attach({
                         name: &quot;highlightMaterial&quot;,
-                        type: &quot;xeogl.GhostMaterial&quot;,
+                        type: &quot;xeogl.EmphasisMaterial&quot;,
                         component: value,
                         sceneDefault: true
                     });

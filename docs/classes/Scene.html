@@ -65,12 +65,12 @@
                                 <li><a href="../classes/Curve.html">Curve</a></li>
                                 <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
+                                <li><a href="../classes/EmphasisMaterial.html">EmphasisMaterial</a></li>
                                 <li><a href="../classes/Entity.html">Entity</a></li>
                                 <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
                                 <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
-                                <li><a href="../classes/GhostMaterial.html">GhostMaterial</a></li>
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
@@ -335,13 +335,13 @@ new xeogl.Clip({ // Clip plane on positive diagonal
 ];
 </code></pre>
 <h3 id="emphasis-effects">Emphasis effects</h3>
-<p>The Scene&#39;s <a href="../classes/Scene.html#property_ghostMaterial" class="crosslink">ghostMaterial</a> provides the default <a href="../classes/GhostMaterial.html" class="crosslink">GhostMaterial</a>
+<p>The Scene&#39;s <a href="../classes/Scene.html#property_ghostMaterial" class="crosslink">ghostMaterial</a> provides the default <a href="../classes/EmphasisMaterial.html" class="crosslink">EmphasisMaterial</a>
 for controlling ghost effects:</p>
 <pre class="code prettyprint"><code class="lang-javascript">var ghostMaterial = scene.ghostMaterial;
 ghostMaterial.edgeColor = [0.9, 0.9, 0.0];
 //...
 </code></pre>
-<p>The Scene&#39;s <a href="../classes/Scene.html#property_highlightMaterial" class="crosslink">highlightMaterial</a> provides the default <a href="../classes/GhostMaterial.html" class="crosslink">GhostMaterial</a>
+<p>The Scene&#39;s <a href="../classes/Scene.html#property_highlightMaterial" class="crosslink">highlightMaterial</a> provides the default <a href="../classes/EmphasisMaterial.html" class="crosslink">EmphasisMaterial</a>
 for controlling highlight effects:</p>
 <pre class="code prettyprint"><code class="lang-javascript">var highlightMaterial = scene.highlightMaterial;
 highlightMaterial.color = [0.9, 0.9, 0.0];
@@ -2475,7 +2475,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     </div>
                     <div id="property_ghostMaterial" class="property item">
                         <h3 class="name"><code>ghostMaterial</code></h3>
-                        <span class="type"><a href="../classes/GhostMaterial.html" class="crosslink">GhostMaterial</a></span>
+                        <span class="type"><a href="../classes/EmphasisMaterial.html" class="crosslink">EmphasisMaterial</a></span>
                     
                     
                     
@@ -2492,12 +2492,12 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         </div>
                     
                         <div class="description">
-                            <p>The Scene&#39;s default <a href="../classes/GhostMaterial.html" class="crosslink">GhostMaterial</a> for the appearance of Entities when they are ghosted.</p>
-                    <p>This <a href="../classes/GhostMaterial.html" class="crosslink">GhostMaterial</a> has
+                            <p>The Scene&#39;s default <a href="../classes/EmphasisMaterial.html" class="crosslink">EmphasisMaterial</a> for the appearance of Entities when they are ghosted.</p>
+                    <p>This <a href="../classes/EmphasisMaterial.html" class="crosslink">EmphasisMaterial</a> has
                     an <a href="../classes/Component.html#property_id" class="crosslink">id</a> equal to "default.ghostMaterial", with all
                     other properties initialised to their default values.</p>
                     <p><a href="../classes/Entity.html" class="crosslink">Entities</a> within this Scene are attached to this
-                    <a href="../classes/GhostMaterial.html" class="crosslink">GhostMaterial</a> by default.</p>
+                    <a href="../classes/EmphasisMaterial.html" class="crosslink">EmphasisMaterial</a> by default.</p>
                     
                         </div>
                     
@@ -2523,7 +2523,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         </div>
                     
                         <div class="description">
-                            <p>The Scene&#39;s default <a href="../classes/GhostMaterial.html" class="crosslink">GhostMaterial</a> for the appearance of Entities when they are highlighted.</p>
+                            <p>The Scene&#39;s default <a href="../classes/EmphasisMaterial.html" class="crosslink">EmphasisMaterial</a> for the appearance of Entities when they are highlighted.</p>
                     <p>This HighlightMaterial has
                     an <a href="../classes/Component.html#property_id" class="crosslink">id</a> equal to "default.highlightMaterial", with all
                     other properties initialised to their default values.</p>
@@ -2821,7 +2821,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         </div>
                     
                         <div class="description">
-                            <p>The Scene&#39;s default <a href="../classes/GhostMaterial.html" class="crosslink">GhostMaterial</a> for the appearance of Entities when they are selected.</p>
+                            <p>The Scene&#39;s default <a href="../classes/EmphasisMaterial.html" class="crosslink">EmphasisMaterial</a> for the appearance of Entities when they are selected.</p>
                     <p>This SelectedMaterial has
                     an <a href="../classes/Component.html#property_id" class="crosslink">id</a> equal to "default.selectedMaterial", with all
                     other properties initialised to their default values.</p>

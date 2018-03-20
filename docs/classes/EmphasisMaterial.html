@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>GhostMaterial - xeogl</title>
+    <title>EmphasisMaterial - xeogl</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link href='https://fonts.googleapis.com/css?family=Exo+2:400,800,900,700,600,500|Roboto:100,300,400,500,700,900'  rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
@@ -65,12 +65,12 @@
                                 <li><a href="../classes/Curve.html">Curve</a></li>
                                 <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
+                                <li><a href="../classes/EmphasisMaterial.html">EmphasisMaterial</a></li>
                                 <li><a href="../classes/Entity.html">Entity</a></li>
                                 <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
                                 <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
-                                <li><a href="../classes/GhostMaterial.html">GhostMaterial</a></li>
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
@@ -181,7 +181,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>GhostMaterial</h1>
+<h1>EmphasisMaterial</h1>
 <div class="box meta">
 
         <div class="extends">
@@ -189,7 +189,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_materials_ghostMaterial.js.html#l1"><code>src&#x2F;materials&#x2F;ghostMaterial.js:1</code></a>
+            Defined in: <a href="../files/src_materials_emphasisMaterial.js.html#l1"><code>src&#x2F;materials&#x2F;emphasisMaterial.js:1</code></a>
         </div>
 
             Module: <a href="../modules/materials.html">materials</a><br>
@@ -199,8 +199,8 @@
 
 
 <div class="box intro">
-    <p>A <strong>GhostMaterial</strong> is a <a href="../classes/Material.html" class="crosslink">Material</a> that defines the appearance of attached
-<a href="../classes/Entity.html" class="crosslink">Entities</a> when they are highlighted (emphasized) or ghosted (de-emphasized).</p>
+    <p>An <strong>EmphasisMaterial</strong> is a <a href="../classes/Material.html" class="crosslink">Material</a> that defines the appearance of attached
+<a href="../classes/Entity.html" class="crosslink">Entities</a> when they are highlighted, selected or ghosted.</p>
 <h2 id="examples">Examples</h2>
 <table>
 <thead>
@@ -223,11 +223,11 @@
 <h2 id="overview">Overview</h2>
 <ul>
 <li>Ghost an <a href="../classes/Entity.html" class="crosslink">Entity</a> by setting its <a href="../classes/Entity.html#property_ghost" class="crosslink">ghost</a> property <code>true</code>.</li>
-<li>When ghosted, an Entity&#39;s appearance is controlled by its GhostMaterial.</li>
-<li>A GhostMaterial provides several preset configurations that you can set it to. Select a preset by setting <a href="../classes/GhostMaterial.html#property_preset" class="crosslink">preset</a> to the preset&#39;s ID. A map of available presets is provided in <a href="../classes/GhostMaterial.html#property_presets" class="crosslink">xeogl.GhostMaterial.presets</a>.</li>
-<li>By default, an Entity has the <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s global GhostMaterial, but you can give each Entity its own GhostMaterial when you want to customize the effect per-Entity.</li>
-<li>Ghost all Entities in a <a href="../classes/Model.html" class="crosslink">Model</a> by setting the Model&#39;s <a href="../classes/Model.html#property_ghost" class="crosslink">ghost</a> property <code>true</code>. Note that all Entities in a Model have the Scene&#39;s global GhostMaterial by default.</li>
-<li>Modify the Scene&#39;s global GhostMaterial to customize it.</li>
+<li>When ghosted, an Entity&#39;s appearance is controlled by its EmphasisMaterial.</li>
+<li>An EmphasisMaterial provides several preset configurations that you can set it to. Select a preset by setting <a href="../classes/EmphasisMaterial.html#property_preset" class="crosslink">preset</a> to the preset&#39;s ID. A map of available presets is provided in <a href="../classes/EmphasisMaterial.html#property_presets" class="crosslink">xeogl.EmphasisMaterial.presets</a>.</li>
+<li>By default, an Entity uses the <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s global EmphasisMaterials, but you can give each Entity its own EmphasisMaterial when you want to customize the effect per-Entity.</li>
+<li>Ghost all Entities in a <a href="../classes/Model.html" class="crosslink">Model</a> by setting the Model&#39;s <a href="../classes/Model.html#property_ghost" class="crosslink">ghost</a> property <code>true</code>. Note that all Entities in a Model have the Scene&#39;s global EmphasisMaterial by default.</li>
+<li>Modify the Scene&#39;s global EmphasisMaterial to customize it.</li>
 </ul>
 <h2 id="usage">Usage</h2>
 <ul>
@@ -235,7 +235,7 @@
 <li><a href="#highlighting">Highlighting</a></li>
 </ul>
 <h3 id="ghosting">Ghosting</h3>
-<p>In the usage example below, we&#39;ll create an Entity with a ghost effect applied to it. The Entity gets its own GhostMaterial, and
+<p>In the usage example below, we&#39;ll create an Entity with a ghost effect applied to it. The Entity gets its own EmphasisMaterial for ghosting, and
 has its <a href="../classes/Entity.html#property_ghost" class="crosslink">ghost</a> property set <code>true</code> to activate the effect.</p>
 <p><a href="../../examples/#effects_ghost"><img src="../../assets/images/screenshots/HighlightMaterial/teapot.png"></img></a></p>
 <pre class="code prettyprint"><code class="lang-javascript">var entity = new xeogl.Entity({
@@ -245,7 +245,7 @@ has its <a href="../classes/Entity.html#property_ghost" class="crosslink">ghost<
    material: new xeogl.PhongMaterial({
        diffuse: [0.2, 0.2, 1.0]
    }),
-   ghostMaterial: new xeogl.GhostMaterial({
+   ghostMaterial: new xeogl.EmphasisMaterial({
        edges: true,
        edgeColor: [0.2, 1.0, 0.2],
        edgeAlpha: 1.0,
@@ -262,11 +262,11 @@ has its <a href="../classes/Entity.html#property_ghost" class="crosslink">ghost<
 });
 </code></pre>
 <p>Note the <strong>ghostEdgeThreshold</strong> configuration on the <a href="../classes/Geometry.html" class="crosslink">Geometry</a> we&#39;ve created for our
-Entity. Our GhostMaterial is configured to draw a wireframe representation of the Geometry, which will have inner edges (ie. edges between
+Entity. Our EmphasisMaterial is configured to draw a wireframe representation of the Geometry, which will have inner edges (ie. edges between
 adjacent co-planar triangles) removed for visual clarity. The <code>ghostEdgeThreshold</code> configuration indicates
 that, for this particular Geometry, an inner edge is one where the angle between the surface normals of adjacent triangles is not
 greater than <code>5</code> degrees. That&#39;s set to <code>2</code> by default, but we can override it to tweak the effect as needed for particular Geometries.</p>
-<p>Here&#39;s the example again, this time using the Scene&#39;s global GhostMaterial by default. We&#39;ll also modify that GhostMaterial
+<p>Here&#39;s the example again, this time using the Scene&#39;s global EmphasisMaterial by default. We&#39;ll also modify that EmphasisMaterial
 to customize the effect.</p>
 <pre class="code prettyprint"><code class="lang-javascript">var entity = new xeogl.Entity({
    geometry: new xeogl.TeapotGeometry({
@@ -292,9 +292,10 @@ ghostMaterial.fill = true;
 ghostMaterial.fillColor = [0, 0, 0];
 ghostMaterial.fillAlpha = 0.7;
 </code></pre>
-<p>In the next example, we&#39;ll use a GhostMaterial in conjunction with a HighlightMaterial, to emphasise a couple of objects within
+<h3 id="highlighting">Highlighting</h3>
+<p>In the next example, we&#39;ll use a ghosting in conjunction with highlighting, to emphasise a couple of objects within
 a gearbox <a href="../classes/Model.html" class="crosslink">Model</a>. We&#39;ll load the Model from glTF, then ghost all of its Entities except for two gears, which we&#39;ll highlight instead. The ghosted
-Entities have the Scene&#39;s global GhostMaterial, which we&#39;ll modify. The  highlighted Entities also have the Scene&#39;s global HighlightMaterial, which we&#39;ll modify as well.</p>
+Entities have the Scene&#39;s global ghosting EmphasisMaterial, which we&#39;ll modify. The  highlighted Entities also have the Scene&#39;s global highlighting EmphasisMaterial, which we&#39;ll modify as well.</p>
 <p><a href="../../examples/#effects_demo_gearbox"><img src="../../assets/images/screenshots/HighlightMaterial/gearbox.png"></img></a></p>
 <pre class="code prettyprint"><code class="lang-javascript">var model = new xeogl.GLTFModel({
     src: "models/gltf/gearbox_conical/scene.gltf",
@@ -332,9 +333,9 @@ model.on("loaded", function() {
 });
 </code></pre>
 <h2 id="presets">Presets</h2>
-<p>For convenience, a GhostMaterial provides several preset configurations that you can set it to, which are provided in
-<a href="../classes/GhostMaterial.html#property_presets" class="crosslink">xeogl.GhostMaterial.presets</a>:</p>
-<pre class="code prettyprint"><code class="lang-javascript">var presets = xeogl.GhostMaterial.presets;
+<p>For convenience, an EmphasisMaterial provides several preset configurations that you can set it to, which are provided in
+<a href="../classes/EmphasisMaterial.html#property_presets" class="crosslink">xeogl.EmphasisMaterial.presets</a>:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var presets = xeogl.EmphasisMaterial.presets;
 </code></pre>
 <p>The presets look something like this:</p>
 <pre class="code prettyprint"><code class="lang-json">{
@@ -369,10 +370,10 @@ model.on("loaded", function() {
        //...
 }
 </code></pre>
-<p>Let&#39;s switch the Scene&#39;s global default  GhostMaterial over to the "sepia" preset used in <a href="/examples/#effects_demo_adam">Example 4: Ghost effect for CAD</a>.</p>
+<p>Let&#39;s switch the Scene&#39;s global default  EmphasisMaterial over to the "sepia" preset used in <a href="/examples/#effects_demo_adam">Example 4: Ghost effect for CAD</a>.</p>
 <pre class="code prettyprint"><code class="lang-javascript">scene.ghostMaterial.preset = "sepia";
 </code></pre>
-<p>You can also just create a GhostMaterial from a preset:</p>
+<p>You can also just create an EmphasisMaterial from a preset:</p>
 <pre class="code prettyprint"><code class="lang-javascript">var entity = new xeogl.Entity({
    geometry: new xeogl.TeapotGeometry({
        ghostEdgeThreshold: 5
@@ -380,20 +381,20 @@ model.on("loaded", function() {
    material: new xeogl.PhongMaterial({
        diffuse: [0.2, 0.2, 1.0]
    }),
-   ghostMaterial: new xeogl.GhostMaterial({
+   ghostMaterial: new xeogl.EmphasisMaterial({
        preset: "sepia"
    });
    ghost: true
 });
 </code></pre>
-<p>Note that applying a preset just sets the GhostMaterial&#39;s property values, which you are then free to modify afterwards.</p>
+<p>Note that applying a preset just sets the EmphasisMaterial&#39;s property values, which you are then free to modify afterwards.</p>
 
 </div>
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_GhostMaterial" class="method item">
-            <h3 class="name"><code>GhostMaterial</code></h3>
+        <div id="method_EmphasisMaterial" class="method item">
+            <h3 class="name"><code>EmphasisMaterial</code></h3>
         
                 <div class="args">
                     <span class="paren">(</span><ul class="args-list inline commas">
@@ -417,7 +418,7 @@ model.on("loaded", function() {
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_materials_ghostMaterial.js.html#l1"><code>src&#x2F;materials&#x2F;ghostMaterial.js:1</code></a>
+                <a href="../files/src_materials_emphasisMaterial.js.html#l1"><code>src&#x2F;materials&#x2F;emphasisMaterial.js:1</code></a>
                 </p>
         
         
@@ -439,7 +440,7 @@ model.on("loaded", function() {
         
         
                             <div class="param-description">
-                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a>, creates this GhostMaterial within the
+                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a>, creates this EmphasisMaterial within the
         default <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted</p>
         
                             </div>
@@ -452,7 +453,7 @@ model.on("loaded", function() {
         
         
                             <div class="param-description">
-                                <p>The GhostMaterial configuration</p>
+                                <p>The EmphasisMaterial configuration</p>
         
                             </div>
         
@@ -474,7 +475,7 @@ model.on("loaded", function() {
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Metadata to attach to this GhostMaterial.</p>
+                                            <p>Metadata to attach to this EmphasisMaterial.</p>
         
                                         </div>
         
@@ -584,7 +585,7 @@ model.on("loaded", function() {
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>GhostMaterial fill color.</p>
+                                            <p>EmphasisMaterial fill color.</p>
         
                                         </div>
         
@@ -606,7 +607,7 @@ model.on("loaded", function() {
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Selects a preset GhostMaterial configuration - see GhostMaterial/preset:method.</p>
+                                            <p>Selects a preset EmphasisMaterial configuration - see EmphasisMaterial/preset:method.</p>
         
                                         </div>
         
@@ -1586,7 +1587,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_ghostMaterial.js.html#l360"><code>src&#x2F;materials&#x2F;ghostMaterial.js:360</code></a>
+                            <a href="../files/src_materials_emphasisMaterial.js.html#l361"><code>src&#x2F;materials&#x2F;emphasisMaterial.js:361</code></a>
                             </p>
                     
                     
@@ -1613,7 +1614,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_ghostMaterial.js.html#l321"><code>src&#x2F;materials&#x2F;ghostMaterial.js:321</code></a>
+                            <a href="../files/src_materials_emphasisMaterial.js.html#l322"><code>src&#x2F;materials&#x2F;emphasisMaterial.js:322</code></a>
                             </p>
                     
                     
@@ -1639,7 +1640,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_ghostMaterial.js.html#l298"><code>src&#x2F;materials&#x2F;ghostMaterial.js:298</code></a>
+                            <a href="../files/src_materials_emphasisMaterial.js.html#l299"><code>src&#x2F;materials&#x2F;emphasisMaterial.js:299</code></a>
                             </p>
                     
                     
@@ -1665,7 +1666,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_ghostMaterial.js.html#l389"><code>src&#x2F;materials&#x2F;ghostMaterial.js:389</code></a>
+                            <a href="../files/src_materials_emphasisMaterial.js.html#l390"><code>src&#x2F;materials&#x2F;emphasisMaterial.js:390</code></a>
                             </p>
                     
                     
@@ -1691,7 +1692,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_ghostMaterial.js.html#l509"><code>src&#x2F;materials&#x2F;ghostMaterial.js:509</code></a>
+                            <a href="../files/src_materials_emphasisMaterial.js.html#l510"><code>src&#x2F;materials&#x2F;emphasisMaterial.js:510</code></a>
                             </p>
                     
                     
@@ -1717,7 +1718,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_ghostMaterial.js.html#l571"><code>src&#x2F;materials&#x2F;ghostMaterial.js:571</code></a>
+                            <a href="../files/src_materials_emphasisMaterial.js.html#l572"><code>src&#x2F;materials&#x2F;emphasisMaterial.js:572</code></a>
                             </p>
                     
                     
@@ -1744,7 +1745,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_ghostMaterial.js.html#l532"><code>src&#x2F;materials&#x2F;ghostMaterial.js:532</code></a>
+                            <a href="../files/src_materials_emphasisMaterial.js.html#l533"><code>src&#x2F;materials&#x2F;emphasisMaterial.js:533</code></a>
                             </p>
                     
                     
@@ -1846,14 +1847,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_ghostMaterial.js.html#l601"><code>src&#x2F;materials&#x2F;ghostMaterial.js:601</code></a>
+                            <a href="../files/src_materials_emphasisMaterial.js.html#l602"><code>src&#x2F;materials&#x2F;emphasisMaterial.js:602</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Selects a preset GhostMaterial configuration.</p>
+                            <p>Selects a preset EmphasisMaterial configuration.</p>
                     <p>Available presets are:</p>
                     <ul>
                     <li>&quot;default&quot; - grey wireframe with translucent fill, for light backgrounds.</li>
@@ -1884,14 +1885,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_ghostMaterial.js.html#l661"><code>src&#x2F;materials&#x2F;ghostMaterial.js:661</code></a>
+                            <a href="../files/src_materials_emphasisMaterial.js.html#l662"><code>src&#x2F;materials&#x2F;emphasisMaterial.js:662</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Available GhostMaterial presets.</p>
+                            <p>Available EmphasisMaterial presets.</p>
                     
                         </div>
                     
@@ -1994,7 +1995,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_ghostMaterial.js.html#l466"><code>src&#x2F;materials&#x2F;ghostMaterial.js:466</code></a>
+                            <a href="../files/src_materials_emphasisMaterial.js.html#l467"><code>src&#x2F;materials&#x2F;emphasisMaterial.js:467</code></a>
                             </p>
                     
                     
@@ -2021,7 +2022,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_ghostMaterial.js.html#l433"><code>src&#x2F;materials&#x2F;ghostMaterial.js:433</code></a>
+                            <a href="../files/src_materials_emphasisMaterial.js.html#l434"><code>src&#x2F;materials&#x2F;emphasisMaterial.js:434</code></a>
                             </p>
                     
                     
@@ -2047,7 +2048,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_ghostMaterial.js.html#l491"><code>src&#x2F;materials&#x2F;ghostMaterial.js:491</code></a>
+                            <a href="../files/src_materials_emphasisMaterial.js.html#l492"><code>src&#x2F;materials&#x2F;emphasisMaterial.js:492</code></a>
                             </p>
                     
                     
@@ -2073,7 +2074,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_ghostMaterial.js.html#l410"><code>src&#x2F;materials&#x2F;ghostMaterial.js:410</code></a>
+                            <a href="../files/src_materials_emphasisMaterial.js.html#l411"><code>src&#x2F;materials&#x2F;emphasisMaterial.js:411</code></a>
                             </p>
                     
                     
