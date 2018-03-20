@@ -360,6 +360,7 @@
             this.ghost = cfg.ghost;
             this.visible = cfg.visible;
             this.outline = cfg.outline;
+            this.selected = cfg.selected;
 
             if (cfg.components) {
                 var components = cfg.components;
@@ -514,6 +515,7 @@
                 component.ghost = this.ghost;
                 component.highlight = this.highlight;
                 component.visible = this.visible;
+                component.selected = this.selected;
 
                 this._onBoundary[component.id] = component.on("boundary", this._setAABBDirty, this);
 
@@ -899,6 +901,33 @@
 
                 get: function () {
                     return this._highlight;
+                }
+            },
+
+            /**
+             * Flag which indicates if this Model's Entities are rendered as selected.
+             *
+             * @property selected
+             * @default false
+             * @type Boolean
+             */
+            selected: {
+
+                set: function (value) {
+                    value = !!value;
+                    if (this._selected === value) {
+                        return;
+                    }
+                    this._selected = value;
+                    for (var id in this.entities) {
+                        if (this.entities.hasOwnProperty(id)) {
+                            this.entities[id].selected = value;
+                        }
+                    }
+                },
+
+                get: function () {
+                    return this._selected;
                 }
             },
 
