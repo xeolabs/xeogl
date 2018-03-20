@@ -193,7 +193,8 @@
 
  ## Overview
 
- * Allows you to develop basic capabilities of your app without needing to load any models.
+ * Procedurally generates simple content for development and testing.
+ * Allows you to develop some basic capabilities of your app without needing to load any models.
 
  It inherits these capabilities from its {{#crossLink &quot;Model&quot;}}{{/crossLink}} base class:
 
@@ -231,7 +232,6 @@
  Must be within the same {{#crossLink &quot;Scene&quot;}}{{/crossLink}} as this TestModel. Internally, the given
  {{#crossLink &quot;Transform&quot;}}{{/crossLink}} will be inserted above each top-most {{#crossLink &quot;Transform&quot;}}Transform{{/crossLink}}
  that the TestModel attaches to its {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
- @param [cfg.splitEntities=true] {Boolean} When true, creates a separate {{#crossLink &quot;Entity&quot;}}{{/crossLink}} for each group of faces that share the same vertex colors. Only works with binary STL.|
  @extends Model
  */
 (function () {
