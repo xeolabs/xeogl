@@ -1,11 +1,12 @@
 /**
- A **CityTestModel** is a procedurally-generated test {{#crossLink "Model"}}{{/crossLink}} containing {{#crossLink "Entity"}}Entities{{/crossLink}} that represent city buildings.
+ A **TestModel** is a procedurally-generated test {{#crossLink "Model"}}{{/crossLink}} containing {{#crossLink "Entity"}}Entities{{/crossLink}} that represent city buildings.
 
- <a href="../../examples/#models_generation_CityTestModel"><img src="http://i.giphy.com/l0HlPJO1AN01Lz27e.gif"></img></a>
+ <a href="../../examples/#models_generation_TestModel"><img src="http://i.giphy.com/l0HlPJO1AN01Lz27e.gif"></img></a>
 
  ## Overview
 
- * Allows you to develop basic capabilities of your app without needing to load any models.
+ * Procedurally generates simple content for development and testing.
+ * Allows you to develop some basic capabilities of your app without needing to load any models.
 
  It inherits these capabilities from its {{#crossLink "Model"}}{{/crossLink}} base class:
 
@@ -20,29 +21,29 @@
  ## Usage
 
  ````javascript
- var model = new xeogl.CityTestModel({
+ var model = new xeogl.TestModel({
      id: "myModel",
      size: 5000, // Width of each axis
      density: 4 // How many buildings on each axis
  });
  ````
  
- @class CityTestModel
+ @class TestModel
  @module xeogl
  @submodule models
  @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this CityTestModel in the default
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this TestModel in the default
  {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this CityTestModel.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this TestModel.
  @param [cfg.size] {Number} World-space width of each axis.
  @param [cfg.density] {Number} Number of buildings on each axis.
- @param [cfg.transform] {Number|String|Transform} A Local-to-World-space (modelling) {{#crossLink "Transform"}}{{/crossLink}} to attach to this CityTestModel.
- Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this CityTestModel. Internally, the given
+ @param [cfg.transform] {Number|String|Transform} A Local-to-World-space (modelling) {{#crossLink "Transform"}}{{/crossLink}} to attach to this TestModel.
+ Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this TestModel. Internally, the given
  {{#crossLink "Transform"}}{{/crossLink}} will be inserted above each top-most {{#crossLink "Transform"}}Transform{{/crossLink}}
- that the CityTestModel attaches to its {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ that the TestModel attaches to its {{#crossLink "Entity"}}Entities{{/crossLink}}.
  @param [cfg.splitEntities=true] {Boolean} When true, creates a separate {{#crossLink "Entity"}}{{/crossLink}} for each group of faces that share the same vertex colors. Only works with binary STL.|
  @extends Model
  */
@@ -50,9 +51,9 @@
 
     "use strict";
 
-    xeogl.CityTestModel = xeogl.BuildableModel.extend({
+    xeogl.TestModel = xeogl.BuildableModel.extend({
 
-        type: "xeogl.CityTestModel",
+        type: "xeogl.TestModel",
 
         _init: function (cfg) {
             
