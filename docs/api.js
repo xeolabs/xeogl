@@ -16,6 +16,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "CameraPath",
         "CameraPathAnimation",
         "Canvas",
+        "CityTestModel",
         "Clip",
         "ClipHelper",
         "Clips",

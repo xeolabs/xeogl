@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>CubeTexture - xeogl</title>
+    <title>CityTestModel - xeogl</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link href='https://fonts.googleapis.com/css?family=Exo+2:400,800,900,700,600,500|Roboto:100,300,400,500,700,900'  rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
@@ -182,34 +182,54 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>CubeTexture</h1>
+<h1>CityTestModel</h1>
 <div class="box meta">
 
         <div class="extends">
-            Extends <a href="../classes/Component.html" class="crosslink">Component</a>
+            Extends <a href="../classes/Model.html" class="crosslink">Model</a>
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_lighting_cubeTexture.js.html#l1"><code>src&#x2F;lighting&#x2F;cubeTexture.js:1</code></a>
+            Defined in: <a href="../files/examples_js_models_cityTestModel.js.html#l1"><code>examples&#x2F;js&#x2F;models&#x2F;cityTestModel.js:1</code></a>
         </div>
 
-            Module: <a href="../modules/lighting.html">lighting</a><br>
+            Module: <a href="../modules/models.html">models</a><br>
             Parent Module: <a href="../modules/xeogl.html">xeogl</a>
 
 </div>
 
 
 <div class="box intro">
-    <p>A <strong>CubeTexture</strong> specifies a cube texture map.</p>
+    <p>A <strong>CityTestModel</strong> is a procedurally-generated test <a href="../classes/Model.html" class="crosslink">Model</a> containing <a href="../classes/Entity.html" class="crosslink">Entities</a> that represent city buildings.</p>
+<p><a href="../../examples/#models_generation_CityTestModel"><img src="http://i.giphy.com/l0HlPJO1AN01Lz27e.gif"></img></a></p>
 <h2 id="overview">Overview</h2>
-<p>See <a href="../classes/Lights.html" class="crosslink">Lights</a> for an example of how to use CubeTextures for light and reflection mapping.</p>
+<ul>
+<li>Allows you to develop basic capabilities of your app without needing to load any models.</li>
+</ul>
+<p>It inherits these capabilities from its <a href="../classes/Model.html" class="crosslink">Model</a> base class:</p>
+<ul>
+<li>Allows you to access and manipulate the components within it.</li>
+<li>Can be transformed within World-space by attaching it to a <a href="../classes/Transform.html" class="crosslink">Transform</a>.</li>
+<li>Provides its dynamic World-space axis-aligned boundary.</li>
+</ul>
+<h2 id="examples">Examples</h2>
+<ul>
+<li>TODO</li>
+</ul>
+<h2 id="usage">Usage</h2>
+<pre class="code prettyprint"><code class="lang-javascript">var model = new xeogl.CityTestModel({
+    id: "myModel",
+    size: 5000, // Width of each axis
+    density: 4 // How many buildings on each axis
+});
+</code></pre>
 
 </div>
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_CubeTexture" class="method item">
-            <h3 class="name"><code>CubeTexture</code></h3>
+        <div id="method_CityTestModel" class="method item">
+            <h3 class="name"><code>CityTestModel</code></h3>
         
                 <div class="args">
                     <span class="paren">(</span><ul class="args-list inline commas">
@@ -233,7 +253,7 @@
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_lighting_cubeTexture.js.html#l1"><code>src&#x2F;lighting&#x2F;cubeTexture.js:1</code></a>
+                <a href="../files/examples_js_models_cityTestModel.js.html#l1"><code>examples&#x2F;js&#x2F;models&#x2F;cityTestModel.js:1</code></a>
                 </p>
         
         
@@ -255,7 +275,7 @@
         
         
                             <div class="param-description">
-                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a> - creates this CubeTexture in the default
+                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a> - creates this CityTestModel in the default
         <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted.</p>
         
                             </div>
@@ -279,7 +299,8 @@
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Optional ID for this CubeTexture, unique among all components in the parent scene, generated automatically when omitted.</p>
+                                            <p>Optional ID, unique among all components in the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>,
+        generated automatically when omitted.</p>
         
                                         </div>
         
@@ -290,40 +311,54 @@
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Optional map of user-defined metadata to attach to this CubeTexture.</p>
+                                            <p>Optional map of user-defined metadata to attach to this CityTestModel.</p>
         
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[src=null]</code>
-                                            <span class="type">Array of String</span>
+                                            <code class="param-name optional">[size]</code>
+                                            <span class="type">Number</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Paths to six image files to load into this CubeTexture.</p>
+                                            <p>World-space width of each axis.</p>
         
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[flipY=false]</code>
+                                            <code class="param-name optional">[density]</code>
+                                            <span class="type">Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Number of buildings on each axis.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[transform]</code>
+                                            <span class="type">Number | String | <a href="../classes/Transform.html" class="crosslink">Transform</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>A Local-to-World-space (modelling) <a href="../classes/Transform.html" class="crosslink">Transform</a> to attach to this CityTestModel.
+        Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this CityTestModel. Internally, the given
+        <a href="../classes/Transform.html" class="crosslink">Transform</a> will be inserted above each top-most <a href="../classes/Transform.html" class="crosslink">Transform</a>
+        that the CityTestModel attaches to its <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[splitEntities=true]</code>
                                             <span class="type">Boolean</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Flips this CubeTexture&#39;s source data along its vertical axis when true.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[encoding=&quot;linear&quot;]</code>
-                                            <span class="type">String</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Encoding format.  See the <a href="../classes/CubeTexture.html#property_encoding" class="crosslink">encoding</a> property for more info.</p>
+                                            <p>When true, creates a separate <a href="../classes/Entity.html" class="crosslink">Entity</a> for each group of faces that share the same vertex colors. Only works with binary STL.|</p>
         
                                         </div>
         
@@ -356,11 +391,19 @@
 
                     <ul class="index-list methods extends">
                             <li class="index-item method inherited">
+                                <a href="#method_add">add</a>
+
+                            </li>
+                            <li class="index-item method inherited">
                                 <a href="#method_create">create</a>
 
                             </li>
                             <li class="index-item method inherited">
                                 <a href="#method_destroy">destroy</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_destroyAll">destroyAll</a>
 
                             </li>
                             <li class="index-item method inherited">
@@ -380,6 +423,10 @@
 
                             </li>
                             <li class="index-item method inherited">
+                                <a href="#method_iterate">iterate</a>
+
+                            </li>
+                            <li class="index-item method inherited">
                                 <a href="#method_log">log</a>
 
                             </li>
@@ -396,6 +443,10 @@
 
                             </li>
                             <li class="index-item method inherited">
+                                <a href="#method_removeAll">removeAll</a>
+
+                            </li>
+                            <li class="index-item method inherited">
                                 <a href="#method_warn">warn</a>
 
                             </li>
@@ -407,15 +458,27 @@
 
                     <ul class="index-list properties extends">
                             <li class="index-item property inherited">
+                                <a href="#property_aabb">aabb</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_components">components</a>
+
+                            </li>
+                            <li class="index-item property inherited">
                                 <a href="#property_destroyed">destroyed</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_encoding">encoding</a>
+                            <li class="index-item property inherited">
+                                <a href="#property_entities">entities</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_flipY">flipY</a>
+                            <li class="index-item property inherited">
+                                <a href="#property_ghost">ghost</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_highlight">highlight</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -431,11 +494,15 @@
 
                             </li>
                             <li class="index-item property inherited">
-                                <a href="#property_scene">scene</a>
+                                <a href="#property_numComponents">numComponents</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_src">src</a>
+                            <li class="index-item property inherited">
+                                <a href="#property_outline">outline</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_scene">scene</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -443,7 +510,19 @@
 
                             </li>
                             <li class="index-item property inherited">
+                                <a href="#property_transform">transform</a>
+
+                            </li>
+                            <li class="index-item property inherited inherited">
                                 <a href="#property_type">type</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_types">types</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_visible">visible</a>
 
                             </li>
                     </ul>
@@ -455,19 +534,23 @@
 
                     <ul class="index-list events extends">
                             <li class="index-item event inherited">
+                                <a href="#event_added">added</a>
+
+                            </li>
+                            <li class="index-item event inherited">
+                                <a href="#event_boundary">boundary</a>
+
+                            </li>
+                            <li class="index-item event inherited">
                                 <a href="#event_destroyed">destroyed</a>
 
                             </li>
-                            <li class="index-item event">
-                                <a href="#event_flipY">flipY</a>
+                            <li class="index-item event inherited">
+                                <a href="#event_removed">removed</a>
 
                             </li>
-                            <li class="index-item event">
-                                <a href="#event_loaded">loaded</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_src">src</a>
+                            <li class="index-item event inherited">
+                                <a href="#event_transform">transform</a>
 
                             </li>
                     </ul>
@@ -477,6 +560,65 @@
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
 
+<div id="method_add" class="method item inherited">
+    <h3 class="name"><code>add</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>component</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Model.html#method_add">Model</a>:
+        <a href="../files/src_models_model.js.html#l372"><code>src&#x2F;models&#x2F;model.js:372</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Adds a <a href="../classes/Component.html" class="crosslink">Component</a> or subtype to this Model.</p>
+<p>The <a href="../classes/Component.html" class="crosslink">Component(s)</a> may be specified by ID, instance, JSON definition or type.</p>
+<p>See class comment for usage examples.</p>
+<p>The <a href="../classes/Component.html" class="crosslink">Components</a> must be in the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Model.</p>
+<p>Fires an <a href="../classes/Model.html#event_added" class="crosslink">added</a> event.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">component</code>
+                        <span class="type">Number | String |  | <a href="../classes/Component.html" class="crosslink">Component</a></span>
+
+
+                    <div class="param-description">
+                        <p>ID, definition or instance of a <a href="../classes/Component.html" class="crosslink">Component</a> type or subtype.</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
 <div id="method_create" class="method item inherited">
     <h3 class="name"><code>create</code></h3>
 
@@ -510,8 +652,8 @@
     </div>
 
     <div class="description">
-        <p>Convenience method for creating a Component within this Component&#39;s <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
-<p>The method is given a component configuration, like so:</p>
+        <p><p>Convenience method for creating a Component within this Component&#39;s <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p></p>
+<p><p>The method is given a component configuration, like so:</p></p>
 <pre class="code prettyprint"><code class="lang-javascript">var material = myComponent.create({
      type: "xeogl.PhongMaterial",
      diffuse: [1,0,0],
@@ -579,6 +721,38 @@
 <p>Automatically disassociates this component from other components, causing them to fall back on any
 defaults that this component overrode on them.</p>
 <p>TODO: describe effect with respect to #create</p>
+
+    </div>
+
+
+
+
+</div>
+<div id="method_destroyAll" class="method item inherited">
+    <h3 class="name"><code>destroyAll</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Model.html#method_destroyAll">Model</a>:
+        <a href="../files/src_models_model.js.html#l562"><code>src&#x2F;models&#x2F;model.js:562</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Destroys all <a href="../classes/Component.html" class="crosslink">Components</a> in this Model.</p>
 
     </div>
 
@@ -830,12 +1004,12 @@ any subsequent notifications on the event as they are made.</p>
     </div>
 
     <div class="description">
-        <p>Tests if this component is of the given type, or is a subclass of the given type.</p>
-<p>The type may be given as either a string or a component constructor.</p>
-<p>This method works by walking up the inheritance type chain, which this component provides in
+        <p><p>Tests if this component is of the given type, or is a subclass of the given type.</p></p>
+<p><p>The type may be given as either a string or a component constructor.</p></p>
+<p><p>This method works by walking up the inheritance type chain, which this component provides in
 property <a href="../classes/Component.html#property_superTypes" class="crosslink">superTypes</a>, returning true as soon as one of the type strings in
-the chain matches the given type, of false if none match.</p>
-<h4 id="examples-">Examples:</h4>
+the chain matches the given type, of false if none match.</p></p>
+<p><h4 id="examples-">Examples:</h4></p>
 <pre class="code prettyprint"><code class="lang-javascript">var myRotate = new xeogl.Rotate({ ... });
 
 myRotate.isType(xeogl.Component); // Returns true for all xeogl components
@@ -875,6 +1049,76 @@ myRotate.isType(xeogl.Entity); // Returns false, because xeogl.Rotate does not (
 
             </div>
         </div>
+
+
+</div>
+<div id="method_iterate" class="method item inherited">
+    <h3 class="name"><code>iterate</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>callback</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[scope=this]</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Model.html#method_iterate">Model</a>:
+        <a href="../files/src_models_model.js.html#l697"><code>src&#x2F;models&#x2F;model.js:697</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Iterates with a callback over the <a href="../classes/Component.html" class="crosslink">Components</a> in this Model.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">callback</code>
+                        <span class="type">Function</span>
+
+
+                    <div class="param-description">
+                        <p>Callback called for each <a href="../classes/Component.html" class="crosslink">Component</a>.</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[scope=this]</code>
+                        <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>Optional scope for the callback, defaults to this Model.</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
 
 
 </div>
@@ -1175,6 +1419,38 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
 </div>
+<div id="method_removeAll" class="method item inherited">
+    <h3 class="name"><code>removeAll</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Model.html#method_removeAll">Model</a>:
+        <a href="../files/src_models_model.js.html#l598"><code>src&#x2F;models&#x2F;model.js:598</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Removes all <a href="../classes/Component.html" class="crosslink">Components</a> from this Model.</p>
+
+    </div>
+
+
+
+
+</div>
 <div id="method_warn" class="method item inherited">
     <h3 class="name"><code>warn</code></h3>
 
@@ -1238,6 +1514,60 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
+                    <div id="property_aabb" class="property item inherited">
+                        <h3 class="name"><code>aabb</code></h3>
+                        <span class="type">Float32Array</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Model.html#property_aabb">Model</a>:
+                            <a href="../files/src_models_model.js.html#l757"><code>src&#x2F;models&#x2F;model.js:757</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>World-space axis-aligned 3D boundary (AABB) of this Model.</p>
+                    <p>The AABB is represented by a six-element Float32Array containing the min/max extents of the
+                    axis-aligned volume, ie. <code>[xmin, ymin,zmin,xmax,ymax, zmax]</code>.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_components" class="property item inherited">
+                        <h3 class="name"><code>components</code></h3>
+                        <span class="type">String:Component</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Model.html#property_components">Model</a>:
+                            <a href="../files/src_models_model.js.html#l294"><code>src&#x2F;models&#x2F;model.js:294</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Components within this Model, mapped to their IDs.</p>
+                    <p>Fires an Model/updated:event event on change.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_destroyed" class="property item inherited">
                         <h3 class="name"><code>destroyed</code></h3>
                         <span class="type">Boolean</span>
@@ -1263,40 +1593,33 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_encoding" class="property item">
-                        <h3 class="name"><code>encoding</code></h3>
-                        <span class="type">String</span>
+                    <div id="property_entities" class="property item inherited">
+                        <h3 class="name"><code>entities</code></h3>
+                        <span class="type">String:Entity</span>
                     
                     
                     
                     
                     
                         <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_lighting_cubeTexture.js.html#l230"><code>src&#x2F;lighting&#x2F;cubeTexture.js:230</code></a>
+                                    <p>Inherited from
+                                    <a href="../classes/Model.html#property_entities">Model</a>:
+                            <a href="../files/src_models_model.js.html#l334"><code>src&#x2F;models&#x2F;model.js:334</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The CubeTexture&#39;s encoding format.</p>
-                    <p>Supported values are:</p>
-                    <ul>
-                    <li>&quot;linear&quot; (default)</li>
-                    <li>&quot;sRGB&quot;</li>
-                    <li>&quot;gamma&quot;</li>
-                    </ul>
+                            <p>The <a href="../classes/Entity.html" class="crosslink">Entity</a> component instances within this Model, mapped to their IDs.</p>
                     
                         </div>
                     
-                            <p><strong>Default:</strong> &quot;linear&quot;</p>
                     
                     
                     </div>
-                    <div id="property_flipY" class="property item">
-                        <h3 class="name"><code>flipY</code></h3>
+                    <div id="property_ghost" class="property item inherited">
+                        <h3 class="name"><code>ghost</code></h3>
                         <span class="type">Boolean</span>
                     
                     
@@ -1304,17 +1627,42 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_lighting_cubeTexture.js.html#l193"><code>src&#x2F;lighting&#x2F;cubeTexture.js:193</code></a>
+                                    <p>Inherited from
+                                    <a href="../classes/Model.html#property_ghost">Model</a>:
+                            <a href="../files/src_models_model.js.html#l851"><code>src&#x2F;models&#x2F;model.js:851</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Flips this CubeTexture&#39;s source data along its vertical axis when true.</p>
-                    <p>Fires a <a href="../classes/CubeTexture.html#event_flipY" class="crosslink">flipY</a> event on change.</p>
+                            <p>Flag which indicates if this Model&#39;s Entities are rendered with ghost effect.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> false</p>
+                    
+                    
+                    </div>
+                    <div id="property_highlight" class="property item inherited">
+                        <h3 class="name"><code>highlight</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Model.html#property_highlight">Model</a>:
+                            <a href="../files/src_models_model.js.html#l878"><code>src&#x2F;models&#x2F;model.js:878</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Flag which indicates if this Model&#39;s Entities are rendered with highlight effect.</p>
                     
                         </div>
                     
@@ -1398,6 +1746,57 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_numComponents" class="property item inherited">
+                        <h3 class="name"><code>numComponents</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Model.html#property_numComponents">Model</a>:
+                            <a href="../files/src_models_model.js.html#l304"><code>src&#x2F;models&#x2F;model.js:304</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The number of Components within this Model.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_outline" class="property item inherited">
+                        <h3 class="name"><code>outline</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Model.html#property_outline">Model</a>:
+                            <a href="../files/src_models_model.js.html#l905"><code>src&#x2F;models&#x2F;model.js:905</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Flag which indicates if this Model&#39;s Entities are rendered with outline effect.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> false</p>
+                    
+                    
+                    </div>
                     <div id="property_scene" class="property item inherited">
                         <h3 class="name"><code>scene</code></h3>
                         <span class="type"><a href="../classes/Scene.html" class="crosslink">Scene</a></span>
@@ -1424,33 +1823,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_src" class="property item">
-                        <h3 class="name"><code>src</code></h3>
-                        <span class="type">Array of String</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_lighting_cubeTexture.js.html#l160"><code>src&#x2F;lighting&#x2F;cubeTexture.js:160</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Array of paths to six image files to source this CubeTexture.</p>
-                    <p>Fires a <a href="../classes/CubeTexture.html#event_src" class="crosslink">src</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> null</p>
-                    
-                    
-                    </div>
                     <div id="property_superTypes" class="property item inherited">
                         <h3 class="name"><code>superTypes</code></h3>
                         <span class="type">Array of String</span>
@@ -1474,9 +1846,39 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     <p>For example, if this component is a <a href="../classes/Rotate.html" class="crosslink">Rotate</a>, which
                     extends <a href="../classes/Transform.html" class="crosslink">Transform</a>, which in turn extends <a href="../classes/Component.html" class="crosslink">Component</a>,
                     then this property will have the value:</p>
-                    <pre class="code prettyprint"><code class="lang-json">["xeogl.Component", "xeogl.Transform"]
+                    <pre class="code prettyprint"><code class="lang-json">[&quot;xeogl.Component&quot;, &quot;xeogl.Transform&quot;]
                     </code></pre>
                     <p>Note that the chain is ordered downwards in the hierarchy, ie. from super-class down towards sub-class.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_transform" class="property item inherited">
+                        <h3 class="name"><code>transform</code></h3>
+                        <span class="type"><a href="../classes/Transform.html" class="crosslink">Transform</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Model.html#property_transform">Model</a>:
+                            <a href="../files/src_models_model.js.html#l716"><code>src&#x2F;models&#x2F;model.js:716</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Local-to-World-space (modelling) <a href="../classes/Transform.html" class="crosslink">Transform</a> attached to this Model.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Model.</p>
+                    <p>Internally, the given <a href="../classes/Transform.html" class="crosslink">Transform</a> will be inserted above each top-most
+                    <a href="../classes/Transform.html" class="crosslink">Transform</a> that the Model attaches to
+                    its <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
+                    <p>Fires an <a href="../classes/Model.html#event_transform" class="crosslink">transform</a> event on change.</p>
                     
                         </div>
                     
@@ -1493,9 +1895,12 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Component.html#property_type">Component</a>:
-                            <a href="../files/src_component.js.html#l351"><code>src&#x2F;component.js:351</code></a>
+                                <p>Inherited from
+                                <a href="../classes/Component.html#property_type">
+                                    Component
+                                </a>
+                                but overwritten in
+                            <a href="../files/src_models_model.js.html#l283"><code>src&#x2F;models&#x2F;model.js:283</code></a>
                             </p>
                     
                     
@@ -1503,10 +1908,71 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>JavaScript class name for this Component.</p>
-                    <p>For example: &quot;xeogl.AmbientLight&quot;, &quot;xeogl.ColorTarget&quot;, &quot;xeogl.Lights&quot; etc.</p>
                     
                         </div>
                     
+                    
+                    
+                    </div>
+                    <div id="property_types" class="property item inherited">
+                        <h3 class="name"><code>types</code></h3>
+                        <span class="type">String:{String:xeogl.Component}</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Model.html#property_types">Model</a>:
+                            <a href="../files/src_models_model.js.html#l312"><code>src&#x2F;models&#x2F;model.js:312</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p><p>A map of maps; for each <a href="../classes/Component.html" class="crosslink">Component</a> type in this Model,
+                    a map to IDs to <a href="../classes/Component.html" class="crosslink">Component</a> instances, eg.</p></p>
+                    <pre class="code prettyprint"><code>"xeogl.Geometry": {
+                      "alpha": &lt;xeogl.Geometry&gt;,
+                      "beta": &lt;xeogl.Geometry&gt;
+                    },
+                    "xeogl.Rotate": {
+                      "charlie": &lt;xeogl.Rotate&gt;,
+                      "delta": &lt;xeogl.Rotate&gt;,
+                      "echo": &lt;xeogl.Rotate&gt;,
+                    },
+                    //...
+                    </code></pre>
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_visible" class="property item inherited">
+                        <h3 class="name"><code>visible</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Model.html#property_visible">Model</a>:
+                            <a href="../files/src_models_model.js.html#l824"><code>src&#x2F;models&#x2F;model.js:824</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Indicates whether this Model&#39;s Entities are visible or not.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> true</p>
                     
                     
                     </div>
@@ -1516,6 +1982,74 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="events" class="api-class-tabpanel">
                 <h2 class="off-left">Events</h2>
 
+                    <div id="event_added" class="events item inherited">
+                        <h3 class="name"><code>added</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Model.html#event_added">Model</a>:
+                            <a href="../files/src_models_model.js.html#l523"><code>src&#x2F;models&#x2F;model.js:523</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever an individual <a href="../classes/Component.html" class="crosslink">Component</a> is added to this <a href="../classes/Model.html" class="crosslink">Model</a>.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type"><a href="../classes/Component.html" class="crosslink">Component</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The <a href="../classes/Component.html" class="crosslink">Component</a> that was added.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_boundary" class="events item inherited">
+                        <h3 class="name"><code>boundary</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Model.html#event_boundary">Model</a>:
+                            <a href="../files/src_models_model.js.html#l944"><code>src&#x2F;models&#x2F;model.js:944</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Model&#39;s World-space boundary changes.</p>
+                    <p>Get the latest boundary from the Model&#39;s <a href="../classes/Model.html#property_aabb" class="crosslink">aabb</a> property.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="event_destroyed" class="events item inherited">
                         <h3 class="name"><code>destroyed</code></h3>
                         <span class="type"></span>
@@ -1541,8 +2075,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_flipY" class="events item">
-                        <h3 class="name"><code>flipY</code></h3>
+                    <div id="event_removed" class="events item inherited">
+                        <h3 class="name"><code>removed</code></h3>
                         <span class="type"></span>
                     
                     
@@ -1550,16 +2084,16 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_lighting_cubeTexture.js.html#l217"><code>src&#x2F;lighting&#x2F;cubeTexture.js:217</code></a>
+                                    <p>Inherited from
+                                    <a href="../classes/Model.html#event_removed">Model</a>:
+                            <a href="../files/src_models_model.js.html#l685"><code>src&#x2F;models&#x2F;model.js:685</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this CubeTexture&#39;s  <a href="../classes/CubeTexture.html#property_flipY" class="crosslink">flipY</a> property changes.</p>
+                            <p>Fired whenever an individual <a href="../classes/Component.html" class="crosslink">Component</a> is removed from this <a href="../classes/Model.html" class="crosslink">Model</a>.</p>
                     
                         </div>
                     
@@ -1569,11 +2103,11 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                 <ul class="params-list">
                                     <li class="param">
                                             <code class="param-name">value</code>
-                                            <span class="type">String</span>
+                                            <span class="type"><a href="../classes/Component.html" class="crosslink">Component</a></span>
                     
                     
                                         <div class="param-description">
-                                            <p>The property&#39;s new value</p>
+                                            <p>The <a href="../classes/Component.html" class="crosslink">Component</a> that was removed.</p>
                     
                                         </div>
                     
@@ -1583,8 +2117,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_loaded" class="events item">
-                        <h3 class="name"><code>loaded</code></h3>
+                    <div id="event_transform" class="events item inherited">
+                        <h3 class="name"><code>transform</code></h3>
                         <span class="type"></span>
                     
                     
@@ -1592,59 +2126,16 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_lighting_cubeTexture.js.html#l114"><code>src&#x2F;lighting&#x2F;cubeTexture.js:114</code></a>
+                                    <p>Inherited from
+                                    <a href="../classes/Model.html#event_transform">Model</a>:
+                            <a href="../files/src_models_model.js.html#l734"><code>src&#x2F;models&#x2F;model.js:734</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this CubeTexture has loaded the
-                    image files that its <a href="../classes/CubeTexture.html#property_src" class="crosslink">src</a> property currently points to.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">HTML Image</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The value of the <a href="../classes/CubeTexture.html#property_src" class="crosslink">src</a> property</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_src" class="events item">
-                        <h3 class="name"><code>src</code></h3>
-                        <span class="type">Array of String</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_lighting_cubeTexture.js.html#l179"><code>src&#x2F;lighting&#x2F;cubeTexture.js:179</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this CubeTexture&#39;s <a href="../classes/CubeTexture.html#property_src" class="crosslink">src</a> property changes.</p>
+                            <p>Fired whenever this Model&#39;s <a href="../classes/Model.html#property_transform" class="crosslink">transform</a> property changes.</p>
                     
                         </div>
                     

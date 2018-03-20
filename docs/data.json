@@ -946,6 +946,15 @@
             "fors": {},
             "namespaces": {}
         },
+        "examples/js/models/cityTestModel.js": {
+            "name": "examples/js/models/cityTestModel.js",
+            "modules": {},
+            "classes": {
+                "CityTestModel": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
         "examples/js/models/glTFModel.js": {
             "name": "examples/js/models/glTFModel.js",
             "modules": {},
@@ -1139,6 +1148,7 @@
                 "OBJModel": 1,
                 "STLModel": 1,
                 "BuildableModel": 1,
+                "CityTestModel": 1,
                 "GLTFModel": 1,
                 "SceneJSModel": 1,
                 "AABBHelper": 1,
@@ -1375,6 +1385,7 @@
                 "OBJModel": 1,
                 "STLModel": 1,
                 "BuildableModel": 1,
+                "CityTestModel": 1,
                 "GLTFModel": 1,
                 "SceneJSModel": 1
             },
@@ -4913,6 +4924,34 @@
                             "optional": true
                         },
                         {
+                            "name": "flattenTransforms",
+                            "description": "Flattens transform hierarchies to improve rendering performance.",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "true"
+                        },
+                        {
+                            "name": "ghost",
+                            "description": "When true, sets all the Model's Entities initially ghosted. |",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
+                        },
+                        {
+                            "name": "highlight",
+                            "description": "When true, sets all the Model's Entities initially highlighted. |",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
+                        },
+                        {
+                            "name": "outline",
+                            "description": "When true, sets all the Model's Entities initially outlined. |",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
+                        },
+                        {
                             "name": "transform",
                             "description": "A Local-to-World-space (modelling) {{#crossLink \"Transform\"}}{{/crossLink}} to attach to this Model.\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this Model. Internally, the given\n{{#crossLink \"Transform\"}}{{/crossLink}} will be inserted above each top-most {{#crossLink \"Transform\"}}Transform{{/crossLink}}\nthat the Model attaches to its {{#crossLink \"Entity\"}}Entities{{/crossLink}}.",
                             "type": "Number|String|Transform",
@@ -4925,34 +4964,6 @@
                             "optional": true
                         }
                     ]
-                },
-                {
-                    "name": "flattenTransforms",
-                    "description": "Flattens transform hierarchies to improve rendering performance.",
-                    "type": "Boolean",
-                    "optional": true,
-                    "optdefault": "true"
-                },
-                {
-                    "name": "ghost",
-                    "description": "When true, sets all the Model's Entities initially ghosted. |",
-                    "type": "Boolean",
-                    "optional": true,
-                    "optdefault": "false"
-                },
-                {
-                    "name": "highlight",
-                    "description": "When true, sets all the Model's Entities initially highlighted. |",
-                    "type": "Boolean",
-                    "optional": true,
-                    "optdefault": "false"
-                },
-                {
-                    "name": "outline",
-                    "description": "When true, sets all the Model's Entities initially outlined. |",
-                    "type": "Boolean",
-                    "optional": true,
-                    "optdefault": "false"
                 }
             ],
             "extends": "Component"
@@ -7109,6 +7120,76 @@
                             "description": "A Local-to-World-space (modelling) {{#crossLink \"Transform\"}}{{/crossLink}} to attach to this BuildableModel.\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this BuildableModel. Internally, the given\n{{#crossLink \"Transform\"}}{{/crossLink}} will be inserted above each top-most {{#crossLink \"Transform\"}}Transform{{/crossLink}}\nthat the BuildableModel attaches to its {{#crossLink \"Entity\"}}Entities{{/crossLink}}.",
                             "type": "Number|String|Transform",
                             "optional": true
+                        }
+                    ]
+                }
+            ],
+            "extends": "Model"
+        },
+        "CityTestModel": {
+            "name": "CityTestModel",
+            "shortname": "CityTestModel",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "xeogl",
+            "namespace": "",
+            "file": "examples/js/models/cityTestModel.js",
+            "line": 1,
+            "description": "A **CityTestModel** is a procedurally-generated test {{#crossLink \"Model\"}}{{/crossLink}} containing {{#crossLink \"Entity\"}}Entities{{/crossLink}} that represent city buildings.\n\n<a href=\"../../examples/#models_generation_CityTestModel\"><img src=\"http://i.giphy.com/l0HlPJO1AN01Lz27e.gif\"></img></a>\n\n## Overview\n\n* Allows you to develop basic capabilities of your app without needing to load any models.\n\nIt inherits these capabilities from its {{#crossLink \"Model\"}}{{/crossLink}} base class:\n\n* Allows you to access and manipulate the components within it.\n* Can be transformed within World-space by attaching it to a {{#crossLink \"Transform\"}}{{/crossLink}}.\n* Provides its dynamic World-space axis-aligned boundary.\n\n## Examples\n\n* TODO\n\n## Usage\n\n````javascript\nvar model = new xeogl.CityTestModel({\n    id: \"myModel\",\n    size: 5000, // Width of each axis\n    density: 4 // How many buildings on each axis\n});\n````",
+            "submodule": "models",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this CityTestModel in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}},\ngenerated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this CityTestModel.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "size",
+                            "description": "World-space width of each axis.",
+                            "type": "Number",
+                            "optional": true
+                        },
+                        {
+                            "name": "density",
+                            "description": "Number of buildings on each axis.",
+                            "type": "Number",
+                            "optional": true
+                        },
+                        {
+                            "name": "transform",
+                            "description": "A Local-to-World-space (modelling) {{#crossLink \"Transform\"}}{{/crossLink}} to attach to this CityTestModel.\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this CityTestModel. Internally, the given\n{{#crossLink \"Transform\"}}{{/crossLink}} will be inserted above each top-most {{#crossLink \"Transform\"}}Transform{{/crossLink}}\nthat the CityTestModel attaches to its {{#crossLink \"Entity\"}}Entities{{/crossLink}}.",
+                            "type": "Number|String|Transform",
+                            "optional": true
+                        },
+                        {
+                            "name": "splitEntities",
+                            "description": "When true, creates a separate {{#crossLink \"Entity\"}}{{/crossLink}} for each group of faces that share the same vertex colors. Only works with binary STL.|",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "true"
                         }
                     ]
                 }
