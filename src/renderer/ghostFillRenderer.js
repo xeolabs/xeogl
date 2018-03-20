@@ -197,17 +197,15 @@
         }
     };
 
-    xeogl.renderer.GhostFillRenderer.prototype.drawObject = function (frame, object, highlight) {
+    xeogl.renderer.GhostFillRenderer.prototype.drawObject = function (frame, object, mode) {
 
         if (frame.lastProgramId !== this._program.id) {
             frame.lastProgramId = this._program.id;
             this._bindProgram(frame);
         }
 
-        var maxTextureUnits = xeogl.WEBGL_INFO.MAX_TEXTURE_UNITS;
         var gl = this._gl;
-        var program = this._program;
-        var material = highlight ? object.highlightMaterial :  object.ghostMaterial;
+        var material = mode === 0 ? object.ghostMaterial : (mode === 1 ? object.highlightMaterial : object.selectedMaterial);
         var modelTransform = object.modelTransform;
         var geometry = object.geometry;
 

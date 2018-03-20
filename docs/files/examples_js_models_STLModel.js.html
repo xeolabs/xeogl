@@ -65,12 +65,12 @@
                                 <li><a href="../classes/Curve.html">Curve</a></li>
                                 <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
                                 <li><a href="../classes/DirLight.html">DirLight</a></li>
+                                <li><a href="../classes/EmphasisMaterial.html">EmphasisMaterial</a></li>
                                 <li><a href="../classes/Entity.html">Entity</a></li>
                                 <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
                                 <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
-                                <li><a href="../classes/GhostMaterial.html">GhostMaterial</a></li>
                                 <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
@@ -186,13 +186,13 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
- An **STLModel** is a {{#crossLink &quot;Model&quot;}}{{/crossLink}} that&#x27;s loaded from an &lt;a href=&quot;https://github.com/KhronosGroup/STL&quot; target = &quot;_other&quot;&gt;STL&lt;/a&gt; file.
+ An **STLModel** is a {{#crossLink &quot;Model&quot;}}{{/crossLink}} that&#x27;s loaded from an &lt;a href=&quot;https://en.wikipedia.org/wiki/STL_(file_format)&quot;&gt;STL&lt;/a&gt; file.
 
  &lt;a href=&quot;../../examples/#importing_stl_shapes&quot;&gt;&lt;img src=&quot;../../../assets/images/screenshots/STLModel.png&quot;&gt;&lt;/img&gt;&lt;/a&gt;
 
  ## Overview
 
- * An [STL](https://en.wikipedia.org/wiki/STL_(file_format) (“StereoLithography”) file is a triangular representation of a 3-dimensional surface geometry. The surface is
+ * An &lt;a href=&quot;https://en.wikipedia.org/wiki/STL_(file_format)&quot;&gt;STL&lt;/a&gt; (“StereoLithography”) file is a triangular representation of a 3-dimensional surface geometry. The surface is
  tessellated logically into a series of triangles. Each facet is described by a perpendicular
  direction and three points representing the vertices (corners) of the triangle.
  * An STLModel is a container of {{#crossLink &quot;Component&quot;}}Components{{/crossLink}} that loads itself from an STL file.
@@ -299,9 +299,9 @@
  | smoothNormals | Boolean |  | false | When true, automatically converts face-oriented normals to vertex normals for a smooth appearance. See [Smoothing Normals](#smoothing-normals). |
  | smoothNormalsAngleThreshold | Number (degrees) | [0..180] | 20 | See [Smoothing Normals](#smoothing-normals). |
  | backfaces | Boolean |  | true | When true, allows visible backfaces, wherever specified in the STL. When false, ignores backfaces. |
- | ghost | Boolean |  | false | When true, ghosts all the model&#x27;s Entities (see {{#crossLink &quot;Entity&quot;}}{{/crossLink}} and {{#crossLink &quot;GhostMaterial&quot;}}{{/crossLink}}). |
+ | ghost | Boolean |  | false | When true, ghosts all the model&#x27;s Entities (see {{#crossLink &quot;Entity&quot;}}{{/crossLink}} and {{#crossLink &quot;EmphasisMaterial&quot;}}{{/crossLink}}). |
  | outline | Boolean |  | false | When true, outlines all the model&#x27;s Entities (see {{#crossLink &quot;Entity&quot;}}{{/crossLink}} and {{#crossLink &quot;OutlineMaterial&quot;}}{{/crossLink}}). |
- | highlight | Boolean |  | false | When true, highlights all the model&#x27;s Entities (see {{#crossLink &quot;Entity&quot;}}{{/crossLink}} and {{#crossLink &quot;GhostMaterial&quot;}}{{/crossLink}}). |
+ | highlight | Boolean |  | false | When true, highlights all the model&#x27;s Entities (see {{#crossLink &quot;Entity&quot;}}{{/crossLink}} and {{#crossLink &quot;EmphasisMaterial&quot;}}{{/crossLink}}). |
  | ghostEdgeThreshold | Number | [0..180] | 2 | When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn. |
  | splitEntities | Boolean |  | true | When true, creates a separate {{#crossLink &quot;Entity&quot;}}{{/crossLink}} for each group of faces that share the same vertex colors. Only works with binary STL.| |
 

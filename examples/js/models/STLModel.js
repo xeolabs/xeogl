@@ -1,11 +1,11 @@
 /**
- An **STLModel** is a {{#crossLink "Model"}}{{/crossLink}} that's loaded from an <a href="https://github.com/KhronosGroup/STL" target = "_other">STL</a> file.
+ An **STLModel** is a {{#crossLink "Model"}}{{/crossLink}} that's loaded from an <a href="https://en.wikipedia.org/wiki/STL_(file_format)">STL</a> file.
 
  <a href="../../examples/#importing_stl_shapes"><img src="../../../assets/images/screenshots/STLModel.png"></img></a>
 
  ## Overview
 
- * An [STL](https://en.wikipedia.org/wiki/STL_(file_format) (“StereoLithography”) file is a triangular representation of a 3-dimensional surface geometry. The surface is
+ * An <a href="https://en.wikipedia.org/wiki/STL_(file_format)">STL</a> (“StereoLithography”) file is a triangular representation of a 3-dimensional surface geometry. The surface is
  tessellated logically into a series of triangles. Each facet is described by a perpendicular
  direction and three points representing the vertices (corners) of the triangle.
  * An STLModel is a container of {{#crossLink "Component"}}Components{{/crossLink}} that loads itself from an STL file.
@@ -112,9 +112,9 @@
  | smoothNormals | Boolean |  | false | When true, automatically converts face-oriented normals to vertex normals for a smooth appearance. See [Smoothing Normals](#smoothing-normals). |
  | smoothNormalsAngleThreshold | Number (degrees) | [0..180] | 20 | See [Smoothing Normals](#smoothing-normals). |
  | backfaces | Boolean |  | true | When true, allows visible backfaces, wherever specified in the STL. When false, ignores backfaces. |
- | ghost | Boolean |  | false | When true, ghosts all the model's Entities (see {{#crossLink "Entity"}}{{/crossLink}} and {{#crossLink "GhostMaterial"}}{{/crossLink}}). |
+ | ghost | Boolean |  | false | When true, ghosts all the model's Entities (see {{#crossLink "Entity"}}{{/crossLink}} and {{#crossLink "EmphasisMaterial"}}{{/crossLink}}). |
  | outline | Boolean |  | false | When true, outlines all the model's Entities (see {{#crossLink "Entity"}}{{/crossLink}} and {{#crossLink "OutlineMaterial"}}{{/crossLink}}). |
- | highlight | Boolean |  | false | When true, highlights all the model's Entities (see {{#crossLink "Entity"}}{{/crossLink}} and {{#crossLink "GhostMaterial"}}{{/crossLink}}). |
+ | highlight | Boolean |  | false | When true, highlights all the model's Entities (see {{#crossLink "Entity"}}{{/crossLink}} and {{#crossLink "EmphasisMaterial"}}{{/crossLink}}). |
  | ghostEdgeThreshold | Number | [0..180] | 2 | When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn. |
  | splitEntities | Boolean |  | true | When true, creates a separate {{#crossLink "Entity"}}{{/crossLink}} for each group of faces that share the same vertex colors. Only works with binary STL.| |
 
