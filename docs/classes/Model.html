@@ -56,6 +56,7 @@
                                 <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
+                                <li><a href="../classes/CityTestModel.html">CityTestModel</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/ClipHelper.html">ClipHelper</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
@@ -403,18 +404,6 @@ destroying them when we destroy the Model or call its <a href="../classes/Model.
                         <li class="arg">
                                 <code class="optional">[cfg]</code>
                         </li>
-                        <li class="arg">
-                                <code class="optional">[flattenTransforms=true]</code>
-                        </li>
-                        <li class="arg">
-                                <code class="optional">[ghost=false]</code>
-                        </li>
-                        <li class="arg">
-                                <code class="optional">[highlight=false]</code>
-                        </li>
-                        <li class="arg">
-                                <code class="optional">[outline=false]</code>
-                        </li>
                     </ul><span class="paren">)</span>
                 </div>
         
@@ -493,6 +482,50 @@ destroying them when we destroy the Model or call its <a href="../classes/Model.
         
                                     </li>
                                     <li class="param">
+                                            <code class="param-name optional">[flattenTransforms=true]</code>
+                                            <span class="type">Boolean</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Flattens transform hierarchies to improve rendering performance.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[ghost=false]</code>
+                                            <span class="type">Boolean</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>When true, sets all the Model&#39;s Entities initially ghosted. |</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[highlight=false]</code>
+                                            <span class="type">Boolean</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>When true, sets all the Model&#39;s Entities initially highlighted. |</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[outline=false]</code>
+                                            <span class="type">Boolean</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>When true, sets all the Model&#39;s Entities initially outlined. |</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
                                             <code class="param-name optional">[transform]</code>
                                             <span class="type">Number | String | <a href="../classes/Transform.html" class="crosslink">Transform</a></span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
@@ -518,54 +551,6 @@ destroying them when we destroy the Model or call its <a href="../classes/Model.
         
                                     </li>
                                 </ul>
-                        </li>
-                        <li class="param">
-                                <code class="param-name optional">[flattenTransforms=true]</code>
-                                <span class="type">Boolean</span>
-                                <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-        
-                            <div class="param-description">
-                                <p>Flattens transform hierarchies to improve rendering performance.</p>
-        
-                            </div>
-        
-                        </li>
-                        <li class="param">
-                                <code class="param-name optional">[ghost=false]</code>
-                                <span class="type">Boolean</span>
-                                <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-        
-                            <div class="param-description">
-                                <p>When true, sets all the Model&#39;s Entities initially ghosted. |</p>
-        
-                            </div>
-        
-                        </li>
-                        <li class="param">
-                                <code class="param-name optional">[highlight=false]</code>
-                                <span class="type">Boolean</span>
-                                <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-        
-                            <div class="param-description">
-                                <p>When true, sets all the Model&#39;s Entities initially highlighted. |</p>
-        
-                            </div>
-        
-                        </li>
-                        <li class="param">
-                                <code class="param-name optional">[outline=false]</code>
-                                <span class="type">Boolean</span>
-                                <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-        
-                            <div class="param-description">
-                                <p>When true, sets all the Model&#39;s Entities initially outlined. |</p>
-        
-                            </div>
-        
                         </li>
                     </ul>
                 </div>

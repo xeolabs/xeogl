@@ -263,10 +263,10 @@
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ModelModel.
- @param [flattenTransforms=true] {Boolean} Flattens transform hierarchies to improve rendering performance.
- @param [ghost=false] {Boolean} When true, sets all the Model's Entities initially ghosted. |
- @param [highlight=false] {Boolean} When true, sets all the Model's Entities initially highlighted. |
- @param [outline=false] {Boolean} When true, sets all the Model's Entities initially outlined. |
+ @param [cfg.flattenTransforms=true] {Boolean} Flattens transform hierarchies to improve rendering performance.
+ @param [cfg.ghost=false] {Boolean} When true, sets all the Model's Entities initially ghosted. |
+ @param [cfg.highlight=false] {Boolean} When true, sets all the Model's Entities initially highlighted. |
+ @param [cfg.outline=false] {Boolean} When true, sets all the Model's Entities initially outlined. |
  @param [cfg.transform] {Number|String|Transform} A Local-to-World-space (modelling) {{#crossLink "Transform"}}{{/crossLink}} to attach to this Model.
  Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this Model. Internally, the given
  {{#crossLink "Transform"}}{{/crossLink}} will be inserted above each top-most {{#crossLink "Transform"}}Transform{{/crossLink}}
