@@ -46,7 +46,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "OBBHelper",
         "OBJGeometry",
         "OBJModel",
-        "Object",
         "Ortho",
         "OutlineMaterial",
         "Path",

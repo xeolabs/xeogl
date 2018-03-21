@@ -84,7 +84,6 @@
                                 <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBBHelper.html">OBBHelper</a></li>
-                                <li><a href="../classes/Object.html">Object</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
                                 <li><a href="../classes/OBJModel.html">OBJModel</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -424,7 +423,7 @@
 
  ### Ghosting
 
- Ghost an Entity by setting its {{#crossLink &quot;Entity/ghost:property&quot;}}{{/crossLink}} property true. The Entity&#x27;s
+ Ghost an Entity by setting its {{#crossLink &quot;Entity/ghosted:property&quot;}}{{/crossLink}} property true. The Entity&#x27;s
  {{#crossLink &quot;EmphasisMaterial&quot;}}{{/crossLink}} then controls its appearance while ghosted.
 
  When we don&#x27;t provide it with a EmphasisMaterial, it will have the Scene&#x27;s {{#crossLink &quot;Scene/ghostMaterial:property&quot;}}{{/crossLink}}
@@ -453,7 +452,7 @@
         fillColor: [0, 0, 0],
         fillAlpha: 0.7
     }),
-    ghost: true
+    ghosted: true
  });
  &#x60;&#x60;&#x60;&#x60;
 
@@ -463,7 +462,7 @@
 
  ### Highlighting
 
- Highlight an Entity by setting its {{#crossLink &quot;Entity/highlight:property&quot;}}{{/crossLink}} property true. The Entity&#x27;s
+ Highlight an Entity by setting its {{#crossLink &quot;Entity/highlighted:property&quot;}}{{/crossLink}} property true. The Entity&#x27;s
  highlighting {{#crossLink &quot;EmphasisMaterial&quot;}}{{/crossLink}} then controls its appearance while highlighted.
 
  When we don&#x27;t provide it with a EmphasisMaterial for highlighting, it will have the Scene&#x27;s {{#crossLink &quot;Scene/highlightMaterial:property&quot;}}{{/crossLink}}
@@ -483,7 +482,7 @@
         color: [1.0, 1.0, 0.0],
         alpha: 0.6
     }),
-    highlight: true
+    highlighted: true
  });
  &#x60;&#x60;&#x60;&#x60;
 
@@ -493,7 +492,7 @@
 
  ### Outlining
 
- Outline an Entity by setting its {{#crossLink &quot;Entity/outline:property&quot;}}{{/crossLink}} property true. The Entity&#x27;s
+ Outline an Entity by setting its {{#crossLink &quot;Entity/outlined:property&quot;}}{{/crossLink}} property true. The Entity&#x27;s
  {{#crossLink &quot;OutlineMaterial&quot;}}{{/crossLink}} then controls its appearance while outlined.
 
  When we don&#x27;t provide it with an OutlineMaterial, it will have the Scene&#x27;s {{#crossLink &quot;Scene/outlineMaterial:property&quot;}}{{/crossLink}}
@@ -514,7 +513,7 @@
         alpha: 0.6,
         width: 5
     }),
-    outline: true
+    outlined: true
  });
  &#x60;&#x60;&#x60;&#x60;
 
@@ -698,10 +697,10 @@
  @param [cfg.collidable=true] {Boolean} Whether this Entity is included in boundary calculations.
  @param [cfg.castShadow=true] {Boolean} Whether this Entity casts shadows.
  @param [cfg.receiveShadow=true] {Boolean} Whether this Entity receives shadows.
- @param [cfg.outline=false] {Boolean} Whether an outline is rendered around this entity, as configured by the Entity&#x27;s {{#crossLink &quot;OutlineMaterial&quot;}}{{/crossLink}} component.
+ @param [cfg.outlined=false] {Boolean} Whether an outline is rendered around this entity, as configured by the Entity&#x27;s {{#crossLink &quot;OutlineMaterial&quot;}}{{/crossLink}} component.
  @param [cfg.outlineMaterial] {String|OutlineMaterial} ID or instance of an {{#crossLink &quot;OutlineMaterial&quot;}}{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/outlineMaterial:property&quot;}}outlineMaterial{{/crossLink}}.
- @param [cfg.ghost=false] {Boolean} Whether this entity is rendered ghosted, as configured by {{#crossLink &quot;Entity/ghostMaterial:property&quot;}}ghostMaterial{{/crossLink}}.
+ @param [cfg.ghosted=false] {Boolean} Whether this entity is rendered ghosted, as configured by {{#crossLink &quot;Entity/ghostMaterial:property&quot;}}ghostMaterial{{/crossLink}}.
  @param [cfg.ghostMaterial] {String|EmphasisMaterial} ID or instance of an {{#crossLink &quot;EmphasisMaterial&quot;}}{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/ghostMaterial:property&quot;}}ghostMaterial{{/crossLink}}.
  @param [cfg.highlight=false] {Boolean} Whether this entity is rendered highlighted, as configured by {{#crossLink &quot;Entity/highlightMaterial:property&quot;}}highlightMaterial{{/crossLink}}.
@@ -745,9 +744,9 @@
                 collidable: null,
                 castShadow: null,
                 receiveShadow: null,
-                outline: null,
-                ghost: false,
-                highlight: false,
+                outlined: null,
+                ghosted: false,
+                highlighted: false,
                 selected: false,
                 layer: null,
                 billboard: null,
@@ -783,13 +782,14 @@
             this.collidable = cfg.collidable;
             this.castShadow = cfg.castShadow;
             this.receiveShadow = cfg.receiveShadow;
-            this.outline = cfg.outline;
+            this.outlined = cfg.outlined;
             this.layer = cfg.layer;
             this.stationary = cfg.stationary;
             this.billboard = cfg.billboard;
             this.solid = cfg.solid;
-            this.ghost = cfg.ghost;
-            this.highlight = cfg.highlight;
+            this.ghosted = cfg.ghosted;
+            this.highlighted = cfg.highlighted;
+            this.selected = cfg.selected;
             this.colorize = cfg.colorize;
         },
 
@@ -1193,23 +1193,23 @@
 
              The outline effect is configured via the Entity&#x27;s {{#crossLink &quot;Entity/outlineMaterial:property&quot;}}outlineMaterial{{/crossLink}} component.
 
-             @property outline
+             @property outlined
              @default false
              @type Boolean
              */
-            outline: {
+            &quot;outlined,outline&quot;: {
 
                 set: function (value) {
                     value = !!value;
-                    if (value === this._state.outline) {
+                    if (value === this._state.outlined) {
                         return;
                     }
-                    this._state.outline = value;
+                    this._state.outlined = value;
                     this._renderer.imageDirty();
                 },
 
                 get: function () {
-                    return this._state.outline;
+                    return this._state.outlined;
                 }
             },
 
@@ -1218,23 +1218,23 @@
 
              The highlight effect is configured via the Entity&#x27;s {{#crossLink &quot;Entity/highlightMaterial:property&quot;}}highlightMaterial{{/crossLink}}.
 
-             @property highlight
+             @property highlighted
              @default false
              @type Boolean
              */
-            highlight: {
+            &quot;highlight,highlighted&quot;: {
 
                 set: function (value) {
                     value = !!value;
-                    if (value === this._state.highlight) {
+                    if (value === this._state.highlighted) {
                         return;
                     }
-                    this._state.highlight = value;
+                    this._state.highlighted = value;
                     this._renderer.imageDirty();
                 },
 
                 get: function () {
-                    return this._state.highlight;
+                    return this._state.highlighted;
                 }
             },
 
@@ -1386,27 +1386,27 @@
             },
 
             /**
-             * Flag which indicates if this Entity is rendered with ghosting effect.
+             * Flag which indicates if this Entity is rendered with ghost effect.
              *
              * The ghost effect is configured via the Entity&#x27;s {{#crossLink &quot;Entity/ghostMaterial:property&quot;}}ghostMaterial{{/crossLink}}.
              *
-             * @property ghost
+             * @property ghosted
              * @default false
              * @type Boolean
              */
-            ghost: {
+            &quot;ghosted,ghost&quot;: {
 
                 set: function (value) {
                     value = !!value;
-                    if (this._state.ghost === value) {
+                    if (this._state.ghosted === value) {
                         return;
                     }
-                    this._state.ghost = value;
+                    this._state.ghosted = value;
                     this._renderer.imageDirty();
                 },
 
                 get: function () {
-                    return this._state.ghost;
+                    return this._state.ghosted;
                 }
             },
 

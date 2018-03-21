@@ -34,27 +34,38 @@
                 var descriptor;
                 for (var key in props) {
                     descriptor = props[key];
+                    if (key.indexOf(",") >= 0) { // Aliased property name of form "foo, bar, baz": { .. }
+                        var aliases = key.split(",");
+                        for (var i = 0, len = aliases.length; i < len; i++) {
+                            var alias = aliases[i].trim();
+                            if (!descriptor.set) {
+                                (function () {
+                                    var name3 = alias;
+                                    descriptor.set = function () {
+                                        this.warn("Property '" + name3 + "' is read-only, ignoring assignment");
+                                    };
+                                })();
+                            }
+                            descriptor.enumerable = true; // Want property to show up in inspectors
+                            Object.defineProperty(prototype, alias, descriptor);
+                        }
+                    } else {
 
-                    // If no setter is provided, then the property
-                    // is strictly read-only. Insert a dummy setter
-                    // to log a warning.
+                        // If no setter is provided, then the property
+                        // is strictly read-only. Insert a dummy setter
+                        // to log a warning.
 
-                    if (!descriptor.set) {
-                        (function () {
-
-                            var name = key;
-
-                            descriptor.set = function () {
-                                this.warn("Property '" + name + "' is read-only, ignoring assignment");
-                            };
-                        })();
+                        if (!descriptor.set) {
+                            (function () {
+                                var name = key;
+                                descriptor.set = function () {
+                                    this.warn("Property '" + name + "' is read-only, ignoring assignment");
+                                };
+                            })();
+                        }
+                        descriptor.enumerable = true; // Want property to show up in inspectors
+                        Object.defineProperty(prototype, key, descriptor);
                     }
-
-
-                    // Want property to show up in inspectors
-                    descriptor.enumerable = true;
-
-                    Object.defineProperty(prototype, key, descriptor);
                 }
                 continue;
             }

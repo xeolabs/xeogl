@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2018-03-20
+ * Built on 2018-03-21
  *
  * MIT License
  * Copyright 2018, Lindsay Kay
@@ -992,27 +992,38 @@ var Canvas2Image = (function () {
                 var descriptor;
                 for (var key in props) {
                     descriptor = props[key];
+                    if (key.indexOf(",") >= 0) { // Aliased property name of form "foo, bar, baz": { .. }
+                        var aliases = key.split(",");
+                        for (var i = 0, len = aliases.length; i < len; i++) {
+                            var alias = aliases[i].trim();
+                            if (!descriptor.set) {
+                                (function () {
+                                    var name3 = alias;
+                                    descriptor.set = function () {
+                                        this.warn("Property '" + name3 + "' is read-only, ignoring assignment");
+                                    };
+                                })();
+                            }
+                            descriptor.enumerable = true; // Want property to show up in inspectors
+                            Object.defineProperty(prototype, alias, descriptor);
+                        }
+                    } else {
 
-                    // If no setter is provided, then the property
-                    // is strictly read-only. Insert a dummy setter
-                    // to log a warning.
+                        // If no setter is provided, then the property
+                        // is strictly read-only. Insert a dummy setter
+                        // to log a warning.
 
-                    if (!descriptor.set) {
-                        (function () {
-
-                            var name = key;
-
-                            descriptor.set = function () {
-                                this.warn("Property '" + name + "' is read-only, ignoring assignment");
-                            };
-                        })();
+                        if (!descriptor.set) {
+                            (function () {
+                                var name = key;
+                                descriptor.set = function () {
+                                    this.warn("Property '" + name + "' is read-only, ignoring assignment");
+                                };
+                            })();
+                        }
+                        descriptor.enumerable = true; // Want property to show up in inspectors
+                        Object.defineProperty(prototype, key, descriptor);
                     }
-
-
-                    // Want property to show up in inspectors
-                    descriptor.enumerable = true;
-
-                    Object.defineProperty(prototype, key, descriptor);
                 }
                 continue;
             }
@@ -6198,7 +6209,7 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                     continue;
                 }
 
-                if (modes.ghost) {
+                if (modes.ghosted) {
 
                     var ghostMaterial = object.ghostMaterial;
 
@@ -6228,7 +6239,7 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
 
                 } else {
 
-                    if (modes.highlight) {
+                    if (modes.highlighted) {
 
                         var highlightMaterial = object.highlightMaterial;
 
@@ -6256,7 +6267,7 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                             }
                         }
 
-                        if (modes.highlight) {
+                        if (modes.highlighted) {
                             highlightObjects[numHighlightObjects++] = object;
                         }
 
@@ -6304,7 +6315,7 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
 
                     } else {
 
-                        if (modes.outline) {
+                        if (modes.outlined) {
                             outlinedObjects[numOutlinedObjects++] = object;
 
                         } else {
@@ -6419,7 +6430,7 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
 
                 for (i = 0; i < numTransparentObjects; i++) {
                     object = transparentObjects[i];
-                    if (object.modes.outline) {
+                    if (object.modes.outlined) {
                         outlinedObjects[numOutlinedObjects++] = object; // Build outlined list
                         continue;
                     }
@@ -19718,16 +19729,16 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
             (function () {
 
-                var cursorPos = [0, 0];
-                var needPick = false;
+                var pickCursorPos = [0, 0];
+                var needPickEntity = false;
                 var needPickSurface = false;
                 var lastPickedEntityId;
                 var hit;
                 var picked = false;
                 var pickedSurface = false;
 
-                function update() {
-                    if (!needPick && !needPickSurface) {
+                function updatePick() {
+                    if (!needPickEntity && !needPickSurface) {
                         return;
                     }
                     picked = false;
@@ -19735,11 +19746,11 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                     if (needPickSurface || self.hasSubs("hoverSurface")) {
                         hit = scene.pick({
                             pickSurface: true,
-                            canvasPos: cursorPos
+                            canvasPos: pickCursorPos
                         });
-                    } else { // needPick == true
+                    } else { // needPickEntity == true
                         hit = scene.pick({
-                            canvasPos: cursorPos
+                            canvasPos: pickCursorPos
                         });
                     }
                     if (hit) {
@@ -19805,14 +19816,14 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                          * @event hoverOff
                          */
                         self.fire("hoverOff", {
-                            canvasPos: cursorPos
+                            canvasPos: pickCursorPos
                         });
                     }
-                    needPick = false;
+                    needPickEntity = false;
                     needPickSurface = false;
                 }
 
-                scene.on("tick", update);
+                scene.on("tick", updatePick);
 
                 function getCoordsWithinElement(event, coords) {
                     if (!event) {
@@ -19849,15 +19860,17 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                         //    return;
                         //}
 
-                        getCoordsWithinElement(e, cursorPos);
+                        getCoordsWithinElement(e, pickCursorPos);
 
                         if (self.hasSubs("hover") || self.hasSubs("hoverOut") || self.hasSubs("hoverOff") || self.hasSubs("hoverSurface")) {
-                            needPick = true;
+                            needPickEntity = true;
                         }
                     });
 
                     var downX;
                     var downY;
+                    var downCursorX;
+                    var downCursorY;
 
                     canvas.addEventListener('mousedown', function (e) {
                         if (!self._active) {
@@ -19865,6 +19878,8 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                         }
                         downX = e.clientX;
                         downY = e.clientY;
+                        downCursorX = pickCursorPos[0];
+                        downCursorY = pickCursorPos[1];
                     });
 
                     canvas.addEventListener('mouseup', (function (e) {
@@ -19884,7 +19899,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
                                 needPickSurface = !!self.hasSubs("pickedSurface");
 
-                                update();
+                                updatePick();
 
                                 if (hit) {
 
@@ -19926,10 +19941,12 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                             if (clicks == 1) {
                                 timeout = setTimeout(function () {
 
-                                    needPick = self._doublePickFlyTo;
-                                    needPickSurface = needPick || !!self.hasSubs("pickedSurface");
+                                    needPickEntity = self._doublePickFlyTo;
+                                    needPickSurface = needPickEntity || !!self.hasSubs("pickedSurface");
+                                    pickCursorPos[0] = downCursorX;
+                                    pickCursorPos[1] = downCursorY;
 
-                                    update();
+                                    updatePick();
 
                                     if (hit) {
                                         self.fire("picked", hit);
@@ -19947,10 +19964,10 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
                                 clearTimeout(timeout);
 
-                                needPick = self._doublePickFlyTo;
-                                needPickSurface = needPick || !!self.hasSubs("doublePickedSurface");
+                                needPickEntity = self._doublePickFlyTo;
+                                needPickSurface = needPickEntity && !!self.hasSubs("doublePickedSurface");
 
-                                update();
+                                updatePick();
 
                                 if (hit) {
                                     /**
@@ -20066,12 +20083,12 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
                                     // Double-tap
 
-                                    cursorPos[0] = Math.round(changedTouches[0].clientX);
-                                    cursorPos[1] = Math.round(changedTouches[0].clientY);
-                                    needPick = true;
+                                    pickCursorPos[0] = Math.round(changedTouches[0].clientX);
+                                    pickCursorPos[1] = Math.round(changedTouches[0].clientY);
+                                    needPickEntity = true;
                                     needPickSurface = !!self.hasSubs("pickedSurface");
 
-                                    update();
+                                    updatePick();
 
                                     if (hit) {
                                         self.fire("doublePicked", hit);
@@ -20094,12 +20111,12 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
                                     // Single-tap
 
-                                    cursorPos[0] = Math.round(changedTouches[0].clientX);
-                                    cursorPos[1] = Math.round(changedTouches[0].clientY);
-                                    needPick = true;
+                                    pickCursorPos[0] = Math.round(changedTouches[0].clientX);
+                                    pickCursorPos[1] = Math.round(changedTouches[0].clientY);
+                                    needPickEntity = true;
                                     needPickSurface = !!self.hasSubs("pickedSurface");
 
-                                    update();
+                                    updatePick();
 
                                     if (hit) {
                                         self.fire("picked", hit);
@@ -27382,9 +27399,9 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ModelModel.
  @param [cfg.flattenTransforms=true] {Boolean} Flattens transform hierarchies to improve rendering performance.
- @param [cfg.ghost=false] {Boolean} When true, sets all the Model's Entities initially ghosted. |
- @param [cfg.highlight=false] {Boolean} When true, sets all the Model's Entities initially highlighted. |
- @param [cfg.outline=false] {Boolean} When true, sets all the Model's Entities initially outlined. |
+ @param [cfg.ghosted=false] {Boolean} When true, sets all the Model's Entities initially ghosted. |
+ @param [cfg.highlighted=false] {Boolean} When true, sets all the Model's Entities initially highlighted. |
+ @param [cfg.outlined=false] {Boolean} When true, sets all the Model's Entities initially outlined. |
  @param [cfg.transform] {Number|String|Transform} A Local-to-World-space (modelling) {{#crossLink "Transform"}}{{/crossLink}} to attach to this Model.
  Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this Model. Internally, the given
  {{#crossLink "Transform"}}{{/crossLink}} will be inserted above each top-most {{#crossLink "Transform"}}Transform{{/crossLink}}
@@ -27475,9 +27492,11 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
             this.transform = cfg.transform;
 
-            this.ghost = cfg.ghost;
+            this.ghosted = cfg.ghosted || cfg.ghost; // Backwards compat
+            this.highlighted = cfg.highlighted;
             this.visible = cfg.visible;
-            this.outline = cfg.outline;
+            this.outlined = cfg.outlined;
+            this.selected = cfg.selected;
 
             if (cfg.components) {
                 var components = cfg.components;
@@ -27629,9 +27648,10 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
                 this.entities[component.id] = component;
 
-                component.ghost = this.ghost;
-                component.highlight = this.highlight;
+                component.ghosted = this.ghosted;
+                component.highlighted = this.highlighted;
                 component.visible = this.visible;
+                component.selected = this.selected;
 
                 this._onBoundary[component.id] = component.on("boundary", this._setAABBDirty, this);
 
@@ -27950,9 +27970,6 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
                 set: function (value) {
                     value = value !== false;
-                    if (this._visible === value) {
-                        return;
-                    }
                     this._visible = value;
                     for (var id in this.entities) {
                         if (this.entities.hasOwnProperty(id)) {
@@ -27967,83 +27984,98 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
             },
 
             /**
-             * Flag which indicates if this Model's Entities are rendered with ghost effect.
+             * Flag which indicates if this Model's Entities are rendered with ghosted effect.
              *
-             * @property ghost
+             * @property ghosted
              * @default false
              * @type Boolean
              */
-            ghost: {
+            "ghosted,ghost": {
 
                 set: function (value) {
                     value = !!value;
-                    if (this._ghost === value) {
-                        return;
-                    }
-                    this._ghost = value;
+                    this._ghosted = value;
                     for (var id in this.entities) {
                         if (this.entities.hasOwnProperty(id)) {
-                            this.entities[id].ghost = value;
+                            this.entities[id].ghosted = value;
                         }
                     }
                 },
 
                 get: function () {
-                    return this._ghost;
+                    return this._ghosted;
                 }
             },
 
             /**
-             * Flag which indicates if this Model's Entities are rendered with highlight effect.
+             * Flag which indicates if this Model's Entities are rendered with highlighted effect.
              *
-             * @property highlight
+             * @property highlighted
              * @default false
              * @type Boolean
              */
-            highlight: {
+            "highlight,highlighted": {
 
                 set: function (value) {
                     value = !!value;
-                    if (this._highlight === value) {
-                        return;
-                    }
-                    this._highlight = value;
+                    this._highlighted = value;
                     for (var id in this.entities) {
                         if (this.entities.hasOwnProperty(id)) {
-                            this.entities[id].highlight = value;
+                            this.entities[id].highlighted = value;
                         }
                     }
                 },
 
                 get: function () {
-                    return this._highlight;
+                    return this._highlighted;
                 }
             },
 
             /**
-             * Flag which indicates if this Model's Entities are rendered with outline effect.
+             * Flag which indicates if this Model's Entities are rendered as selected.
              *
-             * @property outline
+             * @property selected
              * @default false
              * @type Boolean
              */
-            outline: {
+            selected: {
 
                 set: function (value) {
                     value = !!value;
-                    if (this._outline === value) {
-                        return;
-                    }
-                    this._outline = value;
+                    this._selected = value;
                     for (var id in this.entities) {
                         if (this.entities.hasOwnProperty(id)) {
-                            this.entities[id].outline = value;
+                            this.entities[id].selected = value;
                         }
                     }
                 },
 
                 get: function () {
-                    return this._outline;
+                    return this._selected;
+                }
+            },
+
+            /**
+             * Flag which indicates if this Model's Entities are rendered with outlined effect.
+             *
+             * @property outlined
+             * @default false
+             * @type Boolean
+             */
+            "outlined,outline": {
+
+                set: function (value) {
+                    value = !!value;
+                    this._outlined = value;
+                    for (var id in this.entities) {
+                        if (this.entities.hasOwnProperty(id)) {
+                            this.entities[id].outlined = value;
+                        }
+                    }
+                },
+
+                get: function () {
+                    return this._outlined;
                 }
             }
         },
@@ -31901,11 +31933,11 @@ TODO
 
  ## Overview
 
- * Ghost an {{#crossLink "Entity"}}{{/crossLink}} by setting its {{#crossLink "Entity/ghost:property"}}{{/crossLink}} property ````true````.
+ * Ghost an {{#crossLink "Entity"}}{{/crossLink}} by setting its {{#crossLink "Entity/ghosted:property"}}{{/crossLink}} property ````true````.
  * When ghosted, an Entity's appearance is controlled by its EmphasisMaterial.
  * An EmphasisMaterial provides several preset configurations that you can set it to. Select a preset by setting {{#crossLink "EmphasisMaterial/preset:property"}}{{/crossLink}} to the preset's ID. A map of available presets is provided in {{#crossLink "EmphasisMaterial/presets:property"}}xeogl.EmphasisMaterial.presets{{/crossLink}}.
  * By default, an Entity uses the {{#crossLink "Scene"}}{{/crossLink}}'s global EmphasisMaterials, but you can give each Entity its own EmphasisMaterial when you want to customize the effect per-Entity.
- * Ghost all Entities in a {{#crossLink "Model"}}{{/crossLink}} by setting the Model's {{#crossLink "Model/ghost:property"}}{{/crossLink}} property ````true````. Note that all Entities in a Model have the Scene's global EmphasisMaterial by default.
+ * Ghost all Entities in a {{#crossLink "Model"}}{{/crossLink}} by setting the Model's {{#crossLink "Model/ghosted:property"}}{{/crossLink}} property ````true````. Note that all Entities in a Model have the Scene's global EmphasisMaterial by default.
  * Modify the Scene's global EmphasisMaterial to customize it.
 
  ## Usage
@@ -31916,7 +31948,7 @@ TODO
  ### Ghosting
 
  In the usage example below, we'll create an Entity with a ghost effect applied to it. The Entity gets its own EmphasisMaterial for ghosting, and
- has its {{#crossLink "Entity/ghost:property"}}{{/crossLink}} property set ````true```` to activate the effect.
+ has its {{#crossLink "Entity/ghosted:property"}}{{/crossLink}} property set ````true```` to activate the effect.
 
  <a href="../../examples/#effects_ghost"><img src="../../assets/images/screenshots/HighlightMaterial/teapot.png"></img></a>
 
@@ -31941,7 +31973,7 @@ TODO
         fillColor: [0, 0, 0],
         fillAlpha: 0.7
     }),
-    ghost: true
+    ghosted: true
  });
  ````
 
@@ -31962,7 +31994,7 @@ TODO
     material: new xeogl.PhongMaterial({
         diffuse: [0.2, 0.2, 1.0]
     }),
-    ghost: true
+    ghosted: true
  });
 
  var ghostMaterial = entity.scene.ghostMaterial;
@@ -32089,7 +32121,7 @@ TODO
     ghostMaterial: new xeogl.EmphasisMaterial({
         preset: "sepia"
     });
-    ghost: true
+    ghosted: true
  });
  ````
 
@@ -32612,6 +32644,20 @@ TODO
             fill: true,
             fillColor: [0.4, 0.4, 0.4],
             fillAlpha: 0.2
+        },
+
+        "blueprint": {
+            edges: true,
+            edgeColor: [0.7, 0.7, 1.0],
+            edgeAlpha: 0.7,
+            edgeWidth: 1,
+            vertices: false,
+            vertexColor: [0.4, 0.4, 0.4],
+            vertexAlpha: 0.7,
+            vertexSize: 4.0,
+            fill: true,
+            fillColor: [0.2, 0.2, 0.6],
+            fillAlpha: 0.3
         },
 
         "phosphorous": {
@@ -34019,7 +34065,7 @@ TODO
 
  ### Ghosting
 
- Ghost an Entity by setting its {{#crossLink "Entity/ghost:property"}}{{/crossLink}} property true. The Entity's
+ Ghost an Entity by setting its {{#crossLink "Entity/ghosted:property"}}{{/crossLink}} property true. The Entity's
  {{#crossLink "EmphasisMaterial"}}{{/crossLink}} then controls its appearance while ghosted.
 
  When we don't provide it with a EmphasisMaterial, it will have the Scene's {{#crossLink "Scene/ghostMaterial:property"}}{{/crossLink}}
@@ -34048,7 +34094,7 @@ TODO
         fillColor: [0, 0, 0],
         fillAlpha: 0.7
     }),
-    ghost: true
+    ghosted: true
  });
  ````
 
@@ -34058,7 +34104,7 @@ TODO
 
  ### Highlighting
 
- Highlight an Entity by setting its {{#crossLink "Entity/highlight:property"}}{{/crossLink}} property true. The Entity's
+ Highlight an Entity by setting its {{#crossLink "Entity/highlighted:property"}}{{/crossLink}} property true. The Entity's
  highlighting {{#crossLink "EmphasisMaterial"}}{{/crossLink}} then controls its appearance while highlighted.
 
  When we don't provide it with a EmphasisMaterial for highlighting, it will have the Scene's {{#crossLink "Scene/highlightMaterial:property"}}{{/crossLink}}
@@ -34078,7 +34124,7 @@ TODO
         color: [1.0, 1.0, 0.0],
         alpha: 0.6
     }),
-    highlight: true
+    highlighted: true
  });
  ````
 
@@ -34088,7 +34134,7 @@ TODO
 
  ### Outlining
 
- Outline an Entity by setting its {{#crossLink "Entity/outline:property"}}{{/crossLink}} property true. The Entity's
+ Outline an Entity by setting its {{#crossLink "Entity/outlined:property"}}{{/crossLink}} property true. The Entity's
  {{#crossLink "OutlineMaterial"}}{{/crossLink}} then controls its appearance while outlined.
 
  When we don't provide it with an OutlineMaterial, it will have the Scene's {{#crossLink "Scene/outlineMaterial:property"}}{{/crossLink}}
@@ -34109,7 +34155,7 @@ TODO
         alpha: 0.6,
         width: 5
     }),
-    outline: true
+    outlined: true
  });
  ````
 
@@ -34293,10 +34339,10 @@ TODO
  @param [cfg.collidable=true] {Boolean} Whether this Entity is included in boundary calculations.
  @param [cfg.castShadow=true] {Boolean} Whether this Entity casts shadows.
  @param [cfg.receiveShadow=true] {Boolean} Whether this Entity receives shadows.
- @param [cfg.outline=false] {Boolean} Whether an outline is rendered around this entity, as configured by the Entity's {{#crossLink "OutlineMaterial"}}{{/crossLink}} component.
+ @param [cfg.outlined=false] {Boolean} Whether an outline is rendered around this entity, as configured by the Entity's {{#crossLink "OutlineMaterial"}}{{/crossLink}} component.
  @param [cfg.outlineMaterial] {String|OutlineMaterial} ID or instance of an {{#crossLink "OutlineMaterial"}}{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/outlineMaterial:property"}}outlineMaterial{{/crossLink}}.
- @param [cfg.ghost=false] {Boolean} Whether this entity is rendered ghosted, as configured by {{#crossLink "Entity/ghostMaterial:property"}}ghostMaterial{{/crossLink}}.
+ @param [cfg.ghosted=false] {Boolean} Whether this entity is rendered ghosted, as configured by {{#crossLink "Entity/ghostMaterial:property"}}ghostMaterial{{/crossLink}}.
  @param [cfg.ghostMaterial] {String|EmphasisMaterial} ID or instance of an {{#crossLink "EmphasisMaterial"}}{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/ghostMaterial:property"}}ghostMaterial{{/crossLink}}.
  @param [cfg.highlight=false] {Boolean} Whether this entity is rendered highlighted, as configured by {{#crossLink "Entity/highlightMaterial:property"}}highlightMaterial{{/crossLink}}.
@@ -34340,9 +34386,9 @@ TODO
                 collidable: null,
                 castShadow: null,
                 receiveShadow: null,
-                outline: null,
-                ghost: false,
-                highlight: false,
+                outlined: null,
+                ghosted: false,
+                highlighted: false,
                 selected: false,
                 layer: null,
                 billboard: null,
@@ -34378,13 +34424,14 @@ TODO
             this.collidable = cfg.collidable;
             this.castShadow = cfg.castShadow;
             this.receiveShadow = cfg.receiveShadow;
-            this.outline = cfg.outline;
+            this.outlined = cfg.outlined;
             this.layer = cfg.layer;
             this.stationary = cfg.stationary;
             this.billboard = cfg.billboard;
             this.solid = cfg.solid;
-            this.ghost = cfg.ghost;
-            this.highlight = cfg.highlight;
+            this.ghosted = cfg.ghosted;
+            this.highlighted = cfg.highlighted;
+            this.selected = cfg.selected;
             this.colorize = cfg.colorize;
         },
 
@@ -34788,23 +34835,23 @@ TODO
 
              The outline effect is configured via the Entity's {{#crossLink "Entity/outlineMaterial:property"}}outlineMaterial{{/crossLink}} component.
 
-             @property outline
+             @property outlined
              @default false
              @type Boolean
              */
-            outline: {
+            "outlined,outline": {
 
                 set: function (value) {
                     value = !!value;
-                    if (value === this._state.outline) {
+                    if (value === this._state.outlined) {
                         return;
                     }
-                    this._state.outline = value;
+                    this._state.outlined = value;
                     this._renderer.imageDirty();
                 },
 
                 get: function () {
-                    return this._state.outline;
+                    return this._state.outlined;
                 }
             },
 
@@ -34813,23 +34860,23 @@ TODO
 
              The highlight effect is configured via the Entity's {{#crossLink "Entity/highlightMaterial:property"}}highlightMaterial{{/crossLink}}.
 
-             @property highlight
+             @property highlighted
              @default false
              @type Boolean
              */
-            highlight: {
+            "highlight,highlighted": {
 
                 set: function (value) {
                     value = !!value;
-                    if (value === this._state.highlight) {
+                    if (value === this._state.highlighted) {
                         return;
                     }
-                    this._state.highlight = value;
+                    this._state.highlighted = value;
                     this._renderer.imageDirty();
                 },
 
                 get: function () {
-                    return this._state.highlight;
+                    return this._state.highlighted;
                 }
             },
 
@@ -34981,27 +35028,27 @@ TODO
             },
 
             /**
-             * Flag which indicates if this Entity is rendered with ghosting effect.
+             * Flag which indicates if this Entity is rendered with ghost effect.
              *
              * The ghost effect is configured via the Entity's {{#crossLink "Entity/ghostMaterial:property"}}ghostMaterial{{/crossLink}}.
              *
-             * @property ghost
+             * @property ghosted
              * @default false
              * @type Boolean
              */
-            ghost: {
+            "ghosted,ghost": {
 
                 set: function (value) {
                     value = !!value;
-                    if (this._state.ghost === value) {
+                    if (this._state.ghosted === value) {
                         return;
                     }
-                    this._state.ghost = value;
+                    this._state.ghosted = value;
                     this._renderer.imageDirty();
                 },
 
                 get: function () {
-                    return this._state.ghost;
+                    return this._state.ghosted;
                 }
             },
 

@@ -52,7 +52,7 @@
                 xyz: [0, -20, 0]
             })
         }),
-       // highlight: true
+       // highlighted: true
     });
 
     var camera = entity.scene.camera;
@@ -73,7 +73,7 @@
 
         var highlightMaterial = entity.highlightMaterial;
 
-        this["highlight"] = true;
+        this["highlighted"] = true;
         this["highlightMaterial.preset"] = "yellowHighlight";
         this["highlightMaterial.edges"] = highlightMaterial.edges;
         this["highlightMaterial.fill"] = highlightMaterial.fill;
@@ -95,7 +95,7 @@
 
         var update = function () {
 
-            entity.highlight = !!self["highlight"];
+            entity.highlighted = !!self["highlighted"];
 
             var preset = self["highlightMaterial.preset"];
             if (lastHighlightMaterialPreset !== preset) {
@@ -141,8 +141,8 @@
 
     var menu = new Menu();
 
-    var highlightFolder = gui.addFolder('highlight');
-    highlightFolder.add(menu, 'highlight', true);
+    var highlightFolder = gui.addFolder('highlighted');
+    highlightFolder.add(menu, 'highlighted', true);
     highlightFolder.add(menu, 'highlightMaterial.preset', Object.keys(xeogl.EmphasisMaterial.presets));
     highlightFolder.add(menu, 'highlightMaterial.edges', true).listen();
     highlightFolder.addColor(menu, 'highlightMaterial.edgeColor', [255, 255, 255]).listen();

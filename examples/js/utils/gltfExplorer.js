@@ -66,7 +66,7 @@ var gltfExplorer = function (menuId, files) {
     var model = new xeogl.GLTFModel({
         id: "turbine",
         src: file.src,
-        ghost: true,
+        ghosted: true,
         ghostEdgeThreshold: 20,
         lambertMaterials: true,
 
@@ -88,7 +88,7 @@ var gltfExplorer = function (menuId, files) {
             if (!id) {
                 cameraFlight.flyTo();
                 if (lastEntity) {
-                    lastEntity.ghost = true;
+                    lastEntity.ghosted = true;
                     lastEntity = null;
                 }
                 return;
@@ -97,9 +97,9 @@ var gltfExplorer = function (menuId, files) {
             var entity = model.scene.entities[id];
             if (entity) {
                 if (lastEntity) {
-                    lastEntity.ghost = true;
+                    lastEntity.ghosted = true;
                 }
-                entity.ghost = false;
+                entity.ghosted = false;
                 cameraFlight.flyTo({
                     aabb: entity.aabb,
                     fitFOV: 25,
