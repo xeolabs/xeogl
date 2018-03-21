@@ -84,7 +84,6 @@
                                 <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBBHelper.html">OBBHelper</a></li>
-                                <li><a href="../classes/Object.html">Object</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
                                 <li><a href="../classes/OBJModel.html">OBJModel</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -352,21 +351,21 @@
  &#x60;&#x60;&#x60;&#x60;javascript
  var entities = scene.entities;
 
- entities[&quot;gearbox77.0&quot;].highlight = true;
- entities[&quot;gearbox79.0&quot;].highlight = true;
+ entities[&quot;gearbox77.0&quot;].highlighted = true;
+ entities[&quot;gearbox79.0&quot;].highlighted = true;
  &#x60;&#x60;&#x60;&#x60;
 
  A GLTFModel also has ID maps of the components within it. Its components map contains all
  its {{#crossLink &quot;Component&quot;}}Components{{/crossLink}} in one big map:
 
  &#x60;&#x60;&#x60;&#x60;javascript
- model.components[&quot;gearbox77.0&quot;].highlight = true;
+ model.components[&quot;gearbox77.0&quot;].highlighted = true;
  &#x60;&#x60;&#x60;&#x60;
 
  while its entities map contains just the {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}:
 
  &#x60;&#x60;&#x60;&#x60;javascript
- model.entities[&quot;gearbox77.0&quot;].highlight = true;
+ model.entities[&quot;gearbox77.0&quot;].highlighted = true;
  &#x60;&#x60;&#x60;&#x60;
 
  Note the format of the {{#crossLink &quot;Entity&quot;}}{{/crossLink}} IDs:
@@ -480,8 +479,8 @@
  @param [cfg.quantizeGeometry=true] When true, quantizes geometry to reduce memory and GPU bus usage. |
  @param [cfg.combineGeometry=true] When true, combines geometry vertex buffers to improve rendering performance. |
  @param [cfg.backfaces=false] When true, allows visible backfaces, wherever specified in the glTF. When false, ignores backfaces. |
- @param [cfg.ghost=false] {Boolean} When true, sets all the Model&#x27;s Entities initially ghosted. |
- @param [cfg.highlight=false] {Boolean} When true, sets all the Model&#x27;s Entities initially highlighted. |
+ @param [cfg.ghosted=false] {Boolean} When true, sets all the Model&#x27;s Entities initially ghosted. |
+ @param [cfg.highlighted=false] {Boolean} When true, sets all the Model&#x27;s Entities initially highlighted. |
  @param [cfg.outline=false] {Boolean} When true, sets all the Model&#x27;s Entities initially outlined. |
  @param [cfg.ghostEdgeThreshold=2] {Number} When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn. |
  @param [cfg.maxEntities] {Number} Optional maximum number of {{#crossLink &quot;Entity&quot;}}{{/crossLink}}&#x27;s to load. |
