@@ -925,16 +925,16 @@
 
             (function () {
 
-                var cursorPos = [0, 0];
-                var needPick = false;
+                var pickCursorPos = [0, 0];
+                var needPickEntity = false;
                 var needPickSurface = false;
                 var lastPickedEntityId;
                 var hit;
                 var picked = false;
                 var pickedSurface = false;
 
-                function update() {
-                    if (!needPick && !needPickSurface) {
+                function updatePick() {
+                    if (!needPickEntity && !needPickSurface) {
                         return;
                     }
                     picked = false;
@@ -942,11 +942,11 @@
                     if (needPickSurface || self.hasSubs("hoverSurface")) {
                         hit = scene.pick({
                             pickSurface: true,
-                            canvasPos: cursorPos
+                            canvasPos: pickCursorPos
                         });
-                    } else { // needPick == true
+                    } else { // needPickEntity == true
                         hit = scene.pick({
-                            canvasPos: cursorPos
+                            canvasPos: pickCursorPos
                         });
                     }
                     if (hit) {
@@ -1012,14 +1012,14 @@
                          * @event hoverOff
                          */
                         self.fire("hoverOff", {
-                            canvasPos: cursorPos
+                            canvasPos: pickCursorPos
                         });
                     }
-                    needPick = false;
+                    needPickEntity = false;
                     needPickSurface = false;
                 }
 
-                scene.on("tick", update);
+                scene.on("tick", updatePick);
 
                 function getCoordsWithinElement(event, coords) {
                     if (!event) {
@@ -1056,15 +1056,17 @@
                         //    return;
                         //}
 
-                        getCoordsWithinElement(e, cursorPos);
+                        getCoordsWithinElement(e, pickCursorPos);
 
                         if (self.hasSubs("hover") || self.hasSubs("hoverOut") || self.hasSubs("hoverOff") || self.hasSubs("hoverSurface")) {
-                            needPick = true;
+                            needPickEntity = true;
                         }
                     });
 
                     var downX;
                     var downY;
+                    var downCursorX;
+                    var downCursorY;
 
                     canvas.addEventListener('mousedown', function (e) {
                         if (!self._active) {
@@ -1072,6 +1074,8 @@
                         }
                         downX = e.clientX;
                         downY = e.clientY;
+                        downCursorX = pickCursorPos[0];
+                        downCursorY = pickCursorPos[1];
                     });
 
                     canvas.addEventListener('mouseup', (function (e) {
@@ -1091,7 +1095,7 @@
 
                                 needPickSurface = !!self.hasSubs("pickedSurface");
 
-                                update();
+                                updatePick();
 
                                 if (hit) {
 
@@ -1133,10 +1137,12 @@
                             if (clicks == 1) {
                                 timeout = setTimeout(function () {
 
-                                    needPick = self._doublePickFlyTo;
-                                    needPickSurface = needPick || !!self.hasSubs("pickedSurface");
+                                    needPickEntity = self._doublePickFlyTo;
+                                    needPickSurface = needPickEntity || !!self.hasSubs("pickedSurface");
+                                    pickCursorPos[0] = downCursorX;
+                                    pickCursorPos[1] = downCursorY;
 
-                                    update();
+                                    updatePick();
 
                                     if (hit) {
                                         self.fire("picked", hit);
@@ -1154,10 +1160,10 @@
 
                                 clearTimeout(timeout);
 
-                                needPick = self._doublePickFlyTo;
-                                needPickSurface = needPick || !!self.hasSubs("doublePickedSurface");
+                                needPickEntity = self._doublePickFlyTo;
+                                needPickSurface = needPickEntity && !!self.hasSubs("doublePickedSurface");
 
-                                update();
+                                updatePick();
 
                                 if (hit) {
                                     /**
@@ -1273,12 +1279,12 @@
 
                                     // Double-tap
 
-                                    cursorPos[0] = Math.round(changedTouches[0].clientX);
-                                    cursorPos[1] = Math.round(changedTouches[0].clientY);
-                                    needPick = true;
+                                    pickCursorPos[0] = Math.round(changedTouches[0].clientX);
+                                    pickCursorPos[1] = Math.round(changedTouches[0].clientY);
+                                    needPickEntity = true;
                                     needPickSurface = !!self.hasSubs("pickedSurface");
 
-                                    update();
+                                    updatePick();
 
                                     if (hit) {
                                         self.fire("doublePicked", hit);
@@ -1301,12 +1307,12 @@
 
                                     // Single-tap
 
-                                    cursorPos[0] = Math.round(changedTouches[0].clientX);
-                                    cursorPos[1] = Math.round(changedTouches[0].clientY);
-                                    needPick = true;
+                                    pickCursorPos[0] = Math.round(changedTouches[0].clientX);
+                                    pickCursorPos[1] = Math.round(changedTouches[0].clientY);
+                                    needPickEntity = true;
                                     needPickSurface = !!self.hasSubs("pickedSurface");
 
-                                    update();
+                                    updatePick();
 
                                     if (hit) {
                                         self.fire("picked", hit);
