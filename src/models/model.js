@@ -264,9 +264,9 @@
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ModelModel.
  @param [cfg.flattenTransforms=true] {Boolean} Flattens transform hierarchies to improve rendering performance.
- @param [cfg.ghost=false] {Boolean} When true, sets all the Model's Entities initially ghosted. |
- @param [cfg.highlight=false] {Boolean} When true, sets all the Model's Entities initially highlighted. |
- @param [cfg.outline=false] {Boolean} When true, sets all the Model's Entities initially outlined. |
+ @param [cfg.ghosted=false] {Boolean} When true, sets all the Model's Entities initially ghosted. |
+ @param [cfg.highlighted=false] {Boolean} When true, sets all the Model's Entities initially highlighted. |
+ @param [cfg.outlined=false] {Boolean} When true, sets all the Model's Entities initially outlined. |
  @param [cfg.transform] {Number|String|Transform} A Local-to-World-space (modelling) {{#crossLink "Transform"}}{{/crossLink}} to attach to this Model.
  Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this Model. Internally, the given
  {{#crossLink "Transform"}}{{/crossLink}} will be inserted above each top-most {{#crossLink "Transform"}}Transform{{/crossLink}}
@@ -357,9 +357,10 @@
 
             this.transform = cfg.transform;
 
-            this.ghost = cfg.ghost;
+            this.ghosted = cfg.ghosted || cfg.ghost; // Backwards compat
+            this.highlighted = cfg.highlighted;
             this.visible = cfg.visible;
-            this.outline = cfg.outline;
+            this.outlined = cfg.outlined;
             this.selected = cfg.selected;
 
             if (cfg.components) {
@@ -512,8 +513,8 @@
 
                 this.entities[component.id] = component;
 
-                component.ghost = this.ghost;
-                component.highlight = this.highlight;
+                component.ghosted = this.ghosted;
+                component.highlighted = this.highlighted;
                 component.visible = this.visible;
                 component.selected = this.selected;
 
@@ -834,9 +835,6 @@
 
                 set: function (value) {
                     value = value !== false;
-                    if (this._visible === value) {
-                        return;
-                    }
                     this._visible = value;
                     for (var id in this.entities) {
                         if (this.entities.hasOwnProperty(id)) {
@@ -851,56 +849,50 @@
             },
 
             /**
-             * Flag which indicates if this Model's Entities are rendered with ghost effect.
+             * Flag which indicates if this Model's Entities are rendered with ghosted effect.
              *
-             * @property ghost
+             * @property ghosted
              * @default false
              * @type Boolean
              */
-            ghost: {
+            "ghosted,ghost": {
 
                 set: function (value) {
                     value = !!value;
-                    if (this._ghost === value) {
-                        return;
-                    }
-                    this._ghost = value;
+                    this._ghosted = value;
                     for (var id in this.entities) {
                         if (this.entities.hasOwnProperty(id)) {
-                            this.entities[id].ghost = value;
+                            this.entities[id].ghosted = value;
                         }
                     }
                 },
 
                 get: function () {
-                    return this._ghost;
+                    return this._ghosted;
                 }
             },
 
             /**
-             * Flag which indicates if this Model's Entities are rendered with highlight effect.
+             * Flag which indicates if this Model's Entities are rendered with highlighted effect.
              *
-             * @property highlight
+             * @property highlighted
              * @default false
              * @type Boolean
              */
-            highlight: {
+            "highlight,highlighted": {
 
                 set: function (value) {
                     value = !!value;
-                    if (this._highlight === value) {
-                        return;
-                    }
-                    this._highlight = value;
+                    this._highlighted = value;
                     for (var id in this.entities) {
                         if (this.entities.hasOwnProperty(id)) {
-                            this.entities[id].highlight = value;
+                            this.entities[id].highlighted = value;
                         }
                     }
                 },
 
                 get: function () {
-                    return this._highlight;
+                    return this._highlighted;
                 }
             },
 
@@ -915,9 +907,6 @@
 
                 set: function (value) {
                     value = !!value;
-                    if (this._selected === value) {
-                        return;
-                    }
                     this._selected = value;
                     for (var id in this.entities) {
                         if (this.entities.hasOwnProperty(id)) {
@@ -932,29 +921,26 @@
             },
 
             /**
-             * Flag which indicates if this Model's Entities are rendered with outline effect.
+             * Flag which indicates if this Model's Entities are rendered with outlined effect.
              *
-             * @property outline
+             * @property outlined
              * @default false
              * @type Boolean
              */
-            outline: {
+            "outlined,outline": {
 
                 set: function (value) {
                     value = !!value;
-                    if (this._outline === value) {
-                        return;
-                    }
-                    this._outline = value;
+                    this._outlined = value;
                     for (var id in this.entities) {
                         if (this.entities.hasOwnProperty(id)) {
-                            this.entities[id].outline = value;
+                            this.entities[id].outlined = value;
                         }
                     }
                 },
 
                 get: function () {
-                    return this._outline;
+                    return this._outlined;
                 }
             }
         },
