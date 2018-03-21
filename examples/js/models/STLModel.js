@@ -162,19 +162,19 @@
  ````javascript
  var entities = scene.entities;
 
- entities["myModel#1"].highlight = true;
+ entities["myModel#1"].highlighted = true;
  ````
 
  An STLModel also has an ID map of the components within it. Let's highlight an {{#crossLink "Entity"}}Entities{{/crossLink}}:
 
  ````javascript
- model.components["myModel#1"].highlight = true;
+ model.components["myModel#1"].highlighted = true;
  ````
 
  An STLModel also has a map containing just the {{#crossLink "Entity"}}Entities{{/crossLink}}:
 
  ````javascript
- model.entities["myModel#1"].highlight = true;
+ model.entities["myModel#1"].highlighted = true;
  ````
 
  TODO: ID format description
@@ -282,8 +282,8 @@
  @param [cfg.smoothNormals=false] {Boolean} When true, automatically converts face-oriented normals to vertex normals for a smooth appearance - see <a href="#smoothing-normals">Smoothing Normals</a>.
  @param [cfg.smoothNormalsAngleThreshold=20] {Number} See <a href="#smoothing-normals">Smoothing Normals</a>.
  @param [cfg.backfaces=false] When true, allows visible backfaces, wherever specified in the STL. When false, ignores backfaces.
- @param [cfg.ghost=false] {Boolean} When true, sets all the Model's Entities initially ghosted.
- @param [cfg.highlight=false] {Boolean} When true, sets all the Model's Entities initially highlighted.
+ @param [cfg.ghosted=false] {Boolean} When true, sets all the Model's Entities initially ghosted.
+ @param [cfg.highlighted=false] {Boolean} When true, sets all the Model's Entities initially highlighted.
  @param [cfg.outline=false] {Boolean} When true, sets all the Model's Entities initially outlined.
  @param [cfg.ghostEdgeThreshold=2] {Number} When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn.
  @param [cfg.transform] {Number|String|Transform} A Local-to-World-space (modelling) {{#crossLink "Transform"}}{{/crossLink}} to attach to this STLModel.

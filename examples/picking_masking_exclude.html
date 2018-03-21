@@ -47,8 +47,8 @@
 
         scene.ghostMaterial.preset = "gamegrid";
 
-        model.entities["gearbox#70.0"].ghost = true;
-        model.entities["gearbox#90.0"].ghost = true;
+        model.entities["gearbox#70.0"].ghosted = true;
+        model.entities["gearbox#90.0"].ghosted = true;
     });
 
     // Position the camera
@@ -75,17 +75,17 @@
         if (hit) {
             if (lastEntity) {
                 if (lastEntity.id !== hit.entity.id) {
-                    lastEntity.highlight = false;
+                    lastEntity.highlighted = false;
                 } else {
                     return;
                 }
             }
-            hit.entity.highlight = true;
+            hit.entity.highlighted = true;
             lastEntity = hit.entity;
 
         } else if (lastEntity) {
 
-            lastEntity.highlight = false;
+            lastEntity.highlighted = false;
             lastEntity = null;
         }
     });

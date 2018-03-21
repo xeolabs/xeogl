@@ -194,7 +194,7 @@
         this["normalMap"] = !!material.normalMap;
         this["occlusionMap"] = !!material.occlusionMap;
         this["alphaMap"] = !!material.alphaMap;
-        this["ghost"] = hydrant.ghost;
+        this["ghosted"] = hydrant.ghosted;
         this["lightMap"] = !!lights.lightMap;
         this["reflectionMap"] = !!lights.reflectionMap;
         this["dirLights"] = !!(lights.lights && lights.lights.length > 0);
@@ -248,8 +248,8 @@
                 lights.reflectionMap = self["reflectionMap"] ? reflectionMap : null;
             }
 
-            if (self["ghost"] !== !!hydrant.ghost) {
-                hydrant.ghost = self["ghost"];
+            if (self["ghosted"] !== !!hydrant.ghosted) {
+                hydrant.ghosted = self["ghosted"];
             }
 
             if (self["alphaMap"] !== !!material.alphaMap) {
@@ -313,7 +313,7 @@
     materialFolder.add(menu, 'normalMap', true);
     materialFolder.add(menu, 'occlusionMap', true);
     materialFolder.add(menu, 'alphaMap', true);
-    materialFolder.add(menu, 'ghost', false);
+    materialFolder.add(menu, 'ghosted', false);
     materialFolder.open();
 
     var lightsFolder = gui.addFolder('Lights');

@@ -123,13 +123,13 @@
             "office#65.0"
         ];
 
-        model.ghost = true;
+        model.ghosted = true;
 
         for (var i = 0; i < selectedEntities.length; i++) {
             var id = selectedEntities[i];
             var entity = model.entities[id];
-            entity.ghost = false;
-            entity.highlight = true;
+            entity.ghosted = false;
+            entity.highlighted = true;
         }
 
         var Menu = function () {
@@ -137,7 +137,7 @@
             var ghostMaterial = scene.ghostMaterial;
             var highlightMaterial = scene.highlightMaterial;
 
-            this["ghost"] = true;
+            this["ghosted"] = true;
             this["ghostMaterial.preset"] = "defaultLightBG";
             this["ghostMaterial.edges"] = ghostMaterial.edges;
             this["ghostMaterial.fill"] = ghostMaterial.fill;
@@ -151,7 +151,7 @@
             this["ghostMaterial.fillColor"] = typedToJS(ghostMaterial.fillColor);
             this["ghostMaterial.fillAlpha"] = ghostMaterial.fillAlpha;
 
-            this["highlight"] = true;
+            this["highlighted"] = true;
             this["highlightMaterial.preset"] = "yellowHighlight";
             this["highlightMaterial.edges"] = highlightMaterial.edges;
             this["highlightMaterial.fill"] = highlightMaterial.fill;
@@ -175,7 +175,7 @@
 
             var update = function () {
 
-                model.ghost = !!self["ghost"];
+                model.ghosted = !!self["ghosted"];
 
                 var preset = self["ghostMaterial.preset"];
                 if (lastGhostMaterialPreset !== preset) {
@@ -236,13 +236,13 @@
                     highlightMaterial.fillAlpha = self["highlightMaterial.fillAlpha"];
                 }
 
-                var highlighted = !!self["highlight"];
+                var highlighted = !!self["highlighted"];
 
                 for (var i = 0; i < selectedEntities.length; i++) {
                     var id = selectedEntities[i];
                     var entity = model.entities[id];
-                    entity.highlight = highlighted;
-                    entity.ghost = false;
+                    entity.highlighted = highlighted;
+                    entity.ghosted = false;
                 }
 
                 model.scene.gammaOutput = self["scene.gammaOutput"];
@@ -261,7 +261,7 @@
         var menu = new Menu();
 
         var ghostFolder = gui.addFolder('scene.ghostMaterial');
-        ghostFolder.add(menu, 'ghost', true);
+        ghostFolder.add(menu, 'ghosted', true);
         ghostFolder.add(menu, 'ghostMaterial.preset', Object.keys(xeogl.EmphasisMaterial.presets));
         ghostFolder.add(menu, 'ghostMaterial.edges', true).listen();
         ghostFolder.addColor(menu, 'ghostMaterial.edgeColor', [255, 255, 255]).listen();
@@ -276,8 +276,8 @@
         ghostFolder.add(menu, 'ghostMaterial.fillAlpha', 0.0, 1.0).listen();
         ghostFolder.open();
 
-        var highlightFolder = gui.addFolder('scene.highlight');
-        highlightFolder.add(menu, 'highlight', true);
+        var highlightFolder = gui.addFolder('scene.highlighted');
+        highlightFolder.add(menu, 'highlighted', true);
         highlightFolder.add(menu, 'highlightMaterial.preset', Object.keys(xeogl.EmphasisMaterial.presets));
         highlightFolder.add(menu, 'highlightMaterial.edges', true).listen();
         highlightFolder.addColor(menu, 'highlightMaterial.edgeColor', [255, 255, 255]).listen();

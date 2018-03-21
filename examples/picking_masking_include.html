@@ -45,10 +45,10 @@
     });
 
     model.on("loaded", function () {
-        model.ghost = true;
+        model.ghosted = true;
         scene.ghostMaterial.preset = "gamegrid";
-        model.entities["gearbox#77.0"].ghost = false;
-        model.entities["gearbox#79.0"].ghost = false;
+        model.entities["gearbox#77.0"].ghosted = false;
+        model.entities["gearbox#79.0"].ghosted = false;
     });
 
     // Position the camera
@@ -76,17 +76,17 @@
         if (hit) {
             if (lastEntity) {
                 if (lastEntity.id !== hit.entity.id) {
-                    lastEntity.highlight = false;
+                    lastEntity.highlighted = false;
                 } else {
                     return;
                 }
             }
-            hit.entity.highlight = true;
+            hit.entity.highlighted = true;
             lastEntity = hit.entity;
 
         } else if (lastEntity) {
 
-            lastEntity.highlight = false;
+            lastEntity.highlighted = false;
             lastEntity = null;
         }
     });
