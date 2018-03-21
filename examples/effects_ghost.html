@@ -52,7 +52,7 @@
                 xyz: [0, -20, 0]
             })
         }),
-        ghost: true
+        ghosted: true
     });
 
     var camera = entity.scene.camera;
@@ -73,7 +73,7 @@
 
         var ghostMaterial = entity.ghostMaterial;
 
-        this["ghost"] = true;
+        this["ghosted"] = true;
         this["ghostMaterial.preset"] = "vectorscope";
         this["ghostMaterial.edges"] = ghostMaterial.edges;
         this["ghostMaterial.fill"] = ghostMaterial.fill;
@@ -93,7 +93,7 @@
 
         var update = function () {
 
-            entity.ghost = !!self["ghost"];
+            entity.ghosted = !!self["ghosted"];
 
             var preset = self["ghostMaterial.preset"];
             if (lastGhostMaterialPreset !== preset) {
@@ -136,8 +136,8 @@
 
     var menu = new Menu();
 
-    var ghostFolder = gui.addFolder('ghost');
-    ghostFolder.add(menu, 'ghost', true);
+    var ghostFolder = gui.addFolder('ghosted');
+    ghostFolder.add(menu, 'ghosted', true);
     ghostFolder.add(menu, 'ghostMaterial.preset', Object.keys(xeogl.EmphasisMaterial.presets));
     ghostFolder.add(menu, 'ghostMaterial.edges', true).listen();
     ghostFolder.addColor(menu, 'ghostMaterial.edgeColor', [255, 255, 255]).listen();

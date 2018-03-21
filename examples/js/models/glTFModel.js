@@ -164,21 +164,21 @@
  ````javascript
  var entities = scene.entities;
 
- entities["gearbox77.0"].highlight = true;
- entities["gearbox79.0"].highlight = true;
+ entities["gearbox77.0"].highlighted = true;
+ entities["gearbox79.0"].highlighted = true;
  ````
 
  A GLTFModel also has ID maps of the components within it. Its components map contains all
  its {{#crossLink "Component"}}Components{{/crossLink}} in one big map:
 
  ````javascript
- model.components["gearbox77.0"].highlight = true;
+ model.components["gearbox77.0"].highlighted = true;
  ````
 
  while its entities map contains just the {{#crossLink "Entity"}}Entities{{/crossLink}}:
 
  ````javascript
- model.entities["gearbox77.0"].highlight = true;
+ model.entities["gearbox77.0"].highlighted = true;
  ````
 
  Note the format of the {{#crossLink "Entity"}}{{/crossLink}} IDs:
@@ -292,8 +292,8 @@
  @param [cfg.quantizeGeometry=true] When true, quantizes geometry to reduce memory and GPU bus usage. |
  @param [cfg.combineGeometry=true] When true, combines geometry vertex buffers to improve rendering performance. |
  @param [cfg.backfaces=false] When true, allows visible backfaces, wherever specified in the glTF. When false, ignores backfaces. |
- @param [cfg.ghost=false] {Boolean} When true, sets all the Model's Entities initially ghosted. |
- @param [cfg.highlight=false] {Boolean} When true, sets all the Model's Entities initially highlighted. |
+ @param [cfg.ghosted=false] {Boolean} When true, sets all the Model's Entities initially ghosted. |
+ @param [cfg.highlighted=false] {Boolean} When true, sets all the Model's Entities initially highlighted. |
  @param [cfg.outline=false] {Boolean} When true, sets all the Model's Entities initially outlined. |
  @param [cfg.ghostEdgeThreshold=2] {Number} When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn. |
  @param [cfg.maxEntities] {Number} Optional maximum number of {{#crossLink "Entity"}}{{/crossLink}}'s to load. |
