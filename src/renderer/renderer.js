@@ -404,7 +404,7 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                     continue;
                 }
 
-                if (modes.ghost) {
+                if (modes.ghosted) {
 
                     var ghostMaterial = object.ghostMaterial;
 
@@ -434,7 +434,7 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
 
                 } else {
 
-                    if (modes.highlight) {
+                    if (modes.highlighted) {
 
                         var highlightMaterial = object.highlightMaterial;
 
@@ -462,7 +462,7 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                             }
                         }
 
-                        if (modes.highlight) {
+                        if (modes.highlighted) {
                             highlightObjects[numHighlightObjects++] = object;
                         }
 
@@ -510,7 +510,7 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
 
                     } else {
 
-                        if (modes.outline) {
+                        if (modes.outlined) {
                             outlinedObjects[numOutlinedObjects++] = object;
 
                         } else {
@@ -625,7 +625,7 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
 
                 for (i = 0; i < numTransparentObjects; i++) {
                     object = transparentObjects[i];
-                    if (object.modes.outline) {
+                    if (object.modes.outlined) {
                         outlinedObjects[numOutlinedObjects++] = object; // Build outlined list
                         continue;
                     }
