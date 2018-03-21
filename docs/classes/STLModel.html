@@ -84,7 +84,6 @@
                                 <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBBHelper.html">OBBHelper</a></li>
-                                <li><a href="../classes/Object.html">Object</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
                                 <li><a href="../classes/OBJModel.html">OBJModel</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -391,13 +390,13 @@ We&#39;ll now access some of those components by ID, to query and update them pr
 <p>Let&#39;s highlight an <a href="../classes/Entity.html" class="crosslink">Entity</a> in our STLModel:</p>
 <pre class="code prettyprint"><code class="lang-javascript">var entities = scene.entities;
 
-entities["myModel#1"].highlight = true;
+entities["myModel#1"].highlighted = true;
 </code></pre>
 <p>An STLModel also has an ID map of the components within it. Let&#39;s highlight an <a href="../classes/Entity.html" class="crosslink">Entities</a>:</p>
-<pre class="code prettyprint"><code class="lang-javascript">model.components["myModel#1"].highlight = true;
+<pre class="code prettyprint"><code class="lang-javascript">model.components["myModel#1"].highlighted = true;
 </code></pre>
 <p>An STLModel also has a map containing just the <a href="../classes/Entity.html" class="crosslink">Entities</a>:</p>
-<pre class="code prettyprint"><code class="lang-javascript">model.entities["myModel#1"].highlight = true;
+<pre class="code prettyprint"><code class="lang-javascript">model.entities["myModel#1"].highlighted = true;
 </code></pre>
 <p>TODO: ID format description</p>
 <h3 id="transforming-an-stlmodel">Transforming an STLModel</h3>
@@ -625,7 +624,7 @@ var model = new xeogl.STLModel({
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[ghost=false]</code>
+                                            <code class="param-name optional">[ghosted=false]</code>
                                             <span class="type">Boolean</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
@@ -636,7 +635,7 @@ var model = new xeogl.STLModel({
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[highlight=false]</code>
+                                            <code class="param-name optional">[highlighted=false]</code>
                                             <span class="type">Boolean</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
@@ -814,11 +813,11 @@ var model = new xeogl.STLModel({
 
                             </li>
                             <li class="index-item property inherited">
-                                <a href="#property_ghost">ghost</a>
+                                <a href="#property_ghosted">ghosted</a>
 
                             </li>
                             <li class="index-item property inherited">
-                                <a href="#property_highlight">highlight</a>
+                                <a href="#property_highlighted">highlighted</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -838,7 +837,7 @@ var model = new xeogl.STLModel({
 
                             </li>
                             <li class="index-item property inherited">
-                                <a href="#property_outline">outline</a>
+                                <a href="#property_outlined">outlined</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -938,7 +937,7 @@ var model = new xeogl.STLModel({
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Model.html#method_add">Model</a>:
-        <a href="../files/src_models_model.js.html#l373"><code>src&#x2F;models&#x2F;model.js:373</code></a>
+        <a href="../files/src_models_model.js.html#l374"><code>src&#x2F;models&#x2F;model.js:374</code></a>
         </p>
 
 
@@ -1100,7 +1099,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Model.html#method_destroyAll">Model</a>:
-        <a href="../files/src_models_model.js.html#l564"><code>src&#x2F;models&#x2F;model.js:564</code></a>
+        <a href="../files/src_models_model.js.html#l565"><code>src&#x2F;models&#x2F;model.js:565</code></a>
         </p>
 
 
@@ -1233,7 +1232,7 @@ any subsequent notifications on the event as they are made.</p>
                 </li>
                 <li class="param">
                         <code class="param-name">value</code>
-                        <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
+                        <span class="type">Object</span>
 
 
                     <div class="param-description">
@@ -1433,7 +1432,7 @@ myRotate.isType(xeogl.Entity); // Returns false, because xeogl.Rotate does not (
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Model.html#method_iterate">Model</a>:
-        <a href="../files/src_models_model.js.html#l699"><code>src&#x2F;models&#x2F;model.js:699</code></a>
+        <a href="../files/src_models_model.js.html#l700"><code>src&#x2F;models&#x2F;model.js:700</code></a>
         </p>
 
 
@@ -1462,7 +1461,7 @@ myRotate.isType(xeogl.Entity); // Returns false, because xeogl.Rotate does not (
                 </li>
                 <li class="param">
                         <code class="param-name optional">[scope=this]</code>
-                        <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
+                        <span class="type">Object</span>
                         <span class="flag optional" title="This parameter is optional.">optional</span>
 
 
@@ -1553,7 +1552,7 @@ myRotate.isType(xeogl.Entity); // Returns false, because xeogl.Rotate does not (
                 </li>
                 <li class="param">
                         <code class="param-name">options</code>
-                        <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
+                        <span class="type">Object</span>
 
 
                     <div class="param-description">
@@ -1778,7 +1777,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                 </li>
                 <li class="param">
                         <code class="param-name optional">[scope=this]</code>
-                        <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
+                        <span class="type">Object</span>
                         <span class="flag optional" title="This parameter is optional.">optional</span>
 
 
@@ -1873,7 +1872,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                 </li>
                 <li class="param">
                         <code class="param-name optional">[scope=this]</code>
-                        <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
+                        <span class="type">Object</span>
                         <span class="flag optional" title="This parameter is optional.">optional</span>
 
 
@@ -1958,7 +1957,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                 </li>
                 <li class="param">
                         <code class="param-name optional">[options]</code>
-                        <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
+                        <span class="type">Object</span>
                         <span class="flag optional" title="This parameter is optional.">optional</span>
 
 
@@ -2014,7 +2013,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Model.html#method_removeAll">Model</a>:
-        <a href="../files/src_models_model.js.html#l600"><code>src&#x2F;models&#x2F;model.js:600</code></a>
+        <a href="../files/src_models_model.js.html#l601"><code>src&#x2F;models&#x2F;model.js:601</code></a>
         </p>
 
 
@@ -2105,7 +2104,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Model.html#property_aabb">Model</a>:
-                            <a href="../files/src_models_model.js.html#l759"><code>src&#x2F;models&#x2F;model.js:759</code></a>
+                            <a href="../files/src_models_model.js.html#l760"><code>src&#x2F;models&#x2F;model.js:760</code></a>
                             </p>
                     
                     
@@ -2197,8 +2196,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_ghost" class="property item inherited">
-                        <h3 class="name"><code>ghost</code></h3>
+                    <div id="property_ghosted" class="property item inherited">
+                        <h3 class="name"><code>ghosted</code></h3>
                         <span class="type">Boolean</span>
                     
                     
@@ -2207,15 +2206,15 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="meta">
                                     <p>Inherited from
-                                    <a href="../classes/Model.html#property_ghost">Model</a>:
-                            <a href="../files/src_models_model.js.html#l853"><code>src&#x2F;models&#x2F;model.js:853</code></a>
+                                    <a href="../classes/Model.html#property_ghosted">Model</a>:
+                            <a href="../files/src_models_model.js.html#l851"><code>src&#x2F;models&#x2F;model.js:851</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Flag which indicates if this Model&#39;s Entities are rendered with ghost effect.</p>
+                            <p>Flag which indicates if this Model&#39;s Entities are rendered with ghosted effect.</p>
                     
                         </div>
                     
@@ -2223,8 +2222,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_highlight" class="property item inherited">
-                        <h3 class="name"><code>highlight</code></h3>
+                    <div id="property_highlighted" class="property item inherited">
+                        <h3 class="name"><code>highlighted</code></h3>
                         <span class="type">Boolean</span>
                     
                     
@@ -2233,15 +2232,15 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="meta">
                                     <p>Inherited from
-                                    <a href="../classes/Model.html#property_highlight">Model</a>:
-                            <a href="../files/src_models_model.js.html#l880"><code>src&#x2F;models&#x2F;model.js:880</code></a>
+                                    <a href="../classes/Model.html#property_highlighted">Model</a>:
+                            <a href="../files/src_models_model.js.html#l875"><code>src&#x2F;models&#x2F;model.js:875</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Flag which indicates if this Model&#39;s Entities are rendered with highlight effect.</p>
+                            <p>Flag which indicates if this Model&#39;s Entities are rendered with highlighted effect.</p>
                     
                         </div>
                     
@@ -2302,7 +2301,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     </div>
                     <div id="property_metadata" class="property item inherited">
                         <h3 class="name"><code>metadata</code></h3>
-                        <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
+                        <span class="type">Object</span>
                     
                     
                     
@@ -2350,8 +2349,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_outline" class="property item inherited">
-                        <h3 class="name"><code>outline</code></h3>
+                    <div id="property_outlined" class="property item inherited">
+                        <h3 class="name"><code>outlined</code></h3>
                         <span class="type">Boolean</span>
                     
                     
@@ -2360,15 +2359,15 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="meta">
                                     <p>Inherited from
-                                    <a href="../classes/Model.html#property_outline">Model</a>:
-                            <a href="../files/src_models_model.js.html#l934"><code>src&#x2F;models&#x2F;model.js:934</code></a>
+                                    <a href="../classes/Model.html#property_outlined">Model</a>:
+                            <a href="../files/src_models_model.js.html#l923"><code>src&#x2F;models&#x2F;model.js:923</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Flag which indicates if this Model&#39;s Entities are rendered with outline effect.</p>
+                            <p>Flag which indicates if this Model&#39;s Entities are rendered with outlined effect.</p>
                     
                         </div>
                     
@@ -2413,7 +2412,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Model.html#property_selected">Model</a>:
-                            <a href="../files/src_models_model.js.html#l907"><code>src&#x2F;models&#x2F;model.js:907</code></a>
+                            <a href="../files/src_models_model.js.html#l899"><code>src&#x2F;models&#x2F;model.js:899</code></a>
                             </p>
                     
                     
@@ -2499,7 +2498,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Model.html#property_transform">Model</a>:
-                            <a href="../files/src_models_model.js.html#l718"><code>src&#x2F;models&#x2F;model.js:718</code></a>
+                            <a href="../files/src_models_model.js.html#l719"><code>src&#x2F;models&#x2F;model.js:719</code></a>
                             </p>
                     
                     
@@ -2594,7 +2593,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Model.html#property_visible">Model</a>:
-                            <a href="../files/src_models_model.js.html#l826"><code>src&#x2F;models&#x2F;model.js:826</code></a>
+                            <a href="../files/src_models_model.js.html#l827"><code>src&#x2F;models&#x2F;model.js:827</code></a>
                             </p>
                     
                     
@@ -2626,7 +2625,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Model.html#event_added">Model</a>:
-                            <a href="../files/src_models_model.js.html#l525"><code>src&#x2F;models&#x2F;model.js:525</code></a>
+                            <a href="../files/src_models_model.js.html#l526"><code>src&#x2F;models&#x2F;model.js:526</code></a>
                             </p>
                     
                     
@@ -2668,7 +2667,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Model.html#event_boundary">Model</a>:
-                            <a href="../files/src_models_model.js.html#l973"><code>src&#x2F;models&#x2F;model.js:973</code></a>
+                            <a href="../files/src_models_model.js.html#l959"><code>src&#x2F;models&#x2F;model.js:959</code></a>
                             </p>
                     
                     
@@ -2788,7 +2787,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Model.html#event_removed">Model</a>:
-                            <a href="../files/src_models_model.js.html#l687"><code>src&#x2F;models&#x2F;model.js:687</code></a>
+                            <a href="../files/src_models_model.js.html#l688"><code>src&#x2F;models&#x2F;model.js:688</code></a>
                             </p>
                     
                     
@@ -2830,7 +2829,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Model.html#event_transform">Model</a>:
-                            <a href="../files/src_models_model.js.html#l736"><code>src&#x2F;models&#x2F;model.js:736</code></a>
+                            <a href="../files/src_models_model.js.html#l737"><code>src&#x2F;models&#x2F;model.js:737</code></a>
                             </p>
                     
                     
@@ -2847,7 +2846,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                 <ul class="params-list">
                                     <li class="param">
                                             <code class="param-name">value</code>
-                                            <span class="type"><a href="../classes/Object.html" class="crosslink">Object</a></span>
+                                            <span class="type">Object</span>
                     
                     
                                         <div class="param-description">

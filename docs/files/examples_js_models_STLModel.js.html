@@ -84,7 +84,6 @@
                                 <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
                                 <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
                                 <li><a href="../classes/OBBHelper.html">OBBHelper</a></li>
-                                <li><a href="../classes/Object.html">Object</a></li>
                                 <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
                                 <li><a href="../classes/OBJModel.html">OBJModel</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
@@ -350,19 +349,19 @@
  &#x60;&#x60;&#x60;&#x60;javascript
  var entities = scene.entities;
 
- entities[&quot;myModel#1&quot;].highlight = true;
+ entities[&quot;myModel#1&quot;].highlighted = true;
  &#x60;&#x60;&#x60;&#x60;
 
  An STLModel also has an ID map of the components within it. Let&#x27;s highlight an {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}:
 
  &#x60;&#x60;&#x60;&#x60;javascript
- model.components[&quot;myModel#1&quot;].highlight = true;
+ model.components[&quot;myModel#1&quot;].highlighted = true;
  &#x60;&#x60;&#x60;&#x60;
 
  An STLModel also has a map containing just the {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}:
 
  &#x60;&#x60;&#x60;&#x60;javascript
- model.entities[&quot;myModel#1&quot;].highlight = true;
+ model.entities[&quot;myModel#1&quot;].highlighted = true;
  &#x60;&#x60;&#x60;&#x60;
 
  TODO: ID format description
@@ -470,8 +469,8 @@
  @param [cfg.smoothNormals=false] {Boolean} When true, automatically converts face-oriented normals to vertex normals for a smooth appearance - see &lt;a href=&quot;#smoothing-normals&quot;&gt;Smoothing Normals&lt;/a&gt;.
  @param [cfg.smoothNormalsAngleThreshold=20] {Number} See &lt;a href=&quot;#smoothing-normals&quot;&gt;Smoothing Normals&lt;/a&gt;.
  @param [cfg.backfaces=false] When true, allows visible backfaces, wherever specified in the STL. When false, ignores backfaces.
- @param [cfg.ghost=false] {Boolean} When true, sets all the Model&#x27;s Entities initially ghosted.
- @param [cfg.highlight=false] {Boolean} When true, sets all the Model&#x27;s Entities initially highlighted.
+ @param [cfg.ghosted=false] {Boolean} When true, sets all the Model&#x27;s Entities initially ghosted.
+ @param [cfg.highlighted=false] {Boolean} When true, sets all the Model&#x27;s Entities initially highlighted.
  @param [cfg.outline=false] {Boolean} When true, sets all the Model&#x27;s Entities initially outlined.
  @param [cfg.ghostEdgeThreshold=2] {Number} When ghosting, this is the threshold angle between normals of adjacent triangles, below which their shared wireframe edge is not drawn.
  @param [cfg.transform] {Number|String|Transform} A Local-to-World-space (modelling) {{#crossLink &quot;Transform&quot;}}{{/crossLink}} to attach to this STLModel.
