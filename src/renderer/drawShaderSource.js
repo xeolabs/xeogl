@@ -731,18 +731,9 @@
 
             // UTILITY DEFINITIONS
 
-            src.push("float pow2(const in float x) {");
-            src.push("   return x*x;");
-            src.push("}");
-
             src.push("vec3 inverseTransformDirection(in vec3 dir, in mat4 matrix) {");
             src.push("   return normalize( ( vec4( dir, 0.0 ) * matrix ).xyz );");
             src.push("}");
-
-            // src.push("vec3 equirectangularMap(vec3 dir, sampler2D sampler) {"); // http://blog.hvidtfeldts.net/index.php/2012/10/image-based-lighting/
-            // src.push("   vec2 longlat = vec2(atan(dir.y,dir.x),acos(dir.z));"); // Convert (normalized) dir to spherical coordinates.
-            // src.push("   return texture2D(sampler,longlat/vec2(2.0*PI,PI)).xyz;"); // Normalize, and lookup in equirectangular map.
-            // src.push("}");
 
             // STRUCTURES
 
@@ -770,12 +761,6 @@
             src.push("   float   shine;"); // Only used for Phong
             src.push("};");
 
-            // DIFFUSE BRDF EVALUATION
-
-            src.push("vec3 BRDF_Diffuse_Lambert(const in vec3 diffuseColor) {");
-            src.push("   return RECIPROCAL_PI * diffuseColor;");
-            src.push("}");
-
             // COMMON UTILS
 
             if (cfg.phongMaterial) {
@@ -787,7 +772,7 @@
                     if (scene.lights.lightMap) {
                         src.push("   vec3 irradiance = " + TEXTURE_DECODE_FUNCS[scene.lights.lightMap.encoding] + "(textureCube(lightMap, geometry.worldNormal)).rgb;");
                         src.push("   irradiance *= PI;");
-                        src.push("   vec3 diffuseBRDFContrib = BRDF_Diffuse_Lambert(material.diffuseColor);");
+                        src.push("   vec3 diffuseBRDFContrib = (RECIPROCAL_PI * material.diffuseColor);");
                         src.push("   reflectedLight.diffuse += irradiance * diffuseBRDFContrib;");
                     }
 
@@ -805,7 +790,7 @@
                 src.push("void computePhongLighting(const in IncidentLight directLight, const in Geometry geometry, const in Material material, inout ReflectedLight reflectedLight) {");
                 src.push("   float dotNL     = saturate(dot(geometry.viewNormal, directLight.direction));");
                 src.push("   vec3 irradiance = dotNL * directLight.color * PI;");
-                src.push("   reflectedLight.diffuse  += irradiance * BRDF_Diffuse_Lambert(material.diffuseColor);");
+                src.push("   reflectedLight.diffuse  += irradiance * (RECIPROCAL_PI * material.diffuseColor);");
                 src.push("   reflectedLight.specular += directLight.color * material.specularColor * pow(max(dot(reflect(-directLight.direction, -geometry.viewNormal), geometry.viewEyeDir), 0.0), material.shine);");
                 src.push("}");
             }
@@ -814,32 +799,16 @@
 
                 // IRRADIANCE EVALUATION
 
-                //src.push("vec3 sample_reflectMapEquirect(const in vec3 reflect, const in float mipLevel) {");
-                //src.push("   vec2 sampleUV;");
-                //src.push("   sampleUV.y = saturate(reflect.y * 0.5 + 0.5);");
-                //src.push("   sampleUV.x = atan(reflect.z, reflect.x) * RECIPROCAL_PI2 + 0.5;");
-                //src.push("   vec4 texColor = texture2D(reflectionMap, sampleUV, mipLevel);");
-                //src.push("   return texColor.rgb;"); // assumed to be linear
-                //src.push("}");
-
                 src.push("float GGXRoughnessToBlinnExponent(const in float ggxRoughness) {");
-                src.push("   return (2.0 / pow2(ggxRoughness + 0.0001) - 2.0);");
+                src.push("   float r = ggxRoughness + 0.0001;");
+                src.push("   return (2.0 / (r * r) - 2.0);");
                 src.push("}");
 
                 src.push("float getSpecularMIPLevel(const in float blinnShininessExponent, const in int maxMIPLevel) {");
                 src.push("   float maxMIPLevelScalar = float( maxMIPLevel );");
-                src.push("   float desiredMIPLevel = maxMIPLevelScalar - 0.79248 - 0.5 * log2( pow2( blinnShininessExponent ) + 1.0 );");
+                src.push("   float desiredMIPLevel = maxMIPLevelScalar - 0.79248 - 0.5 * log2( ( blinnShininessExponent * blinnShininessExponent ) + 1.0 );");
                 src.push("   return clamp( desiredMIPLevel, 0.0, maxMIPLevelScalar );");
                 src.push("}");
-
-                //src.push("vec3 getLightProbeIndirectRadiance(const in mat4 viewMatrix, const in Geometry geometry, const in float blinnShininessExponent, const in int maxMIPLevel) {");
-                //src.push("   vec3 reflectVec = reflect(geometry.viewEyeDir, geometry.viewNormal);");
-                //src.push("   reflectVec = inverseTransformDirection(reflectVec, viewMatrix);");
-                //src.push("   float mipLevel = getSpecularMIPLevel( blinnShininessExponent, maxMIPLevel );");
-                //src.push("   vec3 reflectionMapColor = sample_reflectMapEquirect(reflectVec, float(mipLevel));");
-                //src.push("   return reflectionMapColor;");
-                //src.push("}");
-
 
                 if (scene.lights.reflectionMap) {
                     src.push("vec3 getLightProbeIndirectRadiance(const in vec3 reflectVec, const in float blinnShininessExponent, const in int maxMIPLevel) {");
@@ -857,27 +826,27 @@
                 src.push("}");
 
                 src.push("float G_GGX_Smith(const in float alpha, const in float dotNL, const in float dotNV) {");
-                src.push("   float a2 = pow2( alpha );");
-                src.push("   float gl = dotNL + sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNL ) );");
-                src.push("   float gv = dotNV + sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNV ) );");
+                src.push("   float a2 = ( alpha * alpha );");
+                src.push("   float gl = dotNL + sqrt( a2 + ( 1.0 - a2 ) * ( dotNL * dotNL ) );");
+                src.push("   float gv = dotNV + sqrt( a2 + ( 1.0 - a2 ) * ( dotNV * dotNV ) );");
                 src.push("   return 1.0 / ( gl * gv );");
                 src.push("}");
 
                 src.push("float G_GGX_SmithCorrelated(const in float alpha, const in float dotNL, const in float dotNV) {");
-                src.push("   float a2 = pow2( alpha );");
-                src.push("   float gv = dotNL * sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNV ) );");
-                src.push("   float gl = dotNV * sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNL ) );");
+                src.push("   float a2 = ( alpha * alpha );");
+                src.push("   float gv = dotNL * sqrt( a2 + ( 1.0 - a2 ) * ( dotNV * dotNV ) );");
+                src.push("   float gl = dotNV * sqrt( a2 + ( 1.0 - a2 ) * ( dotNL * dotNL ) );");
                 src.push("   return 0.5 / max( gv + gl, EPSILON );");
                 src.push("}");
 
                 src.push("float D_GGX(const in float alpha, const in float dotNH) {");
-                src.push("   float a2 = pow2( alpha );");
-                src.push("   float denom = pow2( dotNH ) * ( a2 - 1.0 ) + 1.0;");
-                src.push("   return RECIPROCAL_PI * a2 / pow2( denom );");
+                src.push("   float a2 = ( alpha * alpha );");
+                src.push("   float denom = ( dotNH * dotNH) * ( a2 - 1.0 ) + 1.0;");
+                src.push("   return RECIPROCAL_PI * a2 / ( denom * denom);");
                 src.push("}");
 
                 src.push("vec3 BRDF_Specular_GGX(const in IncidentLight incidentLight, const in Geometry geometry, const in vec3 specularColor, const in float roughness) {");
-                src.push("   float alpha = pow2( roughness );");
+                src.push("   float alpha = ( roughness * roughness );");
                 src.push("   vec3 halfDir = normalize( incidentLight.direction + geometry.viewEyeDir );");
                 src.push("   float dotNL = saturate( dot( geometry.viewNormal, incidentLight.direction ) );");
                 src.push("   float dotNV = saturate( dot( geometry.viewNormal, geometry.viewEyeDir ) );");
@@ -907,7 +876,7 @@
                     if (scene.lights.lightMap) {
                         src.push("   vec3 irradiance = sRGBToLinear(textureCube(lightMap, geometry.worldNormal)).rgb;");
                         src.push("   irradiance *= PI;");
-                        src.push("   vec3 diffuseBRDFContrib = BRDF_Diffuse_Lambert(material.diffuseColor);");
+                        src.push("   vec3 diffuseBRDFContrib = (RECIPROCAL_PI * material.diffuseColor);");
                         src.push("   reflectedLight.diffuse += irradiance * diffuseBRDFContrib;");
                         //   src.push("   reflectedLight.diffuse = vec3(1.0, 0.0, 0.0);");
                     }
@@ -929,7 +898,7 @@
                 src.push("void computePBRLighting(const in IncidentLight incidentLight, const in Geometry geometry, const in Material material, inout ReflectedLight reflectedLight) {");
                 src.push("   float dotNL     = saturate(dot(geometry.viewNormal, incidentLight.direction));");
                 src.push("   vec3 irradiance = dotNL * incidentLight.color * PI;");
-                src.push("   reflectedLight.diffuse  += irradiance * BRDF_Diffuse_Lambert(material.diffuseColor);");
+                src.push("   reflectedLight.diffuse  += irradiance * (RECIPROCAL_PI * material.diffuseColor);");
                 src.push("   reflectedLight.specular += irradiance * BRDF_Specular_GGX(incidentLight, geometry, material.specularColor, material.specularRoughness);");
                 src.push("}");
 
