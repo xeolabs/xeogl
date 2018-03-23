@@ -116,10 +116,10 @@
                                 <div class="collapse navbar-collapse scrollspy smooth-scroll" id="navbar-collapse-1">
                                     <ul class="nav navbar-nav navbar-right">
                                         <li class="active"><a href="#banner">Home</a></li>
-                                        <li><a href="#introduction">Introduction</a></li>
+                                        <li><a href="#introduction">Intro</a></li>
                                         <!--<li><a href="#features">Features</a></li>-->
                                         <li><a href="../examples" target="_parent">Examples</a></li>
-                                        <li><a href="../docs" target="_parent">API Docs</a></li>
+                                        <li><a href="../docs" target="_parent">Docs</a></li>
                                         <li><a href="https://github.com/xeolabs/xeogl" target="_parent">GitHub</a></li>
                                         <li>
                                             <a href="https://github.com/xeolabs/xeogl/archive/master.zip">Download</a>
@@ -146,15 +146,37 @@
 <!-- banner start -->
 <!-- ================ -->
 <div id="banner" class="banner">
+    <div class="container">
+        <!--<div class="col-md-12">-->
+            <div class="row">
+                <div class="gal">
+                    <a href="../examples/#importing_gltf_OfficePlan"><img src="assets/images/office.png" alt="Archviz emphasis demo"></a>
+                    <a href="../examples/#importing_scenejs_tronTank"><img src="assets/images/tronTank.png" alt="Importing SceneJS content"></a>
+                    <a href="../examples/#materials_metallic_fireHydrant"><img src="assets/images/fireHydrant.jpg" alt="Physically-based rendering"></a>
+                    <a href="../examples/#importing_stl_gear"><img src="assets/images/gear.png" alt="Importing STL"></a>
+                    <a href="../examples/#featured_VanGoghRoom"><img src="assets/images/room.png" alt="Loading a glTF model from SketchFab"></a>
+                    <a href="../examples/#importing_gltf_Hoverbike"><img src="assets/images/hoverbike.png" alt="Loading a glTF model from SketchFab"></a>
+                    <a href="../examples/#effects_demo_hoverToHighlight"><img src="assets/images/drill.png" alt="Highlight emphasis demo"></a>
+                    <a href="../examples/#effects_demo_adam"><img src="assets/images/adam3.png" alt="Adam head glTF model"></a>
+                    <a href="../examples/#effects_ghost"><img src="assets/images/teapotWireframe.png" alt="Ghost emphasis effect"></a>
+                    <a href="../examples/#importing_gltf_BranchHouse"><img src="assets/images/branchHouse.png" alt="Branch house"></a>
+                    <a href="../examples/#effects_demo_gearbox"><img src="assets/images/gearboxGhosted.png" alt="Gearbox with ghosting and highlight"></a>
+                    <a href="../examples/#"><img src="assets/images/sceneDef2.png" alt="Defining an entity in xeogl"></a>
+                    <a href="../examples/#effects_demo_sportscar"><img src="assets/images/adam6.jpg" alt="Adam head with emphasis effects"></a>
+                    <a href="../examples/#importing_gltf_OfficePlan"><img src="assets/images/officePlanXRay.jpg" alt="Archviz emphasis demo"></a>
+                    <a href="../examples/#featured_VianneyHouse2"><img src="assets/images/stairwell.png" alt="Archviz"></a>
 
-    <iframe id="demoLink"
-    style="background: black; border: 0; position:absolute; right: 0; width:100%; height:100%; pointer-events:all;"
-    src="../examples/featured_VianneyHouse2.html"></iframe>
+                    <!--<a href="../examples/#importing_gltf_OfficePlan"><img src="assets/images/sceneDef.png" alt="Archviz emphasis demo"></a>-->
+                    <!--<a href="../examples/#effects_demo_sportscar"><img src="assets/images/outlineGear.jpg" alt=""></a>-->
+                    <!--<a href=""><img src="assets/images/zspaceUser.png" alt=""></a>-->
+                    <!--<a href="../examples/#importing_gltf_OfficePlan"><img src="assets/images/sceneDef.png" alt="Archviz emphasis demo"></a>-->
+                    <!--<a href="../examples/#importing_gltf_OfficePlan"><img src="assets/images/sceneDef.png" alt="Archviz emphasis demo"></a>-->
+                    <!--<a href="../examples/#"><img src="assets/images/sceneDef2.png" alt=""></a>-->v
+                </div>
 
-    <!--<iframe id="demoLink"-->
-    <!--style="background: black; border: 0; position:absolute; right: 0; width:100%; height:100%; pointer-events:all;"-->
-    <!--src="../examples/importing_gltf_BranchHouse.html"></iframe>-->
-
+            </div>
+        </div>
+    <!--</div>-->
 </div>
 <!-- banner end -->
 
@@ -168,23 +190,12 @@
             <h1 id="introduction" class="title"><span>xeogl</span> introduction</h1>
 
             <p>xeogl is an open source JavaScript library from <a target="_parent"
-                                                              href="http://twitter.com/xeographics">@xeographics</a> for 3D model visualization on WebGL.</p>
+                                                                  href="http://twitter.com/xeographics">@xeographics</a>
+                for 3D model visualization on WebGL.</p>
 
             <p>It gives you the tools to create interactive 3D worlds in your browser. Build your objects
-                programmatically, or load them from glTF. Navigate them with the camera, and script them with Javascript,
-                to create cool presentations.</p>
-
-            <h2>Contents</h2>
-
-            <ul>
-                <li><a href="#features">Features</a></li>
-                <li><a href="#features">Creating a 3D scene</a></li>
-                <li><a href="#features">Editing scenes</a></li>
-                <li><a href="#animating-scenes">Animating scenes</a></li>
-                <li><a href="#loading-models">Loading models</a></li>
-                <li><a href="#xeogl-in-the-wild">xeogl in the wild</a></li>
-                <li><a href="#learn-more">Learn more</a></li>
-            </ul>
+                programmatically, or load them from glTF. Navigate them with the camera and script them with
+                Javascript, to create cool presentations.</p>
 
             <h2>Features</h2>
 
@@ -195,7 +206,8 @@
                         <li>Declarative, dynamically-editable 3D scene representation</li>
                         <li>No external dependencies; library and tool agnostic</li>
                         <li>Optimized for high-detail visualization</li>
-                        <li class="last">Open source (<a href="https://github.com/xeolabs/xeogl/blob/master/MIT-LICENSE">MIT</a>).
+                        <li class="last">Open source (<a
+                                href="https://github.com/xeolabs/xeogl/blob/master/MIT-LICENSE">MIT</a>).
                     </ul>
                 </li>
                 <li><b>Designed for CAD, BIM and Archviz:</b>
@@ -247,7 +259,7 @@
 
             <p>Then define your 3D scene as an entity-component graph, as shown below.</p>
             <p>Your scene is basically a bunch of <a href="http://xeogl.org/docs/classes/Component.html"
-                                                              target="_parent">components</a> that are
+                                                     target="_parent">components</a> that are
                 tied together by <a href="http://xeogl.org/docs/classes/Entity.html" target="_parent">entities</a>. Each
                 entity represents a WebGL draw call.</p>
 
@@ -380,7 +392,8 @@ var cameraControl = new xeogl.CameraControl();</pre>
                 <li><a
                         href="https://github.com/xeolabs/xeogl/wiki" target="_wiki">Wiki</a></li>
 
-                <li>Follow <a target="_parent" href="http://twitter.com/xeographics">@xeographics</a> on Twitter for updates
+                <li>Follow <a target="_parent" href="http://twitter.com/xeographics">@xeographics</a> on Twitter for
+                    updates
                 </li>
             </ul>
 

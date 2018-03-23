@@ -434,6 +434,41 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
 
                 } else {
 
+                    if (modes.selected) {
+
+                        var selectedMaterial = object.selectedMaterial;
+
+                        if (selectedMaterial.edges) {
+                            if (selectedMaterial.edgeAlpha < 1.0) {
+                                transparentSelectedEdgesObjects[numTransparentSelectedEdgesObjects++] = object;
+                            } else {
+                                opaqueSelectedEdgesObjects[numOpaqueSelectedEdgesObjects++] = object;
+                            }
+                        }
+
+                        if (selectedMaterial.vertices) {
+                            if (selectedMaterial.vertexAlpha < 1.0) {
+                                transparentSelectedVerticesObjects[numTransparentSelectedVerticesObjects++] = object;
+                            } else {
+                                opaqueSelectedVerticesObjects[numOpaqueSelectedVerticesObjects++] = object;
+                            }
+                        }
+
+                        if (selectedMaterial.fill) {
+                            if (selectedMaterial.fillAlpha < 1.0) {
+                                transparentSelectedFillObjects[numTransparentSelectedFillObjects++] = object;
+                            } else {
+                                opaqueSelectedFillObjects[numOpaqueSelectedFillObjects++] = object;
+                            }
+                        }
+
+                        if (modes.selected) {
+                            selectedObjects[numSelectedObjects++] = object;
+                        }
+                    }
+
+                 //   else
+
                     if (modes.highlighted) {
 
                         var highlightMaterial = object.highlightMaterial;
@@ -468,40 +503,9 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
 
                     }
 
-                    else
 
-                    if (modes.selected) {
 
-                        var selectedMaterial = object.selectedMaterial;
 
-                        if (selectedMaterial.edges) {
-                            if (selectedMaterial.edgeAlpha < 1.0) {
-                                transparentSelectedEdgesObjects[numTransparentSelectedEdgesObjects++] = object;
-                            } else {
-                                opaqueSelectedEdgesObjects[numOpaqueSelectedEdgesObjects++] = object;
-                            }
-                        }
-
-                        if (selectedMaterial.vertices) {
-                            if (selectedMaterial.vertexAlpha < 1.0) {
-                                transparentSelectedVerticesObjects[numTransparentSelectedVerticesObjects++] = object;
-                            } else {
-                                opaqueSelectedVerticesObjects[numOpaqueSelectedVerticesObjects++] = object;
-                            }
-                        }
-
-                        if (selectedMaterial.fill) {
-                            if (selectedMaterial.fillAlpha < 1.0) {
-                                transparentSelectedFillObjects[numTransparentSelectedFillObjects++] = object;
-                            } else {
-                                opaqueSelectedFillObjects[numOpaqueSelectedFillObjects++] = object;
-                            }
-                        }
-
-                        if (modes.selected) {
-                            selectedObjects[numSelectedObjects++] = object;
-                        }
-                    }
 
                     transparent = object.material.alphaMode === 2 /* blend */ || modes.xray || modes.colorize[3] < 1;
 
@@ -638,65 +642,7 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                 gl.disable(gl.BLEND);
             }
 
-            if (numOpaqueSelectedFillObjects > 0 || numOpaqueSelectedEdgesObjects > 0 || numOpaqueSelectedVerticesObjects > 0) {
-
-                // Render opaque selected objects
-
-                frame.lastProgramId = null;
-                gl.clear(gl.DEPTH_BUFFER_BIT);
-
-                if (numOpaqueSelectedVerticesObjects > 0) {
-                    for (i = 0; i < numOpaqueSelectedVerticesObjects; i++) {
-                        opaqueSelectedVerticesObjects[i].drawSelectedVertices(frame);
-                    }
-                }
-
-                if (numOpaqueSelectedEdgesObjects > 0) {
-                    for (i = 0; i < numOpaqueSelectedEdgesObjects; i++) {
-                        opaqueSelectedEdgesObjects[i].drawSelectedEdges(frame);
-                    }
-                }
-
-                if (numOpaqueSelectedFillObjects > 0) {
-                    for (i = 0; i < numOpaqueSelectedFillObjects; i++) {
-                        opaqueSelectedFillObjects[i].drawSelectedFill(frame);
-                    }
-                }
-            }
-
-            if (numTransparentSelectedFillObjects > 0 || numTransparentSelectedEdgesObjects > 0 || numTransparentSelectedVerticesObjects > 0) {
-
-                // Render transparent selected objects
-
-                frame.lastProgramId = null;
-
-                gl.clear(gl.DEPTH_BUFFER_BIT);
-                gl.enable(gl.CULL_FACE);
-                gl.enable(gl.BLEND);
-                gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-                //          gl.disable(gl.DEPTH_TEST);
-
-                if (numTransparentSelectedVerticesObjects > 0) {
-                    for (i = 0; i < numTransparentSelectedVerticesObjects; i++) {
-                        transparentSelectedVerticesObjects[i].drawSelectedVertices(frame);
-                    }
-                }
-
-                if (numTransparentSelectedEdgesObjects > 0) {
-                    for (i = 0; i < numTransparentSelectedEdgesObjects; i++) {
-                        transparentSelectedEdgesObjects[i].drawSelectedEdges(frame);
-                    }
-                }
-
-                if (numTransparentSelectedFillObjects > 0) {
-                    for (i = 0; i < numTransparentSelectedFillObjects; i++) {
-                        transparentSelectedFillObjects[i].drawSelectedFill(frame);
-                    }
-                }
-
-                gl.disable(gl.BLEND);
-                //        gl.enable(gl.DEPTH_TEST);
-            }
+            // Highlighting
 
             if (numOpaqueHighlightFillObjects > 0 || numOpaqueHighlightEdgesObjects > 0 || numOpaqueHighlightVerticesObjects > 0) {
 
@@ -751,6 +697,68 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                 if (numTransparentHighlightFillObjects > 0) {
                     for (i = 0; i < numTransparentHighlightFillObjects; i++) {
                         transparentHighlightFillObjects[i].drawHighlightFill(frame);
+                    }
+                }
+
+                gl.disable(gl.BLEND);
+                //        gl.enable(gl.DEPTH_TEST);
+            }
+
+            // Selection
+
+            if (numOpaqueSelectedFillObjects > 0 || numOpaqueSelectedEdgesObjects > 0 || numOpaqueSelectedVerticesObjects > 0) {
+
+                // Render opaque selected objects
+
+                frame.lastProgramId = null;
+                gl.clear(gl.DEPTH_BUFFER_BIT);
+
+                if (numOpaqueSelectedVerticesObjects > 0) {
+                    for (i = 0; i < numOpaqueSelectedVerticesObjects; i++) {
+                        opaqueSelectedVerticesObjects[i].drawSelectedVertices(frame);
+                    }
+                }
+
+                if (numOpaqueSelectedEdgesObjects > 0) {
+                    for (i = 0; i < numOpaqueSelectedEdgesObjects; i++) {
+                        opaqueSelectedEdgesObjects[i].drawSelectedEdges(frame);
+                    }
+                }
+
+                if (numOpaqueSelectedFillObjects > 0) {
+                    for (i = 0; i < numOpaqueSelectedFillObjects; i++) {
+                        opaqueSelectedFillObjects[i].drawSelectedFill(frame);
+                    }
+                }
+            }
+
+            if (numTransparentSelectedFillObjects > 0 || numTransparentSelectedEdgesObjects > 0 || numTransparentSelectedVerticesObjects > 0) {
+
+                // Render transparent selected objects
+
+                frame.lastProgramId = null;
+
+                gl.clear(gl.DEPTH_BUFFER_BIT);
+                gl.enable(gl.CULL_FACE);
+                gl.enable(gl.BLEND);
+                gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+                //          gl.disable(gl.DEPTH_TEST);
+
+                if (numTransparentSelectedVerticesObjects > 0) {
+                    for (i = 0; i < numTransparentSelectedVerticesObjects; i++) {
+                        transparentSelectedVerticesObjects[i].drawSelectedVertices(frame);
+                    }
+                }
+
+                if (numTransparentSelectedEdgesObjects > 0) {
+                    for (i = 0; i < numTransparentSelectedEdgesObjects; i++) {
+                        transparentSelectedEdgesObjects[i].drawSelectedEdges(frame);
+                    }
+                }
+
+                if (numTransparentSelectedFillObjects > 0) {
+                    for (i = 0; i < numTransparentSelectedFillObjects; i++) {
+                        transparentSelectedFillObjects[i].drawSelectedFill(frame);
                     }
                 }
 
