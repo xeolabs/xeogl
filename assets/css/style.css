@@ -219,9 +219,9 @@ blockquote {
     padding-top: 130px;
     padding-bottom: 20px;
     font-size: 0;
-    -webkit-column-count: 4; /* Chrome, Safari, Opera */
-    -moz-column-count: 4; /* Firefox */
-    column-count: 4;
+    -webkit-column-count: 5; /* Chrome, Safari, Opera */
+    -moz-column-count: 5; /* Firefox */
+    column-count: 5;
 
 }
 
