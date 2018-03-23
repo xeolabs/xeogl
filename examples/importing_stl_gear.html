@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.js"></script>
+
+    <script src="js/models/STLModel.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <h1><a href="../docs/classes/STLModel.html" target="_parent">STLModel</a> - importing STL
+    </h1>
+</div>
+
+<script>
+
+    // Load ASCII STL model
+
+    var f1Concept = new xeogl.STLModel({
+        src: "models/stl/binary/spurGear.stl",
+        smoothNormals: true
+    });
+
+    // User camera control
+
+    new xeogl.CameraControl();
+
+    // Initial camera position
+
+    var scene = xeogl.scene;
+    var camera = scene.camera;
+
+    camera.eye = [37.248104095458984, 45.17610168457031, -15.022497177124023];
+    camera.look = [10.90522289276123, 10.90522289276123, 8];
+    camera.up = [-0.5888525247573853, 0.7260482311248779, 0.3551150858402252];
+
+    // Orbit camera
+
+    scene.on("tick", function () {
+        camera.orbitYaw(-0.2);
+    });
+
+    //-----------------------------------------------------------------------------------------------------
+    // Environment
+    //-----------------------------------------------------------------------------------------------------
+
+    var lights = scene.lights;
+
+    lights.lights = [
+//        new xeogl.AmbientLight({
+//            color: [.8, 1, .8],
+//            intensity: 0.6
+//        }),
+        new xeogl.DirLight({
+            dir: [0.8, -0.6, -0.8],
+            color: [1.0, 1.0, 1.0],
+            intensity: 1.0,
+            space: "view"
+        }),
+        new xeogl.DirLight({
+            dir: [-0.8, -0.4, -0.4],
+            color: [1.0, 1.0, 1.0],
+            intensity: 1.0,
+            space: "view"
+        }),
+        new xeogl.DirLight({
+            dir: [0.2, -0.8, 0.8],
+            color: [0.6, 0.6, 0.6],
+            intensity: 1.0,
+            space: "view"
+        })
+    ];
+    lights.reflectionMap = new xeogl.CubeTexture({
+        src: [
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
+        ],
+        encoding: "sRGB"
+    });
+
+</script>
+</body>
+</html>
