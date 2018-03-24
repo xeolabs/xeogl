@@ -75,7 +75,7 @@ var gltfExplorer = function (menuId, files) {
         })
     });
 
-  //  model.scene.camera.gimbalLock = false;
+    //  model.scene.camera.gimbalLock = false;
 
     var cameraFlight = new xeogl.CameraFlightAnimation();
 
@@ -89,6 +89,7 @@ var gltfExplorer = function (menuId, files) {
                 cameraFlight.flyTo();
                 if (lastEntity) {
                     lastEntity.ghosted = true;
+                    lastEntity.highlighted = false;
                     lastEntity = null;
                 }
                 return;
@@ -98,8 +99,10 @@ var gltfExplorer = function (menuId, files) {
             if (entity) {
                 if (lastEntity) {
                     lastEntity.ghosted = true;
+                    lastEntity.highlighted = false;
                 }
                 entity.ghosted = false;
+                entity.highlighted = true;
                 cameraFlight.flyTo({
                     aabb: entity.aabb,
                     fitFOV: 25,

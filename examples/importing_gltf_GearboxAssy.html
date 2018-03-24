@@ -21,39 +21,21 @@
 
 <script>
 
-    xeogl.scene.lights.lights = [
-        new xeogl.DirLight({
-            id: "keyLight",
-            dir: [0.0, -1.0, 0.0],
-            color: [0.8, 0.8, 0.8],
-            intensity: 1.0,
-            shadow: true,
-            space: "world"
-        }),
-
-        new xeogl.DirLight({
-            id: "fillLight",
-            dir: [-0.8, -0.4, -0.4],
-            color: [0.4, 0.4, 0.5],
-            intensity: 1.0,
-            shadow: true,
-            space: "world"
-        }),
-
-        new xeogl.DirLight({
-            id: "rimLight",
-            dir: [0.2, 0.8, 0.8],
-            color: [0.8, 0.8, 0.8],
-            intensity: 1.0,
-            shadow: true,
-            space: "world"
-        })
-    ];
+    xeogl.scene.lights.reflectionMap = new xeogl.CubeTexture({
+        src: [
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PX.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NX.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PY.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NY.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_PZ.png",
+            "textures/reflect/Uffizi_Gallery/Uffizi_Gallery_Radiance_NZ.png"
+        ],
+        encoding: "linear"
+    });
 
     var model = new xeogl.GLTFModel({
         id: "gearbox",
-        src: "models/gltf/GearboxAssy/glTF-MaterialsCommon/GearboxAssy.gltf",
-        lambertMaterials: true
+        src: "models/gltf/GearboxAssy/glTF-MaterialsCommon/GearboxAssy.gltf"
     });
 
     // Ground plane
