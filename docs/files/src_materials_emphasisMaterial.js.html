@@ -197,11 +197,11 @@
 
  ## Overview
 
- * Ghost an {{#crossLink &quot;Entity&quot;}}{{/crossLink}} by setting its {{#crossLink &quot;Entity/ghosted:property&quot;}}{{/crossLink}} property &#x60;&#x60;&#x60;&#x60;true&#x60;&#x60;&#x60;&#x60;.
+ * Ghost an {{#crossLink &quot;Entity&quot;}}{{/crossLink}} by setting its {{#crossLink &quot;Entity/ghost:property&quot;}}{{/crossLink}} property &#x60;&#x60;&#x60;&#x60;true&#x60;&#x60;&#x60;&#x60;.
  * When ghosted, an Entity&#x27;s appearance is controlled by its EmphasisMaterial.
  * An EmphasisMaterial provides several preset configurations that you can set it to. Select a preset by setting {{#crossLink &quot;EmphasisMaterial/preset:property&quot;}}{{/crossLink}} to the preset&#x27;s ID. A map of available presets is provided in {{#crossLink &quot;EmphasisMaterial/presets:property&quot;}}xeogl.EmphasisMaterial.presets{{/crossLink}}.
  * By default, an Entity uses the {{#crossLink &quot;Scene&quot;}}{{/crossLink}}&#x27;s global EmphasisMaterials, but you can give each Entity its own EmphasisMaterial when you want to customize the effect per-Entity.
- * Ghost all Entities in a {{#crossLink &quot;Model&quot;}}{{/crossLink}} by setting the Model&#x27;s {{#crossLink &quot;Model/ghosted:property&quot;}}{{/crossLink}} property &#x60;&#x60;&#x60;&#x60;true&#x60;&#x60;&#x60;&#x60;. Note that all Entities in a Model have the Scene&#x27;s global EmphasisMaterial by default.
+ * Ghost all Entities in a {{#crossLink &quot;Model&quot;}}{{/crossLink}} by setting the Model&#x27;s {{#crossLink &quot;Model/ghost:property&quot;}}{{/crossLink}} property &#x60;&#x60;&#x60;&#x60;true&#x60;&#x60;&#x60;&#x60;. Note that all Entities in a Model have the Scene&#x27;s global EmphasisMaterial by default.
  * Modify the Scene&#x27;s global EmphasisMaterial to customize it.
 
  ## Usage
@@ -212,7 +212,7 @@
  ### Ghosting
 
  In the usage example below, we&#x27;ll create an Entity with a ghost effect applied to it. The Entity gets its own EmphasisMaterial for ghosting, and
- has its {{#crossLink &quot;Entity/ghosted:property&quot;}}{{/crossLink}} property set &#x60;&#x60;&#x60;&#x60;true&#x60;&#x60;&#x60;&#x60; to activate the effect.
+ has its {{#crossLink &quot;Entity/ghost:property&quot;}}{{/crossLink}} property set &#x60;&#x60;&#x60;&#x60;true&#x60;&#x60;&#x60;&#x60; to activate the effect.
 
  &lt;a href=&quot;../../examples/#effects_ghost&quot;&gt;&lt;img src=&quot;../../assets/images/screenshots/HighlightMaterial/teapot.png&quot;&gt;&lt;/img&gt;&lt;/a&gt;
 
@@ -237,7 +237,7 @@
         fillColor: [0, 0, 0],
         fillAlpha: 0.7
     }),
-    ghosted: true
+    ghost: true
  });
  &#x60;&#x60;&#x60;&#x60;
 
@@ -258,7 +258,7 @@
     material: new xeogl.PhongMaterial({
         diffuse: [0.2, 0.2, 1.0]
     }),
-    ghosted: true
+    ghost: true
  });
 
  var ghostMaterial = entity.scene.ghostMaterial;
@@ -385,7 +385,7 @@
     ghostMaterial: new xeogl.EmphasisMaterial({
         preset: &quot;sepia&quot;
     });
-    ghosted: true
+    ghost: true
  });
  &#x60;&#x60;&#x60;&#x60;
 
@@ -908,20 +908,6 @@
             fill: true,
             fillColor: [0.4, 0.4, 0.4],
             fillAlpha: 0.2
-        },
-
-        &quot;blueprint&quot;: {
-            edges: true,
-            edgeColor: [0.7, 0.7, 1.0],
-            edgeAlpha: 0.7,
-            edgeWidth: 1,
-            vertices: false,
-            vertexColor: [0.4, 0.4, 0.4],
-            vertexAlpha: 0.7,
-            vertexSize: 4.0,
-            fill: true,
-            fillColor: [0.2, 0.2, 0.6],
-            fillAlpha: 0.3
         },
 
         &quot;phosphorous&quot;: {
