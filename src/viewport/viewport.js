@@ -21,7 +21,7 @@
  ````Javascript
  // Load glTF model
  var model = new xeogl.GLTFModel({
-    src: "models/gltf/GearboxAssy/glTF/GearboxAssy.gltf"
+    src: "models/gltf/GearboxAssy/glTF-MaterialsCommon/GearboxAssy.gltf"
  });
 
  var scene = model.scene;

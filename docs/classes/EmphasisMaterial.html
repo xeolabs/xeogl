@@ -222,11 +222,11 @@
 </table>
 <h2 id="overview">Overview</h2>
 <ul>
-<li>Ghost an <a href="../classes/Entity.html" class="crosslink">Entity</a> by setting its <a href="../classes/Entity.html#property_ghosted" class="crosslink">ghosted</a> property <code>true</code>.</li>
+<li>Ghost an <a href="../classes/Entity.html" class="crosslink">Entity</a> by setting its Entity/ghost:property property <code>true</code>.</li>
 <li>When ghosted, an Entity&#39;s appearance is controlled by its EmphasisMaterial.</li>
 <li>An EmphasisMaterial provides several preset configurations that you can set it to. Select a preset by setting <a href="../classes/EmphasisMaterial.html#property_preset" class="crosslink">preset</a> to the preset&#39;s ID. A map of available presets is provided in <a href="../classes/EmphasisMaterial.html#property_presets" class="crosslink">xeogl.EmphasisMaterial.presets</a>.</li>
 <li>By default, an Entity uses the <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s global EmphasisMaterials, but you can give each Entity its own EmphasisMaterial when you want to customize the effect per-Entity.</li>
-<li>Ghost all Entities in a <a href="../classes/Model.html" class="crosslink">Model</a> by setting the Model&#39;s <a href="../classes/Model.html#property_ghosted" class="crosslink">ghosted</a> property <code>true</code>. Note that all Entities in a Model have the Scene&#39;s global EmphasisMaterial by default.</li>
+<li>Ghost all Entities in a <a href="../classes/Model.html" class="crosslink">Model</a> by setting the Model&#39;s Model/ghost:property property <code>true</code>. Note that all Entities in a Model have the Scene&#39;s global EmphasisMaterial by default.</li>
 <li>Modify the Scene&#39;s global EmphasisMaterial to customize it.</li>
 </ul>
 <h2 id="usage">Usage</h2>
@@ -236,7 +236,7 @@
 </ul>
 <h3 id="ghosting">Ghosting</h3>
 <p>In the usage example below, we&#39;ll create an Entity with a ghost effect applied to it. The Entity gets its own EmphasisMaterial for ghosting, and
-has its <a href="../classes/Entity.html#property_ghosted" class="crosslink">ghosted</a> property set <code>true</code> to activate the effect.</p>
+has its Entity/ghost:property property set <code>true</code> to activate the effect.</p>
 <p><a href="../../examples/#effects_ghost"><img src="../../assets/images/screenshots/HighlightMaterial/teapot.png"></img></a></p>
 <pre class="code prettyprint"><code class="lang-javascript">var entity = new xeogl.Entity({
    geometry: new xeogl.TeapotGeometry({
@@ -258,7 +258,7 @@ has its <a href="../classes/Entity.html#property_ghosted" class="crosslink">ghos
        fillColor: [0, 0, 0],
        fillAlpha: 0.7
    }),
-   ghosted: true
+   ghost: true
 });
 </code></pre>
 <p>Note the <strong>ghostEdgeThreshold</strong> configuration on the <a href="../classes/Geometry.html" class="crosslink">Geometry</a> we&#39;ve created for our
@@ -275,7 +275,7 @@ to customize the effect.</p>
    material: new xeogl.PhongMaterial({
        diffuse: [0.2, 0.2, 1.0]
    }),
-   ghosted: true
+   ghost: true
 });
 
 var ghostMaterial = entity.scene.ghostMaterial;
@@ -384,7 +384,7 @@ model.on("loaded", function() {
    ghostMaterial: new xeogl.EmphasisMaterial({
        preset: "sepia"
    });
-   ghosted: true
+   ghost: true
 });
 </code></pre>
 <p>Note that applying a preset just sets the EmphasisMaterial&#39;s property values, which you are then free to modify afterwards.</p>

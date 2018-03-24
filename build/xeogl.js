@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2018-03-21
+ * Built on 2018-03-24
  *
  * MIT License
  * Copyright 2018, Lindsay Kay
@@ -6239,6 +6239,41 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
 
                 } else {
 
+                    if (modes.selected) {
+
+                        var selectedMaterial = object.selectedMaterial;
+
+                        if (selectedMaterial.edges) {
+                            if (selectedMaterial.edgeAlpha < 1.0) {
+                                transparentSelectedEdgesObjects[numTransparentSelectedEdgesObjects++] = object;
+                            } else {
+                                opaqueSelectedEdgesObjects[numOpaqueSelectedEdgesObjects++] = object;
+                            }
+                        }
+
+                        if (selectedMaterial.vertices) {
+                            if (selectedMaterial.vertexAlpha < 1.0) {
+                                transparentSelectedVerticesObjects[numTransparentSelectedVerticesObjects++] = object;
+                            } else {
+                                opaqueSelectedVerticesObjects[numOpaqueSelectedVerticesObjects++] = object;
+                            }
+                        }
+
+                        if (selectedMaterial.fill) {
+                            if (selectedMaterial.fillAlpha < 1.0) {
+                                transparentSelectedFillObjects[numTransparentSelectedFillObjects++] = object;
+                            } else {
+                                opaqueSelectedFillObjects[numOpaqueSelectedFillObjects++] = object;
+                            }
+                        }
+
+                        if (modes.selected) {
+                            selectedObjects[numSelectedObjects++] = object;
+                        }
+                    }
+
+                 //   else
+
                     if (modes.highlighted) {
 
                         var highlightMaterial = object.highlightMaterial;
@@ -6273,40 +6308,9 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
 
                     }
 
-                    else
 
-                    if (modes.selected) {
 
-                        var selectedMaterial = object.selectedMaterial;
 
-                        if (selectedMaterial.edges) {
-                            if (selectedMaterial.edgeAlpha < 1.0) {
-                                transparentSelectedEdgesObjects[numTransparentSelectedEdgesObjects++] = object;
-                            } else {
-                                opaqueSelectedEdgesObjects[numOpaqueSelectedEdgesObjects++] = object;
-                            }
-                        }
-
-                        if (selectedMaterial.vertices) {
-                            if (selectedMaterial.vertexAlpha < 1.0) {
-                                transparentSelectedVerticesObjects[numTransparentSelectedVerticesObjects++] = object;
-                            } else {
-                                opaqueSelectedVerticesObjects[numOpaqueSelectedVerticesObjects++] = object;
-                            }
-                        }
-
-                        if (selectedMaterial.fill) {
-                            if (selectedMaterial.fillAlpha < 1.0) {
-                                transparentSelectedFillObjects[numTransparentSelectedFillObjects++] = object;
-                            } else {
-                                opaqueSelectedFillObjects[numOpaqueSelectedFillObjects++] = object;
-                            }
-                        }
-
-                        if (modes.selected) {
-                            selectedObjects[numSelectedObjects++] = object;
-                        }
-                    }
 
                     transparent = object.material.alphaMode === 2 /* blend */ || modes.xray || modes.colorize[3] < 1;
 
@@ -6443,65 +6447,7 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                 gl.disable(gl.BLEND);
             }
 
-            if (numOpaqueSelectedFillObjects > 0 || numOpaqueSelectedEdgesObjects > 0 || numOpaqueSelectedVerticesObjects > 0) {
-
-                // Render opaque selected objects
-
-                frame.lastProgramId = null;
-                gl.clear(gl.DEPTH_BUFFER_BIT);
-
-                if (numOpaqueSelectedVerticesObjects > 0) {
-                    for (i = 0; i < numOpaqueSelectedVerticesObjects; i++) {
-                        opaqueSelectedVerticesObjects[i].drawSelectedVertices(frame);
-                    }
-                }
-
-                if (numOpaqueSelectedEdgesObjects > 0) {
-                    for (i = 0; i < numOpaqueSelectedEdgesObjects; i++) {
-                        opaqueSelectedEdgesObjects[i].drawSelectedEdges(frame);
-                    }
-                }
-
-                if (numOpaqueSelectedFillObjects > 0) {
-                    for (i = 0; i < numOpaqueSelectedFillObjects; i++) {
-                        opaqueSelectedFillObjects[i].drawSelectedFill(frame);
-                    }
-                }
-            }
-
-            if (numTransparentSelectedFillObjects > 0 || numTransparentSelectedEdgesObjects > 0 || numTransparentSelectedVerticesObjects > 0) {
-
-                // Render transparent selected objects
-
-                frame.lastProgramId = null;
-
-                gl.clear(gl.DEPTH_BUFFER_BIT);
-                gl.enable(gl.CULL_FACE);
-                gl.enable(gl.BLEND);
-                gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-                //          gl.disable(gl.DEPTH_TEST);
-
-                if (numTransparentSelectedVerticesObjects > 0) {
-                    for (i = 0; i < numTransparentSelectedVerticesObjects; i++) {
-                        transparentSelectedVerticesObjects[i].drawSelectedVertices(frame);
-                    }
-                }
-
-                if (numTransparentSelectedEdgesObjects > 0) {
-                    for (i = 0; i < numTransparentSelectedEdgesObjects; i++) {
-                        transparentSelectedEdgesObjects[i].drawSelectedEdges(frame);
-                    }
-                }
-
-                if (numTransparentSelectedFillObjects > 0) {
-                    for (i = 0; i < numTransparentSelectedFillObjects; i++) {
-                        transparentSelectedFillObjects[i].drawSelectedFill(frame);
-                    }
-                }
-
-                gl.disable(gl.BLEND);
-                //        gl.enable(gl.DEPTH_TEST);
-            }
+            // Highlighting
 
             if (numOpaqueHighlightFillObjects > 0 || numOpaqueHighlightEdgesObjects > 0 || numOpaqueHighlightVerticesObjects > 0) {
 
@@ -6556,6 +6502,68 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                 if (numTransparentHighlightFillObjects > 0) {
                     for (i = 0; i < numTransparentHighlightFillObjects; i++) {
                         transparentHighlightFillObjects[i].drawHighlightFill(frame);
+                    }
+                }
+
+                gl.disable(gl.BLEND);
+                //        gl.enable(gl.DEPTH_TEST);
+            }
+
+            // Selection
+
+            if (numOpaqueSelectedFillObjects > 0 || numOpaqueSelectedEdgesObjects > 0 || numOpaqueSelectedVerticesObjects > 0) {
+
+                // Render opaque selected objects
+
+                frame.lastProgramId = null;
+                gl.clear(gl.DEPTH_BUFFER_BIT);
+
+                if (numOpaqueSelectedVerticesObjects > 0) {
+                    for (i = 0; i < numOpaqueSelectedVerticesObjects; i++) {
+                        opaqueSelectedVerticesObjects[i].drawSelectedVertices(frame);
+                    }
+                }
+
+                if (numOpaqueSelectedEdgesObjects > 0) {
+                    for (i = 0; i < numOpaqueSelectedEdgesObjects; i++) {
+                        opaqueSelectedEdgesObjects[i].drawSelectedEdges(frame);
+                    }
+                }
+
+                if (numOpaqueSelectedFillObjects > 0) {
+                    for (i = 0; i < numOpaqueSelectedFillObjects; i++) {
+                        opaqueSelectedFillObjects[i].drawSelectedFill(frame);
+                    }
+                }
+            }
+
+            if (numTransparentSelectedFillObjects > 0 || numTransparentSelectedEdgesObjects > 0 || numTransparentSelectedVerticesObjects > 0) {
+
+                // Render transparent selected objects
+
+                frame.lastProgramId = null;
+
+                gl.clear(gl.DEPTH_BUFFER_BIT);
+                gl.enable(gl.CULL_FACE);
+                gl.enable(gl.BLEND);
+                gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+                //          gl.disable(gl.DEPTH_TEST);
+
+                if (numTransparentSelectedVerticesObjects > 0) {
+                    for (i = 0; i < numTransparentSelectedVerticesObjects; i++) {
+                        transparentSelectedVerticesObjects[i].drawSelectedVertices(frame);
+                    }
+                }
+
+                if (numTransparentSelectedEdgesObjects > 0) {
+                    for (i = 0; i < numTransparentSelectedEdgesObjects; i++) {
+                        transparentSelectedEdgesObjects[i].drawSelectedEdges(frame);
+                    }
+                }
+
+                if (numTransparentSelectedFillObjects > 0) {
+                    for (i = 0; i < numTransparentSelectedFillObjects; i++) {
+                        transparentSelectedFillObjects[i].drawSelectedFill(frame);
                     }
                 }
 
@@ -9687,18 +9695,9 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
             // UTILITY DEFINITIONS
 
-            src.push("float pow2(const in float x) {");
-            src.push("   return x*x;");
-            src.push("}");
-
             src.push("vec3 inverseTransformDirection(in vec3 dir, in mat4 matrix) {");
             src.push("   return normalize( ( vec4( dir, 0.0 ) * matrix ).xyz );");
             src.push("}");
-
-            // src.push("vec3 equirectangularMap(vec3 dir, sampler2D sampler) {"); // http://blog.hvidtfeldts.net/index.php/2012/10/image-based-lighting/
-            // src.push("   vec2 longlat = vec2(atan(dir.y,dir.x),acos(dir.z));"); // Convert (normalized) dir to spherical coordinates.
-            // src.push("   return texture2D(sampler,longlat/vec2(2.0*PI,PI)).xyz;"); // Normalize, and lookup in equirectangular map.
-            // src.push("}");
 
             // STRUCTURES
 
@@ -9726,12 +9725,6 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             src.push("   float   shine;"); // Only used for Phong
             src.push("};");
 
-            // DIFFUSE BRDF EVALUATION
-
-            src.push("vec3 BRDF_Diffuse_Lambert(const in vec3 diffuseColor) {");
-            src.push("   return RECIPROCAL_PI * diffuseColor;");
-            src.push("}");
-
             // COMMON UTILS
 
             if (cfg.phongMaterial) {
@@ -9743,7 +9736,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                     if (scene.lights.lightMap) {
                         src.push("   vec3 irradiance = " + TEXTURE_DECODE_FUNCS[scene.lights.lightMap.encoding] + "(textureCube(lightMap, geometry.worldNormal)).rgb;");
                         src.push("   irradiance *= PI;");
-                        src.push("   vec3 diffuseBRDFContrib = BRDF_Diffuse_Lambert(material.diffuseColor);");
+                        src.push("   vec3 diffuseBRDFContrib = (RECIPROCAL_PI * material.diffuseColor);");
                         src.push("   reflectedLight.diffuse += irradiance * diffuseBRDFContrib;");
                     }
 
@@ -9761,7 +9754,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 src.push("void computePhongLighting(const in IncidentLight directLight, const in Geometry geometry, const in Material material, inout ReflectedLight reflectedLight) {");
                 src.push("   float dotNL     = saturate(dot(geometry.viewNormal, directLight.direction));");
                 src.push("   vec3 irradiance = dotNL * directLight.color * PI;");
-                src.push("   reflectedLight.diffuse  += irradiance * BRDF_Diffuse_Lambert(material.diffuseColor);");
+                src.push("   reflectedLight.diffuse  += irradiance * (RECIPROCAL_PI * material.diffuseColor);");
                 src.push("   reflectedLight.specular += directLight.color * material.specularColor * pow(max(dot(reflect(-directLight.direction, -geometry.viewNormal), geometry.viewEyeDir), 0.0), material.shine);");
                 src.push("}");
             }
@@ -9770,32 +9763,16 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
                 // IRRADIANCE EVALUATION
 
-                //src.push("vec3 sample_reflectMapEquirect(const in vec3 reflect, const in float mipLevel) {");
-                //src.push("   vec2 sampleUV;");
-                //src.push("   sampleUV.y = saturate(reflect.y * 0.5 + 0.5);");
-                //src.push("   sampleUV.x = atan(reflect.z, reflect.x) * RECIPROCAL_PI2 + 0.5;");
-                //src.push("   vec4 texColor = texture2D(reflectionMap, sampleUV, mipLevel);");
-                //src.push("   return texColor.rgb;"); // assumed to be linear
-                //src.push("}");
-
                 src.push("float GGXRoughnessToBlinnExponent(const in float ggxRoughness) {");
-                src.push("   return (2.0 / pow2(ggxRoughness + 0.0001) - 2.0);");
+                src.push("   float r = ggxRoughness + 0.0001;");
+                src.push("   return (2.0 / (r * r) - 2.0);");
                 src.push("}");
 
                 src.push("float getSpecularMIPLevel(const in float blinnShininessExponent, const in int maxMIPLevel) {");
                 src.push("   float maxMIPLevelScalar = float( maxMIPLevel );");
-                src.push("   float desiredMIPLevel = maxMIPLevelScalar - 0.79248 - 0.5 * log2( pow2( blinnShininessExponent ) + 1.0 );");
+                src.push("   float desiredMIPLevel = maxMIPLevelScalar - 0.79248 - 0.5 * log2( ( blinnShininessExponent * blinnShininessExponent ) + 1.0 );");
                 src.push("   return clamp( desiredMIPLevel, 0.0, maxMIPLevelScalar );");
                 src.push("}");
-
-                //src.push("vec3 getLightProbeIndirectRadiance(const in mat4 viewMatrix, const in Geometry geometry, const in float blinnShininessExponent, const in int maxMIPLevel) {");
-                //src.push("   vec3 reflectVec = reflect(geometry.viewEyeDir, geometry.viewNormal);");
-                //src.push("   reflectVec = inverseTransformDirection(reflectVec, viewMatrix);");
-                //src.push("   float mipLevel = getSpecularMIPLevel( blinnShininessExponent, maxMIPLevel );");
-                //src.push("   vec3 reflectionMapColor = sample_reflectMapEquirect(reflectVec, float(mipLevel));");
-                //src.push("   return reflectionMapColor;");
-                //src.push("}");
-
 
                 if (scene.lights.reflectionMap) {
                     src.push("vec3 getLightProbeIndirectRadiance(const in vec3 reflectVec, const in float blinnShininessExponent, const in int maxMIPLevel) {");
@@ -9813,27 +9790,27 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 src.push("}");
 
                 src.push("float G_GGX_Smith(const in float alpha, const in float dotNL, const in float dotNV) {");
-                src.push("   float a2 = pow2( alpha );");
-                src.push("   float gl = dotNL + sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNL ) );");
-                src.push("   float gv = dotNV + sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNV ) );");
+                src.push("   float a2 = ( alpha * alpha );");
+                src.push("   float gl = dotNL + sqrt( a2 + ( 1.0 - a2 ) * ( dotNL * dotNL ) );");
+                src.push("   float gv = dotNV + sqrt( a2 + ( 1.0 - a2 ) * ( dotNV * dotNV ) );");
                 src.push("   return 1.0 / ( gl * gv );");
                 src.push("}");
 
                 src.push("float G_GGX_SmithCorrelated(const in float alpha, const in float dotNL, const in float dotNV) {");
-                src.push("   float a2 = pow2( alpha );");
-                src.push("   float gv = dotNL * sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNV ) );");
-                src.push("   float gl = dotNV * sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNL ) );");
+                src.push("   float a2 = ( alpha * alpha );");
+                src.push("   float gv = dotNL * sqrt( a2 + ( 1.0 - a2 ) * ( dotNV * dotNV ) );");
+                src.push("   float gl = dotNV * sqrt( a2 + ( 1.0 - a2 ) * ( dotNL * dotNL ) );");
                 src.push("   return 0.5 / max( gv + gl, EPSILON );");
                 src.push("}");
 
                 src.push("float D_GGX(const in float alpha, const in float dotNH) {");
-                src.push("   float a2 = pow2( alpha );");
-                src.push("   float denom = pow2( dotNH ) * ( a2 - 1.0 ) + 1.0;");
-                src.push("   return RECIPROCAL_PI * a2 / pow2( denom );");
+                src.push("   float a2 = ( alpha * alpha );");
+                src.push("   float denom = ( dotNH * dotNH) * ( a2 - 1.0 ) + 1.0;");
+                src.push("   return RECIPROCAL_PI * a2 / ( denom * denom);");
                 src.push("}");
 
                 src.push("vec3 BRDF_Specular_GGX(const in IncidentLight incidentLight, const in Geometry geometry, const in vec3 specularColor, const in float roughness) {");
-                src.push("   float alpha = pow2( roughness );");
+                src.push("   float alpha = ( roughness * roughness );");
                 src.push("   vec3 halfDir = normalize( incidentLight.direction + geometry.viewEyeDir );");
                 src.push("   float dotNL = saturate( dot( geometry.viewNormal, incidentLight.direction ) );");
                 src.push("   float dotNV = saturate( dot( geometry.viewNormal, geometry.viewEyeDir ) );");
@@ -9863,7 +9840,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                     if (scene.lights.lightMap) {
                         src.push("   vec3 irradiance = sRGBToLinear(textureCube(lightMap, geometry.worldNormal)).rgb;");
                         src.push("   irradiance *= PI;");
-                        src.push("   vec3 diffuseBRDFContrib = BRDF_Diffuse_Lambert(material.diffuseColor);");
+                        src.push("   vec3 diffuseBRDFContrib = (RECIPROCAL_PI * material.diffuseColor);");
                         src.push("   reflectedLight.diffuse += irradiance * diffuseBRDFContrib;");
                         //   src.push("   reflectedLight.diffuse = vec3(1.0, 0.0, 0.0);");
                     }
@@ -9885,7 +9862,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 src.push("void computePBRLighting(const in IncidentLight incidentLight, const in Geometry geometry, const in Material material, inout ReflectedLight reflectedLight) {");
                 src.push("   float dotNL     = saturate(dot(geometry.viewNormal, incidentLight.direction));");
                 src.push("   vec3 irradiance = dotNL * incidentLight.color * PI;");
-                src.push("   reflectedLight.diffuse  += irradiance * BRDF_Diffuse_Lambert(material.diffuseColor);");
+                src.push("   reflectedLight.diffuse  += irradiance * (RECIPROCAL_PI * material.diffuseColor);");
                 src.push("   reflectedLight.specular += irradiance * BRDF_Specular_GGX(incidentLight, geometry, material.specularColor, material.specularRoughness);");
                 src.push("}");
 
@@ -14991,7 +14968,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
  ````Javascript
  // Load glTF model
  var model = new xeogl.GLTFModel({
-    src: "models/gltf/GearboxAssy/glTF/GearboxAssy.gltf"
+    src: "models/gltf/GearboxAssy/glTF-MaterialsCommon/GearboxAssy.gltf"
  });
 
  var scene = model.scene;
@@ -31933,11 +31910,11 @@ TODO
 
  ## Overview
 
- * Ghost an {{#crossLink "Entity"}}{{/crossLink}} by setting its {{#crossLink "Entity/ghosted:property"}}{{/crossLink}} property ````true````.
+ * Ghost an {{#crossLink "Entity"}}{{/crossLink}} by setting its {{#crossLink "Entity/ghost:property"}}{{/crossLink}} property ````true````.
  * When ghosted, an Entity's appearance is controlled by its EmphasisMaterial.
  * An EmphasisMaterial provides several preset configurations that you can set it to. Select a preset by setting {{#crossLink "EmphasisMaterial/preset:property"}}{{/crossLink}} to the preset's ID. A map of available presets is provided in {{#crossLink "EmphasisMaterial/presets:property"}}xeogl.EmphasisMaterial.presets{{/crossLink}}.
  * By default, an Entity uses the {{#crossLink "Scene"}}{{/crossLink}}'s global EmphasisMaterials, but you can give each Entity its own EmphasisMaterial when you want to customize the effect per-Entity.
- * Ghost all Entities in a {{#crossLink "Model"}}{{/crossLink}} by setting the Model's {{#crossLink "Model/ghosted:property"}}{{/crossLink}} property ````true````. Note that all Entities in a Model have the Scene's global EmphasisMaterial by default.
+ * Ghost all Entities in a {{#crossLink "Model"}}{{/crossLink}} by setting the Model's {{#crossLink "Model/ghost:property"}}{{/crossLink}} property ````true````. Note that all Entities in a Model have the Scene's global EmphasisMaterial by default.
  * Modify the Scene's global EmphasisMaterial to customize it.
 
  ## Usage
@@ -31948,7 +31925,7 @@ TODO
  ### Ghosting
 
  In the usage example below, we'll create an Entity with a ghost effect applied to it. The Entity gets its own EmphasisMaterial for ghosting, and
- has its {{#crossLink "Entity/ghosted:property"}}{{/crossLink}} property set ````true```` to activate the effect.
+ has its {{#crossLink "Entity/ghost:property"}}{{/crossLink}} property set ````true```` to activate the effect.
 
  <a href="../../examples/#effects_ghost"><img src="../../assets/images/screenshots/HighlightMaterial/teapot.png"></img></a>
 
@@ -31973,7 +31950,7 @@ TODO
         fillColor: [0, 0, 0],
         fillAlpha: 0.7
     }),
-    ghosted: true
+    ghost: true
  });
  ````
 
@@ -31994,7 +31971,7 @@ TODO
     material: new xeogl.PhongMaterial({
         diffuse: [0.2, 0.2, 1.0]
     }),
-    ghosted: true
+    ghost: true
  });
 
  var ghostMaterial = entity.scene.ghostMaterial;
@@ -32121,7 +32098,7 @@ TODO
     ghostMaterial: new xeogl.EmphasisMaterial({
         preset: "sepia"
     });
-    ghosted: true
+    ghost: true
  });
  ````
 
@@ -32644,20 +32621,6 @@ TODO
             fill: true,
             fillColor: [0.4, 0.4, 0.4],
             fillAlpha: 0.2
-        },
-
-        "blueprint": {
-            edges: true,
-            edgeColor: [0.7, 0.7, 1.0],
-            edgeAlpha: 0.7,
-            edgeWidth: 1,
-            vertices: false,
-            vertexColor: [0.4, 0.4, 0.4],
-            vertexAlpha: 0.7,
-            vertexSize: 4.0,
-            fill: true,
-            fillColor: [0.2, 0.2, 0.6],
-            fillAlpha: 0.3
         },
 
         "phosphorous": {
@@ -35315,7 +35278,7 @@ TODO
  ````Javascript
  // Load glTF model
  var model = new xeogl.GLTFModel({
-    src: "models/gltf/GearboxAssy/glTF/GearboxAssy.gltf"
+    src: "models/gltf/GearboxAssy/glTF-MaterialsCommon/GearboxAssy.gltf"
  });
 
  var scene = model.scene;
