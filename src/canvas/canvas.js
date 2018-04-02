@@ -171,9 +171,10 @@
                 this.contextAttr.preserveDrawingBuffer = false;
             }
 
-            this.contextAttr.stencil = true;
+            this.contextAttr.stencil = false;
             this.contextAttr.antialias = true;
             this.contextAttr.premultipliedAlpha = this.contextAttr.premultipliedAlpha !== false;
+            this.contextAttr.antialias = this.contextAttr.antialias !== false;
 
             if (!cfg.canvas) {
 

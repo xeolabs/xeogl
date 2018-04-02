@@ -732,6 +732,15 @@
             "fors": {},
             "namespaces": {}
         },
+        "examples/js/effects/loadingEffect.js": {
+            "name": "examples/js/effects/loadingEffect.js",
+            "modules": {},
+            "classes": {
+                "LoadingEffect": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
         "examples/js/effects/stereoEffect.js": {
             "name": "examples/js/effects/stereoEffect.js",
             "modules": {},
@@ -1134,6 +1143,7 @@
                 "CameraPathAnimation": 1,
                 "Annotation": 1,
                 "Pin": 1,
+                "LoadingEffect": 1,
                 "StereoEffect": 1,
                 "CubicBezierCurve": 1,
                 "Curve": 1,
@@ -1456,6 +1466,7 @@
             "name": "effects",
             "submodules": {},
             "classes": {
+                "LoadingEffect": 1,
                 "StereoEffect": 1
             },
             "fors": {},
@@ -4756,21 +4767,21 @@
                         },
                         {
                             "name": "ghosted",
-                            "description": "When true, sets all the Model's Entities initially ghosted. |",
+                            "description": "When true, sets all the Model's Entities initially ghosted.",
                             "type": "Boolean",
                             "optional": true,
                             "optdefault": "false"
                         },
                         {
                             "name": "highlighted",
-                            "description": "When true, sets all the Model's Entities initially highlighted. |",
+                            "description": "When true, sets all the Model's Entities initially highlighted.",
                             "type": "Boolean",
                             "optional": true,
                             "optdefault": "false"
                         },
                         {
                             "name": "outlined",
-                            "description": "When true, sets all the Model's Entities initially outlined. |",
+                            "description": "When true, sets all the Model's Entities initially outlined.",
                             "type": "Boolean",
                             "optional": true,
                             "optdefault": "false"
@@ -5824,6 +5835,51 @@
                 }
             ],
             "extends": "Component"
+        },
+        "LoadingEffect": {
+            "name": "LoadingEffect",
+            "shortname": "LoadingEffect",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "xeogl",
+            "namespace": "",
+            "file": "examples/js/effects/loadingEffect.js",
+            "line": 1,
+            "description": "A **LoadingEffect** TODO}.",
+            "submodule": "effects",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this LoadingEffect in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}},\ngenerated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this LoadingEffect.",
+                            "type": "String:Object",
+                            "optional": true
+                        }
+                    ]
+                }
+            ],
+            "extends": "Entity"
         },
         "StereoEffect": {
             "name": "StereoEffect",
@@ -9100,7 +9156,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 223,
+            "line": 224,
             "description": "Boundary of the Canvas in absolute browser window coordinates.\n\n### Usage:\n\n````javascript\nvar boundary = myScene.canvas.boundary;\n\nvar xmin = boundary[0];\nvar ymin = boundary[1];\nvar width = boundary[2];\nvar height = boundary[3];\n````",
             "itemtype": "property",
             "name": "boundary",
@@ -9112,7 +9168,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 259,
+            "line": 260,
             "description": "Fired whenever the WebGL context has been lost",
             "itemtype": "event",
             "name": "webglContextLost",
@@ -9122,7 +9178,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 272,
+            "line": 273,
             "description": "Fired whenever the WebGL context has been restored again after having previously being lost",
             "itemtype": "event",
             "name": "webglContextRestored",
@@ -9138,7 +9194,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 338,
+            "line": 339,
             "description": "Fired whenever this Canvas's {{#crossLink \"Canvas/boundary:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "boundary",
@@ -9154,7 +9210,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 377,
+            "line": 378,
             "description": "Creates a default canvas in the DOM.",
             "access": "private",
             "tagname": "",
@@ -9164,7 +9220,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 407,
+            "line": 408,
             "description": "Creates a image element behind the canvas, for purpose of showing a custom background.",
             "access": "private",
             "tagname": "",
@@ -9174,7 +9230,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 443,
+            "line": 444,
             "description": "Initialises the WebGL context",
             "access": "private",
             "tagname": "",
@@ -9184,7 +9240,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 476,
+            "line": 477,
             "description": "Fired whenever the canvas failed to get a WebGL context, which probably means that WebGL\nis either unsupported or has been disabled.",
             "itemtype": "event",
             "name": "webglContextFailed",
@@ -9194,7 +9250,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 492,
+            "line": 493,
             "description": "Returns a snapshot of this Canvas as a Base64-encoded image.\n\nWhen a callback is given, this method will capture the snapshot asynchronously, on the next animation frame,\nand return it via the callback.\n\nWhen no callback is given, this method captures and returns the snapshot immediately. Note that is only\npossible when you have configured the Canvas's {{#crossLink \"Scene\"}}Scene{{/crossLink}} to preserve the\nWebGL drawing buffer, which has a performance overhead.\n\n#### Usage:\n\n````javascript\n// Get snapshot asynchronously\nmyScene.canvas.getSnapshot({\n    width: 500, // Defaults to size of canvas\n    height: 500,\n    format: \"png\" // Options are \"jpeg\" (default), \"png\" and \"bmp\"\n}, function(imageDataURL) {\n    imageElement.src = imageDataURL;\n});\n\n// Get snapshot synchronously, requires that Scene be\n// configured with preserveDrawingBuffer; true\nimageElement.src = myScene.canvas.getSnapshot({\n    width: 500,\n    height: 500,\n    format: \"png\"\n});\n````",
             "itemtype": "method",
             "name": "getSnapshot",
@@ -9243,7 +9299,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 573,
+            "line": 574,
             "description": "Reads colors of pixels from the last rendered frame.\n\n<p>Call this method like this:</p>\n\n````JavaScript\n\n// Ignore transparent pixels (default is false)\nvar opaqueOnly = true;\n\nvar colors = new Float32Array(8);\n\nmyCanvas.readPixels([ 100, 22, 12, 33 ], colors, 2, opaqueOnly);\n````\n\nThen the r,g,b components of the colors will be set to the colors at those pixels.",
             "params": [
                 {
@@ -9273,7 +9329,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 601,
+            "line": 602,
             "description": "A background color for the canvas. This is overridden by {{#crossLink \"Canvas/backgroundImage:property\"}}{{/crossLink}}.\n\nYou can set this to a new color at any time.",
             "itemtype": "property",
             "name": "backgroundColor",
@@ -9285,7 +9341,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 634,
+            "line": 635,
             "description": "URL of a background image for the canvas. This is overrided by {{#crossLink \"Canvas/backgroundColor/property\"}}{{/crossLink}}.\n\nYou can set this to a new file path at any time.",
             "itemtype": "property",
             "name": "backgroundImage",
@@ -9296,7 +9352,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 673,
+            "line": 674,
             "description": "The busy {{#crossLink \"Spinner\"}}{{/crossLink}} for this Canvas.",
             "itemtype": "property",
             "name": "spinner",
@@ -23123,7 +23179,7 @@
     "warnings": [
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/canvas/canvas.js:492"
+            "line": " src/canvas/canvas.js:493"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -23331,19 +23387,19 @@
         },
         {
             "message": "Missing item type\nCreates a default canvas in the DOM.",
-            "line": " src/canvas/canvas.js:377"
+            "line": " src/canvas/canvas.js:378"
         },
         {
             "message": "Missing item type\nCreates a image element behind the canvas, for purpose of showing a custom background.",
-            "line": " src/canvas/canvas.js:407"
+            "line": " src/canvas/canvas.js:408"
         },
         {
             "message": "Missing item type\nInitialises the WebGL context",
-            "line": " src/canvas/canvas.js:443"
+            "line": " src/canvas/canvas.js:444"
         },
         {
             "message": "Missing item type\nReads colors of pixels from the last rendered frame.\n\n<p>Call this method like this:</p>\n\n````JavaScript\n\n// Ignore transparent pixels (default is false)\nvar opaqueOnly = true;\n\nvar colors = new Float32Array(8);\n\nmyCanvas.readPixels([ 100, 22, 12, 33 ], colors, 2, opaqueOnly);\n````\n\nThen the r,g,b components of the colors will be set to the colors at those pixels.",
-            "line": " src/canvas/canvas.js:573"
+            "line": " src/canvas/canvas.js:574"
         },
         {
             "message": "Missing item type\nImplement protected virtual template method {{#crossLink \"Geometry/method:_update\"}}{{/crossLink}},\nto generate geometry data arrays.",

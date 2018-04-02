@@ -264,9 +264,9 @@
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ModelModel.
  @param [cfg.flattenTransforms=true] {Boolean} Flattens transform hierarchies to improve rendering performance.
- @param [cfg.ghosted=false] {Boolean} When true, sets all the Model's Entities initially ghosted. |
- @param [cfg.highlighted=false] {Boolean} When true, sets all the Model's Entities initially highlighted. |
- @param [cfg.outlined=false] {Boolean} When true, sets all the Model's Entities initially outlined. |
+ @param [cfg.ghosted=false] {Boolean} When true, sets all the Model's Entities initially ghosted.
+ @param [cfg.highlighted=false] {Boolean} When true, sets all the Model's Entities initially highlighted.
+ @param [cfg.outlined=false] {Boolean} When true, sets all the Model's Entities initially outlined.
  @param [cfg.transform] {Number|String|Transform} A Local-to-World-space (modelling) {{#crossLink "Transform"}}{{/crossLink}} to attach to this Model.
  Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this Model. Internally, the given
  {{#crossLink "Transform"}}{{/crossLink}} will be inserted above each top-most {{#crossLink "Transform"}}Transform{{/crossLink}}
