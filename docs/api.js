@@ -37,6 +37,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "LabelHelper",
         "LambertMaterial",
         "Lights",
+        "LoadingEffect",
         "Lookat",
         "Material",
         "MetallicMaterial",
