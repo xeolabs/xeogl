@@ -28,19 +28,44 @@
 <script>
 
     var model = new xeogl.GLTFModel({
-        src: "models/gltf/schependomlaan/schependomlaan.gltf",
-        lambertMaterials: false,
-        backfaces: false
+        src: "models/gltf/schependomlaan/schependomlaan.gltf"
     });
 
     var scene = model.scene;
     var camera = scene.camera;
+    var input = scene.input;
 
     camera.eye = [-14.630206108093262, 22.886425018310547, 10.040632247924805];
     camera.look = [10.9821195602417, 5.828244686126709, -11.232500076293945];
     camera.up = [0.3507666289806366, 0.8899932503700256, -0.29134219884872437];
 
-    var cameraControl = new xeogl.CameraControl();
+    var cameraControl = new xeogl.CameraControl({
+        doublePickFlyTo: false
+    });
+
+    var cameraFlight = new xeogl.CameraFlightAnimation();
+
+    cameraControl.on("hoverEnter", function (hit) {
+        hit.entity.highlighted = true;
+    });
+
+    cameraControl.on("hoverOut", function (hit) {
+        hit.entity.highlighted = false;
+    });
+
+    cameraControl.on("picked", function (hit) {
+        var entity = hit.entity;
+        if (input.keyDown[input.KEY_SHIFT]) {
+            entity.selected = !entity.selected;
+            entity.highlighted = !entity.selected;
+        } else {
+            cameraFlight.flyTo(entity);
+        }
+    });
+
+    cameraControl.on("pickedNothing", function (hit) {
+        cameraFlight.flyTo(model);
+    });
 
 </script>
 </body>
