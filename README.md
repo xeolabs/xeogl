@@ -13,6 +13,22 @@ Find out more in the [Getting Started](https://github.com/xeolabs/xeogl/wiki/Get
 
 [![screenshot from 2018-02-01 02-02-50](http://xeogl.org/assets/images/screenshots/officePlan.png)](http://xeogl.org/examples/#importing_gltf_OfficePlan)
 
+````JavaScript
+var model = new xeogl.GLTFModel({
+    id: "office",
+    src: "models/gltf/office/scene.gltf",
+    transform: new xeogl.Scale({
+            xyz: [.01, .01, .01]
+        })
+    });
+    
+var camera = model.scene.camera;
+    
+camera.eye = [-180.21, 248.69, -262.17];
+camera.look = [-79.57, -23.08, 2.36];
+camera.up = [0.24, 0.72, 0.64];
+````
+
 [[Run demo](http://xeogl.org/examples/#importing_gltf_OfficePlan)]
 
 ## Links 
@@ -29,9 +45,9 @@ Find out more in the [Getting Started](https://github.com/xeolabs/xeogl/wiki/Get
  
 This project requires [Node.js](https://nodejs.org/en/download/) to be installed.
 
-```
+````
 git clone git@github.com:xeolabs/xeogl.git
 cd xeogl
 npm install
 npm run build 
-```
+````
