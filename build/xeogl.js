@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2018-03-24
+ * Built on 2018-04-02
  *
  * MIT License
  * Copyright 2018, Lindsay Kay
@@ -17528,9 +17528,10 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 this.contextAttr.preserveDrawingBuffer = false;
             }
 
-            this.contextAttr.stencil = true;
+            this.contextAttr.stencil = false;
             this.contextAttr.antialias = true;
             this.contextAttr.premultipliedAlpha = this.contextAttr.premultipliedAlpha !== false;
+            this.contextAttr.antialias = this.contextAttr.antialias !== false;
 
             if (!cfg.canvas) {
 
@@ -27376,9 +27377,9 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ModelModel.
  @param [cfg.flattenTransforms=true] {Boolean} Flattens transform hierarchies to improve rendering performance.
- @param [cfg.ghosted=false] {Boolean} When true, sets all the Model's Entities initially ghosted. |
- @param [cfg.highlighted=false] {Boolean} When true, sets all the Model's Entities initially highlighted. |
- @param [cfg.outlined=false] {Boolean} When true, sets all the Model's Entities initially outlined. |
+ @param [cfg.ghosted=false] {Boolean} When true, sets all the Model's Entities initially ghosted.
+ @param [cfg.highlighted=false] {Boolean} When true, sets all the Model's Entities initially highlighted.
+ @param [cfg.outlined=false] {Boolean} When true, sets all the Model's Entities initially outlined.
  @param [cfg.transform] {Number|String|Transform} A Local-to-World-space (modelling) {{#crossLink "Transform"}}{{/crossLink}} to attach to this Model.
  Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this Model. Internally, the given
  {{#crossLink "Transform"}}{{/crossLink}} will be inserted above each top-most {{#crossLink "Transform"}}Transform{{/crossLink}}
