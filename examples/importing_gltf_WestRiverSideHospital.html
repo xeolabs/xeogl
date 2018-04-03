@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.js"></script>
+
+    <script src="js/models/glTFModel.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="info">
+    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - importing Autodesk West Riverside Hospital IFC models from glTF</h1>
+    <ul>
+        <li><a class='code' href="javascript:scene.models['structure'].visible=true">scene.models['structure'].visible=true</a></li>
+        <li><a class='code' href="javascript:scene.models['fireAlarms'].visible=true">scene.models['fireAlarms'].visible=true</a></li>
+    </ul>
+
+</div>
+
+<script>
+
+    var structure = new xeogl.GLTFModel({
+        id: "structure",
+        src: "models/gltf/WestRiverSideHospital/structure.gltf",
+        lambertMaterials: true,
+        ghostEdgeThreshold: 3,
+        ghosted: true
+    });
+
+    var sprinklers = new xeogl.GLTFModel({
+        id: "sprinklers",
+        src: "models/gltf/WestRiverSideHospital/sprinklers.gltf",
+        lambertMaterials: true,
+        ghosted: false,
+        selected: false,
+        highlighted: false
+    });
+
+    var fireAlarms = new xeogl.GLTFModel({
+        id: "fireAlarms",
+        src: "models/gltf/WestRiverSideHospital/fireAlarms.gltf",
+        lambertMaterials: true,
+        ghosted: false,
+        selected: false,
+        highlighted: false
+    });
+
+    var electrical = new xeogl.GLTFModel({
+        id: "electrical",
+        src: "models/gltf/WestRiverSideHospital/electrical.gltf",
+        lambertMaterials: true,
+        ghosted: false,
+        highlighted: false
+    });
+
+    var plumbing = new xeogl.GLTFModel({
+        id: "plumbing",
+        src: "models/gltf/WestRiverSideHospital/plumbing.gltf",
+        lambertMaterials: true,
+        ghosted: false,
+        selected: false,
+        highlighted: false
+    });
+
+    var scene = structure.scene;
+    var camera = scene.camera;
+    var input = scene.input;
+
+    scene.ghostMaterial.preset = "phosphorous";
+
+    camera.eye = [118.22, 189.04, -190.18];
+    camera.look = [12.39, 145.16, -67.14];
+    camera.up = [-0.17, 0.96, 0.19];
+
+    var cameraControl = new xeogl.CameraControl({
+        doublePickFlyTo: false
+    });
+
+    var cameraFlight = new xeogl.CameraFlightAnimation();
+
+    cameraControl.on("hoverEnter", function (hit) {
+        hit.entity.highlighted = true;
+    });
+
+    cameraControl.on("hoverOut", function (hit) {
+        hit.entity.highlighted = false;
+    });
+
+    cameraControl.on("picked", function (hit) {
+        var entity = hit.entity;
+        if (input.keyDown[input.KEY_SHIFT]) {
+            entity.selected = !entity.selected;
+            entity.highlighted = !entity.selected;
+        } else {
+            cameraFlight.flyTo(entity);
+        }
+    });
+
+    cameraControl.on("pickedNothing", function (hit) {
+        cameraFlight.flyTo(scene);
+    });
+
+    var culling = true;
+    var timeout;
+    var culled = false;
+
+    camera.on("viewMatrix", function () {
+
+        if (!culling) {
+            return;
+        }
+
+        if (!culled) {
+            sprinklers.culled = true;
+            electrical.culled = true;
+            plumbing.culled = true;
+            fireAlarms.culled = true;
+            culled = true;
+        }
+
+        if (timeout) {
+            clearTimeout(timeout);
+            timeout = null;
+        }
+
+        timeout = setTimeout(function () {
+            sprinklers.culled = false;
+            electrical.culled = false;
+            plumbing.culled = false;
+            fireAlarms.culled = false;
+            culled = false;
+            timeout = null;
+        }, 100);
+    });
+
+</script>
+</body>
+</html>
