@@ -38,6 +38,10 @@ module.exports = function (grunt) {
             }
         },
 
+        ifc2json: {
+
+        },
+
         clean: {
             tmp: "tmp/*.js",
             docs: ["docs/*"]
