@@ -1257,14 +1257,14 @@
          * @method mulMat4v4
          * @static
          */
-        mulMat4v4: function (m, v) {
+        mulMat4v4: function (m, v, dest) {
+            dest = dest || math.vec4();
             var v0 = v[0], v1 = v[1], v2 = v[2], v3 = v[3];
-            return [
-                m[0] * v0 + m[4] * v1 + m[8] * v2 + m[12] * v3,
-                m[1] * v0 + m[5] * v1 + m[9] * v2 + m[13] * v3,
-                m[2] * v0 + m[6] * v1 + m[10] * v2 + m[14] * v3,
-                m[3] * v0 + m[7] * v1 + m[11] * v2 + m[15] * v3
-            ];
+            dest[0] =  m[0] * v0 + m[4] * v1 + m[8] * v2 + m[12] * v3;
+            dest[1] = m[1] * v0 + m[5] * v1 + m[9] * v2 + m[13] * v3;
+            dest[2] = m[2] * v0 + m[6] * v1 + m[10] * v2 + m[14] * v3;
+            dest[3] = m[3] * v0 + m[7] * v1 + m[11] * v2 + m[15] * v3;
+            return dest;
         },
 
         /**
@@ -2369,6 +2369,24 @@
             q[1] = v[1] * f;
             return q;
         },
+
+        /**
+         * Unprojects a three-element vector.
+         *
+         * @method unprojectVec3
+         * @param {Float32Array} p 3D Projected coordinate
+         * @param {Float32Array} viewMat View matrix
+         * @returns {Float32Array} projMat Projection matrix
+         * @static
+         */
+        unprojectVec3: (function () {
+            var mat = new Float32Array(16);
+            var mat2 = new Float32Array(16);
+            var mat3 = new Float32Array(16);
+            return function (p, viewMat, projMat, q) {
+                return this.transformVec3(this.mulMat4(this.inverseMat4(viewMat, mat), this.inverseMat4(projMat, mat2), mat3), p, q)
+            };
+        })(),
 
         /**
          * Linearly interpolates between two 3D vectors.
