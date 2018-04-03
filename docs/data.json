@@ -9700,7 +9700,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 958,
+            "line": 1067,
             "description": "Fired whenever the pointer no longer hovers over an {{#crossLink \"Entity\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "hoverOut",
@@ -9716,7 +9716,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 968,
+            "line": 1077,
             "description": "Fired when the pointer is over a new {{#crossLink \"Entity\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "hoverEnter",
@@ -9733,7 +9733,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 976,
+            "line": 1085,
             "description": "Fired continuously while the pointer is moving while hovering over an {{#crossLink \"Entity\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "hover",
@@ -9750,7 +9750,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 985,
+            "line": 1094,
             "description": "Fired while the pointer hovers over the surface of an {{#crossLink \"Entity\"}}{{/crossLink}}.\n\nThis event provides 3D information about the point on the surface that the pointer is\nhovering over.",
             "itemtype": "event",
             "name": "hoverSurface",
@@ -9767,7 +9767,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 999,
+            "line": 1108,
             "description": "Fired whenever the pointer no longer hovers over an {{#crossLink \"Entity\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "hoverOut",
@@ -9783,7 +9783,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 1009,
+            "line": 1118,
             "description": "Fired continuously while the pointer is moving but not hovering over anything.",
             "itemtype": "event",
             "name": "hoverOff",
@@ -9793,7 +9793,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 1102,
+            "line": 1190,
             "description": "Fired whenever the pointer has picked (ie. clicked or tapped) an {{#crossLink \"Entity\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "picked",
@@ -9810,7 +9810,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 1111,
+            "line": 1199,
             "description": "Fired when the pointer has picked (ie. clicked or tapped) the surface of an {{#crossLink \"Entity\"}}{{/crossLink}}.\n\nThis event provides 3D information about the point on the surface that the pointer has picked.",
             "itemtype": "event",
             "name": "pickedSurface",
@@ -9827,7 +9827,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 1124,
+            "line": 1212,
             "description": "Fired when the pointer attempted a pick (ie. clicked or tapped), but has hit nothing.",
             "itemtype": "event",
             "name": "pickedNothing",
@@ -9837,7 +9837,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 1169,
+            "line": 1257,
             "description": "Fired whenever the pointer has double-picked (ie. double-clicked or double-tapped) an {{#crossLink \"Entity\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "picked",
@@ -9854,7 +9854,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 1177,
+            "line": 1265,
             "description": "Fired when the pointer has double-picked (ie. double-clicked or double-tapped) the surface of an {{#crossLink \"Entity\"}}{{/crossLink}}.\n\nThis event provides 3D information about the point on the surface that the pointer has picked.",
             "itemtype": "event",
             "name": "doublePickedSurface",
@@ -9871,7 +9871,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 1193,
+            "line": 1281,
             "description": "Fired when the pointer attempted a double-pick (ie. double-clicked or double-tapped), but has hit nothing.",
             "itemtype": "event",
             "name": "doublePickedNothing",
@@ -17302,6 +17302,34 @@
         {
             "file": "src/math/math.js",
             "line": 2373,
+            "description": "Unprojects a three-element vector.",
+            "itemtype": "method",
+            "name": "unprojectVec3",
+            "params": [
+                {
+                    "name": "p",
+                    "description": "3D Projected coordinate",
+                    "type": "Float32Array"
+                },
+                {
+                    "name": "viewMat",
+                    "description": "View matrix",
+                    "type": "Float32Array"
+                }
+            ],
+            "return": {
+                "description": "projMat Projection matrix",
+                "type": "Float32Array"
+            },
+            "static": 1,
+            "class": "xeogl.math.math",
+            "module": "xeogl",
+            "submodule": "math",
+            "namespace": "xeogl.math"
+        },
+        {
+            "file": "src/math/math.js",
+            "line": 2391,
             "description": "Linearly interpolates between two 3D vectors.",
             "itemtype": "method",
             "name": "lerpVec3",
@@ -17313,7 +17341,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2388,
+            "line": 2406,
             "description": "Flattens a two-dimensional array into a one-dimensional array.",
             "itemtype": "method",
             "name": "flatten",
@@ -17335,7 +17363,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2426,
+            "line": 2444,
             "description": "Initializes a quaternion from Euler angles.",
             "params": [
                 {
@@ -17933,7 +17961,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 374,
+            "line": 375,
             "description": "Adds a {{#crossLink \"Component\"}}Component{{/crossLink}} or subtype to this Model.\n\nThe {{#crossLink \"Component\"}}Component(s){{/crossLink}} may be specified by ID, instance, JSON definition or type.\n\nSee class comment for usage examples.\n\nThe {{#crossLink \"Component\"}}Components{{/crossLink}} must be in the same {{#crossLink \"Scene\"}}{{/crossLink}} as this Model.\n\nFires an {{#crossLink \"Model/added:event\"}}{{/crossLink}} event.",
             "itemtype": "method",
             "name": "add",
@@ -17950,7 +17978,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 526,
+            "line": 528,
             "description": "Fired whenever an individual {{#crossLink \"Component\"}}{{/crossLink}} is added to this {{#crossLink \"Model\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "added",
@@ -17967,7 +17995,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 565,
+            "line": 567,
             "description": "Destroys all {{#crossLink \"Component\"}}Components{{/crossLink}} in this Model.",
             "itemtype": "method",
             "name": "destroyAll",
@@ -17977,7 +18005,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 601,
+            "line": 603,
             "description": "Removes all {{#crossLink \"Component\"}}Components{{/crossLink}} from this Model.",
             "itemtype": "method",
             "name": "removeAll",
@@ -17987,7 +18015,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 613,
+            "line": 615,
             "description": "Removes a {{#crossLink \"Component\"}}{{/crossLink}} from this model, without destroying it.\n\nNote that if the Component is owned by the Model, where it was created like this:\n\n````javascript\nvar myComponent = new xeogl.Rotate(myModel, {... });\n````\n\nthen even after removing it, calling {{#crossLink \"Model/destroyAll:method\"}}destroyAll{{/crossLink}} on the\nModel will still destroy the component.",
             "params": [
                 {
@@ -18001,7 +18029,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 688,
+            "line": 690,
             "description": "Fired whenever an individual {{#crossLink \"Component\"}}{{/crossLink}} is removed from this {{#crossLink \"Model\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "removed",
@@ -18018,7 +18046,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 700,
+            "line": 702,
             "description": "Iterates with a callback over the {{#crossLink \"Component\"}}Components{{/crossLink}} in this Model.",
             "itemtype": "method",
             "name": "iterate",
@@ -18042,7 +18070,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 719,
+            "line": 721,
             "description": "The Local-to-World-space (modelling) {{#crossLink \"Transform\"}}{{/crossLink}} attached to this Model.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this Model.\n\nInternally, the given {{#crossLink \"Transform\"}}{{/crossLink}} will be inserted above each top-most\n{{#crossLink \"Transform\"}}Transform{{/crossLink}} that the Model attaches to\nits {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nFires an {{#crossLink \"Model/transform:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "transform",
@@ -18053,7 +18081,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 737,
+            "line": 739,
             "description": "Fired whenever this Model's {{#crossLink \"Model/transform:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "transform",
@@ -18069,7 +18097,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 760,
+            "line": 762,
             "description": "World-space axis-aligned 3D boundary (AABB) of this Model.\n\nThe AABB is represented by a six-element Float32Array containing the min/max extents of the\naxis-aligned volume, ie. ````[xmin, ymin,zmin,xmax,ymax, zmax]````.",
             "itemtype": "property",
             "name": "aabb",
@@ -18081,7 +18109,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 827,
+            "line": 829,
             "description": "Indicates whether this Model's Entities are visible or not.",
             "itemtype": "property",
             "name": "visible",
@@ -18093,7 +18121,19 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 851,
+            "line": 853,
+            "description": "Indicates whether this Model's Entities are culled or not.",
+            "itemtype": "property",
+            "name": "culled",
+            "default": "false",
+            "type": "Boolean",
+            "class": "Model",
+            "module": "xeogl",
+            "submodule": "models"
+        },
+        {
+            "file": "src/models/model.js",
+            "line": 877,
             "description": "Flag which indicates if this Model's Entities are rendered with ghosted effect.",
             "itemtype": "property",
             "name": "ghosted",
@@ -18105,7 +18145,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 875,
+            "line": 901,
             "description": "Flag which indicates if this Model's Entities are rendered with highlighted effect.",
             "itemtype": "property",
             "name": "highlighted",
@@ -18117,7 +18157,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 899,
+            "line": 925,
             "description": "Flag which indicates if this Model's Entities are rendered as selected.",
             "itemtype": "property",
             "name": "selected",
@@ -18129,7 +18169,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 923,
+            "line": 949,
             "description": "Flag which indicates if this Model's Entities are rendered with outlined effect.",
             "itemtype": "property",
             "name": "outlined",
@@ -18141,7 +18181,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 959,
+            "line": 985,
             "description": "Fired whenever this Model's World-space boundary changes.\n\nGet the latest boundary from the Model's {{#crossLink \"Model/aabb:property\"}}{{/crossLink}} property.",
             "itemtype": "event",
             "name": "boundary",
@@ -23247,11 +23287,15 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2388"
+            "line": " src/math/math.js:2373"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2426"
+            "line": " src/math/math.js:2406"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src/math/math.js:2444"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -23467,7 +23511,7 @@
         },
         {
             "message": "Missing item type\nInitializes a quaternion from Euler angles.",
-            "line": " src/math/math.js:2426"
+            "line": " src/math/math.js:2444"
         },
         {
             "message": "Missing item type\nBoundary math functions.",
@@ -23635,7 +23679,7 @@
         },
         {
             "message": "Missing item type\nRemoves a {{#crossLink \"Component\"}}{{/crossLink}} from this model, without destroying it.\n\nNote that if the Component is owned by the Model, where it was created like this:\n\n````javascript\nvar myComponent = new xeogl.Rotate(myModel, {... });\n````\n\nthen even after removing it, calling {{#crossLink \"Model/destroyAll:method\"}}destroyAll{{/crossLink}} on the\nModel will still destroy the component.",
-            "line": " src/models/model.js:613"
+            "line": " src/models/model.js:615"
         },
         {
             "message": "Missing item type\nRotate 'eye' about 'look', around the 'up' vector",

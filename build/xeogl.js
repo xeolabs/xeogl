@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2018-04-02
+ * Built on 2018-04-03
  *
  * MIT License
  * Copyright 2018, Lindsay Kay
@@ -2423,14 +2423,14 @@ xeogl.utils.Map = function (items, baseId) {
          * @method mulMat4v4
          * @static
          */
-        mulMat4v4: function (m, v) {
+        mulMat4v4: function (m, v, dest) {
+            dest = dest || math.vec4();
             var v0 = v[0], v1 = v[1], v2 = v[2], v3 = v[3];
-            return [
-                m[0] * v0 + m[4] * v1 + m[8] * v2 + m[12] * v3,
-                m[1] * v0 + m[5] * v1 + m[9] * v2 + m[13] * v3,
-                m[2] * v0 + m[6] * v1 + m[10] * v2 + m[14] * v3,
-                m[3] * v0 + m[7] * v1 + m[11] * v2 + m[15] * v3
-            ];
+            dest[0] =  m[0] * v0 + m[4] * v1 + m[8] * v2 + m[12] * v3;
+            dest[1] = m[1] * v0 + m[5] * v1 + m[9] * v2 + m[13] * v3;
+            dest[2] = m[2] * v0 + m[6] * v1 + m[10] * v2 + m[14] * v3;
+            dest[3] = m[3] * v0 + m[7] * v1 + m[11] * v2 + m[15] * v3;
+            return dest;
         },
 
         /**
@@ -3535,6 +3535,24 @@ xeogl.utils.Map = function (items, baseId) {
             q[1] = v[1] * f;
             return q;
         },
+
+        /**
+         * Unprojects a three-element vector.
+         *
+         * @method unprojectVec3
+         * @param {Float32Array} p 3D Projected coordinate
+         * @param {Float32Array} viewMat View matrix
+         * @returns {Float32Array} projMat Projection matrix
+         * @static
+         */
+        unprojectVec3: (function () {
+            var mat = new Float32Array(16);
+            var mat2 = new Float32Array(16);
+            var mat3 = new Float32Array(16);
+            return function (p, viewMat, projMat, q) {
+                return this.transformVec3(this.mulMat4(this.inverseMat4(viewMat, mat), this.inverseMat4(projMat, mat2), mat3), p, q)
+            };
+        })(),
 
         /**
          * Linearly interpolates between two 3D vectors.
@@ -6195,6 +6213,8 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
 
             numTransparentObjects = 0;
 
+            // Build draw lists
+
             for (i = 0, len = objectListLen; i < len; i++) {
 
                 object = objectList[i];
@@ -6210,9 +6230,7 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                 }
 
                 if (modes.ghosted) {
-
                     var ghostMaterial = object.ghostMaterial;
-
                     if (ghostMaterial.edges) {
                         if (ghostMaterial.edgeAlpha < 1.0) {
                             transparentGhostEdgesObjects[numTransparentGhostEdgesObjects++] = object;
@@ -6220,7 +6238,6 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                             opaqueGhostEdgesObjects[numOpaqueGhostEdgesObjects++] = object;
                         }
                     }
-
                     if (ghostMaterial.vertices) {
                         if (ghostMaterial.vertexAlpha < 1.0) {
                             transparentGhostVerticesObjects[numTransparentGhostVerticesObjects++] = object;
@@ -6228,7 +6245,6 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                             opaqueGhostVerticesObjects[numOpaqueGhostVerticesObjects++] = object;
                         }
                     }
-
                     if (ghostMaterial.fill) {
                         if (ghostMaterial.fillAlpha < 1.0) {
                             transparentGhostFillObjects[numTransparentGhostFillObjects++] = object;
@@ -6236,95 +6252,75 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                             opaqueGhostFillObjects[numOpaqueGhostFillObjects++] = object;
                         }
                     }
-
                 } else {
 
-                    if (modes.selected) {
-
-                        var selectedMaterial = object.selectedMaterial;
-
-                        if (selectedMaterial.edges) {
-                            if (selectedMaterial.edgeAlpha < 1.0) {
-                                transparentSelectedEdgesObjects[numTransparentSelectedEdgesObjects++] = object;
-                            } else {
-                                opaqueSelectedEdgesObjects[numOpaqueSelectedEdgesObjects++] = object;
-                            }
-                        }
-
-                        if (selectedMaterial.vertices) {
-                            if (selectedMaterial.vertexAlpha < 1.0) {
-                                transparentSelectedVerticesObjects[numTransparentSelectedVerticesObjects++] = object;
-                            } else {
-                                opaqueSelectedVerticesObjects[numOpaqueSelectedVerticesObjects++] = object;
-                            }
-                        }
-
-                        if (selectedMaterial.fill) {
-                            if (selectedMaterial.fillAlpha < 1.0) {
-                                transparentSelectedFillObjects[numTransparentSelectedFillObjects++] = object;
-                            } else {
-                                opaqueSelectedFillObjects[numOpaqueSelectedFillObjects++] = object;
-                            }
-                        }
-
-                        if (modes.selected) {
-                            selectedObjects[numSelectedObjects++] = object;
-                        }
-                    }
-
-                 //   else
-
-                    if (modes.highlighted) {
-
-                        var highlightMaterial = object.highlightMaterial;
-
-                        if (highlightMaterial.edges) {
-                            if (highlightMaterial.edgeAlpha < 1.0) {
-                                transparentHighlightEdgesObjects[numTransparentHighlightEdgesObjects++] = object;
-                            } else {
-                                opaqueHighlightEdgesObjects[numOpaqueHighlightEdgesObjects++] = object;
-                            }
-                        }
-
-                        if (highlightMaterial.vertices) {
-                            if (highlightMaterial.vertexAlpha < 1.0) {
-                                transparentHighlightVerticesObjects[numTransparentHighlightVerticesObjects++] = object;
-                            } else {
-                                opaqueHighlightVerticesObjects[numOpaqueHighlightVerticesObjects++] = object;
-                            }
-                        }
-
-                        if (highlightMaterial.fill) {
-                            if (highlightMaterial.fillAlpha < 1.0) {
-                                transparentHighlightFillObjects[numTransparentHighlightFillObjects++] = object;
-                            } else {
-                                opaqueHighlightFillObjects[numOpaqueHighlightFillObjects++] = object;
-                            }
-                        }
-
-                        if (modes.highlighted) {
-                            highlightObjects[numHighlightObjects++] = object;
-                        }
-
-                    }
-
-
-
-
+                    // Normal render
 
                     transparent = object.material.alphaMode === 2 /* blend */ || modes.xray || modes.colorize[3] < 1;
-
                     if (transparent) {
                         transparentObjects[numTransparentObjects++] = object;
-
                     } else {
-
                         if (modes.outlined) {
                             outlinedObjects[numOutlinedObjects++] = object;
-
                         } else {
                             object.draw(frame);
                         }
+                    }
+                }
+
+                if (modes.selected) {
+                    var selectedMaterial = object.selectedMaterial;
+                    if (selectedMaterial.edges) {
+                        if (selectedMaterial.edgeAlpha < 1.0) {
+                            transparentSelectedEdgesObjects[numTransparentSelectedEdgesObjects++] = object;
+                        } else {
+                            opaqueSelectedEdgesObjects[numOpaqueSelectedEdgesObjects++] = object;
+                        }
+                    }
+                    if (selectedMaterial.vertices) {
+                        if (selectedMaterial.vertexAlpha < 1.0) {
+                            transparentSelectedVerticesObjects[numTransparentSelectedVerticesObjects++] = object;
+                        } else {
+                            opaqueSelectedVerticesObjects[numOpaqueSelectedVerticesObjects++] = object;
+                        }
+                    }
+                    if (selectedMaterial.fill) {
+                        if (selectedMaterial.fillAlpha < 1.0) {
+                            transparentSelectedFillObjects[numTransparentSelectedFillObjects++] = object;
+                        } else {
+                            opaqueSelectedFillObjects[numOpaqueSelectedFillObjects++] = object;
+                        }
+                    }
+                    if (modes.selected) {
+                        selectedObjects[numSelectedObjects++] = object;
+                    }
+                }
+
+                if (modes.highlighted) {
+                    var highlightMaterial = object.highlightMaterial;
+                    if (highlightMaterial.edges) {
+                        if (highlightMaterial.edgeAlpha < 1.0) {
+                            transparentHighlightEdgesObjects[numTransparentHighlightEdgesObjects++] = object;
+                        } else {
+                            opaqueHighlightEdgesObjects[numOpaqueHighlightEdgesObjects++] = object;
+                        }
+                    }
+                    if (highlightMaterial.vertices) {
+                        if (highlightMaterial.vertexAlpha < 1.0) {
+                            transparentHighlightVerticesObjects[numTransparentHighlightVerticesObjects++] = object;
+                        } else {
+                            opaqueHighlightVerticesObjects[numOpaqueHighlightVerticesObjects++] = object;
+                        }
+                    }
+                    if (highlightMaterial.fill) {
+                        if (highlightMaterial.fillAlpha < 1.0) {
+                            transparentHighlightFillObjects[numTransparentHighlightFillObjects++] = object;
+                        } else {
+                            opaqueHighlightFillObjects[numOpaqueHighlightFillObjects++] = object;
+                        }
+                    }
+                    if (modes.highlighted) {
+                        highlightObjects[numHighlightObjects++] = object;
                     }
                 }
             }
@@ -19107,32 +19103,28 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 e.preventDefault();
             };
 
-            var getClickCoordsWithinElement = (function () {
-                var coords = new Float32Array(2);
-                return function (event) {
-                    if (!event) {
-                        event = window.event;
-                        coords[0] = event.x;
-                        coords[a] = event.y;
-                    } else {
-                        var element = event.target;
-                        var totalOffsetLeft = 0;
-                        var totalOffsetTop = 0;
-
-                        while (element.offsetParent) {
-                            totalOffsetLeft += element.offsetLeft;
-                            totalOffsetTop += element.offsetTop;
-                            element = element.offsetParent;
-                        }
-                        coords[0] = event.pageX - totalOffsetLeft;
-                        coords[1] = event.pageY - totalOffsetTop;
+            var getCanvasPosFromEvent = function (event, canvasPos) {
+                if (!event) {
+                    event = window.event;
+                    canvasPos[0] = event.x;
+                    canvasPos[1] = event.y;
+                } else {
+                    var element = event.target;
+                    var totalOffsetLeft = 0;
+                    var totalOffsetTop = 0;
+                    while (element.offsetParent) {
+                        totalOffsetLeft += element.offsetLeft;
+                        totalOffsetTop += element.offsetTop;
+                        element = element.offsetParent;
                     }
-                    return coords;
-                };
-            })();
+                    canvasPos[0] = event.pageX - totalOffsetLeft;
+                    canvasPos[1] = event.pageY - totalOffsetTop;
+                }
+                return canvasPos;
+            };
 
             //------------------------------------------------------------------------------------
-            // Mouse and touch camera control
+            // Mouse, touch and keyboard camera control
             //------------------------------------------------------------------------------------
 
             (function () {
@@ -19143,6 +19135,8 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                 var panVy = 0;
                 var panVz = 0;
                 var vZoom = 0;
+                var mousePos = math.vec2();
+                var panToMouse = false;
 
                 var ctrlDown = false;
                 var altDown = false;
@@ -19155,6 +19149,116 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                     var vec = new Float32Array(3);
                     return function () {
                         return math.lenVec3(math.subVec3(camera.look, camera.eye, vec));
+                    };
+                })();
+
+                var getInverseProjectMat = (function () {
+                    var projMatDirty = true;
+                    camera.on("projMatrix", function () {
+                        projMatDirty = true;
+                    });
+                    var inverseProjectMat = math.mat4();
+                    return function () {
+                        if (projMatDirty) {
+                            math.inverseMat4(camera.projMatrix, inverseProjectMat);
+                        }
+                        return inverseProjectMat;
+                    }
+                })();
+
+                var getTransposedProjectMat = (function () {
+                    var projMatDirty = true;
+                    camera.on("projMatrix", function () {
+                        projMatDirty = true;
+                    });
+                    var transposedProjectMat = math.mat4();
+                    return function () {
+                        if (projMatDirty) {
+                            math.transposeMat4(camera.projMatrix, transposedProjectMat);
+                        }
+                        return transposedProjectMat;
+                    }
+                })();
+
+                var getInverseViewMat = (function () {
+                    var viewMatDirty = true;
+                    camera.on("viewMatrix", function () {
+                        viewMatDirty = true;
+                    });
+                    var inverseViewMat = math.mat4();
+                    return function () {
+                        if (viewMatDirty) {
+                            math.inverseMat4(camera.viewMatrix, inverseViewMat);
+                        }
+                        return inverseViewMat;
+                    }
+                })();
+
+                var getSceneDiagSize = (function () {
+                    var sceneSizeDirty = true;
+                    var diag = 1; // Just in case
+                    scene.on("boundary", function () {
+                        sceneSizeDirty = true;
+                    });
+                    return function () {
+                        if (sceneSizeDirty) {
+                            diag = math.getAABB3Diag(scene.aabb);
+                        }
+                        return diag;
+                    };
+                })();
+
+                var panToMousePos = (function () {
+
+                    var cp = math.vec4();
+                    var viewPos = math.vec4();
+                    var worldPos = math.vec4();
+                    var eyeCursorVec = math.vec3();
+
+                    var unproject = function (inverseProjMat, inverseViewMat, mousePos, z,  viewPos, worldPos) {
+                        var canvas = scene.canvas.canvas;
+                        var halfCanvasWidth = canvas.offsetWidth / 2.0;
+                        var halfCanvasHeight = canvas.offsetHeight / 2.0;
+                        cp[0] = (mousePos[0] - halfCanvasWidth) / halfCanvasWidth;
+                        cp[1] = (mousePos[1] - halfCanvasHeight) / halfCanvasHeight;
+                        cp[2] = z;
+                        cp[3] = 1.0;
+                        math.mulMat4v4(inverseProjMat, cp, viewPos);
+                        math.mulVec3Scalar(viewPos, 1.0 / viewPos[3]); // Normalize homogeneous coord
+                        viewPos[3] = 1.0;
+                        viewPos[1] *= -1; // TODO: Why is this reversed?
+                        math.mulMat4v4(inverseViewMat, viewPos, worldPos);
+                    };
+
+                    return function (mousePos, factor) {
+
+                        console.log(mousePos);
+
+                        var lastHoverDistance = 0;
+                        var inverseProjMat = getInverseProjectMat();
+                        var inverseViewMat = getInverseViewMat();
+
+                        // Get last two columns of projection matrix
+                        var transposedProjectMat = getTransposedProjectMat();
+                        var Pt3 = transposedProjectMat.subarray(8, 12);
+                        var Pt4 = transposedProjectMat.subarray(12);
+                        var D = [0, 0, -(lastHoverDistance || getSceneDiagSize()), 1];
+                        var Z = math.dotVec4(D, Pt3) / math.dotVec4(D, Pt4);
+
+                        unproject(inverseProjMat, inverseViewMat, mousePos, Z, viewPos, worldPos);
+
+                        math.subVec3(worldPos, camera.eye, eyeCursorVec);
+                        math.normalizeVec3(eyeCursorVec);
+
+                        var px = eyeCursorVec[0] * factor;
+                        var py = eyeCursorVec[1] * factor;
+                        var pz = eyeCursorVec[2] * factor;
+
+                        var eye = camera.eye;
+                        var look = camera.look;
+
+                        camera.eye = [eye[0] + px, eye[1] + py, eye[2] + pz];
+                        camera.look = [look[0] + px, look[1] + py, look[2] + pz];
                     };
                 })();
 
@@ -19228,7 +19332,11 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                             if (self._walking) {
                                 y = camera.eye[1];
                             }
-                            camera.pan([0, 0, vZoom]);
+                            if (panToMouse) { // Using mouse input
+                                panToMousePos(mousePos, -vZoom * 2);
+                            } else {
+                                camera.pan([0, 0, vZoom]); // Touchscreen input with no cursor
+                            }
                             if (self._walking) {
                                 var eye = camera.eye;
                                 eye[1] = y;
@@ -19310,9 +19418,9 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                                 down = true;
                                 xDelta = 0;
                                 yDelta = 0;
-                                var coords = getClickCoordsWithinElement(e);
-                                lastX = coords[0];
-                                lastY = coords[1];
+                                getCanvasPosFromEvent(e, mousePos);
+                                lastX = mousePos[0];
+                                lastY = mousePos[1];
                                 break;
                             case 2: // Middle/both buttons
                                 mouseDownMiddle = true;
@@ -19322,9 +19430,9 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                                 down = true;
                                 xDelta = 0;
                                 yDelta = 0;
-                                var coords = getClickCoordsWithinElement(e);
-                                lastX = coords[0];
-                                lastY = coords[1];
+                                getCanvasPosFromEvent(e, mousePos);
+                                lastX = mousePos[0];
+                                lastY = mousePos[1];
                                 break;
                                 break;
                             default:
@@ -19379,12 +19487,13 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                         if (!over) {
                             return;
                         }
+                        getCanvasPosFromEvent(e, mousePos);
+                        panToMouse = true;
                         if (!down) {
                             return;
                         }
-                        var coords = getClickCoordsWithinElement(e);
-                        var x = coords[0];
-                        var y = coords[1];
+                        var x = mousePos[0];
+                        var y = mousePos[1];
                         xDelta += (x - lastX) * mouseOrbitRate;
                         yDelta += (y - lastY) * mouseOrbitRate;
                         lastX = x;
@@ -19431,11 +19540,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                             return;
                         }
                         var d = delta / Math.abs(delta);
-                        if (self._firstPerson) {
-                            panVz += -d * mouseWheelPanRate;
-                        } else {
-                            vZoom = -d * getZoomRate() * mouseZoomRate;
-                        }
+                        vZoom = -d * getZoomRate() * mouseZoomRate;
                         e.preventDefault();
                     });
 
@@ -19803,27 +19908,6 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
 
                 scene.on("tick", updatePick);
 
-                function getCoordsWithinElement(event, coords) {
-                    if (!event) {
-                        event = window.event;
-                        coords[0] = event.x;
-                        coords[1] = event.y;
-                    }
-                    else {
-                        var element = event.target;
-                        var totalOffsetLeft = 0;
-                        var totalOffsetTop = 0;
-
-                        while (element.offsetParent) {
-                            totalOffsetLeft += element.offsetLeft;
-                            totalOffsetTop += element.offsetTop;
-                            element = element.offsetParent;
-                        }
-                        coords[0] = event.pageX - totalOffsetLeft;
-                        coords[1] = event.pageY - totalOffsetTop;
-                    }
-                }
-
                 // Mouse picking
 
                 (function () {
@@ -19838,7 +19922,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
                         //    return;
                         //}
 
-                        getCoordsWithinElement(e, pickCursorPos);
+                        getCanvasPosFromEvent(e, pickCursorPos);
 
                         if (self.hasSubs("hover") || self.hasSubs("hoverOut") || self.hasSubs("hoverOff") || self.hasSubs("hoverSurface")) {
                             needPickEntity = true;
@@ -20125,7 +20209,7 @@ xeogl.renderer.RenderBuffer.prototype.destroy = function () {
             })();
 
             //------------------------------------------------------------------------------------
-            // Keyboard camera control
+            // Keyboard camera axis views
             //------------------------------------------------------------------------------------
 
             (function () {
@@ -27473,6 +27557,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
             this.ghosted = cfg.ghosted || cfg.ghost; // Backwards compat
             this.highlighted = cfg.highlighted;
             this.visible = cfg.visible;
+            this.culled = cfg.culled;
             this.outlined = cfg.outlined;
             this.selected = cfg.selected;
 
@@ -27629,6 +27714,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
                 component.ghosted = this.ghosted;
                 component.highlighted = this.highlighted;
                 component.visible = this.visible;
+                component.culled = this.culled;
                 component.selected = this.selected;
 
                 this._onBoundary[component.id] = component.on("boundary", this._setAABBDirty, this);
@@ -27958,6 +28044,30 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
                 get: function () {
                     return this._visible;
+                }
+            },
+
+            /**
+             Indicates whether this Model's Entities are culled or not.
+
+             @property culled
+             @default false
+             @type Boolean
+             */
+            culled: {
+
+                set: function (value) {
+                    value = !!value;
+                    this._culled = value;
+                    for (var id in this.entities) {
+                        if (this.entities.hasOwnProperty(id)) {
+                            this.entities[id].culled = value;
+                        }
+                    }
+                },
+
+                get: function () {
+                    return this._culled;
                 }
             },
 

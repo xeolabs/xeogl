@@ -26,7 +26,8 @@
     "grunt-contrib-jshint": "^0.11.3",
     "grunt-contrib-qunit": "~0.5.2",
     "grunt-contrib-uglify": "^0.9.2",
-    "grunt-contrib-yuidoc": "^0.7.0"
+    "grunt-contrib-yuidoc": "^0.7.0",
+    "ifc2json-cli": "^2.0.0"
   },
   "engines": {
     "node": ">=0.10.17",

@@ -390,6 +390,8 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
 
             numTransparentObjects = 0;
 
+            // Build draw lists
+
             for (i = 0, len = objectListLen; i < len; i++) {
 
                 object = objectList[i];
@@ -405,9 +407,7 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                 }
 
                 if (modes.ghosted) {
-
                     var ghostMaterial = object.ghostMaterial;
-
                     if (ghostMaterial.edges) {
                         if (ghostMaterial.edgeAlpha < 1.0) {
                             transparentGhostEdgesObjects[numTransparentGhostEdgesObjects++] = object;
@@ -415,7 +415,6 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                             opaqueGhostEdgesObjects[numOpaqueGhostEdgesObjects++] = object;
                         }
                     }
-
                     if (ghostMaterial.vertices) {
                         if (ghostMaterial.vertexAlpha < 1.0) {
                             transparentGhostVerticesObjects[numTransparentGhostVerticesObjects++] = object;
@@ -423,7 +422,6 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                             opaqueGhostVerticesObjects[numOpaqueGhostVerticesObjects++] = object;
                         }
                     }
-
                     if (ghostMaterial.fill) {
                         if (ghostMaterial.fillAlpha < 1.0) {
                             transparentGhostFillObjects[numTransparentGhostFillObjects++] = object;
@@ -431,95 +429,75 @@ xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
                             opaqueGhostFillObjects[numOpaqueGhostFillObjects++] = object;
                         }
                     }
-
                 } else {
 
-                    if (modes.selected) {
-
-                        var selectedMaterial = object.selectedMaterial;
-
-                        if (selectedMaterial.edges) {
-                            if (selectedMaterial.edgeAlpha < 1.0) {
-                                transparentSelectedEdgesObjects[numTransparentSelectedEdgesObjects++] = object;
-                            } else {
-                                opaqueSelectedEdgesObjects[numOpaqueSelectedEdgesObjects++] = object;
-                            }
-                        }
-
-                        if (selectedMaterial.vertices) {
-                            if (selectedMaterial.vertexAlpha < 1.0) {
-                                transparentSelectedVerticesObjects[numTransparentSelectedVerticesObjects++] = object;
-                            } else {
-                                opaqueSelectedVerticesObjects[numOpaqueSelectedVerticesObjects++] = object;
-                            }
-                        }
-
-                        if (selectedMaterial.fill) {
-                            if (selectedMaterial.fillAlpha < 1.0) {
-                                transparentSelectedFillObjects[numTransparentSelectedFillObjects++] = object;
-                            } else {
-                                opaqueSelectedFillObjects[numOpaqueSelectedFillObjects++] = object;
-                            }
-                        }
-
-                        if (modes.selected) {
-                            selectedObjects[numSelectedObjects++] = object;
-                        }
-                    }
-
-                 //   else
-
-                    if (modes.highlighted) {
-
-                        var highlightMaterial = object.highlightMaterial;
-
-                        if (highlightMaterial.edges) {
-                            if (highlightMaterial.edgeAlpha < 1.0) {
-                                transparentHighlightEdgesObjects[numTransparentHighlightEdgesObjects++] = object;
-                            } else {
-                                opaqueHighlightEdgesObjects[numOpaqueHighlightEdgesObjects++] = object;
-                            }
-                        }
-
-                        if (highlightMaterial.vertices) {
-                            if (highlightMaterial.vertexAlpha < 1.0) {
-                                transparentHighlightVerticesObjects[numTransparentHighlightVerticesObjects++] = object;
-                            } else {
-                                opaqueHighlightVerticesObjects[numOpaqueHighlightVerticesObjects++] = object;
-                            }
-                        }
-
-                        if (highlightMaterial.fill) {
-                            if (highlightMaterial.fillAlpha < 1.0) {
-                                transparentHighlightFillObjects[numTransparentHighlightFillObjects++] = object;
-                            } else {
-                                opaqueHighlightFillObjects[numOpaqueHighlightFillObjects++] = object;
-                            }
-                        }
-
-                        if (modes.highlighted) {
-                            highlightObjects[numHighlightObjects++] = object;
-                        }
-
-                    }
-
-
-
-
+                    // Normal render
 
                     transparent = object.material.alphaMode === 2 /* blend */ || modes.xray || modes.colorize[3] < 1;
-
                     if (transparent) {
                         transparentObjects[numTransparentObjects++] = object;
-
                     } else {
-
                         if (modes.outlined) {
                             outlinedObjects[numOutlinedObjects++] = object;
-
                         } else {
                             object.draw(frame);
                         }
+                    }
+                }
+
+                if (modes.selected) {
+                    var selectedMaterial = object.selectedMaterial;
+                    if (selectedMaterial.edges) {
+                        if (selectedMaterial.edgeAlpha < 1.0) {
+                            transparentSelectedEdgesObjects[numTransparentSelectedEdgesObjects++] = object;
+                        } else {
+                            opaqueSelectedEdgesObjects[numOpaqueSelectedEdgesObjects++] = object;
+                        }
+                    }
+                    if (selectedMaterial.vertices) {
+                        if (selectedMaterial.vertexAlpha < 1.0) {
+                            transparentSelectedVerticesObjects[numTransparentSelectedVerticesObjects++] = object;
+                        } else {
+                            opaqueSelectedVerticesObjects[numOpaqueSelectedVerticesObjects++] = object;
+                        }
+                    }
+                    if (selectedMaterial.fill) {
+                        if (selectedMaterial.fillAlpha < 1.0) {
+                            transparentSelectedFillObjects[numTransparentSelectedFillObjects++] = object;
+                        } else {
+                            opaqueSelectedFillObjects[numOpaqueSelectedFillObjects++] = object;
+                        }
+                    }
+                    if (modes.selected) {
+                        selectedObjects[numSelectedObjects++] = object;
+                    }
+                }
+
+                if (modes.highlighted) {
+                    var highlightMaterial = object.highlightMaterial;
+                    if (highlightMaterial.edges) {
+                        if (highlightMaterial.edgeAlpha < 1.0) {
+                            transparentHighlightEdgesObjects[numTransparentHighlightEdgesObjects++] = object;
+                        } else {
+                            opaqueHighlightEdgesObjects[numOpaqueHighlightEdgesObjects++] = object;
+                        }
+                    }
+                    if (highlightMaterial.vertices) {
+                        if (highlightMaterial.vertexAlpha < 1.0) {
+                            transparentHighlightVerticesObjects[numTransparentHighlightVerticesObjects++] = object;
+                        } else {
+                            opaqueHighlightVerticesObjects[numOpaqueHighlightVerticesObjects++] = object;
+                        }
+                    }
+                    if (highlightMaterial.fill) {
+                        if (highlightMaterial.fillAlpha < 1.0) {
+                            transparentHighlightFillObjects[numTransparentHighlightFillObjects++] = object;
+                        } else {
+                            opaqueHighlightFillObjects[numOpaqueHighlightFillObjects++] = object;
+                        }
+                    }
+                    if (modes.highlighted) {
+                        highlightObjects[numHighlightObjects++] = object;
                     }
                 }
             }

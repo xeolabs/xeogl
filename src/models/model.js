@@ -360,6 +360,7 @@
             this.ghosted = cfg.ghosted || cfg.ghost; // Backwards compat
             this.highlighted = cfg.highlighted;
             this.visible = cfg.visible;
+            this.culled = cfg.culled;
             this.outlined = cfg.outlined;
             this.selected = cfg.selected;
 
@@ -516,6 +517,7 @@
                 component.ghosted = this.ghosted;
                 component.highlighted = this.highlighted;
                 component.visible = this.visible;
+                component.culled = this.culled;
                 component.selected = this.selected;
 
                 this._onBoundary[component.id] = component.on("boundary", this._setAABBDirty, this);
@@ -845,6 +847,30 @@
 
                 get: function () {
                     return this._visible;
+                }
+            },
+
+            /**
+             Indicates whether this Model's Entities are culled or not.
+
+             @property culled
+             @default false
+             @type Boolean
+             */
+            culled: {
+
+                set: function (value) {
+                    value = !!value;
+                    this._culled = value;
+                    for (var id in this.entities) {
+                        if (this.entities.hasOwnProperty(id)) {
+                            this.entities[id].culled = value;
+                        }
+                    }
+                },
+
+                get: function () {
+                    return this._culled;
                 }
             },
 
