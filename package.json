@@ -16,10 +16,7 @@
   "scripts": {
     "build": "grunt"
   },
-  "dependencies": {
-    "ifc2json": "^2.0.0",
-    "ifc2json-node": "^1.0.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "grunt": "^0.4.5",
     "grunt-contrib-clean": "^0.6.0",
