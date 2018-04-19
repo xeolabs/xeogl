@@ -26,7 +26,7 @@
     };
 
     xeogl.renderer.GhostVerticesRenderer.prototype.destroy = function () {
-        if (--this._useCount) {
+        if (--this._useCount === 0) {
             ids.removeItem(this.id);
             this._program.destroy();
             delete ghostVerticesRenderers[this._hash];
