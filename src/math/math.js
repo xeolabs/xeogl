@@ -2789,8 +2789,8 @@
                 angleAxis[2] = q[2];
             } else {
                 angleAxis[0] = q[0] / s;
-                angleAxis[0] = q[1] / s;
-                angleAxis[0] = q[2] / s;
+                angleAxis[1] = q[1] / s;
+                angleAxis[2] = q[2] / s;
             }
             angleAxis[3] = angle; // * 57.295779579;
             return angleAxis;
