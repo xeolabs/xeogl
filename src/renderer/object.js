@@ -32,7 +32,7 @@ xeogl.renderer.Object = function (id, entityId, gl, scene, material, ghostMateri
     this._pickTriangle = null;
     this._pickVertex = null;
 
-    this._draw = xeogl.renderer.DrawRenderer.create(this.gl, [(this.scene.gammaOutput ? "gam" : ""), this.scene.lights.hash,
+    this._draw = xeogl.renderer.DrawRenderer.create(this.gl, [this.gl.canvas.id, (this.scene.gammaOutput ? "gam" : ""), this.scene.lights.hash,
         this.scene.clips.hash, this.geometry.hash, this.material.hash, this.modes.hash].join(";"), this.scene, this);
     if (this._draw.errors) {
         this.errors = (this.errors || []).concat(this._draw.errors);
@@ -54,7 +54,7 @@ xeogl.renderer.Object.prototype._getSceneHash = function () {
 
 xeogl.renderer.Object.prototype.draw = function (frame) {
     if (!this._draw) {
-        this._draw = xeogl.renderer.DrawRenderer.create(this.gl, [this._getSceneHash(), this.scene.lights.hash, this.scene.clips.hash, this.geometry.hash, this.material.hash, this.modes.hash].join(";"), this.scene, this);
+        this._draw = xeogl.renderer.DrawRenderer.create(this.gl, [this.gl.canvas.id, this._getSceneHash(), this.scene.lights.hash, this.scene.clips.hash, this.geometry.hash, this.material.hash, this.modes.hash].join(";"), this.scene, this);
         if (this._draw.errors) {
             this.errors = (this.errors || []).concat(this._draw.errors);
             console.error(this._draw.errors.join("\n"));
@@ -66,7 +66,7 @@ xeogl.renderer.Object.prototype.draw = function (frame) {
 
 xeogl.renderer.Object.prototype.drawGhostFill = function (frame) {
     if (!this._ghostFill) {
-        this._ghostFill = xeogl.renderer.GhostFillRenderer.create(this.gl, [this._getSceneHash(), this.scene.clips.hash, this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
+        this._ghostFill = xeogl.renderer.GhostFillRenderer.create(this.gl, [this.gl.canvas.id, this._getSceneHash(), this.scene.clips.hash, this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
         if (this._ghostFill.errors) {
             this.errors = (this.errors || []).concat(this._ghostFill.errors);
             console.error(this._ghostFill.errors.join("\n"));
@@ -78,7 +78,7 @@ xeogl.renderer.Object.prototype.drawGhostFill = function (frame) {
 
 xeogl.renderer.Object.prototype.drawGhostEdges = function (frame) {
     if (!this._ghostEdges) {
-        this._ghostEdges = xeogl.renderer.GhostEdgesRenderer.create(this.gl, [this._getSceneHash(), this.scene.clips.hash, this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
+        this._ghostEdges = xeogl.renderer.GhostEdgesRenderer.create(this.gl, [this.gl.canvas.id, this._getSceneHash(), this.scene.clips.hash, this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
         if (this._ghostEdges.errors) {
             this.errors = (this.errors || []).concat(this._ghostEdges.errors);
             console.error(this._ghostEdges.errors.join("\n"));
@@ -90,7 +90,7 @@ xeogl.renderer.Object.prototype.drawGhostEdges = function (frame) {
 
 xeogl.renderer.Object.prototype.drawGhostVertices = function (frame) {
     if (!this._ghostVertices) {
-        this._ghostVertices = xeogl.renderer.GhostVerticesRenderer.create(this.gl, [this._getSceneHash(), this.scene.clips.hash, this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
+        this._ghostVertices = xeogl.renderer.GhostVerticesRenderer.create(this.gl, [this.gl.canvas.id, this._getSceneHash(), this.scene.clips.hash, this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
         if (this._ghostVertices.errors) {
             this.errors = (this.errors || []).concat(this._ghostVertices.errors);
             console.error(this._ghostVertices.errors.join("\n"));
@@ -102,7 +102,7 @@ xeogl.renderer.Object.prototype.drawGhostVertices = function (frame) {
 
 xeogl.renderer.Object.prototype.drawHighlightFill = function (frame) {
     if (!this._ghostFill) {
-        this._ghostFill = xeogl.renderer.GhostFillRenderer.create(this.gl, [this._getSceneHash(), this.scene.clips.hash, this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
+        this._ghostFill = xeogl.renderer.GhostFillRenderer.create(this.gl, [this.gl.canvas.id, this._getSceneHash(), this.scene.clips.hash, this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
         if (this._ghostFill.errors) {
             this.errors = (this.errors || []).concat(this._ghostFill.errors);
             console.error(this._ghostFill.errors.join("\n"));
@@ -114,7 +114,7 @@ xeogl.renderer.Object.prototype.drawHighlightFill = function (frame) {
 
 xeogl.renderer.Object.prototype.drawHighlightEdges = function (frame) {
     if (!this._ghostEdges) {
-        this._ghostEdges = xeogl.renderer.GhostEdgesRenderer.create(this.gl, [this._getSceneHash(), this.scene.clips.hash, this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
+        this._ghostEdges = xeogl.renderer.GhostEdgesRenderer.create(this.gl, [this.gl.canvas.id, this._getSceneHash(), this.scene.clips.hash, this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
         if (this._ghostEdges.errors) {
             this.errors = (this.errors || []).concat(this._ghostEdges.errors);
             console.error(this._ghostEdges.errors.join("\n"));
@@ -126,7 +126,7 @@ xeogl.renderer.Object.prototype.drawHighlightEdges = function (frame) {
 
 xeogl.renderer.Object.prototype.drawHighlightVertices = function (frame) {
     if (!this._ghostVertices) {
-        this._ghostVertices = xeogl.renderer.GhostVerticesRenderer.create(this.gl, [this._getSceneHash(), this.scene.clips.hash, this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
+        this._ghostVertices = xeogl.renderer.GhostVerticesRenderer.create(this.gl, [this.gl.canvas.id, this._getSceneHash(), this.scene.clips.hash, this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
         if (this._ghostVertices.errors) {
             this.errors = (this.errors || []).concat(this._ghostVertices.errors);
             console.error(this._ghostVertices.errors.join("\n"));
@@ -138,7 +138,7 @@ xeogl.renderer.Object.prototype.drawHighlightVertices = function (frame) {
 
 xeogl.renderer.Object.prototype.drawSelectedFill = function (frame) {
     if (!this._ghostFill) {
-        this._ghostFill = xeogl.renderer.GhostFillRenderer.create(this.gl, [this._getSceneHash(), this.scene.clips.hash, this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
+        this._ghostFill = xeogl.renderer.GhostFillRenderer.create(this.gl, [this.gl.canvas.id, this._getSceneHash(), this.scene.clips.hash, this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
         if (this._ghostFill.errors) {
             this.errors = (this.errors || []).concat(this._ghostFill.errors);
             console.error(this._ghostFill.errors.join("\n"));
@@ -150,7 +150,7 @@ xeogl.renderer.Object.prototype.drawSelectedFill = function (frame) {
 
 xeogl.renderer.Object.prototype.drawSelectedEdges = function (frame) {
     if (!this._ghostEdges) {
-        this._ghostEdges = xeogl.renderer.GhostEdgesRenderer.create(this.gl, [this._getSceneHash(), this.scene.clips.hash, this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
+        this._ghostEdges = xeogl.renderer.GhostEdgesRenderer.create(this.gl, [this.gl.canvas.id, this._getSceneHash(), this.scene.clips.hash, this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
         if (this._ghostEdges.errors) {
             this.errors = (this.errors || []).concat(this._ghostEdges.errors);
             console.error(this._ghostEdges.errors.join("\n"));
@@ -162,7 +162,7 @@ xeogl.renderer.Object.prototype.drawSelectedEdges = function (frame) {
 
 xeogl.renderer.Object.prototype.drawSelectedVertices = function (frame) {
     if (!this._ghostVertices) {
-        this._ghostVertices = xeogl.renderer.GhostVerticesRenderer.create(this.gl, [this._getSceneHash(), this.scene.clips.hash, this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
+        this._ghostVertices = xeogl.renderer.GhostVerticesRenderer.create(this.gl, [this.gl.canvas.id, this._getSceneHash(), this.scene.clips.hash, this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
         if (this._ghostVertices.errors) {
             this.errors = (this.errors || []).concat(this._ghostVertices.errors);
             console.error(this._ghostVertices.errors.join("\n"));
@@ -174,7 +174,7 @@ xeogl.renderer.Object.prototype.drawSelectedVertices = function (frame) {
 
 xeogl.renderer.Object.prototype.drawShadow = function (frame, light) {
     if (!this._shadow) {
-        this._shadow = xeogl.renderer.ShadowRenderer.create(this.gl, [this.scene.clips.hash, this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
+        this._shadow = xeogl.renderer.ShadowRenderer.create(this.gl, [this.gl.canvas.id, this.scene.clips.hash, this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
         if (this._shadow.errors) {
             this.errors = (this.errors || []).concat(this._shadow.errors);
             console.error(this._shadow.errors.join("\n"));
@@ -186,7 +186,7 @@ xeogl.renderer.Object.prototype.drawShadow = function (frame, light) {
 
 xeogl.renderer.Object.prototype.drawOutline = function (frame) {
     if (!this._outline) {
-        this._outline = xeogl.renderer.OutlineRenderer.create(this.gl, [this._getSceneHash(), this.scene.clips.hash, this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
+        this._outline = xeogl.renderer.OutlineRenderer.create(this.gl, [this.gl.canvas.id, this._getSceneHash(), this.scene.clips.hash, this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
         if (this._outline.errors) {
             this.errors = (this.errors || []).concat(this._outline.errors);
             console.error(this._outline.errors.join("\n"));
@@ -198,7 +198,7 @@ xeogl.renderer.Object.prototype.drawOutline = function (frame) {
 
 xeogl.renderer.Object.prototype.pickObject = function (frame) {
     if (!this._pickObject) {
-        this._pickObject = xeogl.renderer.PickObjectRenderer.create(this.gl, [this.scene.clips.hash, this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
+        this._pickObject = xeogl.renderer.PickObjectRenderer.create(this.gl, [this.gl.canvas.id, this.scene.clips.hash, this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
         if (this._pickObject.errors) {
             this.errors = (this.errors || []).concat(this._pickObject.errors);
             return;
@@ -209,7 +209,7 @@ xeogl.renderer.Object.prototype.pickObject = function (frame) {
 
 xeogl.renderer.Object.prototype.pickTriangle = function (frame) {
     if (!this._pickTriangle) {
-        this._pickTriangle = xeogl.renderer.PickTriangleRenderer.create(this.gl, [this.scene.clips.hash, this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
+        this._pickTriangle = xeogl.renderer.PickTriangleRenderer.create(this.gl, [this.gl.canvas.id, this.scene.clips.hash, this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
         if (this._pickTriangle.errors) {
             this.errors = (this.errors || []).concat(this._pickTriangle.errors);
             console.error(this._pickTriangle.errors.join("\n"));
@@ -221,7 +221,7 @@ xeogl.renderer.Object.prototype.pickTriangle = function (frame) {
 
 xeogl.renderer.Object.prototype.pickVertex = function (frame) {
     if (!this._pickVertex) {
-        this._pickVertex = xeogl.renderer.PickVertexRenderer.create(this.gl, [this.scene.clips.hash, this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
+        this._pickVertex = xeogl.renderer.PickVertexRenderer.create(this.gl, [this.gl.canvas.id, this.scene.clips.hash, this.geometry.hash, this.modes.hash].join(";"), this.scene, this);
         if (this._pickVertex.errors) {
             this.errors = (this.errors || []).concat(this._pickVertex.errors);
             console.error(this._pickVertex.errors.join("\n"));
