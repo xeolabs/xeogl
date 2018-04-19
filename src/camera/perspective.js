@@ -59,8 +59,11 @@
 
         _update: function () {
 
-            var canvas = this.scene.canvas.canvas;
-            var aspect = canvas.clientWidth / canvas.clientHeight;
+            const WIDTH_INDEX = 2;
+            const HEIGHT_INDEX = 3;
+
+            var boundary = this.scene.viewport.boundary;
+            var aspect = boundary[WIDTH_INDEX] / boundary[HEIGHT_INDEX];
 
             var fov = this._fov;
             var fovAxis = this._fovAxis;
