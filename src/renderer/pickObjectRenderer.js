@@ -62,7 +62,7 @@
     };
 
     xeogl.renderer.PickObjectRenderer.prototype.destroy = function () {
-        if (--this._useCount) {
+        if (--this._useCount === 0) {
             this._program.destroy();
             delete renderers[this._hash];
             xeogl.stats.memory.programs--;
