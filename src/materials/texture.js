@@ -477,11 +477,11 @@
                         value !== "linearMipmapNearest" &&
                         value !== "linearMipmapLinear" &&
                         value !== "nearestMipmapLinear" &&
-                        value !== "linearMipmapLinear") {
+                        value !== "nearestMipmapNearest") {
 
                         this.error("Unsupported value for 'minFilter': '" + value +
-                            "' - supported values are 'linear', 'linearMipmapNearest', 'nearestMipmapLinear' " +
-                            "and 'linearMipmapLinear'. Defaulting to 'linearMipmapLinear'.");
+                            "' - supported values are 'linear', 'linearMipmapNearest', 'nearestMipmapNearest', " +
+                            "'nearestMipmapLinear' and 'linearMipmapLinear'. Defaulting to 'linearMipmapLinear'.");
 
                         value = "linearMipmapLinear";
                     }
