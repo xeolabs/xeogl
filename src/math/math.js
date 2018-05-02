@@ -705,6 +705,13 @@
             };
         })(),
 
+        distVec3: (function () {
+            var vec = new Float32Array(3);
+            return function (v, w) {
+                return math.lenVec3(math.subVec3(v, w, vec));
+            };
+        })(),
+
         /**
          * @method rcpVec3
          * @static
