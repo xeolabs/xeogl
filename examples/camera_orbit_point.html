@@ -76,6 +76,7 @@
     var lastMouseCoords;
     var pivotPoint;
     var cameraOffset;
+    var polarOffset = 0;
     var azimuth = 0, polar = 0, radius = 0;
 
     input.on("mousedown", function (coords) {
@@ -103,9 +104,15 @@
             // this is only possible because the X, Y components would be 0 anyway, since we're looking at it
             cameraOffset[2] += xeogl.math.distVec3(camera.eye, pivotPoint);
 
-            // find spherical coordinates relative to the pivot point, these will be used for pivoting
+            lookat = xeogl.math.inverseMat4(lookat);
+            var offset = xeogl.math.transformVec3(lookat, cameraOffset);
+
+
+            // find spherical coordinates relative to the pivot point *with the offset removed*, because the pivoting
+            // math all works without the offset (which is applied later)
             var diff = xeogl.math.vec3();
-            xeogl.math.subVec3(camera.eye, pivotPoint, diff);
+            xeogl.math.addVec3(camera.eye, offset, offset);
+            xeogl.math.subVec3(offset, pivotPoint, diff);
 
             radius = xeogl.math.lenVec3(diff);
             polar = Math.acos(diff[1] / radius);
@@ -152,14 +159,17 @@
 
             // the lookat matrix as is will place the point in the middle of the screen
             var lookat = xeogl.math.lookAtMat4v(pos, pivotPoint, camera.up);
-
-            // apply the offset we calculated before, forcing the view position of the pivotPoint to remain constant
-            lookat[12] += cameraOffset[0];
-            lookat[13] += cameraOffset[1];
-            lookat[14] += cameraOffset[2];
-
             // calculate the view -> world matrix
             lookat = xeogl.math.inverseMat4(lookat);
+
+            // transform the offset from view space to current world space
+            var offset = xeogl.math.transformVec3(lookat, cameraOffset);
+
+            // apply the offset we calculated before, forcing the view position of the pivotPoint to remain constant
+            // of course, changing the coordinates here means the spherical coords are no longer correct
+            lookat[12] -= offset[0];
+            lookat[13] -= offset[1];
+            lookat[14] -= offset[2];
 
             // grab the position from the matrix
             camera.eye = [ lookat[12], lookat[13], lookat[14] ];
