@@ -75,6 +75,7 @@
     var input = scene.input;
     var lastMouseCoords;
     var pivotPoint;
+    var isDragging = false;
     var cameraOffset;
     var polarOffset = 0;
     var azimuth = 0, polar = 0, radius = 0;
@@ -89,6 +90,8 @@
         if (hit) {
 
             hitHelper.show(hit);
+
+            isDragging = true;
 
             pivotPoint = hit.worldPos;
 
@@ -107,20 +110,28 @@
             lookat = xeogl.math.inverseMat4(lookat);
             var offset = xeogl.math.transformVec3(lookat, cameraOffset);
 
+            var diff = xeogl.math.vec3();
+            xeogl.math.subVec3(camera.eye, pivotPoint, diff);
+
+            // the real polar coordinate relative to the pivot point
+            var polarWorld = Math.acos(diff[1] / xeogl.math.lenVec3(diff));
 
             // find spherical coordinates relative to the pivot point *with the offset removed*, because the pivoting
             // math all works without the offset (which is applied later)
-            var diff = xeogl.math.vec3();
-            xeogl.math.addVec3(camera.eye, offset, offset);
-            xeogl.math.subVec3(offset, pivotPoint, diff);
+            xeogl.math.addVec3(diff, offset);
 
             radius = xeogl.math.lenVec3(diff);
             polar = Math.acos(diff[1] / radius);
             azimuth = Math.atan2(diff[0], diff[2]);
 
+            // offset = polarWorld - polar
+            // ==> polarWorld = polar + offset
+            polarOffset = polarWorld - polar;
+
         } else {
 
             pivotPoint = null;
+            isDragging = false;
 
             hitHelper.hide();
 
@@ -130,12 +141,32 @@
     });
 
     input.on("mouseup", function () {
-        hitHelper.hide();
-        pivotPoint = null;
+        isDragging = false;
+    });
+
+    input.on("mousewheel", function (delta) {
+        if (pivotPoint) {
+            // move closer to pivot
+            var diff = xeogl.math.vec3();
+            var lookDir = xeogl.math.vec3();
+            xeogl.math.subVec3(camera.look, camera.eye, lookDir);
+            xeogl.math.subVec3(camera.eye, pivotPoint, diff);
+            var dist = xeogl.math.lenVec3(diff);
+            var newDist = dist - delta * .2;
+            newDist = Math.max(newDist, 0.01);
+
+            xeogl.math.mulVec3Scalar(diff, newDist / dist, diff);
+            xeogl.math.addVec3(diff, pivotPoint);
+
+            // trigger update
+            camera.eye = diff;
+            xeogl.math.addVec3(lookDir, diff);
+            camera.look = lookDir;
+        }
     });
 
     input.on("mousemove", function (coords) {
-        if (pivotPoint) {
+        if (isDragging) {
             var dx = coords[0] - lastMouseCoords[0];
             var dy = coords[1] - lastMouseCoords[1];
 
@@ -143,8 +174,9 @@
             azimuth += -dx * .01;
             polar += dy * .01;
 
-            // clamp to top/bottom
+            // clamp to top/bottom, taking into account the polar offset due to the pivot point offset
             polar = xeogl.math.clamp(polar, .001, Math.PI - .001);
+            // polar = xeogl.math.clamp(polar, .001, Math.PI - .001);
 
             // transform spherical back to euclidean
             // this is the new offset relative to the pivot point in world space
@@ -172,6 +204,7 @@
             lookat[14] -= offset[2];
 
             // grab the position from the matrix
+
             camera.eye = [ lookat[12], lookat[13], lookat[14] ];
 
             // Z-axis points backwards, so a valid look position is Eye - Zaxis (any point on that line will do)
