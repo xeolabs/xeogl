@@ -168,7 +168,7 @@
     input.on("mousemove", function (coords) {
         if (isDragging) {
             var dx = coords[0] - lastMouseCoords[0];
-            var dy = coords[1] - lastMouseCoords[1];
+            var dy = -(coords[1] - lastMouseCoords[1]);
 
             // update spherical coordinates based on mouse coordinates
             azimuth += -dx * .01;
