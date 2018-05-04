@@ -57,20 +57,24 @@
 
         _update: function () {
 
+            const WIDTH_INDEX = 2;
+            const HEIGHT_INDEX = 3;
+
             var scene = this.scene;
             var scale = this._scale;
-            var canvas = scene.canvas.canvas;
-            var canvasWidth = canvas.clientWidth;
-            var canvasHeight = canvas.clientHeight;
             var halfSize = 0.5 * scale;
-            var aspect = canvasWidth / canvasHeight;
+
+            var boundary = scene.viewport.boundary;
+            var boundaryWidth = boundary[WIDTH_INDEX];
+            var boundaryHeight = boundary[HEIGHT_INDEX];
+            var aspect = boundaryWidth / boundaryHeight;
 
             var left;
             var right;
             var top;
             var bottom;
 
-            if (canvasWidth > canvasHeight) {
+            if (boundaryWidth > boundaryHeight) {
                 left = -halfSize;
                 right = halfSize;
                 top = halfSize / aspect;
