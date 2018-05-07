@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="../build/xeogl.js"></script>
+    <script src="js/models/glTFModel.js"></script>
+
+<body>
+
+<div id="info">
+    <h1>orbiting the <a href="../docs/classes/Camera.html" target="_parent">Camera</a> about an arbitrary pivot point
+    </h1>
+    <ul>
+        <li>click on the house, then drag to orbit that point</li>
+        <li>author: <a href="http://www.derschmale.com/">Der Schmale</a></li>
+    </ul>
+</div>
+
+<script>
+
+    // important to know what way is "up" in the world
+    var worldUp = [0, 1, 0];
+
+    //--------------------------------------------
+    // Box entities
+    //--------------------------------------------
+
+    var box = new xeogl.Entity({
+        geometry: new xeogl.BoxGeometry({
+            xSize: 1,
+            ySize: 1,
+            zSize: 1
+        }),
+        material: new xeogl.PhongMaterial({
+            ambient: [0.3, 0.3, 0.3],
+            shininess: 30,
+            diffuseMap: new xeogl.Texture({
+                src: "textures/diffuse/uvGrid2.jpg"
+            }),
+            pointSize: 5
+        }),
+        transform: new xeogl.Translate({
+            xyz: [-2, 0, -2]
+        })
+    });
+
+    new xeogl.Entity({
+        geometry: new xeogl.BoxGeometry({
+            xSize: 1,
+            ySize: 1,
+            zSize: 1
+        }),
+        material: new xeogl.PhongMaterial({
+            ambient: [0.3, 0.3, 0.3],
+            shininess: 30,
+            diffuseMap: new xeogl.Texture({
+                src: "textures/diffuse/uvGrid2.jpg"
+            }),
+            pointSize: 5
+        }),
+        transform: new xeogl.Translate({
+            xyz: [2, 0, -2]
+        })
+    });
+
+    new xeogl.Entity({
+        geometry: new xeogl.BoxGeometry({
+            xSize: 1,
+            ySize: 1,
+            zSize: 1
+        }),
+        material: new xeogl.PhongMaterial({
+            ambient: [0.3, 0.3, 0.3],
+            shininess: 30,
+            diffuseMap: new xeogl.Texture({
+                src: "textures/diffuse/uvGrid2.jpg"
+            }),
+            pointSize: 5
+        }),
+        transform: new xeogl.Translate({
+            xyz: [2, 0, 2]
+        })
+    });
+
+    new xeogl.Entity({
+        geometry: new xeogl.BoxGeometry({
+            xSize: 1,
+            ySize: 1,
+            zSize: 1
+        }),
+        material: new xeogl.PhongMaterial({
+            ambient: [0.3, 0.3, 0.3],
+            shininess: 30,
+            diffuseMap: new xeogl.Texture({
+                src: "textures/diffuse/uvGrid2.jpg"
+            }),
+            pointSize: 5
+        }),
+        transform: new xeogl.Translate({
+            xyz: [-2, 0, 2]
+        })
+    });
+
+    //--------------------------------------------
+    // Ground plane entity
+    //--------------------------------------------
+
+    new xeogl.Entity({
+        geometry: new xeogl.PlaneGeometry({
+            xSize: 100,
+            zSize: 100
+        }),
+        material: new xeogl.PhongMaterial({
+            shininess: 170,
+            specular: [0.1, 0.1, 0.3],
+            diffuseMap: new xeogl.Texture({
+                src: "textures/diffuse/UVCheckerMap11-1024.png",
+                scale: [-25.0, 25.0]
+            }),
+            xalpha: 0.99,
+            backfaces: false
+        }),
+        collidable: false,
+        pickable: true,
+        colorize: [0.5, 1, 0.5, 1]
+    });
+
+    var scene = box.scene;
+
+    //--------------------------------------------
+    // Initial camera position
+    //--------------------------------------------
+
+    var camera = scene.camera;
+
+    camera.eye = [-5.403568744659424, 6.691194534301758, 3.806628942489624];
+    camera.look = [-2.2823824882507324, 0.8718322515487671, -2.0741031169891357];
+    camera.up = [0.30852949619293213, 0.7529196739196777, -0.5813107490539551];
+
+    //--------------------------------------------
+    // Create helper to show ray-Entity hits
+    //--------------------------------------------
+
+
+    var hitHelper = new (function () {
+
+        var entity = new xeogl.Entity({
+            geometry: new xeogl.SphereGeometry({radius: .05}),
+            material: new xeogl.PhongMaterial({emissive: [1, 0, 0], diffuse: [0, 0, 0]}),
+            transform: new xeogl.Translate({
+                xyz: [0, 0, 0]
+            }),
+            pickable: false,
+            visible: true
+        });
+
+        this.show = function (hit) {
+            entity.transform.xyz = hit.worldPos;
+            entity.visible = true;
+        };
+
+        this.hide = function () {
+            entity.visible = false;
+        };
+    })();
+
+    //--------------------------------------------------------------------
+
+    // Attempt to pick a Entity on each mouse move.
+    // Highlight each Entity that we successfully pick.
+
+    var input = scene.input;
+    var lastMouseCoords;
+    var pivotPoint;
+    var isDragging = false;
+    var cameraOffset;
+    var azimuth = 0, polar = 0, radius = 0;
+
+    input.on("mousedown", function (coords) {
+
+        var hit = scene.pick({
+            canvasPos: coords,
+            pickSurface: true  // <<------ This causes picking to find the intersection point on the entity
+        });
+
+        if (hit) {
+
+            hitHelper.show(hit);
+
+            isDragging = true;
+
+            pivotPoint = hit.worldPos;
+
+            var lookat = xeogl.math.lookAtMat4v(camera.eye, camera.look, worldUp);
+
+            // we need to find the offset between the pivotPoint in current view space, and that when looking straight at it
+            // this will allow applying the same offset during pivoting to keep it locked in the same view position
+
+            // find the position of the pivot point in current view space, which we'll need to place back
+            cameraOffset = xeogl.math.transformPoint3(lookat, pivotPoint);
+
+            // instead of calculating the lookat matrix for the pivotPoint, we just update the z component directly
+            // this is only possible because the X, Y components would be 0 anyway, since we're looking at it
+            cameraOffset[2] += xeogl.math.distVec3(camera.eye, pivotPoint);
+
+            lookat = xeogl.math.inverseMat4(lookat);
+            var offset = xeogl.math.transformVec3(lookat, cameraOffset);
+
+            var diff = xeogl.math.vec3();
+            xeogl.math.subVec3(camera.eye, pivotPoint, diff);
+
+            // the real polar coordinate relative to the pivot point
+            var polarWorld = Math.acos(diff[1] / xeogl.math.lenVec3(diff));
+
+            // find spherical coordinates relative to the pivot point *with the offset removed*, because the pivoting
+            // math all works without the offset (which is applied later)
+            xeogl.math.addVec3(diff, offset);
+
+            radius = xeogl.math.lenVec3(diff);
+            polar = Math.acos(diff[1] / radius);
+            azimuth = Math.atan2(diff[0], diff[2]);
+
+        } else {
+
+            pivotPoint = null;
+            isDragging = false;
+
+            hitHelper.hide();
+
+        }
+
+        lastMouseCoords = coords;
+    });
+
+    input.on("mouseup", function () {
+        pivotPoint = null;
+        isDragging = false;
+
+        hitHelper.hide();
+    });
+
+    input.on("mousewheel", function (delta) {
+        if (!lastMouseCoords) return;
+
+        var hit = scene.pick({
+            canvasPos: lastMouseCoords,
+            pickSurface: true  // <<------ This causes picking to find the intersection point on the entity
+        });
+
+        if (hit) {
+            var pivotPoint = hit.worldPos;
+            // move closer to pivot
+            var diff = xeogl.math.vec3();
+            var lookDir = xeogl.math.vec3();
+            xeogl.math.subVec3(camera.look, camera.eye, lookDir);
+            xeogl.math.subVec3(camera.eye, pivotPoint, diff);
+            var dist = xeogl.math.lenVec3(diff);
+            var newDist = dist - delta * .2;
+            newDist = Math.max(newDist, 0.01);
+
+            xeogl.math.mulVec3Scalar(diff, newDist / dist, diff);
+            xeogl.math.addVec3(diff, pivotPoint);
+
+            // trigger update
+            camera.eye = diff;
+            xeogl.math.addVec3(lookDir, diff);
+            camera.look = lookDir;
+        }
+    });
+
+    input.on("mousemove", function (coords) {
+        if (isDragging) {
+            var dx = coords[0] - lastMouseCoords[0];
+            var dy = -(coords[1] - lastMouseCoords[1]);
+
+            // update spherical coordinates based on mouse coordinates
+            azimuth += -dx * .01;
+            polar += dy * .01;
+
+            // clamp to top/bottom, taking into account the polar offset due to the pivot point offset
+            polar = xeogl.math.clamp(polar, .001, Math.PI - .001);
+            // polar = xeogl.math.clamp(polar, .001, Math.PI - .001);
+
+            // transform spherical back to euclidean
+            // this is the new offset relative to the pivot point in world space
+            var pos = [
+                radius * Math.sin(polar) * Math.sin(azimuth),
+                radius * Math.cos(polar),
+                radius * Math.sin(polar) * Math.cos(azimuth)
+            ];
+
+            // the absolute position in world space
+            xeogl.math.addVec3(pos, pivotPoint);
+
+            // the lookat matrix as is will place the point in the middle of the screen
+            var lookat = xeogl.math.lookAtMat4v(pos, pivotPoint, worldUp);
+            // calculate the view -> world matrix
+            lookat = xeogl.math.inverseMat4(lookat);
+
+            // transform the offset from view space to current world space
+            var offset = xeogl.math.transformVec3(lookat, cameraOffset);
+
+            // apply the offset we calculated before, forcing the view position of the pivotPoint to remain constant
+            // of course, changing the coordinates here means the spherical coords are no longer correct
+            lookat[12] -= offset[0];
+            lookat[13] -= offset[1];
+            lookat[14] -= offset[2];
+
+            // grab the position from the matrix
+            var zAxis = [ lookat[8], lookat[9], lookat[10] ];
+
+            camera.eye = [lookat[12], lookat[13], lookat[14]];
+
+            // Z-axis points backwards, so a valid look position is Eye - Zaxis (any point on that line will do)
+            xeogl.math.subVec3(camera.eye, zAxis, camera.look);
+            camera.up = [ lookat[4], lookat[5], lookat[6] ];
+        }
+
+        lastMouseCoords = coords;
+    });
+
+</script>
+</body>
+</html>
